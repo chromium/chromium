@@ -21,6 +21,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -43,8 +45,9 @@ import org.chromium.content_public.browser.LoadUrlParams;
  * displayed in the downloads UI.
  */
 @JNINamespace("offline_pages::android")
+@NullMarked
 public class OfflinePageDownloadBridge {
-    private static OfflinePageDownloadBridge sInstance;
+    private static @Nullable OfflinePageDownloadBridge sInstance;
     private static boolean sIsTesting;
     private long mNativeOfflinePageDownloadBridge;
 
@@ -147,6 +150,7 @@ public class OfflinePageDownloadBridge {
         } else {
             context = ContextUtils.getApplicationContext();
         }
+        assert context != null;
 
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
@@ -204,7 +208,7 @@ public class OfflinePageDownloadBridge {
         sIsTesting = isTesting;
     }
 
-    private static ComponentName getComponentName() {
+    private static @Nullable ComponentName getComponentName() {
         if (!ApplicationStatus.hasVisibleActivities()) return null;
 
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();

@@ -19,6 +19,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
@@ -32,6 +35,7 @@ import java.lang.annotation.RetentionPolicy;
  * Class that controls visibility and content of {@link StatusIndicatorCoordinator} to relay
  * connectivity information.
  */
+@NullMarked
 public class OfflineIndicatorControllerV2 {
     @IntDef({
         UmaEnum.CAN_ANIMATE_NATIVE_CONTROLS,
@@ -61,53 +65,50 @@ public class OfflineIndicatorControllerV2 {
             "OfflineIndicator.ShownDurationV2";
 
     @SuppressLint("StaticFieldLeak")
-    private static OfflineDetector sMockOfflineDetector;
+    private static @Nullable OfflineDetector sMockOfflineDetector;
 
-    private static Supplier<Long> sMockElapsedTimeSupplier;
-    private static OfflineIndicatorMetricsDelegate sMockOfflineIndicatorMetricsDelegate;
+    private static @Nullable Supplier<Long> sMockElapsedTimeSupplier;
+    private static @Nullable OfflineIndicatorMetricsDelegate sMockOfflineIndicatorMetricsDelegate;
 
-    private Context mContext;
-    private StatusIndicatorCoordinator mStatusIndicator;
+    private final Context mContext;
+    private final StatusIndicatorCoordinator mStatusIndicator;
     private Handler mHandler;
     private OfflineDetector mOfflineDetector;
     private ObservableSupplier<Boolean> mIsUrlBarFocusedSupplier;
-    private Supplier<Boolean> mCanAnimateBrowserControlsSupplier;
+    private final Supplier<Boolean> mCanAnimateBrowserControlsSupplier;
     private Callback<Boolean> mOnUrlBarFocusChanged;
-    private Runnable mShowRunnable;
-    private Runnable mUpdateAndHideRunnable;
-    private Runnable mHideRunnable;
-    private Runnable mOnUrlBarUnfocusedRunnable;
-    private Runnable mUpdateStatusIndicatorDelayedRunnable;
+    private final Runnable mShowRunnable;
+    private final Runnable mUpdateAndHideRunnable;
+    private final Runnable mHideRunnable;
+    private @Nullable Runnable mOnUrlBarUnfocusedRunnable;
+    private final Runnable mUpdateStatusIndicatorDelayedRunnable;
     private long mLastActionTime;
     private boolean mIsOffline;
     private boolean mIsOfflineStateInitialized;
     private boolean mIsForeground;
-    private OfflineIndicatorMetricsDelegate mMetricsDelegate;
+    private final OfflineIndicatorMetricsDelegate mMetricsDelegate;
 
     /**
      * Constructs the offline indicator.
+     *
      * @param context The {@link Context}.
      * @param statusIndicator The {@link StatusIndicatorCoordinator} instance this controller will
-     *                        control based on the connectivity.
+     *     control based on the connectivity.
      * @param isUrlBarFocusedSupplier The {@link ObservableSupplier} that will supply the UrlBar's
-     *                                focus state and notify a listener when it changes.
+     *     focus state and notify a listener when it changes.
      * @param canAnimateNativeBrowserControls Will supply a boolean meaning whether the native
-     *                                        browser controls can be animated. This is used for
-     *                                        collecting metrics.
-     * TODO(sinansahin): We can remove canAnimateNativeBrowserControls once we're done with metrics
-     *                   collection.
+     *     browser controls can be animated. This is used for collecting metrics. TODO(sinansahin):
+     *     We can remove canAnimateNativeBrowserControls once we're done with metrics collection.
      */
     public OfflineIndicatorControllerV2(
             Context context,
             StatusIndicatorCoordinator statusIndicator,
             ObservableSupplier<Boolean> isUrlBarFocusedSupplier,
             Supplier<Boolean> canAnimateNativeBrowserControls) {
-        if (CommandLine.getInstance()
-                .hasSwitch(ContentSwitches.FORCE_ONLINE_CONNECTION_STATE_FOR_INDICATOR)) {
-            // If "force online connection state" switch is set, the offline indicator should never
-            // show.
-            return;
-        }
+        // If "force online connection state" switch is set, the offline indicator should never
+        // show.
+        assert !CommandLine.getInstance()
+                .hasSwitch(ContentSwitches.FORCE_ONLINE_CONNECTION_STATE_FOR_INDICATOR);
 
         mContext = context;
         mStatusIndicator = statusIndicator;
@@ -237,6 +238,7 @@ public class OfflineIndicatorControllerV2 {
         mIsForeground = isForeground;
     }
 
+    @NullUnmarked
     public void destroy() {
         if (mOfflineDetector != null) {
             mOfflineDetector.destroy();

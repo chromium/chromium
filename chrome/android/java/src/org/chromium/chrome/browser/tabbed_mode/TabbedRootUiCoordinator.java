@@ -213,6 +213,7 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFactory;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -1372,12 +1373,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         }
                     }
                 };
-        mOfflineIndicatorController =
-                new OfflineIndicatorControllerV2(
-                        mActivity,
-                        mStatusIndicatorCoordinator,
-                        isUrlBarFocusedSupplier,
-                        mCanAnimateBrowserControls);
+
+        if (!CommandLine.getInstance()
+                .hasSwitch(ContentSwitches.FORCE_ONLINE_CONNECTION_STATE_FOR_INDICATOR)) {
+            mOfflineIndicatorController =
+                    new OfflineIndicatorControllerV2(
+                            mActivity,
+                            mStatusIndicatorCoordinator,
+                            isUrlBarFocusedSupplier,
+                            mCanAnimateBrowserControls);
+        }
+
         if (mToolbarManager.getOmniboxStub() != null) {
             mToolbarManager.getOmniboxStub().addUrlFocusChangeListener(mUrlFocusChangeListener);
         }

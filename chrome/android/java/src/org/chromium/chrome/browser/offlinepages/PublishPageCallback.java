@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -15,14 +17,17 @@ import org.chromium.ui.base.WindowAndroid;
  * This callback will save the state we need when the JNI call is done, and start the next stage of
  * processing for sharing.
  */
+@NullMarked
 public class PublishPageCallback implements Callback<String> {
-    private final Callback<ShareParams> mShareCallback;
+    private final Callback<@Nullable ShareParams> mShareCallback;
     OfflinePageItem mPage;
     private final WindowAndroid mWindow;
 
     /** Create a callback for use when page publishing is completed. */
     public PublishPageCallback(
-            WindowAndroid window, OfflinePageItem page, Callback<ShareParams> shareCallback) {
+            WindowAndroid window,
+            OfflinePageItem page,
+            Callback<@Nullable ShareParams> shareCallback) {
         mWindow = window;
         mPage = page;
         mShareCallback = shareCallback;

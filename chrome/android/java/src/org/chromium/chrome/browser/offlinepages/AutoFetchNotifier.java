@@ -22,6 +22,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
@@ -50,6 +52,7 @@ import java.lang.annotation.RetentionPolicy;
  * Implements notifications when pages are automatically fetched after reaching the net-error page.
  */
 @JNINamespace("offline_pages")
+@NullMarked
 public class AutoFetchNotifier {
     private static final String TAG = "AutoFetchNotifier";
     private static final String COMPLETE_NOTIFICATION_TAG = "OfflinePageAutoFetchNotification";
@@ -58,7 +61,7 @@ public class AutoFetchNotifier {
     private static final String EXTRA_URL = "org.chromium.chrome.browser.offlinepages.URL";
     private static final String EXTRA_ACTION = "notification_action";
 
-    @VisibleForTesting public static TestHooks mTestHooks;
+    @VisibleForTesting public static @Nullable TestHooks mTestHooks;
 
     /** Interface for testing. */
     @VisibleForTesting
@@ -295,6 +298,7 @@ public class AutoFetchNotifier {
                 offlineId,
                 LaunchLocation.NOTIFICATION,
                 (params) -> {
+                    assert params != null;
                     showCompleteNotificationWithParams(
                             pageTitle, tabId, offlineId, originalUrl, finalUrl, params);
                 },

@@ -22,6 +22,7 @@ import org.jni_zero.JniType;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -31,10 +32,11 @@ import java.lang.reflect.Method;
 
 /**
  * Since the {@link AndroidDownloadManager} can only be accessed from Java, this bridge will
- * transfer all C++ calls over to Java land for making the call to ADM.  This is a one-way bridge,
- * from C++ to Java only.  The Java side of this bridge is not called by other Java code.
+ * transfer all C++ calls over to Java land for making the call to ADM. This is a one-way bridge,
+ * from C++ to Java only. The Java side of this bridge is not called by other Java code.
  */
 @JNINamespace("offline_pages")
+@NullMarked
 public class OfflinePageArchivePublisherBridge {
     private static final String TAG = "OPArchivePublisher";
 
@@ -191,6 +193,7 @@ public class OfflinePageArchivePublisherBridge {
                     fileUtilsClazz.getMethod("copy", InputStream.class, OutputStream.class);
 
             OutputStream out = contentResolver.openOutputStream(intermediateUri);
+            assert out != null;
             InputStream in = new FileInputStream(page.getFilePath());
             copyMethod.invoke(null, in, out);
             in.close();

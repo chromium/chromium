@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.offlinepages;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,9 +46,6 @@ public class ClientIdTest {
         assertNotNull(clientId);
         assertEquals(OfflinePageBridge.BOOKMARK_NAMESPACE, clientId.getNamespace());
         assertEquals(Long.toString(INVALID_BOOKMARK_ID), clientId.getId());
-
-        clientId = ClientId.createClientIdForBookmarkId(null);
-        assertNull(clientId);
     }
 
     /** Ensure that ClientId works properly. */

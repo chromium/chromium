@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.offlinepages;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -18,6 +17,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.tab.Tab;
@@ -26,6 +27,7 @@ import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offlinepages.DeletePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ import java.util.Map;
 
 /** Access gate to C++ side offline pages functionalities. */
 @JNINamespace("offline_pages::android")
+@NullMarked
 public class OfflinePageBridge {
     // These constants must be kept in sync with the constants defined in
     // //components/offline_pages/core/client_namespace_constants.cc
@@ -55,12 +58,11 @@ public class OfflinePageBridge {
 
     /**
      * Retrieves the OfflinePageBridge for the given profile, creating it the first time
-     * getForProfile or getForProfileKey is called for the profile.  Must be called on the UI
-     * thread.
+     * getForProfile or getForProfileKey is called for the profile. Must be called on the UI thread.
      *
      * @param profile The profile associated with the OfflinePageBridge to get.
      */
-    public static OfflinePageBridge getForProfile(Profile profile) {
+    public static @Nullable OfflinePageBridge getForProfile(@Nullable Profile profile) {
         ThreadUtils.assertOnUiThread();
 
         if (profile == null) {
@@ -271,13 +273,13 @@ public class OfflinePageBridge {
     }
 
     /**
-     * Saves the web page loaded into web contents offline.
-     * Retrieves the origin of the page from the WebContents.
+     * Saves the web page loaded into web contents offline. Retrieves the origin of the page from
+     * the WebContents.
      *
      * @param webContents Contents of the page to save.
      * @param clientId Client ID of the bookmark related to the offline page.
      * @param callback Interface that contains a callback. This may be called synchronously, e.g. if
-     *         the web contents is already destroyed.
+     *     the web contents is already destroyed.
      * @see SavePageCallback
      */
     public void savePage(
@@ -285,8 +287,9 @@ public class OfflinePageBridge {
             final ClientId clientId,
             final SavePageCallback callback) {
         OfflinePageOrigin origin;
-        Tab currentTab =
-                TabModelSelectorSupplier.getCurrentTabFrom(webContents.getTopLevelNativeWindow());
+        WindowAndroid topLevelNativeWindow = webContents.getTopLevelNativeWindow();
+        assert topLevelNativeWindow != null;
+        Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(topLevelNativeWindow);
         if (currentTab != null) {
             origin = new OfflinePageOrigin(ContextUtils.getApplicationContext(), currentTab);
         } else {
@@ -302,7 +305,7 @@ public class OfflinePageBridge {
      * @param clientId Client ID of the bookmark related to the offline page.
      * @param origin The app that initiated the download.
      * @param callback Interface that contains a callback. This may be called synchronously, e.g. if
-     *         the web contents is already destroyed.
+     *     the web contents is already destroyed.
      * @see SavePageCallback
      */
     public void savePage(
@@ -465,7 +468,7 @@ public class OfflinePageBridge {
      * @param webContents Contents of the page to check.
      * @return True if an offline preview is being shown.
      */
-    public boolean isShowingOfflinePreview(WebContents webContents) {
+    public boolean isShowingOfflinePreview(@Nullable WebContents webContents) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
                 .isShowingOfflinePreview(
                         mNativeOfflinePageBridge, OfflinePageBridge.this, webContents);
@@ -840,12 +843,13 @@ public class OfflinePageBridge {
                 @JniType("std::string") String clientId,
                 @JniType("std::string") String origin);
 
-        @Nullable
-        String getOfflinePageHeaderForReload(
+        @Nullable String getOfflinePageHeaderForReload(
                 long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
 
         boolean isShowingOfflinePreview(
-                long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
+                long nativeOfflinePageBridge,
+                OfflinePageBridge caller,
+                @Nullable WebContents webContents);
 
         boolean isShowingDownloadButtonInErrorPage(
                 long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);

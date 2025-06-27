@@ -8,8 +8,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Data class representing an underlying request to save a page later. */
 @JNINamespace("offline_pages::android")
+@NullMarked
 public class SavePageRequest {
     // Int representation of the org.chromium.components.offlinepages.RequestState enum.
     private final int mRequestState;

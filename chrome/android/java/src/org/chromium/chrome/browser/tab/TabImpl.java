@@ -915,6 +915,8 @@ class TabImpl implements Tab {
             return;
         }
 
+        if (getWebContents() == null) return;
+
         // TODO(dtrainor): Should we try to rebuild the ContentView if it's frozen?
         if (OfflinePageUtils.isOfflinePage(this)) {
             // If current page is an offline page, reload it with custom behavior defined in extra
@@ -926,7 +928,6 @@ class TabImpl implements Tab {
             return;
         }
 
-        if (getWebContents() == null) return;
         switchUserAgentIfNeeded(UseDesktopUserAgentCaller.RELOAD);
         getWebContents().getNavigationController().reload(true);
     }

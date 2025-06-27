@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -14,6 +13,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.List;
 
 /** Java access to the C++ offline_pages::RequestCoordinator. */
 @JNINamespace("offline_pages::android")
+@NullMarked
 public class RequestCoordinatorBridge {
     private final Profile mProfile;
 
@@ -173,7 +175,7 @@ public class RequestCoordinatorBridge {
             final ClientId clientId,
             boolean userRequested,
             OfflinePageOrigin origin,
-            Callback<Integer> callback) {
+            @Nullable Callback<Integer> callback) {
         Callback<Integer> wrapper =
                 new Callback<>() {
                     @Override
@@ -227,24 +229,24 @@ public class RequestCoordinatorBridge {
 
     /**
      * Save the given URL as an offline page when the network becomes available with a randomly
-     * generated clientId in the given namespace and the given origin. Calls back with whether
-     * the URL has been successfully added to queue.
+     * generated clientId in the given namespace and the given origin. Calls back with whether the
+     * URL has been successfully added to queue.
      *
      * @param url The given URL to save for later
      * @param namespace The namespace for the offline page to be saved later.
      * @param userRequested Whether this request should be prioritized because the user explicitly
-     *                      requested it.
+     *     requested it.
      * @param origin The app that initiated the request.
      * @param callback Callback to call whether the URL is successfully added to the queue. Non-zero
-     *                 number represents failure reason (see offline_pages::AddRequestResult enum).
-     * 0 is success.
+     *     number represents failure reason (see offline_pages::AddRequestResult enum). 0 is
+     *     success.
      */
     public void savePageLater(
             final String url,
             final String namespace,
             boolean userRequested,
             OfflinePageOrigin origin,
-            Callback<Integer> callback) {
+            @Nullable Callback<Integer> callback) {
         ClientId clientId = ClientId.createGuidClientIdForNamespace(namespace);
         savePageLater(url, clientId, userRequested, origin, callback);
     }
