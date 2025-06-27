@@ -45,8 +45,10 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
@@ -81,7 +83,8 @@ public class TabSuspensionTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
@@ -91,6 +94,7 @@ public class TabSuspensionTest {
     @Mock private SuspensionTracker mSuspensionTracker;
 
     private ChromeTabbedActivity mActivity;
+    private WebPageStation mPage;
     private PageViewObserver mPageViewObserver;
     private PageViewObserver mPageViewObserver2;
     private TokenTracker mTokenTracker;
@@ -118,9 +122,9 @@ public class TabSuspensionTest {
         mStartingUrl = mTestServer.getURLWithHostName(STARTING_FQDN, "/defaultresponse");
         mDifferentUrl = mTestServer.getURLWithHostName(DIFFERENT_FQDN, "/defaultresponse");
 
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivity = mActivityTestRule.getActivity();
-        mTab = mActivity.getActivityTab();
+        mPage = mActivityTestRule.startOnBlankPage();
+        mActivity = mPage.getActivity();
+        mTab = mPage.getTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageViewObserver =
