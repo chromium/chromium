@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v6.1.0...chromium-bidi-v7.0.0) (2025-06-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 140.0.7259.0 ([#3524](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3524))
+
+### Features
+
+* **chrome:** update the pinned browser version to 140.0.7259.0 ([#3524](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3524)) ([784add0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/784add0cce2dc8756763e9a9d0ef54c28627e092))
+* implement `emulation.setLocaleOverride` ([#3425](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3425)) ([8cefe61](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8cefe61e51ee9d706d38dea61c18740225b93bae))
+* support `emulation.setScreenOrientationOverride` ([#3439](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3439)) ([0b17774](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0b177749a66e0fe5b9c395d0a05199ae4c246eb1))
+
 ## [6.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v6.0.0...chromium-bidi-v6.1.0) (2025-06-25)
 
 
