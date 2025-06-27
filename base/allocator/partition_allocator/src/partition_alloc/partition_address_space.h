@@ -50,7 +50,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PoolOffsetLookup {
   // Similar to `GetOffset()`, but with MTE tag left in the top bits.
   PA_ALWAYS_INLINE uintptr_t GetTaggedOffset(void* ptr) const {
     const uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
-    PA_DCHECK((address & base_mask_) == base_address_);
+    PA_DCHECK(Includes(address));
     return address & (kPtrTagMask | ~base_mask_);
   }
 
