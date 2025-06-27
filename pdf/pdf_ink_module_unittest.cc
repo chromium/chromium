@@ -33,6 +33,7 @@
 #include "pdf/pdfium/pdfium_ink_reader.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
+#include "pdf/test/test_helpers.h"
 #include "pdf/ui/thumbnail.h"
 #include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"

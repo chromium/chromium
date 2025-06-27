@@ -9,6 +9,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -35,6 +36,8 @@
 namespace chrome_pdf {
 
 namespace {
+
+base::test::TaskEnvironment* g_task_environment = nullptr;
 
 testing::AssertionResult MatchesPngFileImpl(
     const SkImage* actual_image,
@@ -180,6 +183,15 @@ blink::WebPrintParams GetDefaultPrintParams() {
   params.printable_area_in_css_pixels = kUSLetterRect;
   params.print_scaling_option = printing::mojom::PrintScalingOption::kNone;
   return params;
+}
+
+void SetPdfTestTaskEnvironment(base::test::TaskEnvironment* task_environment) {
+  g_task_environment = task_environment;
+}
+
+base::test::TaskEnvironment& GetPdfTestTaskEnvironment() {
+  CHECK(g_task_environment);
+  return *g_task_environment;
 }
 
 }  // namespace chrome_pdf

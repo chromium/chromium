@@ -412,6 +412,7 @@ if (enable_pdf) {
       ":buildflags",
       ":internal",
       "//base",
+      "//base/test:test_support",
       "//cc:test_support",
       "//pdf/loader",
       "//printing",

@@ -20,6 +20,10 @@
 class SkImage;
 class SkSurface;
 
+namespace base::test {
+class TaskEnvironment;
+}  // namespace base::test
+
 namespace gfx {
 class Size;
 }  // namespace gfx
@@ -92,6 +96,14 @@ void SetBlinkIsolate(v8::Isolate* isolate);
 
 // Get print parameters for general use in tests.
 blink::WebPrintParams GetDefaultPrintParams();
+
+// Sets the global PDF test task environment.
+void SetPdfTestTaskEnvironment(base::test::TaskEnvironment* task_environment);
+
+// Returns the global PDF test task environment. Should always exist for any
+// tests in the PDF test suite, otherwise crashes if no task environment was
+// set.
+base::test::TaskEnvironment& GetPdfTestTaskEnvironment();
 
 }  // namespace chrome_pdf
 
