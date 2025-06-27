@@ -13,8 +13,6 @@
 
 namespace gpu {
 
-struct Mailbox;
-
 class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub final
     : public CommandBufferStub {
  public:
@@ -46,12 +44,6 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub final
 
  private:
   // CommandBufferStub overrides:
-  void OnSetDefaultFramebufferSharedImage(const Mailbox& mailbox,
-                                          int samples_count,
-                                          bool preserve,
-                                          bool needs_depth,
-                                          bool needs_stencil) override;
-
   void CreateGpuFenceFromHandle(uint32_t id,
                                 gfx::GpuFenceHandle handle) override;
   void GetGpuFenceHandle(uint32_t gpu_fence_id,

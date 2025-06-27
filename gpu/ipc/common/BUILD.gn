@@ -60,11 +60,8 @@ source_set("command_buffer_traits_sources") {
     "//gpu/ipc/common:vulkan_ycbcr_info",
     "//ui/gfx/ipc/buffer_types",
     "//ui/gfx/ipc/geometry",
+    "//ui/gfx/ipc/skia",
   ]
-
-  if (!is_nacl) {
-    deps += [ "//ui/gfx/ipc/skia" ]
-  }
 }
 
 source_set("memory_stats_sources") {
@@ -159,6 +156,7 @@ source_set("ipc_common_sources") {
     "//ui/gfx/ipc/buffer_types",
     "//ui/gfx/ipc/color",
     "//ui/gfx/ipc/geometry",
+    "//ui/gfx/ipc/skia",
     "//ui/gl",
   ]
 
@@ -175,10 +173,6 @@ source_set("ipc_common_sources") {
       "ios/be_layer_hierarchy_transport.cc",
       "ios/be_layer_hierarchy_transport.h",
     ]
-  }
-
-  if (!is_nacl) {
-    deps += [ "//ui/gfx/ipc/skia" ]
   }
 
   if (is_android) {

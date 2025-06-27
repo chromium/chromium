@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
-#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/client_service_map.h"
 #include "gpu/command_buffer/service/context_group.h"
@@ -181,12 +180,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // Releases the surface associated with the GL context.
   // The decoder should not be used until a new surface is set.
   void ReleaseSurface() override;
-
-  void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
-                                        int samples,
-                                        bool preserve,
-                                        bool needs_depth,
-                                        bool needs_stencil) override;
 
   // Make this decoder's GL context current.
   bool MakeCurrent() override;

@@ -584,30 +584,6 @@ void CommandBufferProxyImpl::OnReturnData(const std::vector<uint8_t>& data) {
   }
 }
 
-void CommandBufferProxyImpl::SetDefaultFramebufferSharedImage(
-    const gpu::Mailbox& mailbox,
-    const gpu::SyncToken& sync_token,
-    int samples_count,
-    bool preserve,
-    bool needs_depth,
-    bool needs_stencil) {
-  CheckLock();
-  base::AutoLock lock(last_state_lock_);
-  if (last_state_.error != gpu::error::kNoError)
-    return;
-
-  last_flush_id_ = channel_->EnqueueDeferredMessage(
-      mojom::DeferredRequestParams::NewCommandBufferRequest(
-          mojom::DeferredCommandBufferRequest::New(
-              route_id_,
-              mojom::DeferredCommandBufferRequestParams::
-                  NewSetDefaultFramebufferSharedImage(
-                      mojom::SetDefaultFramebufferSharedImageParams::New(
-                          mailbox, samples_count, preserve, needs_depth,
-                          needs_stencil)))),
-      {sync_token}, /*release_count=*/0);
-}
-
 std::pair<base::UnsafeSharedMemoryRegion, base::WritableSharedMemoryMapping>
 CommandBufferProxyImpl::AllocateAndMapSharedMemory(
     size_t size,

@@ -39,7 +39,6 @@ class GLSurface;
 namespace gpu {
 
 class DecoderClient;
-struct Mailbox;
 
 namespace gles2 {
 
@@ -157,14 +156,6 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   // Releases the surface associated with the GL context.
   // The decoder should not be used until a new surface is set.
   virtual void ReleaseSurface() = 0;
-
-  // This is intended only for use with NaCL swapchain, replacing
-  // TakeFrontBuffer/ReturnFrontBuffer flow.
-  virtual void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
-                                                int samples,
-                                                bool preserve,
-                                                bool needs_depth,
-                                                bool needs_stencil) = 0;
 
   // Gets the GLES2 Util which holds info.
   virtual GLES2Util* GetGLES2Util() = 0;

@@ -15,8 +15,6 @@ namespace gpu {
 
 struct SharedMemoryLimits {
   SharedMemoryLimits() {
-// We can't call AmountOfPhysicalMemory under NACL, so leave the default.
-#if !BUILDFLAG(IS_NACL)
     // Max mapped memory to use for a texture upload depends on device ram.
     // Do not use more than 5% of extra shared memory, and do not use any extra
     // for memory contrained devices (<=1GB).
@@ -33,7 +31,6 @@ struct SharedMemoryLimits {
       min_transfer_buffer_size = 32 * 1024;
       mapped_memory_chunk_size = 256 * 1024;
     }
-#endif
   }
 
   uint32_t command_buffer_size = 1024 * 1024;

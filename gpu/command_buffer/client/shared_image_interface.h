@@ -26,11 +26,8 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
-
-#if !BUILDFLAG(IS_NACL)
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
-#endif
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>

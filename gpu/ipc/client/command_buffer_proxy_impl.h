@@ -56,7 +56,6 @@ struct GpuFenceHandle;
 
 namespace gpu {
 struct ContextCreationAttribs;
-struct Mailbox;
 struct SyncToken;
 }
 
@@ -140,12 +139,6 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
                        base::OnceClosure callback) override;
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
   bool CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) override;
-  void SetDefaultFramebufferSharedImage(const gpu::Mailbox& mailbox,
-                                        const gpu::SyncToken& sync_token,
-                                        int samples_count,
-                                        bool preserve,
-                                        bool needs_depth,
-                                        bool needs_stencil);
   void AddDeletionObserver(DeletionObserver* observer);
   void RemoveDeletionObserver(DeletionObserver* observer);
 

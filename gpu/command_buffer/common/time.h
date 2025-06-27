@@ -5,8 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_TIME_H_
 #define GPU_COMMAND_BUFFER_COMMON_TIME_H_
 
-#if !defined(__native_client__)
-
 #include <stdint.h>
 
 #include "base/time/time.h"
@@ -28,7 +26,5 @@ inline uint64_t MicrosecondsSinceOriginOfTime() {
 }
 
 } // namespace gpu
-
-#endif  // __native_client__
 
 #endif  // GPU_COMMAND_BUFFER_COMMON_TIME_H_

@@ -113,12 +113,7 @@ void FreeOffsetSet::ReturnFreeOffset(uint32_t offset) {
 // sub-allocate from. This should be at least as big as the minimum shared
 // memory allocation size.
 size_t AllocationSize() {
-#if BUILDFLAG(IS_NACL)
-  // base::SysInfo isn't available under NaCl.
-  size_t system_allocation_size = getpagesize();
-#else
   size_t system_allocation_size = base::SysInfo::VMAllocationGranularity();
-#endif
 
   // If the allocation is small (less than 2K), round it up to at least 2K.
   return std::max(size_t{2048}, system_allocation_size);

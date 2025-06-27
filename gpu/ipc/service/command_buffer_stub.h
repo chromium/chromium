@@ -26,7 +26,6 @@
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
-#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -228,12 +227,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
                          GetGpuFenceHandleCallback callback) override;
   void SignalSyncToken(const SyncToken& sync_token, uint32_t id) override;
   void SignalQuery(uint32_t query, uint32_t id) override;
-
-  virtual void OnSetDefaultFramebufferSharedImage(const Mailbox& mailbox,
-                                                  int samples_count,
-                                                  bool preserve,
-                                                  bool needs_depth,
-                                                  bool needs_stencil) {}
 
   scoped_refptr<MemoryTracker> CreateMemoryTracker() const;
 

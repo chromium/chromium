@@ -709,7 +709,7 @@ void FeatureInfo::InitializeFeatures() {
   //
   // Therefore we made up GL_GOOGLE_depth_texture / GL_CHROMIUM_depth_texture.
   //
-  // GL_GOOGLE_depth_texture is legacy. As we exposed it into NaCl we can't
+  // TODO:GL_GOOGLE_depth_texture was exposed into NaCl, we can now
   // get rid of it.
   //
   bool enable_depth_texture = false;
