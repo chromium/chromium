@@ -292,4 +292,21 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
                 UNKNOWN,
                 mBehavior.getSegmentationDefault());
     }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
+                    + ":open_in_browser/true/default_variant/15/contextual_only/true")
+    public void canShowManualOverride_openInBrowserDefaultWinsOverManual() {
+        // Initialize custom action button types.
+        CustomButtonParams share = Mockito.mock(CustomButtonParams.class);
+        when(share.getType()).thenReturn(ButtonType.CCT_SHARE_BUTTON);
+        initBehavior(List.of(share));
+        assertFalse(mBehavior.canShowManualOverride(SHARE));
+
+        CustomButtonParams custom = Mockito.mock(CustomButtonParams.class);
+        when(custom.getType()).thenReturn(ButtonType.OTHER);
+        initBehavior(List.of(custom));
+        assertFalse(mBehavior.canShowManualOverride(TRANSLATE));
+    }
 }
