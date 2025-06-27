@@ -20,7 +20,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.hats.TestSurveyUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -45,7 +47,8 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class ChromeStartupSurveyIntegrationTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public TestSurveyUtils.TestSurveyComponentRule mTestSurveyComponentRule =
@@ -53,12 +56,13 @@ public class ChromeStartupSurveyIntegrationTest {
 
     private MessageDispatcher mMessageDispatcher;
     private PropertyModel mSurveyMessage;
+    private WebPageStation mPage;
 
     @Before
     public void setup() {
         ChromeSurveyController.setEnableForTesting();
         ChromeSurveyController.forceIsUMAEnabledForTesting(true);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         waitForSurveyMessagePresented();
     }
 
@@ -87,7 +91,7 @@ public class ChromeStartupSurveyIntegrationTest {
     }
 
     private void waitForSurveyMessagePresented() {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         CriteriaHelper.pollUiThread(() -> !tab.isLoading() && tab.isUserInteractable());
 
         ThreadUtils.runOnUiThreadBlocking(
