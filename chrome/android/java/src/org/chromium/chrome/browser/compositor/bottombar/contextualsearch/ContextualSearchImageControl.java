@@ -19,25 +19,43 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
  * search provider icon and custom image (either a thumbnail or card icon) for the current query.
  */
 public class ContextualSearchImageControl {
+
+    interface ImageListener {
+        /** Called when the custom image visibility is updated. */
+        void onUpdateCustomImageVisibility(
+                boolean customImageIsVisible, float visibilityPercentage);
+    }
+
     /** The {@link ContextualSearchPanel} that this class belongs to. */
     private final ContextualSearchPanel mPanel;
 
     /** The percentage that the image is visible that is based upon the panel position. */
     private float mVisibilityPercentageBasedOnPanelPosition;
 
-    public ContextualSearchImageControl(ContextualSearchPanel panel) {
+    /** Listener for updates to the image. */
+    private final ImageListener mListener;
+
+    public ContextualSearchImageControl(ContextualSearchPanel panel, ImageListener listener) {
         mPanel = panel;
+        mListener = listener;
     }
 
     /**
      * Updates the Bar image when in transition between peeked to expanded states.
+     *
      * @param percentage The percentage to the more opened state.
      */
     public void onUpdateFromPeekToExpand(float percentage) {
         if (mCardIconVisible || mThumbnailVisible) {
-            mCustomImageVisibilityPercentage = 1.f - percentage;
+            setCustomImageVisibility(1.f - percentage);
             mVisibilityPercentageBasedOnPanelPosition = percentage;
         }
+    }
+
+    private void setCustomImageVisibility(float percentage) {
+        mCustomImageVisibilityPercentage = percentage;
+        mListener.onUpdateCustomImageVisibility(
+                /* customImageIsVisible= */ percentage > 0, percentage);
     }
 
     // ============================================================================================
@@ -177,7 +195,7 @@ public class ContextualSearchImageControl {
 
         mThumbnailUrl = "";
         mThumbnailVisible = false;
-        mCustomImageVisibilityPercentage = 0.f;
+        setCustomImageVisibility(0.f);
     }
 
     // ============================================================================================
@@ -208,7 +226,7 @@ public class ContextualSearchImageControl {
                         OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
                         animator -> {
                             if (mVisibilityPercentageBasedOnPanelPosition > 0.f) return;
-                            mCustomImageVisibilityPercentage = animator.getAnimatedValue();
+                            setCustomImageVisibility(animator.getAnimatedValue());
                         });
         mImageVisibilityAnimator.setInterpolator(mCustomImageVisibilityInterpolator);
         mImageVisibilityAnimator.addListener(

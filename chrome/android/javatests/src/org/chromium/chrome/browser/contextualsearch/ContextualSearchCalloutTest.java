@@ -31,14 +31,42 @@ public class ContextualSearchCalloutTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    public void testCalloutControlOpacity() throws Exception {
+    public void testCalloutPeekToExpandOpacityWhenNoCustomImage() throws Exception {
         ContextualSearchPanel panel = (ContextualSearchPanel) mManager.getContextualSearchPanel();
         // The view gets inflated immediately so this needs to run on the UI thread.
         ThreadUtils.runOnUiThreadBlocking(() -> panel.getSearchBarControl());
         ContextualSearchCalloutControl calloutControl =
                 panel.getSearchBarControl().getCalloutControl();
 
-        calloutControl.onUpdateFromPeekToExpand(0.f);
+        // Mark custom image as invisible
+        calloutControl.onUpdateCustomImageVisibility(
+                /* customImageIsVisible= */ false, /* visibilityPercentage= */ 0);
+
+        calloutControl.onUpdateFromPeekToExpand(0);
+        Assert.assertEquals(0, calloutControl.getOpacity(), 0.01f);
+
+        calloutControl.onUpdateFromPeekToExpand(0.5f);
+        Assert.assertEquals(0, calloutControl.getOpacity(), 0.01f);
+
+        calloutControl.onUpdateFromPeekToExpand(1);
+        Assert.assertEquals(0, calloutControl.getOpacity(), 0.01f);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testCalloutPeekToExpandOpacityWhenVisibleCustomImage() throws Exception {
+        ContextualSearchPanel panel = (ContextualSearchPanel) mManager.getContextualSearchPanel();
+        // The view gets inflated immediately so this needs to run on the UI thread.
+        ThreadUtils.runOnUiThreadBlocking(() -> panel.getSearchBarControl());
+        ContextualSearchCalloutControl calloutControl =
+                panel.getSearchBarControl().getCalloutControl();
+
+        // Mark custom image as visible.
+        calloutControl.onUpdateCustomImageVisibility(
+                /* customImageIsVisible= */ true, /* visibilityPercentage= */ 1);
+
+        calloutControl.onUpdateFromPeekToExpand(0);
         Assert.assertEquals(1, calloutControl.getOpacity(), 0.01f);
 
         calloutControl.onUpdateFromPeekToExpand(0.25f);
@@ -47,7 +75,30 @@ public class ContextualSearchCalloutTest extends ContextualSearchInstrumentation
         calloutControl.onUpdateFromPeekToExpand(0.5f);
         Assert.assertEquals(0, calloutControl.getOpacity(), 0.01f);
 
-        calloutControl.onUpdateFromPeekToExpand(1.f);
+        calloutControl.onUpdateFromPeekToExpand(1);
         Assert.assertEquals(0, calloutControl.getOpacity(), 0.01f);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testCalloutCustomImageOpacity() throws Exception {
+        ContextualSearchPanel panel = (ContextualSearchPanel) mManager.getContextualSearchPanel();
+        // The view gets inflated immediately so this needs to run on the UI thread.
+        ThreadUtils.runOnUiThreadBlocking(() -> panel.getSearchBarControl());
+        ContextualSearchCalloutControl calloutControl =
+                panel.getSearchBarControl().getCalloutControl();
+
+        calloutControl.onUpdateCustomImageVisibility(
+                /* customImageIsVisible= */ false, /* visibilityPercentage= */ 0);
+        Assert.assertEquals(0, calloutControl.getOpacity(), 0.01f);
+
+        calloutControl.onUpdateCustomImageVisibility(
+                /* customImageIsVisible= */ true, /* visibilityPercentage= */ 0.5f);
+        Assert.assertEquals(0.5f, calloutControl.getOpacity(), 0.01f);
+
+        calloutControl.onUpdateCustomImageVisibility(
+                /* customImageIsVisible= */ true, /* visibilityPercentage= */ 1);
+        Assert.assertEquals(1, calloutControl.getOpacity(), 0.01f);
     }
 }

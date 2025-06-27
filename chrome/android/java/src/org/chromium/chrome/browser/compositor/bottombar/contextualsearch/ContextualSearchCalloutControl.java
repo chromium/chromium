@@ -10,7 +10,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -32,13 +31,11 @@ public class ContextualSearchCalloutControl extends OverlayPanelInflater {
     /** Listener for updates to the callout. */
     private final CalloutListener mListener;
 
-    /** Whether this control is enabled or not. */
-    private final boolean mIsEnabled;
-
-    /** Whether the alternate text variant is enabled or not. */
-    private final boolean mIsTextVariantEnabled;
-
-    @Nullable private TextView mTextView;
+    /**
+     * Whether the super G callout icon is enabled. It is hidden unless a custom image is shown on
+     * the left of the bar, to prevent two super G icons from being displayed at the same time.
+     */
+    private boolean mIsIconEnabled;
 
     @Nullable private ImageView mImageView;
 
@@ -67,11 +64,9 @@ public class ContextualSearchCalloutControl extends OverlayPanelInflater {
                 container,
                 resourceLoader);
         mListener = listener;
-        mIsEnabled = ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_SEARCH_CALLOUT);
-        mIsTextVariantEnabled = ChromeFeatureList.sTouchToSearchCalloutTextVariant.getValue();
 
         // Pre-inflate so that the contextual search text padding is adjusted to the callout width.
-        if (mIsEnabled) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_SEARCH_CALLOUT)) {
             inflate();
             invalidate();
         }
@@ -83,10 +78,27 @@ public class ContextualSearchCalloutControl extends OverlayPanelInflater {
      * @param percentage The percentage of the panel that is expanded.
      */
     public void onUpdateFromPeekToExpand(float percentage) {
+        if (!mIsIconEnabled) {
+            return;
+        }
+
         // The callout animation completes during the first 50% of the peek to expand transition.
         float animationProgressPercent = Math.min(percentage, .5f) / .5f;
         // The callout starts off at 100% opacity and finishes at 0% opacity.
         mOpacity = 1.f - animationProgressPercent;
+    }
+
+    /**
+     * Updates the opacity of the callout when the TTS panel is updated from a super G to a custom
+     * thumbnail.
+     *
+     * @param percentage The percentage of the fade in animation.
+     */
+    public void onUpdateCustomImageVisibility(
+            boolean customImageIsVisible, float visibilityPercentage) {
+        // Enables the super G icon callout when the custom image becomes visible.
+        mIsIconEnabled = customImageIsVisible;
+        mOpacity = visibilityPercentage;
     }
 
     /**
@@ -106,13 +118,6 @@ public class ContextualSearchCalloutControl extends OverlayPanelInflater {
 
         View view = assumeNonNull(getView());
 
-        mTextView = view.findViewById(R.id.contextual_search_callout_text);
-        mTextView.setText(
-                mIsTextVariantEnabled
-                        ? view.getResources()
-                                .getString(R.string.contextual_search_callout_text_variant)
-                        : view.getResources().getString(R.string.contextual_search_callout_text));
-
         mImageView = view.findViewById(R.id.contextual_search_callout_image);
     }
 
@@ -121,16 +126,13 @@ public class ContextualSearchCalloutControl extends OverlayPanelInflater {
         super.onCaptureEnd();
 
         Context context = assumeNonNull(getContext());
-        mCalloutWidthPx =
+        int imageMargin =
                 (int)
-                        (assumeNonNull(mTextView).getWidth()
-                                + assumeNonNull(mImageView).getWidth()
-                                + context.getResources()
+                        (2.f
+                                * context.getResources()
                                         .getDimension(
-                                                R.dimen.contextual_search_callout_margin_start)
-                                + context.getResources()
-                                        .getDimension(
-                                                R.dimen.contextual_search_callout_margin_end));
+                                                R.dimen.contextual_search_callout_icon_margin));
+        mCalloutWidthPx = (int) (assumeNonNull(mImageView).getWidth() + imageMargin);
 
         mListener.onCapture(mCalloutWidthPx);
     }

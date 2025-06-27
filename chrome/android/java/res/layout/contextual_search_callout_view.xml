@@ -17,17 +17,9 @@ found in the LICENSE file.
         android:id="@+id/contextual_search_callout_image"
         android:layout_width="@dimen/contextual_search_callout_icon_size"
         android:layout_height="@dimen/contextual_search_callout_icon_size"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_logo_googleg_20dp"
+        android:layout_marginStart="@dimen/contextual_search_callout_icon_margin"
+        android:layout_marginEnd="@dimen/contextual_search_callout_icon_margin"
+        android:scaleType="center"
+        android:src="@drawable/ic_logo_googleg_24dp"
         android:importantForAccessibility="no"/>
-    <TextView
-        android:id="@+id/contextual_search_callout_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/contextual_search_callout_margin_start"
-        android:layout_marginEnd="@dimen/contextual_search_callout_margin_end"
-        android:textAppearance="@style/TextAppearance.TextMedium.Accent1"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:includeFontPadding="false" />
 </LinearLayout>

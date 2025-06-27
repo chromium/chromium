@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchCalloutControl.CalloutListener;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchImageControl.ImageListener;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.base.LocalizationUtils;
@@ -145,7 +146,12 @@ public class ContextualSearchBarControl {
             DynamicResourceLoader loader) {
         mContextualSearchPanel = panel;
         mCanPromoteToNewTab = panel.canPromoteToNewTab();
-        mImageControl = new ContextualSearchImageControl(panel);
+
+        mCalloutControl =
+                new ContextualSearchCalloutControl(
+                        panel, context, container, loader, getCalloutListener());
+
+        mImageControl = new ContextualSearchImageControl(panel, getImageListener());
         mContextControl = new ContextualSearchContextControl(panel, context, container, loader);
         mSearchTermControl = new ContextualSearchTermControl(panel, context, container, loader);
 
@@ -154,10 +160,6 @@ public class ContextualSearchBarControl {
 
         mQuickActionControl = new ContextualSearchQuickActionControl(context, loader);
         mCardIconControl = new ContextualSearchCardIconControl(context, loader);
-
-        mCalloutControl =
-                new ContextualSearchCalloutControl(
-                        panel, context, container, loader, getCalloutListener());
 
         mTextLayerMinHeight =
                 context.getResources()
@@ -670,6 +672,18 @@ public class ContextualSearchBarControl {
                 mSearchTermControl.setPeekedEndPadding(widthPx);
                 mCaptionControl.setPeekedEndPadding(widthPx);
                 mContextControl.setPeekedEndPadding(widthPx);
+            }
+        };
+    }
+
+    /** Displays the callout when a custom image is visible. */
+    private ImageListener getImageListener() {
+        return new ImageListener() {
+            @Override
+            public void onUpdateCustomImageVisibility(
+                    boolean customImageIsVisible, float visibilityPercentage) {
+                mCalloutControl.onUpdateCustomImageVisibility(
+                        customImageIsVisible, visibilityPercentage);
             }
         };
     }
