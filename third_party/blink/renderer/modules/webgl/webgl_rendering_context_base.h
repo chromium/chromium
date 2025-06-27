@@ -713,11 +713,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool IsComposited() const override { return true; }
   bool IsAccelerated() const override;
   bool UsingSwapChain() const override;
-  bool CanCreatePassThroughProvider(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper);
+  bool CanCreatePassThroughProvider(gfx::Size size,
+                                    viz::SharedImageFormat format);
   void PageVisibilityChanged() override;
   void SizeChanged() override;
   std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider()

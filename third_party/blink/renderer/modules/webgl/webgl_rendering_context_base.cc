@@ -1922,9 +1922,20 @@ bool WebGLRenderingContextBase::IsAccelerated() const {
 
 bool WebGLRenderingContextBase::CanCreatePassThroughProvider(
     gfx::Size size,
-    viz::SharedImageFormat format,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-        context_provider_wrapper) {
+    viz::SharedImageFormat format) {
+  if (!SharedGpuContext::IsGpuCompositingEnabled()) {
+    return false;
+  }
+
+  if (!Host()->LowLatencyEnabled()) {
+    return false;
+  }
+
+  // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
+  // context_provider_wrapper, so it's important to call that first as it can
+  // invalidate the weak pointer.
+  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+
   bool using_webgl_image_chromium =
       SharedGpuContext::MaySupportImageChromium() &&
       (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
@@ -1933,11 +1944,7 @@ bool WebGLRenderingContextBase::CanCreatePassThroughProvider(
     return false;
   }
 
-  // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
-  // context_provider_wrapper, so it's important to call that first as it can
-  // invalidate the weak pointer.
-  if (!SharedGpuContext::IsGpuCompositingEnabled() ||
-      !context_provider_wrapper) {
+  if (!context_provider_wrapper) {
     return false;
   }
 
@@ -2027,26 +2034,23 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
   // rect tracking in the shared image system to enforce this.
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
+  if (CanCreatePassThroughProvider(Host()->Size(), format)) {
+    // Note: Unlike other CanvasResourceProvider subclasses, a
+    // CanvasResourceProviderPassThrough instance is always valid and does
+    // not require clearing as part of initialization (both of these being
+    // due to the fact that it simply delegates the internal parts of the
+    // resource to the drawing buffer).
+    provider = std::make_unique<CanvasResourceProviderPassThrough>(
+        Host()->Size(), format, alpha_type, color_space,
+        SharedGpuContext::ContextProviderWrapper(), Host());
+    CHECK(provider->IsValid());
+  }
   if (SharedGpuContext::IsGpuCompositingEnabled() &&
       Host()->LowLatencyEnabled()) {
-    // If LowLatency is enabled, we need a resource that is able to perform well
-    // in such mode. It will first try a PassThrough provider and, if that is
-    // not possible, it will try a SharedImage with the appropriate flags.
-    if (CanCreatePassThroughProvider(
-            Host()->Size(), format,
-            SharedGpuContext::ContextProviderWrapper())) {
-      // Note: Unlike other CanvasResourceProvider subclasses, a
-      // CanvasResourceProviderPassThrough instance is always valid and does
-      // not require clearing as part of initialization (both of these being
-      // due to the fact that it simply delegates the internal parts of the
-      // resource to the drawing buffer).
-      provider = std::make_unique<CanvasResourceProviderPassThrough>(
-          Host()->Size(), format, alpha_type, color_space,
-          SharedGpuContext::ContextProviderWrapper(), Host());
-      CHECK(provider->IsValid());
-    }
+    // If LowLatency is enabled, we need a resource that is able to perform
+    // well in such mode. If a PassThrough provider was not possible, try a
+    // SharedImage with the appropriate flags.
     if (!provider) {
-      // If PassThrough failed, try a SharedImage with usage display enabled.
       gpu::SharedImageUsageSet shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
       provider = CanvasResourceProvider::CreateSharedImageProvider(
