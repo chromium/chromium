@@ -24,7 +24,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,9 +52,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
@@ -83,21 +83,19 @@ import org.chromium.ui.util.ColorUtils;
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
 public class StatusBarColorControllerTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, true);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
+    private WebPageStation mPage;
     private @ColorInt int mScrimColor;
     private OmniboxTestUtils mOmniboxUtils;
 
     @Before
     public void setUp() {
-        mScrimColor = sActivityTestRule.getActivity().getColor(R.color.default_scrim_color);
-        mOmniboxUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
+        mPage = mActivityTestRule.startOnBlankPage();
+        mScrimColor = mPage.getActivity().getColor(R.color.default_scrim_color);
+        mOmniboxUtils = new OmniboxTestUtils(mPage.getActivity());
     }
 
     /** Test that the status bar color is toggled when toggling incognito while in overview mode. */
@@ -107,13 +105,13 @@ public class StatusBarColorControllerTest {
     @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     @DisabledTest(message = "crbug.com/353460498")
     public void testColorToggleIncognitoInTabSwitcher() {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final @ColorInt int expectedOverviewStandardColor =
                 ChromeColors.getPrimaryBackgroundColor(activity, false);
         final @ColorInt int expectedOverviewIncognitoColor =
                 ChromeColors.getPrimaryBackgroundColor(activity, true);
 
-        sActivityTestRule.loadUrlInNewTab(
+        mActivityTestRule.loadUrlInNewTab(
                 "about:blank", /* incognito= */ true, TabLaunchType.FROM_CHROME_UI);
         TabModelSelector tabModelSelector = activity.getTabModelSelector();
         ThreadUtils.runOnUiThreadBlocking(
@@ -142,15 +140,15 @@ public class StatusBarColorControllerTest {
     @Feature({"StatusBar"})
     @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredInTabSwitcher() throws Exception {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final @ColorInt int expectedDefaultStandardColor =
                 ChromeColors.getDefaultThemeColor(activity, false);
 
         String pageWithBrandColorUrl =
-                sActivityTestRule
+                mActivityTestRule
                         .getTestServer()
                         .getURL("/chrome/test/data/android/theme_color_test.html");
-        sActivityTestRule.loadUrl(pageWithBrandColorUrl);
+        mActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
         waitForStatusBarColor(activity, Color.RED);
 
@@ -169,11 +167,11 @@ public class StatusBarColorControllerTest {
     @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     @DisabledTest(message = "https://issues.chromium.org/issues/341157444")
     public void testStatusBarColorNtp() {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final @ColorInt int expectedColor =
                 ContextCompat.getColor(activity, R.color.home_surface_background_color);
 
-        sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
+        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
 
         // Scroll the toolbar up and let it pinned on top.
@@ -187,9 +185,9 @@ public class StatusBarColorControllerTest {
     @Feature({"StatusBar"})
     @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testColorWithStatusIndicator() {
-        final ChromeActivity activity = sActivityTestRule.getActivity();
+        final ChromeActivity activity = mActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getStatusBarColorController();
@@ -246,9 +244,9 @@ public class StatusBarColorControllerTest {
     @DisabledTest(message = "b/352622267")
     @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testFocusAndScrollColors() {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getStatusBarColorController();
@@ -290,12 +288,12 @@ public class StatusBarColorControllerTest {
     @Feature({"StatusBar"})
     @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredWhenOmniboxIsFocused() throws Exception {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final @ColorInt int expectedFocusedColor =
                 ContextCompat.getColor(activity, R.color.omnibox_suggestion_dropdown_bg);
 
         String pageWithBrandColorUrl =
-                sActivityTestRule
+                mActivityTestRule
                         .getTestServer()
                         .getURL("/chrome/test/data/android/theme_color_test.html");
         loadUrlAndWaitForShowing(pageWithBrandColorUrl);
@@ -314,15 +312,15 @@ public class StatusBarColorControllerTest {
     @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredWhenOmniboxIsFocused_FeatureMatchToolbarColorEnabled()
             throws Exception {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final @ColorInt int expectedFocusedColor =
                 ContextCompat.getColor(activity, R.color.omnibox_suggestion_dropdown_bg);
 
         String pageWithBrandColorUrl =
-                sActivityTestRule
+                mActivityTestRule
                         .getTestServer()
                         .getURL("/chrome/test/data/android/theme_color_test.html");
-        sActivityTestRule.loadUrl(pageWithBrandColorUrl);
+        mActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
         mOmniboxUtils.waitAnimationsComplete();
         waitForStatusBarColor(activity, Color.RED);
@@ -343,9 +341,9 @@ public class StatusBarColorControllerTest {
     @Feature({"StatusBar"})
     @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testColorWithStatusIndicator_FeatureMatchToolbarColorEnabled() {
-        final ChromeActivity activity = sActivityTestRule.getActivity();
+        final ChromeActivity activity = mActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getStatusBarColorController();
@@ -402,9 +400,9 @@ public class StatusBarColorControllerTest {
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41485874")
     public void testStatusBarColorForTabStripRedesignFolioTablet() {
-        final ChromeActivity activity = sActivityTestRule.getActivity();
+        final ChromeActivity activity = mActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getStatusBarColorController();
@@ -421,16 +419,16 @@ public class StatusBarColorControllerTest {
     @Feature({"StatusBar"})
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testStatusBarColorOnTabletDuringTabStripTransition() {
-        final ChromeActivity activity = sActivityTestRule.getActivity();
+        final ChromeActivity activity = mActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getStatusBarColorController();
         statusBarColorController.setAllowToolbarColorOnTablets(true);
 
         @ColorInt
-        int toolbarColor = sActivityTestRule.getActivity().getToolbarManager().getPrimaryColor();
+        int toolbarColor = mActivityTestRule.getActivity().getToolbarManager().getPrimaryColor();
 
         // We will invoke #onToolbarColorChanged() on a tablet that in turn invokes
         // #updateStatusBarColor() to assert that it sets |mToolbarColor| as expected. The status
@@ -483,7 +481,7 @@ public class StatusBarColorControllerTest {
     @Feature({"StatusBar, Automotive Toolbar"})
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
     public void testStatusBarBlackInAutomotive() {
-        final ChromeActivity activity = sActivityTestRule.getActivity();
+        final ChromeActivity activity = mActivityTestRule.getActivity();
         assertEquals(
                 "Status bar should always be black in automotive devices.",
                 Color.BLACK,
@@ -541,12 +539,12 @@ public class StatusBarColorControllerTest {
     }
 
     private void loadUrlAndWaitForShowing(String url) {
-        sActivityTestRule.loadUrl(url);
+        mActivityTestRule.loadUrl(url);
         waitForShowing();
     }
 
     private void loadUrlInNewTabAndWaitForShowing(String url, boolean incognito) {
-        sActivityTestRule.loadUrlInNewTab(url, incognito);
+        mActivityTestRule.loadUrlInNewTab(url, incognito);
         waitForShowing();
     }
 
@@ -554,7 +552,7 @@ public class StatusBarColorControllerTest {
         // At least for now, StaticLayout requests focus when it's doneShowing(). When exactly this
         // happens is quite racy and can cause flakes, as it removes focus from the omnibox. See
         // crbug.com/342539152. Unclear if we even want this, see crbug.com/40249125.
-        LayoutManagerImpl lmi = sActivityTestRule.getActivity().getLayoutManagerSupplier().get();
+        LayoutManagerImpl lmi = mActivityTestRule.getActivity().getLayoutManagerSupplier().get();
         LayoutTestUtils.waitForLayout(lmi, LayoutType.BROWSING);
     }
 
