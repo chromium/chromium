@@ -7039,7 +7039,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5958836583172610505">Synchronisierung aktiviert</translation>
 <translation id="5959471481388474538">Netzwerk nicht verfügbar</translation>
 <translation id="5959982036207776176">Die Funktion „Lupe“ folgt dem Wort, das mit der Bedienungshilfe „Vorlesen“ vorgelesen wird</translation>
-<translation id="5961545272769624207">Touch-Geste zuweisen</translation>
+<translation id="5961545272769624207">Touchgeste zuweisen</translation>
 <translation id="5963413905009737549">Section-Element</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (Spitzenwert <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Alle in &amp;neuem Fenster öffnen}=1{In &amp;neuem Fenster öffnen}other{Alle ({COUNT}) in &amp;neuem Fenster öffnen}}</translation>

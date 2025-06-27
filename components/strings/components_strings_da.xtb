@@ -1911,7 +1911,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4261046003697461417">Beskyttede dokumenter kan ikke annoteres</translation>
 <translation id="4265872034478892965">Tilladt af din administrator</translation>
 <translation id="4269029136757623689">Ventilatorer til privat brug</translation>
-<translation id="4269264543938335308">Svømmetøj</translation>
+<translation id="4269264543938335308">Badetøj</translation>
 <translation id="4269599248168651462">Servercertifikatet er givet til et navn, der ikke er unikt.</translation>
 <translation id="4270541775497538019">Stabler 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Se 0 anmeldelser. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}=1{Se 1 anmeldelse. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}one{Se # anmeldelse. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}other{Se # anmeldelser. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}}</translation>

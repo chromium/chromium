@@ -830,7 +830,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="480990236307250886">Abrir a página inicial</translation>
 <translation id="4822710610088666676">Grupo de guias <ph name="TAB_GROUP_TITLE" /> fechado e salvo</translation>
 <translation id="4826163340425232009">Página inferior de login.</translation>
-<translation id="4834250788637067901">Formas de pagamento, ofertas e endereços que usam Google Pay</translation>
+<translation id="4834250788637067901">Formas de pagamento, ofertas e endereços que usam o Google Pay</translation>
 <translation id="4835385943915508971">O Chrome não tem acesso ao recurso solicitado.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurar grupo de <ph name="TAB_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" /> como um novo grupo de guias em segundo plano.}one{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" /> como um novo grupo de guias em segundo plano.}other{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" /> como um novo grupo de guias em segundo plano.}}</translation>
 <translation id="4837753911714442426">Abrir opções de impressão de página</translation>
@@ -884,7 +884,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5035846135112863536">Selecione "Mais detalhes" abaixo para saber mais informações sobre o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia: <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> guia: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> guias: <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privacidade</translation>
-<translation id="504456571576643789">Considerações</translation>
+<translation id="504456571576643789">Lembre-se</translation>
 <translation id="506254248375231072">Nenhuma guia</translation>
 <translation id="5062960805900435602">A informação sobre a fusão de senhas está fechada</translation>
 <translation id="5075939510584558547">Salvar sem criptografia</translation>
