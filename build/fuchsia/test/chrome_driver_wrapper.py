@@ -7,9 +7,9 @@
 import logging
 import os
 import subprocess
+import sys
 
 from contextlib import AbstractContextManager
-from typing import List
 
 # From vpython wheel.
 # pylint: disable=import-error
@@ -31,7 +31,7 @@ class ChromeDriverWrapper(AbstractContextManager):
     communicating with it. This class expects the chromedriver exists at
     clang_x64/stripped/chromedriver in output dir."""
 
-    def __init__(self, extra_args: List[str] = None):
+    def __init__(self):
         # The reference of the webdriver.Chrome instance.
         self._driver = None
 
@@ -44,7 +44,13 @@ class ChromeDriverWrapper(AbstractContextManager):
         self._proc: subprocess.Popen = None
 
         # Extra arguments sent to run_test.py webpage process.
-        self._extra_args = extra_args or []
+        self._extra_args = []
+        for arg in sys.argv:
+            # The image update should happen before running the
+            # web_engine_shell.
+            if (arg.startswith('--os-check=') or
+                arg.startswith('--system-image-dir=')):
+                self._extra_args.append(arg)
 
     def __enter__(self):
         """Starts the run_test.py and the chromedriver connecting to it, must be
