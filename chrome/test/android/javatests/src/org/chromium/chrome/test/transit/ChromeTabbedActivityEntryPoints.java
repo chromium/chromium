@@ -37,17 +37,23 @@ public class ChromeTabbedActivityEntryPoints {
 
     /** Start the ChromeTabbedActivity in a web page at the given |url|. */
     public static WebPageStation startOnUrl(ChromeTabbedActivityTestRule ctaTestRule, String url) {
-        disableFirstRunFlow();
-
-        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
-        sentinel.setAsEntryPoint();
-
-        return sentinel.runTo(() -> ctaTestRule.startMainActivityWithURL(url))
+        return startOnUrlTo(ctaTestRule, url)
                 .arriveAt(
                         WebPageStation.newBuilder()
                                 .withEntryPoint()
                                 .withExpectedUrlSubstring(url)
                                 .build());
+    }
+
+    /** Start the ChromeTabbedActivity with the given |url|. */
+    @CheckReturnValue
+    public static TripBuilder startOnUrlTo(ChromeTabbedActivityTestRule ctaTestRule, String url) {
+        disableFirstRunFlow();
+
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+
+        return sentinel.runTo(() -> ctaTestRule.startMainActivityWithURL(url));
     }
 
     /** Start the ChromeTabbedActivity in an NTP as if it was started from the launcher. */

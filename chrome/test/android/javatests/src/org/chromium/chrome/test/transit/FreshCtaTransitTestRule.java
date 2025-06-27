@@ -51,13 +51,24 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
     }
 
     /**
-     * Start the test in a web page served by the test server.
+     * Start the test with a url that leads to a web page.
      *
      * @param url the URL of the page to load
      * @return the active entry {@link PageStation}
      */
     public WebPageStation startOnUrl(String url) {
         return ChromeTabbedActivityEntryPoints.startOnUrl(mActivityTestRule, url);
+    }
+
+    /**
+     * Start the test with a url.
+     *
+     * @param url the URL of the page to load
+     * @return a {@link TripBuilder} to complete the transition.
+     */
+    @CheckReturnValue
+    public TripBuilder startOnUrlTo(String url) {
+        return ChromeTabbedActivityEntryPoints.startOnUrlTo(mActivityTestRule, url);
     }
 
     /**
