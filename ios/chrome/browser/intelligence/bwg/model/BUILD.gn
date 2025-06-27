@@ -4,6 +4,9 @@
 
 source_set("model") {
   sources = [
+    "bwg_link_opening_delegate.h",
+    "bwg_link_opening_handler.h",
+    "bwg_link_opening_handler.mm",
     "bwg_service.h",
     "bwg_service.mm",
     "bwg_session_delegate.h",

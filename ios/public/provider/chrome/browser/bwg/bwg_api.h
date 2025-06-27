@@ -13,6 +13,7 @@
 #import "services/network/public/cpp/resource_request.h"
 
 @class BWGConfiguration;
+@protocol BWGGatewayProtocol;
 
 namespace ios::provider {
 
@@ -47,6 +48,9 @@ void StartBwgOverlay(BWGConfiguration* bwg_configuration);
 // Gets the portion of the PageContext script that checks whether PageContext
 // should be detached from the request.
 const std::u16string GetPageContextShouldDetachScript();
+
+// Creates a BWG gateway object for relaying internal protocols.
+id<BWGGatewayProtocol> CreateBWGGateway();
 
 }  // namespace ios::provider
 

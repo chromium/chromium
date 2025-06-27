@@ -12,11 +12,14 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_configuration.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 
 namespace {
 // Helper to convert PageContextWrapperError to BWGPageContextState.
@@ -37,6 +40,13 @@ BwgService::BwgService(AuthenticationService* auth_service,
   auth_service_ = auth_service;
   identity_manager_ = identity_manager;
   pref_service_ = pref_service;
+
+  bwg_gateway_ = ios::provider::CreateBWGGateway();
+
+  if (bwg_gateway_) {
+    bwg_link_opening_handler_ = [[BWGLinkOpeningHandler alloc] init];
+    bwg_gateway_.linkOpeningHandler = bwg_link_opening_handler_;
+  }
 }
 
 BwgService::~BwgService() = default;
@@ -50,6 +60,7 @@ void BwgService::PresentOverlayOnViewController(
   config.authService = auth_service_;
   config.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
+  config.gateway = bwg_gateway_;
 
   std::unique_ptr<optimization_guide::proto::PageContext> pageContext = nullptr;
   if (expected_page_context.has_value()) {

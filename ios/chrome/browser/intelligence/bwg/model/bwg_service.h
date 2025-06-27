@@ -24,6 +24,9 @@ class IdentityManager;
 }  // namespace signin
 class PrefService;
 
+@protocol BWGGatewayProtocol;
+@protocol BWGLinkOpeningDelegate;
+
 // A browser-context keyed service for BWG.
 class BwgService : public KeyedService {
  public:
@@ -52,6 +55,12 @@ class BwgService : public KeyedService {
 
   // The PrefService associated with the Profile.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  // The gateway for bridging internal protocols.
+  id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
+
+  // Handler for opening links from BWG.
+  id<BWGLinkOpeningDelegate> bwg_link_opening_handler_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_

@@ -25,4 +25,8 @@ const std::u16string GetPageContextShouldDetachScript() {
   return kShouldDetachPageContextScript;
 }
 
+id<BWGGatewayProtocol> CreateBWGGateway() {
+  return nil;
+}
+
 }  // namespace ios::provider
