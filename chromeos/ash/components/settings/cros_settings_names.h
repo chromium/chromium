@@ -641,6 +641,11 @@ inline constexpr char kDevicePeripheralDataAccessEnabled[] =
 inline constexpr char kDeviceAllowedBluetoothServices[] =
     "cros.device.allowed_bluetooth_services";
 
+// Boolean pref indicating whether "Just Works" bluetooth pairing is enabled or
+// not.
+inline constexpr char kDeviceBluetoothJustWorksPairingEnabled[] =
+    "cros.device.bluetooth_just_works_pairing_enabled";
+
 // A dictionary pref specifying the recurring schedule for device reboot.
 inline constexpr char kDeviceScheduledReboot[] =
     "cros.device.device_scheduled_reboot";

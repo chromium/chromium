@@ -81,6 +81,7 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kDeviceActivityHeartbeatCollectionRateMs,
     kDeviceActivityHeartbeatEnabled,
     kDeviceAllowedBluetoothServices,
+    kDeviceBluetoothJustWorksPairingEnabled,
     kDeviceAutoUpdateTimeRestrictions,
     kDeviceCrostiniArcAdbSideloadingAllowed,
     kDeviceDisabled,
@@ -1306,6 +1307,13 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       list.Append(service_uuid);
     new_values_cache->SetValue(kDeviceAllowedBluetoothServices,
                                base::Value(std::move(list)));
+  }
+  if (policy.has_devicebluetoothjustworkspairingenabled()) {
+    base::Value::List list;
+    const em::BooleanPolicyProto& container(
+        policy.devicebluetoothjustworkspairingenabled());
+    new_values_cache->SetValue(kDeviceBluetoothJustWorksPairingEnabled,
+                               base::Value(container.value()));
   }
 
   if (policy.has_device_scheduled_reboot()) {

@@ -2123,4 +2123,5 @@ message ChromeDeviceSettingsProto {
   optional IntegerPolicyProto DevicePowerBatteryChargingOptimization = 1319;
   optional BooleanPolicyProto DeviceFlexArcPreloadEnabled = 1320;
   optional BooleanPolicyProto DeviceUserInitiatedFirmwareUpdatesEnabled = 1356;
+  optional BooleanPolicyProto DeviceBluetoothJustWorksPairingEnabled = 1373;
 }

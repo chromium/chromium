@@ -2356,6 +2356,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                           policies);
     }
   }
+
+  if (policy.has_devicebluetoothjustworkspairingenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.devicebluetoothjustworkspairingenabled());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceBluetoothJustWorksPairingEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
 }
 
 // TODO(b/324221325): Move other Kiosk-related policies to this function.

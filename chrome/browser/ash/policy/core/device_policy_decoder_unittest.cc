@@ -980,4 +980,22 @@ TEST_F(DevicePolicyDecoderTest, DevicePowerBatteryChargingOptimization) {
                                key::kDevicePowerBatteryChargingOptimization,
                                std::move(expected_value));
 }
+
+TEST_F(DevicePolicyDecoderTest,
+       DecodeDeviceBluetoothJustWorksPairingEnabledSuccess) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceBluetoothJustWorksPairingEnabled);
+
+  base::Value device_bluetooth_just_works_pairing_enabled_value(true);
+
+  em::BooleanPolicyProto* proto =
+      device_policy.mutable_devicebluetoothjustworkspairingenabled();
+  proto->set_value(device_bluetooth_just_works_pairing_enabled_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceBluetoothJustWorksPairingEnabled,
+      std::move(device_bluetooth_just_works_pairing_enabled_value));
+}
 }  // namespace policy
