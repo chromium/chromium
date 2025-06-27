@@ -103,7 +103,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
     return worker_context_provider_.get();
   }
 
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface() const;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface() const;
 
   // If supported, this sets the viz::LocalSurfaceId the LayerTreeFrameSink will
   // use to submit a CompositorFrame.

@@ -194,7 +194,7 @@ void LayerTreeFrameSink::GpuChannelLostOnClientThread() {
   client_->DidLoseLayerTreeFrameSink();
 }
 
-scoped_refptr<gpu::ClientSharedImageInterface>
+scoped_refptr<gpu::SharedImageInterface>
 LayerTreeFrameSink::shared_image_interface() const {
   return shared_image_interface_;
 }

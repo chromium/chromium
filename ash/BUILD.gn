@@ -5522,6 +5522,7 @@ static_library("test_support") {
     "//device/bluetooth:mocks",
     "//google_apis",
     "//google_apis/common:test_support",
+    "//gpu/ipc/client",
     "//services/device/public/cpp:test_support",
     "//services/device/public/mojom",
     "//services/network:test_support",
