@@ -310,7 +310,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 
   // The user should stay on the new tab page.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

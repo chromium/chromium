@@ -403,7 +403,7 @@ void WaitForEmpyOmnibox() {
 // Tests typing in the omnibox using the keyboard accessory view.
 - (void)testToolbarOmniboxKeyboardAccessoryView {
   // Select the omnibox to get the keyboard up.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];

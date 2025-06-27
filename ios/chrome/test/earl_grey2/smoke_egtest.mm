@@ -167,7 +167,7 @@
 
 // Tests waitForSufficientlyVisibleElementWithMatcher in chrome_earl_grey.h
 - (void)testWaitForSufficientlyVisibleElementWithMatcher {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];

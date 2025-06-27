@@ -456,6 +456,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   self.accessibilityButton.clipsToBounds = YES;
   self.accessibilityButton.isAccessibilityElement = YES;
   self.accessibilityButton.accessibilityLabel = self.placeholderText;
+  self.accessibilityButton.accessibilityIdentifier =
+      kNTPFakeOmniboxAccessibilityButton;
   [self.fakeOmnibox addSubview:self.accessibilityButton];
   self.accessibilityButton.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.fakeOmnibox, self.accessibilityButton);

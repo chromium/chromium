@@ -125,6 +125,10 @@ NSString* IdentifierForRecentActivityLogCellAtIndex(unsigned int index) {
       stringWithFormat:@"%@%u", kRecentActivityLogCellIdentifierPrefix, index];
 }
 
+bool IsIPad() {
+  return UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
+}
+
 id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
   GREYMatchesBlock matches = ^BOOL(id element) {
     TableViewSwitchCell* switch_cell =
@@ -1130,9 +1134,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)NTPOmnibox {
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT)),
-      grey_minimumVisiblePercent(0.2), nil);
+  if (IsIPad()) {
+    return [self defocusedLocationView];
+  } else {
+    return grey_accessibilityID(kNTPFakeOmniboxAccessibilityButton);
+  }
 }
 
 + (id<GREYMatcher>)fakeOmnibox {

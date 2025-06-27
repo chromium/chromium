@@ -34,6 +34,9 @@ extern NSString* const kNTPCustomizationMenuButtonIdentifier;
 // Represents the identity disc badge.
 extern NSString* const kNTPFeedHeaderIdentityDiscBadge;
 
+// Represents the NTP omnibox.
+extern NSString* const kNTPFakeOmniboxAccessibilityButton;
+
 // The corner radius for the module containers on the Home surface.
 extern const CGFloat kHomeModuleContainerCornerRadius;
 
