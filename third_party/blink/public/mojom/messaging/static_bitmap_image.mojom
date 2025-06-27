@@ -8,6 +8,7 @@ import "skia/public/mojom/bitmap.mojom";
 import "gpu/ipc/common/exported_shared_image.mojom";
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/sync_token.mojom";
+import "ui/gfx/mojom/color_space.mojom";
 import "skia/public/mojom/image_info.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
@@ -34,8 +35,10 @@ struct AcceleratedStaticBitmapImage {
   // Sync token that must be waited on before reading the shared image
   // associated with this AcceleratedStaticBitmapImage.
   gpu.mojom.SyncToken sync_token;
-  // Common image metadata.
-  skia.mojom.ImageInfo image_info;
+  // Image color space.
+  gfx.mojom.ColorSpace color_space;
+  // Image alpha type.
+  skia.mojom.AlphaType alpha_type;
   // Resource lifetime management callback. Until this pending remote is
   // destroyed or the callback is called the sender shall keep the
   // resource alive.

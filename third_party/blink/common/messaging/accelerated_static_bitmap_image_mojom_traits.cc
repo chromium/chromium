@@ -61,20 +61,12 @@ bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
                   blink::AcceleratedImageInfo>::
     Read(blink::mojom::AcceleratedStaticBitmapImage::DataView data,
          blink::AcceleratedImageInfo* out) {
-  SkImageInfo image_info;
   if (!data.ReadSharedImage(&out->shared_image) ||
       !data.ReadSyncToken(&out->sync_token) ||
-      !data.ReadImageInfo(&image_info)) {
+      !data.ReadColorSpace(&out->color_space) ||
+      !data.ReadAlphaType(&out->alpha_type)) {
     return false;
   }
-
-  out->size = gfx::Size(image_info.width(), image_info.height());
-  out->format =
-      viz::SkColorTypeToSinglePlaneSharedImageFormat(image_info.colorType());
-  out->alpha_type = image_info.alphaType();
-  out->color_space = image_info.refColorSpace()
-                         ? gfx::ColorSpace(*image_info.refColorSpace())
-                         : gfx::ColorSpace::CreateSRGB();
 
   auto callback = data.TakeReleaseCallback<
       mojo::PendingRemote<blink::mojom::ImageReleaseCallback>>();
