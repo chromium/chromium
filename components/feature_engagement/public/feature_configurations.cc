@@ -1909,6 +1909,24 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+  if (kIPHTouchToSearchCalloutFeature.name == feature->name) {
+    // A config that allows the touch to search IPH to be shown:
+    // * Once per week.
+    // * Up to two times per year.
+    // * Only as long as the user has never expanded the panel.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger = EventConfig("touch_to_search_expansion_trigger",
+                                 Comparator(EQUAL, 0), 7, 7);
+    config.event_configs.insert(EventConfig("touch_to_search_expansion_trigger",
+                                            Comparator(LESS_THAN, 2), 360,
+                                            360));
+    config.used = EventConfig("touch_to_search_expansion_used",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

@@ -662,6 +662,8 @@ chromium-metrics-reviews@google.com.
       summary="tab switcher floating action button"/>
   <variant name="IPH_ToolbarManagementButton"
       summary="toolbar management button"/>
+  <variant name="IPH_TouchToSearchCallout"
+      summary="Touch to search IPH feature"/>
   <variant name="IPH_TrackingProtectionOffboarding"
       summary="(obsolete) tracking protection offboarding notice"/>
   <variant name="IPH_TrackingProtectionOnboarding"

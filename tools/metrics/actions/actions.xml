@@ -49926,6 +49926,8 @@ should be able to be added at any place in this file.
       label="For tab switcher new tab floating action button."/>
   <suffix name="ToolbarManagementButton"
       label="For the toolbar managmeent button."/>
+  <suffix name="TouchToSearchCallout"
+      label="For the touch to search IPH feature."/>
   <suffix name="TrackingProtectionOffboarding"
       label="for tracking protection offboarding notice (obsolete)"/>
   <suffix name="TrackingProtectionOnboarding"
