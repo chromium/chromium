@@ -104,12 +104,13 @@ public class TabBuilder {
     }
 
     /**
-     * Sets a {@link WebContents} object to be used on the Tab. If not set, a new one
-     * will be created.
+     * Sets a {@link WebContents} object to be used on the Tab. If not set, a new one will be
+     * created.
+     *
      * @param webContents {@link WebContents} object.
      * @return {@link TabBuilder} creating the Tab.
      */
-    public TabBuilder setWebContents(WebContents webContents) {
+    public TabBuilder setWebContents(@Nullable WebContents webContents) {
         mWebContents = webContents;
         return this;
     }
