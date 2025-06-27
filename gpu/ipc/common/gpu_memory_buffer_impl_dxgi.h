@@ -25,10 +25,6 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-namespace media {
-class GpuMemoryBufferTrackerWin;
-}
-
 namespace gpu {
 
 class GpuMemoryBufferSupport;
@@ -77,8 +73,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
   const gfx::DXGIHandleToken& GetToken() const;
 
  private:
-  // TODO(crbug.com/40264379): Remove the need for this.
-  friend media::GpuMemoryBufferTrackerWin;
   friend GpuMemoryBufferSupport;
 
   static std::unique_ptr<GpuMemoryBufferImplDXGI> CreateFromHandle(
