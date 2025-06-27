@@ -262,6 +262,7 @@ void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
   CHECK_LE(offsets.size(), 2u);
   if (offsets.size() == 2 && offsets[0] >= offsets[1]) {
     std::swap(offsets[0], offsets[1]);
+    std::swap(replacements[0], replacements[1]);
     std::swap(info.endpoint_infos[0], info.endpoint_infos[1]);
   }
 
@@ -281,8 +282,8 @@ void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
     if (!info.endpoint_infos[i].focus_target_id) {
       continue;
     }
-    const size_t label_length = offsets[i] - label_start;
-    if (label_length > 0) {
+    if (label_start < offsets[i]) {
+      const size_t label_length = offsets[i] - label_start;
       AddLabel(label_text.substr(label_start, label_length),
                flex_layout_order++);
     }
@@ -293,8 +294,8 @@ void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
 
   // Add a label for the text after the last button, if any; otherwise, this
   // label covers the entire string.
-  const size_t label_length = label_text.size() - label_start;
-  if (label_length > 0) {
+  if (label_start < label_text.size()) {
+    const size_t label_length = label_text.size() - label_start;
     AddLabel(label_text.substr(label_start, label_length), flex_layout_order++);
   }
 

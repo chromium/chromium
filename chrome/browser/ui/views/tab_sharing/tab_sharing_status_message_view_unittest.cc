@@ -33,6 +33,9 @@ EndpointInfo kTab1 = EndpointInfo(u"Tab1",
 EndpointInfo kTab2 = EndpointInfo(u"Tab2",
                                   EndpointInfo::TargetType::kCapturingTab,
                                   GlobalRenderFrameHostId(2, 2));
+EndpointInfo kTab11 = EndpointInfo(u"Tab11",
+                                   EndpointInfo::TargetType::kCapturingTab,
+                                   GlobalRenderFrameHostId(11, 11));
 EndpointInfo kWithoutId1 = EndpointInfo(u"WithoutId1",
                                         EndpointInfo::TargetType::kCapturedTab,
                                         GlobalRenderFrameHostId());
@@ -223,4 +226,17 @@ TEST_F(TabSharingStatusMessageViewTest,
       MessageInfo(u"prefix-$2-infix-$1-postfix", {kWithoutId1, kWithoutId2}));
   EXPECT_THAT(GetChildTexts(view),
               ElementsAreArray({"prefix-WithoutId2-infix-WithoutId1-postfix"}));
+}
+
+// Verify an underflow and out of bounds error does not occur with the swapping
+// logic when the second tab's text is longer than the first tab's.
+TEST_F(TabSharingStatusMessageViewTest, ReversedLongerSecondTab) {
+  ASSERT_LT(kTab1.text.length(), kTab11.text.length())
+      << "Bug repro requires that the second tab has longer text than the "
+         "first tab";
+
+  // Use format string "$2$1" to trigger the swapping logic, and place first the
+  // longer text of the second tab.
+  TabSharingStatusMessageView view(MessageInfo(u"$2$1", {kTab1, kTab11}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"Tab11", "Tab1"}));
 }
