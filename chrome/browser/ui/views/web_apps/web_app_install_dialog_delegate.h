@@ -10,12 +10,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/web_apps/web_app_modal_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 
 class PrefService;
@@ -123,6 +125,14 @@ class WebAppInstallDialogDelegate : public WebAppModalDialogDelegate {
   InstallDialogType dialog_type_;
   std::u16string text_field_contents_;
   bool received_user_response_ = false;
+
+  // Ensures the corresponding page action is highlighted, if any.
+  // If the new page actions framework is enabled, then a
+  // `ScopedPageActionActivity` is used.
+  const std::optional<std::variant<views::Button::ScopedAnchorHighlight,
+                                   page_actions::ScopedPageActionActivity>>
+      page_action_highlight_;
+
   base::WeakPtrFactory<WebAppInstallDialogDelegate> weak_ptr_factory_{this};
 };
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -13,11 +14,15 @@
 #include "base/observer_list_internal.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -29,6 +34,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
@@ -53,6 +59,51 @@ int64_t ToLong(web_app::WebAppInstallStatus web_app_install_status) {
 }
 #endif
 
+// Creates a scoped highlight on the corresponding page action icon, if any.
+// Returns nullopt if not found.
+std::optional<std::variant<views::Button::ScopedAnchorHighlight,
+                           page_actions::ScopedPageActionActivity>>
+NewPageActionHighlight(content::WebContents& web_contents) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(&web_contents);
+  if (!tab) {
+    return std::nullopt;
+  }
+  if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
+    tabs::TabFeatures* tab_features = tab->GetTabFeatures();
+    CHECK(tab_features);
+
+    return tab_features->page_action_controller()->AddActivity(
+        kActionInstallPwa);
+  }
+
+  // TODO(crbug.com/425953501): We shouldn't be using this. Once
+  // `ToolbarButtonProvider` is migrated to `BrowserWindowInterface`, we can
+  // use that directly.
+  Browser* browser =
+      tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view) {
+    return std::nullopt;
+  }
+
+  ToolbarButtonProvider* toolbar_button_provider =
+      browser_view->toolbar_button_provider();
+  if (!toolbar_button_provider) {
+    return std::nullopt;
+  }
+
+  views::Button* install_icon = toolbar_button_provider->GetPageActionIconView(
+      PageActionIconType::kPwaInstall);
+
+  if (install_icon) {
+    // TODO(crbug.com/40841129): move this to dialog->SetHighlightedButton.
+    return install_icon->AddAnchorHighlight();
+  }
+
+  return std::nullopt;
+}
 }  // namespace
 
 constexpr int kMinBoundsForInstallDialog = 50;
@@ -100,7 +151,9 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
       iph_state_(std::move(iph_state)),
       prefs_(prefs),
       tracker_(tracker),
-      dialog_type_(dialog_type) {
+      dialog_type_(dialog_type),
+      page_action_highlight_(
+          NewPageActionHighlight(CHECK_DEREF(web_contents))) {
   CHECK(install_info_);
   CHECK(install_tracker_);
   CHECK(prefs_);
@@ -109,23 +162,6 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
 WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
   if (!web_contents()) {
     return;
-  }
-  // TODO(crbug.com/40841129): move this to dialog->SetHighlightedButton.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (!browser) {
-    return;
-  }
-
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-
-  if (browser_view && browser_view->toolbar_button_provider()) {
-    PageActionIconView* install_icon =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kPwaInstall);
-    if (install_icon) {
-      // Dehighlight the install icon when this dialog is closed.
-      install_icon->SetHighlighted(false);
-    }
   }
 }
 
