@@ -15,7 +15,8 @@ found in the LICENSE file.
     <!-- For messages below the front messages, used in stacking animation. -->
     <dimen name="message_banner_back_elevation">5dp</dimen>
     <dimen name="message_primary_button_max_width">112dp</dimen>
-    <dimen name="message_progress_indicator_size">36dp</dimen>
+    <dimen name="message_progress_indicator_size">32dp</dimen>
+    <dimen name="message_progress_indicator_thickness">3dp</dimen>
     <dimen name="message_icon_margin">12dp</dimen>
     <dimen name="message_icon_size">24dp</dimen>
     <dimen name="message_icon_size_large">36dp</dimen>
