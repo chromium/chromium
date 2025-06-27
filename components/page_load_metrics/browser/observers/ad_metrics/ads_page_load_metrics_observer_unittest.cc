@@ -20,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -463,6 +464,8 @@ class AdsPageLoadMetricsObserverTest
 
   void SetUp() override {
     SetUpScopedFeatureList();
+    // Subresource filter indexing is slow. Use a longer timeout.
+    base::test::ScopedRunLoopTimeout timeout{FROM_HERE, base::Seconds(45)};
     SubresourceFilterTestHarness::SetUp();
     tester_ = std::make_unique<PageLoadMetricsObserverTester>(
         web_contents(), this,
