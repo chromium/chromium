@@ -13,13 +13,16 @@ class GURL;
 namespace net {
 
 // Method for creating a valid NSURL (compliant with RFC 1738/1808/2396) from a
-// valid GURL. This method will return nil if the |url| is not valid.
+// valid GURL. This method will return nil if `url.is_valid() == false`.
+// As GURL and NSURL valid URL sets do not match, it is possible that this
+// function returns nil even if `url.is_valid() == true`. The result must always
+// be checked for nullity.
 // Note that NSURLs should *always* be created from GURLs, so that GURL
 // sanitization rules are applied everywhere.
 NET_EXPORT NSURL* NSURLWithGURL(const GURL& url);
 
 // Method for creating a valid GURL from a NSURL. This method will return an
-// empty GURL if the |url| is nil.
+// empty GURL if the `url` is nil and can return an invalid GURL.
 NET_EXPORT GURL GURLWithNSURL(NSURL* url);
 
 }  // namespace net
