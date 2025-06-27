@@ -18,7 +18,7 @@ const tests = [
     downloadsElement.hasEnteredAnnotationMode = false;
     document.body.appendChild(downloadsElement);
 
-    const downloadButton = downloadsElement.$.download;
+    const downloadButton = downloadsElement.$.save;
     const actionMenu = downloadsElement.$.menu;
     chrome.test.assertFalse(actionMenu.open);
 
@@ -53,7 +53,7 @@ const tests = [
     // open.
     downloadsElement.hasEdits = true;
     downloadsElement.isFormFieldFocused = false;
-    await eventToPromise('download-menu-shown-for-testing', downloadsElement);
+    await eventToPromise('save-menu-shown-for-testing', downloadsElement);
     chrome.test.assertTrue(actionMenu.open);
     chrome.test.assertEq(2, numRequests);
 
@@ -68,7 +68,7 @@ const tests = [
 
     // Click again to re-open menu.
     downloadButton.click();
-    await eventToPromise('download-menu-shown-for-testing', downloadsElement);
+    await eventToPromise('save-menu-shown-for-testing', downloadsElement);
     chrome.test.assertTrue(actionMenu.open);
 
     // Click on "Original".

@@ -91,7 +91,7 @@ class PDFExtensionDownloadTest : public base::test::WithFeatureOverride,
         "var viewer = document.getElementById('viewer');"
         "var toolbar = viewer.shadowRoot.getElementById('toolbar');"
         "var downloads = toolbar.shadowRoot.getElementById('downloads');"
-        "downloads.shadowRoot.getElementById('download').click();"));
+        "downloads.shadowRoot.getElementById('save').click();"));
 
     WaitForDownload(download_waiter.get());
   }

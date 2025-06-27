@@ -2241,7 +2241,7 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
         "var viewer = document.getElementById('viewer');"
         "var toolbar = viewer.shadowRoot.getElementById('toolbar');"
         "var downloads = toolbar.shadowRoot.getElementById('downloads');"
-        "downloads.shadowRoot.getElementById('download-edited').click();"));
+        "downloads.shadowRoot.getElementById('save-edited').click();"));
   }
 
   void WaitForSavedPdf(const base::FilePath& path) {

@@ -8,17 +8,17 @@ import type {ViewerDownloadControlsElement} from './viewer_download_controls.js'
 
 export function getHtml(this: ViewerDownloadControlsElement) {
   return html`<!--_html_template_start_-->
-<cr-icon-button id="download" iron-icon="cr:file-download"
-    @click="${this.onDownloadClick_}" aria-label="$i18n{tooltipDownload}"
-    aria-haspopup="${this.downloadHasPopup_()}"
+<cr-icon-button id="save" iron-icon="cr:file-download"
+    @click="${this.onSaveClick}" aria-label="$i18n{tooltipDownload}"
+    aria-haspopup="${this.saveButtonHasPopup()}"
     title="$i18n{tooltipDownload}"></cr-icon-button>
-<cr-action-menu id="menu" @open-changed="${this.onOpenChanged_}">
-  <button id="download-edited" class="dropdown-item"
-      @click="${this.onDownloadEditedClick_}">
+<cr-action-menu id="menu" @open-changed="${this.onOpenChanged}">
+  <button id="save-edited" class="dropdown-item"
+      @click="${this.onSaveEditedClick}">
     $i18n{downloadEdited}
   </button>
-  <button id="download-original" class="dropdown-item"
-      @click="${this.onDownloadOriginalClick_}">
+  <button id="save-original" class="dropdown-item"
+      @click="${this.onSaveOriginalClick}">
     $i18n{downloadOriginal}
   </button>
 </cr-action-menu>

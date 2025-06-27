@@ -63,6 +63,7 @@ build_webui("build") {
     "elements/viewer_pdf_sidenav.ts",
     "elements/viewer_properties_dialog.html.ts",
     "elements/viewer_properties_dialog.ts",
+    "elements/viewer_save_controls_mixin.ts",
     "elements/viewer_thumbnail.html.ts",
     "elements/viewer_thumbnail.ts",
     "elements/viewer_thumbnail_bar.html.ts",

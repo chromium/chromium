@@ -17,7 +17,7 @@ cr-action-menu::part(dialog) {
   top: 48px;
 }
 
-:host([menu-open_]) #download {
+:host([menu-open_]) #save {
   background-color: var(--active-button-bg);
   border-radius: 50%;
 }
