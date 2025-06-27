@@ -672,9 +672,6 @@
             if (proxyConfig.httpProxy !== undefined) {
                 servers.push(`http=${proxyConfig.httpProxy}`);
             }
-            if (proxyConfig.ftpProxy !== undefined) {
-                servers.push(`ftp=${proxyConfig.ftpProxy}`);
-            }
             if (proxyConfig.sslProxy !== undefined) {
                 servers.push(`https=${proxyConfig.sslProxy}`);
             }
@@ -4581,6 +4578,8 @@
                     return await this.#inputProcessor.releaseActions(this.#parser.parseReleaseActionsParams(command.params));
                 case 'input.setFiles':
                     return await this.#inputProcessor.setFiles(this.#parser.parseSetFilesParams(command.params));
+                case 'network.addDataCollector':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'network.addIntercept':
                     return await this.#networkProcessor.addIntercept(this.#parser.parseAddInterceptParams(command.params));
                 case 'network.continueRequest':
@@ -4591,8 +4590,12 @@
                     return await this.#networkProcessor.continueWithAuth(this.#parser.parseContinueWithAuthParams(command.params));
                 case 'network.failRequest':
                     return await this.#networkProcessor.failRequest(this.#parser.parseFailRequestParams(command.params));
+                case 'network.getData':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'network.provideResponse':
                     return await this.#networkProcessor.provideResponse(this.#parser.parseProvideResponseParams(command.params));
+                case 'network.removeDataCollector':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'network.removeIntercept':
                     return await this.#networkProcessor.removeIntercept(this.#parser.parseRemoveInterceptParams(command.params));
                 case 'network.setCacheBehavior':
@@ -6192,6 +6195,7 @@
         #id;
         userContext;
         #hiddenSandbox = uuidv4();
+        #downloadIdToUrlMap = new Map();
         #loaderId;
         #parentId = null;
         #originalOpener;
@@ -6620,6 +6624,7 @@
                 if (this.id !== params.frameId) {
                     return;
                 }
+                this.#downloadIdToUrlMap.set(params.guid, params.url);
                 this.#eventManager.registerEvent({
                     type: 'event',
                     method: BrowsingContext$2.EventNames.DownloadWillBegin,
@@ -6631,6 +6636,46 @@
                         url: params.url,
                     },
                 }, this.id);
+            });
+            this.#cdpTarget.browserCdpClient.on('Browser.downloadProgress', (params) => {
+                if (!this.#downloadIdToUrlMap.has(params.guid)) {
+                    return;
+                }
+                if (params.state === 'inProgress') {
+                    return;
+                }
+                const url = this.#downloadIdToUrlMap.get(params.guid);
+                switch (params.state) {
+                    case 'canceled':
+                        this.#eventManager.registerEvent({
+                            type: 'event',
+                            method: BrowsingContext$2.EventNames.DownloadEnd,
+                            params: {
+                                status: 'canceled',
+                                context: this.id,
+                                navigation: params.guid,
+                                timestamp: getTimestamp(),
+                                url,
+                            },
+                        }, this.id);
+                        break;
+                    case 'completed':
+                        this.#eventManager.registerEvent({
+                            type: 'event',
+                            method: BrowsingContext$2.EventNames.DownloadEnd,
+                            params: {
+                                filepath: params.filePath ?? null,
+                                status: 'complete',
+                                context: this.id,
+                                navigation: params.guid,
+                                timestamp: getTimestamp(),
+                                url,
+                            },
+                        }, this.id);
+                        break;
+                    default:
+                        throw new UnknownErrorException(`Unknown download state: ${params.state}`);
+                }
             });
         }
         static #getPromptType(cdpType) {
@@ -14892,11 +14937,13 @@
         'invalid web extension',
         'move target out of bounds',
         'no such alert',
+        'no such network collector',
         'no such element',
         'no such frame',
         'no such handle',
         'no such history entry',
         'no such intercept',
+        'no such network data',
         'no such node',
         'no such request',
         'no such script',
@@ -14908,6 +14955,7 @@
         'unable to close browser',
         'unable to set cookie',
         'unable to set file input',
+        'unavailable network data',
         'underspecified storage partition',
         'unknown command',
         'unknown error',
@@ -14971,7 +15019,6 @@
         Session.ManualProxyConfigurationSchema = z.lazy(() => z
             .object({
             proxyType: z.literal('manual'),
-            ftpProxy: z.string().optional(),
             httpProxy: z.string().optional(),
             sslProxy: z.string().optional(),
         })
@@ -15794,12 +15841,15 @@
         }));
     })(Emulation$1 || (Emulation$1 = {}));
     const NetworkCommandSchema = z.lazy(() => z.union([
+        Network$1.AddDataCollectorSchema,
         Network$1.AddInterceptSchema,
         Network$1.ContinueRequestSchema,
         Network$1.ContinueResponseSchema,
         Network$1.ContinueWithAuthSchema,
         Network$1.FailRequestSchema,
+        Network$1.GetDataSchema,
         Network$1.ProvideResponseSchema,
+        Network$1.RemoveDataCollectorSchema,
         Network$1.RemoveInterceptSchema,
         Network$1.SetCacheBehaviorSchema,
     ]));
@@ -15837,6 +15887,9 @@
         }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
+        Network.DataTypeSchema = z.literal('response');
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
         Network.BytesValueSchema = z.lazy(() => z.union([Network.StringValueSchema, Network.Base64ValueSchema]));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
@@ -15850,6 +15903,12 @@
             type: z.literal('base64'),
             value: z.string(),
         }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.CollectorSchema = z.lazy(() => z.string());
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.CollectorTypeSchema = z.literal('blob');
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.SameSiteSchema = z.lazy(() => z.enum(['strict', 'lax', 'none']));
@@ -15981,6 +16040,29 @@
         }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
+        Network.AddDataCollectorSchema = z.lazy(() => z.object({
+            method: z.literal('network.addDataCollector'),
+            params: Network.AddDataCollectorParametersSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.AddDataCollectorParametersSchema = z.lazy(() => z.object({
+            dataTypes: z.array(Network.DataTypeSchema).min(1),
+            maxEncodedDataSize: JsUintSchema,
+            collectorType: Network.CollectorTypeSchema.default('blob').optional(),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.AddDataCollectorResultSchema = z.lazy(() => z.object({
+            collector: Network.CollectorSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
         Network.AddInterceptParametersSchema = z.lazy(() => z.object({
             phases: z.array(Network.InterceptPhaseSchema).min(1),
             contexts: z
@@ -16064,6 +16146,19 @@
         }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
+        Network.DisownDataSchema = z.lazy(() => z.object({
+            method: z.literal('network.disownData'),
+            params: Network.DisownDataParametersSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.DisownDataParametersSchema = z.lazy(() => z.object({
+            dataType: Network.DataTypeSchema,
+            collector: Network.CollectorSchema,
+            request: Network.RequestSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
         Network.FailRequestSchema = z.lazy(() => z.object({
             method: z.literal('network.failRequest'),
             params: Network.FailRequestParametersSchema,
@@ -16074,6 +16169,26 @@
             request: Network.RequestSchema,
         }));
     })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.GetDataSchema = z.lazy(() => z.object({
+            method: z.literal('network.getData'),
+            params: Network.GetDataParametersSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.GetDataParametersSchema = z.lazy(() => z.object({
+            dataType: Network.DataTypeSchema,
+            collector: Network.CollectorSchema.optional(),
+            disown: z.boolean().default(false).optional(),
+            request: Network.RequestSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    var Script$1;
+    (function (Script) {
+        Script.GetDataResultSchema = z.lazy(() => z.object({
+            bytes: Network$1.BytesValueSchema,
+        }));
+    })(Script$1 || (Script$1 = {}));
     (function (Network) {
         Network.ProvideResponseSchema = z.lazy(() => z.object({
             method: z.literal('network.provideResponse'),
@@ -16088,6 +16203,17 @@
             headers: z.array(Network.HeaderSchema).optional(),
             reasonPhrase: z.string().optional(),
             statusCode: JsUintSchema.optional(),
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.RemoveDataCollectorSchema = z.lazy(() => z.object({
+            method: z.literal('network.removeDataCollector'),
+            params: Network.RemoveDataCollectorParametersSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.RemoveDataCollectorParametersSchema = z.lazy(() => z.object({
+            collector: Network.CollectorSchema,
         }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
@@ -16189,7 +16315,6 @@
             params: Network.ResponseStartedParametersSchema,
         }));
     })(Network$1 || (Network$1 = {}));
-    var Script$1;
     (function (Script) {
         Script.ChannelSchema = z.lazy(() => z.string());
     })(Script$1 || (Script$1 = {}));

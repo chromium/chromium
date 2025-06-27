@@ -113,6 +113,7 @@ class ThirdPartyNoticeParser:
         for header in expected_headers:
             print(lines[self._headers[header]], file=self._readme_file)
         print('Revision: '+self._get_revision(original_name_value, original_version_value), file=self._readme_file)
+        print('Update Mechanism: Manual', file=self._readme_file)
         print('Security Critical: no', file=self._readme_file)
         print('Shipped: yes', file=self._readme_file)
 

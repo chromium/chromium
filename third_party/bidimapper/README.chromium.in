@@ -5,6 +5,7 @@ Version: ${VERSION}
 Date: ${DATE}
 Revision: ${REVISION}
 SHA-512: ${TAR-SHA512}
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Shipped: yes
