@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/cpp/test/fake_usb_device.h"
@@ -102,10 +103,17 @@ void FakeUsbDeviceManager::OpenFileDescriptor(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+void FakeUsbDeviceManager::SetOnClientSetClosure(base::OnceClosure closure) {
+  on_client_set_ = std::move(closure);
+}
+
 void FakeUsbDeviceManager::SetClient(
     mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client) {
   DCHECK(client);
   clients_.Add(std::move(client));
+  if (on_client_set_) {
+    std::move(on_client_set_).Run();
+  }
 }
 
 void FakeUsbDeviceManager::AddReceiver(
