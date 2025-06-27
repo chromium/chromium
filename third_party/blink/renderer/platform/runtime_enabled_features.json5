@@ -2802,10 +2802,6 @@
       status: "stable",
     },
     {
-      name: "IsolatedSVGDocumentOptimization",
-      status: "stable",
-    },
-    {
       name: "JavaScriptCompileHintsPerFunctionMagicRuntime",
       status: "experimental",
       origin_trial_feature_name: "JavaScriptCompileHintsPerFunctionMagic",

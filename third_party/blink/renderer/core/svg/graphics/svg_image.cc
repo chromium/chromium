@@ -688,9 +688,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   Page* page = !pages.empty() ? *pages.begin() : nullptr;
   const Settings* settings_to_use = page ? &page->GetSettings() : nullptr;
   const ColorProviderColorMaps* color_maps =
-      page && RuntimeEnabledFeatures::IsolatedSVGDocumentOptimizationEnabled()
-          ? &page->GetColorProviderColorMaps()
-          : nullptr;
+      page ? &page->GetColorProviderColorMaps() : nullptr;
 
   // FIXME: If this SVG ends up loading itself, we might leak the world.
   // The Cache code does not know about ImageResources holding Frames and
