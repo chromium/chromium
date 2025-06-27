@@ -74,6 +74,10 @@ SkColor GetDefaultOutlineColor() {
           enterprise_connectors::kWatermarkStyleOutlineOpacityDefault));
 }
 
+int GetDefaultFontSize() {
+  return enterprise_connectors::kWatermarkStyleFontSizeDefault;
+}
+
 SkColor GetFillColor(const PrefService* prefs) {
   if (!base::FeatureList::IsEnabled(
           enterprise_watermark::kEnableWatermarkCustomization)) {
@@ -98,9 +102,10 @@ SkColor GetOutlineColor(const PrefService* prefs) {
 
 // Returns the font size for the watermark.
 // This function always returns a positive integer (>= 1).
-int GetFontSize() {
-  return std::max(enterprise_connectors::kWatermarkStyleFontSizeDefault,
-                  kMinFontSize);
+int GetFontSize(const PrefService* prefs) {
+  int font_size_from_pref =
+      prefs->GetInteger(enterprise_connectors::kWatermarkStyleFontSizePref);
+  return std::max(font_size_from_pref, kMinFontSize);
 }
 
 }  // namespace enterprise_watermark

@@ -24,7 +24,7 @@ watermark::mojom::WatermarkBlockPtr MakeTestWatermarkBlock(
     const std::string& watermark_text,
     const SkSize watermark_size) {
   // Initialize text blob
-  static constexpr SkScalar kTextSize = 30.0f;
+  constexpr SkScalar kTextSize = 30.0f;
   SkFont font(skia::DefaultTypeface(), kTextSize, 1.0f, 0.0f);
   sk_sp<SkTextBlob> blob =
       SkTextBlob::MakeFromString(watermark_text.c_str(), font);

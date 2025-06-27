@@ -6494,7 +6494,7 @@ void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {
     watermark_view_->SetString(watermark_text,
                                enterprise_watermark::GetFillColor(prefs),
                                enterprise_watermark::GetOutlineColor(prefs),
-                               enterprise_watermark::GetFontSize());
+                               enterprise_watermark::GetFontSize(prefs));
   }
 }
 

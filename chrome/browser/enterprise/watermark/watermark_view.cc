@@ -31,7 +31,7 @@ WatermarkView::WatermarkView() : background_color_(SkColorSetARGB(0, 0, 0, 0)) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetString(/*text=*/std::string(""), GetDefaultFillColor(),
-            GetDefaultOutlineColor(), GetFontSize());
+            GetDefaultOutlineColor(), GetDefaultFontSize());
   GetViewAccessibility().SetIsInvisible(true);
 }
 
