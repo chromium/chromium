@@ -1032,6 +1032,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kProvisionalNotificationsAllowedByPolicy,
                                 true);
 
+  registry->RegisterDictionaryPref(prefs::kBwgSessionMap);
+
   registry->RegisterBooleanPref(prefs::kIOSBwgConsent, false);
 
   registry->RegisterBooleanPref(prefs::kIOSBWGManualPromo, false);

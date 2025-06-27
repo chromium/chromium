@@ -40,6 +40,10 @@ inline constexpr char kBottomOmniboxByDefault[] =
 inline constexpr char kBrowserLockdownModeEnabled[] =
     "ios.browser_lockdown_mode_enabled";
 
+// A map of sessionID (clientID) to sub-dictionaries of conversationID
+// (serverID) and creation timestamp.
+inline constexpr char kBwgSessionMap[] = "ios.bwg.session_map";
+
 // A map of profile data directory to cached information. This cache can
 // be used to display information about profiles without actually having
 // to load them.
