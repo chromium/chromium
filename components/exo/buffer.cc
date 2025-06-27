@@ -674,25 +674,16 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
         next_commit_id_, std::move(per_commit_explicit_release_callback));
   }
 
-  viz::TransferableResource resource;
-  resource.set_sync_token(prev_sync_token);
-  resource.synchronization_type = prev_synchronization_type;
-  resource.id = resource_manager->AllocateResourceId();
-  resource.format = viz::SinglePlaneFormat::kRGBA_8888;
-  resource.size = GetSize();
-
-  resource.resource_source =
-      viz::TransferableResource::ResourceSource::kExoBuffer;
-
   // Create a new image texture for |gpu_memory_buffer_handle_| if one doesn't
   // already exist. The contents of this buffer are copied to |texture| using a
   // call to CopyTexImage.
+  gpu::SyncToken sync_token = prev_sync_token;
   if (!contents_texture_) {
     contents_texture_ = std::make_unique<Texture>(
         context_provider, &gpu_memory_buffer_handle_, format_, size_,
         color_space, query_type_, wait_for_release_delay_,
         is_overlay_candidate_);
-    resource.set_sync_token(contents_texture_->sync_token());
+    sync_token = contents_texture_->sync_token();
   }
   Texture* contents_texture = contents_texture_.get();
 
@@ -736,17 +727,24 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
     // We can sync on the existing sync token if present. Examples of where this
     // can happen is video, where there is no fence provided, or in
     // raster/composite when the fence already signaled at this stage.
-
     if (acquire_fence && !acquire_fence->GetGpuFenceHandle().is_null()) {
       contents_texture->UpdateSharedImage(std::move(acquire_fence));
-      resource.set_sync_token(contents_texture->sync_token());
+      sync_token = contents_texture->sync_token();
     }
     uint32_t texture_target =
         contents_texture->shared_image()->GetTextureTarget();
+
+    viz::TransferableResource resource;
+    resource.set_sync_token(sync_token);
+    resource.id = resource_manager->AllocateResourceId();
+    resource.size = GetSize();
     resource.set_mailbox(contents_texture->mailbox());
     resource.set_texture_target(texture_target);
     resource.is_overlay_candidate = is_overlay_candidate_;
     resource.format = format_;
+    resource.resource_source =
+        viz::TransferableResource::ResourceSource::kExoBuffer;
+    resource.synchronization_type = prev_synchronization_type;
 
     if (context_provider->ContextCapabilities().chromium_gpu_fence &&
         request_release_fence) {
@@ -771,7 +769,6 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   if (!texture_) {
     texture_ =
         std::make_unique<Texture>(context_provider, GetSize(), color_space);
-    resource.set_sync_token(texture_->sync_token());
   }
   Texture* texture = texture_.get();
 
@@ -784,6 +781,14 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
                      std::move(contents_texture_),
                      release_contents_callback_.callback(), next_commit_id_,
                      /*release_fence=*/gfx::GpuFenceHandle()));
+
+  viz::TransferableResource resource;
+  resource.synchronization_type = prev_synchronization_type;
+  resource.id = resource_manager->AllocateResourceId();
+  resource.format = viz::SinglePlaneFormat::kRGBA_8888;
+  resource.size = GetSize();
+  resource.resource_source =
+      viz::TransferableResource::ResourceSource::kExoBuffer;
   resource.set_mailbox(texture->mailbox());
   resource.set_sync_token(texture_->sync_token());
   resource.set_texture_target(GL_TEXTURE_2D);
