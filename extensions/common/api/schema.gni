@@ -11,6 +11,7 @@ import("//extensions/buildflags/buildflags.gni")
 extensions_api_schema_files_ = [
   "alarms.idl",
   "declarative_net_request.idl",
+  "dns.idl",
   "events.json",
   "extension_types.json",
   "file_handlers.idl",
@@ -62,7 +63,6 @@ if (enable_extensions) {
     "bluetooth.idl",
     "cec_private.idl",
     "clipboard.idl",
-    "dns.idl",
     "extension_options_internal.idl",
     "feedback_private.idl",
     "file_system.idl",

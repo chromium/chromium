@@ -22,8 +22,15 @@ var testHostnameResolution = function() {
 
 var testNonexistentHostnameResolution = function() {
   var callback = function(resolveInfo) {
-    // NET_ERROR(NAME_NOT_RESOLVED, -105)
-    chrome.test.assertEq(-105, resolveInfo.resultCode);
+    if (/Android/.test(navigator.userAgent)) {
+      // The Android test runner has networking disabled by default and the
+      // network disconnected error takes precedence.
+      // NET_ERROR(INTERNET_DISCONNECTED, -106)
+      chrome.test.assertEq(-106, resolveInfo.resultCode);
+    } else {
+      // NET_ERROR(NAME_NOT_RESOLVED, -105)
+      chrome.test.assertEq(-105, resolveInfo.resultCode);
+    }
     chrome.test.succeed("hostname correctly failed to resolve");
   };
   chrome.dns.resolve("this.hostname.is.bogus.test", callback);

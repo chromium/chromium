@@ -237,15 +237,11 @@
   "dns": [
     {
       "channel": "dev",
-      "extension_types": ["extension", "platform_app"],
-      // "desktop_android" is not supported.
-      "platforms": ["chromeos", "linux", "mac", "win"]
+      "extension_types": ["extension", "platform_app"]
     },
     {
       "channel": "stable",
       "extension_types": ["extension", "platform_app"],
-      // "desktop_android" is not supported.
-      "platforms": ["chromeos", "linux", "mac", "win"],
       "allowlist": [
         "7AE714FFD394E073F0294CFA134C9F91DB5FBAA4",  // CCD Development
         "C7DA3A55C2355F994D3FDDAD120B426A0DF63843",  // CCD Testing

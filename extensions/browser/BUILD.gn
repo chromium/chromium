@@ -1083,7 +1083,6 @@ if (enable_extensions) {
       # crbug.com/650835.
       "api/bluetooth/bluetooth_appshell_test.cc",
       "api/bluetooth_socket/bluetooth_socket_apitest.cc",
-      "api/dns/dns_apitest.cc",
       "api/feedback_private/feedback_private_apitest.cc",
       "api/hid/hid_apitest.cc",
       "api/socket/socket_apitest.cc",

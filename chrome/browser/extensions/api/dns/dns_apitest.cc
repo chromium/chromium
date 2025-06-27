@@ -5,17 +5,21 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "content/public/browser/browser_context.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/dns/dns_api.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/shell/test/shell_apitest.h"
+#include "extensions/common/extension_paths.h"
 #include "extensions/test/result_catcher.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -32,9 +36,18 @@ using extensions::api_test_utils::RunFunctionAndReturnSingleResult;
 
 constexpr char kHostname[] = "www.sowbug.test";
 constexpr char kAddress[] = "9.8.7.6";
+
+// Returns //extensions/test/data.
+base::FilePath GetExtensionsDirTestData() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath test_root_path;
+  base::PathService::Get(extensions::DIR_TEST_DATA, &test_root_path);
+  return test_root_path;
+}
+
 }  // namespace
 
-class DnsApiTest : public ShellApiTest {
+class DnsApiTest : public ExtensionApiTest {
  public:
   DnsApiTest() {
     // Enable kPartitionConnectionsByNetworkIsolationKey so the test can verify
@@ -45,7 +58,7 @@ class DnsApiTest : public ShellApiTest {
 
  private:
   void SetUpOnMainThread() override {
-    ShellApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule(kHostname, kAddress);
     host_resolver()->AddSimulatedFailure("this.hostname.is.bogus.test");
   }
@@ -62,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
   resolve_function->set_has_callback(true);
 
   std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
-      resolve_function.get(), "[\"127.0.0.1\"]", browser_context()));
+      resolve_function.get(), "[\"127.0.0.1\"]", profile()));
   const base::Value::Dict& dict = result->GetDict();
 
   EXPECT_EQ(net::OK, dict.FindInt("resultCode"));
@@ -74,7 +87,9 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
 
 IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
   ResultCatcher catcher;
-  const Extension* extension = LoadExtension("extension");
+  // Load a simple test extension.
+  const Extension* extension =
+      LoadExtension(GetExtensionsDirTestData().AppendASCII("extension"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(catcher.GetNextResult());
 
@@ -84,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
 
   std::string function_arguments = base::StringPrintf(R"(["%s"])", kHostname);
   std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
-      resolve_function.get(), function_arguments, browser_context()));
+      resolve_function.get(), function_arguments, profile()));
   const base::Value::Dict& dict = result->GetDict();
 
   EXPECT_EQ(net::OK, dict.FindInt("resultCode"));
@@ -97,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
   // DNS lookup using the expected NIK, and make sure the IP address is
   // retrieved.
   network::mojom::NetworkContext* network_context =
-      browser_context()->GetDefaultStoragePartition()->GetNetworkContext();
+      profile()->GetDefaultStoragePartition()->GetNetworkContext();
   net::HostPortPair host_port_pair(kHostname, 0);
   network::mojom::ResolveHostParametersPtr params =
       network::mojom::ResolveHostParameters::New();
@@ -127,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
 }
 
 IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsExtension) {
-  ASSERT_TRUE(RunAppTest("api_test/dns/api")) << message_;
+  ASSERT_TRUE(RunExtensionTest("dns/api")) << message_;
 }
 
 }  // namespace extensions
