@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -228,7 +229,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public void cancelTabClosure(@TabId int tabId) {}
 
     @Override
-    public void openMostRecentlyClosedEntry() {}
+    public void openMostRecentlyClosedEntry() {
+        assertOnUiThread();
+        mModelDelegate.openMostRecentlyClosedEntry(this);
+        if (!mCurrentTabSupplier.hasValue()) {
+            setIndex(0, TabSelectionType.FROM_NEW);
+        }
+    }
 
     @Override
     public TabList getComprehensiveModel() {
@@ -444,11 +451,20 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    protected void moveTabToIndex(int index, int newIndex) {}
+    protected void moveTabToIndex(int index, int newIndex) {
+        Tab tab = getTabAt(index);
+        if (tab == null) return;
+        moveTab(tab.getId(), newIndex);
+    }
 
     @Override
     protected List<Tab> getAllTabs() {
-        return Collections.emptyList();
+        assertOnUiThread();
+        List<Tab> tabs = new ArrayList<>();
+        for (Tab tab : this) {
+            tabs.add(tab);
+        }
+        return tabs;
     }
 
     @Override
