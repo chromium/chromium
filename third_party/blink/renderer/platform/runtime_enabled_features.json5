@@ -2531,6 +2531,12 @@
       status: "stable",
       base_feature: "none",
     },
+    {
+      // Adds color:gray to the <hr> element in the UA stylesheet.
+      // https://issues.chromium.org/issues/425113244
+      name: "HrElementGray",
+      status: "stable",
+    },
     // The `anchor` attribute, supported by both anchor positioning and the
     // popover API.
     {

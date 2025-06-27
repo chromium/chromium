@@ -129,7 +129,7 @@ Found 119 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["forecolor","#0000FF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") after
   assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
 [FAIL] [["forecolor","#0000FF"],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("forecolor") after
-  assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
+  assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(128, 128, 128)"
 [FAIL] [["forecolor","#0000FF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr><font color=\\"#0000ff\\">a</font>bar" but got "foo<hr>abar"
 [FAIL] [["forecolor","#0000FF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") after
