@@ -3,6 +3,10 @@
     --cr-menu-border-radius: 12px;
   }
 
+  #timePicker {
+    max-width: 512px;
+  }
+
   .dropdown-item {
     padding: 4px 16px;
   }
@@ -10,7 +14,6 @@
   .row {
     align-items: center;
     display: flex;
-    overflow: auto;
   }
 
   .time-period-chip {
@@ -18,10 +21,9 @@
   }
 </style>
 
-<div class="row" scrollable>
-  <template is="dom-repeat" items="[[expandedOptionList_]]">
-    <!-- TODO(crbug.com/397187800): Handle content overflow,
-         current behavior is to scroll.-->
+<div class="row" id="timePicker">
+  <template is="dom-repeat" items="[[expandedOptionList_]]"
+      on-dom-change="onTimePickerDomChanged_">
     <cr-chip class="time-period-chip"
         selected="[[isTimePeriodSelected_(item.value)]]"
         on-click="onTimePeriodSelected_">
