@@ -4537,12 +4537,6 @@ extern const char kArcWindowPredictorDescription[];
 extern const char kScalableIphDebugName[];
 extern const char kScalableIphDebugDescription[];
 
-extern const char kScannerDisclaimerDebugOverrideName[];
-extern const char kScannerDisclaimerDebugOverrideDescription[];
-extern const char kScannerDisclaimerDebugOverrideChoiceDefault[];
-extern const char kScannerDisclaimerDebugOverrideChoiceAlwaysReminder[];
-extern const char kScannerDisclaimerDebugOverrideChoiceAlwaysFull[];
-
 extern const char kSealKeyName[];
 extern const char kSealKeyDescription[];
 
