@@ -23,7 +23,7 @@ namespace cc {
 class PictureLayerTilingSet;
 
 // This queue returns all tiles required to be rasterized from HIGH_RESOLUTION
-// and LOW_RESOLUTION tilings.
+// tilings.
 class CC_EXPORT TilingSetRasterQueueAll {
  public:
   static std::unique_ptr<TilingSetRasterQueueAll> Create(
@@ -192,7 +192,6 @@ class CC_EXPORT TilingSetRasterQueueAll {
   };
 
   enum IteratorType {
-    LOW_RES,
     HIGH_RES,
     ACTIVE_NON_IDEAL_PENDING_HIGH_RES,
     NUM_ITERATORS
@@ -200,7 +199,6 @@ class CC_EXPORT TilingSetRasterQueueAll {
 
   TilingSetRasterQueueAll(
       PictureLayerTiling* high_res_tiling,
-      PictureLayerTiling* low_res_tiling,
       PictureLayerTiling* active_non_ideal_pending_high_res_tiling,
       bool is_drawing_layer);
 

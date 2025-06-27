@@ -35,8 +35,8 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
     }
   } else {
     if (!tiling_set->num_tilings()) {
-      return base::WrapUnique(new TilingSetRasterQueueAll(
-          nullptr, nullptr, nullptr, is_drawing_layer));
+      return base::WrapUnique(
+          new TilingSetRasterQueueAll(nullptr, nullptr, is_drawing_layer));
     }
   }
 
@@ -74,7 +74,7 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
   }
 
   return base::WrapUnique(new TilingSetRasterQueueAll(
-      use_high_res_tiling ? high_res_tiling : nullptr, nullptr,
+      use_high_res_tiling ? high_res_tiling : nullptr,
       use_active_non_ideal_pending_high_res_tiling
           ? active_non_ideal_pending_high_res_tiling
           : nullptr,
@@ -83,22 +83,15 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
 
 TilingSetRasterQueueAll::TilingSetRasterQueueAll(
     PictureLayerTiling* high_res_tiling,
-    PictureLayerTiling* low_res_tiling,
     PictureLayerTiling* active_non_ideal_pending_high_res_tiling,
     bool is_drawing_layer)
     : current_stage_(0), is_drawing_layer_(is_drawing_layer) {
-  if (!high_res_tiling && !low_res_tiling &&
-      !active_non_ideal_pending_high_res_tiling) {
+  if (!high_res_tiling && !active_non_ideal_pending_high_res_tiling) {
     DCHECK(!features::IsCCSlimmingEnabled());
     return;
   }
 
   // Make the tiling iterators.
-  if (low_res_tiling) {
-    MakeTilingIterator(LOW_RES, low_res_tiling);
-  } else if (!features::IsCCSlimmingEnabled()) {
-    iterators_[LOW_RES].emplace();
-  }
   if (high_res_tiling) {
     MakeTilingIterator(HIGH_RES, high_res_tiling);
   } else if (!features::IsCCSlimmingEnabled()) {
@@ -112,10 +105,6 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
   }
 
   // Set up the stages.
-  if (low_res_tiling) {
-    stages_.push_back(IterationStage(LOW_RES, TilePriority::NOW));
-  }
-
   if (high_res_tiling) {
     stages_.push_back(IterationStage(HIGH_RES, TilePriority::NOW));
   }
