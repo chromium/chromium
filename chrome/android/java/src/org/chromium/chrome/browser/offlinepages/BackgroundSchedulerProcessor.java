@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.offlinepages;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device.DeviceConditions;
 
-/** Class allowing for mocking out calls to BackgroundSchedulerBridge.  */
+/** Class allowing for mocking out calls to BackgroundSchedulerBridge. */
+@NullMarked
 public class BackgroundSchedulerProcessor {
-    private static BackgroundSchedulerProcessor sInstance;
+    private static @Nullable BackgroundSchedulerProcessor sInstance;
 
     /** Returns a singleton instance. */
     public static BackgroundSchedulerProcessor getInstance() {

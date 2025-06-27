@@ -9,16 +9,18 @@ import android.content.DialogInterface;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 
+@NullMarked
 public class LaunchFailedActivity extends AppCompatActivity {
     /**
      * Tracks whether an exception has been reported.
      *
-     * We do this once per process, to avoid spamming if the user keeps trying to relaunch but don't
-     * bother with persistence since a few repeated attempts at different time intervals will be
-     * spaced out.
+     * <p>We do this once per process, to avoid spamming if the user keeps trying to relaunch but
+     * don't bother with persistence since a few repeated attempts at different time intervals will
+     * be spaced out.
      */
     private static boolean sNotified;
 

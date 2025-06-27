@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -12,11 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.CaptureAction;
@@ -40,6 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Dialog for selecting a media source for media capture. */
+@NullMarked
 public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     // This web contents is the one that is receiving the shared content.
     private final WebContents mWebContents;
@@ -52,9 +55,9 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     private final MaterialSwitch mAudioSwitch;
     private final ModelList mModelList = new ModelList();
     private final Map<Tab, TabItemState> mTabItemStateMap = new HashMap<>();
-    @Nullable private TabItemState mLastSelectedTabItemState;
-    @Nullable private PropertyModel mPropertyModel;
-    @Nullable private Delegate mDelegate;
+    private @Nullable TabItemState mLastSelectedTabItemState;
+    private @Nullable PropertyModel mPropertyModel;
+    private @Nullable Delegate mDelegate;
 
     /** A delegate for handling returning the picker result. */
     interface Delegate {
@@ -64,7 +67,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
          * @param webContents The contents to share.
          * @param audioShare True if tab audio should be shared.
          */
-        void onPickTab(@NonNull WebContents webContents, boolean audioShare);
+        void onPickTab(WebContents webContents, boolean audioShare);
 
         /** Called when the user has selected a window to share. */
         void onPickWindow();
@@ -206,12 +209,14 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
 
     private void startAndroidCapturePrompt() {
         var fragment = MediaCapturePickerHeadlessFragment.getInstanceForCurrentActivity();
+        assumeNonNull(fragment);
         fragment.startAndroidCapturePrompt(
                 (action, result) -> {
                     if (action != CaptureAction.CAPTURE_CANCELLED) {
                         ScreenCapture.onPick(mWebContents, result);
                     }
 
+                    assumeNonNull(mDelegate);
                     switch (action) {
                         case CaptureAction.CAPTURE_CANCELLED:
                             mDelegate.onCancel();
@@ -238,8 +243,9 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
         var controller =
                 new ModalDialogProperties.Controller() {
                     @Override
-                    public void onClick(PropertyModel model, int buttonType) {
+                    public void onClick(@Nullable PropertyModel model, int buttonType) {
                         boolean picked = buttonType == ModalDialogProperties.ButtonType.POSITIVE;
+                        assumeNonNull(mDelegate);
                         if (picked && mLastSelectedTabItemState != null) {
                             var tab = mLastSelectedTabItemState.mTab;
                             tab.loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);

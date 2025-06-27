@@ -12,10 +12,12 @@ import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesPrope
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Model-to-View binder for most visited list. Handles view manipulations. */
+@NullMarked
 final class MostVisitedTilesViewBinder {
     /** The view holder holds the most visited container layout and most visited tiles layout. */
     public static class ViewHolder {

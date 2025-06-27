@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -22,8 +24,6 @@ import android.service.chooser.ChooserAction;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -31,6 +31,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 
 /** A helper class that provides additional Chrome-specific share functionality. */
+@NullMarked
 public class ShareHelper extends org.chromium.components.browser_ui.share.ShareHelper {
     private static final String TAG = "AndroidShare";
     // The max number of custom actions supported for custom actions.
@@ -69,6 +72,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
 
     /**
      * Shares the params using the system share sheet with custom actinos.
+     *
      * @param params The share parameters.
      * @param profile The profile last shared component will be saved to, if |saveLastUsed| is set.
      * @param saveLastUsed True if the chosen share component should be saved for future reuse.
@@ -78,7 +82,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             ShareParams params,
             @Nullable Profile profile,
             boolean saveLastUsed,
-            @Nullable ChromeCustomShareAction.Provider customActionProvider) {
+            ChromeCustomShareAction.@Nullable Provider customActionProvider) {
         assert (customActionProvider == null || ChooserActionHelper.isSupported())
                 : "Custom action is not supported.";
 
@@ -101,8 +105,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      */
     // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     public static void shareDirectly(
-            @NonNull ShareParams params,
-            @NonNull ComponentName component,
+            ShareParams params,
+            ComponentName component,
             @Nullable Profile profile,
             boolean saveLastUsed) {
         // Save the component directly without using a SaveComponentCallback.
@@ -117,7 +121,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         } catch (ActivityNotFoundException exception) {
             // In rare cases when the component set for the send intent is not found, swallow the
             // errors.
-            Log.e(TAG, exception.getMessage());
+            String message = exception.getMessage() != null ? exception.getMessage() : "";
+            Log.e(TAG, message);
             ChromePureJavaExceptionReporter.reportJavaException(exception);
         }
     }
@@ -191,6 +196,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             }
         }
         if (isComponentValid) {
+            // Needed for NullAway.
+            assert component != null;
             final PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
             try {
                 // TODO(dtrainor): Make asynchronous and have a callback to update the menu.
@@ -207,9 +214,10 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
 
     /**
      * Share directly with the last used share target, and record its share source.
+     *
      * @param params The container holding the share parameters.
      */
-    static void shareWithLastUsedComponent(@NonNull ShareParams params) {
+    static void shareWithLastUsedComponent(ShareParams params) {
         ComponentName component = getLastShareComponentName();
         if (component == null) return;
         assert params.getCallback() == null;
@@ -220,11 +228,13 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     /**
      * Stores the component selected for sharing last time share was called by certain app.
      *
-     * This method is public since it is used in tests to avoid creating share dialog.
+     * <p>This method is public since it is used in tests to avoid creating share dialog.
+     *
      * @param component The {@link ComponentName} of the app selected for sharing.
      */
     @VisibleForTesting
-    public static void setLastShareComponentName(Profile profile, ComponentName component) {
+    public static void setLastShareComponentName(
+            @Nullable Profile profile, ComponentName component) {
         ChromeSharedPreferences.getInstance()
                 .writeString(
                         ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME,
@@ -238,7 +248,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             WindowAndroid window,
             Intent sharingIntent,
             @Nullable TargetChosenCallback callback,
-            ChromeCustomShareAction.Provider customActions) {
+            ChromeCustomShareAction.@Nullable Provider customActions) {
         new CustomActionChosenReceiver(callback, customActions)
                 .sendChooserIntent(window, sharingIntent);
     }
@@ -265,12 +275,12 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
 
     /** Helper class for injecting extras into the sharing intents. */
     private static class CustomActionChosenReceiver extends TargetChosenReceiver {
-        private final ChromeCustomShareAction.Provider mCustomActionProvider;
+        private final ChromeCustomShareAction.@Nullable Provider mCustomActionProvider;
         private final Map<String, Runnable> mActionsMap = new HashMap<>();
 
         protected CustomActionChosenReceiver(
                 @Nullable TargetChosenCallback callback,
-                @Nullable ChromeCustomShareAction.Provider customActionProvider) {
+                ChromeCustomShareAction.@Nullable Provider customActionProvider) {
             super(callback);
             mCustomActionProvider = customActionProvider;
         }
@@ -295,6 +305,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
 
             List<Parcelable> chooserActions = new ArrayList<>();
             Activity activity = window.getActivity().get();
+            assumeNonNull(activity);
 
             // Use different request code to avoid pending intent don't collision.
             int requestCode =
@@ -320,7 +331,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             }
         }
 
-        private Parcelable createChooserAction(
+        private @Nullable Parcelable createChooserAction(
                 ChromeCustomShareAction action, Activity activity, int requestCode) {
             Intent sendBackIntent = createSendBackIntentWithFilteredAction();
             sendBackIntent.putExtra(EXTRA_SHARE_CUSTOM_ACTION, action.key);
@@ -347,8 +358,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * saving the chosen component.
      */
     private static class SaveComponentCallback implements TargetChosenCallback {
-        private final TargetChosenCallback mOriginalCallback;
-        private final Profile mProfile;
+        private final @Nullable TargetChosenCallback mOriginalCallback;
+        private final @Nullable Profile mProfile;
 
         public SaveComponentCallback(
                 @Nullable Profile profile, @Nullable TargetChosenCallback originalCallback) {
@@ -357,7 +368,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         }
 
         @Override
-        public void onTargetChosen(ComponentName chosenComponent) {
+        public void onTargetChosen(@Nullable ComponentName chosenComponent) {
             if (chosenComponent != null) {
                 setLastShareComponentName(mProfile, chosenComponent);
             }
@@ -377,7 +388,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
         }
 
-        static Parcelable newChooserAction(Icon icon, String name, PendingIntent action) {
+        static @Nullable Parcelable newChooserAction(Icon icon, String name, PendingIntent action) {
             if (!isSupported()) return null;
             return new ChooserAction.Builder(icon, name, action).build();
         }
