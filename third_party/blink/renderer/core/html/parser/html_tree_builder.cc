@@ -632,7 +632,7 @@ void AdjustForeignAttributes(AtomicHTMLToken* token) {
     base::HeapArray<const QualifiedName*> xml_attrs = xml_names::GetAttrs();
     AddNamesWithPrefix(map, g_xml_atom, xml_attrs);
 
-    map->insert(WTF::g_xmlns_atom, xmlns_names::kXmlnsAttr);
+    map->insert(g_xmlns_atom, xmlns_names::kXmlnsAttr);
     map->insert(
         AtomicString("xmlns:xlink"),
         QualifiedName(g_xmlns_atom, g_xlink_atom, xmlns_names::kNamespaceURI));

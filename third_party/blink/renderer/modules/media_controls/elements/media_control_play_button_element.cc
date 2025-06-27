@@ -31,7 +31,7 @@ void MediaControlPlayButtonElement::UpdateDisplayType() {
   int state = MediaElement().paused() ? IDS_AX_MEDIA_PLAY_BUTTON
                                       : IDS_AX_MEDIA_PAUSE_BUTTON;
   setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(state)));
+               AtomicString(GetLocale().QueryString(state)));
   SetClass("pause", MediaElement().paused());
   UpdateOverflowString();
 

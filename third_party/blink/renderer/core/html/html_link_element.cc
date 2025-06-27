@@ -538,12 +538,12 @@ AtomicString HTMLLinkElement::ParseSameDocumentIdFromHref(const String& href) {
   String actual_href =
       href.IsNull() ? FastGetAttribute(html_names::kHrefAttr) : href;
   if (actual_href.empty()) {
-    return WTF::g_null_atom;
+    return g_null_atom;
   }
 
   KURL url = GetDocument().CompleteURL(actual_href);
   if (!url.HasFragmentIdentifier()) {
-    return WTF::g_null_atom;
+    return g_null_atom;
   }
 
   return EqualIgnoringFragmentIdentifier(url, GetDocument().Url())

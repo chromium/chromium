@@ -37,7 +37,7 @@ class BatteryManager final : public EventTarget,
   ScriptPromise<BatteryManager> StartRequest(ScriptState*);
 
   // EventTarget implementation.
-  const WTF::AtomicString& InterfaceName() const override {
+  const AtomicString& InterfaceName() const override {
     return event_target_names::kBatteryManager;
   }
   ExecutionContext* GetExecutionContext() const override {

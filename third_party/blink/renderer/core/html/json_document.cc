@@ -101,7 +101,7 @@ class JSONDocumentParser : public HTMLDocumentParser {
 
     auto* label = MakeGarbageCollected<HTMLLabelElement>(*GetDocument());
     label->ParserAppendChild(Text::Create(
-        *GetDocument(), WTF::AtomicString(Locale::DefaultLocale().QueryString(
+        *GetDocument(), AtomicString(Locale::DefaultLocale().QueryString(
                             IDS_PRETTY_PRINT_JSON))));
     label->SetShadowPseudoId(AtomicString("-internal-json-formatter-control"));
     auto* checkbox = MakeGarbageCollected<HTMLInputElement>(*GetDocument());
@@ -110,10 +110,9 @@ class JSONDocumentParser : public HTMLDocumentParser {
         event_type_names::kChange,
         MakeGarbageCollected<PrettyPrintJSONListener>(pre_, checkbox),
         /*use_capture=*/false);
-    checkbox->setAttribute(
-        html_names::kAriaLabelAttr,
-        WTF::AtomicString(
-            Locale::DefaultLocale().QueryString(IDS_PRETTY_PRINT_JSON)));
+    checkbox->setAttribute(html_names::kAriaLabelAttr,
+                           AtomicString(Locale::DefaultLocale().QueryString(
+                               IDS_PRETTY_PRINT_JSON)));
     label->ParserAppendChild(checkbox);
     // Add the checkbox to a form with autocomplete=off, to avoid form
     // restoration from changing the value of the checkbox.

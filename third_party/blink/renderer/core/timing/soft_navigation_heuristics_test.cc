@@ -68,7 +68,7 @@ class SoftNavigationHeuristicsTest : public testing::Test {
         ->IsTrackingSoftNavigationHeuristics();
   }
 
-  static WTF::AtomicString KeyboardEventScopeTypeToEventName(
+  static AtomicString KeyboardEventScopeTypeToEventName(
       SoftNavigationHeuristics::EventScope::Type type) {
     switch (type) {
       case SoftNavigationHeuristics::EventScope::Type::kKeydown:

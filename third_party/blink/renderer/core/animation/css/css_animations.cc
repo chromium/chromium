@@ -3457,7 +3457,7 @@ void CSSAnimations::TransitionEventDelegate::OnEventCondition(
 }
 
 void CSSAnimations::TransitionEventDelegate::EnqueueEvent(
-    const WTF::AtomicString& type,
+    const AtomicString& type,
     const AnimationTimeDelta& elapsed_time) {
   String property_name =
       property_.IsCSSCustomProperty()

@@ -87,7 +87,7 @@ void BluetoothDevice::ClearAttributeInstanceMapAndFireEvent() {
       *Event::CreateBubble(event_type_names::kGattserverdisconnected));
 }
 
-const WTF::AtomicString& BluetoothDevice::InterfaceName() const {
+const AtomicString& BluetoothDevice::InterfaceName() const {
   return event_target_names::kBluetoothDevice;
 }
 

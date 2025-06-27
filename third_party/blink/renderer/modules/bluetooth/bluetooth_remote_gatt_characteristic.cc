@@ -62,8 +62,7 @@ void BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged(
   }
 }
 
-const WTF::AtomicString& BluetoothRemoteGATTCharacteristic::InterfaceName()
-    const {
+const AtomicString& BluetoothRemoteGATTCharacteristic::InterfaceName() const {
   return event_target_names::kBluetoothRemoteGATTCharacteristic;
 }
 

@@ -34,8 +34,8 @@ void MediaControlMuteButtonElement::UpdateDisplayType() {
   bool muted = MediaElement().muted() || MediaElement().volume() == 0;
   setAttribute(
       html_names::kAriaLabelAttr,
-      WTF::AtomicString(GetLocale().QueryString(
-          muted ? IDS_AX_MEDIA_UNMUTE_BUTTON : IDS_AX_MEDIA_MUTE_BUTTON)));
+      AtomicString(GetLocale().QueryString(muted ? IDS_AX_MEDIA_UNMUTE_BUTTON
+                                                 : IDS_AX_MEDIA_MUTE_BUTTON)));
   SetClass("muted", muted);
   UpdateOverflowString();
 

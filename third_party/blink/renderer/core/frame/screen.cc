@@ -201,7 +201,7 @@ void Screen::Trace(Visitor* visitor) const {
   Supplementable<Screen>::Trace(visitor);
 }
 
-const WTF::AtomicString& Screen::InterfaceName() const {
+const AtomicString& Screen::InterfaceName() const {
   return event_target_names::kScreen;
 }
 

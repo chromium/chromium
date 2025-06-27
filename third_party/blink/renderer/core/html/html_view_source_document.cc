@@ -140,8 +140,9 @@ void HTMLViewSourceDocument::CreateContainingTable() {
       event_type_names::kChange,
       MakeGarbageCollected<ViewSourceEventListener>(table, checkbox),
       /*use_capture=*/false);
-  checkbox->setAttribute(html_names::kAriaLabelAttr, WTF::AtomicString(Locale::DefaultLocale().QueryString(
-                              IDS_VIEW_SOURCE_LINE_WRAP)));
+  checkbox->setAttribute(html_names::kAriaLabelAttr,
+                         AtomicString(Locale::DefaultLocale().QueryString(
+                             IDS_VIEW_SOURCE_LINE_WRAP)));
 
   if (ViewSourceLineWrappingPreference::Get()) {
     table->setAttribute(html_names::kClassAttr, AtomicString(kLineWrapClass));
@@ -150,7 +151,7 @@ void HTMLViewSourceDocument::CreateContainingTable() {
 
   auto* label = MakeGarbageCollected<HTMLLabelElement>(*this);
   label->ParserAppendChild(
-      Text::Create(*this, WTF::AtomicString(Locale::DefaultLocale().QueryString(
+      Text::Create(*this, AtomicString(Locale::DefaultLocale().QueryString(
                               IDS_VIEW_SOURCE_LINE_WRAP))));
   label->setAttribute(html_names::kClassAttr,
                       AtomicString("line-wrap-control"));

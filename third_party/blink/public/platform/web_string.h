@@ -173,9 +173,9 @@ class BLINK_PLATFORM_EXPORT WebString {
 
   operator WTF::StringView() const;
 
-  WebString(const WTF::AtomicString&);
-  WebString& operator=(const WTF::AtomicString&);
-  operator WTF::AtomicString() const;
+  WebString(const AtomicString&);
+  WebString& operator=(const AtomicString&);
+  operator AtomicString() const;
 #endif
 
  private:

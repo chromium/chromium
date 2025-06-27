@@ -422,15 +422,14 @@ FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
   response->SetResponseSource(fetch_api_response.response_source);
   response->SetURLList(fetch_api_response.url_list);
   response->SetStatus(fetch_api_response.status_code);
-  response->SetStatusMessage(WTF::AtomicString(fetch_api_response.status_text));
-  response->SetRequestMethod(
-      WTF::AtomicString(fetch_api_response.request_method));
+  response->SetStatusMessage(AtomicString(fetch_api_response.status_text));
+  response->SetRequestMethod(AtomicString(fetch_api_response.request_method));
   response->SetResponseTime(fetch_api_response.response_time);
   response->SetCacheStorageCacheName(
       fetch_api_response.cache_storage_cache_name);
   response->SetConnectionInfo(fetch_api_response.connection_info);
   response->SetAlpnNegotiatedProtocol(
-      WTF::AtomicString(fetch_api_response.alpn_negotiated_protocol));
+      AtomicString(fetch_api_response.alpn_negotiated_protocol));
   response->SetWasFetchedViaSpdy(fetch_api_response.was_fetched_via_spdy);
   response->SetHasRangeRequested(fetch_api_response.has_range_requested);
   response->SetRequestIncludeCredentials(

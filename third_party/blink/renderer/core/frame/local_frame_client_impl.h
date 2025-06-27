@@ -183,7 +183,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   std::optional<blink::UserAgentMetadata> UserAgentMetadata() override;
   WTF::String DoNotTrackValue() override;
   void TransitionToCommittedForNewPage() override;
-  LocalFrame* CreateFrame(const WTF::AtomicString& name,
+  LocalFrame* CreateFrame(const AtomicString& name,
                           HTMLFrameOwnerElement*) override;
 
   RemoteFrame* CreateFencedFrame(

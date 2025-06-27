@@ -36,7 +36,7 @@ class MODULES_EXPORT ScreenOrientation final : public EventTarget,
   ~ScreenOrientation() override;
 
   // EventTarget implementation.
-  const WTF::AtomicString& InterfaceName() const override;
+  const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
   V8OrientationType type() const;

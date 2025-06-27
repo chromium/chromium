@@ -78,8 +78,8 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
 
  private:
   InvokerType invoker_type_;
-  AtomicString class_like_name_ = WTF::g_empty_atom;
-  AtomicString property_like_name_ = WTF::g_empty_atom;
+  AtomicString class_like_name_ = g_empty_atom;
+  AtomicString property_like_name_ = g_empty_atom;
   base::TimeTicks start_time_;
   base::TimeTicks execution_start_time_;
   base::TimeTicks end_time_;

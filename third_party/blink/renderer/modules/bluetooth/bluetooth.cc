@@ -611,7 +611,7 @@ bool Bluetooth::IsScanActive(mojo::ReceiverId id) const {
   return client_receivers_.HasReceiver(id);
 }
 
-const WTF::AtomicString& Bluetooth::InterfaceName() const {
+const AtomicString& Bluetooth::InterfaceName() const {
   return event_type_names::kAdvertisementreceived;
 }
 

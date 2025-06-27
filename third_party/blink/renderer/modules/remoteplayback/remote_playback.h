@@ -73,7 +73,7 @@ class MODULES_EXPORT RemotePlayback final
   void RemotePlaybackDisabled();
 
   // EventTarget implementation.
-  const WTF::AtomicString& InterfaceName() const override;
+  const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
   // Starts notifying the page about the changes to the remote playback devices

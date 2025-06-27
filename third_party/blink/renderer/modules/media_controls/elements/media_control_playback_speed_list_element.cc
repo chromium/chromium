@@ -100,7 +100,7 @@ MediaControlPlaybackSpeedListElement::MediaControlPlaybackSpeedListElement(
     : MediaControlPopupMenuElement(media_controls) {
   setAttribute(html_names::kRoleAttr, AtomicString("menu"));
   setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(
+               AtomicString(GetLocale().QueryString(
                    IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_SUBMENU_TITLE)));
   SetShadowPseudoId(
       AtomicString("-internal-media-controls-playback-speed-list"));
@@ -199,7 +199,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
   playback_speed_label_span->setAttribute(html_names::kAriaHiddenAttr,
                                           keywords::kTrue);
   playback_speed_item->setAttribute(html_names::kAriaLabelAttr,
-                                    WTF::AtomicString(playback_speed_label));
+                                    AtomicString(playback_speed_label));
   playback_speed_item->ParserAppendChild(playback_speed_label_span);
   playback_speed_item->ParserAppendChild(playback_speed_item_input);
 
@@ -237,9 +237,9 @@ void MediaControlPlaybackSpeedListElement::RefreshPlaybackSpeedListMenu() {
         playback_speed.display_name, playback_speed.playback_rate);
     playback_speed_item->setAttribute(
         html_names::kAriaSetsizeAttr,
-        WTF::AtomicString::Number(std::size(kPlaybackSpeeds)));
+        AtomicString::Number(std::size(kPlaybackSpeeds)));
     playback_speed_item->setAttribute(html_names::kAriaPosinsetAttr,
-                                      WTF::AtomicString::Number(i + 1));
+                                      AtomicString::Number(i + 1));
     playback_speed_item->setAttribute(html_names::kRoleAttr,
                                       AtomicString("menuitemcheckbox"));
     ParserAppendChild(playback_speed_item);

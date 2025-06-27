@@ -27,7 +27,7 @@ class PLATFORM_EXPORT FetchUtils {
  public:
   static bool IsForbiddenMethod(const WTF::String& method);
   static bool IsForbiddenResponseHeaderName(const WTF::String& name);
-  static WTF::AtomicString NormalizeMethod(const WTF::AtomicString& method);
+  static AtomicString NormalizeMethod(const AtomicString& method);
   static WTF::String NormalizeHeaderValue(const WTF::String& value);
 
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(

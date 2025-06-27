@@ -77,7 +77,7 @@ void SensorTestContext::BindSensorProviderRequest(
 
 // static
 void SensorTestUtils::WaitForEvent(EventTarget* event_target,
-                                   const WTF::AtomicString& event_type) {
+                                   const AtomicString& event_type) {
   base::RunLoop run_loop;
   auto* event_listener =
       MakeGarbageCollected<SyncEventListener>(run_loop.QuitClosure());

@@ -389,7 +389,7 @@ void CrossThreadMediaSourceAttachment::AddTrackToMediaElementOnMainThread(
   // media element. Note, we use default nullptr for the supplemental
   // sourceBuffer attribute to prevent main thread JS from attempting to
   // reference worker-thread SourceBuffer. Due to lack of deducible conversion
-  // from WTF::String to WTF::AtomicString, we construct the atomics locally for
+  // from WTF::String to AtomicString, we construct the atomics locally for
   // use in track creation here.
   const AtomicString atomic_id(id);
   const AtomicString atomic_kind(kind);

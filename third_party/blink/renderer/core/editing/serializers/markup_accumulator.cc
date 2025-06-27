@@ -264,8 +264,10 @@ AtomicString MarkupAccumulator::AppendElement(const Element& element) {
               attribute, DefaultNsDeclarationMatchType::kNamespaceUri)) {
         // Drop xmlns= only if it's inconsistent with element's namespace.
         // https://github.com/w3c/DOM-Parsing/issues/47
-        if (!EqualIgnoringNullity(attribute.Value(), element.namespaceURI()))
+        if (!WTF::EqualIgnoringNullity(attribute.Value(),
+                                       element.namespaceURI())) {
           continue;
+        }
       }
       if (EmitAttributeChoice::kEmit ==
           WillProcessAttribute(element, attribute)) {
@@ -382,7 +384,7 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
   // 12.6. Otherwise, if local default namespace is null, or local default
   // namespace is not null and its value is not equal to ns, then:
   if (local_default_namespace.IsNull() ||
-      !EqualIgnoringNullity(local_default_namespace, ns)) {
+      !WTF::EqualIgnoringNullity(local_default_namespace, ns)) {
     // 12.6.1. Set the ignore namespace definition attribute flag to true.
     data.ignore_namespace_definition_attribute_ = true;
     // 12.6.3. Let the value of inherited ns be ns.
@@ -398,7 +400,7 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
   // 12.7. Otherwise, the node has a local default namespace that matches
   // ns. Append to qualified name the value of node's localName, let the value
   // of inherited ns be ns, and append the value of qualified name to markup.
-  DCHECK(EqualIgnoringNullity(local_default_namespace, ns));
+  DCHECK(WTF::EqualIgnoringNullity(local_default_namespace, ns));
   namespace_context.SetContextNamespace(ns);
   formatter_.AppendStartTagOpen(markup_, element);
   return data;
@@ -488,15 +490,15 @@ bool MarkupAccumulator::ShouldAddNamespaceAttribute(
   if (!candidate_prefix)
     return true;
 
-  return !EqualIgnoringNullity(LookupNamespaceURI(candidate_prefix),
-                               attribute.NamespaceURI());
+  return !WTF::EqualIgnoringNullity(LookupNamespaceURI(candidate_prefix),
+                                    attribute.NamespaceURI());
 }
 
 void MarkupAccumulator::AppendNamespace(const AtomicString& prefix,
                                         const AtomicString& namespace_uri,
                                         const Document& document) {
   AtomicString found_uri = LookupNamespaceURI(prefix);
-  if (!EqualIgnoringNullity(found_uri, namespace_uri)) {
+  if (!WTF::EqualIgnoringNullity(found_uri, namespace_uri)) {
     AddPrefix(prefix, namespace_uri);
     if (prefix.empty()) {
       MarkupFormatter::AppendAttribute(markup_, g_null_atom, g_xmlns_atom,
@@ -541,8 +543,9 @@ AtomicString MarkupAccumulator::RetrievePreferredPrefixString(
   // 2.1. If prefix matches preferred prefix, then stop running these steps and
   // return prefix.
   if (!preferred_prefix.empty() && !ns_for_preferred.IsNull() &&
-      EqualIgnoringNullity(ns_for_preferred, ns))
+      WTF::EqualIgnoringNullity(ns_for_preferred, ns)) {
     return preferred_prefix;
+  }
 
   const Vector<AtomicString>& candidate_list =
       namespace_stack_.back().PrefixList(ns);
@@ -559,8 +562,9 @@ AtomicString MarkupAccumulator::RetrievePreferredPrefixString(
   for (const auto& candidate_prefix : base::Reversed(candidate_list)) {
     DCHECK(!candidate_prefix.empty());
     AtomicString ns_for_candidate = LookupNamespaceURI(candidate_prefix);
-    if (EqualIgnoringNullity(ns_for_candidate, ns))
+    if (WTF::EqualIgnoringNullity(ns_for_candidate, ns)) {
       return candidate_prefix;
+    }
   }
 
   // No prefixes for |ns|.

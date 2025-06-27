@@ -2385,7 +2385,7 @@ TEST_F(AIPageContentAgentTest, MetaTags) {
   // test this case.
   auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
   document.getElementById(AtomicString("nullcontent"))
-      ->setAttribute(html_names::kContentAttr, WTF::g_null_atom);
+      ->setAttribute(html_names::kContentAttr, g_null_atom);
 
   mojom::blink::AIPageContentOptions options;
   options.max_meta_elements = 32;

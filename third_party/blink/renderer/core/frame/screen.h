@@ -71,7 +71,7 @@ class CORE_EXPORT Screen : public EventTarget,
   void Trace(Visitor*) const override;
 
   // EventTarget:
-  const WTF::AtomicString& InterfaceName() const override;
+  const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
   // True if information about the device's screen size should be reduced in

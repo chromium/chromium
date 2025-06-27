@@ -526,7 +526,7 @@ class CORE_EXPORT CSSAnimations final {
     void Trace(Visitor*) const override;
 
    private:
-    void EnqueueEvent(const WTF::AtomicString& type,
+    void EnqueueEvent(const AtomicString& type,
                       const AnimationTimeDelta& elapsed_time);
 
     const Element& TransitionTarget() const { return *transition_target_; }

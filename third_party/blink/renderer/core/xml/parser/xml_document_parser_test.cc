@@ -56,8 +56,8 @@ TEST(XMLDocumentParserTest, ParseFragmentWithUnboundNamespacePrefix) {
   EXPECT_TRUE(fragment->HasOneChild());
   auto* bar = To<Element>(fragment->firstChild());
   EXPECT_TRUE(bar);
-  EXPECT_EQ(bar->prefix(), WTF::g_null_atom);
-  EXPECT_EQ(bar->namespaceURI(), WTF::g_null_atom);
+  EXPECT_EQ(bar->prefix(), g_null_atom);
+  EXPECT_EQ(bar->namespaceURI(), g_null_atom);
   EXPECT_EQ(bar->localName(), "foo:bar");
 }
 

@@ -225,7 +225,7 @@ inline constexpr bool IsReturnTypeCompatible<IDLStringType, WTF::String> = true;
 
 template <typename IDLStringType>
   requires std::derived_from<IDLStringType, IDLStringTypeBase>
-inline constexpr bool IsReturnTypeCompatible<IDLStringType, WTF::AtomicString> =
+inline constexpr bool IsReturnTypeCompatible<IDLStringType, AtomicString> =
     true;
 
 // TODO(caseq): note we do not differentiate between double and float here. Not

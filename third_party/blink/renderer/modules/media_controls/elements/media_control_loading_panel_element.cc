@@ -41,7 +41,7 @@ MediaControlLoadingPanelElement::MediaControlLoadingPanelElement(
   setAttribute(html_names::kRoleAttr, AtomicString("group"));
   setAttribute(
       html_names::kAriaLabelAttr,
-      WTF::AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_LOADING_PANEL)));
+      AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_LOADING_PANEL)));
   setAttribute(html_names::kAriaLiveAttr, AtomicString("polite"));
   CreateUserAgentShadowRoot();
 

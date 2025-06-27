@@ -30,7 +30,7 @@ MediaControlDownloadButtonElement::MediaControlDownloadButtonElement(
   setType(input_type_names::kButton);
   setAttribute(
       html_names::kAriaLabelAttr,
-      WTF::AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_DOWNLOAD_BUTTON)));
+      AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_DOWNLOAD_BUTTON)));
 
   SetShadowPseudoId(AtomicString("-internal-media-controls-download-button"));
   SetIsWanted(false);

@@ -21,10 +21,10 @@ MediaControlOverflowMenuButtonElement::MediaControlOverflowMenuButtonElement(
   setType(input_type_names::kButton);
   setAttribute(
       html_names::kAriaLabelAttr,
-      WTF::AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_OVERFLOW_BUTTON)));
-  setAttribute(html_names::kTitleAttr,
-               WTF::AtomicString(
-                   GetLocale().QueryString(IDS_AX_MEDIA_OVERFLOW_BUTTON_HELP)));
+      AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_OVERFLOW_BUTTON)));
+  setAttribute(
+      html_names::kTitleAttr,
+      AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_OVERFLOW_BUTTON_HELP)));
   setAttribute(html_names::kAriaHaspopupAttr, AtomicString("menu"));
   SetShadowPseudoId(AtomicString("-internal-media-controls-overflow-button"));
   SetIsWanted(false);

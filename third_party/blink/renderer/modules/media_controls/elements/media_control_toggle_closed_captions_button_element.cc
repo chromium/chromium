@@ -51,7 +51,7 @@ MediaControlToggleClosedCaptionsButtonElement::
         MediaControlsImpl& media_controls)
     : MediaControlInputElement(media_controls) {
   setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(
+               AtomicString(GetLocale().QueryString(
                    IDS_AX_MEDIA_SHOW_CLOSED_CAPTIONS_MENU_BUTTON)));
   setType(input_type_names::kButton);
   SetShadowPseudoId(

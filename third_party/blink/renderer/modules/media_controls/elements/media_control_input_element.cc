@@ -169,7 +169,7 @@ void MediaControlInputElement::UpdateOverflowLabelAriaLabel(String subtitle) {
   }
 
   overflow_label_element_->setAttribute(html_names::kAriaLabelAttr,
-                                        WTF::AtomicString(full_aria_label));
+                                        AtomicString(full_aria_label));
 }
 
 void MediaControlInputElement::MaybeRecordDisplayed() {

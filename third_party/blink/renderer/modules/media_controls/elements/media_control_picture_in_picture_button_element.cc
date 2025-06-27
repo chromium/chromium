@@ -104,7 +104,7 @@ void MediaControlPictureInPictureButtonElement::UpdateAriaString(
           : GetLocale().QueryString(
                 IDS_AX_MEDIA_ENTER_PICTURE_IN_PICTURE_BUTTON);
 
-  setAttribute(html_names::kAriaLabelAttr, WTF::AtomicString(aria_string));
+  setAttribute(html_names::kAriaLabelAttr, AtomicString(aria_string));
   UpdateAriaLabel(aria_string);
 }
 

@@ -21,7 +21,7 @@ MediaControlDisplayCutoutFullscreenButtonElement::
     : MediaControlInputElement(media_controls) {
   setType(input_type_names::kButton);
   setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(
+               AtomicString(GetLocale().QueryString(
                    IDS_AX_MEDIA_DISPLAY_CUT_OUT_FULL_SCREEN_BUTTON)));
   SetShadowPseudoId(AtomicString(
       "-internal-media-controls-display-cutout-fullscreen-button"));

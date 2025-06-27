@@ -48,7 +48,7 @@ struct AnchorTestData {
     }
     std::sort(items.begin(), items.end(),
               [](const AnchorTestData& a, const AnchorTestData& b) {
-                return CodeUnitCompare(a.name, b.name) < 0;
+                return WTF::CodeUnitCompare(a.name, b.name) < 0;
               });
     return items;
   }

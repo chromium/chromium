@@ -59,7 +59,7 @@ MediaControlTextTrackListElement::MediaControlTextTrackListElement(
     : MediaControlPopupMenuElement(media_controls) {
   setAttribute(html_names::kRoleAttr, AtomicString("menu"));
   setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(
+               AtomicString(GetLocale().QueryString(
                    IDS_MEDIA_OVERFLOW_MENU_CLOSED_CAPTIONS_SUBMENU_TITLE)));
   SetShadowPseudoId(AtomicString("-internal-media-controls-text-track-list"));
 }
@@ -151,7 +151,7 @@ Element* MediaControlTextTrackListElement::CreateTextTrackListItem(
   track_label_span->setInnerText(track_label);
   track_label_span->setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
   track_item->setAttribute(html_names::kAriaLabelAttr,
-                           WTF::AtomicString(track_label));
+                           AtomicString(track_label));
   track_item->ParserAppendChild(track_label_span);
   track_item->ParserAppendChild(track_item_input);
 
@@ -211,9 +211,9 @@ void MediaControlTextTrackListElement::RefreshTextTrackListMenu() {
   // createTextTrackListItem to create the "Off" track item.
   auto* off_track = CreateTextTrackListItem(nullptr);
   off_track->setAttribute(html_names::kAriaSetsizeAttr,
-                          WTF::AtomicString::Number(track_list->length() + 1));
+                          AtomicString::Number(track_list->length() + 1));
   off_track->setAttribute(html_names::kAriaPosinsetAttr,
-                          WTF::AtomicString::Number(1));
+                          AtomicString::Number(1));
   off_track->setAttribute(html_names::kRoleAttr,
                           AtomicString("menuitemcheckbox"));
   ParserAppendChild(off_track);
@@ -223,14 +223,13 @@ void MediaControlTextTrackListElement::RefreshTextTrackListMenu() {
     if (!track->CanBeRendered())
       continue;
     auto* track_item = CreateTextTrackListItem(track);
-    track_item->setAttribute(
-        html_names::kAriaSetsizeAttr,
-        WTF::AtomicString::Number(track_list->length() + 1));
+    track_item->setAttribute(html_names::kAriaSetsizeAttr,
+                             AtomicString::Number(track_list->length() + 1));
     // We set the position with an offset of 2 because we want to start the
     // count at 1 (versus 0), and the "Off" track item holds the first position
     // and isnt included in this loop.
     track_item->setAttribute(html_names::kAriaPosinsetAttr,
-                             WTF::AtomicString::Number(i + 2));
+                             AtomicString::Number(i + 2));
     track_item->setAttribute(html_names::kRoleAttr,
                              AtomicString("menuitemcheckbox"));
     ParserAppendChild(track_item);

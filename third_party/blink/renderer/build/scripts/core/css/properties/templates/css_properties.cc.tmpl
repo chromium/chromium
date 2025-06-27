@@ -68,7 +68,7 @@ const char* {{class_name}}::GetPropertyName() const {
   return "{{exposed_property.name}}";
 }
 
-const WTF::AtomicString& {{class_name}}::GetPropertyNameAtomicString() const {
+const AtomicString& {{class_name}}::GetPropertyNameAtomicString() const {
   DEFINE_STATIC_LOCAL(const AtomicString, name, ("{{exposed_property.name}}"));
   return name;
 }

@@ -246,7 +246,7 @@ MemoryBreakdownEntry* ConvertJavaScriptBreakdown(
     attribution.push_back(ConvertAttribution(entry));
   }
   result->setAttribution(attribution);
-  result->setTypes({WTF::AtomicString(kMemoryTypeJavaScript)});
+  result->setTypes({AtomicString(kMemoryTypeJavaScript)});
   return result;
 }
 
@@ -260,7 +260,7 @@ MemoryBreakdownEntry* ConvertCanvasBreakdown(
     attribution.push_back(ConvertAttribution(entry));
   }
   result->setAttribution(attribution);
-  result->setTypes({WTF::AtomicString(kMemoryTypeCanvas)});
+  result->setTypes({AtomicString(kMemoryTypeCanvas)});
   return result;
 }
 

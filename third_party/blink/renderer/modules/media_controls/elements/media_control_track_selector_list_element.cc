@@ -90,7 +90,7 @@ MediaControlTrackSelectorListElement::MediaControlTrackSelectorListElement(
     : MediaControlPopupMenuElement(media_controls), is_video_(is_video) {
   setAttribute(html_names::kRoleAttr, AtomicString("menu"));
   setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(
+               AtomicString(GetLocale().QueryString(
                    IDS_MEDIA_OVERFLOW_MENU_TRACK_SELECTION_SUBMENU_TITLE)));
   if (is_video) {
     SetShadowPseudoId(

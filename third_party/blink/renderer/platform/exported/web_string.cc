@@ -172,17 +172,17 @@ WebString::operator WTF::StringView() const {
   return StringView(impl_.get());
 }
 
-WebString::WebString(const WTF::AtomicString& s) {
+WebString::WebString(const AtomicString& s) {
   impl_ = s.Impl();
 }
 
-WebString& WebString::operator=(const WTF::AtomicString& s) {
+WebString& WebString::operator=(const AtomicString& s) {
   impl_ = s.Impl();
   return *this;
 }
 
-WebString::operator WTF::AtomicString() const {
-  return WTF::AtomicString(impl_);
+WebString::operator AtomicString() const {
+  return AtomicString(impl_);
 }
 
 }  // namespace blink

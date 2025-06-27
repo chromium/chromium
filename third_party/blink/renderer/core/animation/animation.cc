@@ -876,7 +876,7 @@ bool Animation::HasLowerCompositeOrdering(
       // ::view-transition subtree but we may want to sort them based on their
       // actual composite order.
       // https://github.com/w3c/csswg-drafts/issues/9588.
-      return CodeUnitCompareLessThan(
+      return WTF::CodeUnitCompareLessThan(
           PseudoElement::PseudoElementNameForEvents(owning_element1),
           PseudoElement::PseudoElementNameForEvents(owning_element2));
     }

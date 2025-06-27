@@ -171,7 +171,7 @@ KeyframeEffect* KeyframeEffect::Create(
       element->GetDocument().UpdateStyleAndLayoutTreeForElement(
           element, DocumentUpdateReason::kWebAnimation);
 
-      AtomicString pseudo_argument = WTF::g_null_atom;
+      AtomicString pseudo_argument = g_null_atom;
 
       PseudoId pseudo_id = CSSSelectorParser::ParsePseudoElement(
           pseudo, element, pseudo_argument);

@@ -24,14 +24,14 @@ MediaControlTrackSelectorMenuButtonElement::
   switch (type) {
     case WebMediaPlayer::TrackType::kVideoTrack:
       setAttribute(html_names::kAriaLabelAttr,
-                   WTF::AtomicString(GetLocale().QueryString(
+                   AtomicString(GetLocale().QueryString(
                        IDS_AX_MEDIA_SHOW_VIDEO_TRACK_SELECTION_MENU_BUTTON)));
       SetShadowPseudoId(AtomicString(
           "-internal-media-controls-video-track-selection-button"));
       break;
     case WebMediaPlayer::TrackType::kAudioTrack:
       setAttribute(html_names::kAriaLabelAttr,
-                   WTF::AtomicString(GetLocale().QueryString(
+                   AtomicString(GetLocale().QueryString(
                        IDS_AX_MEDIA_SHOW_AUDIO_TRACK_SELECTION_MENU_BUTTON)));
       SetShadowPseudoId(AtomicString(
           "-internal-media-controls-audio-track-selection-button"));

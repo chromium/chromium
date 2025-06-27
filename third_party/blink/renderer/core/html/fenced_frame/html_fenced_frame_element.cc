@@ -131,8 +131,8 @@ double ComputeSizeLossFunction(const PhysicalSize& requested_size,
   return wasted_area_fraction + resolution_penalty;
 }
 
-std::optional<WTF::AtomicString> ConvertEventTypeToFencedEventType(
-    const WTF::String& event_type) {
+std::optional<AtomicString> ConvertEventTypeToFencedEventType(
+    const String& event_type) {
   if (!CanNotifyEventTypeAcrossFence(event_type.Ascii())) {
     return std::nullopt;
   }
@@ -810,9 +810,8 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
   }
 }
 
-void HTMLFencedFrameElement::DispatchFencedEvent(
-    const WTF::String& event_type) {
-  std::optional<WTF::AtomicString> fenced_event_type =
+void HTMLFencedFrameElement::DispatchFencedEvent(const String& event_type) {
+  std::optional<AtomicString> fenced_event_type =
       ConvertEventTypeToFencedEventType(event_type);
   CHECK(fenced_event_type.has_value());
   // Note: This method sets isTrusted = true on the event object, to indicate

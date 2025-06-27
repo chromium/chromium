@@ -50,7 +50,7 @@ void FetchContext::PrepareRequest(ResourceRequest&,
                                   ResourceType) {}
 
 void FetchContext::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
-                                     const WTF::AtomicString&) {}
+                                     const AtomicString&) {}
 
 void FetchContext::UpgradeResourceRequestForLoader(
     ResourceType,

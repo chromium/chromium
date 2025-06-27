@@ -7,7 +7,7 @@
 
 namespace WTF {
 
-// Visits the characters of a WTF::String, WTF::AtomicString, StringView or
+// Visits the characters of a WTF::String, AtomicString, StringView or
 // compatible type.
 //
 // Intended to be used with a generic lambda or other functor overloaded to

@@ -149,7 +149,7 @@ class ViewTransitionTest : public testing::Test,
 
   void ValidatePseudoElementTree(
       Element* scope,
-      const Vector<WTF::AtomicString>& view_transition_names,
+      const Vector<AtomicString>& view_transition_names,
       bool has_incoming_image) {
     auto* transition_pseudo = scope->GetPseudoElement(kPseudoIdViewTransition);
     ASSERT_TRUE(transition_pseudo);

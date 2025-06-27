@@ -79,7 +79,7 @@ ScreenOrientation::ScreenOrientation(LocalDOMWindow* window)
 
 ScreenOrientation::~ScreenOrientation() = default;
 
-const WTF::AtomicString& ScreenOrientation::InterfaceName() const {
+const AtomicString& ScreenOrientation::InterfaceName() const {
   return event_target_names::kScreenOrientation;
 }
 

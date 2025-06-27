@@ -466,7 +466,7 @@ void StyleSheetContents::ParserAddNamespace(const AtomicString& prefix,
 const AtomicString& StyleSheetContents::NamespaceURIFromPrefix(
     const AtomicString& prefix) const {
   auto it = namespaces_.find(prefix);
-  return it != namespaces_.end() ? it->value : WTF::g_null_atom;
+  return it != namespaces_.end() ? it->value : g_null_atom;
 }
 
 void StyleSheetContents::ParseAuthorStyleSheet(
