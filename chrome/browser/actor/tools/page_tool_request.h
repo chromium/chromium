@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_PAGE_TOOL_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-#include <string_view>
 #include <variant>
 
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "components/optimization_guide/content/browser/page_content_proto_util.h"
-#include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/weak_document_ptr.h"
+#include "chrome/common/actor.mojom-forward.h"
+#include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 
 namespace actor {
