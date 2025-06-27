@@ -19,6 +19,9 @@
 
 namespace {
 
+platform_experience::InstallerLauncherDelegate*
+    g_installer_delegate_for_testing = nullptr;
+
 // Switch used to install platform_experience_helper
 constexpr char kPlatformExperienceHelperForceInstallSwitch[] = "force-install";
 // Directory under which platform_experience_helper is installed
@@ -79,26 +82,57 @@ void ReportUserInstallLaunchStatusMetric(UserInstallerLaunchStatus status) {
       "Windows.PlatformExperienceHelper.InstallerLaunchStatus.User", status);
 }
 
+class DefaultInstallerLauncherDelegate
+    : public platform_experience::InstallerLauncherDelegate {
+ public:
+  DefaultInstallerLauncherDelegate() = default;
+  ~DefaultInstallerLauncherDelegate() override = default;
+
+  Microsoft::WRL::ComPtr<IAppCommandWeb> GetUpdaterAppCommand(
+      const std::wstring& command_name) override {
+    return ::GetUpdaterAppCommand(command_name).value_or(nullptr);
+  }
+
+  base::Process LaunchProcess(const base::CommandLine& cmd_line,
+                              const base::LaunchOptions& options) override {
+    return base::LaunchProcess(cmd_line, options);
+  }
+};
+
+platform_experience::InstallerLauncherDelegate* GetDelegate() {
+  if (g_installer_delegate_for_testing) {
+    return g_installer_delegate_for_testing;
+  }
+  static DefaultInstallerLauncherDelegate default_delegate;
+  return &default_delegate;
+}
+
 }  // namespace
 
 namespace platform_experience {
+
+void SetInstallerLauncherDelegateForTesting(  // IN-TEST
+    InstallerLauncherDelegate* delegate) {
+  g_installer_delegate_for_testing = delegate;
+}
 
 void MaybeInstallPlatformExperienceHelper() {
   if (PlatformExperienceHelperMightBeInstalled()) {
     return;
   }
 
+  InstallerLauncherDelegate* delegate = GetDelegate();
+
   if (install_static::IsSystemInstall()) {
-    auto command = GetUpdaterAppCommand(installer::kCmdInstallPEH);
-    if (!command.has_value()) {
+    auto command = delegate->GetUpdaterAppCommand(installer::kCmdInstallPEH);
+    if (!command) {
       ReportSystemInstallerLaunchStatus(
           SystemInstallerLaunchStatus::kAppCommandNotFound);
       return;
     }
 
     const VARIANT& var = base::win::ScopedVariant::kEmptyVariant;
-    if (FAILED(
-            (*command)->execute(var, var, var, var, var, var, var, var, var))) {
+    if (FAILED(command->execute(var, var, var, var, var, var, var, var, var))) {
       ReportSystemInstallerLaunchStatus(
           SystemInstallerLaunchStatus::kAppCommandExecutionFailed);
     } else {
@@ -118,7 +152,7 @@ void MaybeInstallPlatformExperienceHelper() {
   launch_options.feedback_cursor_off = true;
   launch_options.force_breakaway_from_job_ = true;
   ::SetLastError(ERROR_SUCCESS);
-  base::Process process = base::LaunchProcess(install_cmd, launch_options);
+  base::Process process = delegate->LaunchProcess(install_cmd, launch_options);
   UserInstallerLaunchStatus status = UserInstallerLaunchStatus::kSuccess;
   if (!process.IsValid()) {
     switch (::GetLastError()) {
