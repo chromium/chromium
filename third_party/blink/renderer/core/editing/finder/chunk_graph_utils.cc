@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
@@ -35,8 +34,7 @@ const Node* FindOuterMostRubyContainerInBlockContainer(const Node& node,
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (style->Display() == EDisplay::kRuby ||
           style->Display() == EDisplay::kBlockRuby ||
-          (RuntimeEnabledFeatures::FindOrphanAnnotationFixEnabled() &&
-           style->Display() == EDisplay::kRubyText)) {
+          style->Display() == EDisplay::kRubyText) {
         ruby_container = element;
       }
       if (&ancestor == &block) {

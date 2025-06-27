@@ -2249,11 +2249,6 @@
       status: "stable",
     },
     {
-      // crbug.com/409358630
-      name: "FindOrphanAnnotationFix",
-      status: "stable",
-    },
-    {
       // crbug.com/411739501
       name: "FixNextPositionCalculationInInsertList",
       status: "stable",
