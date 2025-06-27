@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.tab_ui;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
 import org.chromium.components.visited_url_ranking.url_grouping.UserResponse;
@@ -21,46 +23,42 @@ import java.util.List;
  */
 @NullMarked
 public class SuggestionLifecycleObserverHandler implements SuggestionLifecycleObserver {
-    private final int mSuggestionId;
-    private final Callback<UserResponseMetadata> mUserResponseCallback;
-    private final SuggestionLifecycleObserver mSuggestionLifecycleObserver;
-    private boolean mResponseObserverAlreadyCalled;
+    private @Nullable Integer mSuggestionId;
+    private @Nullable Callback<UserResponseMetadata> mUserResponseCallback;
+    private SuggestionLifecycleObserver mSuggestionLifecycleObserver;
+    private boolean mCanCallUserResponseListener;
+
+    /** Constructs an observer handler for a specific tab group suggestion. */
+    public SuggestionLifecycleObserverHandler() {
+        mCanCallUserResponseListener = false;
+    }
 
     /**
-     * Constructs an observer handler for a specific tab group suggestion.
+     * Initializes the handler.
      *
-     * @param suggestionId The ID for the suggestion.
-     * @param userResponseCallback To be invoked with the user's response.
-     * @param suggestionResponseListener Listens for user responses to the suggestion.
+     * @param observer Listens for user responses to the suggestion.
      */
-    public SuggestionLifecycleObserverHandler(
-            int suggestionId,
-            Callback<UserResponseMetadata> userResponseCallback,
-            SuggestionLifecycleObserver suggestionResponseListener) {
-        mSuggestionId = suggestionId;
-        mUserResponseCallback = userResponseCallback;
-        mSuggestionLifecycleObserver = suggestionResponseListener;
+    @Initializer
+    public void initialize(SuggestionLifecycleObserver observer) {
+        mSuggestionLifecycleObserver = observer;
     }
 
     @Override
     public void onSuggestionAccepted() {
         onSuggestionResponse(
-                mSuggestionLifecycleObserver::onSuggestionAccepted,
-                new UserResponseMetadata(mSuggestionId, UserResponse.ACCEPTED));
+                mSuggestionLifecycleObserver::onSuggestionAccepted, UserResponse.ACCEPTED);
     }
 
     @Override
     public void onSuggestionDismissed() {
         onSuggestionResponse(
-                mSuggestionLifecycleObserver::onSuggestionDismissed,
-                new UserResponseMetadata(mSuggestionId, UserResponse.REJECTED));
+                mSuggestionLifecycleObserver::onSuggestionDismissed, UserResponse.REJECTED);
     }
 
     @Override
     public void onSuggestionIgnored() {
         onSuggestionResponse(
-                mSuggestionLifecycleObserver::onSuggestionIgnored,
-                new UserResponseMetadata(mSuggestionId, UserResponse.IGNORED));
+                mSuggestionLifecycleObserver::onSuggestionIgnored, UserResponse.IGNORED);
     }
 
     @Override
@@ -68,13 +66,37 @@ public class SuggestionLifecycleObserverHandler implements SuggestionLifecycleOb
         mSuggestionLifecycleObserver.onShowSuggestion(tabIds);
     }
 
-    private void onSuggestionResponse(
-            Runnable listener, UserResponseMetadata userResponseMetadata) {
-        if (mResponseObserverAlreadyCalled) return;
-        mResponseObserverAlreadyCalled = true;
+    /**
+     * Updates the details of the suggestion and allows for user responses to be observed.
+     *
+     * @param suggestionId The ID for the suggestion.
+     * @param userResponseCallback To be invoked with the user's response.
+     */
+    public void updateSuggestionDetails(
+            int suggestionId, Callback<UserResponseMetadata> userResponseCallback) {
+        assert mSuggestionId == null
+                && mUserResponseCallback == null
+                && !mCanCallUserResponseListener;
+        mSuggestionId = suggestionId;
+        mUserResponseCallback = userResponseCallback;
+        mCanCallUserResponseListener = true;
+    }
+
+    private void reset() {
+        mSuggestionId = null;
+        mUserResponseCallback = null;
+        mCanCallUserResponseListener = false;
+    }
+
+    private void onSuggestionResponse(Runnable listener, @UserResponse int userResponse) {
+        if (!mCanCallUserResponseListener) return;
+        assert mSuggestionId != null && mUserResponseCallback != null;
+
+        mCanCallUserResponseListener = false;
 
         listener.run();
-        mUserResponseCallback.onResult(userResponseMetadata);
+        mUserResponseCallback.onResult(new UserResponseMetadata(mSuggestionId, userResponse));
         mSuggestionLifecycleObserver.onAnySuggestionResponse();
+        reset();
     }
 }
