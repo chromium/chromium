@@ -158,7 +158,12 @@ class BaseCtaTransitTestRule {
         mActivityTestRule.waitForActivityCompletelyLoaded();
     }
 
-    // TODO(crbug.com/406324209): Support recreate() in Public Transit.
+    // TODO(crbug.com/406324209): Support finishActivity() in Public Transit.
+    public void finishActivity() {
+        mActivityTestRule.finishActivity();
+    }
+
+    // TODO(crbug.com/406324209): Support recreateActivity() in Public Transit.
     public void recreateActivity() {
         mActivityTestRule.recreateActivity();
     }
