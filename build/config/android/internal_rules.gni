@@ -157,6 +157,8 @@ template("write_build_config") {
   if (current_toolchain != default_toolchain) {
     not_needed(invoker, "*")
     _params = {
+      type = ""
+
       # This has to be a build-time error rather than a GN assert because many
       # packages have a mix of java and non-java targets. For example, the
       # following would fail even though nothing depends on :bar(//baz):
@@ -178,26 +180,28 @@ template("write_build_config") {
   } else {
     _deps_configs = []
     if (defined(invoker.config_deps)) {
-      _deps += invoker.config_deps
       foreach(_dep, invoker.config_deps) {
         _dep_label = get_label_info(_dep, "label_no_toolchain")
         _dep_gen_dir = get_label_info(_dep, "target_gen_dir")
         _dep_name = get_label_info(_dep, "name")
         _dep_config = "$_dep_gen_dir/$_dep_name.params.json"
-
         _deps_configs += [ _dep_config ]
       }
     }
     if (defined(invoker.possible_config_deps)) {
+      _is_bundle = _type == "android_app_bundle"
+      not_needed([ "_is_bundle" ])
       foreach(_possible_dep, invoker.possible_config_deps) {
         _dep_label = get_label_info(_possible_dep, "label_no_toolchain")
         if (filter_exclude([ _dep_label ], java_target_patterns) == []) {
-          _deps += [ "$_dep_label$build_config_target_suffix" ]
           _dep_gen_dir = get_label_info(_possible_dep, "target_gen_dir")
           _dep_name = get_label_info(_possible_dep, "name")
-          _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
-
+          _dep_config = "$_dep_gen_dir/$_dep_name.params.json"
           _deps_configs += [ _dep_config ]
+          if (_is_bundle) {
+            _inputs += [ "$_dep_gen_dir/$_dep_name.build_config.json" ]
+            _deps += [ "$_dep_label$build_config_target_suffix" ]
+          }
         }
       }
     }
@@ -218,11 +222,9 @@ template("write_build_config") {
 
         # Put the bug number in the target name so that false-positives
         # have a hint in the error message about non-existent dependencies.
-        _deps += [ "$_dep_label$build_config_target_suffix" ]
         _dep_gen_dir = get_label_info(_possible_dep, "target_gen_dir")
         _dep_name = get_label_info(_possible_dep, "name")
-        _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
-
+        _dep_config = "$_dep_gen_dir/$_dep_name.params.json"
         _public_deps_configs += [ _dep_config ]
       }
       _inputs += _public_deps_configs
@@ -231,10 +233,9 @@ template("write_build_config") {
         invoker.annotation_processor_deps != []) {
       _processor_configs = []
       foreach(_dep_label, invoker.annotation_processor_deps) {
-        _deps += [ "$_dep_label$build_config_target_suffix" ]
         _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
         _dep_name = get_label_info(_dep_label, "name")
-        _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+        _dep_config = "$_dep_gen_dir/$_dep_name.params.json"
         _processor_configs += [ _dep_config ]
       }
       _inputs += _processor_configs
@@ -243,28 +244,32 @@ template("write_build_config") {
       _dep_label = invoker.apk_under_test
       _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
       _dep_name = get_label_info(_dep_label, "name")
-      _apk_under_test_config = "$_dep_gen_dir/$_dep_name.build_config.json"
-      _inputs += [ _apk_under_test_config ]
-      _deps += [ "$_dep_label$build_config_target_suffix" ]
-    }
-    if (defined(invoker.base_module_target)) {
-      _dep_label = invoker.base_module_target
-      _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
-      _dep_name = get_label_info(_dep_label, "name")
-      _base_module_config = "$_dep_gen_dir/$_dep_name.build_config.json"
-      _inputs += [ _base_module_config ]
+      _apk_under_test_config = "$_dep_gen_dir/$_dep_name.params.json"
+      _inputs += [
+        _apk_under_test_config,
+        "$_dep_gen_dir/$_dep_name.build_config.json",
+      ]
+
+      # .build_config.json needed only for AndroidManifest.xml.
       _deps += [ "$_dep_label$build_config_target_suffix" ]
     }
     if (defined(invoker.parent_module_target)) {
       _dep_label = invoker.parent_module_target
       _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
       _dep_name = get_label_info(_dep_label, "name")
-      _parent_module_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+      _parent_module_config = "$_dep_gen_dir/$_dep_name.params.json"
       _inputs += [ _parent_module_config ]
-      _deps += [ "$_dep_label$build_config_target_suffix" ]
+      _deps_configs += [ _parent_module_config ]
     }
-    if (defined(invoker.module_build_configs)) {
-      _inputs += invoker.module_build_configs
+    if (defined(invoker.base_module_target)) {
+      _dep_label = invoker.base_module_target
+      _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
+      _dep_name = get_label_info(_dep_label, "name")
+      _base_module_config = "$_dep_gen_dir/$_dep_name.params.json"
+      _inputs += [ _base_module_config ]
+      if (!defined(invoker.parent_module_target)) {
+        _deps_configs += [ _base_module_config ]
+      }
     }
     if (defined(invoker.android_manifest)) {
       _inputs += [ invoker.android_manifest ]
@@ -312,8 +317,12 @@ template("write_build_config") {
       type = _type
       gn_target = _target_label
 
-      if (defined(_deps_configs)) {
-        deps_configs = rebase_path(_deps_configs, root_build_dir)
+      if (_deps_configs != []) {
+        if (_type == "group" || _type == "android_resources") {
+          public_deps_configs = rebase_path(_deps_configs, root_build_dir)
+        } else {
+          deps_configs = rebase_path(_deps_configs, root_build_dir)
+        }
       }
       if (defined(_public_deps_configs)) {
         public_deps_configs = rebase_path(_public_deps_configs, root_build_dir)
@@ -331,10 +340,6 @@ template("write_build_config") {
       if (defined(_parent_module_config)) {
         parent_module_config =
             rebase_path(_parent_module_config, root_build_dir)
-      }
-      if (defined(invoker.module_build_configs)) {
-        module_configs =
-            rebase_path(invoker.module_build_configs, root_build_dir)
       }
       if (defined(_suffix_apk_assets_used_by_config)) {
         suffix_apk_assets_used_by_config =
@@ -360,10 +365,10 @@ template("write_build_config") {
                                "recursive_resource_deps",
                                "requires_android",
                                "requires_robolectric",
-                               "resource_overlay",
                                "secondary_native_lib_placeholders",
                                "supports_android",
                                "use_interface_jars",
+                               "uses_split",
                                "version_code",
                                "version_name",
                              ])
@@ -424,6 +429,9 @@ template("write_build_config") {
       }
       if (defined(invoker.resources_zip)) {
         resources_zip = rebase_path(invoker.resources_zip, root_build_dir)
+        if (defined(invoker.resource_overlay) && invoker.resource_overlay) {
+          resources_overlay_zip = resources_zip
+        }
       }
       if (defined(invoker.rtxt_path)) {
         rtxt_path = rebase_path(invoker.rtxt_path, root_build_dir)
@@ -511,20 +519,6 @@ template("write_build_config") {
             rebase_path("$target_out_dir/$_trace_events_target_name",
                         root_build_dir)
       }
-      if (defined(invoker.modules)) {
-        modules = []
-        foreach(_module, invoker.modules) {
-          modules += [
-            {
-              name = _module.name
-              build_config = rebase_path(_module.build_config, root_build_dir)
-              if (defined(_module.uses_split)) {
-                uses_split = _module.uses_split
-              }
-            },
-          ]
-        }
-      }
     }
   }
   write_file(_params_file, _params, "json")
@@ -537,10 +531,10 @@ template("write_build_config") {
     outputs = [ invoker.build_config ]
 
     args = [
+      "--output",
+      rebase_path(invoker.build_config, root_build_dir),
       "--depfile",
       rebase_path(depfile, root_build_dir),
-      "--params",
-      rebase_path(_params_file, root_build_dir),
     ]
 
     deps = []
@@ -1258,13 +1252,8 @@ if (enable_java_templates) {
         rebase_path(_stamp, root_build_dir),
       ]
     } else {
-      if (defined(invoker.has_apk_under_test) && invoker.has_apk_under_test) {
-        _args += [ "--input-paths=@FileArg($_rebased_build_config:device_classpath_extended)" ]
-      } else {
-        _args += [
-          "--input-paths=@FileArg($_rebased_build_config:device_classpath)",
-        ]
-      }
+      _args +=
+          [ "--input-paths=@FileArg($_rebased_build_config:device_classpath)" ]
 
       # We don't directly set the output arg on the _args variable since it is
       # shared with the expectation target that uses its own stamp file and
@@ -3619,6 +3608,17 @@ if (enable_java_templates) {
       _java_header_deps += [ "${invoker.base_module_target}__java__header" ]
       _java_validate_deps += [ "${invoker.base_module_target}__java__validate" ]
       _java_host_deps += [ "${invoker.base_module_target}__compile_java" ]
+      if (defined(invoker.parent_module_target)) {
+        assert(
+            invoker.parent_module_target != invoker.base_module_target,
+            "Use parent_module_target only when parent_module_target != base_module_target")
+        _java_assetres_deps +=
+            [ "${invoker.parent_module_target}__java__assetres" ]
+        _java_header_deps += [ "${invoker.parent_module_target}__java__header" ]
+        _java_validate_deps +=
+            [ "${invoker.parent_module_target}__java__validate" ]
+        _java_host_deps += [ "${invoker.parent_module_target}__compile_java" ]
+      }
     }
 
     if (_is_prebuilt || _has_sources) {
@@ -3631,7 +3631,7 @@ if (enable_java_templates) {
       _javac_classpath_deps =
           _java_host_deps + _non_java_deps + [ ":$_build_config_target_name" ]
 
-      _include_android_sdk = _build_device_jar
+      _include_android_sdk = _requires_android
       if (defined(invoker.include_android_sdk)) {
         _include_android_sdk = invoker.include_android_sdk
       }
@@ -3675,7 +3675,6 @@ if (enable_java_templates) {
                                "main_class",
                                "mergeable_android_manifests",
                                "module_name",
-                               "parent_module_target",
                                "proguard_configs",
                                "proguard_enabled",
                                "proguard_mapping_path",
@@ -3695,6 +3694,7 @@ if (enable_java_templates) {
               "android_manifest_dep",
               "merged_android_manifest",
               "final_dex_path",
+              "library_always_compress",
               "loadable_modules",
               "native_lib_placeholders",
               "res_size_info_path",
@@ -3702,7 +3702,7 @@ if (enable_java_templates) {
               "secondary_abi_shared_libraries_runtime_deps_file",
               "secondary_native_lib_placeholders",
               "shared_libraries_runtime_deps_file",
-              "library_always_compress",
+              "uses_split",
             ])
       }
       if (_type == "android_apk") {
@@ -3720,6 +3720,7 @@ if (enable_java_templates) {
                                  "add_view_trace_events",
                                  "base_module_target",
                                  "module_pathmap_path",
+                                 "parent_module_target",
                                  "proto_resources_path",
                                ])
       }
@@ -4289,7 +4290,7 @@ if (enable_java_templates) {
         if (defined(invoker.public_deps)) {
           public_deps += invoker.public_deps
         }
-        if (is_cronet_for_aosp_build) {
+        if (is_cronet_build) {
           # See crbug/1449896 for more details about the metadata fields
           # and why they are added.
           _java_library_deps = _default_deps
@@ -4329,7 +4330,12 @@ if (enable_java_templates) {
             if (defined(invoker.jar_included_patterns)) {
               java_library_jar_included_patterns = invoker.jar_included_patterns
             }
-            java_library_android_sdk_dep = [ _android_sdk_dep ]
+            if (defined(invoker.alternative_android_sdk_dep)) {
+              java_library_android_sdk_dep =
+                  [ invoker.alternative_android_sdk_dep ]
+            } else {
+              java_library_android_sdk_dep = [ default_android_sdk_dep ]
+            }
           }
         }
       } else {

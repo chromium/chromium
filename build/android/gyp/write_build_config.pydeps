@@ -4,4 +4,5 @@
 ../../gn_helpers.py
 util/__init__.py
 util/build_utils.py
+util/params_json_util.py
 write_build_config.py

@@ -35,6 +35,9 @@ android_assets("mockito_apk_assets") {
 android_library("mockito_modified_files_java") {
   testonly = true
   deps = [
+    # Depend on org_mockito_mockito_android_java to ensure that this .jar comes
+    # earlier in the classpath.
+    "//third_party/android_deps:org_mockito_mockito_android_java",
     "//third_party/android_deps:org_mockito_mockito_core_java",
     "//third_party/junit:junit",
   ]
