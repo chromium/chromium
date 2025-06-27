@@ -138,8 +138,6 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
     // This is needed to avoid anti-aliasing artifacts around the border itself.
     UIView* containerView =
         [self createCircularContainerWithSize:containerSize];
-    containerView.layer.cornerRadius = containerSize / 2.0;
-
     [_facesStackView addArrangedSubview:containerView];
 
     [NSLayoutConstraint activateConstraints:@[
@@ -253,6 +251,7 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
   container.translatesAutoresizingMaskIntoConstraints = NO;
   container.backgroundColor = _facePileBackgroundColor;
   container.layer.masksToBounds = YES;
+  container.layer.cornerRadius = size / 2.0;
   return container;
 }
 
