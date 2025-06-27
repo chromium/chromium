@@ -273,6 +273,16 @@ void PolicyUIHandler::RegisterMessages() {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
+void PolicyUIHandler::AddPolicyPromotionObserver(
+    PolicyPromotionObserver* observer) {
+  promotion_eligibility_observers_.AddObserver(observer);
+}
+
+void PolicyUIHandler::RemovePolicyPromotionObserver(
+    PolicyPromotionObserver* observer) {
+  promotion_eligibility_observers_.RemoveObserver(observer);
+}
+
 void PolicyUIHandler::OnPolicyValueAndStatusChanged() {
   SendPolicies();
   // Send also the status to UI because when policy value is updated, policy
@@ -601,6 +611,12 @@ void PolicyUIHandler::OnPromotionEligibilityFetched(
                             should_show_promotion);
 
   ResolveJavascriptCallback(base::Value(callback_id), should_show_promotion);
+
+  for (PolicyPromotionObserver& observer : promotion_eligibility_observers_) {
+    observer.OnPromotionEligibilityFetched(callback_id, response);
+  }
+
+  promotion_checked_ = true;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
