@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -56,14 +57,26 @@ class FetchInstallInfoFromInstallUrlCommand
   void OnWebAppUrlLoadedGetWebAppInstallInfo(
       webapps::WebAppUrlLoaderResult result);
   void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> install_info);
-  void OnManifestRetrieved(std::unique_ptr<WebAppInstallInfo> web_app_info,
-                           blink::mojom::ManifestPtr opt_manifest,
-                           bool valid_manifest_for_web_app,
-                           webapps::InstallableStatusCode error_code);
-  void OnIconsRetrieved(std::unique_ptr<WebAppInstallInfo> web_app_info,
-                        IconsDownloadedResult result,
-                        IconsMap icons_map,
-                        DownloadedIconsHttpResults icons_http_results);
+
+  // The command divides and goes into 2 paths here:
+  // 1. If an opt_manifest is found and is valid, it uses that information to
+  // create a `WebAppInstallInfo` instance, and carries over any fields from the
+  // `WebAppInstallInfo` instance created from the page metadata if needed.
+  // 2. Else, it uses the `WebAppInstallInfo` obtained from the page metadata to
+  // retrieve icons and progress.
+  void OnManifestRetrievedMaybeFetchInstallInfo(
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      blink::mojom::ManifestPtr opt_manifest,
+      bool valid_manifest_for_web_app,
+      webapps::InstallableStatusCode error_code);
+  void OnIconsRetrievedForNoManifest(
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      IconsDownloadedResult result,
+      IconsMap icons_map,
+      DownloadedIconsHttpResults icons_http_results);
+  void OnInstallInfoFetchedFromManifestApplyMerge(
+      std::unique_ptr<WebAppInstallInfo> info_from_page,
+      std::unique_ptr<WebAppInstallInfo> info_from_manifest);
   void CompleteCommandAndSelfDestruct(
       FetchInstallInfoResult result,
       std::unique_ptr<WebAppInstallInfo> install_info);
@@ -76,6 +89,7 @@ class FetchInstallInfoFromInstallUrlCommand
 
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
+  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
   InstallErrorLogEntry install_error_log_entry_;
 

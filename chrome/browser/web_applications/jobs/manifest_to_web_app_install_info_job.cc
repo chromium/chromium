@@ -462,9 +462,8 @@ void ManifestToWebAppInstallInfoJob::Start(
     return;
   }
 
-  // TODO(crbug.com/427565907): Make the icon fetching options customizable.
   data_retriever_->GetIcons(
-      web_contents.get(), icon_urls_to_download, /*skip_page_favicons=*/true,
+      web_contents.get(), icon_urls_to_download, options_.skip_page_favicons,
       /*fail_all_if_any_fail=*/false,
       base::BindOnce(
           &ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo,
