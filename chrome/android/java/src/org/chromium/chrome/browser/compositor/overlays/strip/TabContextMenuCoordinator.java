@@ -11,6 +11,8 @@ import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 import android.app.Activity;
 import android.content.res.Resources;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
@@ -35,10 +37,11 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetC
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
@@ -191,47 +194,48 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
 
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.menu_add_tab_to_group,
-                        R.id.add_to_tab_group,
-                        isIncognito,
-                        /* enabled= */ true));
+                buildListItem(R.string.menu_add_tab_to_group, R.id.add_to_tab_group, isIncognito));
 
         if (tab.getTabGroupId() != null) {
             // Show the option to remove the tab from its group iff the tab is already in a group.
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                    buildListItem(
                             R.string.remove_tab_from_group,
                             R.id.remove_from_tab_group,
-                            isIncognito,
-                            /* enabled= */ true));
+                            isIncognito));
         }
 
         if (tab.getTabGroupId() == null && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             // Show the option to move the tab to another window iff the tab is not in a group.
             Activity activity = assumeNonNull(mWindowAndroid.getActivity().get());
+            String title =
+                    activity.getResources()
+                            .getQuantityString(
+                                    R.plurals.move_tab_to_another_window,
+                                    MultiWindowUtils.getInstanceCount());
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            activity.getResources()
-                                    .getQuantityString(
-                                            R.plurals.move_tab_to_another_window,
-                                            MultiWindowUtils.getInstanceCount()),
-                            R.id.move_to_other_window_menu_id,
-                            isIncognito,
-                            /* enabled= */ true));
+                    new ListItemBuilder()
+                            .withTitle(title)
+                            .withMenuId(R.id.move_to_other_window_menu_id)
+                            .withIsIncognito(isIncognito)
+                            .build());
         }
 
         itemList.add(buildMenuDivider(isIncognito));
 
         if (ShareUtils.shouldEnableShare(tab)) {
-            itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            R.string.share, R.id.share_tab, isIncognito, /* enabled= */ true));
+            itemList.add(buildListItem(R.string.share, R.id.share_tab, isIncognito));
         }
+        itemList.add(buildListItem(R.string.close, R.id.close_tab, isIncognito));
+    }
 
-        itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.close, R.id.close_tab, isIncognito, /* enabled= */ true));
+    private static ListItem buildListItem(
+            @StringRes int titleRes, @IdRes int menuId, boolean isIncognito) {
+        return new ListItemBuilder()
+                .withTitleRes(titleRes)
+                .withMenuId(menuId)
+                .withIsIncognito(isIncognito)
+                .build();
     }
 
     @Override

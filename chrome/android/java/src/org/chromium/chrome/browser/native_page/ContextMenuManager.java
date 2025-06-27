@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.tile.TileUtils;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuHost;
@@ -206,11 +207,8 @@ public class ContextMenuManager {
         for (@ContextMenuItemId int itemId = 0; itemId < ContextMenuItemId.NUM_ENTRIES; itemId++) {
             if (!shouldShowItem(itemId, delegate)) continue;
 
-            menuModel.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            /* titleId= */ getResourceIdForMenuItem(itemId),
-                            /* menuId= */ itemId,
-                            /* startIconId= */ 0));
+            int titleId = getResourceIdForMenuItem(itemId);
+            menuModel.add(new ListItemBuilder().withTitleRes(titleId).withMenuId(itemId).build());
         }
 
         if (menuModel.isEmpty()) {

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.home_page_button;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.BUTTON_DATA;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.CONTAINER_VISIBILITY;
 import static org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsProperties.IS_BUTTON_VISIBLE;
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.content.Context;
 import android.view.View;
@@ -27,6 +26,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoordinator.HomePageButtonsState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -135,10 +135,11 @@ public class HomePageButtonsMediator {
             RectProvider rectProvider = MenuBuilderHelper.getRectProvider(view);
             mHomeButtonMenuList = new MVCListAdapter.ModelList();
             mHomeButtonMenuList.add(
-                    buildMenuListItem(
-                            R.string.options_homepage_edit_title,
-                            ID_SETTINGS,
-                            R.drawable.ic_edit_24dp));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.options_homepage_edit_title)
+                            .withMenuId(ID_SETTINGS)
+                            .withStartIconRes(R.drawable.ic_edit_24dp)
+                            .build());
             BasicListMenu listMenu =
                     BrowserUiListMenuUtils.getBasicListMenu(
                             mContext,

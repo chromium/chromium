@@ -79,10 +79,10 @@ public class BrowserUiListMenuUtils {
             @DrawableRes int startIconId,
             boolean enabled) {
         return new ListItemBuilder()
-                .setTitleRes(titleId)
-                .setMenuId(menuId)
-                .setStartIconId(startIconId)
-                .setEnabled(enabled)
+                .withTitleRes(titleId)
+                .withMenuId(menuId)
+                .withStartIconRes(startIconId)
+                .withEnabled(enabled)
                 .build();
     }
 
@@ -93,9 +93,9 @@ public class BrowserUiListMenuUtils {
     public static ListItem buildMenuListItem(
             @StringRes int titleId, @IdRes int menuId, @DrawableRes int startIconId) {
         return new ListItemBuilder()
-                .setTitleRes(titleId)
-                .setMenuId(menuId)
-                .setStartIconId(startIconId)
+                .withTitleRes(titleId)
+                .withMenuId(menuId)
+                .withStartIconRes(startIconId)
                 .build();
     }
 
@@ -106,10 +106,10 @@ public class BrowserUiListMenuUtils {
     public static ListItem buildMenuListItem(
             String title, @IdRes int menuId, @DrawableRes int startIconId, boolean enabled) {
         return new ListItemBuilder()
-                .setTitle(title)
-                .setMenuId(menuId)
-                .setStartIconId(startIconId)
-                .setEnabled(enabled)
+                .withTitle(title)
+                .withMenuId(menuId)
+                .withStartIconRes(startIconId)
+                .withEnabled(enabled)
                 .build();
     }
 
@@ -125,12 +125,12 @@ public class BrowserUiListMenuUtils {
             boolean enabled) {
         ListItemBuilder builder =
                 new ListItemBuilder()
-                        .setTitle(title)
-                        .setMenuId(menuId)
-                        .setStartIconId(startIconId)
-                        .setEnabled(enabled);
+                        .withTitle(title)
+                        .withMenuId(menuId)
+                        .withStartIconRes(startIconId)
+                        .withEnabled(enabled);
         if (contentDescription != null) {
-            builder.setContentDescription(contentDescription);
+            builder.withContentDescription(contentDescription);
         }
         return builder.build();
     }
@@ -146,11 +146,11 @@ public class BrowserUiListMenuUtils {
             boolean enabled,
             boolean isTextEllipsizedAtEnd) {
         return new ListItemBuilder()
-                .setTitle(title)
-                .setMenuId(menuId)
-                .setStartIconId(startIconId)
-                .setEnabled(enabled)
-                .setIsTextEllipsizedAtEnd(isTextEllipsizedAtEnd)
+                .withTitle(title)
+                .withMenuId(menuId)
+                .withStartIconRes(startIconId)
+                .withEnabled(enabled)
+                .withIsTextEllipsizedAtEnd(isTextEllipsizedAtEnd)
                 .build();
     }
 
@@ -161,11 +161,11 @@ public class BrowserUiListMenuUtils {
     public static ListItem buildMenuListItemWithIncognitoBranding(
             String title, @IdRes int menuId, boolean isIncognito, boolean enabled) {
         return new ListItemBuilder()
-                .setTitle(title)
-                .setMenuId(menuId)
-                .setIsIncognito(isIncognito)
-                .setEnabled(enabled)
-                .setTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
+                .withTitle(title)
+                .withMenuId(menuId)
+                .withIsIncognito(isIncognito)
+                .withEnabled(enabled)
+                .withTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
                 .build();
     }
 
@@ -176,11 +176,11 @@ public class BrowserUiListMenuUtils {
     public static ListItem buildMenuListItemWithIncognitoBranding(
             @StringRes int titleId, @IdRes int menuId, boolean isIncognito, boolean enabled) {
         return new ListItemBuilder()
-                .setTitleRes(titleId)
-                .setMenuId(menuId)
-                .setTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
-                .setIsIncognito(isIncognito)
-                .setEnabled(enabled)
+                .withTitleRes(titleId)
+                .withMenuId(menuId)
+                .withTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
+                .withIsIncognito(isIncognito)
+                .withEnabled(enabled)
                 .build();
     }
 
@@ -193,12 +193,12 @@ public class BrowserUiListMenuUtils {
             @DrawableRes int startIconId,
             boolean isIncognito) {
         return new ListItemBuilder()
-                .setTitleRes(titleId)
-                .setMenuId(menuId)
-                .setStartIconId(startIconId)
-                .setIconTintColorStateList(R.color.default_icon_color_light_tint_list)
-                .setTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
-                .setIsIncognito(isIncognito)
+                .withTitleRes(titleId)
+                .withMenuId(menuId)
+                .withStartIconRes(startIconId)
+                .withIconTintColorStateList(R.color.default_icon_color_light_tint_list)
+                .withTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
+                .withIsIncognito(isIncognito)
                 .build();
     }
 
@@ -215,13 +215,13 @@ public class BrowserUiListMenuUtils {
             boolean isIncognito,
             boolean enabled) {
         return new ListItemBuilder()
-                .setTitleRes(titleId)
-                .setMenuId(menuId)
-                .setStartIconId(startIconId)
-                .setIconTintColorStateList(iconTintColorStateList)
-                .setTextAppearanceStyle(textAppearanceStyle)
-                .setIsIncognito(isIncognito)
-                .setEnabled(enabled)
+                .withTitleRes(titleId)
+                .withMenuId(menuId)
+                .withStartIconRes(startIconId)
+                .withIconTintColorStateList(iconTintColorStateList)
+                .withTextAppearanceStyle(textAppearanceStyle)
+                .withIsIncognito(isIncognito)
+                .withEnabled(enabled)
                 .build();
     }
 
@@ -235,10 +235,10 @@ public class BrowserUiListMenuUtils {
             @DrawableRes int endIconId,
             boolean enabled) {
         return new ListItemBuilder()
-                .setTitleRes(titleId)
-                .setMenuId(menuId)
-                .setEndIconId(endIconId)
-                .setEnabled(enabled)
+                .withTitleRes(titleId)
+                .withMenuId(menuId)
+                .withEndIconRes(endIconId)
+                .withEnabled(enabled)
                 .build();
     }
 }

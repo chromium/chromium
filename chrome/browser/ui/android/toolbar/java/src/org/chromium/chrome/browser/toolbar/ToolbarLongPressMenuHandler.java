@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.Clipboard;
@@ -215,15 +216,18 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     ModelList buildMenuItems(boolean onTop) {
         ModelList itemList = new ModelList();
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
-                        onTop
-                                ? R.string.toolbar_move_to_the_bottom
-                                : R.string.toolbar_move_to_the_top,
-                        MenuItemType.MOVE_ADDRESS_BAR_TO,
-                        /* startIconId= */ 0));
+                new ListItemBuilder()
+                        .withTitleRes(
+                                onTop
+                                        ? R.string.toolbar_move_to_the_bottom
+                                        : R.string.toolbar_move_to_the_top)
+                        .withMenuId(MenuItemType.MOVE_ADDRESS_BAR_TO)
+                        .build());
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
-                        R.string.toolbar_copy_link, MenuItemType.COPY_LINK, /* startIconId= */ 0));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.toolbar_copy_link)
+                        .withMenuId(MenuItemType.COPY_LINK)
+                        .build());
         return itemList;
     }
 

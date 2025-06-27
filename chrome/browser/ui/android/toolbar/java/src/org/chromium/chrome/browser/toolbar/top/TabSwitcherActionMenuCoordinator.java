@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 
 import android.content.Context;
@@ -31,6 +30,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
@@ -236,41 +236,55 @@ public class TabSwitcherActionMenuCoordinator {
     protected ListItem buildListItemByMenuItemType(@MenuItemType int type) {
         switch (type) {
             case MenuItemType.CLOSE_TAB:
-                return buildMenuListItem(R.string.close_tab, R.id.close_tab, R.drawable.btn_close);
+                return new ListItemBuilder()
+                        .withTitleRes(R.string.close_tab)
+                        .withMenuId(R.id.close_tab)
+                        .withStartIconRes(R.drawable.btn_close)
+                        .build();
             case MenuItemType.NEW_TAB:
-                return buildMenuListItem(
-                        R.string.menu_new_tab, R.id.new_tab_menu_id, R.drawable.new_tab_icon);
+                return new ListItemBuilder()
+                        .withTitleRes(R.string.menu_new_tab)
+                        .withMenuId(R.id.new_tab_menu_id)
+                        .withStartIconRes(R.drawable.new_tab_icon)
+                        .build();
             case MenuItemType.NEW_INCOGNITO_TAB:
-                return buildMenuListItem(
-                        R.string.menu_new_incognito_tab,
-                        R.id.new_incognito_tab_menu_id,
-                        R.drawable.incognito_simple,
-                        IncognitoUtils.isIncognitoModeEnabled(mProfile));
+                boolean enabled = IncognitoUtils.isIncognitoModeEnabled(mProfile);
+                return new ListItemBuilder()
+                        .withTitleRes(R.string.menu_new_incognito_tab)
+                        .withMenuId(R.id.new_incognito_tab_menu_id)
+                        .withStartIconRes(R.drawable.incognito_simple)
+                        .withEnabled(enabled)
+                        .build();
             case MenuItemType.CLOSE_ALL_INCOGNITO_TABS:
-                return buildMenuListItem(
-                        R.string.menu_close_all_incognito_tabs,
-                        R.id.close_all_incognito_tabs_menu_id,
-                        R.drawable.ic_close_all_tabs);
+                return new ListItemBuilder()
+                        .withTitleRes(R.string.menu_close_all_incognito_tabs)
+                        .withMenuId(R.id.close_all_incognito_tabs_menu_id)
+                        .withStartIconRes(R.drawable.ic_close_all_tabs)
+                        .build();
             case MenuItemType.SWITCH_TO_INCOGNITO:
-                return buildMenuListItem(
-                        R.string.menu_switch_to_incognito,
-                        R.id.switch_to_incognito_menu_id,
-                        R.drawable.ic_switch_to_incognito);
+                return new ListItemBuilder()
+                        .withTitleRes(R.string.menu_switch_to_incognito)
+                        .withMenuId(R.id.switch_to_incognito_menu_id)
+                        .withStartIconRes(R.drawable.ic_switch_to_incognito)
+                        .build();
             case MenuItemType.SWITCH_OUT_OF_INCOGNITO:
-                return buildMenuListItem(
-                        R.string.menu_switch_out_of_incognito,
-                        R.id.switch_out_of_incognito_menu_id,
-                        R.drawable.ic_switch_out_of_incognito);
+                return new ListItemBuilder()
+                        .withTitleRes(R.string.menu_switch_out_of_incognito)
+                        .withMenuId(R.id.switch_out_of_incognito_menu_id)
+                        .withStartIconRes(R.drawable.ic_switch_out_of_incognito)
+                        .build();
             case MenuItemType.ADD_TAB_TO_GROUP:
-                return buildMenuListItem(
-                        R.string.menu_add_tab_to_group,
-                        R.id.add_tab_to_group_menu_id,
-                        R.drawable.ic_widgets);
+                return new ListItemBuilder()
+                        .withTitleRes(R.string.menu_add_tab_to_group)
+                        .withMenuId(R.id.add_tab_to_group_menu_id)
+                        .withStartIconRes(R.drawable.ic_widgets)
+                        .build();
             case MenuItemType.ADD_TAB_TO_NEW_GROUP:
-                return buildMenuListItem(
-                        R.string.menu_add_tab_to_new_group,
-                        R.id.add_tab_to_new_group_menu_id,
-                        R.drawable.ic_widgets);
+                return new ListItemBuilder()
+                        .withTitleRes(R.string.menu_add_tab_to_new_group)
+                        .withMenuId(R.id.add_tab_to_new_group_menu_id)
+                        .withStartIconRes(R.drawable.ic_widgets)
+                        .build();
             case MenuItemType.DIVIDER:
             default:
                 return buildMenuDivider(mProfile.isIncognitoBranded());

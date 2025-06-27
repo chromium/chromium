@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.home_button;
 
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
-
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.View;
@@ -24,6 +22,7 @@ import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.HomeButtonDisplay;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
@@ -76,10 +75,11 @@ public class HomeButtonCoordinator implements HomeButtonDisplay {
             RectProvider rectProvider = MenuBuilderHelper.getRectProvider(mHomeButton);
             mMenuList = new MVCListAdapter.ModelList();
             mMenuList.add(
-                    buildMenuListItem(
-                            R.string.options_homepage_edit_title,
-                            ID_SETTINGS,
-                            R.drawable.ic_edit_24dp));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.options_homepage_edit_title)
+                            .withMenuId(ID_SETTINGS)
+                            .withStartIconRes(R.drawable.ic_edit_24dp)
+                            .build());
             BasicListMenu listMenu =
                     BrowserUiListMenuUtils.getBasicListMenu(
                             mContext,

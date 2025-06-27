@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
@@ -29,6 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.listmenu.ListMenu;
@@ -185,13 +184,18 @@ public class TabGroupRowView extends LinearLayout {
             @Nullable Runnable leaveRunnable) {
         ModelList listItems = new ModelList();
         if (openRunnable != null) {
-            listItems.add(buildMenuListItem(R.string.open_tab_group_menu_item, 0, 0));
+            listItems.add(
+                    new ListItemBuilder().withTitleRes(R.string.open_tab_group_menu_item).build());
         }
         if (deleteRunnable != null) {
-            listItems.add(buildMenuListItem(R.string.delete_tab_group_menu_item, 0, 0));
+            listItems.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.delete_tab_group_menu_item)
+                            .build());
         }
         if (leaveRunnable != null) {
-            listItems.add(buildMenuListItem(R.string.leave_tab_group_menu_item, 0, 0));
+            listItems.add(
+                    new ListItemBuilder().withTitleRes(R.string.leave_tab_group_menu_item).build());
         }
         return BrowserUiListMenuUtils.getBasicListMenu(
                 getContext(),

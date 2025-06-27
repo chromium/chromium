@@ -18,7 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -80,36 +80,40 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                 TabShareUtils.isCollaborationIdValid(collaborationId)
                         && mCollaborationService.getServiceStatus().isAllowedToJoin();
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.menu_select_tabs,
-                        R.id.select_tabs,
-                        R.drawable.ic_select_check_box_24dp,
-                        isIncognito));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.menu_select_tabs)
+                        .withMenuId(R.id.select_tabs)
+                        .withStartIconRes(R.drawable.ic_select_check_box_24dp)
+                        .withIsIncognito(isIncognito)
+                        .build());
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.tab_grid_dialog_toolbar_edit_group_name,
-                        R.id.edit_group_name,
-                        R.drawable.material_ic_edit_24dp,
-                        isIncognito));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.tab_grid_dialog_toolbar_edit_group_name)
+                        .withMenuId(R.id.edit_group_name)
+                        .withStartIconRes(R.drawable.material_ic_edit_24dp)
+                        .withIsIncognito(isIncognito)
+                        .build());
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.tab_grid_dialog_toolbar_edit_group_color,
-                        R.id.edit_group_color,
-                        R.drawable.ic_colorize_24dp,
-                        isIncognito));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.tab_grid_dialog_toolbar_edit_group_color)
+                        .withMenuId(R.id.edit_group_color)
+                        .withStartIconRes(R.drawable.ic_colorize_24dp)
+                        .withIsIncognito(isIncognito)
+                        .build());
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.tab_grid_dialog_toolbar_close_group,
-                        R.id.close_tab_group,
-                        R.drawable.ic_tab_close_24dp,
-                        isIncognito));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.tab_grid_dialog_toolbar_close_group)
+                        .withMenuId(R.id.close_tab_group)
+                        .withStartIconRes(R.drawable.ic_tab_close_24dp)
+                        .withIsIncognito(isIncognito)
+                        .build());
         if (mTabGroupSyncService != null && !isIncognito && !hasCollaborationData) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            R.string.tab_grid_dialog_toolbar_delete_group,
-                            R.id.delete_tab_group,
-                            R.drawable.material_ic_delete_24dp,
-                            /* isIncognito= */ false));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_grid_dialog_toolbar_delete_group)
+                            .withMenuId(R.id.delete_tab_group)
+                            .withStartIconRes(R.drawable.material_ic_delete_24dp)
+                            .build());
         }
     }
 
@@ -121,34 +125,34 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
             int insertionIndex = getMenuItemIndex(itemList, R.id.close_tab_group);
             itemList.add(
                     insertionIndex++,
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            R.string.tab_grid_dialog_toolbar_manage_sharing,
-                            R.id.manage_sharing,
-                            R.drawable.ic_group_24dp,
-                            /* isIncognito= */ false));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_grid_dialog_toolbar_manage_sharing)
+                            .withMenuId(R.id.manage_sharing)
+                            .withStartIconRes(R.drawable.ic_group_24dp)
+                            .build());
             itemList.add(
                     insertionIndex++,
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            R.string.tab_grid_dialog_toolbar_recent_activity,
-                            R.id.recent_activity,
-                            R.drawable.ic_update_24dp,
-                            /* isIncognito= */ false));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_grid_dialog_toolbar_recent_activity)
+                            .withMenuId(R.id.recent_activity)
+                            .withStartIconRes(R.drawable.ic_update_24dp)
+                            .build());
         }
 
         if (memberRole == MemberRole.OWNER) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            R.string.tab_grid_dialog_toolbar_delete_group,
-                            R.id.delete_shared_group,
-                            R.drawable.material_ic_delete_24dp,
-                            /* isIncognito= */ false));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_grid_dialog_toolbar_delete_group)
+                            .withMenuId(R.id.delete_shared_group)
+                            .withStartIconRes(R.drawable.material_ic_delete_24dp)
+                            .build());
         } else if (memberRole == MemberRole.MEMBER) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            R.string.tab_grid_dialog_toolbar_leave_group,
-                            R.id.leave_group,
-                            R.drawable.material_ic_delete_24dp,
-                            /* isIncognito= */ false));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_grid_dialog_toolbar_leave_group)
+                            .withMenuId(R.id.leave_group)
+                            .withStartIconRes(R.drawable.material_ic_delete_24dp)
+                            .build());
         }
     }
 

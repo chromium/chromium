@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.multiwindow.UiUtils.INVALID_TASK_ID;
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -37,6 +36,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.util.TimeTextResolver;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
@@ -372,7 +372,10 @@ public class InstanceSwitcherCoordinator {
 
     private void buildMoreMenu(PropertyModel.Builder builder, InstanceInfo item) {
         ModelList moreMenu = new ModelList();
-        moreMenu.add(buildMenuListItem(R.string.instance_switcher_close_window, 0, 0));
+        moreMenu.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.instance_switcher_close_window)
+                        .build());
         ListMenu.Delegate moreMenuDelegate =
                 (model) -> {
                     int textId = model.get(ListMenuItemProperties.TITLE_ID);

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.feed;
 
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -59,6 +57,7 @@ import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -1239,26 +1238,32 @@ public class FeedSurfaceMediator
         if (FeedServiceBridge.isSignedIn()) {
             if (WebFeedBridge.isWebFeedEnabled()) {
                 itemList.add(
-                        buildMenuListItem(
-                                R.string.ntp_manage_feed,
-                                R.id.ntp_feed_header_menu_item_manage,
-                                iconId));
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.ntp_manage_feed)
+                                .withMenuId(R.id.ntp_feed_header_menu_item_manage)
+                                .withStartIconRes(iconId)
+                                .build());
             } else {
                 itemList.add(
-                        buildMenuListItem(
-                                R.string.ntp_manage_my_activity,
-                                R.id.ntp_feed_header_menu_item_activity,
-                                iconId));
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.ntp_manage_my_activity)
+                                .withMenuId(R.id.ntp_feed_header_menu_item_activity)
+                                .withStartIconRes(iconId)
+                                .build());
                 itemList.add(
-                        buildMenuListItem(
-                                R.string.ntp_manage_interests,
-                                R.id.ntp_feed_header_menu_item_interest,
-                                iconId));
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.ntp_manage_interests)
+                                .withMenuId(R.id.ntp_feed_header_menu_item_interest)
+                                .withStartIconRes(iconId)
+                                .build());
             }
         }
         itemList.add(
-                buildMenuListItem(
-                        R.string.learn_more, R.id.ntp_feed_header_menu_item_learn, iconId));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.learn_more)
+                        .withMenuId(R.id.ntp_feed_header_menu_item_learn)
+                        .withStartIconRes(iconId)
+                        .build());
         itemList.add(
                 getMenuToggleSwitch(
                         mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY),
@@ -1273,14 +1278,11 @@ public class FeedSurfaceMediator
      * @param iconId IconId for the list item if any.
      */
     private MVCListAdapter.ListItem getMenuToggleSwitch(boolean isEnabled, int iconId) {
-        if (isEnabled) {
-            return buildMenuListItem(
-                    R.string.ntp_turn_off_feed,
-                    R.id.ntp_feed_header_menu_item_toggle_switch,
-                    iconId);
-        }
-        return buildMenuListItem(
-                R.string.ntp_turn_on_feed, R.id.ntp_feed_header_menu_item_toggle_switch, iconId);
+        return new ListItemBuilder()
+                .withTitleRes(isEnabled ? R.string.ntp_turn_off_feed : R.string.ntp_turn_on_feed)
+                .withMenuId(R.id.ntp_feed_header_menu_item_toggle_switch)
+                .withStartIconRes(iconId)
+                .build();
     }
 
     /** Whether a new thumbnail should be captured. */

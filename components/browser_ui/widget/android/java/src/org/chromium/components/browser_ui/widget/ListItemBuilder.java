@@ -25,8 +25,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ListItemBuilder {
     private @StringRes int mTitleRes;
     private @IdRes int mMenuId;
-    private @DrawableRes int mStartIconId;
-    private @DrawableRes int mEndIconId;
+    private @DrawableRes int mStartIconRes;
+    private @DrawableRes int mEndIconRes;
     private boolean mEnabled;
     private @Nullable String mContentDescription;
     private boolean mIsTextEllipsizedAtEnd;
@@ -39,8 +39,8 @@ public class ListItemBuilder {
     public ListItemBuilder() {
         mTitleRes = Resources.ID_NULL;
         mMenuId = Resources.ID_NULL;
-        mStartIconId = Resources.ID_NULL;
-        mEndIconId = Resources.ID_NULL;
+        mStartIconRes = Resources.ID_NULL;
+        mEndIconRes = Resources.ID_NULL;
         mIconTintColorStateList = Resources.ID_NULL;
         mTextAppearanceStyle = Resources.ID_NULL;
 
@@ -50,7 +50,7 @@ public class ListItemBuilder {
     /**
      * @param title The text on the menu item. By default, this is set to null.
      */
-    public ListItemBuilder setTitle(String title) {
+    public ListItemBuilder withTitle(String title) {
         mTitle = title;
         return this;
     }
@@ -59,7 +59,7 @@ public class ListItemBuilder {
      * @param titleRes The string resource for the menu item. By default, this is set to {@link
      *     Resources#ID_NULL}.
      */
-    public ListItemBuilder setTitleRes(@StringRes int titleRes) {
+    public ListItemBuilder withTitleRes(@StringRes int titleRes) {
         mTitleRes = titleRes;
         return this;
     }
@@ -67,7 +67,7 @@ public class ListItemBuilder {
     /**
      * @param menuId The ID of the menu item. By default, this is set to {@link Resources#ID_NULL}.
      */
-    public ListItemBuilder setMenuId(@IdRes int menuId) {
+    public ListItemBuilder withMenuId(@IdRes int menuId) {
         mMenuId = menuId;
         return this;
     }
@@ -76,24 +76,24 @@ public class ListItemBuilder {
      * @param startIconId The icon on the start of the menu item. Pass 0 for no icon. By default,
      *     this is set to {@link Resources#ID_NULL}.
      */
-    public ListItemBuilder setStartIconId(@DrawableRes int startIconId) {
-        mStartIconId = startIconId;
+    public ListItemBuilder withStartIconRes(@DrawableRes int startIconRes) {
+        mStartIconRes = startIconRes;
         return this;
     }
 
     /**
-     * @param endIconId The icon on the end of the menu item. Pass 0 for no icon. By default, this
+     * @param endIconRes The icon on the end of the menu item. Pass 0 for no icon. By default, this
      *     is set to {@link Resources#ID_NULL}.
      */
-    public ListItemBuilder setEndIconId(@DrawableRes int endIconId) {
-        mEndIconId = endIconId;
+    public ListItemBuilder withEndIconRes(@DrawableRes int endIconRes) {
+        mEndIconRes = endIconRes;
         return this;
     }
 
     /**
      * @param enabled Whether this menu item should be enabled. By default, the item is enabled.
      */
-    public ListItemBuilder setEnabled(boolean enabled) {
+    public ListItemBuilder withEnabled(boolean enabled) {
         mEnabled = enabled;
         return this;
     }
@@ -102,7 +102,7 @@ public class ListItemBuilder {
      * @param contentDescription The accessibility content description of the menu item. By default,
      *     this is set to {@link Resources#ID_NULL}.
      */
-    public ListItemBuilder setContentDescription(String contentDescription) {
+    public ListItemBuilder withContentDescription(String contentDescription) {
         mContentDescription = contentDescription;
         return this;
     }
@@ -111,7 +111,7 @@ public class ListItemBuilder {
      * @param isTextEllipsizedAtEnd Whether the text in this menu item is ellipsized at the end. By
      *     default, this is false.
      */
-    public ListItemBuilder setIsTextEllipsizedAtEnd(boolean isTextEllipsizedAtEnd) {
+    public ListItemBuilder withIsTextEllipsizedAtEnd(boolean isTextEllipsizedAtEnd) {
         mIsTextEllipsizedAtEnd = isTextEllipsizedAtEnd;
         return this;
     }
@@ -120,7 +120,7 @@ public class ListItemBuilder {
      * @param isIncognito Whether the current menu item will be displayed in incognito mode. By
      *     default, this is false.
      */
-    public ListItemBuilder setIsIncognito(boolean isIncognito) {
+    public ListItemBuilder withIsIncognito(boolean isIncognito) {
         mIsIncognito = isIncognito;
         return this;
     }
@@ -129,7 +129,7 @@ public class ListItemBuilder {
      * @param iconTintColorStateList The tint color for the icon. By default, this is set to {@link
      *     Resources#ID_NULL}.
      */
-    public ListItemBuilder setIconTintColorStateList(@ColorRes int iconTintColorStateList) {
+    public ListItemBuilder withIconTintColorStateList(@ColorRes int iconTintColorStateList) {
         mIconTintColorStateList = iconTintColorStateList;
         return this;
     }
@@ -138,7 +138,7 @@ public class ListItemBuilder {
      * @param textAppearanceStyle The appearance of the text in the menu item. By default, this is
      *     set to {@link Resources#ID_NULL}.
      */
-    public ListItemBuilder setTextAppearanceStyle(@StyleRes int textAppearanceStyle) {
+    public ListItemBuilder withTextAppearanceStyle(@StyleRes int textAppearanceStyle) {
         mTextAppearanceStyle = textAppearanceStyle;
         return this;
     }
@@ -161,8 +161,8 @@ public class ListItemBuilder {
         }
 
         builder.with(ListMenuItemProperties.MENU_ITEM_ID, mMenuId)
-                .with(ListMenuItemProperties.START_ICON_ID, mStartIconId)
-                .with(ListMenuItemProperties.END_ICON_ID, mEndIconId)
+                .with(ListMenuItemProperties.START_ICON_ID, mStartIconRes)
+                .with(ListMenuItemProperties.END_ICON_ID, mEndIconRes)
                 .with(ListMenuItemProperties.ENABLED, mEnabled);
 
         if (mContentDescription != null) {

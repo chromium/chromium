@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -158,11 +159,10 @@ public class RecentActivityListCoordinator {
             ListMenuButton menuView = view.findViewById(R.id.recent_activity_menu_button);
             ModelList modelList = new ModelList();
             modelList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.data_sharing_shared_tab_groups_activity,
-                            R.id.see_full_activity,
-                            0,
-                            /* enabled= */ true));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.data_sharing_shared_tab_groups_activity)
+                            .withMenuId(R.id.see_full_activity)
+                            .build());
             ListMenu.Delegate delegate =
                     (model) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);

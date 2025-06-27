@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Token;
@@ -22,7 +24,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
-import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -137,13 +139,13 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
         boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
 
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                buildListItem(
                         R.string.close_tab_group_menu_item,
                         R.id.close_tab_group,
                         mShouldShowIcons ? R.drawable.ic_tab_close_24dp : Resources.ID_NULL,
                         isIncognito));
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                buildListItem(
                         R.string.rename_tab_group_menu_item,
                         R.id.edit_group_name,
                         mShouldShowIcons ? R.drawable.ic_edit_24dp : Resources.ID_NULL,
@@ -151,7 +153,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
 
         if (!hasCollaborationData) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                    buildListItem(
                             R.string.ungroup_tab_group_menu_item,
                             R.id.ungroup_tab,
                             mShouldShowIcons ? R.drawable.ic_ungroup_tabs_24dp : Resources.ID_NULL,
@@ -166,8 +168,9 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
 
         // Delete does not make sense for incognito since the tab group is not saved to sync.
         if (mTabGroupSyncService != null && !isIncognito && !hasCollaborationData) {
+
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                    buildListItem(
                             R.string.delete_tab_group_menu_item,
                             R.id.delete_tab_group,
                             mShouldShowIcons
@@ -180,31 +183,24 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     @Override
     public void buildCollaborationMenuItems(ModelList itemList, @MemberRole int memberRole) {
         if (memberRole == MemberRole.OWNER) {
+
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                    buildListItem(
                             R.string.delete_tab_group_menu_item,
                             R.id.delete_shared_group,
                             mShouldShowIcons
                                     ? R.drawable.material_ic_delete_24dp
                                     : Resources.ID_NULL,
-                            /* iconTintColorStateList= */ Resources.ID_NULL,
-                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                            /* isIncognito= */ false,
-                            /* enabled= */ true));
+                            /* isIncognito= */ false));
         } else if (memberRole == MemberRole.MEMBER) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                    buildListItem(
                             R.string.leave_tab_group_menu_item,
                             R.id.leave_group,
                             mShouldShowIcons
                                     ? R.drawable.material_ic_delete_24dp
                                     : Resources.ID_NULL,
-                            mShouldShowIcons
-                                    ? R.drawable.material_ic_delete_24dp
-                                    : Resources.ID_NULL,
-                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                            /* isIncognito= */ false,
-                            /* enabled= */ true));
+                            /* isIncognito= */ false));
         }
     }
 
@@ -217,10 +213,25 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     }
 
     private ListItem buildShareMenuItem(@StringRes int stringId) {
-        return BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                stringId,
-                R.id.share_group,
-                mShouldShowIcons ? R.drawable.ic_group_24dp : Resources.ID_NULL,
-                /* isIncognito= */ false);
+        return new ListItemBuilder()
+                .withTitleRes(stringId)
+                .withMenuId(R.id.share_group)
+                .withStartIconRes(mShouldShowIcons ? R.drawable.ic_group_24dp : Resources.ID_NULL)
+                .withTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
+                .build();
+    }
+
+    private static ListItem buildListItem(
+            @StringRes int titleRes,
+            @IdRes int menuId,
+            @DrawableRes int startIconId,
+            boolean isIncognito) {
+        return new ListItemBuilder()
+                .withTitleRes(titleRes)
+                .withMenuId(menuId)
+                .withStartIconRes(startIconId)
+                .withIsIncognito(isIncognito)
+                .withTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
+                .build();
     }
 }

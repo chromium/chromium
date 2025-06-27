@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoor
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
@@ -310,20 +310,21 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 TabShareUtils.isCollaborationIdValid(collaborationId)
                         && mCollaborationService.getServiceStatus().isAllowedToJoin();
         itemList.add(buildMenuDivider(isIncognito));
+
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.open_new_tab_in_group_context_menu_item,
-                        R.id.open_new_tab_in_group,
-                        isIncognito,
-                        /* enabled= */ true));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.open_new_tab_in_group_context_menu_item)
+                        .withMenuId(R.id.open_new_tab_in_group)
+                        .withIsIncognito(isIncognito)
+                        .build());
 
         if (!hasCollaborationData) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            R.string.ungroup_tab_group_menu_item,
-                            R.id.ungroup_tab,
-                            isIncognito,
-                            /* enabled= */ true));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.ungroup_tab_group_menu_item)
+                            .withMenuId(R.id.ungroup_tab)
+                            .withIsIncognito(isIncognito)
+                            .build());
         }
 
         if (!isIncognito
@@ -331,19 +332,18 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 && mCollaborationService.getServiceStatus().isAllowedToCreate()
                 && !hasCollaborationData) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.share_tab_group_context_menu_item,
-                            R.id.share_group,
-                            /* startIconId= */ 0,
-                            /* enabled= */ true));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.share_tab_group_context_menu_item)
+                            .withMenuId(R.id.share_group)
+                            .build());
         }
 
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.tab_grid_dialog_toolbar_close_group,
-                        R.id.close_tab_group,
-                        isIncognito,
-                        /* enabled= */ true));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.tab_grid_dialog_toolbar_close_group)
+                        .withMenuId(R.id.close_tab_group)
+                        .withIsIncognito(isIncognito)
+                        .build());
 
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             // TODO(crbug.com/417272356): Update text; Currently shows "Move to new window" instead
@@ -351,27 +351,29 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             // This is called after showMenu, which assumes Activity is non-null, so it is OK to
             // continue to make this assumption here.
             Activity activity = assumeNonNull(mWindowAndroid.getActivity().get());
+            String title =
+                    activity.getResources()
+                            .getQuantityString(
+                                    R.plurals.move_group_to_another_window_context_menu_item,
+                                    MultiWindowUtils.getInstanceCount());
+
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            activity.getResources()
-                                    .getQuantityString(
-                                            R.plurals
-                                                    .move_group_to_another_window_context_menu_item,
-                                            MultiWindowUtils.getInstanceCount()),
-                            R.id.move_to_other_window_menu_id,
-                            isIncognito,
-                            /* enabled= */ true));
+                    new ListItemBuilder()
+                            .withTitle(title)
+                            .withMenuId(R.id.move_to_other_window_menu_id)
+                            .withIsIncognito(isIncognito)
+                            .build());
         }
 
         // Delete does not make sense for incognito since the tab group is not saved to sync.
         if ((mTabGroupSyncService != null) && !isIncognito && !hasCollaborationData) {
             itemList.add(buildMenuDivider(isIncognito));
+
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.tab_grid_dialog_toolbar_delete_group,
-                            R.id.delete_tab_group,
-                            /* startIconId= */ 0,
-                            /* enabled= */ true));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_grid_dialog_toolbar_delete_group)
+                            .withMenuId(R.id.delete_tab_group)
+                            .build());
         }
     }
 
@@ -379,38 +381,38 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     public void buildCollaborationMenuItems(ModelList itemList, @MemberRole int memberRole) {
         if (memberRole != MemberRole.UNKNOWN) {
             int insertionIndex = getMenuItemIndex(itemList, R.id.close_tab_group);
+
             itemList.add(
                     insertionIndex++,
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.tab_grid_dialog_toolbar_manage_sharing,
-                            R.id.manage_sharing,
-                            /* startIconId= */ 0,
-                            /* enabled= */ true));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_grid_dialog_toolbar_manage_sharing)
+                            .withMenuId(R.id.manage_sharing)
+                            .build());
+
             itemList.add(
                     insertionIndex++,
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.tab_grid_dialog_toolbar_recent_activity,
-                            R.id.recent_activity,
-                            /* startIconId= */ 0,
-                            /* enabled= */ true));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_grid_dialog_toolbar_recent_activity)
+                            .withMenuId(R.id.recent_activity)
+                            .build());
         }
 
         if (memberRole == MemberRole.OWNER) {
             itemList.add(buildMenuDivider(/* isIncognito= */ false));
+
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.tab_grid_dialog_toolbar_delete_group,
-                            R.id.delete_shared_group,
-                            /* startIconId= */ 0,
-                            /* enabled= */ true));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_grid_dialog_toolbar_delete_group)
+                            .withMenuId(R.id.delete_shared_group)
+                            .build());
         } else if (memberRole == MemberRole.MEMBER) {
             itemList.add(buildMenuDivider(/* isIncognito= */ false));
+
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.tab_grid_dialog_toolbar_leave_group,
-                            R.id.leave_group,
-                            /* startIconId= */ 0,
-                            /* enabled= */ true));
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.tab_grid_dialog_toolbar_leave_group)
+                            .withMenuId(R.id.leave_group)
+                            .build());
         }
         resizeMenu();
     }
