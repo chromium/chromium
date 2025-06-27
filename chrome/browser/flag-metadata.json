@@ -1423,11 +1423,6 @@
     "expiry_milestone": 151
   },
   {
-    "name": "CCO",
-    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
-    "expiry_milestone": 136
-  },
-  {
     "name": "cct-adaptive-button",
     "owners": [ "jinsukkim@google.com", "chrome-connective-tissue@google.com" ],
     "expiry_milestone": 142
@@ -1695,29 +1690,9 @@
     "expiry_milestone": 135
   },
   {
-    "name": "compose-nudge-display-at-cursor",
-    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
-    "expiry_milestone": 136
-  },
-  {
-    "name": "compose-proactive-nudge",
-    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
-    "expiry_milestone": 136
-  },
-  {
-    "name": "compose-segmentation-promotion",
-    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
-    "expiry_milestone": 136
-  },
-  {
     "name": "compose-selection-nudge",
     "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
-    "expiry_milestone": 136
-  },
-  {
-    "name": "compose-upfront-input-modes",
-    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
-    "expiry_milestone": 141
+    "expiry_milestone": 144
   },
   {
     "name": "conch",

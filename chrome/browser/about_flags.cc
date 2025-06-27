@@ -3919,102 +3919,6 @@ const FeatureEntry::FeatureVariation kGroupSuggestionVariations[] = {
 };
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-// Vatiations of the Compose proactive nudge.
-const FeatureEntry::FeatureParam
-    kComposeProactiveNudge_CompactNoFocusDelay_10[] = {
-        {"proactive_nudge_focus_delay_milliseconds", "0"},
-        {"proactive_nudge_compact_ui", "true"},
-        {"proactive_nudge_text_change_count", "10"}};
-
-const FeatureEntry::FeatureParam
-    kComposeProactiveNudge_CompactNoFocusDelay_10_5[] = {
-        {"proactive_nudge_focus_delay_milliseconds", "0"},
-        {"proactive_nudge_compact_ui", "true"},
-        {"proactive_nudge_text_change_count", "10"},
-        {"nudge_field_change_event_max", "5"}};
-
-const FeatureEntry::FeatureParam
-    kComposeProactiveNudge_CompactNoFocusDelay_10_10[] = {
-        {"proactive_nudge_focus_delay_milliseconds", "0"},
-        {"proactive_nudge_compact_ui", "true"},
-        {"proactive_nudge_text_change_count", "10"},
-        {"nudge_field_change_event_max", "10"}};
-
-const FeatureEntry::FeatureParam
-    kComposeProactiveNudge_CompactNoFocusDelay_50[] = {
-        {"proactive_nudge_focus_delay_milliseconds", "0"},
-        {"proactive_nudge_compact_ui", "true"},
-        {"proactive_nudge_text_change_count", "50"}};
-
-const FeatureEntry::FeatureParam
-    kComposeProactiveNudge_CompactLongFocusDelay_10[] = {
-        {"proactive_nudge_focus_delay_milliseconds", "60000"},  // one minute
-        {"proactive_nudge_compact_ui", "true"},
-        {"proactive_nudge_text_change_count", "10"}};
-
-const FeatureEntry::FeatureParam
-    kComposeProactiveNudge_CompactLongFocusDelay_50[] = {
-        {"proactive_nudge_focus_delay_milliseconds", "60000"},  // one minute
-        {"proactive_nudge_compact_ui", "true"},
-        {"proactive_nudge_text_change_count", "50"}};
-
-const FeatureEntry::FeatureParam
-    kComposeProactiveNudge_CompactLongTextDelay_10[] = {
-        {"proactive_nudge_focus_delay_milliseconds", "0"},
-        {"proactive_nudge_text_settled_delay_milliseconds", "10000"},
-        {"proactive_nudge_compact_ui", "true"},
-        {"proactive_nudge_text_change_count", "10"}};
-
-const FeatureEntry::FeatureParam
-    kComposeProactiveNudge_CompactLongTextDelay_50[] = {
-        {"proactive_nudge_focus_delay_milliseconds", "0"},
-        {"proactive_nudge_text_settled_delay_milliseconds", "10000"},
-        {"proactive_nudge_compact_ui", "true"},
-        {"proactive_nudge_text_change_count", "50"}};
-
-const FeatureEntry::FeatureParam kComposeProactiveNudge_LargeNoFocusDelay_10[] =
-    {{"proactive_nudge_focus_delay_milliseconds", "0"},
-     {"proactive_nudge_compact_ui", "false"},
-     {"proactive_nudge_text_change_count", "10"}};
-
-const FeatureEntry::FeatureParam kComposeProactiveNudge_LargeNoFocusDelay_50[] =
-    {{"proactive_nudge_focus_delay_milliseconds", "0"},
-     {"proactive_nudge_compact_ui", "false"},
-     {"proactive_nudge_text_change_count", "50"}};
-
-const FeatureEntry::FeatureVariation kComposeProactiveNudgeVariations[] = {
-    {"Compact UI - No focus delay - Show (10 edits)",
-     kComposeProactiveNudge_CompactNoFocusDelay_10,
-     std::size(kComposeProactiveNudge_CompactNoFocusDelay_10), nullptr},
-    {"Compact UI - No focus delay - Show (10 edits) - Dismiss (5 edits)",
-     kComposeProactiveNudge_CompactNoFocusDelay_10_5,
-     std::size(kComposeProactiveNudge_CompactNoFocusDelay_10_5), nullptr},
-    {"Compact UI - No focus delay - Show (10 edits) - Dismiss (10 edits)",
-     kComposeProactiveNudge_CompactNoFocusDelay_10_10,
-     std::size(kComposeProactiveNudge_CompactNoFocusDelay_10_10), nullptr},
-    {"Compact UI - No focus delay - Show (50 edits)",
-     kComposeProactiveNudge_CompactNoFocusDelay_50,
-     std::size(kComposeProactiveNudge_CompactNoFocusDelay_50), nullptr},
-    {"Compact UI - Long focus delay - Show (10 edits)",
-     kComposeProactiveNudge_CompactLongFocusDelay_10,
-     std::size(kComposeProactiveNudge_CompactLongFocusDelay_10), nullptr},
-    {"Compact UI - Long focus delay - Show (50 edits)",
-     kComposeProactiveNudge_CompactLongFocusDelay_50,
-     std::size(kComposeProactiveNudge_CompactLongFocusDelay_50), nullptr},
-
-    {"Compact UI - No Focus delay - Show (10 edits) - long text delay",
-     kComposeProactiveNudge_CompactLongTextDelay_10,
-     std::size(kComposeProactiveNudge_CompactLongTextDelay_10), nullptr},
-    {"Compact UI - No Focus delay - Show (50 edits) - long text delay",
-     kComposeProactiveNudge_CompactLongTextDelay_50,
-     std::size(kComposeProactiveNudge_CompactLongTextDelay_50), nullptr},
-    {"Large UI - No focus delay - Show (10 edits)",
-     kComposeProactiveNudge_LargeNoFocusDelay_10,
-     std::size(kComposeProactiveNudge_LargeNoFocusDelay_10), nullptr},
-    {"Large UI - Long focus delay - Show (50 edits)",
-     kComposeProactiveNudge_LargeNoFocusDelay_50,
-     std::size(kComposeProactiveNudge_LargeNoFocusDelay_50), nullptr}};
-
 // Variations of the Compose selection nudge.
 const FeatureEntry::FeatureParam kComposeSelectionNudge_1[] = {
     {"selection_nudge_length", "1"}};
@@ -10677,32 +10581,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-    {flag_descriptions::kComposeId, flag_descriptions::kComposeName,
-     flag_descriptions::kComposeDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
-     FEATURE_VALUE_TYPE(compose::features::kEnableCompose)},
-
-    {"compose-proactive-nudge", flag_descriptions::kComposeProactiveNudgeName,
-     flag_descriptions::kComposeProactiveNudgeDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         compose::features::kEnableComposeProactiveNudge,
-         kComposeProactiveNudgeVariations,
-         "ComposeProactiveNudge")},
-
-    {"compose-nudge-display-at-cursor",
-     flag_descriptions::kComposeNudgeAtCursorName,
-     flag_descriptions::kComposeNudgeAtCursorDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
-     FEATURE_VALUE_TYPE(compose::features::kEnableComposeNudgeAtCursor)},
-
-    {"compose-segmentation-promotion",
-     flag_descriptions::kComposeSegmentationPromotionName,
-     flag_descriptions::kComposeSegmentationPromotionDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
-     FEATURE_VALUE_TYPE(segmentation_platform::features::
-                            kSegmentationPlatformComposePromotion)},
-
     {"compose-selection-nudge", flag_descriptions::kComposeSelectionNudgeName,
      flag_descriptions::kComposeSelectionNudgeDescription,
      kOsWin | kOsLinux | kOsMac | kOsCrOS,
@@ -10710,12 +10588,6 @@ const FeatureEntry kFeatureEntries[] = {
          compose::features::kEnableComposeSelectionNudge,
          kComposeSelectionNudgeVariations,
          "ComposeSelectionNudge")},
-
-    {"compose-upfront-input-modes",
-     flag_descriptions::kComposeUpfrontInputModesName,
-     flag_descriptions::kComposeUpfrontInputModesDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
-     FEATURE_VALUE_TYPE(compose::features::kComposeUpfrontInputModes)},
 #endif
 
     {"related-website-sets-permission-grants",
