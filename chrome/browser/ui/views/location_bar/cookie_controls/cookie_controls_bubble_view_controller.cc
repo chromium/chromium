@@ -45,7 +45,7 @@ constexpr int kFaviconID = 1;
 
 // Delay in milliseconds before triggering a page reload for the tracking
 // protections UI.
-constexpr int kReloadUIDisplayDelay = 200;
+constexpr int kReloadUIDisplayDelay = 900;
 
 // Expected URL types for `UrlIdentity::CreateFromUrl()`.
 constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
