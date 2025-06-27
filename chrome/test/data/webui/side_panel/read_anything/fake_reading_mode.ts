@@ -445,4 +445,7 @@ export class FakeReadingMode {
       Array<{nodeId: number, start: number, length: number}> {
     return [];
   }
+
+  // Resets the granularity index.
+  resetGranularityIndex() {}
 }

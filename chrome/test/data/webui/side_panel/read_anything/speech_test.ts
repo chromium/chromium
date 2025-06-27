@@ -143,6 +143,32 @@ suite('Speech', () => {
     assertEquals(8, speech.getCallCount('speak'));
   });
 
+  test('play after speech finishes plays again from the top', () => {
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+    const spoken1 = speech.getArgs('speak')[0];
+    spoken1.onend();
+    const spoken2 = speech.getArgs('speak')[1];
+    spoken2.onend();
+    const spoken3 = speech.getArgs('speak')[2];
+    spoken3.onend();
+    const spoken4 = speech.getArgs('speak')[3];
+    spoken4.onend();
+    const spoken5 = speech.getArgs('speak')[4];
+    spoken5.onend();
+    const spoken6 = speech.getArgs('speak')[5];
+    spoken6.onend();
+    const spoken7 = speech.getArgs('speak')[6];
+    spoken7.onend();
+    const spoken8 = speech.getArgs('speak')[7];
+    spoken8.onend();
+
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+
+    assertEquals(9, speech.getCallCount('speak'));
+    const spoken9 = speech.getArgs('speak')[0];
+    assertEquals(paragraph1[0], spoken9.text.trim());
+  });
+
   test('uses set language', () => {
     const expectedLang = 'fr';
     chrome.readingMode.setLanguageForTesting(expectedLang);

@@ -531,6 +531,10 @@ suite('SpeechController', () => {
   test('speech finished clears state', async () => {
     const text = 'New phone who dis?';
     setSimpleTreeWithText(text);
+    let resetGranularityIndex = false;
+    chrome.readingMode.resetGranularityIndex = () => {
+      resetGranularityIndex = true;
+    };
 
     speechController.onPlayPauseToggle(null, text);
 
@@ -543,6 +547,7 @@ suite('SpeechController', () => {
     spoken.onend();
 
     assertTrue(isSpeechActiveChanged);
+    assertTrue(resetGranularityIndex);
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isPausedFromButton());
     assertFalse(speechController.isTemporaryPause());

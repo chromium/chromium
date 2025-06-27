@@ -761,6 +761,8 @@ export class SpeechController {
 
   private onSpeechFinished_() {
     this.clearReadAloudState();
+    chrome.readingMode.resetGranularityIndex();
+
     this.model_.setPauseSource(PauseActionSource.SPEECH_FINISHED);
     this.logger_.logSpeechStopSource(
         chrome.readingMode.contentFinishedStopSource);
