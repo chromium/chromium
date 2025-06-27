@@ -77,11 +77,11 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
 
 void ChangePasswordFormWaiter::DocumentOnLoadCompletedInPrimaryMainFrame() {
   if (timeout_timer_.IsRunning()) {
-    return;
+    // Page is still loading, reset the timer.
+    timeout_timer_.Reset();
   }
-  timeout_timer_.Start(
-      FROM_HERE, ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout,
-      this, &ChangePasswordFormWaiter::OnTimeout);
+  timeout_timer_.Start(FROM_HERE, kChangePasswordFormWaitingTimeout, this,
+                       &ChangePasswordFormWaiter::OnTimeout);
 }
 
 void ChangePasswordFormWaiter::OnTimeout() {
