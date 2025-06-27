@@ -631,14 +631,13 @@ class TestUploadIndividual(unittest.TestCase):
     self.mock_upload_perf_results.return_value = 0
     self.upload_skia_json_flag = True
 
-    benchmark_name, success, logdog_dict = ppr_module._upload_individual(
+    benchmark_name, success, _ = ppr_module._upload_individual(
         self.benchmark_name, self.directories, self.configuration_name,
         self.build_properties, self.output_json_file,
         self.upload_skia_json_flag)
 
     self.assertEqual(benchmark_name, self.benchmark_name)
     self.assertTrue(success)
-    self.assertEqual(logdog_dict[self.benchmark_name]['upload_failed'], 'False')
     self.mock_upload_skia_json.assert_not_called(
     )  # Should not be called because charts_count is not 0
     self.mock_shutil_rmtree.assert_called_once_with('/mock/tmp/dir')

@@ -472,7 +472,7 @@ def _merge_perf_results(benchmark_name, results_filename, directories):
     # Skip uploading Charts due to crbug.com/418674022#comment19
     logging.warning('Skip uploading Charts results to legacy dashboard: %s.',
                     benchmark_name)
-    return False, 0, 0
+    return True, charts_count, 0
 
   with open(results_filename, 'w') as rf:
     json.dump(merged_results, rf)
@@ -511,8 +511,9 @@ def _upload_individual(benchmark_name, directories, configuration_name,
     success, charts_count, _ = _merge_perf_results(benchmark_name,
                                                    results_filename,
                                                    directories)
-    if not success:
-      return (benchmark_name, False, logdog_dict)
+    if not success or charts_count > 0:
+      # Skip uploading Charts due to crbug.com/418674022#comment19
+      return (benchmark_name, success, logdog_dict)
     results_size_in_mib = os.path.getsize(results_filename) / (2 ** 20)
     logging.info('Uploading perf results from %s benchmark (size %s Mib)' %
           (benchmark_name, results_size_in_mib))
@@ -525,8 +526,7 @@ def _upload_individual(benchmark_name, directories, configuration_name,
                    upload_end_time)
     logdog_dict[base_benchmark_name]['upload_failed'] = (
         'True' if upload_return_code else 'False')
-    # `_upload_skia_json`` does not support Charts results format.
-    if upload_skia_json and charts_count == 0:
+    if upload_skia_json:
       upload_return_code += _upload_skia_json(benchmark_name,
                                               configuration_name,
                                               results_filename, tmpfile_dir,
