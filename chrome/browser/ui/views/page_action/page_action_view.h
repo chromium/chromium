@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_VIEW_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -138,6 +140,9 @@ class PageActionView : public IconLabelBubbleView,
   // for testing purpose.
   base::RepeatingCallback<void(PageActionTrigger)> click_callback_ =
       base::DoNothing();
+
+  // If set, ensures this view is highlighted.
+  std::optional<views::Button::ScopedAnchorHighlight> highlight_;
 };
 
 }  // namespace page_actions

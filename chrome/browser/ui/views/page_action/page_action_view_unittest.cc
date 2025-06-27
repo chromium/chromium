@@ -42,6 +42,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -369,6 +370,23 @@ TEST_F(PageActionViewTest, TooltipText) {
   EXPECT_CALL(*model(), GetTooltipText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(page_action_view()->GetTooltipText(), kTestText);
+}
+
+TEST_F(PageActionViewTest, Highlight) {
+  auto scoped_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+  views::InkDropHost* const ink_drop =
+      views::InkDrop::Get(page_action_view()->ink_drop_view());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetActionActive()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(ink_drop->GetHighlighted());
+
+  EXPECT_CALL(*model(), GetActionActive()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_FALSE(ink_drop->GetHighlighted());
 }
 
 // Test that OnThemeChanged updates the icon image correctly.

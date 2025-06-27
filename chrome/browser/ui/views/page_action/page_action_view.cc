@@ -113,6 +113,12 @@ void PageActionView::OnPageActionModelChanged(
   SetTooltipText(model.GetTooltipText());
   UpdateIconImage();
 
+  if (model.GetActionActive() && !highlight_) {
+    highlight_ = AddAnchorHighlight();
+  } else {
+    highlight_.reset();
+  }
+
   const bool was_chip_visible = IsChipVisible();
   if (!model.GetVisible()) {
     ResetSlideAnimation(/*show=*/false);
