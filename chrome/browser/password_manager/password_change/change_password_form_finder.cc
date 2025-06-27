@@ -5,14 +5,15 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
 #include "content/public/browser/web_contents.h"
-#include "chrome/browser/password_manager/password_change/button_click_helper.h"
 
 namespace {
 
@@ -76,13 +77,15 @@ void ChangePasswordFormFinder::OnPageContentReceived(
     std::move(callback_).Run(nullptr);
     return;
   }
-  // TODO(crbug.com/407486413): Check if it's a settings page and try to find a
-  // button which opens a change-pwd form.
   optimization_guide::proto::PasswordChangeRequest request;
   request.set_step(optimization_guide::proto::PasswordChangeRequest::FlowStep::
                        PasswordChangeRequest_FlowStep_OPEN_FORM_STEP);
   *request.mutable_page_context()->mutable_annotated_page_content() =
       std::move(content->proto);
+  *request.mutable_page_context()->mutable_title() =
+      base::UTF16ToUTF8(web_contents_->GetTitle());
+  *request.mutable_page_context()->mutable_url() =
+      web_contents_->GetLastCommittedURL().spec();
   optimization_guide::ExecuteModelWithLogging(
       GetOptimizationService(),
       optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,

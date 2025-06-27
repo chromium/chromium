@@ -209,6 +209,53 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 }
 
+TEST_F(ChangePasswordFormFinderTest, ExecuteModelOpenFormRequestHasArgs) {
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  auto form_finder = std::make_unique<ChangePasswordFormFinder>(
+      pass_key(), web_contents(), completion_callback.Get(),
+      capture_annotated_page_content.Get());
+
+  GURL test_url("https://example.com/change-password");
+  std::u16string test_title = u"Change Your Password";
+
+  content::WebContentsTester::For(web_contents())
+      ->SetLastCommittedURL(test_url);
+  content::WebContentsTester::For(web_contents())->SetTitle(test_title);
+
+  ASSERT_TRUE(form_finder->form_waiter());
+  static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
+      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(
+          [test_url, test_title](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              std::optional<base::TimeDelta> execution_timeout,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            const auto& request = static_cast<
+                const optimization_guide::proto::PasswordChangeRequest&>(
+                request_metadata);
+
+            EXPECT_EQ(request.page_context().url(), test_url.spec());
+            EXPECT_EQ(request.page_context().title(),
+                      base::UTF16ToUTF8(test_title));
+
+            PostResponse<true>(std::move(callback));
+          });
+
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          optimization_guide::AIPageContentResult()));
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+}
+
 TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedButFailed) {
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
