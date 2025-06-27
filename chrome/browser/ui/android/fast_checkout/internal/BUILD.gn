@@ -154,8 +154,8 @@ android_library("javatests") {
   resources_package = "org.chromium.chrome.browser.ui.fast_checkout"
 
   sources = [
-    "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutIntegrationTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutRenderTest.java",
+    "javatest/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutIntegrationTest.java",
+    "javatest/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutRenderTest.java",
   ]
   deps = [
     ":java",
