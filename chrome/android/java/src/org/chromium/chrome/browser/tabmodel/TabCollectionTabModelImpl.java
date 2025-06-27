@@ -529,7 +529,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int getTabCountForGroup(@Nullable Token tabGroupId) {
-        return 0;
+        if (tabGroupId == null) return 0;
+
+        return TabCollectionTabModelImplJni.get()
+                .getTabCountForGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
     }
 
     @Override
@@ -715,5 +718,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 int index,
                 @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
                 boolean isPinned);
+
+        int getTabCountForGroup(
+                long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
     }
 }

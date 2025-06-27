@@ -133,6 +133,21 @@ void TabCollectionTabModelImpl::AddTabRecursive(
                                          index, tab_group_id, is_pinned);
 }
 
+size_t TabCollectionTabModelImpl::GetTabCountForGroup(
+    JNIEnv* env,
+    const base::Token& token) {
+  std::optional<TabGroupId> tab_group_id =
+      tab_groups::TabGroupId::FromRawToken(token);
+  TabGroupTabCollection* group_collection =
+      tab_strip_collection_->GetTabGroupCollection(*tab_group_id);
+
+  if (group_collection) {
+    return group_collection->TabCountRecursive();
+  }
+
+  return 0;
+}
+
 size_t TabCollectionTabModelImpl::GetSafeIndex(
     bool is_move,
     size_t proposed_index,
