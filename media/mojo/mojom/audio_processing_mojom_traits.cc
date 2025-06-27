@@ -33,6 +33,7 @@ bool StructTraits<media::mojom::AudioProcessingSettingsDataView,
   out_settings->automatic_gain_control = input.automatic_gain_control();
   out_settings->multi_channel_capture_processing =
       input.multi_channel_capture_processing();
+  out_settings->use_loopback_aec_reference = input.use_loopback_aec_reference();
   return true;
 }
 

@@ -156,6 +156,9 @@ media::AudioProcessingSettings ComputeWebrtcProcessingSettings(
          media::AudioParameters::AUTOMATIC_GAIN_CONTROL));
 
   out.multi_channel_capture_processing = multichannel_processing;
+
+  out.use_loopback_aec_reference =
+      out.echo_cancellation && media::IsSystemLoopbackAsAecReferenceForcedOn();
   return out;
 }
 

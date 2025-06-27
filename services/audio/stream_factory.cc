@@ -107,7 +107,8 @@ void StreamFactory::CreateInputStream(
       std::move(stream_receiver), std::move(client), std::move(observer),
       std::move(pending_log), audio_manager_, aecdump_recording_manager_,
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-      GetNewReferenceSignalProvider(), std::move(processing_config),
+      GetNewReferenceSignalProvider(processing_config),
+      std::move(processing_config),
 #else
       nullptr, nullptr,
 #endif
@@ -360,8 +361,13 @@ void StreamFactory::CreateOutputStreamInternal(
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 std::unique_ptr<ReferenceSignalProvider>
-StreamFactory::GetNewReferenceSignalProvider() {
-  if (loopback_reference_manager_) {
+StreamFactory::GetNewReferenceSignalProvider(
+    const media::mojom::AudioProcessingConfigPtr& processing_config) {
+  if (!processing_config) {
+    return nullptr;
+  }
+  if (processing_config->settings.use_loopback_aec_reference) {
+    CHECK(loopback_reference_manager_);
     return loopback_reference_manager_->GetReferenceSignalProvider();
   }
   if (output_device_mixer_manager_) {

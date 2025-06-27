@@ -25,7 +25,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   bool multi_channel_capture_processing = true;
   // If true, a system loopback stream will be used as the echo cancellation
   // reference signal.
-  bool needs_loopback_aec_reference = false;
+  bool use_loopback_aec_reference = false;
 
   bool operator==(const AudioProcessingSettings& b) const {
     return echo_cancellation == b.echo_cancellation &&
@@ -33,7 +33,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
            automatic_gain_control == b.automatic_gain_control &&
            multi_channel_capture_processing ==
                b.multi_channel_capture_processing &&
-           needs_loopback_aec_reference == b.needs_loopback_aec_reference;
+           use_loopback_aec_reference == b.use_loopback_aec_reference;
   }
 
   bool NeedWebrtcAudioProcessing() const {

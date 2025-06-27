@@ -212,10 +212,12 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSaveVideoFrameAs);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSearchForVideoFrame);
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeWideEchoCancellation);
-#endif
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
 #if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kSystemLoopbackAsAecReference);
+MEDIA_EXPORT extern const base::FeatureParam<bool>
+    kSystemLoopbackAsAecReferenceForcedOn;
 MEDIA_EXPORT extern const base::FeatureParam<int> kAddedProcessingDelayMs;
 MEDIA_EXPORT extern const base::FeatureParam<int> kAecDelayNumFilters;
 #endif  // BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
@@ -550,7 +552,13 @@ MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
     const base::CommandLine& command_line);
 
 MEDIA_EXPORT bool IsChromeWideEchoCancellationEnabled();
+
+// Returns true if loopback-based AEC can be used for audio input streams that
+// are configured to do so.
 MEDIA_EXPORT bool IsSystemLoopbackAsAecReferenceEnabled();
+// Returns true if loopback-based AEC is enabled and its usage is forced, which
+// means that loopback-based AEC will be used instead of chrome-wide AEC.
+MEDIA_EXPORT bool IsSystemLoopbackAsAecReferenceForcedOn();
 #if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
 MEDIA_EXPORT base::TimeDelta GetAecAddedDelay();
 MEDIA_EXPORT int GetAecDelayNumFilters();

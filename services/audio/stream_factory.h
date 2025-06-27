@@ -113,7 +113,8 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
       const base::UnguessableToken& group_id,
       CreateLoopbackStreamCallback created_callback) final;
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  std::unique_ptr<ReferenceSignalProvider> GetNewReferenceSignalProvider();
+  std::unique_ptr<ReferenceSignalProvider> GetNewReferenceSignalProvider(
+      const media::mojom::AudioProcessingConfigPtr& processing_config);
 #endif
 
  private:

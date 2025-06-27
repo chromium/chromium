@@ -152,7 +152,7 @@ CreateWebRtcAudioProcessingModule(const AudioProcessingSettings& settings) {
 
   base::TimeDelta added_delay;
 #if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
-  if (settings.needs_loopback_aec_reference) {
+  if (settings.use_loopback_aec_reference) {
     added_delay = media::GetAecAddedDelay();
     int num_filters = media::GetAecDelayNumFilters();
     webrtc::EchoCanceller3Config config;

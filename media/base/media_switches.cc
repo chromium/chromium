@@ -486,6 +486,8 @@ BASE_FEATURE(kChromeWideEchoCancellation,
 BASE_FEATURE(kSystemLoopbackAsAecReference,
              "SystemLoopbackAsAecReference",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kSystemLoopbackAsAecReferenceForcedOn{
+    &kSystemLoopbackAsAecReference, "forced_on", false};
 // If we are using system loopback as AEC reference, we delay the capture
 // signal with `added_delay_ms` so that the reference signal arrives before
 // the capture signal.
@@ -1775,6 +1777,15 @@ bool IsChromeWideEchoCancellationEnabled() {
 bool IsSystemLoopbackAsAecReferenceEnabled() {
 #if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
   return base::FeatureList::IsEnabled(kSystemLoopbackAsAecReference);
+#else
+  return false;
+#endif
+}
+
+bool IsSystemLoopbackAsAecReferenceForcedOn() {
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+  return IsSystemLoopbackAsAecReferenceEnabled() &&
+         kSystemLoopbackAsAecReferenceForcedOn.Get();
 #else
   return false;
 #endif

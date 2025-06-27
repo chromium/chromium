@@ -17,7 +17,7 @@ std::string AudioProcessingSettings::ToString() const {
        ", gain control: ", bool_to_yes_no(automatic_gain_control),
        ", multichannel capture processing: ",
        bool_to_yes_no(multi_channel_capture_processing),
-       ", loopback aec: ", bool_to_yes_no(needs_loopback_aec_reference)});
+       ", loopback aec: ", bool_to_yes_no(use_loopback_aec_reference)});
 }
 
 }  // namespace media
