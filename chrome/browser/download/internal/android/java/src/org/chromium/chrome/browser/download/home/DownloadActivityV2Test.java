@@ -39,6 +39,8 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.MediumTest;
 
+import org.chromium.base.test.util.Restriction;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
@@ -482,7 +484,7 @@ public class DownloadActivityV2Test {
 
     @Test
     @MediumTest
-    @DisabledTest(message="crbug.com/428127167")
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/428127167
     public void testDeleteDangerousUsingMenu() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -504,6 +506,7 @@ public class DownloadActivityV2Test {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/428127167
     public void testDeleteDangerousUsingSelection() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
