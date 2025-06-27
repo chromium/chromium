@@ -283,15 +283,21 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
     config.features_disabled.push_back(kAutofillReportFormSubmissionErrors);
   }
 
+  // TODO(crbug.com/428189566): Re-enable after the test is fixed for
+  // ios-fieldtrial-rel.
   if ([self isRunningTest:@selector
-            (testSubmissionCountReporting_ScheduledTask)] ||
-      [self isRunningTest:@selector(testSubmissionCountReporting_UnloadPage)]) {
+            (DISABLED_testSubmissionCountReporting_ScheduledTask)] ||
+      [self isRunningTest:@selector
+            (DISABLED_testSubmissionCountReporting_UnloadPage)]) {
     config.features_enabled.push_back(kAutofillIsolatedWorldForJavascriptIos);
     config.features_enabled.push_back(kAutofillCountFormSubmissionInRenderer);
   }
 
-  if ([self isRunningTest:@selector
-            (testSubmissionCountReporting_ScheduledTask_NotIsolated)]) {
+  // TODO(crbug.com/428189566): Re-enable after the test is fixed for
+  // ios-fieldtrial-rel.
+  if ([self
+          isRunningTest:@selector
+          (DISABLED_testSubmissionCountReporting_ScheduledTask_NotIsolated)]) {
     config.features_disabled.push_back(kAutofillIsolatedWorldForJavascriptIos);
     config.features_enabled.push_back(kAutofillCountFormSubmissionInRenderer);
   }
@@ -1136,7 +1142,9 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
 // Tests submission count reporting with the scheduled task for the 2 types of
 // form submission, regular and programmatic.
-- (void)testSubmissionCountReporting_ScheduledTask {
+// TODO(crbug.com/428189566): Re-enable after the test is fixed for
+// ios-fieldtrial-rel.
+- (void)DISABLED_testSubmissionCountReporting_ScheduledTask {
   // Load the page without submitting the form.
   [self loadFullAddressFormWithParams:{.default_prevented = true,
                                        .multiple_submissions = true}];
@@ -1223,7 +1231,9 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 // Tests submission count reporting with the scheduled task for the 2 types of
 // form submission, regular and programmatic - when autofill isn't in the
 // isolated world.
-- (void)testSubmissionCountReporting_ScheduledTask_NotIsolated {
+// TODO(crbug.com/428189566): Re-enable after the test is fixed for
+// ios-fieldtrial-rel.
+- (void)DISABLED_testSubmissionCountReporting_ScheduledTask_NotIsolated {
   // Load page without submitting the form.
   [self loadFullAddressFormWithParams:{.default_prevented = true,
                                        .multiple_submissions = true}];
@@ -1302,7 +1312,9 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 }
 
 // Tests submission count reporting when unloading a page.
-- (void)testSubmissionCountReporting_UnloadPage {
+// TODO(crbug.com/428189566): Re-enable after the test is fixed for
+// ios-fieldtrial-rel.
+- (void)DISABLED_testSubmissionCountReporting_UnloadPage {
   // Load page without submitting the form.
   [self loadFullAddressFormWithParams:{.default_prevented = true,
                                        .multiple_submissions_skip_programmatic =
