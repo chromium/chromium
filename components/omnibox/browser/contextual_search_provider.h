@@ -87,8 +87,8 @@ class ContextualSearchProvider : public BaseSearchProvider {
 
   // Conditionally appends a special toolbelt match with various actions.
   // The `input_starter_pack_engine` may be nullptr and its value can affect the
-  // actions included on the toolbelt. Returns true if toolbelt is added; false
-  // otherwise.
+  // actions included on the toolbelt. Returns true if toolbelt with the lens
+  // action is added; false otherwise.
   bool MaybeAddToolbeltMatch(const AutocompleteInput& input,
                              const TemplateURL* input_starter_pack_engine);
 

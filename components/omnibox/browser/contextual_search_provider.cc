@@ -45,6 +45,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/search.h"
 #include "components/search_engines/search_engine_type.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
@@ -119,13 +120,13 @@ void ContextualSearchProvider::Start(
 
   const auto [input, starter_pack_engine] = AdjustInputForStarterPackKeyword(
       autocomplete_input, client()->GetTemplateURLService());
-  const bool toolbelted = MaybeAddToolbeltMatch(input, starter_pack_engine);
+  const bool toolbelted_with_lens =
+      MaybeAddToolbeltMatch(input, starter_pack_engine);
 
-  // Note, the dedicated entrypoint match is not added if the toolbelt is
-  // included because the toolbelt will already have an action to serve as the
-  // Lens entrypoint.
+  // Note, the dedicated entrypoint match is not added if the toolbelt with
+  // lens.
   if (omnibox_feature_configs::ContextualSearch::Get().show_open_lens_action &&
-      !toolbelted && IsLensEntrypointAvailable(input, client())) {
+      !toolbelted_with_lens && IsLensEntrypointAvailable(input, client())) {
     AddLensEntrypointMatch(input);
   }
 
@@ -433,12 +434,14 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
 
   // Lens is only allowed if the DSE is google, but that's already checked in
   // `client->IsLensEnabled()`. Lens is not restricted by locale.
+  bool lens_added = false;
   if (ActionEnabledForPageContext(input, config.show_lens_action_on_non_ntp,
                                   config.show_lens_action_on_ntp) &&
       (config.always_include_lens_action ||
        IsLensEntrypointAvailable(input, client()))) {
     match.actions.push_back(
         base::MakeRefCounted<ContextualSearchOpenLensAction>());
+    lens_added = true;
   }
 
   // Add the starter pack entry actions only if the given starter pack keyword
@@ -485,7 +488,7 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
         template_url_starter_pack_data::StarterPackId::kTabs);
   }
   matches_.push_back(match);
-  return true;
+  return lens_added;
 }
 
 const TemplateURL* ContextualSearchProvider::GetKeywordTemplateURL() const {
