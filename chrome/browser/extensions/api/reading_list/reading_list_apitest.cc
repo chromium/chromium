@@ -5,11 +5,13 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/reading_list.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -35,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest,
   // this observer will catch events for each.
   TestEventRouterObserver event_observer(EventRouter::Get(profile()));
 
-  // Add a Reading List entry in a normal browser.
+  // Add a Reading List entry in a normal profile.
   ReadingListModel* const reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(profile());
   reading_list_model->AddOrReplaceEntry(
@@ -53,12 +55,12 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest,
   ASSERT_FALSE(base::Contains(event_observer.events(),
                               api::reading_list::OnEntryAdded::kEventName));
 
-  const Browser* const incognito_browser = CreateIncognitoBrowser(profile());
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
-  // Add a Reading List entry in an incognito browser.
+  // Add a Reading List entry in an off-the-record profile.
   ReadingListModel* const incognito_reading_list_model =
-      ReadingListModelFactory::GetForBrowserContext(
-          incognito_browser->profile());
+      ReadingListModelFactory::GetForBrowserContext(incognito_profile);
   incognito_reading_list_model->AddOrReplaceEntry(
       GURL("https://www.example.com"), "example of title",
       reading_list::EntrySource::ADDED_VIA_CURRENT_APP, base::TimeDelta());
@@ -68,8 +70,7 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest,
   Event* incognito_event = event_observer.events()
                                .at(api::reading_list::OnEntryAdded::kEventName)
                                .get();
-  EXPECT_EQ(incognito_event->restrict_to_browser_context,
-            incognito_browser->profile());
+  EXPECT_EQ(incognito_event->restrict_to_browser_context, incognito_profile);
 }
 
 }  // namespace

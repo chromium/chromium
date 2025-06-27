@@ -89,6 +89,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::PermissionsEventRouterFactory::GetInstance();
   extensions::PreferenceAPI::GetFactoryInstance();
   extensions::ProcessesAPI::GetFactoryInstance();
+  extensions::ReadingListEventRouterFactory::GetInstance();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ActivityLogAPI::GetFactoryInstance();
@@ -122,7 +123,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   extensions::PrintingAPIHandler::GetFactoryInstance();
 #endif
-  extensions::ReadingListEventRouterFactory::GetInstance();
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance();
 #endif
