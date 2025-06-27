@@ -92,8 +92,10 @@ enum class CardBenefitFormEvent {
   // when the user had two or more server cards.
   kSuggestionWithBenefitFilledWithMultipleServerCards = 8,
 
-  // TODO(crbug.com/417323667): "9" is reserved for
-  // `kSuggestionWithoutBenefitFilledWithMultipleServerCards`.
+  // A suggestion of a masked server card without a benefit available was
+  // filled when the user had two or more server cards, and at least one had a
+  // benefit available.
+  kSuggestionWithoutBenefitFilledWithMultipleServerCards = 9,
 
   // TODO(crbug.com/417323667): "10" is reserved for
   // `kSuggestionWithBenefitSubmitted`.

@@ -315,6 +315,12 @@ void LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent event,
         LogBenefitFormEventToBenefitSourceHistogramDeprecated(
             context.selected_benefit_source,
             FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE);
+      } else {
+        if (context.masked_server_card_count >= 2) {
+          LogBenefitFormEventToMainBenefitHistogram(
+              CardBenefitFormEvent::
+                  kSuggestionWithoutBenefitFilledWithMultipleServerCards);
+        }
       }
       LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
           context.instrument_ids_to_available_benefit_sources,
