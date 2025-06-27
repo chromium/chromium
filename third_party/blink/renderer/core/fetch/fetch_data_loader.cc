@@ -296,7 +296,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
     DCHECK(!form_data_);
     DCHECK(!multipart_parser_);
 
-    StringUTF8Adaptor multipart_boundary_utf8(multipart_boundary_);
+    StringUtf8Adaptor multipart_boundary_utf8(multipart_boundary_);
     Vector<char> multipart_boundary_vector;
     multipart_boundary_vector.AppendSpan(base::span(multipart_boundary_utf8));
 

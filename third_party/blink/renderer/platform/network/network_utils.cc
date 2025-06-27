@@ -50,7 +50,7 @@ namespace network_utils {
 
 bool IsReservedIPAddress(const StringView& host) {
   net::IPAddress address;
-  StringUTF8Adaptor utf8(host);
+  StringUtf8Adaptor utf8(host);
   if (!net::ParseURLHostnameToAddress(utf8.AsStringView(), &address)) {
     return false;
   }
@@ -59,7 +59,7 @@ bool IsReservedIPAddress(const StringView& host) {
 
 String GetDomainAndRegistry(const StringView& host,
                             PrivateRegistryFilter filter) {
-  StringUTF8Adaptor host_utf8(host);
+  StringUtf8Adaptor host_utf8(host);
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       host_utf8.AsStringView(), getNetPrivateRegistryFilter(filter));
   return String(domain);

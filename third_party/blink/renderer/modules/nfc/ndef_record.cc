@@ -36,7 +36,7 @@ namespace blink {
 namespace {
 
 WTF::Vector<uint8_t> GetUTF8DataFromString(const String& string) {
-  StringUTF8Adaptor utf8_string(string);
+  StringUtf8Adaptor utf8_string(string);
   WTF::Vector<uint8_t> data;
   data.AppendSpan(base::span(utf8_string));
   return data;

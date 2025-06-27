@@ -454,7 +454,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
   // once.
   DCHECK(metadata_set.empty());
 
-  StringUTF8Adaptor string_adapter(attribute);
+  StringUtf8Adaptor string_adapter(attribute);
   std::string_view characters = base::TrimWhitespaceASCII(
       base::as_string_view(string_adapter), base::TRIM_ALL);
 
@@ -563,8 +563,8 @@ bool SubresourceIntegrity::VerifyInlineIntegrity(
   // any of the known keys. If any key can verify any signature, return true.
   int semantically_valid_signatures = 0;
 
-  StringUTF8Adaptor sig_adaptor(signature_attr);
-  StringUTF8Adaptor source_adaptor(source_code);
+  StringUtf8Adaptor sig_adaptor(signature_attr);
+  StringUtf8Adaptor source_adaptor(source_code);
   for (std::string_view piece : base::SplitStringPiece(
            sig_adaptor.AsStringView(), base::kWhitespaceASCII,
            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {

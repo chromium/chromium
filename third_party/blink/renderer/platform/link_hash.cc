@@ -47,9 +47,9 @@ static bool ResolveRelative(const KURL& base,
   // We use these low-level GURL functions to avoid converting back and forth
   // from UTF-8 unnecessarily.
   url::Parsed parsed;
-  StringUTF8Adaptor base_utf8(base.GetString());
+  StringUtf8Adaptor base_utf8(base.GetString());
   if (relative.Is8Bit()) {
-    StringUTF8Adaptor relative_utf8(relative);
+    StringUtf8Adaptor relative_utf8(relative);
     return url::ResolveRelative(base_utf8.data(), base_utf8.size(),
                                 base.GetParsed(), relative_utf8.data(),
                                 relative_utf8.size(), nullptr, buffer, &parsed);

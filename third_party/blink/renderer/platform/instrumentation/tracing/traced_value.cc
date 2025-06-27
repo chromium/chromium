@@ -42,7 +42,7 @@ void TracedValue::SetBooleanWithCopiedName(const char* name, bool value) {
 }
 
 void TracedValue::SetString(const char* name, const String& value) {
-  StringUTF8Adaptor adaptor(value);
+  StringUtf8Adaptor adaptor(value);
   traced_value_->SetString(name, adaptor.AsStringView());
 }
 
@@ -52,7 +52,7 @@ void TracedValue::SetValue(const char* name, TracedValue* value) {
 
 void TracedValue::SetStringWithCopiedName(const char* name,
                                           const String& value) {
-  StringUTF8Adaptor adaptor(value);
+  StringUtf8Adaptor adaptor(value);
   traced_value_->SetStringWithCopiedName(name, adaptor.AsStringView());
 }
 
@@ -89,7 +89,7 @@ void TracedValue::PushBoolean(bool value) {
 }
 
 void TracedValue::PushString(const String& value) {
-  StringUTF8Adaptor adaptor(value);
+  StringUtf8Adaptor adaptor(value);
   traced_value_->AppendString(adaptor.AsStringView());
 }
 

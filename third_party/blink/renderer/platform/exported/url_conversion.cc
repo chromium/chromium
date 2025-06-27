@@ -20,7 +20,7 @@ GURL WebStringToGURL(const WebString& web_string) {
   String str = web_string;
   if (str.Is8Bit()) {
     // Ensure the (possibly Latin-1) 8-bit string is UTF-8 for GURL.
-    StringUTF8Adaptor utf8(str);
+    StringUtf8Adaptor utf8(str);
     return GURL(utf8.AsStringView());
   }
 

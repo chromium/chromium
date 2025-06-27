@@ -158,7 +158,7 @@ class V8ScriptRunnerTest : public testing::Test {
     if (serialized_metadata.size() != 0) {
       resource->SetSerializedCachedMetadata(serialized_metadata);
     }
-    StringUTF8Adaptor code_utf8(code.value());
+    StringUtf8Adaptor code_utf8(code.value());
     resource->AppendData(code_utf8);
     resource->FinishForTest();
 

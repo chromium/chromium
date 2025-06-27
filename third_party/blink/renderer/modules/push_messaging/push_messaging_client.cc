@@ -107,7 +107,7 @@ void PushMessagingClient::DidGetManifest(
   }
 
   if (!manifest->gcm_sender_id.IsNull()) {
-    StringUTF8Adaptor gcm_sender_id_as_utf8_string(manifest->gcm_sender_id);
+    StringUtf8Adaptor gcm_sender_id_as_utf8_string(manifest->gcm_sender_id);
     Vector<uint8_t> application_server_key;
     application_server_key.AppendSpan(base::span(gcm_sender_id_as_utf8_string));
     options->application_server_key = std::move(application_server_key);

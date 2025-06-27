@@ -84,7 +84,7 @@ bool IsProtocolDefaultPort(const String& protocol, const String& port) {
   if (!port_ok)
     return false;
 
-  StringUTF8Adaptor protocol_utf8(protocol);
+  StringUtf8Adaptor protocol_utf8(protocol);
   int default_port = url::DefaultPortForScheme(protocol_utf8.AsStringView());
   return default_port != url::PORT_UNSPECIFIED && default_port == port_number;
 }
@@ -104,7 +104,7 @@ String EscapeBaseURLString(const StringView& input, ValueType type) {
   std::string result;
   result.reserve(input.length());
 
-  StringUTF8Adaptor utf8(input);
+  StringUtf8Adaptor utf8(input);
   liburlpattern::EscapePatternStringAndAppend(utf8.AsStringView(), result);
 
   return String::FromUTF8(result);
@@ -385,7 +385,7 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   }
 
   const auto& input_string = input->GetAsUSVString();
-  const StringUTF8Adaptor utf8_string(input_string);
+  const StringUtf8Adaptor utf8_string(input_string);
   liburlpattern::ConstructorStringParser constructor_string_parser(
       utf8_string.AsStringView());
 

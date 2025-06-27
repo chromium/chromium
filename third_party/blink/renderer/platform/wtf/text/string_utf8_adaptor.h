@@ -41,21 +41,21 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
+namespace blink {
 
 // This class lets you get UTF-8 data out of a String without mallocing a
 // separate buffer to hold the data if the String happens to be 8 bit and
 // contain only ASCII characters.
-class WTF_EXPORT StringUTF8Adaptor final {
+class WTF_EXPORT StringUtf8Adaptor final {
   DISALLOW_NEW();
 
  public:
   using iterator = base::raw_span<const char>::iterator;
 
-  explicit StringUTF8Adaptor(
+  explicit StringUtf8Adaptor(
       StringView string,
-      Utf8ConversionMode mode = Utf8ConversionMode::kLenient);
-  ~StringUTF8Adaptor();
+      WTF::Utf8ConversionMode mode = WTF::Utf8ConversionMode::kLenient);
+  ~StringUtf8Adaptor();
 
   const char* data() const { return span_.data(); }
   wtf_size_t size() const { return span_.size(); }
@@ -72,8 +72,11 @@ class WTF_EXPORT StringUTF8Adaptor final {
   base::raw_span<const char> span_;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
-using WTF::StringUTF8Adaptor;
+// TODO(crbug.com/422768753): Remove the `using` directive.
+namespace WTF {
+using StringUTF8Adaptor = blink::StringUtf8Adaptor;
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_UTF8_ADAPTOR_H_

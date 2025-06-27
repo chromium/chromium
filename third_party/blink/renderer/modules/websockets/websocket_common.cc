@@ -252,7 +252,7 @@ std::optional<uint16_t> WebSocketCommon::ValidateCloseCodeAndReason(
 
   // Bindings specify USVString, so unpaired surrogates are already replaced
   // with U+FFFD.
-  StringUTF8Adaptor utf8(reason);
+  StringUtf8Adaptor utf8(reason);
   if (utf8.size() > kMaxReasonSizeInBytes) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

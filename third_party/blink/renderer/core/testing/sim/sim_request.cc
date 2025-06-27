@@ -66,7 +66,7 @@ void SimRequestBase::StartInternal() {
 }
 
 void SimRequestBase::Write(const String& data) {
-  WriteInternal(StringUTF8Adaptor(data));
+  WriteInternal(StringUtf8Adaptor(data));
 }
 
 void SimRequestBase::Write(const Vector<char>& data) {

@@ -18,7 +18,7 @@ String CreateCanonicalUUIDString() {
 bool IsValidUUID(const String& uuid) {
   // In most (if not all) cases the given uuid should be utf-8, so this
   // conversion should be almost no-op.
-  StringUTF8Adaptor utf8(uuid);
+  StringUtf8Adaptor utf8(uuid);
   return base::Uuid::ParseLowercase(utf8.AsStringView()).is_valid();
 }
 

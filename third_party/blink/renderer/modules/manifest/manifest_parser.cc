@@ -195,7 +195,7 @@ std::optional<std::vector<liburlpattern::Part>> ParsePatternInitField(
     return std::vector<liburlpattern::Part>();
   }
 
-  StringUTF8Adaptor utf8(value);
+  StringUtf8Adaptor utf8(value);
   auto parse_result = liburlpattern::Parse(
       utf8.AsStringView(),
       [](std::string_view input) { return std::string(input); });
@@ -219,7 +219,7 @@ std::optional<std::vector<liburlpattern::Part>> ParsePatternInitField(
 String EscapePatternString(const StringView& input) {
   std::string result;
   result.reserve(input.length());
-  StringUTF8Adaptor utf8(input);
+  StringUtf8Adaptor utf8(input);
   liburlpattern::EscapePatternStringAndAppend(utf8.AsStringView(), result);
   return String(result);
 }

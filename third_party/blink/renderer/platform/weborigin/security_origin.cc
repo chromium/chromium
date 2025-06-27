@@ -709,7 +709,7 @@ String SecurityOrigin::CanonicalizeSpecialHost(const String& host,
   url::Component out_host;
   url::RawCanonOutputT<char> canon_output;
   if (host.Is8Bit()) {
-    StringUTF8Adaptor utf8(host);
+    StringUtf8Adaptor utf8(host);
     *success = url::CanonicalizeSpecialHost(
         utf8.data(), url::Component(0, utf8.size()), canon_output, out_host);
   } else {
@@ -730,7 +730,7 @@ String SecurityOrigin::CanonicalizeHost(const String& host,
   url::Component out_host;
   url::RawCanonOutputT<char> canon_output;
   if (host.Is8Bit()) {
-    StringUTF8Adaptor utf8(host);
+    StringUtf8Adaptor utf8(host);
     *success = url::CanonicalizeFileHost(
         utf8.data(), url::Component(0, utf8.size()), canon_output, out_host);
   } else {

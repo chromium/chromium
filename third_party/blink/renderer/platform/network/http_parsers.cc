@@ -657,7 +657,7 @@ bool IsHTTPTabOrSpace(UChar c) {
 // Note that `mime_type` should already have been stripped of parameters by
 // `ExtractMIMETypeFromMediaType`.
 AtomicString MinimizedMIMEType(const AtomicString& mime_type) {
-  StringUTF8Adaptor mime_utf8(mime_type);
+  StringUtf8Adaptor mime_utf8(mime_type);
 
   if (IsSupportedJavascriptMimeType(mime_utf8.AsStringView())) {
     return AtomicString("text/javascript");
@@ -937,7 +937,7 @@ bool ParseMultipartHeadersFromBody(base::span<const uint8_t> bytes,
   // Copy headers listed in replaceHeaders to the response.
   for (const AtomicString& header : ReplaceHeaders()) {
     std::string value;
-    StringUTF8Adaptor adaptor(header);
+    StringUtf8Adaptor adaptor(header);
     std::string_view header_string_piece(adaptor.AsStringView());
     size_t iterator = 0;
 
@@ -978,7 +978,7 @@ bool ParseMultipartFormHeadersFromBody(base::span<const uint8_t> bytes,
   const AtomicString* const headerNamePointers[] = {
       &http_names::kContentDisposition, &http_names::kContentType};
   for (const AtomicString* headerNamePointer : headerNamePointers) {
-    StringUTF8Adaptor adaptor(*headerNamePointer);
+    StringUtf8Adaptor adaptor(*headerNamePointer);
     size_t iterator = 0;
     std::string_view headerNameStringPiece = adaptor.AsStringView();
     std::string value;
@@ -996,7 +996,7 @@ bool ParseContentRangeHeaderFor206(const String& content_range,
                                    int64_t* last_byte_position,
                                    int64_t* instance_length) {
   return net::HttpUtil::ParseContentRangeHeaderFor206(
-      StringUTF8Adaptor(content_range).AsStringView(), first_byte_position,
+      StringUtf8Adaptor(content_range).AsStringView(), first_byte_position,
       last_byte_position, instance_length);
 }
 

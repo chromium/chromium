@@ -94,7 +94,7 @@ Document* XSLTProcessor::CreateDocumentFromSource(
     WebNavigationParams::FillStaticResponse(
         params.get(), mime_type,
         source_encoding.empty() ? "UTF-8" : source_encoding,
-        StringUTF8Adaptor(document_source));
+        StringUtf8Adaptor(document_source));
     params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
     frame->Loader().CommitNavigation(std::move(params), nullptr,
                                      CommitReason::kXSLT);

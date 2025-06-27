@@ -135,7 +135,7 @@ class CORE_EXPORT PagePopupClient {
 
 inline void PagePopupClient::AddString(const String& str,
                                        SegmentedBuffer& data) {
-  StringUTF8Adaptor utf8(str);
+  StringUtf8Adaptor utf8(str);
   data.Append(base::span(utf8));
 }
 

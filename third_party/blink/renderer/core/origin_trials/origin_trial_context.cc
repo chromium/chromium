@@ -633,7 +633,7 @@ bool OriginTrialContext::EnableTrialFromToken(
     const Vector<OriginInfo>* script_origins) {
   DCHECK(!token.empty());
   OriginTrialStatus trial_status = OriginTrialStatus::kValidTokenNotProvided;
-  StringUTF8Adaptor token_string(token);
+  StringUtf8Adaptor token_string(token);
   // TODO(https://crbug.com/1153336): Remove explicit validator.
   // Since |blink::SecurityOrigin::IsPotentiallyTrustworthy| is the source of
   // security information in this context, use that explicitly, instead of

@@ -231,7 +231,7 @@ static bool SaveResultToString(xmlDocPtr result_doc,
 }
 
 static char* AllocateParameterValue(const String& value) {
-  StringUTF8Adaptor utf8(value);
+  StringUtf8Adaptor utf8(value);
   auto parameter_value = base::HeapArray<char>::Uninit(
       base::CheckAdd(utf8.size(), 1u).ValueOrDie());
   parameter_value.copy_prefix_from(base::span(utf8));

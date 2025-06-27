@@ -97,7 +97,7 @@ class ClipboardTextReader final : public ClipboardReader {
     DCHECK(!IsMainThread());
 
     // Encode WTF String to UTF-8, the standard text format for Blobs.
-    StringUTF8Adaptor utf8_text(plain_text);
+    StringUtf8Adaptor utf8_text(plain_text);
     Vector<uint8_t> utf8_bytes;
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());
     utf8_bytes.AppendSpan(base::span(utf8_text));
@@ -183,7 +183,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
     DCHECK(!IsMainThread());
 
     // Encode WTF String to UTF-8, the standard text format for blobs.
-    StringUTF8Adaptor utf8_text(plain_text);
+    StringUtf8Adaptor utf8_text(plain_text);
     Vector<uint8_t> utf8_bytes;
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());
     utf8_bytes.AppendSpan(base::span(utf8_text));
@@ -261,7 +261,7 @@ class ClipboardSvgReader final : public ClipboardReader {
     DCHECK(!IsMainThread());
 
     // Encode WTF String to UTF-8, the standard text format for Blobs.
-    StringUTF8Adaptor utf8_text(plain_text);
+    StringUtf8Adaptor utf8_text(plain_text);
     Vector<uint8_t> utf8_bytes;
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());
     utf8_bytes.AppendSpan(base::span(utf8_text));

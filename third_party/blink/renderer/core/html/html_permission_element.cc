@@ -173,7 +173,7 @@ uint16_t GetTranslatedMessageID(uint16_t message_id,
     return message_id;
   }
 
-  StringUTF8Adaptor lang_adaptor(language_string);
+  StringUtf8Adaptor lang_adaptor(language_string);
   std::string_view lang_utf8 = lang_adaptor.AsStringView();
   if (auto mapped_id = GetPermissionElementMessageId(lang_utf8, message_id);
       mapped_id.has_value()) {

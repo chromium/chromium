@@ -29,7 +29,7 @@ base::FilePath StringToFilePath(const String& str) {
   }
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  StringUTF8Adaptor utf8(str);
+  StringUtf8Adaptor utf8(str);
   return base::FilePath::FromUTF8Unsafe(utf8.AsStringView());
 #else
   const LChar* data8 = str.Characters8();

@@ -366,7 +366,7 @@ bool LocalDOMWindow::IsCrossSiteSubframe() const {
   // It'd be nice to avoid the url::Origin temporaries, but that would require
   // exposing the net internal helper.
   // TODO: If the helper gets exposed, we could do this without any new
-  // allocations using StringUTF8Adaptor.
+  // allocations using StringUtf8Adaptor.
   auto* top_origin =
       GetFrame()->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
   return !net::registry_controlled_domains::SameDomainOrHost(
