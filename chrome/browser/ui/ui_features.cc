@@ -110,7 +110,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kSideBySideShowDropTargetDelay,
                    &kSideBySide,
                    "drop_target_show_delay",
-                   base::Seconds(1));
+                   base::Milliseconds(700));
 
 // The padding inside the drop target that determines the overall width.
 BASE_FEATURE_PARAM(int,
