@@ -40,7 +40,7 @@ constexpr gfx::Size kDefaultTextureSizeForTesting = gfx::Size(20, 20);
 
 constexpr auto kResultFormat = CopyOutputRequest::ResultFormat::RGBA;
 constexpr auto kResultDestination =
-    CopyOutputRequest::ResultDestination::kNativeTextures;
+    CopyOutputRequest::ResultDestination::kSharedImage;
 
 // Returns the index of |render_pass_id| in |shared_elements| if the id
 // corresponds to an element in the given list. Otherwise returns the size of

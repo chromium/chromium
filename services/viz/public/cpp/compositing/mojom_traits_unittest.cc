@@ -327,7 +327,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
 
   const auto result_format = CopyOutputRequest::ResultFormat::RGBA;
   const auto result_destination =
-      CopyOutputRequest::ResultDestination::kNativeTextures;
+      CopyOutputRequest::ResultDestination::kSharedImage;
 
   const int8_t mailbox_name[GL_MAILBOX_SIZE_CHROMIUM] = {
       0, 9, 8, 7, 6, 5, 4, 3, 2, 1, 9, 7, 5, 3, 1, 3};
@@ -371,7 +371,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
       },
       run_loop_for_release.QuitClosure(), sync_token));
 
-  output->SendResult(std::make_unique<CopyOutputTextureResult>(
+  output->SendResult(std::make_unique<CopyOutputSharedImageResult>(
       result_format, result_rect, mailbox, gfx::ColorSpace::CreateSRGB(),
       "CopyOutputRequest_TextureRequest", std::move(release_callbacks)));
 
@@ -1351,8 +1351,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_EmptyTexture) {
 
   auto input = std::make_unique<CopyOutputResult>(
       CopyOutputRequest::ResultFormat::RGBA,
-      CopyOutputRequest::ResultDestination::kNativeTextures, gfx::Rect(),
-      false);
+      CopyOutputRequest::ResultDestination::kSharedImage, gfx::Rect(), false);
   EXPECT_TRUE(input->IsEmpty());
 
   std::unique_ptr<CopyOutputResult> output;
@@ -1360,8 +1359,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_EmptyTexture) {
 
   EXPECT_TRUE(output->IsEmpty());
   EXPECT_EQ(output->format(), CopyOutputResult::Format::RGBA);
-  EXPECT_EQ(output->destination(),
-            CopyOutputResult::Destination::kNativeTextures);
+  EXPECT_EQ(output->destination(), CopyOutputResult::Destination::kSharedImage);
   EXPECT_TRUE(output->rect().IsEmpty());
   EXPECT_EQ(output->GetSharedImage().get(), nullptr);
 }
@@ -1431,7 +1429,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
   gpu::Mailbox mailbox;
   mailbox.SetName(mailbox_name);
   std::unique_ptr<CopyOutputResult> input =
-      std::make_unique<CopyOutputTextureResult>(
+      std::make_unique<CopyOutputSharedImageResult>(
           CopyOutputResult::Format::RGBA, result_rect, mailbox,
           result_color_space, "CopyOutputResult_Texture",
           std::move(release_callbacks));
@@ -1441,15 +1439,14 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
 
   EXPECT_FALSE(output->IsEmpty());
   EXPECT_EQ(output->format(), CopyOutputResult::Format::RGBA);
-  EXPECT_EQ(output->destination(),
-            CopyOutputResult::Destination::kNativeTextures);
+  EXPECT_EQ(output->destination(), CopyOutputResult::Destination::kSharedImage);
   EXPECT_EQ(output->rect(), result_rect);
   ASSERT_NE(output->GetSharedImage().get(), nullptr);
   EXPECT_EQ(output->GetSharedImage()->mailbox(), mailbox);
   EXPECT_EQ(output->GetSharedImage()->color_space(), result_color_space);
 
   CopyOutputResult::ReleaseCallbacks out_callbacks =
-      output->TakeTextureOwnership();
+      output->TakeSharedImageOwnership();
 
   EXPECT_EQ(1u, out_callbacks.size());
   for (auto& cb : out_callbacks) {

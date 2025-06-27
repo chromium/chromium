@@ -92,7 +92,7 @@ void TakeScreenshot(
   const gfx::Rect request_bounds(screenshot_layer->size());
   auto screenshot_request = std::make_unique<viz::CopyOutputRequest>(
       viz::CopyOutputRequest::ResultFormat::RGBA,
-      viz::CopyOutputRequest::ResultDestination::kNativeTextures,
+      viz::CopyOutputRequest::ResultDestination::kSharedImage,
       std::move(on_screenshot_taken));
   screenshot_request->set_area(request_bounds);
   screenshot_request->set_result_task_runner(

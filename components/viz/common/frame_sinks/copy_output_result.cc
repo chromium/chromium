@@ -56,7 +56,7 @@ CopyOutputResult::CopyOutputResult(Format format,
   DCHECK(format_ == Format::RGBA || format_ == Format::I420_PLANES ||
          format == Format::NV12);
   DCHECK(destination_ == Destination::kSystemMemory ||
-         destination_ == Destination::kNativeTextures);
+         destination_ == Destination::kSharedImage);
 }
 
 CopyOutputResult::~CopyOutputResult() = default;
@@ -81,7 +81,8 @@ CopyOutputResult::ScopedSkBitmap CopyOutputResult::ScopedAccessSkBitmap()
   return ScopedSkBitmap(this);
 }
 
-CopyOutputResult::ReleaseCallbacks CopyOutputResult::TakeTextureOwnership() {
+CopyOutputResult::ReleaseCallbacks
+CopyOutputResult::TakeSharedImageOwnership() {
   return {};
 }
 
@@ -229,14 +230,14 @@ const SkBitmap& CopyOutputSkBitmapResult::AsSkBitmap() const {
 
 CopyOutputSkBitmapResult::~CopyOutputSkBitmapResult() = default;
 
-CopyOutputTextureResult::CopyOutputTextureResult(
+CopyOutputSharedImageResult::CopyOutputSharedImageResult(
     Format format,
     const gfx::Rect& rect,
     const gpu::Mailbox& mailbox,
     const gfx::ColorSpace& color_space,
     std::string_view debug_label,
     ReleaseCallbacks release_callbacks)
-    : CopyOutputTextureResult(
+    : CopyOutputSharedImageResult(
           format,
           rect,
           base::WrapRefCounted(new gpu::ClientSharedImage(
@@ -246,12 +247,12 @@ CopyOutputTextureResult::CopyOutputTextureResult(
                                    debug_label})),
           std::move(release_callbacks)) {}
 
-CopyOutputTextureResult::CopyOutputTextureResult(
+CopyOutputSharedImageResult::CopyOutputSharedImageResult(
     Format format,
     const gfx::Rect& rect,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     ReleaseCallbacks release_callbacks)
-    : CopyOutputResult(format, Destination::kNativeTextures, rect, false),
+    : CopyOutputResult(format, Destination::kSharedImage, rect, false),
       shared_image_(std::move(shared_image)),
       release_callbacks_(std::move(release_callbacks)) {
   // check non-null `shared_image_`
@@ -266,7 +267,7 @@ CopyOutputTextureResult::CopyOutputTextureResult(
   DCHECK(rect.IsEmpty() || shared_image_->color_space().IsValid());
 }
 
-CopyOutputTextureResult::~CopyOutputTextureResult() {
+CopyOutputSharedImageResult::~CopyOutputSharedImageResult() {
   for (auto& release_callback : release_callbacks_) {
     // No need to check if release_callback is valid, when texture ownership
     // is taken away from us, we zero out release_callbacks_ and the loop would
@@ -276,12 +277,12 @@ CopyOutputTextureResult::~CopyOutputTextureResult() {
 }
 
 scoped_refptr<gpu::ClientSharedImage>
-CopyOutputTextureResult::GetSharedImage() {
+CopyOutputSharedImageResult::GetSharedImage() {
   return shared_image_;
 }
 
 CopyOutputResult::ReleaseCallbacks
-CopyOutputTextureResult::TakeTextureOwnership() {
+CopyOutputSharedImageResult::TakeSharedImageOwnership() {
   CopyOutputResult::ReleaseCallbacks result = std::move(release_callbacks_);
   release_callbacks_.clear();
 

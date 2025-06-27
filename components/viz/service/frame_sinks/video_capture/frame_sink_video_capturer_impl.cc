@@ -1154,7 +1154,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   auto request = std::make_unique<CopyOutputRequest>(
       VideoPixelFormatToCopyOutputRequestFormat(pixel_format_),
       capture_texture_results
-          ? CopyOutputRequest::ResultDestination::kNativeTextures
+          ? CopyOutputRequest::ResultDestination::kSharedImage
           : CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&FrameSinkVideoCapturerImpl::DidCopyFrame,
                      capture_weak_factory_.GetWeakPtr(),
@@ -1245,7 +1245,7 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
           case CopyOutputResult::Destination::kSystemMemory:
             format = "ARGB_Bitmap";
             break;
-          case CopyOutputResult::Destination::kNativeTextures:
+          case CopyOutputResult::Destination::kSharedImage:
             format = "ARGB_Texture";
             break;
         }

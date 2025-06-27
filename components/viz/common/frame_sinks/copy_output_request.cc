@@ -38,7 +38,7 @@ const char* ResultDestinationToShortString(
   switch (result_destination) {
     case viz::CopyOutputRequest::ResultDestination::kSystemMemory:
       return "CPU";
-    case viz::CopyOutputRequest::ResultDestination::kNativeTextures:
+    case viz::CopyOutputRequest::ResultDestination::kSharedImage:
       return "GPU";
   }
 }
@@ -117,7 +117,7 @@ void CopyOutputRequest::SetUniformScaleRatio(int scale_from, int scale_to) {
 
 void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   DCHECK(!blit_request_);
-  DCHECK_EQ(result_destination(), ResultDestination::kNativeTextures);
+  DCHECK_EQ(result_destination(), ResultDestination::kSharedImage);
   DCHECK(result_format() == ResultFormat::NV12 ||
          result_format() == ResultFormat::RGBA);
   DCHECK(has_result_selection());

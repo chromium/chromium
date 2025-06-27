@@ -900,7 +900,7 @@ class LayerTreeHostCopyRequestTestDeleteSharedImage
     EXPECT_EQ(gfx::Size(10, 10).ToString(), result->size().ToString());
     EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
     EXPECT_EQ(result->destination(),
-              viz::CopyOutputResult::Destination::kNativeTextures);
+              viz::CopyOutputResult::Destination::kSharedImage);
     EXPECT_NE(result->GetSharedImage().get(), nullptr);
 
     // Save the result for later.
@@ -914,7 +914,7 @@ class LayerTreeHostCopyRequestTestDeleteSharedImage
   void InsertCopyRequest() {
     copy_layer_->RequestCopyOfOutput(std::make_unique<viz::CopyOutputRequest>(
         viz::CopyOutputRequest::ResultFormat::RGBA,
-        viz::CopyOutputResult::Destination::kNativeTextures,
+        viz::CopyOutputResult::Destination::kSharedImage,
         base::BindOnce(&LayerTreeHostCopyRequestTestDeleteSharedImage::
                            ReceiveCopyRequestOutputAndCommit,
                        base::Unretained(this))));
@@ -1122,7 +1122,7 @@ class LayerTreeHostCopyRequestTestCreatesSharedImage
     // Request a normal texture copy. This should create a new shared image.
     copy_layer_->RequestCopyOfOutput(std::make_unique<viz::CopyOutputRequest>(
         viz::CopyOutputRequest::ResultFormat::RGBA,
-        viz::CopyOutputResult::Destination::kNativeTextures,
+        viz::CopyOutputResult::Destination::kSharedImage,
         base::BindOnce(
             &LayerTreeHostCopyRequestTestCreatesSharedImage::CopyOutputCallback,
             base::Unretained(this))));
@@ -1132,9 +1132,9 @@ class LayerTreeHostCopyRequestTestCreatesSharedImage
     EXPECT_FALSE(result->IsEmpty());
     EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
     EXPECT_EQ(result->destination(),
-              viz::CopyOutputResult::Destination::kNativeTextures);
+              viz::CopyOutputResult::Destination::kSharedImage);
     ASSERT_NE(result->GetSharedImage().get(), nullptr);
-    release_ = result->TakeTextureOwnership();
+    release_ = result->TakeSharedImageOwnership();
     EXPECT_EQ(1u, release_.size());
   }
 
@@ -1207,7 +1207,7 @@ class LayerTreeHostCopyRequestTestDestroyBeforeCopy
         std::unique_ptr<viz::CopyOutputRequest> request =
             std::make_unique<viz::CopyOutputRequest>(
                 viz::CopyOutputRequest::ResultFormat::RGBA,
-                viz::CopyOutputResult::Destination::kNativeTextures,
+                viz::CopyOutputResult::Destination::kSharedImage,
                 base::BindOnce(&LayerTreeHostCopyRequestTestDestroyBeforeCopy::
                                    CopyOutputCallback,
                                base::Unretained(this)));
@@ -1299,7 +1299,7 @@ class LayerTreeHostCopyRequestTestShutdownBeforeCopy
         std::unique_ptr<viz::CopyOutputRequest> request =
             std::make_unique<viz::CopyOutputRequest>(
                 viz::CopyOutputRequest::ResultFormat::RGBA,
-                viz::CopyOutputResult::Destination::kNativeTextures,
+                viz::CopyOutputResult::Destination::kSharedImage,
                 base::BindOnce(&LayerTreeHostCopyRequestTestShutdownBeforeCopy::
                                    CopyOutputCallback,
                                base::Unretained(this)));

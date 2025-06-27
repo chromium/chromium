@@ -494,9 +494,9 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
         }
         break;
       }
-      case CopyOutputResult::Destination::kNativeTextures: {
+      case CopyOutputResult::Destination::kSharedImage: {
         // We don't need to provide a real GPU result.
-        result = std::make_unique<CopyOutputTextureResult>(
+        result = std::make_unique<CopyOutputSharedImageResult>(
             request->result_format(), request->result_selection(),
             gpu::ClientSharedImage::CreateForTesting(),
             CopyOutputResult::ReleaseCallbacks{});

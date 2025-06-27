@@ -686,10 +686,10 @@ void SoftwareRenderer::CopyDrawnRenderPass(
 
   bitmap.setImmutable();
 
-  // Returning kNativeTextures results is only supported with blit requests, so
+  // Returning kSharedImage results is only supported with blit requests, so
   // we copy to client provided image.
   if (request->result_destination() ==
-          CopyOutputResult::Destination::kNativeTextures &&
+          CopyOutputResult::Destination::kSharedImage &&
       request->has_blit_request()) {
     const auto& blit_request = request->blit_request();
 
@@ -747,7 +747,7 @@ void SoftwareRenderer::CopyDrawnRenderPass(
           SkCanvas::kFast_SrcRectConstraint);
     }
 
-    request->SendResult(std::make_unique<CopyOutputTextureResult>(
+    request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
         CopyOutputResult::Format::RGBA, geometry.result_selection,
         request->blit_request().mailbox(), representation->color_space(),
         "CopyDrawnRenderPass", CopyOutputResult::ReleaseCallbacks()));

@@ -39,7 +39,7 @@ class VideoFrame;
 }  // namespace media
 
 namespace viz {
-class CopyOutputTextureResult;
+class CopyOutputSharedImageResult;
 }  // namespace viz
 
 namespace gpu {
@@ -283,7 +283,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   // SharedImageInterface.
   explicit ClientSharedImage(ExportedSharedImage exported_si);
 
-  friend class ::viz::CopyOutputTextureResult;
+  friend class ::viz::CopyOutputSharedImageResult;
   // Creates unowned (no `sii_holder`) `ClientSharedImage`
   explicit ClientSharedImage(const Mailbox& mailbox,
                              const SharedImageInfo& info);

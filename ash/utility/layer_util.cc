@@ -22,7 +22,7 @@ void CopyCopyOutputResultToLayer(
   DCHECK(!copy_result->IsEmpty());
   DCHECK_EQ(copy_result->format(), viz::CopyOutputResult::Format::RGBA);
   DCHECK_EQ(copy_result->destination(),
-            viz::CopyOutputResult::Destination::kNativeTextures);
+            viz::CopyOutputResult::Destination::kSharedImage);
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       copy_result->GetSharedImage();
@@ -33,7 +33,7 @@ void CopyCopyOutputResultToLayer(
           /*is_overlay_candidate=*/false,
           viz::TransferableResource::ResourceSource::kUI);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
-      copy_result->TakeTextureOwnership();
+      copy_result->TakeSharedImageOwnership();
 
   // CopyOutputResults carrying RGBA format contain a single texture, there
   // should be only one release callback when a result is not empty:
@@ -93,7 +93,7 @@ void CopyLayerContentToNewLayer(ui::Layer* layer, LayerCopyCallback callback) {
                                      std::move(callback), layer->size());
   auto copy_request = std::make_unique<viz::CopyOutputRequest>(
       viz::CopyOutputRequest::ResultFormat::RGBA,
-      viz::CopyOutputRequest::ResultDestination::kNativeTextures,
+      viz::CopyOutputRequest::ResultDestination::kSharedImage,
       std::move(new_callback));
   gfx::Rect bounds(layer->size());
   copy_request->set_area(bounds);
@@ -107,7 +107,7 @@ void CopyLayerContentToLayer(ui::Layer* layer,
       base::BindOnce(&CopyToLayerOnCopyRequestFinished, std::move(callback));
   auto copy_request = std::make_unique<viz::CopyOutputRequest>(
       viz::CopyOutputRequest::ResultFormat::RGBA,
-      viz::CopyOutputRequest::ResultDestination::kNativeTextures,
+      viz::CopyOutputRequest::ResultDestination::kSharedImage,
       std::move(new_callback));
   gfx::Rect bounds(layer->size());
   copy_request->set_area(bounds);

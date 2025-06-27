@@ -75,7 +75,7 @@ class LayerTreeHostReadbackPixelTest
       DCHECK_NE(renderer_type_, viz::RendererType::kSoftware);
       request = std::make_unique<viz::CopyOutputRequest>(
           viz::CopyOutputRequest::ResultFormat::RGBA,
-          viz::CopyOutputRequest::ResultDestination::kNativeTextures,
+          viz::CopyOutputRequest::ResultDestination::kSharedImage,
           base::BindOnce(
               &LayerTreeHostReadbackPixelTest::ReadbackResultAsTexture,
               base::Unretained(this)));
@@ -157,7 +157,7 @@ class LayerTreeHostReadbackPixelTest
     ASSERT_FALSE(result->IsEmpty());
     ASSERT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
     ASSERT_EQ(result->destination(),
-              viz::CopyOutputResult::Destination::kNativeTextures);
+              viz::CopyOutputResult::Destination::kSharedImage);
 
     scoped_refptr<gpu::ClientSharedImage> shared_image =
         result->GetSharedImage();
@@ -166,7 +166,7 @@ class LayerTreeHostReadbackPixelTest
     EXPECT_EQ(color_space, output_color_space_);
 
     viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
-        result->TakeTextureOwnership();
+        result->TakeSharedImageOwnership();
     EXPECT_EQ(1u, release_callbacks.size());
 
     SkBitmap bitmap = CopyMailboxToBitmap(result->size(), mailbox, color_space);

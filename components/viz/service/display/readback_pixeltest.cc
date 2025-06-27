@@ -579,7 +579,7 @@ TEST_P(ReadbackPixelTestRGBA, ExecutesCopyRequest) {
       break;
     }
 #if !BUILDFLAG(IS_ANDROID)
-    case CopyOutputResult::Destination::kNativeTextures: {
+    case CopyOutputResult::Destination::kSharedImage: {
       const gfx::Size size = result->size();
       actual.allocPixels(SkImageInfo::Make(size.width(), size.height(),
                                            kRGBA_8888_SkColorType,
@@ -617,7 +617,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(CopyOutputResult::Destination::kSystemMemory)));
 #else
         testing::Values(CopyOutputResult::Destination::kSystemMemory,
-                        CopyOutputResult::Destination::kNativeTextures)));
+                        CopyOutputResult::Destination::kSharedImage)));
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -633,7 +633,7 @@ class ReadbackPixelTestRGBAWithBlit
         populates_gpu_memory_buffer_(std::get<3>(GetParam())) {}
 
   CopyOutputResult::Destination RequestDestination() const {
-    return CopyOutputResult::Destination::kNativeTextures;
+    return CopyOutputResult::Destination::kSharedImage;
   }
 
   CopyOutputResult::Format RequestFormat() const {
@@ -714,8 +714,7 @@ TEST_P(ReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
   ASSERT_TRUE(result);
   ASSERT_FALSE(result->IsEmpty());
   ASSERT_EQ(result_selection, result->rect());
-  ASSERT_EQ(result->destination(),
-            CopyOutputResult::Destination::kNativeTextures);
+  ASSERT_EQ(result->destination(), CopyOutputResult::Destination::kSharedImage);
 
   // Packed plane sizes. Note that for blit request, the size of the returned
   // textures is caller-controlled, and we have issued a COR w/ blit request
@@ -894,7 +893,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Result scaling: Scale by half?
         testing::Values(true, false),
         testing::Values(CopyOutputResult::Destination::kSystemMemory,
-                        CopyOutputResult::Destination::kNativeTextures)));
+                        CopyOutputResult::Destination::kSharedImage)));
 
 class ReadbackPixelTestNV12WithBlit
     : public ReadbackPixelTest,
@@ -908,7 +907,7 @@ class ReadbackPixelTestNV12WithBlit
         populates_gpu_memory_buffer_(std::get<3>(GetParam())) {}
 
   CopyOutputResult::Destination RequestDestination() const {
-    return CopyOutputResult::Destination::kNativeTextures;
+    return CopyOutputResult::Destination::kSharedImage;
   }
 
   CopyOutputResult::Format RequestFormat() const {
@@ -1050,8 +1049,7 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   ASSERT_TRUE(result);
   ASSERT_FALSE(result->IsEmpty());
   ASSERT_EQ(result_selection, result->rect());
-  ASSERT_EQ(result->destination(),
-            CopyOutputResult::Destination::kNativeTextures);
+  ASSERT_EQ(result->destination(), CopyOutputResult::Destination::kSharedImage);
 
   // Packed plane sizes. Note that for blit request, the size of the returned
   // textures is caller-controlled, and we have issued a COR w/ blit request

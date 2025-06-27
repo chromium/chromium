@@ -898,7 +898,7 @@ bool IsValidInTextureCopyOutputRequest(
   }
 
   if (request.result_destination() !=
-      CopyOutputRequest::ResultDestination::kNativeTextures) {
+      CopyOutputRequest::ResultDestination::kSharedImage) {
     DLOG(ERROR) << "BlitRequest must have native texture destination";
     return false;
   }
@@ -937,7 +937,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
           surface, geometry, color_space, src_rect, rescale_mode,
           is_downscale_or_identity_in_both_dimensions, std::move(request));
       break;
-    case CopyOutputRequest::ResultDestination::kNativeTextures: {
+    case CopyOutputRequest::ResultDestination::kSharedImage: {
       CopyOutputRGBAInTexture(
           surface, geometry, color_space, src_rect, rescale_mode,
           is_downscale_or_identity_in_both_dimensions, std::move(request));
@@ -1131,7 +1131,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
             std::move(representation)));
   }
 
-  request->SendResult(std::make_unique<CopyOutputTextureResult>(
+  request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
       CopyOutputResult::Format::RGBA, geometry.result_selection, mailbox,
       color_space, "CopyOutputRGBAInTexture", std::move(release_callbacks)));
 }
@@ -1455,7 +1455,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   // GMB may not yield the latest version of the contents.
   const bool should_wait_for_gpu_work =
       request->result_destination() ==
-          CopyOutputRequest::ResultDestination::kNativeTextures &&
+          CopyOutputRequest::ResultDestination::kSharedImage &&
       request->has_blit_request() &&
       request->blit_request().populates_gpu_memory_buffer();
 
@@ -1535,7 +1535,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   DCHECK(request);
 
   switch (request->result_destination()) {
-    case CopyOutputRequest::ResultDestination::kNativeTextures: {
+    case CopyOutputRequest::ResultDestination::kSharedImage: {
       CopyOutputResult::ReleaseCallbacks release_callbacks;
 
       if (!request->has_blit_request()) {
@@ -1546,7 +1546,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
             CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
                 std::move(mailbox_access_data.representation)));
       }
-      request->SendResult(std::make_unique<CopyOutputTextureResult>(
+      request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
           CopyOutputResult::Format::NV12, geometry.result_selection,
           mailbox_access_data.mailbox, color_space, "CopyOutputNV12",
           std::move(release_callbacks)));

@@ -179,7 +179,7 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceAsTexture(
   CopyFromCompositingSurfaceInternal(
       src_subrect, output_size, surface_id,
       viz::CopyOutputRequest::ResultFormat::RGBA,
-      viz::CopyOutputRequest::ResultDestination::kNativeTextures,
+      viz::CopyOutputRequest::ResultDestination::kSharedImage,
       std::move(callback));
 }
 
@@ -477,7 +477,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
 
   CHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
   CHECK_EQ(result->destination(),
-           viz::CopyOutputResult::Destination::kNativeTextures);
+           viz::CopyOutputResult::Destination::kSharedImage);
 
 // TODO(crbug.com/1227661): Revert https://crrev.com/c/3222541 to re-enable this
 // CHECK on CrOS.
@@ -494,7 +494,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
       false /* is_overlay_candidate */,
       viz::TransferableResource::ResourceSource::kStaleContent);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
-      result->TakeTextureOwnership();
+      result->TakeSharedImageOwnership();
   CHECK_EQ(1u, release_callbacks.size());
 
   if (stale_content_layer_->parent() != client_->DelegatedFrameHostGetLayer())
