@@ -20,7 +20,6 @@ source_set("data_source") {
     ":whats_new_item",
     "resources:screenshots_files",
     "resources:whats_new_entries_plist",
-    "resources:whats_new_price_insights_entries_plist",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_promo/ui_bundled/resources:animation_files",

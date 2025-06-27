@@ -26,8 +26,6 @@ const CGFloat kIconImageWhatsNew = 16;
 
 // The file names.
 NSString* const kfileName = @"whats_new_entries.plist";
-NSString* const kfilePriceInsightsName =
-    @"whats_new_price_insights_entries.plist";
 
 // Dictionary keys.
 NSString* const kDictionaryFeaturesKey = @"Features";
