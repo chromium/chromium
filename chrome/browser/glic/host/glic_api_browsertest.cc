@@ -895,13 +895,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testEnableDragResize) {
   RunTestSequence(WaitForCanResizeEnabled(/*enabled=*/true));
 }
 
-// This test is flaky on Mac (crbug.com/414584725).
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_testDisableDragResize DISABLED_testDisableDragResize
-#else
-#define MAYBE_testDisableDragResize testDisableDragResize
-#endif
-IN_PROC_BROWSER_TEST_F(GlicApiTest, MAYBE_testDisableDragResize) {
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testDisableDragResize) {
   // Check the default resize setting here.
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
