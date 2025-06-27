@@ -383,6 +383,9 @@ inline constexpr base::FeatureParam<bool> kPageActionsMigrationPriceInsights(
     "price_insights",
     false);
 
+inline constexpr base::FeatureParam<bool>
+    kPageActionsMigrationDiscounts(&kPageActionsMigration, "discounts", false);
+
 inline constexpr base::FeatureParam<bool> kPageActionsMigrationManagePasswords(
     &kPageActionsMigration,
     "manage_passwords",
