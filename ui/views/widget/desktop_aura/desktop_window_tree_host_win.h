@@ -296,7 +296,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // Call Windows API to update the window display affinity.
   void UpdateAllowScreenshots();
 
-  // Designates an acrylic DWM_SYSTEMBACKDROP to the window if it does not have
+  // Designates a Mica DWM_SYSTEMBACKDROP to the window if it does not have
   // a redirection bitmap.
   void UpdateBackdropColorMode();
 
