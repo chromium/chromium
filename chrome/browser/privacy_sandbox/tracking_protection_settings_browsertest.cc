@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSettingsMetricsBrowserTest,
                        RecordsMetricsOnStartup) {
   histogram_tester_.ExpectUniqueSample("Settings.TrackingProtection.Enabled",
                                        false, 1);
-  histogram_tester_.ExpectUniqueSample("Settings.IpProtection.Enabled", false,
+  histogram_tester_.ExpectUniqueSample("Settings.IpProtection.Enabled", true,
                                        1);
   histogram_tester_.ExpectUniqueSample(
       "Settings.FingerprintingProtection.Enabled", true, 1);

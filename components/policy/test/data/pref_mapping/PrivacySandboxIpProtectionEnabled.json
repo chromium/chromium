@@ -10,7 +10,7 @@
     ],
     "simple_policy_pref_mapping_test": {
 	    "pref_name": "tracking_protection.ip_protection_enabled",
-	    "default_value": false,
+	    "default_value": true,
 	    "values_to_test": [
 	      true,
 	      false
@@ -22,7 +22,7 @@
         "policies": {},
         "prefs": {
           "tracking_protection.ip_protection_enabled": {
-            "default_value": false
+            "default_value": true
           }
         }
       }

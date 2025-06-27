@@ -106,6 +106,7 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsDoNotTrackStatus) {
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
+  prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kIpProtectionEnabled));
   EXPECT_FALSE(tracking_protection_settings()->IsIpProtectionEnabled());
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
