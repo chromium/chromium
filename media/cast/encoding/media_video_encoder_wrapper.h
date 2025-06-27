@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/video_encoder.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
@@ -89,6 +90,14 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // can then construct the encoder.
   void ConstructEncoder();
 
+  // Setter method for the video encoder.
+  //
+  // Takes an `encoder` with a default deleter, unwraps its contents, and takes
+  // ownership of the underlying instance by setting `encoder_`, which has a
+  // custom task runner deleter. This is done to ensure that the encoder is
+  // always deleted on the VIDEO thread, to avoid lifetime issues.
+  void SetEncoder(std::unique_ptr<media::VideoEncoder> encoder);
+
   // Calculates the predicated frame duration for `frame`. Used to provide
   // metrics on encoder utilization.
   // TODO(crbug.com/282984511): this method is written, in some form, in several
@@ -160,11 +169,10 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // These options are intended to be per frame.
   media::VideoEncoder::EncodeOptions encode_options_;
 
-  // This member belongs to the video encoder thread. It must not be
-  // dereferenced on the main thread. We manage the lifetime of this member
-  // manually because it needs to be initialize, used and destroyed on the
-  // video encoder thread and video encoder thread can out-live the main thread.
-  std::unique_ptr<media::VideoEncoder> encoder_;
+  // The backing `encoder_` instance is constructed on the main thread, but
+  // should only be dereferenced and destructed on the video thread. Proper
+  // destruction is ensured using a custom deleter.
+  std::unique_ptr<media::VideoEncoder, base::OnTaskRunnerDeleter> encoder_;
 
   // If true, we use the overridden encoder and do not update it when the frame
   // size changes.
