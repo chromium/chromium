@@ -25,6 +25,7 @@ include_rules = [
   "+components/enterprise",
   "+components/error_page/common",
   "+components/favicon/core",
+  "+components/fingerprinting_protection_filter/common",
   "+components/fingerprinting_protection_filter/ios",
   "+components/shared_highlighting/core/common",
   "+components/power_bookmarks/core",

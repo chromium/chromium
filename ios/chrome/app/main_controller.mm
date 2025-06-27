@@ -26,6 +26,7 @@
 #import "base/timer/timer.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/component_updater/component_updater_service.h"
+#import "components/component_updater/installer_policies/afp_content_rule_list_component_installer.h"
 #import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
@@ -242,6 +243,7 @@ void RegisterComponentsForUpdate() {
                                   GetApplicationContext()->GetLocalState());
   RegisterOptimizationHintsComponent(cus);
   RegisterPlusAddressBlocklistComponent(cus);
+  RegisterAntiFingerprintingContentRuleListComponent(cus);
 }
 
 // The delay before beginning memory experimentation.

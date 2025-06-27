@@ -6,12 +6,10 @@
 
 #import <memory>
 
+#import "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #import "ios/chrome/browser/script_blocking/model/script_blocking_rule_applier_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/content_manager/content_rule_list_manager.h"
-
-constexpr char kScriptBlockingRuleApplierServiceKey[] =
-    "ScriptBlockingRuleApplierService";
 
 // static
 ScriptBlockingRuleApplierServiceFactory*
@@ -30,12 +28,22 @@ ScriptBlockingRuleApplierServiceFactory::GetForProfile(ProfileIOS* profile) {
 
 ScriptBlockingRuleApplierServiceFactory::
     ScriptBlockingRuleApplierServiceFactory()
-    : ProfileKeyedServiceFactoryIOS(kScriptBlockingRuleApplierServiceKey,
-                                    TestingCreation::kNoServiceForTests) {}
+    : ProfileKeyedServiceFactoryIOS("ScriptBlockingRuleApplierService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests,
+                                    ProfileSelection::kOwnInstanceInIncognito) {
+}
 
 std::unique_ptr<KeyedService>
 ScriptBlockingRuleApplierServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
+  if (!fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionEnabledForIncognitoState(
+              browser_state->IsOffTheRecord())) {
+    // Feature is disabled for the given profile. Do not create the service.
+    return nullptr;
+  }
+
   return std::make_unique<ScriptBlockingRuleApplierService>(
       web::ContentRuleListManager::FromBrowserState(browser_state));
 }
