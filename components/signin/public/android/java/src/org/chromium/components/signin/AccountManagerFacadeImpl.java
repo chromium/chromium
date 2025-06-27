@@ -197,10 +197,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public void invalidateAccessToken(String accessToken, @Nullable Runnable completedRunnable) {
         ThreadUtils.assertOnUiThread();
-        if (TextUtils.isEmpty(accessToken)) {
-            throw new IllegalArgumentException("Access token cannot be empty");
-        }
-        if (mDisallowTokenRequestsForTesting) {
+        if (TextUtils.isEmpty(accessToken) || mDisallowTokenRequestsForTesting) {
+            // TODO(https://crbug.com/366403142): Replace isEmpty check with an exception.
             if (completedRunnable != null) {
                 completedRunnable.run();
             }
