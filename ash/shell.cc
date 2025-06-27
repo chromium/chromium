@@ -252,6 +252,7 @@
 #include "ash/wm_mode/wm_mode_controller.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -823,6 +824,10 @@ Shell::~Shell() {
   views::ViewsTextServicesContextMenuChromeos::SetImplFactory(
       base::NullCallback());
 
+  // Close and destroy all application windows here, so that the window manager
+  // related objects, which app windows relies on, can be sefely deleted.
+  CloseAllAppWindows();
+
   wm_mode_controller_.reset();
 
   // `shortcut_input_handler_` must be cleaned up before
@@ -980,7 +985,8 @@ Shell::~Shell() {
   // are needed for proper deletion of RoundedDisplayProviders.
   window_tree_host_manager_->ShutdownRoundedDisplays();
 
-  // Close all widgets (including the shelf) and destroy all window containers.
+  // Close all windows and associated widgets (including system UI) and destroy
+  // all containers.
   CloseAllRootWindowChildWindows();
 
   glanceables_controller_.reset();
@@ -1966,6 +1972,21 @@ void Shell::InitRootWindow(aura::Window* root_window) {
   ::wm::SetWindowMoveClient(root_window, toplevel_window_event_handler_.get());
   root_window->AddPreTargetHandler(toplevel_window_event_handler_.get());
   root_window->AddPostTargetHandler(toplevel_window_event_handler_.get());
+}
+
+void Shell::CloseAllAppWindows() {
+  auto list = mru_window_tracker_->BuildAppWindowList(DesksMruType::kAllDesks);
+  aura::WindowTracker tracker;
+  for (auto window : list) {
+    tracker.Add(window.get());
+  }
+  // Delete from the bottom of mru list so that it won't affect activation.
+  for (auto window : base::Reversed(list)) {
+    // Make sure that the window in the `list` is still alive.
+    if (tracker.Contains(window)) {
+      delete window;
+    }
+  }
 }
 
 void Shell::CloseAllRootWindowChildWindows() {

@@ -973,6 +973,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   // Initializes the root window so that it can host browser windows.
   void InitRootWindow(aura::Window* root_window);
 
+  // Close All windows that are considered application windows.
+  void CloseAllAppWindows();
+
   // Destroys all child windows including widgets across all roots.
   void CloseAllRootWindowChildWindows();
 

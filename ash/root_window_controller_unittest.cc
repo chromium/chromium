@@ -655,34 +655,54 @@ class DestroyedWindowObserver : public aura::WindowObserver {
   raw_ptr<Window> window_{nullptr};
 };
 
+namespace {
+
+class RootWindowControllerAfterShutdownTest : public RootWindowControllerTest {
+ public:
+  RootWindowControllerAfterShutdownTest() = default;
+  RootWindowControllerAfterShutdownTest(const RootWindowControllerTest&) =
+      delete;
+  RootWindowControllerAfterShutdownTest operator=(
+      const RootWindowControllerTest&) = delete;
+  ~RootWindowControllerAfterShutdownTest() override = default;
+
+  void TearDown() override {
+    RootWindowControllerTest::TearDown();
+
+    ASSERT_FALSE(observer1_.destroyed());
+    window1_.reset();
+
+    ASSERT_FALSE(observer2_.destroyed());
+    window2_.reset();
+  }
+
+ protected:
+  aura::test::TestWindowDelegate delegate1_;
+  DestroyedWindowObserver observer1_;
+  std::unique_ptr<aura::Window> window1_;
+  DestroyedWindowObserver observer2_;
+  std::unique_ptr<aura::Window> window2_;
+};
+
+}  // namespace
+
 // Verifies shutdown doesn't delete windows that are not owned by the parent.
-TEST_F(RootWindowControllerTest, DontDeleteWindowsNotOwnedByParent) {
-  DestroyedWindowObserver observer1;
-  aura::test::TestWindowDelegate delegate1;
-  std::unique_ptr<aura::Window> window1 = std::make_unique<aura::Window>(
-      &delegate1, aura::client::WINDOW_TYPE_CONTROL);
-  window1->set_owned_by_parent(false);
-  observer1.SetWindow(window1.get());
-  window1->Init(ui::LAYER_NOT_DRAWN);
+TEST_F(RootWindowControllerAfterShutdownTest,
+       DontDeleteWindowsNotOwnedByParent) {
+  window1_ = std::make_unique<aura::Window>(&delegate1_,
+                                            aura::client::WINDOW_TYPE_CONTROL);
+  window1_->set_owned_by_parent(false);
+  observer1_.SetWindow(window1_.get());
+  window1_->Init(ui::LAYER_NOT_DRAWN);
   aura::client::ParentWindowWithContext(
-      window1.get(), Shell::GetPrimaryRootWindow(), gfx::Rect(),
+      window1_.get(), Shell::GetPrimaryRootWindow(), gfx::Rect(),
       display::kInvalidDisplayId);
 
-  DestroyedWindowObserver observer2;
-  std::unique_ptr<aura::Window> window2 =
-      std::make_unique<aura::Window>(nullptr);
-  window2->set_owned_by_parent(false);
-  observer2.SetWindow(window2.get());
-  window2->Init(ui::LAYER_NOT_DRAWN);
-  Shell::GetPrimaryRootWindow()->AddChild(window2.get());
-
-  Shell::GetPrimaryRootWindowController()->CloseChildWindows();
-
-  ASSERT_FALSE(observer1.destroyed());
-  window1.reset();
-
-  ASSERT_FALSE(observer2.destroyed());
-  window2.reset();
+  window2_ = std::make_unique<aura::Window>(nullptr);
+  window2_->set_owned_by_parent(false);
+  observer2_.SetWindow(window2_.get());
+  window2_->Init(ui::LAYER_NOT_DRAWN);
+  Shell::GetPrimaryRootWindow()->AddChild(window2_.get());
 }
 
 // Verify that the context menu gets hidden when entering or exiting tablet

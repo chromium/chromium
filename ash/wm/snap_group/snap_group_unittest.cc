@@ -3559,6 +3559,20 @@ TEST_F(SnapGroupTest, NoCrashWhenReSnappingSecondaryToPrimaryWithTransient) {
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w0.get()));
 }
 
+// Make sure snapgroup will be deleted correctly during shutdonwn.
+// (crbug.com/423973589)
+TEST_F(SnapGroupTest, Shutdown) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  TRACE_CALL(SnapWindowsSideBySide(kGrouped, w1.get(), w2.get()));
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Let shutdown process delete windows.
+  ASSERT_TRUE(w1.release());
+  ASSERT_TRUE(w2.release());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupPhantomBoundsTest:
 
