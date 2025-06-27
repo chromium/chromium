@@ -11,6 +11,7 @@ build_webui("build") {
   web_component_files = [
     "content_setting_pattern_source.ts",
     "cr_frame_list.ts",
+    "expandable_json_viewer.ts",
     "mojo_timedelta.ts",
     "mojo_timestamp.ts",
     "pref_display.ts",

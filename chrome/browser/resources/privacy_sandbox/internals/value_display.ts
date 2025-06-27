@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './mojo_timestamp.js';
+import './expandable_json_viewer.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import type {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
@@ -22,6 +23,8 @@ export function timestampLogicalFn(v: Value) {
   return tsElement;
 }
 
+// TODO(crbug.com/427549893): Don't use expandable-json-viewer if JSON content
+// is {} or [].
 export class ValueDisplayElement extends CustomElement {
   static override get template() {
     return getTemplate();
@@ -41,7 +44,9 @@ export class ValueDisplayElement extends CustomElement {
     }
   }
 
-  configure(value: Value, logicalFn: LogicalFn = defaultLogicalFn) {
+  configure(
+      value: Value, logicalFn: LogicalFn = defaultLogicalFn,
+      title: string = '') {
     const tElem = this.shadowRoot!.querySelector<HTMLElement>(`#type`)!;
     const vElem = this.shadowRoot!.querySelector<HTMLElement>(`#value`)!;
     const lElem =
@@ -74,23 +79,18 @@ export class ValueDisplayElement extends CustomElement {
       vElem.textContent = 'null';
       vElem.classList.add('none');
 
-    } else if (value.listValue != null) {
-      tElem.textContent = '(list)';
-
+    } else if (value.listValue != null || value.dictionaryValue != null) {
       // The pre element is used to preserve line breaks and spaces
       const jsonValueElement = document.createElement('pre');
       jsonValueElement.id = 'json-value';
       jsonValueElement.textContent =
           JSON.stringify(this.flattenValue(value), null, 2);
-      vElem.appendChild(jsonValueElement);
 
-    } else if (value.dictionaryValue != null) {
-      tElem.textContent = '(dictionary)';
-      const jsonValueElement = document.createElement('pre');
-      jsonValueElement.id = 'json-value';
-      jsonValueElement.textContent =
-          JSON.stringify(this.flattenValue(value), null, 2);
-      vElem.appendChild(jsonValueElement);
+      const jsonViewerElement =
+          document.createElement('expandable-json-viewer');
+
+      vElem.appendChild(jsonViewerElement);
+      jsonViewerElement.configure(jsonValueElement, title);
 
     } else if (value.binaryValue != null) {
       tElem.textContent = '(binary)';

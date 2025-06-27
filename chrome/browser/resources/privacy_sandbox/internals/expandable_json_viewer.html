@@ -1,0 +1,95 @@
+<style>
+  :host {
+    &:not([expanded]) {
+      & #json-content {
+        border-top: none;
+        height: 0;
+        overflow: hidden;
+      }
+
+      & #open-icon {
+        display: block;
+      }
+
+      & #close-icon {
+        display: none;
+      }
+    }
+
+    &[expanded] {
+      & #json-content {
+        max-height: 50vh;
+        overflow: auto;
+        border-top: 1px solid lightgray;
+        padding: 2px;
+        height: auto;
+      }
+
+      & #close-icon {
+        display: block;
+      }
+
+      & #open-icon {
+        display: none;
+      }
+    }
+  }
+
+  .container {
+    border: 1px solid lightgray;
+    max-width: 50em;
+    margin: 2px 0;
+  }
+
+  .toggle-icon {
+    fill: lightgray;
+    transition: fill 0.3s;
+  }
+
+  #json-header {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    font-weight: bold;
+    justify-content: space-between;
+    padding: 2px;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: rgb(242, 242, 242);
+
+      & .toggle-icon {
+        fill: gray;
+      }
+    }
+
+    &:active {
+      background-color: rgb(234, 234, 234);
+
+      & .toggle-icon {
+        fill: black;
+      }
+    }
+  }
+</style>
+
+<div class="container">
+  <div id="json-header">
+    <span id="title"></span>
+    <div class="toggle-icon">
+      <!-- When collapsed-->
+      <span id="open-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+          <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z">
+        </svg>
+      </span>
+      <!-- When expanded-->
+      <span id="close-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+          <path d="m12 8-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z">
+        </svg>
+      </span>
+    </div>
+  </div>
+  <div id="json-content"></div>
+</div>
