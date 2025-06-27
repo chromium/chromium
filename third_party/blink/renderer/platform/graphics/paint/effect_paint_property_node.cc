@@ -224,8 +224,7 @@ gfx::Rect EffectPaintPropertyNode::MapRect(const gfx::Rect& input_rect) const {
   if (!state_.filter_info) {
     return input_rect;
   }
-  if (RuntimeEnabledFeatures::ReferenceFilterOutputBoundsEnabled() &&
-      state_.filter_info->operations.HasReferenceFilter()) {
+  if (state_.filter_info->operations.HasReferenceFilter()) {
     return state_.filter_info->output_bounds;
   }
   return state_.filter_info->operations.MapRect(input_rect);

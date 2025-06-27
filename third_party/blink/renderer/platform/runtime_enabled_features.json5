@@ -3908,11 +3908,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      // Killswitch M136.
-      name: "ReferenceFilterOutputBounds",
-      status: "stable",
-    },
-    {
       name: "RegionCapture",
       status: {"Android": "", "default": "stable"},
     },
