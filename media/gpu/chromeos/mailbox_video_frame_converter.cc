@@ -289,7 +289,7 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
       frame->format(), shared_image, shared_image_sync_token,
       std::move(release_mailbox_cb), coded_size, frame->visible_rect(),
       frame->natural_size(), frame->timestamp());
-  mailbox_frame->set_color_space(frame->ColorSpace());
+  mailbox_frame->set_color_space(shared_image->color_space());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
   mailbox_frame->set_metadata(frame->metadata());
   mailbox_frame->metadata().read_lock_fences_enabled = true;

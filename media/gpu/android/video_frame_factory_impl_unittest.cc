@@ -135,7 +135,7 @@ class VideoFrameFactoryImplTest : public testing::Test {
     gpu::SharedImageMetadata metadata;
     metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
     metadata.size = video_frame_params_.coded_size;
-    metadata.color_space = gfx::ColorSpace::CreateSRGB();
+    metadata.color_space = video_frame_params_.color_space;
     metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
     metadata.alpha_type = kOpaque_SkAlphaType;
     metadata.usage = gpu::SharedImageUsageSet();

@@ -189,17 +189,6 @@ void VideoToolboxFrameConverter::Convert(
   const gfx::Size natural_size =
       metadata->aspect_ratio.GetNaturalSize(visible_rect);
 
-  bool allow_overlay = true;
-  gfx::ColorSpace color_space = GetImageBufferColorSpace(image.get());
-  if (!color_space.IsValid()) {
-    // Chrome and macOS do not agree on the color space; force compositing to
-    // ensure a consistent result. See crbug.com/343014700.
-    allow_overlay = false;
-    // Always use limited range since we request a limited range output format.
-    color_space = metadata->color_space.GetWithMatrixAndRange(
-        metadata->color_space.GetMatrixID(), gfx::ColorSpace::RangeID::LIMITED);
-  }
-
   gfx::GpuMemoryBufferHandle handle;
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
@@ -219,6 +208,7 @@ void VideoToolboxFrameConverter::Convert(
   VideoPixelFormat video_pixel_format =
       PixelFormatToVideoPixelFormat(pixel_format);
 
+  bool allow_overlay = true;
   if (__builtin_available(macOS 13.0, iOS 16.0, *)) {
     // On macOS < 13 or iOS < 16, there is a video artifact issue if the decoded
     // YUV 4:4:4 CVImageBuffer is processed by macOS internally.
@@ -253,6 +243,16 @@ void VideoToolboxFrameConverter::Convert(
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
+  gfx::ColorSpace color_space = GetImageBufferColorSpace(image.get());
+  if (!color_space.IsValid()) {
+    // Chrome and macOS do not agree on the color space; force compositing to
+    // ensure a consistent result. See crbug.com/343014700.
+    allow_overlay = false;
+    // Always use limited range since we request a limited range output format.
+    color_space = metadata->color_space.GetWithMatrixAndRange(
+        metadata->color_space.GetMatrixID(), gfx::ColorSpace::RangeID::LIMITED);
+  }
+
   auto shared_image = shared_image_interface->CreateSharedImage(
       {*format, coded_size, color_space, kTopLeft_GrSurfaceOrigin,
        kOpaque_SkAlphaType, shared_image_usage, kSharedImageDebugLabel},
@@ -284,7 +284,7 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
-  frame->set_color_space(color_space);
+  frame->set_color_space(shared_image->color_space());
   frame->set_hdr_metadata(metadata->hdr_metadata);
   if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
     frame->metadata().frame_duration = metadata->duration;
