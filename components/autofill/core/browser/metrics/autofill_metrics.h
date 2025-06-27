@@ -456,6 +456,21 @@ class AutofillMetrics {
     kMaxValue = kPassword
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // Represents the status of Autofill prompts when at least one prompt can be
+  // displayed.
+  enum class AutofillPromptStatus {
+    // Both prompts could have been displayed.
+    kAddressAndCreditCardShown = 0,
+    // Only the address prompt could have been displayed.
+    kAddressShown = 1,
+    // Only the credit card prompt could have been displayed.
+    kCreditCardShown = 2,
+    kMaxValue = kCreditCardShown,
+  };
+
   // Utility class for determining the seamlessness of a credit card fill.
   class CreditCardSeamlessness {
    public:
@@ -906,6 +921,9 @@ class AutofillMetrics {
   static void LogDataListSuggestionsUpdated();
 
   static void LogDataListSuggestionsInserted();
+
+  // Logs the status of Autofill prompts.
+  static void LogAutofillPromptStatus(AutofillPromptStatus status);
 };
 
 #if defined(UNIT_TEST)

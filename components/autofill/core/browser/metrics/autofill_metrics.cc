@@ -1582,4 +1582,9 @@ void AutofillMetrics::LogDataListSuggestionsInserted() {
       AutofillDataListEvents::kDataListSuggestionsInserted);
 }
 
+// static
+void AutofillMetrics::LogAutofillPromptStatus(AutofillPromptStatus status) {
+  base::UmaHistogramEnumeration("Autofill.PromptStatus", status);
+}
+
 }  // namespace autofill

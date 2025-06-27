@@ -2522,6 +2522,12 @@ Called by update_autofill_enums.py.-->
   <int value="8" label="EditedFallback"/>
 </enum>
 
+<enum name="AutofillPromptStatus">
+  <int value="0" label="Address and credit card"/>
+  <int value="1" label="Address only"/>
+  <int value="2" label="Credit card only"/>
+</enum>
+
 <enum name="AutofillProviderPackageName">
   <int value="0" label="Unknown"/>
   <int value="1" label="Autofill with Google"/>

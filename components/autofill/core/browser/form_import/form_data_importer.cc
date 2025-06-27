@@ -292,6 +292,24 @@ void FormDataImporter::ImportAndProcessFormData(
         ProcessIbanImportCandidate(*extracted_data.extracted_iban);
   }
 
+  // Record the prompt status iff at least one prompt could have been displayed.
+  // Recording that status isn't pertinent otherwise. When there is a full
+  // profile candidate available for import, it is reasonable to think that
+  // either the save or update prompt would have been displayed, which guess is
+  // probably not 100% reliable but that's good enough for this metric.
+  bool has_full_profile_candidate =
+      !preliminary_imported_address_profiles.empty();
+  if (has_full_profile_candidate && cc_prompt_potentially_shown) {
+    AutofillMetrics::LogAutofillPromptStatus(
+        AutofillMetrics::AutofillPromptStatus::kAddressAndCreditCardShown);
+  } else if (has_full_profile_candidate) {
+    AutofillMetrics::LogAutofillPromptStatus(
+        AutofillMetrics::AutofillPromptStatus::kAddressShown);
+  } else if (cc_prompt_potentially_shown) {
+    AutofillMetrics::LogAutofillPromptStatus(
+        AutofillMetrics::AutofillPromptStatus::kCreditCardShown);
+  }
+
   ProcessExtractedAddressProfiles(
       extracted_data.extracted_address_profiles,
       // If a prompt for credit cards or IBANs is potentially shown, do not

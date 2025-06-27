@@ -432,6 +432,15 @@ std::unique_ptr<FormStructure> ConstructDefaultCreditCardFormStructure() {
       GetDefaultCreditCardTypeValuePairs());
 }
 
+// Constructs a FormStructure with one address section and one payment section.
+std::unique_ptr<FormStructure> ConstructAddressAndCreditCardForm() {
+  TypeValuePairs a = GetDefaultProfileTypeValuePairs();
+  TypeValuePairs b = GetDefaultCreditCardTypeValuePairs();
+  a.reserve(a.size() + b.size());
+  std::ranges::move(b, std::back_inserter(a));
+  return ConstructFormStructureFromTypeValuePairs(a);
+}
+
 // Constructs a |FormData| instance that carries the information of the default
 // profile.
 FormData ConstructDefaultFormData() {
@@ -3861,6 +3870,55 @@ TEST_F(FormDataImporterTest,
           .GetObservedFieldValues(
               std::to_array<const AutofillField*>({&field}));
   EXPECT_EQ(observed_field_types.size(), 1u);
+}
+
+// Tests that the Autofill.PromptStatus metric is correctly recorded when only
+// the address prompt can be shown.
+TEST_F(FormDataImporterTest, AutofillPromptStatusMetric_Address) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+  test_api(form_data_importer())
+      .ImportAndProcessFormData(
+          *form_structure, /*profile_autofill_enabled=*/true,
+          /*payment_methods_autofill_enabled=*/true, ukm_source_id());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PromptStatus",
+      AutofillMetrics::AutofillPromptStatus::kAddressShown, 1);
+}
+
+// Tests that the Autofill.PromptStatus metric is correctly recorded when only
+// the credit card prompt can be shown.
+TEST_F(FormDataImporterTest, AutofillPromptStatusMetric_CreditCard) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable)
+      .WillOnce(Return(true));
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  test_api(form_data_importer())
+      .ImportAndProcessFormData(
+          *form_structure, /*profile_autofill_enabled=*/true,
+          /*payment_methods_autofill_enabled=*/true, ukm_source_id());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PromptStatus",
+      AutofillMetrics::AutofillPromptStatus::kCreditCardShown, 1);
+}
+
+// Tests that the Autofill.PromptStatus metric is correctly recorded when both
+// the address and the credit card prompts can be shown.
+TEST_F(FormDataImporterTest, AutofillPromptStatusMetric_AddressAndCreditCard) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable)
+      .WillOnce(Return(true));
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructAddressAndCreditCardForm();
+  test_api(form_data_importer())
+      .ImportAndProcessFormData(
+          *form_structure, /*profile_autofill_enabled=*/true,
+          /*payment_methods_autofill_enabled=*/true, ukm_source_id());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PromptStatus",
+      AutofillMetrics::AutofillPromptStatus::kAddressAndCreditCardShown, 1);
 }
 
 class SkipSaveCardInFormDataImporterTest

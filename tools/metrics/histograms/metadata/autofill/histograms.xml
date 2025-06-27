@@ -5622,6 +5622,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FlowType" variants="Autofill.ProgressDialog.FlowType"/>
 </histogram>
 
+<histogram name="Autofill.PromptStatus" enum="AutofillPromptStatus"
+    expires_after="2026-03-30">
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Gives the status of the autofill prompts. Recorded when processing the
+    submitted form data and only if there is enough data to display at least one
+    prompt.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.QueriedCreditCardFormIsSecure" enum="BooleanSecure"
     expires_after="2025-12-12">
   <owner>battre@chromium.org</owner>
