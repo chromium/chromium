@@ -48,10 +48,6 @@ namespace arc {
 class GpuArcVideoEncodeAccelerator;
 }
 
-namespace media {
-class V4L2JpegEncodeAccelerator;
-}  // namespace media
-
 namespace gpu {
 class ClientSharedImage;
 
@@ -108,10 +104,9 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
   }
 
  private:
-  // TODO(crbug.com/404905709): Eliminate these class' creation of GMBs and
+  // TODO(crbug.com/404905709): Eliminate this class' creation of GMBs and
   // remove this friending.
   friend class arc::GpuArcVideoEncodeAccelerator;
-  friend class media::V4L2JpegEncodeAccelerator;
 
   // ClientSharedImage is the only entity that should be creating GMBs via
   // GpuMemoryBufferSupport.

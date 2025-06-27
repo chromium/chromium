@@ -17,12 +17,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "components/chromeos_camera/jpeg_encode_accelerator.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/parsers/jpeg_parser.h"
+#include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 
 namespace {
 
@@ -213,7 +213,8 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     // The V4L2Device this class is operating upon.
     scoped_refptr<V4L2Device> device_;
 
-    std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
+    std::unique_ptr<gfx::ClientNativePixmapFactory>
+        client_native_pixmap_factory_;
 
     // Input queue state.
     bool input_streamon_;

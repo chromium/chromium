@@ -19,6 +19,7 @@ class ClientNativePixmapFactory;
 }  // namespace gfx
 
 namespace media {
+class V4L2JpegEncodeAccelerator;
 class VaapiJpegEncodeAccelerator;
 }  // namespace media
 
@@ -54,8 +55,9 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
  private:
-  // TODO(crbug.com/404905709): Eliminate this class' creation of GMBs and
+  // TODO(crbug.com/404905709): Eliminate these class' creation of GMBs and
   // remove this friending.
+  friend class media::V4L2JpegEncodeAccelerator;
   friend class media::VaapiJpegEncodeAccelerator;
   friend class GpuMemoryBufferSupport;
 

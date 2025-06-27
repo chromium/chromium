@@ -25,11 +25,13 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 #define IOCTL_OR_ERROR_RETURN_VALUE(type, arg, value, type_name) \
   do {                                                           \
@@ -123,7 +125,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::DestroyTask() {
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   device_ = base::MakeRefCounted<V4L2Device>();
-  gpu_memory_buffer_support_ = std::make_unique<gpu::GpuMemoryBufferSupport>();
+  client_native_pixmap_factory_ = ui::CreateClientNativePixmapFactoryOzone();
   output_buffer_pixelformat_ = V4L2_PIX_FMT_JPEG;
   if (!device_->Open(V4L2Device::Type::kJpegEncoder,
                      output_buffer_pixelformat_)) {
@@ -580,10 +582,10 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
       1);
 
   auto output_gmb_buffer =
-      gpu_memory_buffer_support_->CreateGpuMemoryBufferImplFromHandle(
-          std::move(output_gmb_handle), output_gmb_buffer_size,
-          gfx::BufferFormat::R_8, gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
-          base::DoNothing());
+      gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
+          client_native_pixmap_factory_.get(), std::move(output_gmb_handle),
+          output_gmb_buffer_size, gfx::BufferFormat::R_8,
+          gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE, base::DoNothing());
   if (!output_gmb_buffer) {
     VLOGF(1) << "Failed to import gmb buffer";
     return 0;
