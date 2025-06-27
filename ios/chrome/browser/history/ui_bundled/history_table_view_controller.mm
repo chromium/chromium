@@ -100,6 +100,15 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 @implementation HistoryTableViewController
 
+#pragma mark - UIViewController
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  if ([self.scrimView isDescendantOfView:self.view]) {
+    [self.view bringSubviewToFront:self.scrimView];
+  }
+}
+
 #pragma mark - TableViewModel
 
 - (void)viewDidLoad {
