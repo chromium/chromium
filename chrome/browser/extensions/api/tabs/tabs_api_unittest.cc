@@ -1725,14 +1725,14 @@ TEST_F(TabsApiUnitTest, TabsDiscard) {
   const std::string args = base::StringPrintf(kFormatArgs, tab_id);
   ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
                                           api_test_utils::FunctionMode::kNone));
-  // check that the tab has discarded
+  // Check that the tab has discarded
   content::WebContents* new_contents_at_index =
       GetTabStripModel()->GetWebContentsAt(index);
   EXPECT_TRUE(new_contents_at_index->WasDiscarded());
 }
 
-// Tests that calling chrome.tabs.discard on a saved tab does not discard.
-TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
+// Tests that calling chrome.tabs.discard on a saved tab does discard.
+TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabAllowed) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("DiscardTest").Build();
   const GURL kExampleCom("http://example.com");
@@ -1762,12 +1762,16 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
   browser()->tab_strip_model()->ChangeTabGroupVisuals(group, visual_data);
 
-  // The tab discard function should fail.
   auto function = base::MakeRefCounted<TabsDiscardFunction>();
   function->set_extension(extension);
   EXPECT_TRUE(api_test_utils::RunFunction(
       function.get(), base::StringPrintf("[%d]", tab_id), profile(),
       api_test_utils::FunctionMode::kNone));
+
+  // Check that the tab has discarded
+  content::WebContents* new_contents_at_index =
+      GetTabStripModel()->GetWebContentsAt(0);
+  EXPECT_TRUE(new_contents_at_index->WasDiscarded());
 }
 
 TEST_F(TabsApiUnitTest, SplitTabsWithHighlightFunction) {
