@@ -643,11 +643,7 @@ class PolicyTemplateChecker(object):
         and not self._SupportedPolicy(policy, current_version)):
       return
 
-    # Only validate the default when present.
-    # TODO(crbug.com/40725804): Always validate the default for types that
-    # should have it.
-    if 'default' not in policy:
-      return
+    # Validate the default for types that should have it.
     policy_type = self.policy_type_provider.GetPolicyType(policy)
     default = policy.get('default')
     if policy_type == 'int':

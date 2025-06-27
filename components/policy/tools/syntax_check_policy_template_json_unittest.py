@@ -68,7 +68,9 @@ class SyntaxCheckPolicyTemplateUnittest(unittest.TestCase):
             'caption': 'true caption'
         }],
         'example_value':
-        True
+        True,
+        'default':
+        False
     }]
     self.do_test(policy_list)
 
