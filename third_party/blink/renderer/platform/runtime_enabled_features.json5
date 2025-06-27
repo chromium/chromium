@@ -4086,10 +4086,6 @@
       status: {"Linux": "test", "Win": "test"},
     },
     {
-      name: "RoundScrollOffsets",
-      status: "stable",
-    },
-    {
       name: "RtcAudioJitterBufferMaxPackets",
       origin_trial_feature_name: "RtcAudioJitterBufferMaxPackets",
       status: "experimental",

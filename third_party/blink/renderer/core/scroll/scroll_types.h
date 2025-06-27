@@ -218,11 +218,7 @@ inline ScrollOffset ToScrollDelta(ScrollDirectionPhysical dir, float delta) {
 // physical pixels.
 inline gfx::Vector2d SnapScrollOffsetToPhysicalPixels(
     const gfx::Vector2dF& offset) {
-  if (RuntimeEnabledFeatures::RoundScrollOffsetsEnabled()) {
-    return gfx::ToRoundedVector2d(offset);
-  }
-
-  return gfx::ToFlooredVector2d(offset);
+  return gfx::ToRoundedVector2d(offset);
 }
 
 }  // namespace blink
