@@ -33,7 +33,7 @@ class MEDIA_GPU_EXPORT TestGbmBufferManager {
 
   ~TestGbmBufferManager();
 
-  std::unique_ptr<TestGbmBuffer> CreateGmbBuffer(
+  std::unique_ptr<TestGbmBuffer> CreateGbmBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,

@@ -196,7 +196,7 @@ gfx::GpuMemoryBufferHandle TestGbmBuffer::CloneHandle() const {
 TestGbmBufferManager::TestGbmBufferManager() : gbm_device_(CreateGbmDevice()) {}
 TestGbmBufferManager::~TestGbmBufferManager() = default;
 
-std::unique_ptr<TestGbmBuffer> TestGbmBufferManager::CreateGmbBuffer(
+std::unique_ptr<TestGbmBuffer> TestGbmBufferManager::CreateGbmBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,

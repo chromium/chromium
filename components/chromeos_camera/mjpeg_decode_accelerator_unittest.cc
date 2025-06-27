@@ -329,7 +329,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
     return nullptr;
   }
   std::unique_ptr<media::TestGbmBuffer> buffer =
-      gbm_buffer_manager_->CreateGmbBuffer(coded_size, *gfx_format,
+      gbm_buffer_manager_->CreateGbmBuffer(coded_size, *gfx_format,
                                            kBufferUsage,
                                            gpu::kNullSurfaceHandle, nullptr);
   if (!buffer) {
@@ -427,7 +427,7 @@ base::ScopedFD MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufFd(
   // so we allocate the buffer by GBM manager instead of simply memfd_create().
   // The buffer has R_8 format and dimensions (|size|, 1).
   std::unique_ptr<media::TestGbmBuffer> buffer =
-      gbm_buffer_manager_->CreateGmbBuffer(
+      gbm_buffer_manager_->CreateGbmBuffer(
           gfx::Size(base::checked_cast<int>(size), 1), gfx::BufferFormat::R_8,
           kBufferUsage, gpu::kNullSurfaceHandle, nullptr);
   if (!buffer) {
