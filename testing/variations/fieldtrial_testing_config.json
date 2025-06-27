@@ -5454,25 +5454,6 @@
             ]
         }
     ],
-    "ChromnientSimplifiedSelection": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "SimplifiedSelectionEnabled",
-                    "enable_features": [
-                        "LensOverlaySimplifiedSelection"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromnientSurvey": [
         {
             "platforms": [
