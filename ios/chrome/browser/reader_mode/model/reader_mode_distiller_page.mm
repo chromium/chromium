@@ -7,6 +7,7 @@
 #import "base/base64.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/dom_distiller/ios/distiller_page_utils.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -20,10 +21,12 @@ void ReaderModeDistillerPage::DistillPageImpl(const GURL& url,
   if (!url.is_valid() || !script.length()) {
     return;
   }
-  // Gets the instance of the WebFramesManager from `web_state_` that can
-  // execute the DOM distiller JavaScript in the isolated content world.
   web::WebFramesManager* web_frames_manager =
-      web_state_->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
+      ReaderModeJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_);
+  if (!web_frames_manager) {
+    return;
+  }
   web::WebFrame* main_frame = web_frames_manager->GetMainWebFrame();
   if (!main_frame) {
     return;
