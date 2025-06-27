@@ -203,13 +203,14 @@ void ReadAnythingService::InstallTtsDownloadExtension() {
 
 void ReadAnythingService::RemoveTtsDownloadExtension() {
 #if !BUILDFLAG(IS_CHROMEOS)
-  auto* component_loader = extensions::ComponentLoader::Get(profile_);
-  if (!component_loader) {
-    // In tests, the service might not be created.
-    CHECK_IS_TEST();
-    return;
-  }
-  component_loader->Remove(extension_misc::kTTSEngineExtensionId);
+  // Remove the legacy TTS extension for all profiles.
+
+  // This code for removing the extension installed in the legacy way
+  // should remain in place until at least milestone 141 to ensure there
+  // are no conflicts with installing the component loader extension.
+  EmbeddedA11yExtensionLoader::GetInstance()->Init();
+  EmbeddedA11yExtensionLoader::GetInstance()->RemoveExtensionWithId(
+      extension_misc::kTTSEngineExtensionId);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
