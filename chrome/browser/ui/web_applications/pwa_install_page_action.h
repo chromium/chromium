@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -29,7 +30,9 @@ class PwaInstallPageActionController
       public webapps::AppBannerManager::Observer,
       public page_actions::PageActionObserver {
  public:
-  explicit PwaInstallPageActionController(tabs::TabInterface& tab_interface);
+  PwaInstallPageActionController(
+      tabs::TabInterface& tab_interface,
+      page_actions::PageActionController& page_action_controller);
   ~PwaInstallPageActionController() override;
 
   PwaInstallPageActionController(const PwaInstallPageActionController&) =
@@ -57,23 +60,15 @@ class PwaInstallPageActionController
   // Handles all the logic related to showing and hiding the page action.
   void UpdateVisibility();
 
-  // Returns the controller of all page actions.
-  page_actions::PageActionController& GetPageActionController();
-
   // Requests PageActionController to show this Page Action
   void Show(content::WebContents* web_contents, bool showChip);
   // Requests PageActionController to hide this Page Action
   void Hide();
 
-  raw_ptr<webapps::AppBannerManager> manager_;
-  raw_ref<tabs::TabInterface> tab_interface_;
-
   void WillDiscardContents(tabs::TabInterface* tab_interface,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
-  base::CallbackListSubscription will_discard_contents_subscription_;
   void WillDeactivate(tabs::TabInterface* tab_interface);
-  base::CallbackListSubscription will_deactivate_subscription_;
 
   // Called when the IPH is shown.
   void OnIphShown(user_education::FeaturePromoResult result);
@@ -81,8 +76,10 @@ class PwaInstallPageActionController
   // Called when IPH is closed.
   void OnIphClosed(const webapps::ManifestId manifest_id);
 
-  // Whether the IPH feature is enabled.
-  bool iph_is_enabled_ = false;
+  // Decide whether IPH promo should be shown based on previous interactions
+  // and if IPH has already been requested to be shown.
+  bool ShouldShowIph(content::WebContents* web_contents,
+                     const webapps::WebAppBannerData& data);
 
   // Whether the IPH is trying to show.
   // iph_pending_ is true if the iph has been queued to be shown.
@@ -93,10 +90,20 @@ class PwaInstallPageActionController
   // Track whether the callback (i.e. the action) is being executed.
   bool is_executing_ = false;
 
-  // Decide whether IPH promo should be shown based on previous interactions
-  // and if IPH has already been requested to be shown.
-  bool ShouldShowIph(content::WebContents* web_contents,
-                     const webapps::WebAppBannerData& data);
+  raw_ptr<webapps::AppBannerManager> manager_;
+  const raw_ref<tabs::TabInterface> tab_interface_;
+  const raw_ref<page_actions::PageActionController> page_action_controller_;
+
+  // If set, indicates that an IPH is showing and therefore the page action
+  // is considered active.
+  std::optional<page_actions::ScopedPageActionActivity> iph_activity_ =
+      std::nullopt;
+
+  // Whether the IPH feature is enabled.
+  const bool iph_is_enabled_ = false;
+
+  base::CallbackListSubscription will_discard_contents_subscription_;
+  base::CallbackListSubscription will_deactivate_subscription_;
 
   base::WeakPtrFactory<PwaInstallPageActionController> weak_ptr_factory_{this};
 };

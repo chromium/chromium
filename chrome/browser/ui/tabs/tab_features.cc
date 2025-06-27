@@ -192,7 +192,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
     if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
       pwa_install_page_action_controller_ =
-          std::make_unique<PwaInstallPageActionController>(tab);
+          std::make_unique<PwaInstallPageActionController>(
+              tab, *page_action_controller_);
     }
 
     if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
@@ -249,8 +250,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab.GetContents());
 
     dwa_web_contents_observer_ =
-        std::make_unique<metrics::DwaWebContentsObserver>(
-            tab.GetContents());
+        std::make_unique<metrics::DwaWebContentsObserver>(tab.GetContents());
 
     if (tab_groups::TabGroupSyncService* tab_group_sync_service =
             tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile)) {
@@ -271,7 +271,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<glic::GlicTabIndicatorHelper>(&tab);
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
-  }     // IsInNormalWindow() end.
+  }  // IsInNormalWindow() end.
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);

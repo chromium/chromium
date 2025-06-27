@@ -37,9 +37,11 @@ const base::FeatureParam<int> kIphSiteEngagementThresholdParam{
 }  // namespace
 
 PwaInstallPageActionController::PwaInstallPageActionController(
-    tabs::TabInterface& tab_interface)
+    tabs::TabInterface& tab_interface,
+    page_actions::PageActionController& page_action_controller)
     : page_actions::PageActionObserver(kActionInstallPwa),
       tab_interface_(tab_interface),
+      page_action_controller_(page_action_controller),
       iph_is_enabled_(base::FeatureList::IsEnabled(
           feature_engagement::kIPHDesktopPwaInstallFeature)) {
   content::WebContents* web_contents = tab_interface_->GetContents();
@@ -60,7 +62,7 @@ PwaInstallPageActionController::PwaInstallPageActionController(
       base::BindRepeating(&PwaInstallPageActionController::WillDeactivate,
                           base::Unretained(this)));
 
-  RegisterAsPageActionObserver(GetPageActionController());
+  RegisterAsPageActionObserver(page_action_controller_.get());
 }
 
 void PwaInstallPageActionController::SetIsExecuting(bool is_executing) {
@@ -93,7 +95,7 @@ void PwaInstallPageActionController::OnPageActionIconShown(
   if (!iph_is_enabled_) {
     return;
   }
-  // Only try to show IPH when |PwaInstallView.IsDrawn|. This catches the case
+  // Only try to show IPH when drawn. This catches the case
   // that view is set to visible but not drawn in fullscreen mode.
   content::WebContents* web_contents = tab_interface_->GetContents();
   if (!web_contents) {
@@ -165,38 +167,34 @@ void PwaInstallPageActionController::UpdateVisibility() {
 void PwaInstallPageActionController::Show(content::WebContents* web_contents,
                                           bool showChip) {
   // Controller responsible for all page actions
-  page_actions::PageActionController& all_actions_controller =
-      GetPageActionController();
-  all_actions_controller.OverrideText(
+  page_action_controller_->OverrideText(
       kActionInstallPwa,
       l10n_util::GetStringUTF16(IDS_OMNIBOX_PWA_INSTALL_ICON_LABEL));
-  all_actions_controller.OverrideAccessibleName(
+  page_action_controller_->OverrideAccessibleName(
       kActionInstallPwa,
       l10n_util::GetStringFUTF16(
           IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
           webapps::AppBannerManager::GetInstallableWebAppName(web_contents)));
-  all_actions_controller.OverrideTooltip(
+  page_action_controller_->OverrideTooltip(
       kActionInstallPwa,
       l10n_util::GetStringFUTF16(
           IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
           webapps::AppBannerManager::GetInstallableWebAppName(web_contents)));
-  all_actions_controller.Show(kActionInstallPwa);
+  page_action_controller_->Show(kActionInstallPwa);
   if (showChip) {
-    all_actions_controller.ShowSuggestionChip(kActionInstallPwa);
+    page_action_controller_->ShowSuggestionChip(kActionInstallPwa);
   } else {
-    all_actions_controller.HideSuggestionChip(kActionInstallPwa);
+    page_action_controller_->HideSuggestionChip(kActionInstallPwa);
   }
 }
 
 void PwaInstallPageActionController::Hide() {
   // Controller responsible for all page actions
-  page_actions::PageActionController& all_actions_controller =
-      GetPageActionController();
-  all_actions_controller.HideSuggestionChip(kActionInstallPwa);
-  all_actions_controller.Hide(kActionInstallPwa);
-  all_actions_controller.ClearOverrideAccessibleName(kActionInstallPwa);
-  all_actions_controller.ClearOverrideText(kActionInstallPwa);
-  all_actions_controller.ClearOverrideTooltip(kActionInstallPwa);
+  page_action_controller_->HideSuggestionChip(kActionInstallPwa);
+  page_action_controller_->Hide(kActionInstallPwa);
+  page_action_controller_->ClearOverrideAccessibleName(kActionInstallPwa);
+  page_action_controller_->ClearOverrideText(kActionInstallPwa);
+  page_action_controller_->ClearOverrideTooltip(kActionInstallPwa);
 }
 
 void PwaInstallPageActionController::OnInstallableWebAppStatusUpdated(
@@ -208,14 +206,6 @@ void PwaInstallPageActionController::OnInstallableWebAppStatusUpdated(
 void PwaInstallPageActionController::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   UpdateVisibility();
-}
-
-page_actions::PageActionController&
-PwaInstallPageActionController::GetPageActionController() {
-  page_actions::PageActionController* all_actions_controller =
-      tab_interface_->GetTabFeatures()->page_action_controller();
-  CHECK(all_actions_controller);
-  return *all_actions_controller;
 }
 
 bool PwaInstallPageActionController::ShouldShowIph(
@@ -248,15 +238,15 @@ void PwaInstallPageActionController::OnIphShown(
     user_education::FeaturePromoResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   iph_pending_ = false;
+  iph_activity_ = page_action_controller_->AddActivity(kActionInstallPwa);
 }
 
 void PwaInstallPageActionController::OnIphClosed(
     const webapps::ManifestId manifest_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  iph_activity_.reset();
   // IPH is also closed when the install button is clicked and the action is
-  // executed. This does not count as an 'ignore'. The button should remain
-  // highlighted and will eventually be un-highlighted when the PWA install
-  // bubble is closed.
+  // executed.
   if (is_executing_) {
     return;
   }

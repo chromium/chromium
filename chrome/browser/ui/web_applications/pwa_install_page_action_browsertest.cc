@@ -840,6 +840,8 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                   feature_engagement::kIPHDesktopPwaInstallFeature) ||
               browser()->window()->IsFeaturePromoActive(
                   feature_engagement::kIPHDesktopPwaInstallFeature));
+  // TODO(crbug.com/40796769): Once the above logic is deflaked, we should also
+  // check that the highlights on the icon are appropriately set.
 }
 
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
