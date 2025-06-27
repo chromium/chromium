@@ -121,6 +121,7 @@
 <translation id="6051432659151380973">ඔබේ පටිති සමූහ ස්වයංක්‍රීයව සුරකියි</translation>
 <translation id="6054741997831917303">මෙම අයිතමයෙහි මිල මෑතකදී <ph name="PREVIOUS_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා පහත වැටී ඇත</translation>
 <translation id="6109251075362363230">මෑතක දී භාවිතා කළ පිටපත ව්‍යතිරේකය හැර, සියලු ම අනුපත් පටිති දැන් ලේඛනාරක්ෂණය කරනු ලැබේ.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{තෝරා ගත් <ph name="TABS_COUNT_ONE" /> අයිතමයක් වසන්න}one{තෝරා ගත් අයිතම <ph name="TABS_COUNT_MANY" />ක් වසන්න}other{තෝරා ගත් අයිතම <ph name="TABS_COUNT_MANY" />ක් වසන්න}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{සමූහය නව කවුළුවට ගෙන යන්න}one{සමූහය තව කවුළුවකට ගෙන යන්න}other{සමූහය තව කවුළුවකට ගෙන යන්න}}</translation>
 <translation id="6193448654517602979">පටිති තෝරන්න</translation>
 <translation id="6220820548421939212">ඔව්. මම සහභාගි වෙමි</translation>
@@ -157,6 +158,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" පටිති සමූහය තවදුරටත් ලබා ගත නොහැක</translation>
 <translation id="7452985128687107478">පටිති සමූහ ඔබේ සියලුම උපාංග පුරා ස්වයංක්‍රීයව සුරැකෙන අතර යාවත්කාලීන වෙයි</translation>
 <translation id="747459581954555080">සියල්ල ප්‍රතිස්ථාපනය කරන්න</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{තෝරා ගත් <ph name="TABS_COUNT_ONE" /> අයිතමයක් ප්‍රතිසාධනය කරන්න}one{තෝරන ලද අයිතම <ph name="TABS_COUNT_MANY" />ක් ප්‍රතිසාධනය කරන්න}other{තෝරන ලද අයිතම <ph name="TABS_COUNT_MANY" />ක් ප්‍රතිසාධනය කරන්න}}</translation>
 <translation id="753732157349120914">ටැබ මාරුව</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google වෙතින් සමාලෝචන <ph name="REVIEWS_COUNT_ONE" />}one{Google වෙතින් සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />}other{Google වෙතින් සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />}}</translation>
 <translation id="7559245342362162951">පූර්ණ තිර ජාලකයේ සමූහයේ පටිති පෙන්වන්න</translation>

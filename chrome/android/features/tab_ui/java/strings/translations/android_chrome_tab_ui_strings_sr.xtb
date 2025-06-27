@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">Групе картица се аутоматски чувају</translation>
 <translation id="6054741997831917303">Цена ове ставке је недавно снижена са <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Све дупликате картица ћемо сада архивирати, изузев последње коришћене копије.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Затворите <ph name="TABS_COUNT_ONE" /> изабрану ставку}one{Затворите <ph name="TABS_COUNT_MANY" /> изабрану ставку}few{Затворите <ph name="TABS_COUNT_MANY" /> изабране ставке}other{Затворите <ph name="TABS_COUNT_MANY" /> изабраних ставки}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Премести групу у нови прозор}one{Премести групу у други прозор}few{Премести групу у други прозор}other{Премести групу у други прозор}}</translation>
 <translation id="6193448654517602979">Изаберите картице</translation>
 <translation id="6220820548421939212">Да. Може</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">Група картица <ph name="TAB_GROUP_NAME" /> више није доступна</translation>
 <translation id="7452985128687107478">Групе картица се аутоматски чувају и ажурирају на свим уређајима</translation>
 <translation id="747459581954555080">Врати све</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Вратите <ph name="TABS_COUNT_ONE" /> изабрану ставку}one{Вратите <ph name="TABS_COUNT_MANY" /> изабрану ставку}few{Вратите <ph name="TABS_COUNT_MANY" /> изабране ставке}other{Вратите <ph name="TABS_COUNT_MANY" /> изабраних ставки}}</translation>
 <translation id="753732157349120914">Пребацивач картица</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> рецензија из Google-а}one{<ph name="REVIEWS_COUNT_MANY" /> рецензија из Google-а}few{<ph name="REVIEWS_COUNT_MANY" /> рецензије из Google-а}other{<ph name="REVIEWS_COUNT_MANY" /> рецензија из Google-а}}</translation>
 <translation id="7559245342362162951">Приказује картице групе у мрежи на целом екрану</translation>

@@ -2295,7 +2295,7 @@
 <translation id="2552966063069741410">時區</translation>
 <translation id="2553290675914258594">已驗證存取權</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> 無法連線至<ph name="NETWORK_ID" />，請選取其他網絡，或再試一次。</translation>
-<translation id="2553352788023127673">搜尋記錄和密碼可以在相關管理設定中刪除</translation>
+<translation id="2553352788023127673">搜尋記錄和密碼可以在相應的管理設定中刪除</translation>
 <translation id="2553440850688409052">隱藏此外掛程式</translation>
 <translation id="2554553592469060349">選取的檔案過大 (大小上限：3 MB)。</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> 個應用程式 (共 <ph name="TOTAL_NUM_APPS" /> 個) 可傳送通知</translation>
@@ -3470,7 +3470,7 @@
 <translation id="3408555740610481810">正在使用攝錄機和麥克風</translation>
 <translation id="3409157109901479672">左邊</translation>
 <translation id="3409513286451883969">將所選內容翻譯為<ph name="LANGUAGE" /> (&amp;T)</translation>
-<translation id="3410151451624226773">在 Google 密碼管理工具中控管</translation>
+<translation id="3410151451624226773">在「Google 密碼管理工具」中管理</translation>
 <translation id="3412265149091626468">跳至所選範圍</translation>
 <translation id="3413122095806433232">CA 發行者：<ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">大小：</translation>
@@ -6198,7 +6198,7 @@
 <translation id="5320135788267874712">新的裝置名稱</translation>
 <translation id="532247166573571973">可能無法連接伺服器，請稍後再試。</translation>
 <translation id="5323328004379641163">自訂 Chrome 和此網頁的外觀</translation>
-<translation id="5323501626199324454">在 Google 帳戶中管理</translation>
+<translation id="5323501626199324454">在 Google 帳戶管理</translation>
 <translation id="5324300749339591280">應用程式清單</translation>
 <translation id="5324780743567488672">自動使用您的位置設定時區</translation>
 <translation id="5327248766486351172">名稱</translation>
@@ -6546,7 +6546,7 @@
 <translation id="557722062034137776">重設裝置並不會影響您的 Google 帳戶，以及任何與這些帳戶同步處理的數據。不過，裝置中所有本機儲存檔案將被刪除。</translation>
 <translation id="5578059481725149024">自動登入</translation>
 <translation id="5578387000057347457">輸入自訂提示或醒目顯示文字，即可製作圖像</translation>
-<translation id="5579225964082017560">從「<ph name="SECTION_HEADER" />」清單中移除 <ph name="SITE" /></translation>
+<translation id="5579225964082017560">從「<ph name="SECTION_HEADER" />」清單移除 <ph name="SITE" /></translation>
 <translation id="5581134892342029705">已經完成翻譯去<ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Microsoft Windows 硬件驅動程式驗證</translation>
 <translation id="5581972110672966454">無法將裝置加入網域。請再試一次，或聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -11084,7 +11084,7 @@
 <translation id="8791157330927639737">進一步了解點樣更新</translation>
 <translation id="8791534160414513928">與瀏覽流量一併傳送「Do Not Track」要求</translation>
 <translation id="8793390639824829328">網站會使用此功能捲動及縮放已分享的分頁</translation>
-<translation id="8793895150509408038">查看「<ph name="SECTION_HEADER" />」清單中的 <ph name="SITE" /> 網站詳細資料</translation>
+<translation id="8793895150509408038">睇下「<ph name="SECTION_HEADER" />」清單入面嘅 <ph name="SITE" /> 網站詳情</translation>
 <translation id="879413103056696865">開啟熱點時，您的 <ph name="PHONE_NAME" /> 將會：</translation>
 <translation id="8794548468611058947">你可為此 <ph name="DEVICE_TYPE" /> 建立 PIN，不必輸入 Google 帳戶密碼登入</translation>
 <translation id="8795916974678578410">開啟新視窗</translation>

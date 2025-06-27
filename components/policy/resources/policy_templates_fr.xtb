@@ -1061,6 +1061,17 @@ Cette règle constitue une solution temporaire au cas où des entreprises rencon
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="1755310913456007816">Utiliser les paramètres existants de vérification en ligne de la révocation</translation>
 <translation id="1760951637494635692">Autoriser l'API Serial sur ces sites</translation>
+<translation id="1764415246330773476">Cette règle contrôle la visibilité de l'avis de gestion dans le pied de la page "Nouvel onglet". Par défaut, le pied de la page "Nouvel onglet" affiche des informations lorsque le navigateur est géré par une organisation (indiqué par une icône représentant un bâtiment et la mention "Géré par [nom de domaine]"). Vous pouvez personnaliser cette règle à l'aide des règles <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> et <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
+
+Si cette règle n'est pas configurée ou si elle est définie sur "True", les navigateurs gérés affichent un avertissement indiquant "Géré par…" accompagné d'une icône.
+
+Si cette règle est définie sur "False", l'avis de gestion est masqué.
+
+Notez que cette règle ne s'applique qu'aux navigateurs gérés. Elle n'aura donc aucune incidence pour les utilisateurs gérés sur les navigateurs non gérés.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de la <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="1765503534110351026">Cette règle étant obsolète, veuillez utiliser <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
 
        Si cette règle est configurée, <ph name="PRODUCT_NAME" /> contourne tout proxy de la liste d'hôtes indiquée ici. Elle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée et si vous avez sélectionné <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ou <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> pour <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -1922,6 +1933,15 @@ Si la règle est désactivée, elle empêche les utilisateurs ou les variantes d
 <translation id="2377059627106831967">Autoriser le regroupement des fenêtres d'aperçu de l'IA générative sans améliorer les modèles d'IA.</translation>
 <translation id="2377109572344699022">Contrôler l'utilisation de l'API Direct Sockets</translation>
 <translation id="2382672620906337383">La fonction JavaScript setTimeout() ne sera limitée que si le seuil d'imbrication est supérieur.</translation>
+<translation id="2383521405943565490">Cette règle détermine si le partitionnement du stockage tiers est autorisé par défaut.
+
+Si cette règle est définie sur "1 - AllowPartitioning" ou si elle n'est pas configurée, le partitionnement du stockage tiers est autorisé par défaut. Cette valeur par défaut peut être remplacée pour des origines de premier niveau spécifiques par d'autres moyens.
+
+Si cette règle est définie sur "2 - BlockPartitioning", le partitionnement du stockage tiers est désactivé pour tous les contextes.
+
+Utilisez <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> pour désactiver le partitionnement du stockage tiers pour des origines de premier niveau spécifiques. Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Cette règle sera supprimée dans Chrome 145. Nous vous recommandons d'utiliser la méthode requestStorageAccess à la place : https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Vous pouvez envoyer vos retours sur https://crbug.com/425248669.</translation>
 <translation id="2386362615870139244">Autoriser les WakeLock forçant l'activation de l'écran</translation>
 <translation id="2387469539700985783">Cette règle n'a aucun effet sur les rapports effectués par Android.</translation>
 <translation id="2388701318721126001">Si cette règle est désactivée, l'utilisateur <ph name="PRODUCT_OS_NAME" /> ne peut pas sélectionner un fond d'écran dans un album Google Photos.
@@ -8113,6 +8133,15 @@ Si cette règle est définie sur "True" ou si elle n'est pas définie, les utili
 
 Si cette règle est définie sur "False", le transfert de port dans les conteneurs Crostini sera désactivé.</translation>
 <translation id="6677291257287862684">Activer les touches rémanentes sur l'écran de connexion</translation>
+<translation id="6677886356657067286">Cette règle vous permet de définir une liste de formats d'URL indiquant les origines de premier niveau pour lesquelles le partitionnement du stockage tiers (partitionnement du stockage iFrame multi-origine) doit être désactivé.
+
+Si cette règle n'est pas configurée ou si une origine de premier niveau ne correspond à aucun des formats d'URL, <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> s'applique.
+
+Pour en savoir plus sur les formats valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Notez que les formats que vous répertoriez ici sont traités comme des origines, et non comme des URL. Vous ne devez donc pas spécifier de chemin d'accès.
+
+Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Cette règle sera supprimée dans Chrome 145. Nous vous recommandons d'utiliser la méthode requestStorageAccess à la place : https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Vous pouvez envoyer vos retours sur https://crbug.com/425248669.</translation>
 <translation id="668153983584136017">Cette règle a été abandonnée, car le nouvel algorithme GREASE est activé par défaut depuis M103.
 Lorsqu'elle est activée, la fonctionnalité de mise à jour GREASE User-Agent Client Hints aligne l'algorithme GREASE user-agent sur les dernières caractéristiques.
      Les caractéristiques mises à jour peuvent entraîner un dysfonctionnement de certains sites qui appliquent des restrictions concernant les caractères que peuvent contenir les requêtes. Pour en savoir plus, consultez les caractéristiques : https://wicg.github.io/ua-client-hints/#grease

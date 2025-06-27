@@ -46,7 +46,7 @@
 <translation id="2569352796411618312">הצעה: <ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
 <translation id="257674075312929031">קבוצה</translation>
 <translation id="2662028055331606429">דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" /></translation>
-<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך יום אחד (<ph name="AUTO_DELETE_DELAY_ONE" />). אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}one{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך יומיים (<ph name="AUTO_DELETE_DELAY_MANY" />). אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}two{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך יומיים (<ph name="AUTO_DELETE_DELAY_MANY" />). אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}other{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך יומיים (<ph name="AUTO_DELETE_DELAY_MANY" />). אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}}</translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך יום אחד (<ph name="AUTO_DELETE_DELAY_ONE" />). אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}one{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך יומיים (<ph name="AUTO_DELETE_DELAY_MANY" />). אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}two{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך יומיים (<ph name="AUTO_DELETE_DELAY_MANY" />). אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}other{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך <ph name="AUTO_DELETE_DELAY_MANY" /> ימים. אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}}</translation>
 <translation id="266935134738038806">כניסה לאתר</translation>
 <translation id="2671423594960767771">שיתוף קבוצה</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{עודכנה לפני שבוע (<ph name="NUM_WEEKS_ONE" />)}one{עודכנה לפני <ph name="NUM_WEEKS_MANY" /> שבועות}two{עודכנה לפני שבועיים (<ph name="NUM_WEEKS_MANY" />)}other{עודכנה לפני <ph name="NUM_WEEKS_MANY" /> שבועות}}</translation>
@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">קבוצות הכרטיסיות נשמרות אוטומטית</translation>
 <translation id="6054741997831917303">המחיר של הפריט הזה ירד לאחרונה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">עכשיו גם כל הכרטיסיות הכפולות יועברו לארכיון, חוץ מהעותק האחרון שנעשה בו שימוש.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{סגירת הפריט שנבחר (<ph name="TABS_COUNT_ONE" />)}one{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}two{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{העברת קבוצת הכרטיסיות לחלון חדש}one{העברת קבוצת הכרטיסיות לחלון אחר}two{העברת קבוצת הכרטיסיות לחלון אחר}other{העברת קבוצת הכרטיסיות לחלון אחר}}</translation>
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
 <translation id="6220820548421939212">כן. אני בעניין</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">קבוצת הכרטיסיות "<ph name="TAB_GROUP_NAME" />" לא זמינה יותר</translation>
 <translation id="7452985128687107478">קבוצות של כרטיסיות נשמרות באופן אוטומטי ומתעדכנות בכל המכשירים</translation>
 <translation id="747459581954555080">שחזור הכול</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{שחזור הפריט שנבחר <ph name="TABS_COUNT_ONE" />}one{שחזור של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}two{שחזור של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}other{שחזור של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}}</translation>
 <translation id="753732157349120914">מחליף הכרטיסיות</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{‏ביקורת אחת (<ph name="REVIEWS_COUNT_ONE" />) מ-Google}one{‏<ph name="REVIEWS_COUNT_MANY" /> ביקורות מ-Google}two{‏<ph name="REVIEWS_COUNT_MANY" /> ביקורות מ-Google}other{‏<ph name="REVIEWS_COUNT_MANY" /> ביקורות מ-Google}}</translation>
 <translation id="7559245342362162951">הצגת כרטיסיות הקבוצה ברשת מסך מלא</translation>
@@ -210,7 +212,7 @@
 <translation id="9090098097337832354">המידע על החנות הזו נסגר</translation>
 <translation id="9114502155681725011">פתיחה של תפריט הפעולות בקבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" />, בצבע <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">הוספת כרטיסייה חדשה לקבוצה</translation>
-<translation id="9187834032751045001">הודעה על המחיקה האוטומטית של הכרטיסיות נפתחה בחצי הגובה.</translation>
+<translation id="9187834032751045001">ההודעה על המחיקה האוטומטית של הכרטיסיות נפתחה בחצי הגובה.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="992256792861109788">ורוד</translation>

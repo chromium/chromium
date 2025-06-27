@@ -2158,6 +2158,7 @@
 <translation id="4635278307999235413">অ্যাডমিন কনসোলে ডেটা পাঠানো হচ্ছে</translation>
 <translation id="4636930964841734540">তথ্য</translation>
 <translation id="4640225694041297329">গত ৭ দিনের ফলাফল দেখুন</translation>
+<translation id="4642296966515958616">এই ট্যাব গ্রুপে যোগ দিতে, Chrome আপডেট করুন</translation>
 <translation id="464342062220857295">সার্চের ফিচার</translation>
 <translation id="4644567637638438744">আপনি Microsoft OneDrive-এ সাইন-ইন করলেই শুধুমাত্র ফাইল আপলোড করা যাবে</translation>
 <translation id="4644670975240021822">রিভার্স অর্ডার, সামনের দিক নীচে</translation>
@@ -2931,6 +2932,7 @@
 <translation id="5967592137238574583">পরিচিতির তথ্য সম্পাদনা করুন</translation>
 <translation id="5967867314010545767">ইতিহাস থেকে সরান</translation>
 <translation id="5968022600320704045">কোনও সার্চ ফলাফল নেই</translation>
+<translation id="5968400720580217226">AI মোড</translation>
 <translation id="5969199813874624822">দাম সেভ এবং ট্র্যাক করুন</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sixth Roll</translation>
@@ -3150,6 +3152,7 @@
 <translation id="6326947323444967009">iOS সেটিংসে Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
 <translation id="6327065120806001832">স্থানীয় নেটওয়ার্ক অ্যাক্সেস</translation>
 <translation id="6328639280570009161">নেটওয়ার্ক পূর্বানুমান নিষ্ক্রিয় করার চেষ্টা করুন</translation>
+<translation id="6329815962353376655">&lt;প্রশ্ন টাইপ করুন&gt;</translation>
 <translation id="6334834493885103305">আপনি এখন Affirm, Zip বা Klarna ব্যবহার করে কিস্তিতে পেমেন্ট করতে পারবেন</translation>
 <translation id="6335029926534404762">অ্যাথলিট জুতো</translation>
 <translation id="6336948221660696475">ভিআর (VR) ব্যবহার করার অনুমতি নেই</translation>
@@ -3863,6 +3866,7 @@
 <translation id="7521387064766892559">জাভাস্ক্রিপ্ট</translation>
 <translation id="752189128961566325">আপনি বিভিন্ন Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে পারবেন</translation>
 <translation id="7523408071729642236">ম্যানুফ্যাকচারিং</translation>
+<translation id="7524958309155133228"><ph name="ENGINE" />-কে জিজ্ঞাসা করুন</translation>
 <translation id="7525067979554623046">তৈরি করুন</translation>
 <translation id="7525804896095537619">নাম খালি থাকলে চলবে না</translation>
 <translation id="7526934274050461096">এই সাইটে আপনার সংযোগ ব্যক্তিগত নয়</translation>
@@ -4729,6 +4733,7 @@
 <translation id="9042617223719777575">অধিক ক্ষমতা সম্পন্ন</translation>
 <translation id="9042827002460091668">ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> আপনার স্থানীয় নেটওয়ার্কে, যেকোনও ডিভাইস খুঁজতে ও কানেক্ট করতে চায়</translation>
 <translation id="9046864189129893978">মাইক্রোফোন (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823"><ph name="POLICY_VALUE" />-এ সেট করার জন্য এই অ্যাকশনের <ph name="POLICY_NAME" /> নীতি প্রয়োজন: <ph name="ACTION_LIST" />।</translation>
 <translation id="9048662076076074925">২৪ x ৩৬ ইঞ্চি</translation>

@@ -1129,6 +1129,17 @@ política fue la versión 121. Se quitó en la versión 122.</translation>
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="1755310913456007816">Usa la configuración para comprobar la actual revocación en línea</translation>
 <translation id="1760951637494635692">Permite la API de Serial en estos sitios</translation>
+<translation id="1764415246330773476">Esta política controla la visibilidad del aviso de administración en el pie de página de la página Nueva pestaña. De forma predeterminada, el pie de página de la página Nueva Pestaña muestra información cuando el navegador está administrado por una organización (indicado por un ícono de edificio y "Administrado por [nombre del dominio]"). Esto se puede personalizar con las políticas <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> y <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
+
+Si no la estableces o la estableces como verdadera, los navegadores administrados mostrarán el aviso "Administrado por…" con un ícono.
+
+Si estableces esta política como falsa, se ocultará el aviso de administración.
+
+Ten en cuenta que esta política solo se aplica a los navegadores administrados, por lo que no tendrá efecto en los usuarios administrados en navegadores no administrados.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="1765503534110351026">Esta política dejó de estar disponible; usa <ph name="PROXY_SETTINGS_POLICY_NAME" /> en su lugar.
 
        Si estableces la política, <ph name="PRODUCT_NAME" /> omitirá cualquier proxy de la lista de hosts que se proporciona aquí. Esta política se aplica únicamente si no se especifica la política <ph name="PROXY_SETTINGS_POLICY_NAME" /> y si especificaste <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> o <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> para <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -2017,6 +2028,15 @@ la política BruschettaVMConfiguration o, si esto falla, un nombre genérico.</t
 <translation id="2377059627106831967">Permitir la agrupación de la ventana de la Visión general creada por IA generativa sin mejorar los modelos de IA.</translation>
 <translation id="2377109572344699022">Controlar el uso de la API de Direct Sockets</translation>
 <translation id="2382672620906337383">No se restringirá JavaScript setTimeout() hasta que el umbral de anidación sea más alto</translation>
+<translation id="2383521405943565490">Esta política controla si se permite la partición de almacenamiento de terceros de forma predeterminada.
+
+Si estableces esta política como 1 (AllowPartitioning) o no la estableces, se permitirá la partición de almacenamiento de terceros de forma predeterminada. Este valor predeterminado se puede anular para orígenes de nivel superior específicos por otros medios.
+
+Si estableces esta política como 2 (BlockPartitioning), se inhabilitará la partición de almacenamiento de terceros para todos los contextos.
+
+Usa <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> para inhabilitar la partición de almacenamiento de terceros para orígenes de nivel superior específicos. Para obtener información detallada sobre la partición de almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Se quitará en Chrome 145 y, en su lugar, se recomienda usar el método requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puedes enviar comentarios en https://crbug.com/425248669.</translation>
 <translation id="2386362615870139244">Permitir bloqueos de activación de pantalla</translation>
 <translation id="2387469539700985783">Esta política no afecta el informe que crea Android.</translation>
 <translation id="2388701318721126001">Si inhabilitas esta política, no se podrá seleccionar la imagen de fondo de pantalla de <ph name="PRODUCT_OS_NAME" /> del usuario de un álbum de Google Fotos.
@@ -8528,6 +8548,15 @@ Si estableces esta política como verdadera o no la estableces, los usuarios pod
 
 Si la estableces como falsa, se inhabilitará la redirección de puertos a los contenedores de Crostini.</translation>
 <translation id="6677291257287862684">Habilitar las teclas especiales en la pantalla de acceso</translation>
+<translation id="6677886356657067286">Esta política te permite establecer una lista de patrones de URL que especifiquen los orígenes de nivel superior para los que se debe inhabilitar la partición de almacenamiento de terceros (partición de almacenamiento de iframe de origen cruzado).
+
+Si no estableces esta política o si un origen de nivel superior no coincide con uno de los patrones de URL, se aplicará <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
+
+Para obtener información detallada sobre los patrones válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Ten en cuenta que los patrones que incluyas aquí se tratarán como orígenes, no como URLs, por lo que no debes especificar una ruta de acceso.
+
+Para obtener información detallada sobre la partición de almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Se quitará en Chrome 145 y, en su lugar, se recomienda usar el método requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puedes enviar comentarios en https://crbug.com/425248669.</translation>
 <translation id="668153983584136017">Esta política dejó de estar disponible, ya que el algoritmo GREASE actualizado está activado de forma predeterminada desde la versión M103.
 Si habilitas la política, la función de actualización de GREASE de User-Agent Client Hints se alineará con el algoritmo GREASE de usuario-agente con las especificaciones más recientes.
       Las especificaciones actualizadas pueden generar errores en los sitios web que restringen los caracteres que pueden incluir las solicitudes. Para obtener más información, consulta las especificaciones: https://wicg.github.io/ua-client-hints/#grease

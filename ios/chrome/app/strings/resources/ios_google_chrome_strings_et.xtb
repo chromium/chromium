@@ -90,6 +90,7 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="2957447865124070833">Valige <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="2986402782150919988">Järjehoidjate lisamine Chrome'i</translation>
 <translation id="3030414234702425231">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chrome'i andmed. Google'i kontole jäävad teie andmed alles.</translation>
+<translation id="3042447686908081308">Impordi Chrome'i</translation>
 <translation id="3051521853355903257">Paroolide haldamine Chrome'is</translation>
 <translation id="309672519329227863">Pääsete muudes rakendustes juurde oma Chrome'i paroolidele ja muule teabele.</translation>
 <translation id="3109170945534582468">Chrome'i toimingud</translation>
@@ -337,6 +338,7 @@ Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chrome’
 <translation id="9176561303811134420">Makseviiside haldamine Chrome'is</translation>
 <translation id="9181628561061032322">Avab Chrome'i hiljutised vahelehed.</translation>
 <translation id="948597495737267756">Avab teie Chrome'i ajaloo lehe.</translation>
+<translation id="954347330803595209">Importige andmed, et kasutada Chrome'is oma paroole, ajalugu, järjehoidjaid ja krediitkaarte</translation>
 <translation id="97300214378190234">Saate Chrome'i kasutada iga kord, kui puudutate linke muudes rakendustes.</translation>
 <translation id="997929539742564806">Chrome'is salvestatud paroolide ja pääsuvõtmete automaatne sisestamine, et rakendustes ja saitidel kiirelt sisse logida</translation>
 <translation id="998677222109959694">Chrome'i seadete haldamine</translation>

@@ -129,6 +129,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="2490684707762498678"><ph name="APP_NAME" /> tarafından yönetiliyor</translation>
 <translation id="2498359688066513246">Yardım ve geri bildirim</translation>
 <translation id="2501278716633472235">Geri dön</translation>
+<translation id="2533138527374486328">Bu düğme açıkken siteler yerel ağınızdaki cihazlara bağlanmak isteyebilir. Düğme kapalıyken siteler yerel ağınızdaki cihazlara bağlanamaz.</translation>
 <translation id="2546283357679194313">Çerezler ve site verileri</translation>
 <translation id="2570922361219980984">Konum erişimi bu cihaz için de kapalı. Konum erişimini <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>
 <translation id="257931822824936280">Genişletildi - Daraltmak için tıklayın.</translation>
@@ -424,6 +425,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="5968921426641056619">Web adresini girin</translation>
 <translation id="5975083100439434680">Uzaklaştır</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Keşfet feed'ini açın</translation>
 <translation id="6015775454662021376">Bu sitenin cihazınıza erişimini kontrol edin</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6042308850641462728">Daha fazla</translation>
@@ -511,6 +513,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="7188508872042490670">Cihaz üzerindeki site verileri</translation>
 <translation id="7201549776650881587">Bu işlem, <ph name="ORIGIN" /> altındaki tüm siteler veya ana ekranınızdaki uygulaması tarafından depolanan verilerin ve çerezlerin tamamını temizler</translation>
 <translation id="7203150201908454328">Genişletilmiş</translation>
+<translation id="7213166370492037743">Sitelerin yerel ağımdaki cihazlara bağlanmasına izin verme</translation>
 <translation id="7219254577985949841">Site verileri silinsin mi?</translation>
 <translation id="723171743924126238">Resim seç</translation>
 <translation id="7243308994586599757">Sayfanın altına yakın bir yerde kullanılabilen seçenekler</translation>

@@ -358,6 +358,7 @@
 <translation id="1232569758102978740">ללא שם</translation>
 <translation id="1233497634904001272">יש לגעת במפתח האבטחה שוב כדי להשלים את הבקשה.</translation>
 <translation id="1233721473400465416">לוקאל</translation>
+<translation id="1233835246554936745">{0,plural, =1{שמירת פריט אחד בחשבון}one{שמירת # פריטים בחשבון}two{שמירת # פריטים בחשבון}other{שמירת # פריטים בחשבון}}</translation>
 <translation id="1234736487471201993">‏יצירת קוד QR לתמונה הזו</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">רשתות מוכרות</translation>
@@ -5662,6 +5663,7 @@
 <translation id="4918844574251943176">התמונה הועתקה</translation>
 <translation id="4921348630401250116">המרת טקסט לדיבור</translation>
 <translation id="4922104989726031751">‏כדי להשתמש במנהל הסיסמאות עם מערכת ההפעלה, צריך להפעיל מחדש את Chromium ולאפשר גישה למנהל הסיסמאות במחשב. הכרטיסיות ייפתחו מחדש אחרי ההפעלה.</translation>
+<translation id="4923561999941435531">{0,plural, =1{שמירת פריט אחד בחשבון}one{שמירת # פריטים בחשבון}two{שמירת # פריטים בחשבון}other{שמירת # פריטים בחשבון}}</translation>
 <translation id="492363500327720082">ההסרה של <ph name="APP_NAME" /> מתבצעת…</translation>
 <translation id="4923977675318667854">הצגה של קבוצות כרטיסיות</translation>
 <translation id="4924002401726507608">שליחת משוב</translation>
@@ -9548,6 +9550,7 @@
 <translation id="7722040605881499779">השטח שנדרש כדי לעדכן: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">‏איפוס לברירת המחדל של Chrome</translation>
 <translation id="7724603315864178912">חיתוך</translation>
+<translation id="7724711098786238351">‏מצב ההדגמה מיועד למשתמשים מגיל 18 ומעלה, והוא כפוף לתנאים ולהגבלות ולמדיניות הפרטיות של Google. המערכת מבצעת איפוס נתונים באופן קבוע. בפרק הזמן שעד האיפוס הבא, יכול להיות שאחרים יראו נתונים שמוזנים במכשיר הזה.</translation>
 <translation id="7726288096350730168">מחיקה מהמכשיר הזה</translation>
 <translation id="7726391492136714301">הצגת ההתראות והאפליקציות שבטלפון</translation>
 <translation id="7727898923446098954">הכרטיסייה מוסתרת</translation>
@@ -11044,6 +11047,7 @@
 <translation id="8749805710397399240">‏אי אפשר להפעיל Cast של התוכן שמוצג במסך. יש לבדוק את הרשאת מקליט המסך ב'העדפות מערכת'.</translation>
 <translation id="8749826920799243530">המכשיר לא רשום</translation>
 <translation id="8749863574775030885">‏גישה למכשירי USB מספק לא ידוע</translation>
+<translation id="8749865622265861882">זהו מכשיר להדגמה</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> רוצה להתחבר אל יציאה טורית</translation>
 <translation id="8750346984209549530">‏APN סלולרי</translation>
 <translation id="8750786237117206586">‏ניהול הגדרות האודיו של ChromeOS Flex</translation>

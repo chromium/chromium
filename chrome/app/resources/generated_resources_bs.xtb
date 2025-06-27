@@ -358,6 +358,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1232569758102978740">Bez naslova</translation>
 <translation id="1233497634904001272">Dodirnite ponovo sigurnosni ključ da dovršite zahtjev.</translation>
 <translation id="1233721473400465416">Postavke lokacije</translation>
+<translation id="1233835246554936745">{0,plural, =1{Sačuvajte 1 stavku na računu}one{Sačuvajte # stavku na računu}few{Sačuvajte # stavke na računu}other{Sačuvajte # stavki na računu}}</translation>
 <translation id="1234736487471201993">Kreiraj QR kôd za ovu sliku</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Poznate mreže</translation>
@@ -1709,7 +1710,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2173302385160625112">Provjerite internetsku vezu</translation>
 <translation id="2173801458090845390">Dodaj zahtjev za ID na ovaj uređaj</translation>
 <translation id="2175384018164129879">&amp;Upravljajte pretraživačima i pretraživanjem web lokacija</translation>
-<translation id="2175526076681939329">Koristi primarne tipke</translation>
+<translation id="2175526076681939329">Korištenje primarnih tipki</translation>
 <translation id="217576141146192373">Dodavanje štampača nije uspjelo. Provjerite konfiguraciju štampača i pokušajte ponovo.</translation>
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="217631816678106981">Nemoj kopirati</translation>
@@ -5657,6 +5658,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4918844574251943176">Slika je kopirana</translation>
 <translation id="4921348630401250116">Pretvaranje teksta u govor</translation>
 <translation id="4922104989726031751">Da koristite Upravitelj lozinki sa svojim operativnim sistemom, ponovo pokrenite Chromium i dozvolite pristup upravitelju lozinki računara. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Sačuvajte 1 stavku na računu}one{Sačuvajte # stavku na računu}few{Sačuvajte # stavke na računu}other{Sačuvajte # stavki na računu}}</translation>
 <translation id="492363500327720082">Deinstaliranje aplikacije <ph name="APP_NAME" />...</translation>
 <translation id="4923977675318667854">Prikaži grupe kartica</translation>
 <translation id="4924002401726507608">Pošaljite povratne informacije</translation>
@@ -9538,6 +9540,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="7722040605881499779">Potrebno za ažuriranje: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Vrati na zadani Chrome</translation>
 <translation id="7724603315864178912">Izreži</translation>
+<translation id="7724711098786238351">Demo način rada je namijenjen korisnicima starijim od 18 godina i reguliran je Googleovim Uslovima korištenja usluge i Pravilima privatnosti. Podatke unesene na uređaju možda će vidjeti druge osobe između periodičnih uništavanja.</translation>
 <translation id="7726391492136714301">Pregledajte obavještenja i aplikacije telefona</translation>
 <translation id="7727898923446098954">Kartica je sakrivena</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{Pauziraj ovu karticu}one{Pauziraj ove kartice}few{Pauziraj ove kartice}other{Pauziraj ove kartice}}</translation>
@@ -11032,6 +11035,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8749805710397399240">Nije moguće emitirati vaš ekran. Provjerite odobrenje za Snimač ekrana u Postavkama sistema.</translation>
 <translation id="8749826920799243530">Uređaj nije prijavljen</translation>
 <translation id="8749863574775030885">Pristupi USB uređajima od nepoznatog dobavljača</translation>
+<translation id="8749865622265861882">Koristite demo uređaj</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> se želi povezati na serijski priključak</translation>
 <translation id="8750346984209549530">Mobilni APN</translation>
 <translation id="8750786237117206586">Upravljajte postavkama zvuka ChromeOS Flexa</translation>

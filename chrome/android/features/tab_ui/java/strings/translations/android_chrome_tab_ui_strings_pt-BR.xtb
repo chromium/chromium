@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2662028055331606429">Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{O Chrome fecha automaticamente os itens da seção "Inativas" que você não usa há <ph name="AUTO_DELETE_DELAY_ONE" /> dia. É possível desativar esse recurso agora ou a qualquer momento nas configurações.}one{O Chrome fecha automaticamente os itens da seção "Inativas" que você não usa há <ph name="AUTO_DELETE_DELAY_MANY" /> dia. É possível desativar esse recurso agora ou a qualquer momento nas configurações.}other{O Chrome fecha automaticamente os itens da seção "Inativas" que você não usa há <ph name="AUTO_DELETE_DELAY_MANY" /> dias. É possível desativar esse recurso agora ou a qualquer momento nas configurações.}}</translation>
 <translation id="266935134738038806">Visitar o site</translation>
 <translation id="2671423594960767771">Compartilhar grupo</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Atualizado há <ph name="NUM_WEEKS_ONE" /> semana}one{Atualizado há <ph name="NUM_WEEKS_MANY" /> semana}other{Atualizado há <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">Lista de grupos de guias aberta no tamanho máximo</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
 <translation id="4159784952369912983">Roxo</translation>
+<translation id="4203448675570432781">O aviso sobre as mudanças na exclusão automática de guias foi fechado.</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
 <translation id="4371591986692297148">Inativos</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Restaurar item}one{Restaurar item}other{Restaurar itens}}</translation>
@@ -187,6 +189,7 @@
 <translation id="8205266828577616993">Mover guia para cima</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Atualizado há <ph name="NUM_MINS_ONE" /> minuto}one{Atualizado há <ph name="NUM_MINS_MANY" /> minuto}other{Atualizado há <ph name="NUM_MINS_MANY" /> minutos}}</translation>
 <translation id="8236097722223016103">Adicionar aos favoritos</translation>
+<translation id="827881768507898324">O aviso sobre a exclusão automática de guias foi aberto na altura máxima.</translation>
 <translation id="8338427544764842461">Seus grupos de guias são salvos aqui e atualizados em todos os dispositivos conectados</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Abrir o grupo de guias compartilhado com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Abrir o grupo de guias compartilhado com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Abrir o grupo de guias compartilhado com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> guia selecionada}one{Fechar <ph name="TABS_COUNT_MANY" /> guia selecionada}other{Fechar <ph name="TABS_COUNT_MANY" /> guias selecionadas}}</translation>
@@ -207,6 +210,7 @@
 <translation id="9090098097337832354">As informações sobre a loja estão fechadas</translation>
 <translation id="9114502155681725011">Abrir o menu de ações do grupo de guias <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Adicionar nova guia ao grupo</translation>
+<translation id="9187834032751045001">O aviso sobre a exclusão automática de guias foi aberto na metade da altura.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Abrir o grupo de guias com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Abrir o grupo de guias com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Abrir o grupo de guias com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="992256792861109788">Rosa</translation>

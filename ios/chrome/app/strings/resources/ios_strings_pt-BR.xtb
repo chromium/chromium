@@ -388,6 +388,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="251837347827266434">Sua conta será desconectada, as guias serão fechadas e os dados de navegação serão excluídos</translation>
 <translation id="2520787026086861736">Para desativar, acesse <ph name="BEGIN_LINK" />Preenchimento automático e senhas<ph name="END_LINK" /></translation>
 <translation id="2523295204312809179">Quando você fecha um grupo de guias, ele é automaticamente salvo aqui</translation>
+<translation id="2524699375503213836">Transfira seus dados do Safari</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Você pode usar as senhas salvas em qualquer dispositivo. Elas são armazenadas no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Senha oculta</translation>
@@ -704,7 +705,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3948600256434252210">Deslize para a direita para entrar no modo de navegação anônima.</translation>
 <translation id="3950479158728806902">Criar automaticamente uma chave de acesso para fazer login mais rápido</translation>
 <translation id="3950820424414687140">Fazer login</translation>
-<translation id="3955740319737378355">Concluído</translation>
+<translation id="3955740319737378355">OK</translation>
 <translation id="3955822496205734389">Você tem senhas fracas.</translation>
 <translation id="3958312024468322930">Arraste até o Dock na parte de baixo da tela inicial</translation>
 <translation id="3962326069546168954">Salvar</translation>
@@ -715,7 +716,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3986739045730058129">Acessar a guia</translation>
 <translation id="3992684624889376114">Sobre esta página</translation>
 <translation id="3993594519743675442">Ocultar "Definir um lembrete"</translation>
-<translation id="3994422733891749358">Escolha as notificações que você quer receber</translation>
+<translation id="3994422733891749358">Escolha quais notificações receber</translation>
 <translation id="3994522032746736727">Fazer login como <ph name="EMAIL" /></translation>
 <translation id="3994911892367422121">ENTENDI</translation>
 <translation id="3995521777587992544">Barra de progresso do carregamento de página, <ph name="EMAIL" /> carregada.</translation>

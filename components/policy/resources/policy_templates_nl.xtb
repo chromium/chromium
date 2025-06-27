@@ -5740,7 +5740,7 @@ Het veld <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> kan gewone woorden en
 
 Voor elke invoer geeft het veld <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> de URL aan van de zoekmachine die tijdens een zoekopdracht met het bijbehorende zoekwoord wordt gebruikt. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt tijdens de zoekopdracht vervangen door de zoektermen van de gebruiker. Ongeldige invoer en vermeldingen met dubbele snelkoppelingen worden genegeerd.
 
-Items voor Zoekopdrachten op site die zijn ingesteld als aanbevolen, worden weergegeven in de adresbalk als de gebruiker '@' typt. Er kunnen maximaal 3 items als aanbevolen worden geselecteerd.
+Items voor zoekopdrachten op site die zijn ingesteld als aanbevolen, worden weergegeven in de adresbalk als de gebruiker '@' typt. Er kunnen maximaal 3 items als aanbevolen worden geselecteerd.
 
 Voor een item voor zoekopdrachten op site waarbij <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" /> Waar is, kunnen gebruikers die vermelding bewerken of uitzetten. Aanbevolen zoekmachines (die beginnen met @) kunnen alleen worden uitgezet. Als een gebruiker een item wijzigt dat oorspronkelijk is gemaakt door dit beleid, wordt het niet meer beheerd door het beleid en wordt het behandeld als een door de gebruiker gemaakte snelkoppeling. Als <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" /> Onwaar of niet gespecificeerd is voor een item voor zoekopdrachten op site, kunnen gebruikers dat item niet bewerken of uitzetten. De instelling om overschrijven door gebruikers toe te staan, wordt alleen ondersteund in M139 en hoger. Eerdere versies staan standaard geen overschrijving door gebruikers toe.
 

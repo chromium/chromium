@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">Предлог: <ph name="NUMBER_OF_TABS" /> ваши картички не се користени во последно време. Дали да се затворат?</translation>
 <translation id="257674075312929031">Група</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> рецензии</translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{Chrome ќе ги затвора автоматски ставките што не сте ги користеле <ph name="AUTO_DELETE_DELAY_ONE" /> ден во делот со неактивни картички. Ова може да го исклучите сега или кога сакате во „Поставки“.}one{Chrome ќе ги затвора автоматски ставките што не сте ги користеле <ph name="AUTO_DELETE_DELAY_MANY" /> ден во делот со неактивни картички. Ова може да го исклучите сега или кога сакате во „Поставки“.}other{Chrome ќе ги затвора автоматски ставките што не сте ги користеле <ph name="AUTO_DELETE_DELAY_MANY" /> дена во делот со неактивни картички. Ова може да го исклучите сега или кога сакате во „Поставки“.}}</translation>
 <translation id="266935134738038806">Одете на сајтот</translation>
 <translation id="2671423594960767771">Сподели ја групата</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Ажурирано пред <ph name="NUM_WEEKS_ONE" /> седмица}one{Ажурирано пред <ph name="NUM_WEEKS_MANY" /> седмица}other{Ажурирано пред <ph name="NUM_WEEKS_MANY" /> седмици}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">Список со групи картички, отворен на цел екран</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
 <translation id="4159784952369912983">Пурпурна</translation>
+<translation id="4203448675570432781">Известувањето за промените во „Автоматско бришење“ на картичките е затворено.</translation>
 <translation id="427987768447457592">Нова група картички</translation>
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Врати ја ставката}one{Врати ги ставките}other{Врати ги ставките}}</translation>
@@ -187,6 +189,7 @@
 <translation id="8205266828577616993">Помести картичка нагоре</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Ажурирано пред <ph name="NUM_MINS_ONE" /> минута}one{Ажурирано пред <ph name="NUM_MINS_MANY" /> минута}other{Ажурирано пред <ph name="NUM_MINS_MANY" /> минути}}</translation>
 <translation id="8236097722223016103">Додавање во „Обележувачи“</translation>
+<translation id="827881768507898324">Известувањето за промените во „Автоматско бришење“ е отворено на целосна висина</translation>
 <translation id="8338427544764842461">Вашите групи картички се зачувани овде и се ажурираат на сите ваши најавени уреди</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Прошири ја споделената група картички со <ph name="TABS_COUNT_ONE" /> картичка, боја: <ph name="COLOR_NAME" />.}one{Прошири ја споделената група картички со <ph name="TABS_COUNT_MANY" /> картичка, боја: <ph name="COLOR_NAME" />.}other{Прошири ја споделената група картички со <ph name="TABS_COUNT_MANY" /> картички, боја: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затвори <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Затвори <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Затвори <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
@@ -207,6 +210,7 @@
 <translation id="9090098097337832354">Информациите за продавницава се затворени</translation>
 <translation id="9114502155681725011">Отворете го менито со дејства на група картички за групата картички „<ph name="TITLE_OF_GROUP" />“, боја: <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Додај нова картичка во групата</translation>
+<translation id="9187834032751045001">Известувањето за промените во „Автоматско бришење“ е отворено на половина висина.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Прошири ја групата картички со <ph name="TABS_COUNT_ONE" /> картичка, во <ph name="COLOR_NAME" /> боја.}one{Прошири ја групата картички со <ph name="TABS_COUNT_MANY" /> картичка, во <ph name="COLOR_NAME" /> боја.}other{Прошири ја групата картички со <ph name="TABS_COUNT_MANY" /> картички, во <ph name="COLOR_NAME" /> боја.}}</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="992256792861109788">Розова</translation>

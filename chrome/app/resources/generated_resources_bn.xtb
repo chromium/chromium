@@ -357,6 +357,7 @@
 <translation id="1232569758102978740">শিরোনামহীন</translation>
 <translation id="1233497634904001272">অনুরোধটি সম্পূর্ণ করার জন্য নিরাপত্তা কী আবার স্পর্শ করুন।</translation>
 <translation id="1233721473400465416">স্থানীয়</translation>
+<translation id="1233835246554936745">{0,plural, =1{অ্য়াকাউন্টে ১টি আইটেম সেভ করুন}one{অ্যাকাউন্টে #টি আইটেম সেভ করুন}other{অ্যাকাউন্টে #টি আইটেম সেভ করুন}}</translation>
 <translation id="1234736487471201993">এই ছবির QR কোড তৈরি করুন</translation>
 <translation id="1234808891666923653">সার্ভিস ওয়ার্কার্স</translation>
 <translation id="1235458158152011030">পরিচিত নেটওয়ার্কগুলি</translation>
@@ -5659,6 +5660,7 @@
 <translation id="4918844574251943176">ছবি কপি করা হয়েছে</translation>
 <translation id="4921348630401250116">টেক্সট-টু-স্পিচ</translation>
 <translation id="4922104989726031751">আপনার অপারেটিং সিস্টেমের সাথে Password Manager ব্যবহার করতে, Chromium আবার চালু করুন এবং নিজের কম্পিউটারের Password Manager অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
+<translation id="4923561999941435531">{0,plural, =1{অ্য়াকাউন্টে ১টি আইটেম সেভ করুন}one{অ্যাকাউন্টে #টি আইটেম সেভ করুন}other{অ্যাকাউন্টে #টি আইটেম সেভ করুন}}</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> আনইনস্টল করা হচ্ছে...</translation>
 <translation id="4923977675318667854">ট্যাব গ্রুপ দেখুন</translation>
 <translation id="4924002401726507608">মতামত জানান</translation>
@@ -9539,6 +9541,7 @@
 <translation id="7722040605881499779">আপডেটের জন্য প্রয়োজন: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">ডিফল্ট Chrome-এ রিসেট করুন</translation>
 <translation id="7724603315864178912">কাটুন</translation>
+<translation id="7724711098786238351">ডেমো মোড এমন ব্যবহারকারীদের জন্য উপলভ্য যাদের বয়স ১৮ বছরের বেশি এবং এটি Google-এর পরিষেবার শর্তাবলী এবং গোপনীয়তা নীতি দ্বারা পরিচালিত। এই ডিভাইসে লেখা ডেটা নির্দিষ্ট সময় অন্তর অন্যরা দেখতে পেতে পারেন।</translation>
 <translation id="7726391492136714301">আপনার ফোনের বিজ্ঞপ্তি ও অ্যাপ দেখুন</translation>
 <translation id="7727898923446098954">ট্যাব লুকানো আছে</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{এই ট্যাব পজ করুন}one{এই ট্যাব পজ করুন}other{এই ট্যাবগুলি পজ করুন}}</translation>
@@ -11032,6 +11035,7 @@
 <translation id="8749805710397399240">আপনার স্ক্রিন কাস্ট করা যাচ্ছে না। 'সিস্টেম অভিরুচি' বিকল্পে 'স্ক্রিন রেকর্ডিং' অনুমতি চেক করুন।</translation>
 <translation id="8749826920799243530">ডিভাইসটি তালিকাভুক্ত নয়</translation>
 <translation id="8749863574775030885">একটি অজানা বিক্রেতা থেকে USB ডিভাইস অ্যাক্সেস করুন</translation>
+<translation id="8749865622265861882">আপনি একটি ডেমো ডিভাইস ব্যবহার করছেন</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> সিরিয়াল পোর্টে কানেক্ট করতে চাইছে</translation>
 <translation id="8750346984209549530">মোবাইল APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex অডিও সেটিংস ম্যানেজ করুন</translation>

@@ -174,6 +174,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium v
 <translation id="5203244847421322551">Chromium'da şifreleri kaydedip otomatik olarak doldurun</translation>
 <translation id="5224391634244552924">Kaydedilen şifre yok. Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="5259423875997548710">Chromium'da görsel arayın.</translation>
+<translation id="5284913972719948193">Chromium'da şifreleriniz, geçmişiniz, yer işaretleriniz ve kredi kartlarınızı kullanmak için verilerinizi içe aktarın</translation>
 <translation id="5308226104666789935">Chromium, güncellemeleri denetleyemiyor</translation>
 <translation id="5311557153294205270">Girilen URL'leri Chromium'daki yer işaretlerinize ekler.</translation>
 <translation id="5383251701169024761">Kayıtlı şifrelerinizi diğer uygulamalarda da kolayca görmek üzere otomatik doldurma için Chromium'u kullanın.</translation>
@@ -307,6 +308,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="865600487977764604">Chromium'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarında güvenliğinizi artırmak için kullanılabilir.</translation>
 <translation id="8663480472502753423">Chromium'u güncel tutun</translation>
 <translation id="8685813584220679697">Bu sitede ve Chromium'da oturum açın.</translation>
+<translation id="8698780336333802489">Chromium'a aktar</translation>
 <translation id="8730503818204408000">Chromium'u varsayılan tarayıcı olarak ayarlamak için Chromium ayarlarını açar.</translation>
 <translation id="8754966941001340678">Chromium, gelişmiş korumayı önerir</translation>
 <translation id="8759037115129007407">Aile üyeniz şu anda şifre alamıyor. Bu kişiden Chromium'u güncellemesini ve şifrelerini senkronize etmesini isteyin. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
