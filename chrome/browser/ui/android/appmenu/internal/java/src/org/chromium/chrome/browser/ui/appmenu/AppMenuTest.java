@@ -140,7 +140,7 @@ public class AppMenuTest {
 
     private void setUpTestOnUiThread() {
         mLifecycleDispatcher = new TestActivityLifecycleDispatcher();
-        mDelegate = new TestAppMenuDelegate();
+        mDelegate = new TestAppMenuDelegate(sActivity);
         mTestMenuButtonDelegate = () -> sActivity.findViewById(R.id.top_button);
 
         mAppMenuCoordinator =
@@ -450,7 +450,6 @@ public class AppMenuTest {
         Assert.assertTrue(mMenuObserver.menuHighlighting);
 
         showMenuAndAssert();
-        mPropertiesDelegate.footerInflatedCallback.waitForCallback(0);
 
         ChipView chipView =
                 (ChipView)
@@ -613,9 +612,6 @@ public class AppMenuTest {
         mPropertiesDelegate.headerResourceId = R.layout.test_menu_header;
         mPropertiesDelegate.footerResourceId = R.layout.test_menu_footer;
         showMenuAndAssert();
-
-        mPropertiesDelegate.headerInflatedCallback.waitForCallback(0);
-        mPropertiesDelegate.footerInflatedCallback.waitForCallback(0);
 
         Assert.assertEquals(
                 "Incorrect number of header views",

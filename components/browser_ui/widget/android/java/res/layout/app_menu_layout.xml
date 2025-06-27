@@ -18,10 +18,4 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
-
-    <ViewStub
-        android:id="@+id/app_menu_footer_stub"
-        android:inflatedId="@+id/app_menu_footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 </LinearLayout>

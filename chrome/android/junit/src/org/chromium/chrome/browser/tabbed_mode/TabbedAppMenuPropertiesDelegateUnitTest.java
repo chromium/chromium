@@ -6,9 +6,12 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,6 +73,7 @@ import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -118,6 +122,8 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -193,6 +199,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
     @Mock private Profile mProfile;
     @Mock private AppMenuDelegate mAppMenuDelegate;
+    @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private WebFeedSnackbarController.FeedLauncher mFeedLauncher;
     @Mock private ModalDialogManager mDialogManager;
     @Mock private SnackbarManager mSnackbarManager;
@@ -216,6 +223,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
     @Mock private UpdateMenuItemHelper mUpdateMenuItemHelper;
+    @Mock private LargeIconBridge.Natives mLargeIconBridgeJni;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -335,6 +343,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+
+        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
     }
 
     @After
@@ -1825,10 +1835,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForWebFeedFooter();
         when(mTab.isIncognito()).thenReturn(true);
 
-        assertNotEquals(
-                "Footer Resource ID should not be web_feed_main_menu_item.",
-                R.layout.web_feed_main_menu_item,
-                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+        assertThat(
+                "Footer should not be a WebFeed footer",
+                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
+                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
     }
 
     @Test
@@ -1836,10 +1846,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForWebFeedFooter();
         when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(true);
 
-        assertNotEquals(
-                "Footer Resource ID should not be web_feed_main_menu_item.",
-                R.layout.web_feed_main_menu_item,
-                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+        assertThat(
+                "Footer should not be a WebFeed footer",
+                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
+                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
     }
 
     @Test
@@ -1847,10 +1857,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForWebFeedFooter();
         when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
 
-        assertNotEquals(
-                "Footer Resource ID should not be web_feed_main_menu_item.",
-                R.layout.web_feed_main_menu_item,
-                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+        assertThat(
+                "Footer should not be a WebFeed footer",
+                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
+                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
     }
 
     @Test
@@ -1858,20 +1868,20 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForWebFeedFooter();
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
 
-        assertNotEquals(
-                "Footer Resource ID should not be web_feed_main_menu_item.",
-                R.layout.web_feed_main_menu_item,
-                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+        assertThat(
+                "Footer should not be a WebFeed footer",
+                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
+                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
     }
 
     @Test
     public void getFooterResourceId_httpsUrl_returnsWebFeedMenuItem() {
         setUpMocksForWebFeedFooter();
 
-        assertEquals(
-                "Footer Resource ID should be web_feed_main_menu_item.",
-                R.layout.web_feed_main_menu_item,
-                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+        assertThat(
+                "Footer should be a WebFeed footer",
+                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
+                instanceOf(WebFeedMainMenuItem.class));
     }
 
     @Test
@@ -1880,10 +1890,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
 
-        assertNotEquals(
-                "Footer Resource ID should not be web_feed_main_menu_item.",
-                R.layout.web_feed_main_menu_item,
-                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+        assertThat(
+                "Footer should not be a WebFeed footer",
+                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
+                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
     }
 
     @Test
@@ -1891,10 +1901,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForWebFeedFooter();
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
 
-        assertEquals(
-                "Footer Resource ID should be web_feed_main_menu_item.",
-                R.layout.web_feed_main_menu_item,
-                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+        assertThat(
+                "Footer should be a WebFeed footer",
+                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
+                instanceOf(WebFeedMainMenuItem.class));
     }
 
     @Test
@@ -1902,10 +1912,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForWebFeedFooter();
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
 
-        assertNotEquals(
-                "Footer Resource ID should not be web_feed_main_menu_item.",
-                R.layout.web_feed_main_menu_item,
-                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+        assertThat(
+                "Footer should not be a WebFeed footer",
+                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
+                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
     }
 
     private void setUpMocksForWebFeedFooter() {

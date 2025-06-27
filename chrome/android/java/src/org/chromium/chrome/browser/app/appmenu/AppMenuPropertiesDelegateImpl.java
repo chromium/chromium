@@ -942,30 +942,14 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     public void onMenuDismissed() {}
 
     @Override
-    public int getFooterResourceId() {
-        return 0;
+    public @Nullable View buildFooterView(AppMenuHandler appMenuHandler) {
+        return null;
     }
 
     @Override
-    public int getHeaderResourceId() {
-        return 0;
+    public @Nullable View buildHeaderView() {
+        return null;
     }
-
-    @Override
-    public boolean shouldShowFooter(int maxMenuHeight) {
-        return true;
-    }
-
-    @Override
-    public boolean shouldShowHeader(int maxMenuHeight) {
-        return true;
-    }
-
-    @Override
-    public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {}
-
-    @Override
-    public void onHeaderViewInflated(AppMenuHandler appMenuHandler, View view) {}
 
     @Override
     public boolean shouldShowIconBeforeItem() {

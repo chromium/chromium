@@ -25,14 +25,12 @@ import android.view.View.MeasureSpec;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.ViewStub;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -80,20 +78,6 @@ class AppMenu implements OnKeyListener {
          * @param isVisible Whether the App Menu is showing.
          */
         void onMenuVisibilityChanged(boolean isVisible);
-
-        /**
-         * A notification that the header view has been inflated.
-         *
-         * @param view The inflated view.
-         */
-        void onHeaderViewInflated(View view);
-
-        /**
-         * A notification that the footer view has been inflated.
-         *
-         * @param view The inflated view.
-         */
-        void onFooterViewInflated(View view);
     }
 
     /** Provides initial sizing information for the app menu. */
@@ -159,11 +143,11 @@ class AppMenu implements OnKeyListener {
      *     software button or keyboard).
      * @param screenRotation Current device screen rotation.
      * @param visibleDisplayFrame The display area rect in which AppMenu is supposed to fit in.
-     * @param footerResourceId The resource id for a view to add as a fixed view at the bottom of
-     *     the menu. Can be 0 if no such view is required. The footer is always visible and overlays
-     *     other app menu items if necessary.
-     * @param headerResourceId The resource id for a view to add as the first item in menu list. Can
-     *     be null if no such view is required. See {@link ListView#addHeaderView(View)}.
+     * @param footer The view to add as a fixed view at the bottom of the menu. Can be null if no
+     *     such view is required. The footer is always visible and overlays other app menu items if
+     *     necessary.
+     * @param header The resource id for a view to add as the first item in menu list. Can be null
+     *     if no such view is required. See {@link ListView#addHeaderView(View)}.
      * @param highlightedItemId The resource id of the menu item that should be highlighted. Can be
      *     {@code null} if no item should be highlighted. Note that {@code 0} is dedicated to custom
      *     menu items and can be declared by external apps.
@@ -177,8 +161,8 @@ class AppMenu implements OnKeyListener {
             boolean isByPermanentButton,
             int screenRotation,
             Rect visibleDisplayFrame,
-            @IdRes int footerResourceId,
-            @IdRes int headerResourceId,
+            @Nullable View footer,
+            @Nullable View header,
             @Nullable Integer highlightedItemId,
             boolean isMenuIconAtStart,
             @ControlsPosition int controlsPosition,
@@ -266,8 +250,8 @@ class AppMenu implements OnKeyListener {
 
         mListView = contentView.findViewById(R.id.app_menu_list);
 
-        int footerHeight = inflateFooter(footerResourceId, contentView, menuWidth);
-        int headerHeight = inflateHeader(headerResourceId, contentView, menuWidth);
+        int footerHeight = attachFooter(footer, (ViewGroup) contentView, menuWidth);
+        int headerHeight = attachHeader(header, menuWidth);
 
         if (highlightedItemId != null) {
             View viewToHighlight = contentView.findViewById(highlightedItemId);
@@ -629,41 +613,35 @@ class AppMenu implements OnKeyListener {
         return contentView;
     }
 
-    private int inflateFooter(int footerResourceId, View contentView, int menuWidth) {
-        if (footerResourceId == 0) {
+    private int attachFooter(@Nullable View footer, ViewGroup contentView, int menuWidth) {
+        if (footer == null) {
             mFooterView = null;
             return 0;
         }
 
-        ViewStub footerStub = contentView.findViewById(R.id.app_menu_footer_stub);
-        footerStub.setLayoutResource(footerResourceId);
-        mFooterView = footerStub.inflate();
+        mFooterView = footer;
+        mFooterView.setId(R.id.app_menu_footer);
+        contentView.addView(
+                footer, contentView.indexOfChild(contentView.findViewById(R.id.app_menu_list)) + 1);
 
         int widthMeasureSpec = MeasureSpec.makeMeasureSpec(menuWidth, MeasureSpec.EXACTLY);
         int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         mFooterView.measure(widthMeasureSpec, heightMeasureSpec);
 
-        if (mVisibilityDelegate != null) mVisibilityDelegate.onFooterViewInflated(mFooterView);
-
         return mFooterView.getMeasuredHeight();
     }
 
     @RequiresNonNull("mListView")
-    private int inflateHeader(int headerResourceId, View contentView, int menuWidth) {
-        if (headerResourceId == 0) return 0;
+    private int attachHeader(@Nullable View header, int menuWidth) {
+        if (header == null) return 0;
 
-        View headerView =
-                LayoutInflater.from(contentView.getContext())
-                        .inflate(headerResourceId, mListView, false);
-        mListView.addHeaderView(headerView);
+        mListView.addHeaderView(header);
 
         int widthMeasureSpec = MeasureSpec.makeMeasureSpec(menuWidth, MeasureSpec.EXACTLY);
         int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-        headerView.measure(widthMeasureSpec, heightMeasureSpec);
+        header.measure(widthMeasureSpec, heightMeasureSpec);
 
-        if (mVisibilityDelegate != null) mVisibilityDelegate.onHeaderViewInflated(headerView);
-
-        return headerView.getMeasuredHeight();
+        return header.getMeasuredHeight();
     }
 
     void finishAnimationsForTests() {

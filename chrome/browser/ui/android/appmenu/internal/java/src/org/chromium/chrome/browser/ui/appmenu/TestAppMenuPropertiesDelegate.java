@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
@@ -21,13 +23,17 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
+    private final Context mContext;
+
     public final CallbackHelper menuDismissedCallback = new CallbackHelper();
-    public final CallbackHelper footerInflatedCallback = new CallbackHelper();
-    public final CallbackHelper headerInflatedCallback = new CallbackHelper();
     public int footerResourceId;
     public int headerResourceId;
     public boolean enableAppIconRow;
     public boolean iconBeforeItem;
+
+    TestAppMenuPropertiesDelegate(Context context) {
+        mContext = context;
+    }
 
     @Override
     public void destroy() {}
@@ -138,33 +144,15 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     }
 
     @Override
-    public int getFooterResourceId() {
-        return footerResourceId;
+    public @Nullable View buildFooterView(AppMenuHandler appMenuHandler) {
+        if (footerResourceId == 0) return null;
+        return LayoutInflater.from(mContext).inflate(footerResourceId, null);
     }
 
     @Override
-    public int getHeaderResourceId() {
-        return headerResourceId;
-    }
-
-    @Override
-    public boolean shouldShowFooter(int maxMenuHeight) {
-        return footerResourceId != 0;
-    }
-
-    @Override
-    public boolean shouldShowHeader(int maxMenuHeight) {
-        return headerResourceId != 0;
-    }
-
-    @Override
-    public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {
-        footerInflatedCallback.notifyCalled();
-    }
-
-    @Override
-    public void onHeaderViewInflated(AppMenuHandler appMenuHandler, View view) {
-        headerInflatedCallback.notifyCalled();
+    public @Nullable View buildHeaderView() {
+        if (headerResourceId == 0) return null;
+        return LayoutInflater.from(mContext).inflate(headerResourceId, null);
     }
 
     @Override

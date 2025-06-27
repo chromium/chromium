@@ -17,4 +17,6 @@ found in the LICENSE file.
     <item type="id" name="highlight_view_rect_provider" />
     <item type="id" name="highlight_drawable_overlay_added" />
 
+    <!-- App Menu -->
+    <item type="id" name="app_menu_footer" />
 </resources>

@@ -10,6 +10,7 @@ import android.util.SparseArray;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 
@@ -60,52 +61,15 @@ public interface AppMenuPropertiesDelegate {
     /** Notify the delegate that menu was dismissed. */
     void onMenuDismissed();
 
-    /**
-     * @return Resource layout id for the footer if there should be one. O otherwise. The footer
-     *         is shown at a fixed position at the bottom the app menu. It is always visible and
-     *         overlays other app menu items if necessary.
-     */
-    int getFooterResourceId();
+    /** Returns a footer view for the menu, or null if no footer should be shown. */
+    @Nullable View buildFooterView(AppMenuHandler appMenuHandler);
 
-    /**
-     * @return The resource ID for a layout the be used as the app menu header if there should be
-     *     one. 0 otherwise. The header will be displayed as the first item in the app menu. It will
-     *     be scrolled off as the menu scrolls.
-     */
-    int getHeaderResourceId();
-
-    /**
-     * Determines whether the footer should be shown based on the maximum available menu height.
-     *
-     * @param maxMenuHeight The maximum available height for the menu to draw.
-     * @return Whether the footer, as specified in {@link #getFooterResourceId()}, should be shown.
-     */
-    boolean shouldShowFooter(int maxMenuHeight);
-
-    /**
-     * Determines whether the header should be shown based on the maximum available menu height.
-     * @param maxMenuHeight The maximum available height for the menu to draw.
-     * @return Whether the header, as specified in {@link #getHeaderResourceId()}, should be shown.
-     */
-    boolean shouldShowHeader(int maxMenuHeight);
-
-    /**
-     * A notification that the footer view has finished inflating.
-     * @param appMenuHandler The handler for the menu the view is inside of.
-     * @param view The view that was inflated.
-     */
-    void onFooterViewInflated(AppMenuHandler appMenuHandler, View view);
-
-    /**
-     * A notification that the header view has finished inflating.
-     * @param appMenuHandler The handler for the menu the view is inside of.
-     * @param view The view that was inflated.
-     */
-    void onHeaderViewInflated(AppMenuHandler appMenuHandler, View view);
+    /** Returns a header view for the menu, or null if no header should be shown. */
+    @Nullable View buildHeaderView();
 
     /**
      * @return For items with both a text label and a non-interactive icon, whether the app menu
-     *         should show the icon before the text.
+     *     should show the icon before the text.
      */
     boolean shouldShowIconBeforeItem();
 

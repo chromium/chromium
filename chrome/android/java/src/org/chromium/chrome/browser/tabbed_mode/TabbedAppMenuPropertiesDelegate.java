@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -957,42 +958,24 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     @Override
-    public int getFooterResourceId() {
-        if (shouldShowWebFeedMenuItem()) {
-            return R.layout.web_feed_main_menu_item;
+    public @Nullable View buildFooterView(AppMenuHandler appMenuHandler) {
+        if (!shouldShowWebFeedMenuItem()) {
+            return null;
         }
-        return 0;
-    }
 
-    @Override
-    public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {
-        if (view instanceof WebFeedMainMenuItem) {
-            ((WebFeedMainMenuItem) view)
-                    .initialize(
-                            mActivityTabProvider.get(),
-                            appMenuHandler,
-                            WebFeedFaviconFetcher.createDefault(),
-                            mFeedLauncher,
-                            mModalDialogManager,
-                            mSnackbarManager,
-                            CreatorActivity.class);
-        }
-    }
-
-    @Override
-    public int getHeaderResourceId() {
-        return 0;
-    }
-
-    @Override
-    public void onHeaderViewInflated(AppMenuHandler appMenuHandler, View view) {}
-
-    @Override
-    public boolean shouldShowFooter(int maxMenuHeight) {
-        if (shouldShowWebFeedMenuItem()) {
-            return true;
-        }
-        return super.shouldShowFooter(maxMenuHeight);
+        WebFeedMainMenuItem footer =
+                (WebFeedMainMenuItem)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.web_feed_main_menu_item, null);
+        footer.initialize(
+                mActivityTabProvider.get(),
+                appMenuHandler,
+                WebFeedFaviconFetcher.createDefault(),
+                mFeedLauncher,
+                mModalDialogManager,
+                mSnackbarManager,
+                CreatorActivity.class);
+        return footer;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

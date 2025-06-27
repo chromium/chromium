@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
@@ -16,6 +18,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
@@ -429,25 +432,25 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     }
 
     @Override
-    public int getFooterResourceId() {
+    public @Nullable View buildFooterView(AppMenuHandler appMenuHandler) {
         // Avoid showing the branded menu footer for media and offline pages.
         if (mUiType == CustomTabsUiType.MEDIA_VIEWER || mUiType == CustomTabsUiType.OFFLINE_PAGE) {
-            return 0;
+            return null;
         }
-        return R.layout.powered_by_chrome_footer;
-    }
 
-    @Override
-    public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {
-        super.onFooterViewInflated(appMenuHandler, view);
+        View footer =
+                LayoutInflater.from(mContext).inflate(R.layout.powered_by_chrome_footer, null);
 
-        TextView footerTextView = view.findViewById(R.id.running_in_chrome_footer_text);
+        TextView footerTextView = footer.findViewById(R.id.running_in_chrome_footer_text);
         if (footerTextView != null) {
-            String appName = view.getResources().getString(R.string.app_name);
+            Resources res = footer.getResources();
+            String appName = res.getString(R.string.app_name);
             String footerText =
-                    view.getResources().getString(R.string.twa_running_in_chrome_template, appName);
+                    res.getString(R.string.twa_running_in_chrome_template, appName);
             footerTextView.setText(footerText);
         }
+
+        return footer;
     }
 
     @Override
