@@ -24,7 +24,7 @@ AXSystemCaretWin::AXSystemCaretWin(gfx::AcceleratedWidget event_target)
   data_.id = -1;
   data_.role = ax::mojom::Role::kCaret;
   // |get_accState| should return 0 which means that the caret is visible.
-  data_.state = 0;
+  data_.state = AXStates(0U);
   data_.AddState(ax::mojom::State::kInvisible);
   // According to MSDN, "Edit" should be the name of the caret object.
   data_.SetName(u"Edit");

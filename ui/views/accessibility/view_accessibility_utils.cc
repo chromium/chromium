@@ -90,7 +90,7 @@ void ViewAccessibilityUtils::Merge(const ui::AXNodeData& source,
     destination.id = source.id;
   }
 
-  destination.state |= source.state;
+  destination.state.value() |= source.state.value();
 
   destination.actions |= source.actions;
 }
@@ -150,7 +150,7 @@ void ViewAccessibilityUtils::ValidateAttributesNotSet(
            "it.";
   };
 
-  DCHECK(new_data.state == 0U) << bitfieldErrorMessage("state");
+  DCHECK(new_data.state.value() == 0U) << bitfieldErrorMessage("state");
   DCHECK(new_data.actions == 0U) << bitfieldErrorMessage("action");
   DCHECK(new_data.relative_bounds.bounds.IsEmpty())
       << "The `relative_bounds` should not be set in the lazy loading "

@@ -199,7 +199,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   AXTextAttributes GetTextAttributes() const;
 
   bool HasState(ax::mojom::State state) const;
-  ax::mojom::State GetState() const;
 
   bool HasAction(ax::mojom::Action action) const;
 

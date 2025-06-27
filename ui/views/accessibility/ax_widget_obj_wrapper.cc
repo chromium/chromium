@@ -50,7 +50,7 @@ void AXWidgetObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
                                     "Widget");
   out_node_data->relative_bounds.bounds =
       gfx::RectF(widget_->GetWindowBoundsInScreen());
-  out_node_data->state = 0;
+  out_node_data->state = ui::AXStates(0U);
 }
 
 ui::AXNodeID AXWidgetObjWrapper::GetUniqueId() const {

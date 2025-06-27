@@ -1477,7 +1477,7 @@ TEST(AXEventGeneratorTest, NodeBecomesUnignored) {
   AXEventGenerator event_generator(&tree);
   ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
-  update.nodes[3].state = 0;
+  update.nodes[3].state = AXStates(0U);
   ASSERT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(event_generator,
               UnorderedElementsAre(
@@ -1514,7 +1514,7 @@ TEST(AXEventGeneratorTest, NodeBecomesUnignored2) {
   ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   // Marking as no longer ignored should fire CHILDREN_CHANGED on 2
-  update.nodes[3].state = 0;
+  update.nodes[3].state = AXStates(0U);
   // Remove node id 5 so it also fires CHILDREN_CHANGED on 4.
   update.nodes.pop_back();
   update.nodes[3].child_ids.clear();

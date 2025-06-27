@@ -175,8 +175,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
                               std::vector<std::string>* value) const;
   const base::StringPairs& GetHtmlAttributes() const;
   AXTextAttributes GetTextAttributes() const;
+  AXStates GetStates() const;
   bool HasState(ax::mojom::State state) const;
-  ax::mojom::State GetState() const;
   bool HasAction(ax::mojom::Action action) const;
   bool HasDefaultActionVerb() const;
   std::vector<ax::mojom::Action> GetSupportedActions() const;

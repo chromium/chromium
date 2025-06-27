@@ -952,7 +952,7 @@ bool AutomationTreeManagerOwner::CalculateNodeState(const AXTreeID& tree_id,
   if (!node)
     return false;
 
-  *node_state = node->data().state;
+  *node_state = node->data().state.value();
 
   AutomationAXTreeWrapper* top_tree_wrapper = nullptr;
   AutomationAXTreeWrapper* walker = tree_wrapper;

@@ -85,6 +85,8 @@ component("ax_base") {
     "ax_relative_bounds.h",
     "ax_role_properties.cc",
     "ax_role_properties.h",
+    "ax_states.cc",
+    "ax_states.h",
     "ax_text_attributes.cc",
     "ax_text_attributes.h",
     "ax_tree_checks.h",

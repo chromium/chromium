@@ -24,6 +24,7 @@
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_hypertext.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_states.h"
 #include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -419,10 +420,9 @@ class AX_EXPORT AXNode final {
     return data().GetTextAttributes();
   }
 
+  AXStates GetStates() const { return data().GetStates(); }
+
   bool HasState(ax::mojom::State state) const { return data().HasState(state); }
-  ax::mojom::State GetState() const {
-    return static_cast<ax::mojom::State>(data().state);
-  }
 
   bool HasAction(ax::mojom::Action action) const {
     return data().HasAction(action);

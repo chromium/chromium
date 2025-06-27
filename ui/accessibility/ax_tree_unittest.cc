@@ -1189,7 +1189,7 @@ TEST(AXTreeTest, NodeToClearUpdatesParentUnignoredCount) {
   update.node_id_to_clear = 2;
   update.root_id = 1;
   update.nodes[0] = initial_state.nodes[1];
-  update.nodes[0].state = 0;
+  update.nodes[0].state = AXStates(0U);
   update.nodes[0].child_ids.resize(0);
   EXPECT_TRUE(tree.Unserialize(update)) << tree.error();
 

@@ -18,6 +18,7 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_relative_bounds.h"
+#include "ui/accessibility/ax_states.h"
 #include "ui/accessibility/ax_text_attributes.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -206,14 +207,21 @@ struct AX_BASE_EXPORT AXNodeData final {
   void SetValue(const std::string& value);
   void SetValue(const std::u16string& value);
 
+  // Returns the field of state bits.
+  AXStates GetStates() const { return state; }
+
   // Returns true if the given enum bit is 1.
-  bool HasState(ax::mojom::State state) const;
+  bool HasState(ax::mojom::State a_state) const {
+    return ui::HasState(state, a_state);
+  }
   bool HasAction(ax::mojom::Action action) const;
   bool HasTextStyle(ax::mojom::TextStyle text_style) const;
 
   // Set or remove bits in the given enum's corresponding bitfield.
-  void AddState(ax::mojom::State state);
-  void RemoveState(ax::mojom::State state);
+  void AddState(ax::mojom::State a_state) { ui::AddState(state, a_state); }
+  void RemoveState(ax::mojom::State a_state) {
+    ui::RemoveState(state, a_state);
+  }
   void AddAction(ax::mojom::Action action);
   void RemoveAction(ax::mojom::Action action);
   void AddTextStyle(ax::mojom::TextStyle text_style);
@@ -369,7 +377,7 @@ struct AX_BASE_EXPORT AXNodeData final {
   // copyable struct.
   AXNodeID id = kInvalidAXNodeID;
   ax::mojom::Role role;
-  uint32_t state = 0U;
+  AXStates state{0U};
   uint64_t actions = 0ULL;
   std::vector<std::pair<ax::mojom::StringAttribute, std::string>>
       string_attributes;

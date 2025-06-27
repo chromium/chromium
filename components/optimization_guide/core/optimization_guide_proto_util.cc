@@ -530,7 +530,7 @@ void PopulateAXNode(const ui::AXNodeData& source,
                     optimization_guide::proto::AXNodeData* destination) {
   destination->set_id(source.id);
   destination->set_role(AXRoleToProto(source.role));
-  destination->set_state(source.state);
+  destination->set_state(source.state.value());
   destination->set_actions(source.actions);
 
   for (const auto& attribute : source.string_attributes) {

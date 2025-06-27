@@ -749,10 +749,6 @@ bool AXPlatformNodeBase::HasState(ax::mojom::State state) const {
   return GetDelegate()->HasState(state);
 }
 
-ax::mojom::State AXPlatformNodeBase::GetState() const {
-  return GetDelegate()->GetState();
-}
-
 bool AXPlatformNodeBase::HasAction(ax::mojom::Action action) const {
   return GetDelegate()->HasAction(action);
 }

@@ -3067,43 +3067,52 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_ACTIVE);
 
   AXPlatformNodeDelegate* const delegate = GetDelegate();
+  const AXStates ax_states = delegate->GetStates();
   bool is_minimized = delegate->IsMinimized();
   if (is_minimized && GetRole() == ax::mojom::Role::kWindow)
     atk_state_set_add_state(atk_state_set, ATK_STATE_ICONIFIED);
 
-  if (HasState(ax::mojom::State::kCollapsed))
+  if (ui::HasState(ax_states, ax::mojom::State::kCollapsed)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_EXPANDABLE);
-  if (HasState(ax::mojom::State::kDefault))
+  }
+  if (ui::HasState(ax_states, ax::mojom::State::kDefault)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_DEFAULT);
-  if ((HasState(ax::mojom::State::kEditable) ||
-       HasState(ax::mojom::State::kRichlyEditable)) &&
+  }
+  if ((ui::HasState(ax_states, ax::mojom::State::kEditable) ||
+       ui::HasState(ax_states, ax::mojom::State::kRichlyEditable)) &&
       GetData().GetRestriction() != ax::mojom::Restriction::kReadOnly) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_EDITABLE);
   }
-  if (HasState(ax::mojom::State::kExpanded)) {
+  if (ui::HasState(ax_states, ax::mojom::State::kExpanded)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_EXPANDABLE);
     atk_state_set_add_state(atk_state_set, ATK_STATE_EXPANDED);
   }
   if (IsFocused())
     atk_state_set_add_state(atk_state_set, ATK_STATE_FOCUSED);
-  if (IsFocusable())
+  if (delegate->IsFocusable()) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_FOCUSABLE);
-  if (HasState(ax::mojom::State::kHorizontal))
+  }
+  if (ui::HasState(ax_states, ax::mojom::State::kHorizontal)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_HORIZONTAL);
+  }
   if (!IsInvisibleOrIgnored()) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_VISIBLE);
     if (!delegate->IsOffscreen() && !is_minimized) {
       atk_state_set_add_state(atk_state_set, ATK_STATE_SHOWING);
     }
   }
-  if (HasState(ax::mojom::State::kMultiselectable))
+  if (ui::HasState(ax_states, ax::mojom::State::kMultiselectable)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_MULTISELECTABLE);
-  if (HasState(ax::mojom::State::kRequired))
+  }
+  if (ui::HasState(ax_states, ax::mojom::State::kRequired)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_REQUIRED);
-  if (HasState(ax::mojom::State::kVertical))
+  }
+  if (ui::HasState(ax_states, ax::mojom::State::kVertical)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_VERTICAL);
-  if (HasState(ax::mojom::State::kVisited))
+  }
+  if (ui::HasState(ax_states, ax::mojom::State::kVisited)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_VISITED);
+  }
   if (HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) &&
       GetIntAttribute(ax::mojom::IntAttribute::kInvalidState) !=
           static_cast<int32_t>(ax::mojom::InvalidState::kFalse)) {
@@ -3131,10 +3140,10 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
 
   if (IsTextField()) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_SELECTABLE_TEXT);
-    if (HasState(ax::mojom::State::kMultiline))
-      atk_state_set_add_state(atk_state_set, ATK_STATE_MULTI_LINE);
-    else
-      atk_state_set_add_state(atk_state_set, ATK_STATE_SINGLE_LINE);
+    atk_state_set_add_state(
+        atk_state_set, ui::HasState(ax_states, ax::mojom::State::kMultiline)
+                           ? ATK_STATE_MULTI_LINE
+                           : ATK_STATE_SINGLE_LINE);
   }
 
   // Special case for indeterminate progressbar.
@@ -3144,7 +3153,7 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   }
 
   if (!GetStringAttribute(ax::mojom::StringAttribute::kAutoComplete).empty() ||
-      HasState(ax::mojom::State::kAutofillAvailable)) {
+      ui::HasState(ax_states, ax::mojom::State::kAutofillAvailable)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_SUPPORTS_AUTOCOMPLETION);
   }
 

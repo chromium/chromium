@@ -45,17 +45,6 @@ uint64_t ModifyFlag(uint64_t bitfield, uint32_t flag, bool set) {
   return set ? (bitfield |= (1ULL << flag)) : (bitfield &= ~(1ULL << flag));
 }
 
-std::string StateBitfieldToString(uint32_t state_enum) {
-  std::string str;
-  for (uint32_t i = static_cast<uint32_t>(ax::mojom::State::kNone) + 1;
-       i <= static_cast<uint32_t>(ax::mojom::State::kMaxValue); ++i) {
-    if (IsFlagSet(state_enum, i))
-      str += " " +
-             base::ToUpperASCII(ui::ToString(static_cast<ax::mojom::State>(i)));
-  }
-  return str;
-}
-
 std::string ActionsBitfieldToString(uint64_t actions) {
   std::string str;
   for (uint32_t i = static_cast<uint32_t>(ax::mojom::Action::kNone) + 1;
@@ -267,7 +256,7 @@ AXNodeData::AXNodeData(AXNodeData&& other) {
 
   other.id = kInvalidAXNodeID;
   other.role = ax::mojom::Role::kUnknown;
-  other.state = 0U;
+  other.state = AXStates(0U);
   other.actions = 0ULL;
 }
 
@@ -628,10 +617,6 @@ void AXNodeData::SetValue(const std::u16string& value) {
   SetValue(base::UTF16ToUTF8(value));
 }
 
-bool AXNodeData::HasState(ax::mojom::State state_enum) const {
-  return IsFlagSet(state, static_cast<uint32_t>(state_enum));
-}
-
 bool AXNodeData::HasAction(ax::mojom::Action action) const {
   return IsFlagSet(actions, static_cast<uint32_t>(action));
 }
@@ -640,22 +625,6 @@ bool AXNodeData::HasTextStyle(ax::mojom::TextStyle text_style_enum) const {
   int32_t style = GetIntAttribute(ax::mojom::IntAttribute::kTextStyle);
   return IsFlagSet(static_cast<uint32_t>(style),
                    static_cast<uint32_t>(text_style_enum));
-}
-
-void AXNodeData::AddState(ax::mojom::State state_enum) {
-  DCHECK_GT(static_cast<int>(state_enum),
-            static_cast<int>(ax::mojom::State::kNone));
-  DCHECK_LE(static_cast<int>(state_enum),
-            static_cast<int>(ax::mojom::State::kMaxValue));
-  state = ModifyFlag(state, static_cast<uint32_t>(state_enum), true);
-}
-
-void AXNodeData::RemoveState(ax::mojom::State state_enum) {
-  DCHECK_GT(static_cast<int>(state_enum),
-            static_cast<int>(ax::mojom::State::kNone));
-  DCHECK_LE(static_cast<int>(state_enum),
-            static_cast<int>(ax::mojom::State::kMaxValue));
-  state = ModifyFlag(state, static_cast<uint32_t>(state_enum), false);
 }
 
 void AXNodeData::AddAction(ax::mojom::Action action_enum) {
@@ -1103,7 +1072,7 @@ std::string AXNodeData::ToString(bool verbose) const {
   result += " ";
   result += ui::ToString(role);
 
-  result += StateBitfieldToString(state);
+  result += ui::ToString(state);
 
   if (HasStringAttribute(ax::mojom::StringAttribute::kHtmlTag)) {
     result += base::StringPrintf(

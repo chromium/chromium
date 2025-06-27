@@ -1018,7 +1018,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
   BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
   EXPECT_EQ(kInitialEmptyDocumentRootNodeID, root->GetId());
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
-  EXPECT_EQ(ax::mojom::State::kNone, root->GetState());
+  EXPECT_EQ(AXStates(0U), root->GetStates());
 
   // Tree with a child textfield.
   AXNodeData tree1_1;
@@ -1099,7 +1099,7 @@ TEST_F(BrowserAccessibilityWinTest, EmptyDocHasUniqueIdWin) {
   BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
   EXPECT_EQ(kInitialEmptyDocumentRootNodeID, root->GetId());
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
-  EXPECT_EQ(ax::mojom::State::kNone, root->GetState());
+  EXPECT_EQ(AXStates(0U), root->GetStates());
 
   BrowserAccessibilityWin* win_root = ToBrowserAccessibilityWin(root);
 

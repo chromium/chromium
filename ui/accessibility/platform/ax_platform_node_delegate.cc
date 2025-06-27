@@ -844,16 +844,14 @@ AXTextAttributes AXPlatformNodeDelegate::GetTextAttributes() const {
   return GetData().GetTextAttributes();
 }
 
+AXStates AXPlatformNodeDelegate::GetStates() const {
+  return node_ ? node_->GetStates() : GetData().GetStates();
+}
+
 bool AXPlatformNodeDelegate::HasState(ax::mojom::State state) const {
   if (node_)
     return node_->HasState(state);
   return GetData().HasState(state);
-}
-
-ax::mojom::State AXPlatformNodeDelegate::GetState() const {
-  if (node_)
-    return node_->GetState();
-  return static_cast<ax::mojom::State>(GetData().state);
 }
 
 bool AXPlatformNodeDelegate::HasAction(ax::mojom::Action action) const {

@@ -27,7 +27,7 @@ bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
     ui::AXNodeData* out) {
   out->id = data.id();
   out->role = data.role();
-  out->state = data.state();
+  out->state = ui::AXStates(data.state());
   out->actions = data.actions();
 
   // TODO(dcheng): AXNodeData should probably just switch over to absl's
