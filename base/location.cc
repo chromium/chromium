@@ -4,6 +4,8 @@
 
 #include "base/location.h"
 
+#include <string_view>
+
 #include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -17,30 +19,24 @@ namespace base {
 
 namespace {
 
-// Returns the length of the given null terminated c-string.
-constexpr size_t StrLen(const char* str) {
-  size_t str_len = 0;
-  for (str_len = 0; UNSAFE_TODO(str[str_len]) != '\0'; ++str_len)
-    ;
-  return str_len;
-}
+#if defined(__clang__) && defined(_MSC_VER)
+constexpr std::string_view kThisFilePath = "base\\location.cc";
+#else
+constexpr std::string_view kThisFilePath = "base/location.cc";
+#endif
 
 // Finds the length of the build folder prefix from the file path.
 // TODO(ssid): Strip prefixes from stored strings in the binary. This code only
 // skips the prefix while reading the file name strings at runtime.
 constexpr size_t StrippedFilePathPrefixLength() {
-  constexpr char path[] = __FILE__;
+  constexpr std::string_view kPath = __FILE__;
   // Only keep the file path starting from the src directory.
-#if defined(__clang__) && defined(_MSC_VER)
-  constexpr char stripped[] = "base\\location.cc";
-#else
-  constexpr char stripped[] = "base/location.cc";
-#endif
-  constexpr size_t path_len = StrLen(path);
-  constexpr size_t stripped_len = StrLen(stripped);
-  static_assert(path_len >= stripped_len,
+
+  constexpr size_t kPathLen = kPath.size();
+  constexpr size_t kStrippedLen = kThisFilePath.size();
+  static_assert(kPathLen >= kStrippedLen,
                 "Invalid file path for base/location.cc.");
-  return path_len - stripped_len;
+  return kPathLen - kStrippedLen;
 }
 
 constexpr size_t kStrippedPrefixLength = StrippedFilePathPrefixLength();
@@ -49,29 +45,14 @@ constexpr size_t kStrippedPrefixLength = StrippedFilePathPrefixLength();
 // and the suffix matches the |expected| string.
 // TODO(ssid): With C++20 we can make base::EndsWith() constexpr and use it
 //  instead.
-constexpr bool StrEndsWith(const char* name,
+constexpr bool StrEndsWith(std::string_view name,
                            size_t prefix_len,
-                           const char* expected) {
-  const size_t name_len = StrLen(name);
-  const size_t expected_len = StrLen(expected);
-  if (name_len != prefix_len + expected_len) {
-    return false;
-  }
-  for (size_t i = 0; i < expected_len; ++i) {
-    if (UNSAFE_TODO(name[i + prefix_len] != expected[i])) {
-      return false;
-    }
-  }
-  return true;
+                           std::string_view expected) {
+  return name.substr(prefix_len) == expected;
 }
 
-#if defined(__clang__) && defined(_MSC_VER)
-static_assert(StrEndsWith(__FILE__, kStrippedPrefixLength, "base\\location.cc"),
+static_assert(StrEndsWith(__FILE__, kStrippedPrefixLength, kThisFilePath),
               "The file name does not match the expected prefix format.");
-#else
-static_assert(StrEndsWith(__FILE__, kStrippedPrefixLength, "base/location.cc"),
-              "The file name does not match the expected prefix format.");
-#endif
 
 }  // namespace
 
