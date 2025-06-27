@@ -36,6 +36,10 @@ class PasswordManagerSettingsServiceFactory
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+
+  // Creates the service but doesn't hook the cyclic service dependencies.
+  std::unique_ptr<password_manager::PasswordManagerSettingsService>
+  CreateService(Profile* profile) const;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_SETTINGS_SERVICE_FACTORY_H_
