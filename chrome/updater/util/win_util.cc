@@ -81,6 +81,14 @@ namespace updater {
 
 namespace {
 
+// Undocumented interface used to get the COM client handle.
+MIDL_INTERFACE("68C6A1B9-DE39-42C3-8D28-BF40A5126541")
+ICallingProcessInfo : public IUnknown {
+ public:
+  virtual IFACEMETHODIMP OpenCallerProcessHandle(DWORD desired_access,
+                                                 HANDLE * handle) = 0;
+};
+
 HResultOr<bool> IsUserRunningSplitToken() {
   HANDLE token = NULL;
   if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token)) {
@@ -1545,6 +1553,39 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
                               kMaxQueryConfigBufferBytes,
                               &bytes_needed_ignored) &&
          (service_config->dwStartType != SERVICE_DISABLED);
+}
+
+void LogComCaller(const std::string& caller_func) {
+  Microsoft::WRL::ComPtr<ICallingProcessInfo> calling_proc_info;
+  HRESULT hr = ::CoGetCallContext(IID_PPV_ARGS(&calling_proc_info));
+  if (FAILED(hr)) {
+    VLOG(2) << caller_func
+            << ": Unable to get ICallingProcessInfo interface: " << std::hex
+            << hr;
+    return;
+  }
+
+  ScopedKernelHANDLE handle;
+  hr = calling_proc_info->OpenCallerProcessHandle(
+      PROCESS_QUERY_LIMITED_INFORMATION,
+      ScopedKernelHANDLE::Receiver(handle).get());
+  if (FAILED(hr)) {
+    VLOG(2) << caller_func
+            << ": ICallingProcessInfo::OpenCallerProcessHandle failed: "
+            << std::hex << hr;
+    return;
+  }
+
+  const base::Process process(handle.release());
+  if (!process.IsValid()) {
+    VLOG(2) << caller_func
+            << ": ICallingProcessInfo::OpenCallerProcessHandle returned an "
+               "invalid handle";
+    return;
+  }
+
+  VLOG(2) << caller_func
+          << ": COM client pid for this COM server: " << process.Pid();
 }
 
 }  // namespace updater

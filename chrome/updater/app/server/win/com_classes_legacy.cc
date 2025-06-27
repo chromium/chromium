@@ -924,7 +924,10 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   AppBundleWebImpl(const AppBundleWebImpl&) = delete;
   AppBundleWebImpl& operator=(const AppBundleWebImpl&) = delete;
 
-  HRESULT RuntimeClassInitialize() { return S_OK; }
+  HRESULT RuntimeClassInitialize() {
+    LogComCaller(__FUNCTION__);
+    return S_OK;
+  }
 
   // Overrides for IAppBundleWeb.
   IFACEMETHODIMP createApp(BSTR app_id,
@@ -1346,6 +1349,7 @@ PolicyStatusImpl::PolicyStatusImpl()
 PolicyStatusImpl::~PolicyStatusImpl() = default;
 
 HRESULT PolicyStatusImpl::RuntimeClassInitialize() {
+  LogComCaller(__FUNCTION__);
   return S_OK;
 }
 

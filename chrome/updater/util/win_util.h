@@ -472,6 +472,9 @@ bool StoreRunTimeEnrollmentToken(const std::string& enrollment_token);
 // Returns `true` if the service exists and is not deleted or disabled.
 [[nodiscard]] bool IsServiceEnabled(const std::wstring& service_name);
 
+// Logs the COM client PID when called from a COM server.
+void LogComCaller(const std::string& caller_func);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_

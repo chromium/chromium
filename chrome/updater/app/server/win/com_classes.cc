@@ -216,6 +216,7 @@ UpdaterImpl::UpdaterImpl()
           {IID_MAP_ENTRY_SYSTEM(IUpdater), IID_MAP_ENTRY_SYSTEM(IUpdater2)}) {}
 
 HRESULT UpdaterImpl::RuntimeClassInitialize() {
+  LogComCaller(__FUNCTION__);
   return S_OK;
 }
 
@@ -873,6 +874,7 @@ HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
 }
 
 HRESULT UpdaterInternalImpl::RuntimeClassInitialize() {
+  LogComCaller(__FUNCTION__);
   return S_OK;
 }
 
