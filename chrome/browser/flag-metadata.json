@@ -2377,6 +2377,11 @@
       "expiry_milestone": 137
   },
   {
+    "name": "download-auto-deletion-clear-files-on-every-startup",
+    "owners": ["danieltwhite@google.com", "bling-flags@google.com"],
+    "expiry_milestone": 142
+  },
+  {
     "name": "download-notification-service-unified-api",
     "owners": ["shaktisahu@chromium.org", "qinmin@chromium.org"],
     "expiry_milestone": 125

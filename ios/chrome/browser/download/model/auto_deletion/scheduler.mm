@@ -11,6 +11,7 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/download/model/auto_deletion/scheduled_file.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
 
@@ -120,6 +121,10 @@ void Scheduler::Clear() {
 
 bool Scheduler::IsFileReadyForDeletion(base::Time instant,
                                        const ScheduledFile& file) {
+  if (isDownloadAutoDeletionTestingFeatureEnabled()) {
+    return true;
+  }
+
   const base::Time download_date = file.download_time();
   const base::TimeDelta download_age = instant - download_date;
   return download_age > kFileDeletionThreshold;

@@ -235,6 +235,9 @@ extern const char kDeprecateFeedHeaderExperimentDescription[];
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 
+extern const char kDownloadAutoDeletionClearFilesOnEveryStartupName[];
+extern const char kDownloadAutoDeletionClearFilesOnEveryStartupDescription[];
+
 extern const char kDownloadAutoDeletionName[];
 extern const char kDownloadAutoDeletionDescription[];
 

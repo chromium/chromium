@@ -2333,6 +2333,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"download-auto-deletion", flag_descriptions::kDownloadAutoDeletionName,
      flag_descriptions::kDownloadAutoDeletionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDownloadAutoDeletionFeatureEnabled)},
+    {"download-auto-deletion-clear-files-on-every-startup",
+     flag_descriptions::kDownloadAutoDeletionClearFilesOnEveryStartupName,
+     flag_descriptions::
+         kDownloadAutoDeletionClearFilesOnEveryStartupDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDownloadAutoDeletionClearFilesOnEveryStartup)},
     {"lens-ink-multi-sample-mode-disabled",
      flag_descriptions::kLensInkMultiSampleModeDisabledName,
      flag_descriptions::kLensInkMultiSampleModeDisabledDescription,

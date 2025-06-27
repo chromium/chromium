@@ -422,6 +422,13 @@ const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "
     "the time specified by this flag.";
 
+extern const char kDownloadAutoDeletionClearFilesOnEveryStartupName[] =
+    "Enable Download Auto-Deletion Testing Mode";
+extern const char kDownloadAutoDeletionClearFilesOnEveryStartupDescription[] =
+    "When enabled, the Auto-deletion feature wil clear all downloaded files "
+    "scheduled for deletion on every application startup, regardless of when "
+    "the file was downloaded. This feature is intended for testing-only.";
+
 extern const char kDownloadAutoDeletionName[] = "Enable Download Auto Deletion";
 extern const char kDownloadAutoDeletionDescription[] =
     "When enabled, files downloaded on the device can be scheduled to be "

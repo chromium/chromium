@@ -521,6 +521,15 @@ BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDownloadAutoDeletionClearFilesOnEveryStartup,
+             "DownloadAutoDeletionClearFilesOnEveryStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool isDownloadAutoDeletionTestingFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
+      kDownloadAutoDeletionClearFilesOnEveryStartup);
+}
+
 BASE_FEATURE(kDownloadAutoDeletionFeatureEnabled,
              "DownloadAutoDeletionFeatureEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);

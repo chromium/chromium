@@ -535,6 +535,13 @@ bool IsNewSyncOptInIllustration();
 // Feature flag to disable Lens LVF features.
 BASE_DECLARE_FEATURE(kDisableLensCamera);
 
+// Feature flag that allows the Auto-deletion feature to clear all downloaded
+// files scheduled for deletion on every application startup, regardless of when
+// the file was downloaded. This feature is intended for testing-only.
+BASE_DECLARE_FEATURE(kDownloadAutoDeletionClearFilesOnEveryStartup);
+
+bool isDownloadAutoDeletionTestingFeatureEnabled();
+
 // YES when the Downloads Auto Deletion feature is enabled.
 BASE_DECLARE_FEATURE(kDownloadAutoDeletionFeatureEnabled);
 
