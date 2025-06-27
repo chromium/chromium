@@ -3856,7 +3856,7 @@
   {
     "name": "enable-media-foundation-video-capture",
     "owners": [ "agpalak@chromium.org", "herre@chromium.org", "video-cmi-apis@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 160
   },
   {
     "name": "enable-missive-storage-config",
@@ -8524,7 +8524,7 @@
   {
     "name": "run-video-capture-service-in-browser",
     "owners": [ "agpalak@chromium.org", "herre@chromium.org", "video-cmi-apis@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 160
   },
   {
       "name": "running-compact",
