@@ -32,6 +32,8 @@ source_set("event_dispatcher") {
   deps = [
     ":helpers",
     ":tool_request_variant",
+    ":ui_event_types",
+    ":ui_event_utils",
     "//chrome/browser/actor:actor",
   ]
 }
@@ -64,6 +66,47 @@ source_set("tool_request_variant") {
   ]
 }
 
+source_set("ui_event_types") {
+  sources = [
+    "ui_event.cc",
+    "ui_event.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/actor:types",
+  ]
+  deps = [
+    "//components/tabs:public",
+    "//ui/gfx/geometry:geometry",
+  ]
+}
+
+source_set("ui_event_utils") {
+  sources = [
+    "ui_event_debugstring.cc",
+    "ui_event_debugstring.h",
+  ]
+  deps = [
+    ":helpers",
+    ":ui_event_types",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
 source_set("helpers") {
   sources = [ "helpers.h" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ui_event_debugstring_unittest.cc" ]
+  deps = [
+    ":ui_event_types",
+    ":ui_event_utils",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

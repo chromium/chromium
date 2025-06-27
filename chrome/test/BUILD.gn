@@ -8188,6 +8188,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/actor",
       "//chrome/browser/actor:unit_tests",
+      "//chrome/browser/actor/ui:unit_tests",
       "//chrome/browser/contextual_cueing:unit_tests",
       "//chrome/browser/task_manager/common",
       "//chrome/browser/ui/bookmarks:unit_tests",

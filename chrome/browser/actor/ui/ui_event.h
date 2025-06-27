@@ -1,0 +1,66 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ACTOR_UI_UI_EVENT_H_
+#define CHROME_BROWSER_ACTOR_UI_UI_EVENT_H_
+
+#include <optional>
+#include <variant>
+
+#include "chrome/browser/actor/task_id.h"
+#include "components/tabs/public/tab_interface.h"
+#include "ui/gfx/geometry/point.h"
+
+namespace actor::ui {
+
+struct DomNode {
+  int node_id;
+  std::string document_identifier;
+};
+
+using PageTarget = std::variant<gfx::Point, DomNode>;
+
+enum class MouseClickType {
+  kLeft,
+  kRight,
+};
+
+enum class MouseClickCount {
+  kSingle,
+  kDouble,
+};
+
+struct StartTask {
+  StartTask(std::optional<tabs::TabInterface::Handle>, actor::TaskId);
+  StartTask(const StartTask&);
+  ~StartTask();
+
+  std::optional<tabs::TabInterface::Handle> tab_handle;
+  actor::TaskId task_id;
+};
+
+struct MouseMove {
+  MouseMove(tabs::TabInterface::Handle, PageTarget);
+  MouseMove(const MouseMove&);
+  ~MouseMove();
+
+  tabs::TabInterface::Handle tab_handle;
+  PageTarget target;
+};
+
+struct MouseClick {
+  MouseClick(tabs::TabInterface::Handle, MouseClickType, MouseClickCount);
+  MouseClick(const MouseClick&);
+  ~MouseClick();
+
+  tabs::TabInterface::Handle tab_handle;
+  MouseClickType click_type;
+  MouseClickCount click_count;
+};
+
+using UiEvent = std::variant<StartTask, MouseClick, MouseMove>;
+
+}  // namespace actor::ui
+
+#endif  // CHROME_BROWSER_ACTOR_UI_UI_EVENT_H_
