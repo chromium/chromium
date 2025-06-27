@@ -239,6 +239,31 @@ public class BrowserUiListMenuUtils {
      * @param titleId The text on the menu item.
      * @param menuId Id of the menu item.
      * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
+     * @param isIncognito Whether the current menu item will be displayed in incognito mode.
+     * @return ListItem Representing an item with text and maybe an icon.
+     */
+    public static ListItem buildMenuListItemWithIncognitoBranding(
+            @StringRes int titleId,
+            @IdRes int menuId,
+            @DrawableRes int startIconId,
+            boolean isIncognito) {
+        return buildMenuListItemWithIncognitoBranding(
+                titleId,
+                menuId,
+                startIconId,
+                R.color.default_icon_color_light_tint_list,
+                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                isIncognito,
+                /* enabled= */ true);
+    }
+
+    /**
+     * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
+     * the menu item (e.g. if there is no icon or text).
+     *
+     * @param titleId The text on the menu item.
+     * @param menuId Id of the menu item.
+     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
      * @param iconTintColorStateList The appearance of the icon in incognito mode.
      * @param textAppearanceStyle The appearance of the text in the menu item in incognito mode.
      * @param isIncognito Whether the current menu item will be displayed in incognito mode.

@@ -141,6 +141,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
      */
     public void showMenu(RectProvider anchorViewRectProvider, int tabId, boolean focusable) {
         mIsMenuFocusableUponCreation = focusable;
+        boolean isIncognito = mTabGroupModelFilter.getTabModel().isIncognitoBranded();
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabId,
@@ -149,7 +150,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 /* animStyle= */ ResourcesCompat.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 mActivity,
-                /* isIncognito= */ false);
+                isIncognito);
         recordUserActionWithPrefix("Shown");
     }
 
@@ -214,56 +215,70 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
         @Nullable Tab tab = getTabById(mTabGroupModelFilter::getTabModel, id);
         if (tab == null) return;
 
+        boolean isIncognito = tab.isIncognitoBranded();
         if (ShareUtils.shouldEnableShare(tab)) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.share, R.id.share_tab, R.drawable.tab_list_editor_share_icon));
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.share,
+                            R.id.share_tab,
+                            R.drawable.tab_list_editor_share_icon,
+                            isIncognito));
         }
 
         if (mTabGroupModelFilter.getTabGroupCount() == 0) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.menu_add_tab_to_new_group,
                             R.id.add_to_new_tab_group,
-                            R.drawable.ic_widgets));
+                            R.drawable.ic_widgets,
+                            isIncognito));
         } else {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             tab.getTabGroupId() == null
                                     ? R.string.menu_add_tab_to_group
                                     : R.string.menu_move_tab_to_group,
                             R.id.add_to_tab_group,
-                            R.drawable.ic_widgets));
+                            R.drawable.ic_widgets,
+                            isIncognito));
         }
 
         if (mBookmarkModel.hasBookmarkIdForTab(tab)) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.edit_bookmark,
                             R.id.edit_bookmark,
-                            R.drawable.btn_star_filled));
+                            R.drawable.btn_star_filled,
+                            isIncognito));
         } else {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.add_to_bookmarks,
                             R.id.add_to_bookmarks,
-                            R.drawable.star_outline_24dp));
+                            R.drawable.star_outline_24dp,
+                            isIncognito));
         }
 
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
-                        R.string.select_tab, R.id.select_tabs, R.drawable.ic_edit_24dp));
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                        R.string.select_tab,
+                        R.id.select_tabs,
+                        R.drawable.ic_edit_24dp,
+                        isIncognito));
 
         // TODO(crbug.com/425953251): Add tests once callback is established.
         if (shouldBuildPinTabMenuItem()) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.pin_tab, R.id.pin_tab, R.drawable.ic_keep_24dp));
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.pin_tab, R.id.pin_tab, R.drawable.ic_keep_24dp, isIncognito));
         }
 
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
-                        R.string.close_tab, R.id.close_tab, R.drawable.material_ic_close_24dp));
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                        R.string.close_tab,
+                        R.id.close_tab,
+                        R.drawable.material_ic_close_24dp,
+                        isIncognito));
     }
 
     @Override
