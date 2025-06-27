@@ -777,8 +777,14 @@ _CONFIG = [
             'net::CookieSameSite',
             'net::CookieSourceScheme',
 
+            # Cookie prefix feature flags.
+            'net::features::kPrefixCookieHttp',
+            'net::features::kPrefixCookieHostHttp',
+
             # Net error codes
             'net::OK',
+
+            # HTTP status codes
             'net::ERR_.*',
 
             # HTTP status codes

@@ -8,7 +8,9 @@
 #include "base/task/task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_monster.h"
@@ -200,6 +202,9 @@ TEST_F(CookieStoreTest, SetWithMixedCaseDomain) {
 }
 
 TEST_F(CookieStoreTest, SetWithHttpPrefix) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kPrefixCookieHttp);
+
   V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
   CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
 
@@ -230,6 +235,9 @@ TEST_F(CookieStoreTest, SetWithHttpPrefix) {
 }
 
 TEST_F(CookieStoreTest, SetWithHostHttpPrefix) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kPrefixCookieHostHttp);
+
   V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
   CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
 
