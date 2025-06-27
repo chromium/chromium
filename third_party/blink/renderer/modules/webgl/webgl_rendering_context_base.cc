@@ -1920,7 +1920,7 @@ bool WebGLRenderingContextBase::IsAccelerated() const {
   NOTREACHED();
 }
 
-bool WebGLRenderingContextBase::CanCreatePassThroughProvider(
+bool WebGLRenderingContextBase::CanUseDrawingBufferSIWithoutCopyForLowLatency(
     gfx::Size size,
     viz::SharedImageFormat format) {
   if (!SharedGpuContext::IsGpuCompositingEnabled()) {
@@ -2034,7 +2034,7 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
   // rect tracking in the shared image system to enforce this.
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
-  if (CanCreatePassThroughProvider(Host()->Size(), format)) {
+  if (CanUseDrawingBufferSIWithoutCopyForLowLatency(Host()->Size(), format)) {
     // Note: Unlike other CanvasResourceProvider subclasses, a
     // CanvasResourceProviderPassThrough instance is always valid and does
     // not require clearing as part of initialization (both of these being
