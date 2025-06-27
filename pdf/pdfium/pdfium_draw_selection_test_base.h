@@ -16,8 +16,8 @@ namespace chrome_pdf {
 
 class PDFiumEngine;
 
-// A subclass of PDFiumTestBase that offers methods for setting and testing
-// drawn selections and highlights.
+// A subclass of PDFiumTestBase that offers methods for testing drawn
+// selections, highlights, and carets.
 class PDFiumDrawSelectionTestBase : public PDFiumTestBase {
  protected:
   void DrawSelectionAndCompare(PDFiumEngine& engine,
@@ -33,6 +33,14 @@ class PDFiumDrawSelectionTestBase : public PDFiumTestBase {
                                 int page_index,
                                 std::string_view expected_png_filename);
 
+  // Draws the caret, but also attempts to draw the selection, even though they
+  // are mutually exclusive. This allows tests to verify that only the caret is
+  // visible.
+  void DrawCaretAndCompareWithPlatformExpectations(
+      PDFiumEngine& engine,
+      int page_index,
+      std::string_view expected_png_filename);
+
   void SetSelection(PDFiumEngine& engine,
                     uint32_t start_page_index,
                     uint32_t start_char_index,
@@ -40,11 +48,12 @@ class PDFiumDrawSelectionTestBase : public PDFiumTestBase {
                     uint32_t end_char_index);
 
  private:
-  void DrawSelectionAndCompareImpl(PDFiumEngine& engine,
-                                   int page_index,
-                                   base::FilePath::StringViewType sub_directory,
-                                   std::string_view expected_png_filename,
-                                   bool use_platform_suffix);
+  void DrawAndCompareImpl(PDFiumEngine& engine,
+                          int page_index,
+                          base::FilePath::StringViewType sub_directory,
+                          std::string_view expected_png_filename,
+                          bool use_platform_suffix,
+                          bool draw_caret);
 };
 
 }  // namespace chrome_pdf

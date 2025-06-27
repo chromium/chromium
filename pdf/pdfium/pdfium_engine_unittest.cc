@@ -2732,6 +2732,58 @@ TEST_P(PDFiumEngineInkDrawTest, RotatedPdf) {
 // covering one of these is sufficient for checking how data is written out.
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkDrawTest, testing::Values(false));
 
+class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
+ public:
+  PDFiumEngineCaretTest() = default;
+  PDFiumEngineCaretTest(const PDFiumEngineCaretTest&) = delete;
+  PDFiumEngineCaretTest& operator=(const PDFiumEngineCaretTest&) = delete;
+  ~PDFiumEngineCaretTest() override = default;
+
+  void SetUp() override {
+    PDFiumDrawSelectionTestBase::SetUp();
+
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPdfInk2,
+        {{features::kPdfInk2TextHighlighting.name, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PDFiumEngineCaretTest, Draw) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  engine->PluginSizeUpdated({500, 500});
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, DrawOnGeometryChange) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  engine->PluginSizeUpdated({500, 500});
+
+  engine->ScrolledToXPosition(20);
+
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_caret_on_geometry_change_0.png");
+
+  engine->ScrolledToYPosition(40);
+
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_caret_on_geometry_change_1.png");
+}
+
+INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineCaretTest, testing::Bool());
+
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 class SearchStringTestClient : public TestClient {

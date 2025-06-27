@@ -32,6 +32,7 @@
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/loader/document_loader.h"
+#include "pdf/pdf_caret.h"
 #include "pdf/pdf_caret_client.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
@@ -849,6 +850,9 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   void PaintPageShadow(size_t progressive_index, SkBitmap& image_data);
 
+  // Draw the text caret. No-op if `caret_` is nullptr.
+  void DrawCaret(size_t progressive_index, SkBitmap& image_data) const;
+
   // Highlight visible find results and selections.
   void DrawSelections(size_t progressive_index, SkBitmap& image_data) const;
 
@@ -1275,6 +1279,9 @@ class PDFiumEngine : public DocumentLoader::Client,
   bool read_only_ = false;
 
   PDFiumPrint print_;
+
+  // The text caret on the PDF, excluding AcroForms.
+  std::unique_ptr<PdfCaret> caret_;
 
   // The list of text fragments to highlight on the PDF.
   std::vector<PDFiumRange> text_fragment_highlights_;

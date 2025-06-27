@@ -50,6 +50,7 @@
 #include "pdf/loader/document_loader_impl.h"
 #include "pdf/loader/url_loader.h"
 #include "pdf/loader/url_loader_wrapper_impl.h"
+#include "pdf/pdf_caret.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_transform.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
@@ -602,6 +603,10 @@ PDFiumEngine::PDFiumEngine(PDFiumEngineClient* client,
   IFSDK_PAUSE::version = 1;
   IFSDK_PAUSE::user = nullptr;
   IFSDK_PAUSE::NeedToPauseNow = Pause_NeedToPauseNow;
+
+  if (features::kPdfInk2TextHighlighting.Get() && !client_->IsPrintPreview()) {
+    caret_ = std::make_unique<PdfCaret>(this);
+  }
 }
 
 PDFiumEngine::~PDFiumEngine() {
@@ -658,6 +663,10 @@ void PDFiumEngine::PluginSizeUpdated(const gfx::Size& size) {
   CalculateVisiblePages();
   OnSelectionPositionChanged();
 
+  if (caret_) {
+    caret_->OnGeometryChanged();
+  }
+
   if (document_pending_) {
     // This method may be called in a `blink::ScriptForbiddenScope` context,
     // which imposes certain restrictions on clients. Complete the work
@@ -682,6 +691,9 @@ void PDFiumEngine::ScrolledToXPosition(int position) {
   client_->CaretChanged(caret_rect_);
 
   OnSelectionPositionChanged();
+  if (caret_) {
+    caret_->OnGeometryChanged();
+  }
 }
 
 void PDFiumEngine::ScrolledToYPosition(int position) {
@@ -696,6 +708,9 @@ void PDFiumEngine::ScrolledToYPosition(int position) {
   client_->CaretChanged(caret_rect_);
 
   OnSelectionPositionChanged();
+  if (caret_) {
+    caret_->OnGeometryChanged();
+  }
 }
 
 void PDFiumEngine::PrePaint() {
@@ -1004,6 +1019,13 @@ void PDFiumEngine::FinishLoadingDocument() {
   }
 
   client_->DocumentLoadComplete();
+
+  // TODO(crbug.com/427242881): Figure out when to enter caret browsing mode.
+  // For now, just enter it after the document loads.
+  if (caret_ && !pages_.empty() && pages_[0]->GetCharCount()) {
+    // TODO(crbug.com/427778119): Set caret blink interval.
+    caret_->SetVisibility(true);
+  }
 }
 
 void PDFiumEngine::UnsupportedFeature(const std::string& feature) {
@@ -3266,6 +3288,7 @@ void PDFiumEngine::FinishPaint(size_t progressive_index, SkBitmap& image_data) {
   // Paint the page shadows.
   PaintPageShadow(progressive_index, image_data);
 
+  DrawCaret(progressive_index, image_data);
   DrawSelections(progressive_index, image_data);
   form_highlights_.clear();
 
@@ -3363,6 +3386,26 @@ void PDFiumEngine::PaintPageShadow(size_t progressive_index,
   gfx::Rect page_rect = shadow_rect;
   page_rect.Inset(ScaleToCeiledInsets(insets, current_zoom_));
   DrawPageShadow(page_rect, shadow_rect, dirty_in_screen, image_data);
+}
+
+void PDFiumEngine::DrawCaret(size_t progressive_index,
+                             SkBitmap& image_data) const {
+  if (!caret_) {
+    return;
+  }
+
+  CHECK_LT(progressive_index, progressive_paints_.size());
+
+  const gfx::Rect& dirty_in_screen =
+      progressive_paints_[progressive_index].rect();
+
+  const std::optional<RegionData> region =
+      GetRegion(dirty_in_screen.origin(), image_data);
+  if (!region.has_value()) {
+    return;
+  }
+
+  caret_->MaybeDrawCaret(region.value(), dirty_in_screen);
 }
 
 void PDFiumEngine::DrawSelections(size_t progressive_index,
