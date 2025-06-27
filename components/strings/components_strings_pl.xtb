@@ -301,7 +301,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1486096554574027028">Szukaj haseł</translation>
 <translation id="1492194039220927094">Przekazywanie zasad w trybie push:</translation>
 <translation id="1495677929897281669">Wróć do karty</translation>
-<translation id="1500286806237135498">Aparaty (<ph name="CAMERAS_COUNT" />)</translation>
+<translation id="1500286806237135498">Kamery (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Tektura falista</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ten komunikat pojawia się, jeśli do połączenia z internetem wymagane jest zalogowanie się w portalu Wi-Fi.&lt;/p&gt;
     &lt;p&gt;Aby naprawić błąd, kliknij &lt;strong&gt;Połącz&lt;/strong&gt; na stronie, którą chcesz otworzyć.&lt;/p&gt;</translation>
@@ -612,7 +612,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2036983605131262583">Rolka alternatywna</translation>
 <translation id="2040463897538655645">Pamięć wymienna</translation>
 <translation id="2040894699575719559">Lokalizacja zablokowana</translation>
-<translation id="2041788246978549610">Używaj dostępnych mikrofonów (<ph name="MICS_COUNT" />)</translation>
+<translation id="2041788246978549610">Używanie dostępnych mikrofonów (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Taca 7</translation>
 <translation id="2043896419861982462">Aby ukryć opcje płatności w ratach, otwórz <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Koperta personalizowana</translation>
@@ -1213,7 +1213,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignorowana, bo lista wyłączonych zawiera wzorzec równoważny z „*”, co oznacza wyłączenie zasady.</translation>
 <translation id="3098944373717628099">Za godzinę Twoje pliki lokalne zostaną usunięte</translation>
-<translation id="3099619114405539473">Używaj dostępnych kamer (<ph name="CAMERAS_COUNT" />)</translation>
+<translation id="3099619114405539473">Używanie dostępnych kamer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Konto oszczędnościowe</translation>
 <translation id="3103188521861412364">Akcje i obligacje</translation>
 <translation id="3103535543639438037">Porównuj podobne produkty obok siebie</translation>

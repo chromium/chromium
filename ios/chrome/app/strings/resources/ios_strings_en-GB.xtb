@@ -1181,7 +1181,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5888889603768021126">Signed in with</translation>
 <translation id="5889333064153755823">Delete browsing data</translation>
 <translation id="5896576662943111387">Built for iOS</translation>
-<translation id="5897749768294722429">To quickly get back to sites you've visited, sync your tabs and history.</translation>
+<translation id="5897749768294722429">To quickly get back to sites that you've visited, sync your tabs and history.</translation>
 <translation id="5898848375214731122">Mass</translation>
 <translation id="5899314093904173337">To share with people nearby, let them scan this QR code with their camera or QR scanner app</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} new tab}other{{count} new tabs}}</translation>

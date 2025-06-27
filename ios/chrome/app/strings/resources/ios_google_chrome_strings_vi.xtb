@@ -219,7 +219,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="6646696210740573446">Gửi một phần URL đã làm rối mã nguồn đến Google thông qua một máy chủ đảm bảo quyền riêng tư giúp ẩn địa chỉ IP của bạn. Nếu một trang web tìm cách đánh cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL (bao gồm cả các đoạn nội dung trên trang) cho Google.</translation>
 <translation id="6647304104688527905">Mở một thẻ mới trong Chrome.</translation>
 <translation id="6684809838922667136">Cải thiện Chrome</translation>
-<translation id="6695698548122852044">{THRESHOLD,plural, =1{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Những dữ liệu chỉ được lưu vào thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}other{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Những dữ liệu chỉ được lưu vào thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}}</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Những dữ liệu chỉ được lưu trên thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}other{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome. Những dữ liệu chỉ được lưu trên thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}}</translation>
 <translation id="6709398533399187136">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Trình quản lý mật khẩu của Google khuyên bạn nên đổi mật khẩu này ngay.</translation>
 <translation id="6788035488757621217">Trong phần cài đặt của thiết bị, hãy mở "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" rồi chọn "Chrome"</translation>
 <translation id="6820553595690137150">Quy trình mã hoá bằng cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán.
@@ -258,7 +258,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="7400722733683201933">Giới thiệu về Google Chrome</translation>
 <translation id="7466693328838535498">Trong hộp Tiện ích Tìm kiếm, nhập Chrome</translation>
 <translation id="7477056987201678345">Đang xoá dữ liệu trên Chrome…</translation>
-<translation id="7492574581995589075">Tổ chức của bạn đã tắt tính năng sử dụng và lưu dữ liệu Chrome vào Tài khoản Google. Dấu trang, mật khẩu mới và các nội dung khác sẽ chỉ được lưu vào thiết bị này.</translation>
+<translation id="7492574581995589075">Tổ chức của bạn đã tắt tính năng sử dụng và lưu dữ liệu Chrome vào Tài khoản Google. Dấu trang, mật khẩu mới và các nội dung khác sẽ chỉ được lưu trên thiết bị này.</translation>
 <translation id="7540272326042438331">Chia sẻ Chrome</translation>
 <translation id="7575971113404272499">Mẹo dùng Chrome: Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="7581063337314642333">Truy cập lưới thẻ trong Chrome</translation>

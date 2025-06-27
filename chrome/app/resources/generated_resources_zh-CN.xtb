@@ -4657,7 +4657,7 @@
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4242577469625748426">无法在设备上安装策略设置：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">您的<ph name="BEGIN_LINK" />浏览器和个人资料<ph name="END_LINK" />由 <ph name="DOMAIN" /> 管理</translation>
-<translation id="424315890655130736">请输入密码</translation>
+<translation id="424315890655130736">输入口令</translation>
 <translation id="4243504193894350135">打印机已暂停运行</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />，<ph name="GRADE" />级</translation>
 <translation id="4244238649050961491">查找更多触控笔应用</translation>
@@ -11667,7 +11667,7 @@
 <translation id="936801553271523408">系统诊断数据</translation>
 <translation id="93766956588638423">修复扩展程序</translation>
 <translation id="938623846785894166">不常用的文件</translation>
-<translation id="939598580284253335">请输入密码</translation>
+<translation id="939598580284253335">输入口令</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="940212040923880623">查找和修改(&amp;F)</translation>
 <translation id="942296794412775122">麦克风开/关</translation>

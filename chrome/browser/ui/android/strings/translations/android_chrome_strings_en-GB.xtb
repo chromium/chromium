@@ -1858,7 +1858,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">You’ll have your history on all your synced devices so that you can continue what you were doing</translation>
-<translation id="9191906083913361689">You can also view and manage these items in your bookmarks, reading list, or password manager</translation>
+<translation id="9191906083913361689">You can also view and manage these items in your bookmarks, reading list or password manager</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204021776105550328">Deleting</translation>
 <translation id="9204836675896933765">1 file left</translation>

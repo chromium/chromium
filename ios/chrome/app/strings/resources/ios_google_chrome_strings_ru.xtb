@@ -86,7 +86,7 @@
 <translation id="2876628302275096482">Подробнее о том, <ph name="BEGIN_LINK" />как Chrome обеспечивает конфиденциальность ваших данных<ph name="END_LINK" />…</translation>
 <translation id="292371311537977079">Настройки Chrome</translation>
 <translation id="2923827943290349720">Блокировать доступ к вкладкам инкогнито при закрытии Chrome</translation>
-<translation id="2940565985148833945">Совет: используйте Объектив для поиска информации</translation>
+<translation id="2940565985148833945">Объектив для поиска</translation>
 <translation id="2957447865124070833">Выберите <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="2986402782150919988">Добавить закладки в Chrome</translation>
 <translation id="3030414234702425231">Вы выходите из аккаунта, которым управляет администратор домена <ph name="SIGNOUT_MANAGED_DOMAIN" />. Обратите внимание, что данные Chrome будут удалены с устройства, но останутся в вашем аккаунте Google.</translation>
@@ -281,7 +281,7 @@
 <translation id="787226752901403048">Чтобы делиться группами вкладок, присоединяться к ним и обсуждать идеи с другими пользователями, войдите в Chrome.</translation>
 <translation id="7897703007638178753">Недавние вкладки в Chrome</translation>
 <translation id="7948283758957877064">Что нового в Chrome</translation>
-<translation id="8000174216052461231">Совет: настройте максимальную защиту в Chrome</translation>
+<translation id="8000174216052461231">Максимальная защита</translation>
 <translation id="8006014511203279255">Открывайте ссылки в сообщениях и других приложениях с помощью Chrome.</translation>
 <translation id="8014670471808569312">Chrome предложит сохранить пароль.</translation>
 <translation id="8018153653741938705">Безопасная работа с Google Chrome</translation>

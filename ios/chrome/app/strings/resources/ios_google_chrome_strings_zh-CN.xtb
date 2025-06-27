@@ -308,7 +308,7 @@
 <translation id="8459495907675268833">所选数据已从 Chrome 和同步的设备中移除。不过，您的 Google 账号在 history.google.com 上可能有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
 <translation id="8491300088149538575">目前登录的账号是 <ph name="EMAIL" />。您的数据已于 <ph name="TIME" />使用您的口令加密。请输入该口令，以便将 Chrome 数据保存在您的 Google 账号中并使用这些数据。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8544583291890527417">Chrome 检测到隐私或安全问题时会发送提醒。</translation>
+<translation id="8544583291890527417">Chrome 检测到隐私或安全问题时会发出提醒。</translation>
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="8603022514504485810">Google 密码管理工具无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 账号中的密码<ph name="END_LINK" />。</translation>
 <translation id="8630122478628016441">开启“在您关闭 Chrome 时锁定无痕式标签页”。</translation>

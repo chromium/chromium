@@ -612,7 +612,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2036983605131262583">Alternativ papirrulle</translation>
 <translation id="2040463897538655645">Flytbart lager</translation>
 <translation id="2040894699575719559">Stedet er blokeret</translation>
-<translation id="2041788246978549610">Brug tilgængelige mikrofoner (<ph name="MICS_COUNT" />)</translation>
+<translation id="2041788246978549610">Bruge tilgængelige mikrofoner (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bakke 7</translation>
 <translation id="2043896419861982462">Gå til <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> for at skjule valgmuligheder for afbetaling</translation>
 <translation id="2045871135676061132">Konvolut Personlig</translation>
@@ -1213,7 +1213,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3095940652251934233">Erklæring</translation>
 <translation id="3098513225387949945">Ignoreret, fordi deaktiveringslisten indeholder et mønster, der svarer til "*", hvilket er ækvivalent til deaktivering af politikken.</translation>
 <translation id="3098944373717628099">Dine lokale filer slettes om 1 time</translation>
-<translation id="3099619114405539473">Brug tilgængelige kameraer (<ph name="CAMERAS_COUNT" />)</translation>
+<translation id="3099619114405539473">Bruge tilgængelige kameraer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Opsparingskonto</translation>
 <translation id="3103188521861412364">Aktier og obligationer</translation>
 <translation id="3103535543639438037">Sammenlign lignende produkter side om side</translation>
@@ -1516,7 +1516,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3583757800736429874">&amp;Annuller fortryd flytning</translation>
 <translation id="3584299510153766161">To huller nederst</translation>
 <translation id="3584755835709800788">Science fiction- og fantasyfilm</translation>
-<translation id="3585455899094692781">Brug og flyt tilgængelige kameraer (<ph name="CAMERAS_COUNT" />)</translation>
+<translation id="3585455899094692781">Bruge og flytte tilgængelige kameraer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Vådfilm</translation>
 <translation id="3586931643579894722">Skjul oplysninger</translation>
 <translation id="3587725436724465984">Din organisation har identificeret, at websitet <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> muligvis overtræder en politik. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1936,7 +1936,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4261046003697461417">Beskyttede dokumenter kan ikke annoteres</translation>
 <translation id="4265872034478892965">Tilladt af din administrator</translation>
 <translation id="4269029136757623689">Ventilatorer til privat brug</translation>
-<translation id="4269264543938335308">Svømmetøj</translation>
+<translation id="4269264543938335308">Badetøj</translation>
 <translation id="4269599248168651462">Servercertifikatet er givet til et navn, der ikke er unikt.</translation>
 <translation id="4270541775497538019">Stabler 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Se 0 anmeldelser. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}=1{Se 1 anmeldelse. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}one{Se # anmeldelse. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}other{Se # anmeldelser. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}}</translation>
