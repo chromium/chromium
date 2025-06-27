@@ -268,6 +268,8 @@ void SessionServiceImpl::DeferRequestForRefresh(
   it->second.emplace_back(request, std::move(callback));
 
   auto* session = GetSession(session_key);
+  CHECK(session, base::NotFatalUntil::M147);
+  // TODO(crbug.com/417770933): Remove this block.
   if (!session) {
     // If we can't find the session, clear the `session_key` in the map
     // and continue all related requests. We can call this a fatal error

@@ -595,49 +595,6 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_NonFatalError) {
   EXPECT_EQ(future.Take(), SessionService::RefreshResult::kUnreachable);
 }
 
-TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
-  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
-
-  // No session for site_2.
-  SchemefulSite site_1(kTestUrl);
-  SchemefulSite site_2(kTestUrl2);
-  ASSERT_TRUE(service().GetSession({site_1, Session::Id(kSessionId)}));
-  ASSERT_FALSE(service().GetSession({site_2, Session::Id(kSessionId2)}));
-
-  // Create a request to kTestUrl and defer it.
-  net::TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl2, IDLE, &delegate, kDummyAnnotation);
-  // The request needs to be samesite for it to be considered
-  // candidate for deferral.
-  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl2));
-
-  HttpRequestHeaders extra_headers;
-  std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), &extra_headers,
-                            FirstPartySetMetadata());
-  ASSERT_FALSE(maybe_deferral);
-
-  // Defer the request any way.
-  // Set AccessCallback for DeferRequestForRefresh().
-  base::test::TestFuture<SessionAccess> future_2;
-  request->SetDeviceBoundSessionAccessCallback(
-      future_2.GetRepeatingCallback<const SessionAccess&>());
-
-  base::test::TestFuture<SessionService::RefreshResult> future_3;
-
-  // Set up a successful fetcher.
-  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId2, kRefreshUrlString2, kOrigin2);
-  service().DeferRequestForRefresh(
-      request.get(), SessionService::DeferralParams(Session::Id(kSessionId2)),
-      future_3.GetCallback());
-
-  // Check that refresh fails since the session wasn't supposed to be
-  // deferred.
-  EXPECT_EQ(future_3.Take(), SessionService::RefreshResult::kFatalError);
-}
-
 TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
   // Register a session with kSessionId.
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
