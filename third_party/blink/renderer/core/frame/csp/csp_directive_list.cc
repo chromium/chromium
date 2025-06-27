@@ -7,8 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -624,15 +626,21 @@ CSPCheckResult CheckSource(
   String suffix = String();
   CSPCheckResult result = CSPSourceListAllows(
       *directive.source_list, *csp.self_origin, url_to_check, redirect_status);
+
   if (result) {
-    // We ignore URL-based allowlists if we're allowing dynamic script
-    // injection.
-    if (!CheckDynamic(directive.source_list, effective_type)) {
-      return result;
-    } else {
+    if (CheckDynamic(directive.source_list, effective_type)) {
+      // We ignore URL-based allowlists if we're allowing dynamic script
+      // injection.
       suffix =
           " Note that 'strict-dynamic' is present, so host-based allowlisting "
           "is disabled.";
+    } else if (!directive.source_list->url_hashes.empty()) {
+      // We ignore URL-based allowlists if there's a URL hash present.
+      suffix =
+          " Note that the directive contains a URL hash, so host-based "
+          "allowlisting is disabled.";
+    } else {
+      return result;
     }
   }
 
@@ -863,6 +871,25 @@ bool CSPDirectiveListShouldDisableWasmEval(
   return true;
 }
 
+bool CheckURLHash(const KURL& url,
+                  const network::mojom::blink::CSPSourceList* source_list) {
+  if (!source_list) {
+    return false;
+  }
+  WTF::HashSet<IntegrityAlgorithm> hash_algorithms_used;
+  for (const network::mojom::blink::CSPHashSourcePtr& hash :
+       source_list->url_hashes) {
+    hash_algorithms_used.insert(hash->algorithm);
+  }
+  Vector<network::mojom::blink::CSPHashSourcePtr> url_hashes;
+  // TODO(crbug.com/414459670): Support relative URLs.
+  FillInCSPHashValues(url.GetString(), hash_algorithms_used, url_hashes);
+
+  return std::ranges::any_of(url_hashes, [=](const auto& url_hash) {
+    return CSPSourceListAllowUrlHash(*source_list, *url_hash);
+  });
+}
+
 CSPCheckResult CSPDirectiveListAllowFromSource(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
@@ -903,10 +930,10 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
     return CSPCheckResult::Allowed();
   }
 
+  CSPOperativeDirective directive = OperativeDirective(csp, type);
   if (type == CSPDirectiveName::ScriptSrcElem ||
       type == CSPDirectiveName::StyleSrcElem) {
-    if (IsMatchingNoncePresent(OperativeDirective(csp, type).source_list,
-                               nonce)) {
+    if (IsMatchingNoncePresent(directive.source_list, nonce)) {
       return CSPCheckResult::Allowed();
     }
   }
@@ -916,13 +943,17 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
         CSPDirectiveListAllowDynamic(csp, type)) {
       return CSPCheckResult::Allowed();
     }
-    if (AreAllMatchingIntegrityChecksPresent(
-            OperativeDirective(csp, type).source_list, integrity_metadata)) {
+    if (AreAllMatchingIntegrityChecksPresent(directive.source_list,
+                                             integrity_metadata)) {
+      return CSPCheckResult::Allowed();
+    }
+    if (base::FeatureList::IsEnabled(
+            network::features::kCSPScriptSrcHashesInV1) &&
+        CheckURLHash(url, directive.source_list)) {
       return CSPCheckResult::Allowed();
     }
   }
 
-  CSPOperativeDirective directive = OperativeDirective(csp, type);
   return CheckSource(csp, policy, directive, url, type, url_before_redirects,
                      redirect_status, reporting_disposition);
 }

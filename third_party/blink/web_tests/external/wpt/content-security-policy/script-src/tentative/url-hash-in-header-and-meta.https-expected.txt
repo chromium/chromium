@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] more lax meta tag should still allow script
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] multiple meta tags should apply most strict policy - both lax
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+Harness: the test ran to completion.
+
