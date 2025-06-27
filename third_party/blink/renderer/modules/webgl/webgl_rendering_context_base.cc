@@ -1920,9 +1920,8 @@ bool WebGLRenderingContextBase::IsAccelerated() const {
   NOTREACHED();
 }
 
-bool WebGLRenderingContextBase::CanUseDrawingBufferSIWithoutCopyForLowLatency(
-    gfx::Size size,
-    viz::SharedImageFormat format) {
+bool WebGLRenderingContextBase::
+    CanUseDrawingBufferSIWithoutCopyForLowLatency() {
   if (!SharedGpuContext::IsGpuCompositingEnabled()) {
     return false;
   }
@@ -1935,6 +1934,8 @@ bool WebGLRenderingContextBase::CanUseDrawingBufferSIWithoutCopyForLowLatency(
   // context_provider_wrapper, so it's important to call that first as it can
   // invalidate the weak pointer.
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+  auto size = Host()->Size();
+  auto format = GetSharedImageFormat();
 
   bool using_webgl_image_chromium =
       SharedGpuContext::MaySupportImageChromium() &&
@@ -2034,7 +2035,7 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
   // rect tracking in the shared image system to enforce this.
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
-  if (CanUseDrawingBufferSIWithoutCopyForLowLatency(Host()->Size(), format)) {
+  if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
     // Note: Unlike other CanvasResourceProvider subclasses, a
     // CanvasResourceProviderPassThrough instance is always valid and does
     // not require clearing as part of initialization (both of these being

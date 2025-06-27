@@ -713,9 +713,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool IsComposited() const override { return true; }
   bool IsAccelerated() const override;
   bool UsingSwapChain() const override;
-  bool CanUseDrawingBufferSIWithoutCopyForLowLatency(
-      gfx::Size size,
-      viz::SharedImageFormat format);
+  bool CanUseDrawingBufferSIWithoutCopyForLowLatency();
   void PageVisibilityChanged() override;
   void SizeChanged() override;
   std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider()
