@@ -11,14 +11,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
-#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -531,22 +530,13 @@ class AiDataKeyedServiceActorBrowserTest
     scoped_feature_list_.InitWithFeatures({features::kGlicActor}, {});
   }
 
-  void SetUpOnMainThread() override {
-    AiDataKeyedServiceBrowserTest::SetUpOnMainThread();
-    // Optimization guide uses this histogram to signal initialization in tests.
-    optimization_guide::RetryForHistogramUntilCountReached(
-        &histogram_tester_for_init_,
-        "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AiDataKeyedServiceBrowserTest::SetUpCommandLine(command_line);
-    actor::SetUpBlocklist(command_line, "blocked.example.com");
+    command_line->AppendSwitch(actor::switches::kDisableActorSafetyChecks);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::HistogramTester histogram_tester_for_init_;
 };
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest, StartStopTask) {

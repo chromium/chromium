@@ -53,6 +53,7 @@
 #include "chrome/browser/android/flags/bad_flags_snackbar_manager.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
+#include "chrome/browser/actor/actor_switches.h"
 #endif
 
 namespace {
@@ -177,6 +178,10 @@ const char* const kBadFlags[] = {
     // debugging due to privacy concerns with storing data during an incognito
     // session.
     network::switches::kStoreProbabilisticRevealTokens,
+
+    // This flag bypasses several safety checks in the glic actor (e.g. an
+    // origin blocklist) for testing purposes.
+    actor::switches::kDisableActorSafetyChecks,
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 

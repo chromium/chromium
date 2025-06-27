@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -15,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
@@ -42,6 +44,11 @@
 namespace actor {
 
 namespace {
+
+bool DisableSafetyChecks() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kDisableActorSafetyChecks);
+}
 
 class DecisionWrapper {
  public:
@@ -120,6 +127,11 @@ void MayActOnUrl(const GURL& url,
 
   if (!url.SchemeIs(url::kHttpsScheme) || url.HostIsIPAddress()) {
     decision_wrapper->Reject("Wrong scheme");
+    return;
+  }
+
+  if (DisableSafetyChecks()) {
+    decision_wrapper->Accept();
     return;
   }
 
@@ -245,7 +257,8 @@ void MayActOnTab(const tabs::TabInterface& tab,
   // it'll have a user interaction observer attached.
   // Do not act on such a page.
   if (safe_browsing::SafeBrowsingUserInteractionObserver::FromWebContents(
-          &web_contents)) {
+          &web_contents) &&
+      !DisableSafetyChecks()) {
     decision_wrapper->Reject("Blocked by safebrowsing");
     return;
   }

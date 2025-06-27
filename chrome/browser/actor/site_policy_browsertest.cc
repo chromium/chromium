@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -190,6 +191,15 @@ class ActorSitePolicyDelayedWarningBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class ActorSitePolicyNoSafetyChecksBrowserTest
+    : public ActorSitePolicySafeBrowsingBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ActorSitePolicySafeBrowsingBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(actor::switches::kDisableActorSafetyChecks);
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(ActorSitePolicySafeBrowsingBrowserTest,
                        BlockDangerousSite) {
   const GURL dangerous_url =
@@ -218,6 +228,26 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicySafeBrowsingBrowserTest,
   const GURL normally_allowed_url =
       embedded_https_test_server().GetURL("a.com", "/title1.html");
   CheckUrl(normally_allowed_url, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSitePolicyNoSafetyChecksBrowserTest,
+                       DontRequireSafeBrowsing) {
+  // Disable SafeBrowsing.
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+
+  // SafeBrowsing is not mandatory in this configuration.
+  const GURL url = embedded_https_test_server().GetURL("a.com", "/title1.html");
+  CheckUrl(url, true);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSitePolicyNoSafetyChecksBrowserTest,
+                       IgnoreBlocklist) {
+  // The blocklist is ignored in this configuration.
+  const GURL blocked_url =
+      embedded_https_test_server().GetURL("bar.com", "/title1.html");
+  CheckUrl(blocked_url, true);
 }
 
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
