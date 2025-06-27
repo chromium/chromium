@@ -26,6 +26,7 @@ class PrefService;
 
 @protocol BWGGatewayProtocol;
 @protocol BWGLinkOpeningDelegate;
+@protocol BWGSessionDelegate;
 
 // A browser-context keyed service for BWG.
 class BwgService : public KeyedService {
@@ -57,10 +58,13 @@ class BwgService : public KeyedService {
   raw_ptr<PrefService> pref_service_ = nullptr;
 
   // The gateway for bridging internal protocols.
-  id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
+  __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
   // Handler for opening links from BWG.
-  id<BWGLinkOpeningDelegate> bwg_link_opening_handler_ = nullptr;
+  __strong id<BWGLinkOpeningDelegate> bwg_link_opening_handler_ = nullptr;
+
+  // Handler for the BWG sessions.
+  __strong id<BWGSessionDelegate> bwg_session_handler_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_

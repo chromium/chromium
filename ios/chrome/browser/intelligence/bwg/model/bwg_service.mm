@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -46,6 +48,9 @@ BwgService::BwgService(AuthenticationService* auth_service,
   if (bwg_gateway_) {
     bwg_link_opening_handler_ = [[BWGLinkOpeningHandler alloc] init];
     bwg_gateway_.linkOpeningHandler = bwg_link_opening_handler_;
+
+    bwg_session_handler_ = [[BWGSessionHandler alloc] init];
+    bwg_gateway_.sessionHandler = bwg_session_handler_;
   }
 }
 

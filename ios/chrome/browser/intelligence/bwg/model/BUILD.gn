@@ -10,6 +10,8 @@ source_set("model") {
     "bwg_service.h",
     "bwg_service.mm",
     "bwg_session_delegate.h",
+    "bwg_session_handler.h",
+    "bwg_session_handler.mm",
     "bwg_tab_helper.h",
     "bwg_tab_helper.mm",
   ]
