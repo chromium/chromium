@@ -30,14 +30,15 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -50,9 +51,8 @@ import java.util.concurrent.TimeoutException;
 @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 public class PreviewTabTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public EmbeddedTestServerRule mTestServer = new EmbeddedTestServerRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     /** Needed to ensure the First Run Flow is disabled automatically during setUp, etc. */
     @Rule public DisableFirstRun mDisableFirstRunFlowRule = new DisableFirstRun();
@@ -67,6 +67,7 @@ public class PreviewTabTest {
     private EphemeralTabCoordinator mEphemeralTabCoordinator;
     private BottomSheetTestSupport mSheetTestSupport;
     private TestEphemeralTabObserver mEphemeralTabObserver;
+    private WebPageStation mPage;
 
     private static class TestEphemeralTabObserver implements EphemeralTabObserver {
         public final CallbackHelper onToolbarCreatedCallback = new CallbackHelper();
@@ -91,7 +92,7 @@ public class PreviewTabTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getServer().getURL(BASE_PAGE));
+        mPage = mActivityTestRule.startOnTestServerUrl(BASE_PAGE);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabbedRootUiCoordinator tabbedRootUiCoordinator =
@@ -175,7 +176,7 @@ public class PreviewTabTest {
                 mEphemeralTabCoordinator.isOpened());
 
         mActivityTestRule.loadUrlInNewTab(
-                mTestServer.getServer().getURL(BASE_PAGE), /* incognito= */ true);
+                mActivityTestRule.getTestServer().getURL(BASE_PAGE), /* incognito= */ true);
         mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
@@ -212,7 +213,7 @@ public class PreviewTabTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mEphemeralTabCoordinator.requestOpenSheet(
-                                new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)),
+                                new GURL(mActivityTestRule.getTestServer().getURL(PREVIEW_TAB)),
                                 "PreviewTab",
                                 mActivityTestRule.getProfile(false)));
         endAnimations();
@@ -236,7 +237,7 @@ public class PreviewTabTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
-                                new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)),
+                                new GURL(mActivityTestRule.getTestServer().getURL(PREVIEW_TAB)),
                                 null,
                                 "PreviewTab",
                                 mActivityTestRule.getProfile(false)));

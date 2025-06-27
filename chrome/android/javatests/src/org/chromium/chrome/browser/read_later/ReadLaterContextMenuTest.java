@@ -51,13 +51,15 @@ import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
-import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -67,9 +69,9 @@ import org.chromium.ui.test.util.ViewUtils;
 @Batch(Batch.PER_CLASS)
 public class ReadLaterContextMenuTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    @Rule public EmbeddedTestServerRule mTestServer = new EmbeddedTestServerRule();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tracker mTracker;
     @Mock RequestCoordinatorBridge.Natives mRequestCoordinatorBridgeJniMock;
@@ -80,8 +82,13 @@ public class ReadLaterContextMenuTest {
             "/chrome/test/data/android/contextmenu/test_link.html";
     private static final String CONTEXT_MENU_LINK_DOM_ID = "testLink";
 
+    private EmbeddedTestServer mTestServer;
+    private WebPageStation mPage;
+
     @Before
     public void setUp() {
+        mTestServer = mActivityTestRule.getTestServer();
+
         // Pretend the feature engagement feature is already initialized. Otherwise
         // UserEducationHelper#requestShowIph() calls get dropped during test.
         doAnswer(
@@ -94,7 +101,7 @@ public class ReadLaterContextMenuTest {
         TrackerFactory.setTrackerForTests(mTracker);
         when(mTracker.shouldTriggerHelpUiWithSnooze(any()))
                 .thenReturn(new TriggerDetails(false, false));
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         RequestCoordinatorBridgeJni.setInstanceForTesting(mRequestCoordinatorBridgeJniMock);
     }
 
@@ -110,7 +117,7 @@ public class ReadLaterContextMenuTest {
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
                 .thenReturn(new TriggerDetails(true, false));
 
-        mActivityTestRule.loadUrlInNewTab(mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL));
+        mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(CONTEXT_MENU_TEST_URL));
 
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
@@ -129,7 +136,7 @@ public class ReadLaterContextMenuTest {
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testContextMenuAddToOfflinePage() throws Throwable {
-        String url = mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL);
+        String url = mTestServer.getURL(CONTEXT_MENU_TEST_URL);
         mActivityTestRule.loadUrlInNewTab(url);
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
@@ -139,7 +146,7 @@ public class ReadLaterContextMenuTest {
                 tab,
                 CONTEXT_MENU_LINK_DOM_ID,
                 R.id.contextmenu_read_later);
-        String linkUrl = mTestServer.getServer().getURL(CONTEXT_MENU_LINK_URL);
+        String linkUrl = mTestServer.getURL(CONTEXT_MENU_LINK_URL);
         verify(mRequestCoordinatorBridgeJniMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .savePageLater(any(), any(), eq(linkUrl), any(), any(), any(), anyBoolean());
     }

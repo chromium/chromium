@@ -41,8 +41,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.printing.PrintDocumentAdapterWrapper.LayoutResultCallbackWrapper;
 import org.chromium.printing.PrintDocumentAdapterWrapper.WriteResultCallbackWrapper;
 import org.chromium.printing.PrintManagerDelegate;
@@ -64,8 +65,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PrintingControllerTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEMP_FILE_NAME = "temp_print";
     private static final String TEMP_FILE_EXTENSION = ".pdf";
@@ -158,9 +159,8 @@ public class PrintingControllerTest {
     @LargeTest
     @Feature({"Printing"})
     public void testNormalPrintingFlow() throws Throwable {
-        mActivityTestRule.startMainActivityWithURL(URL);
-        final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
-        testNormalPrintingFlowHelper(currentTab);
+        WebPageStation page = mActivityTestRule.startOnUrl(URL);
+        testNormalPrintingFlowHelper(page.getTab());
     }
 
     /** Test a basic printing flow on pdf page. */
@@ -169,10 +169,9 @@ public class PrintingControllerTest {
     @Feature({"Printing"})
     @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
     public void testNormalPrintingFlow_PDF() throws Throwable {
-        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
-        final String url = testServer.getURL("/pdf/test/data/hello_world2.pdf");
-        mActivityTestRule.startMainActivityWithURL(url);
-        final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
+        WebPageStation page =
+                mActivityTestRule.startOnTestServerUrl("/pdf/test/data/hello_world2.pdf");
+        Tab currentTab = page.getTab();
         // Wait for PDF page to load.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -196,8 +195,8 @@ public class PrintingControllerTest {
     @MediumTest
     @Feature({"Printing"})
     public void testPrintCloseWindowBeforeStart() {
-        mActivityTestRule.startMainActivityWithURL(URL);
-        final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
+        WebPageStation page = mActivityTestRule.startOnUrl(URL);
+        Tab currentTab = page.getTab();
         final PrintingControllerImpl printingController = createControllerOnUiThread();
         final PrintManagerDelegate mockPrintManagerDelegate =
                 mockPrintManagerDelegate(() -> Assert.fail("Shouldn't start a printing job."));
@@ -229,8 +228,8 @@ public class PrintingControllerTest {
     @LargeTest
     @Feature({"Printing"})
     public void testPrintCloseWindowBeforeOnWrite() throws Throwable {
-        mActivityTestRule.startMainActivityWithURL(URL);
-        final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
+        WebPageStation page = mActivityTestRule.startOnUrl(URL);
+        Tab currentTab = page.getTab();
         final PrintingControllerImpl printingController = createControllerOnUiThread();
 
         startControllerOnUiThread(printingController, currentTab);
@@ -304,10 +303,10 @@ public class PrintingControllerTest {
     @MediumTest
     @Feature({"Printing"})
     public void testCancelPrintBeforeWriteResultCallbacks() throws Throwable {
-        mActivityTestRule.startMainActivityWithURL(URL);
+        WebPageStation page = mActivityTestRule.startOnUrl(URL);
+        Tab currentTab = page.getTab();
 
         final WaitForOnWriteHelper onWriteHelper = new WaitForOnWriteHelper();
-        final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
         final PrintingControllerImpl printingController =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new PrintingControllerImplPdfWritingDone(onWriteHelper));
@@ -364,7 +363,7 @@ public class PrintingControllerTest {
     @SmallTest
     @Feature({"Printing"})
     public void testPdfWritingDoneCalledWithoutInitailizePrintingTask() {
-        mActivityTestRule.startMainActivityWithURL(URL);
+        mActivityTestRule.startOnUrl(URL);
         final PrintingControllerImpl controller = createControllerOnUiThread();
 
         // Calling pdfWritingDone() with |pageCount| = 0 before onWrite() was called. It shouldn't
@@ -376,8 +375,8 @@ public class PrintingControllerTest {
     @SmallTest
     @Feature({"Printing"})
     public void testTabPrinterCanPrintHiddenTab() {
-        mActivityTestRule.startMainActivityWithURL(URL);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        WebPageStation page = mActivityTestRule.startOnUrl(URL);
+        ChromeTabbedActivity cta = page.getActivity();
 
         // ensure two tabs are open.
         TabUiTestHelper.createTabs(cta, false, 2);
