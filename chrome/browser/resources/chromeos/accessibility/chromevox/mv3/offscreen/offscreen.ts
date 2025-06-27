@@ -10,8 +10,63 @@ import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 
 import {LibLouisWorker} from './liblouis_worker.js';
 
-type MessageSender = chrome.runtime.MessageSender;
 type SendResponse = (value: any) => void;
+
+/**
+ * Receives messages and routes them to the proper class for handling.
+ */
+class OffscreenMessageHandler {
+  static instance?: OffscreenMessageHandler;
+
+  constructor() {
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: chrome.runtime.MessageSender,
+         sendResponse: SendResponse) =>
+            this.handleMessage_(message, sendResponse));
+  }
+
+  static init(): void {
+    if (OffscreenMessageHandler.instance) {
+      throw 'Error: trying to create two instances of singleton ' +
+          'OffscreenMessageHandler.';
+    }
+
+    OffscreenMessageHandler.instance = new OffscreenMessageHandler();
+  }
+
+
+  /**
+   * Handles messages from various contexts (e.g. service worker, learn mode,
+   * etc.). Returns true if the `sendResponse` callback should be kept alive,
+   * false otherwise.
+   */
+  private handleMessage_(message: any|undefined, sendResponse: SendResponse):
+      boolean {
+    switch (message.command) {
+      case OffscreenCommandType.IMAGE_DATA_FROM_URL:
+        OffscreenBrailleDisplayManager.instance!.getImageDataFromUrl(
+            message, sendResponse);
+        // The response is asynchronous and the callback must be kept alive.
+        return true;
+      case OffscreenCommandType.LEARN_MODE_REGISTER_LISTENERS:
+        OffscreenLearnModeKeyboardHandler.instance!.registerListeners();
+        break;
+      case OffscreenCommandType.LEARN_MODE_REMOVE_LISTENERS:
+        OffscreenLearnModeKeyboardHandler.instance!.removeListeners();
+        break;
+      case OffscreenCommandType.ON_CLIPBOARD_DATA_CHANGED:
+        const forceRead = message.forceRead as boolean;
+        OffscreenClipboardHandler.instance!.onClipboardDataChanged(
+            sendResponse, forceRead);
+        break;
+      case OffscreenCommandType.SHOULD_SET_DEFAULT_VOICE:
+        OffscreenSpeechSynthesis.instance!.shouldSetDefaultVoice(sendResponse);
+        break;
+    }
+
+    return false;
+  }
+}
 
 /**
  * Handles keydown and keyup events on the document and sends serialized key
@@ -70,28 +125,6 @@ class OffscreenBackgroundKeyboardHandler {
 class OffscreenLearnModeKeyboardHandler {
   static instance?: OffscreenLearnModeKeyboardHandler;
 
-  constructor() {
-    // Add listeners to chrome.runtime
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: chrome.runtime.MessageSender,
-         _sendResponse: SendResponse) =>
-            this.handleMessageFromLearnMode_(message));
-  }
-
-  private handleMessageFromLearnMode_(message: any|undefined): boolean {
-    switch (message.command) {
-      case OffscreenCommandType.LEARN_MODE_REGISTER_LISTENERS:
-        this.registerListeners_();
-        break;
-      case OffscreenCommandType.LEARN_MODE_REMOVE_LISTENERS:
-        this.removeListeners_();
-        break;
-    }
-    // Returns false as the response is not asynchronous and the callback does
-    // not need to be kept alive.
-    return false;
-  }
-
   static init(): void {
     if (OffscreenLearnModeKeyboardHandler.instance) {
       throw 'Error: trying to create two instances of singleton ' +
@@ -101,13 +134,13 @@ class OffscreenLearnModeKeyboardHandler {
         new OffscreenLearnModeKeyboardHandler();
   }
 
-  private registerListeners_(): void {
+  registerListeners(): void {
     window.addEventListener('keydown', this.onKeyDown_, true);
     window.addEventListener('keyup', this.onKeyUp_, true);
     window.addEventListener('keypress', this.onKeyPress_, true);
   }
 
-  private removeListeners_(): void {
+  removeListeners(): void {
     window.removeEventListener('keydown', this.onKeyDown_, true);
     window.removeEventListener('keyup', this.onKeyUp_, true);
     window.removeEventListener('keypress', this.onKeyPress_, true);
@@ -150,24 +183,6 @@ class OffscreenClipboardHandler {
   constructor() {
     document.addEventListener(
         'copy', event => this.onClipboardCopyEvent_(event));
-
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: MessageSender,
-         sendResponse: SendResponse) =>
-            this.handleMessageFromServiceWorker_(message, sendResponse));
-  }
-
-  private handleMessageFromServiceWorker_(
-      message: any|undefined, sendResponse: SendResponse): boolean {
-    switch (message['command']) {
-      case OffscreenCommandType.ON_CLIPBOARD_DATA_CHANGED:
-        const forceRead = message['forceRead'] as boolean;
-        this.onClipboardDataChanged_(sendResponse, forceRead);
-        break;
-    }
-    // Returns false as the response is not asynchronous and the callback does
-    // not need to be kept alive.
-    return false;
   }
 
   static init(): void {
@@ -199,8 +214,7 @@ class OffscreenClipboardHandler {
    * the call to ClipboardHandler.instance.readNextClipboardDataChange in the
    * service worker.
    */
-  private onClipboardDataChanged_(
-      sendResponse: SendResponse, forceRead: boolean): void {
+  onClipboardDataChanged(sendResponse: SendResponse, forceRead: boolean): void {
     if (!forceRead && !this.lastClipboardEvent_) {
       return;
     }
@@ -229,23 +243,6 @@ class OffscreenSpeechSynthesis {
         BackgroundBridge.PrimaryTts.onVoicesChanged();
       };
     }
-
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: MessageSender,
-         sendResponse: SendResponse) =>
-            this.handleMessageFromServiceWorker_(message, sendResponse));
-  }
-
-  private handleMessageFromServiceWorker_(
-      message: any|undefined, sendResponse: SendResponse): boolean {
-    switch (message['command']) {
-      case OffscreenCommandType.SHOULD_SET_DEFAULT_VOICE:
-        this.shouldSetDefaultVoice_(sendResponse);
-        break;
-    }
-    // Returns false as the response is not asynchronous and the callback does
-    // not need to be kept alive.
-    return false;
   }
 
   static init(): void {
@@ -258,7 +255,7 @@ class OffscreenSpeechSynthesis {
 
   // If the SpeechSynthesis API is not available it indicates we are
   // in chromecast and the default voice must be set.
-  private shouldSetDefaultVoice_(sendResponse: SendResponse): void {
+  shouldSetDefaultVoice(sendResponse: SendResponse): void {
     if (!window.speechSynthesis) {
       sendResponse(true);
       return;
@@ -270,25 +267,6 @@ class OffscreenSpeechSynthesis {
 class OffscreenBrailleDisplayManager {
   static instance?: OffscreenBrailleDisplayManager;
 
-  constructor() {
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: MessageSender,
-         sendResponse: SendResponse) =>
-            this.handleMessageFromServiceWorker_(message, sendResponse));
-  }
-
-  private handleMessageFromServiceWorker_(
-      message: any|undefined, sendResponse: SendResponse): boolean {
-    switch (message['command']) {
-      case OffscreenCommandType.IMAGE_DATA_FROM_URL:
-        this.getImageDataFromUrl_(message, sendResponse);
-        // Returns true as the response is asynchronous and the callback
-        // must be kept alive.
-        return true;
-    }
-    return false;
-  }
-
   static init(): void {
     if (OffscreenBrailleDisplayManager.instance) {
       throw 'Error: trying to create two instances of singleton ' +
@@ -298,7 +276,7 @@ class OffscreenBrailleDisplayManager {
         new OffscreenBrailleDisplayManager();
   }
 
-  getImageDataFromUrl_(message: any, sendResponse: SendResponse): void {
+  getImageDataFromUrl(message: any, sendResponse: SendResponse): void {
     const {imageDataUrl, imageState: {rows, columns, cellWidth, cellHeight}} =
         message;
 
@@ -324,7 +302,6 @@ class OffscreenBrailleDisplayManager {
   }
 }
 
-
 OffscreenBackgroundKeyboardHandler.init();
 OffscreenLearnModeKeyboardHandler.init();
 OffscreenClipboardHandler.init();
@@ -332,3 +309,5 @@ OffscreenSpeechSynthesis.init();
 OffscreenBrailleDisplayManager.init();
 EarconEngine.init();
 LibLouisWorker.init();
+
+OffscreenMessageHandler.init();

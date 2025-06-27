@@ -19,7 +19,6 @@ group("build") {
   deps = [
     ":chromevox_phonetic_dictionaries_js",
     ":copied_files",
-    "//third_party/chromevox:chromevox_third_party_resources",
     "//third_party/liblouis",
   ]
 }
