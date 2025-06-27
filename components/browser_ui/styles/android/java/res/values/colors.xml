@@ -40,7 +40,7 @@ found in the LICENSE file.
     <color name="default_task_description_color">@color/default_bg_color_baseline</color>
 
     <!-- Progress Bar colors -->
-    <macro name="progress_bar_foreground">@macro/default_control_color_active</macro>
+    <macro name="progress_bar_background">?attr/colorSecondaryContainer</macro>
     <color name="progress_bar_secondary">@color/baseline_neutral_40</color>
 
     <!-- Chip Colors -->
