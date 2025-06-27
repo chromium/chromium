@@ -194,7 +194,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private boolean mShouldHighlightCookieControlsIcon;
     private int mBlockingStatus3pcd;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
-    private Supplier<AppMenuHandler> mAppMenuHandler;
+    private Supplier<AppMenuHandler> mAppMenuHandler = () -> null;
     private AppMenuObserver mAppMenuObserver;
 
     private final Handler mTaskHandler = new Handler();
