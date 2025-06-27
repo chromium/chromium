@@ -332,11 +332,19 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 @Override
                 public void onTabGroupRemoved(LocalTabGroupId localId, @TriggerSource int source) {
                     refreshArchivedTabList();
+
+                    if (mTabActionState == TabActionState.SELECTABLE) {
+                        moveToState(TabActionState.CLOSABLE);
+                    }
                 }
 
                 @Override
                 public void onTabGroupRemoved(String syncId, @TriggerSource int source) {
                     refreshArchivedTabList();
+
+                    if (mTabActionState == TabActionState.SELECTABLE) {
+                        moveToState(TabActionState.CLOSABLE);
+                    }
                 }
             };
 

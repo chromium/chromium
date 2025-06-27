@@ -1153,6 +1153,47 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mUserActionTester.getActionCount("TabGroups.RestoreSingleTabGroup"));
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    public void testTabListEditorExitSelectableState_OnRemoteGroupDeleted() {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        SavedTabGroup savedTabGroup =
+                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+
+        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
+        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+        ThreadUtils.runOnUiThreadBlocking(() -> notifyTabGroupSyncObserversWithInitialization());
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        // Assert that there are 2 items consisting of a tab group and 1 tab.
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
+
+        // Enter the selection state and select both the tab group and single tab.
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(2)
+                .verifyItemNotSelectedAtAdapterPosition(0)
+                .verifyItemNotSelectedAtAdapterPosition(1)
+                .verifyToolbarSelectionText("2 inactive items");
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        mRobot.resultRobot.verifyToolbarSelectionText("2 items");
+
+        // Mock an external event emitted which signals for the tab group deletion.
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> notifyTabGroupSyncObserversWithDeletedGroup(savedTabGroup.syncId));
+
+        // Verify that the selection state is now hidden.
+        onView(withText("1 inactive item")).check(matches(isDisplayed()));
+        mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(1);
+    }
+
     private Tab addArchivedTab(GURL url, String title) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -1197,6 +1238,12 @@ public class ArchivedTabsDialogCoordinatorTest {
     private void notifyTabGroupSyncObserversWithChangedGroup(SavedTabGroup group) {
         for (TabGroupSyncService.Observer obs : mTabGroupSyncServiceObserverCaptor.getAllValues()) {
             obs.onTabGroupUpdated(group, TriggerSource.REMOTE);
+        }
+    }
+
+    private void notifyTabGroupSyncObserversWithDeletedGroup(String syncId) {
+        for (TabGroupSyncService.Observer obs : mTabGroupSyncServiceObserverCaptor.getAllValues()) {
+            obs.onTabGroupRemoved(syncId, TriggerSource.REMOTE);
         }
     }
 
