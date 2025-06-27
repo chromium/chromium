@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
@@ -70,10 +69,6 @@ std::unique_ptr<KeyedService> BuildTestShareKitService(
 
 class TabGroupCoordinatorTest : public PlatformTest {
  protected:
-  TabGroupCoordinatorTest() {
-    feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  }
-
   void SetUp() override {
     PlatformTest::SetUp();
     // Create a TestProfileIOS with required services.
@@ -165,7 +160,7 @@ class TabGroupCoordinatorWithSharedTabGroupsJoinOnlyTest
   TabGroupCoordinatorWithSharedTabGroupsJoinOnlyTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {kTabGroupSync, data_sharing::features::kDataSharingJoinOnly}, {});
+        {data_sharing::features::kDataSharingJoinOnly}, {});
   }
 };
 
@@ -177,7 +172,7 @@ class TabGroupCoordinatorWithSharedTabGroupsTest
   TabGroupCoordinatorWithSharedTabGroupsTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {kTabGroupSync, data_sharing::features::kDataSharingFeature}, {});
+        {data_sharing::features::kDataSharingFeature}, {});
   }
 };
 

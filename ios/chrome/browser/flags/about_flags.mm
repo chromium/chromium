@@ -500,41 +500,6 @@ const FeatureEntry::FeatureVariation kLensTranslateToggleModeVariations[] = {
     {"(Always)", kLensTranslateToggleModeAlways,
      std::size(kLensTranslateToggleModeAlways), nullptr}};
 
-const FeatureEntry::FeatureParam kTabGroupIndicatorAboveButtonsVisble[] = {
-    {kTabGroupIndicatorVisible, "true"},
-    {kTabGroupIndicatorBelowOmnibox, "false"},
-    {kTabGroupIndicatorButtonsUpdate, "true"}};
-const FeatureEntry::FeatureParam kTabGroupIndicatorBelowButtonsVisble[] = {
-    {kTabGroupIndicatorVisible, "true"},
-    {kTabGroupIndicatorBelowOmnibox, "true"},
-    {kTabGroupIndicatorButtonsUpdate, "true"}};
-const FeatureEntry::FeatureParam kTabGroupIndicatorAboveVisble[] = {
-    {kTabGroupIndicatorVisible, "true"},
-    {kTabGroupIndicatorBelowOmnibox, "false"},
-    {kTabGroupIndicatorButtonsUpdate, "false"}};
-const FeatureEntry::FeatureParam kTabGroupIndicatorBelowVisble[] = {
-    {kTabGroupIndicatorVisible, "true"},
-    {kTabGroupIndicatorBelowOmnibox, "true"},
-    {kTabGroupIndicatorButtonsUpdate, "false"}};
-const FeatureEntry::FeatureParam kTabGroupIndicatorButtons[] = {
-    {kTabGroupIndicatorVisible, "false"},
-    {kTabGroupIndicatorBelowOmnibox, "false"},
-    {kTabGroupIndicatorButtonsUpdate, "true"}};
-
-const FeatureEntry::FeatureVariation kTabGroupIndicatorVariations[] = {
-    {"Indicator above omnibox + buttons update",
-     kTabGroupIndicatorAboveButtonsVisble,
-     std::size(kTabGroupIndicatorAboveButtonsVisble), nullptr},
-    {"Indicator below omnibox + buttons update",
-     kTabGroupIndicatorBelowButtonsVisble,
-     std::size(kTabGroupIndicatorBelowButtonsVisble), nullptr},
-    {"Indicator above omnibox", kTabGroupIndicatorAboveVisble,
-     std::size(kTabGroupIndicatorAboveVisble), nullptr},
-    {"Indicator below omnibox", kTabGroupIndicatorBelowVisble,
-     std::size(kTabGroupIndicatorBelowVisble), nullptr},
-    {"buttons update only", kTabGroupIndicatorButtons,
-     std::size(kTabGroupIndicatorButtons), nullptr}};
-
 const FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
@@ -2014,9 +1979,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-quick-delete", flag_descriptions::kIOSQuickDeleteName,
      flag_descriptions::kIOSQuickDeleteDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSQuickDelete)},
-    {"tab-group-sync", flag_descriptions::kTabGroupSyncName,
-     flag_descriptions::kTabGroupSyncDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabGroupSync)},
     {"omnibox-suggestion-answer-migration",
      flag_descriptions::kOmniboxSuggestionAnswerMigrationName,
      flag_descriptions::kOmniboxSuggestionAnswerMigrationDescription,
@@ -2165,11 +2127,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillIsolatedWorldForJavascriptIOSDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillIsolatedWorldForJavascriptIos)},
-    {"tab-group-indicator", flag_descriptions::kTabGroupIndicatorName,
-     flag_descriptions::kTabGroupIndicatorDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabGroupIndicator,
-                                    kTabGroupIndicatorVariations,
-                                    "TabGroupIndicator")},
     {"safe-browsing-local-lists-use-sbv5",
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Name,
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description,

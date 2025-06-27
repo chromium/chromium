@@ -32,7 +32,6 @@ class ShareKitServiceFactoryTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
-            kTabGroupSync,
             data_sharing::features::kDataSharingJoinOnly,
         },
         /*disable_features=*/{});

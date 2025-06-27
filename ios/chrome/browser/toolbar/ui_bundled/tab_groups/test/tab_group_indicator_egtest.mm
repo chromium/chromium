@@ -154,10 +154,8 @@ void CreateSharedGroupAndOpenMenu() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupIndicator);
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
-  config.features_enabled.push_back(kTabGroupSync);
 
   // Add the flag to use FakeTabGroupSyncService.
   config.additional_args.push_back(

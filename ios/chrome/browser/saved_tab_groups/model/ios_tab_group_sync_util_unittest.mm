@@ -82,7 +82,7 @@ class TabGroupSyncUtilTest : public PlatformTest {
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {kTabGroupSync, data_sharing::features::kDataSharingFeature}, {});
+        {data_sharing::features::kDataSharingFeature}, {});
     AppendNewWebState(browser_.get());
     AppendNewWebState(browser_.get());
     AppendNewWebState(browser_.get());
@@ -202,59 +202,6 @@ TEST_F(TabGroupSyncUtilTest, TestMoveTabGroupsAcrossRegularBrowsers) {
 
   EXPECT_CALL(*mock_service_, CreateScopedLocalObserverPauser()).Times(2);
   local_observer_->SetSyncUpdatePaused(true);
-  EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id_0)).Times(0);
-  EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id_1)).Times(0);
-
-  // Move groups.
-  MoveTabGroupToBrowser(tab_group_0, other_browser_.get(), 0);
-  MoveTabGroupToBrowser(tab_group_1, other_browser_.get(), 1);
-
-  const TabGroup* other_group_0 = other_web_state_list->GetGroupOfWebStateAt(0);
-  const TabGroup* other_group_1 = other_web_state_list->GetGroupOfWebStateAt(1);
-  ASSERT_TRUE(other_group_0);
-  ASSERT_TRUE(other_group_1);
-  EXPECT_EQ(1, other_group_0->range().count());
-  EXPECT_EQ(1, other_group_1->range().count());
-  EXPECT_EQ(tab_group_id_0, other_group_0->tab_group_id());
-  EXPECT_EQ(tab_group_id_1, other_group_1->tab_group_id());
-  EXPECT_EQ(visual_data, other_group_0->visual_data());
-  EXPECT_EQ(visual_data, other_group_1->visual_data());
-  EXPECT_EQ(1, web_state_list->count());
-  EXPECT_EQ(2, other_web_state_list->count());
-  EXPECT_EQ(tab_id_0, GetTabIDForWebStateAt(0, other_browser_.get()));
-  EXPECT_EQ(tab_id_1, GetTabIDForWebStateAt(1, other_browser_.get()));
-}
-
-// Tests that a tab group with multiple tabs is moved from one regular browser
-// to another browser with tab group sync disabled.
-TEST_F(TabGroupSyncUtilTest,
-       TestMoveTabGroupsAcrossRegularBrowsersSyncDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(kTabGroupSync);
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    // Feature has been launched on phones.
-    return;
-  }
-
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  WebStateList* other_web_state_list = other_browser_->GetWebStateList();
-
-  // Create 2 groups.
-  TabGroupId tab_group_id_0 = TabGroupId::GenerateNew();
-  TabGroupId tab_group_id_1 = TabGroupId::GenerateNew();
-  TabGroupVisualData visual_data =
-      TabGroupVisualData(u"Group", TabGroupColorId::kGrey);
-  const TabGroup* tab_group_0 = web_state_list->CreateGroup(
-      {0}, TabGroupVisualData(visual_data), tab_group_id_0);
-  const TabGroup* tab_group_1 = web_state_list->CreateGroup(
-      {1}, TabGroupVisualData(visual_data), tab_group_id_1);
-  web::WebStateID tab_id_0 = GetTabIDForWebStateAt(0, browser_.get());
-  web::WebStateID tab_id_1 = GetTabIDForWebStateAt(1, browser_.get());
-  ASSERT_EQ(3, web_state_list->count());
-  ASSERT_EQ(tab_group_0, web_state_list->GetGroupOfWebStateAt(0));
-  ASSERT_EQ(tab_group_1, web_state_list->GetGroupOfWebStateAt(1));
-
-  EXPECT_CALL(*mock_service_, CreateScopedLocalObserverPauser()).Times(0);
   EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id_0)).Times(0);
   EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id_1)).Times(0);
 

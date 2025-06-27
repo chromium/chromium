@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
@@ -770,9 +769,6 @@ TEST_F(TabsCloserTest, UndoCloseTabs_Reentrancy) {
 // Checks that close all/undo is correctly updating the TabGroupSyncService,
 // both when it hasn't been modified and when it has been modified.
 TEST_F(TabsCloserTest, UndoCloseTabs_SavedTabs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kTabGroupSync}, {});
-
   WebStateList* web_state_list = browser()->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(

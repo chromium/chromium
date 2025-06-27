@@ -5,11 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TAB_GROUPS_TAB_GROUP_INDICATOR_FEATURES_UTILS_H_
 #define IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TAB_GROUPS_TAB_GROUP_INDICATOR_FEATURES_UTILS_H_
 
-// Feature parameters for the tab group indicator.
-extern const char kTabGroupIndicatorVisible[];
-extern const char kTabGroupIndicatorBelowOmnibox[];
-extern const char kTabGroupIndicatorButtonsUpdate[];
-
 // Whether the tab group indicator is visible.
 bool HasTabGroupIndicatorVisible();
 

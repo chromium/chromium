@@ -821,7 +821,6 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
 
 // Tests that ungrouping a group correctly deletes the group.
 TEST_P(BaseGridMediatorTest, UnGroup) {
-  scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
   WebStateList* web_state_list = browser_->GetWebStateList();
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({1}, {}, tab_group_id);
@@ -845,7 +844,6 @@ TEST_P(BaseGridMediatorTest, UnGroup) {
 // Tests that ungrouping a group from another browser (e.g from Search)
 // correctly deletes the group.
 TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
-  scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
   mode_holder_.mode = TabGridMode::kSearch;
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
@@ -873,7 +871,6 @@ TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
 
 // Tests that closing the last tab of a selected group clears the selection.
 TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
-  scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   WebStateList* web_state_list = browser_->GetWebStateList();
   const TabGroup* group = web_state_list->CreateGroup({1}, {}, tab_group_id);
@@ -897,7 +894,6 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
 
 // Tests that closing a group locally removes the mapping from the sync service.
 TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
-  scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
   WebStateList* web_state_list = browser_->GetWebStateList();
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({1}, {}, tab_group_id);
@@ -921,7 +917,6 @@ TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
 // Tests that closing a group locally from another browser (e.g from Search)
 // correctly closes the group and removes the mapping from the sync service.
 TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
-  scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
   mode_holder_.mode = TabGridMode::kSearch;
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
@@ -950,7 +945,6 @@ TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
 
 // Tests that closing multiple selected items doesn't delete saved groups.
 TEST_P(BaseGridMediatorTest, CloseSelectedTabsAndGroups) {
-  scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);

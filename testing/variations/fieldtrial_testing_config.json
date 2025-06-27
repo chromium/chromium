@@ -13073,22 +13073,6 @@
             ]
         }
     ],
-    "IOSTabGroupSynciPad": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGroupIndicator",
-                        "TabGroupSync"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTabResumptionThumbnails": [
         {
             "platforms": [

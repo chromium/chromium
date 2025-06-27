@@ -155,19 +155,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     // still work when kIdentityDiscAccountMenu is enabled.
     config.features_disabled.push_back(kIdentityDiscAccountMenu);
   }
-  // TODO(crbug.com/425606651): When kTabGroupSync is launched, remove the two
-  // tests below and OpenSigninMethodFromTabSwitcher.
-  if ([self isRunningTest:@selector(testDismissSigninFromTabSwitcher)] ||
-      [self isRunningTest:@selector
-            (testDismissSigninFromTabSwitcherFromIdentityPicker)]) {
-    // Once kIdentityDiscAccountMenu is launched, the ADP will open the account
-    // menu instead of settings view. It will be safe to remove this test at
-    // that point. The new flow is covered in testViewAccountMenu. Note:
-    // testOpenManageSyncSettingsFromNTPWhenSigninIsNotAllowedByPolicy should
-    // still work when kIdentityDiscAccountMenu is enabled.
-    config.features_disabled.push_back(kTabGroupSync);
-  }
-
   return config;
 }
 
@@ -425,49 +412,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Interrupted at: user consent.
 - (void)testDismissSigninFromRecentTabs {
   [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromRecentTabs];
-}
-
-// Tests to dismiss sign-in by opening an URL from another app.
-// Sign-in opened from: tab switcher.
-// Interrupted at: user consent.
-- (void)testDismissSigninFromTabSwitcher {
-  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
-  // Recent Tabs is not reachable from the Tab Grid. So the sign-in flow is not
-  // supported with Tab Group Sync enabled.
-  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when "
-                           @"Tab Group Sync is enabled.");
-  }
-
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromTabSwitcher];
-}
-
-// Tests to dismiss sign-in by opening an URL from another app.
-// Sign-in opened from: tab switcher.
-// Interrupted at: identity picker.
-- (void)testDismissSigninFromTabSwitcherFromIdentityPicker {
-  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
-  // Recent Tabs is not reachable from the Tab Grid. So the sign-in flow is not
-  // supported with Tab Group Sync enabled.
-  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when "
-                           @"Tab Group Sync is enabled.");
-  }
-
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [self openSigninFromView:OpenSigninMethodFromTabSwitcher];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
-
-  // Open the URL as if it was opened from another app.
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL expectedURL = self.testServer->GetURL("/echo");
-  [ChromeEarlGrey
-      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
-
-  [SigninEarlGrey verifySignedOut];
 }
 
 // Opens the reauth dialog and interrupts it by open an URL from an external

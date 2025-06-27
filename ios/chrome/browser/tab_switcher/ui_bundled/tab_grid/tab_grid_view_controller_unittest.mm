@@ -5,11 +5,9 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 
 #import "base/test/metrics/user_action_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_container_view_controller.h"
@@ -25,11 +23,6 @@
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
-
-// Returns the third panel page given the current experiments.
-TabGridPage ThirdPanelPage() {
-  return IsTabGroupSyncEnabled() ? TabGridPageTabGroups : TabGridPageRemoteTabs;
-}
 
 // Fake WebStateList delegate that attaches the required tab helper.
 class TabGridFakeWebStateListDelegate : public FakeWebStateListDelegate {
@@ -47,15 +40,6 @@ class TabGridViewControllerTest : public PlatformTest,
                                   public ::testing::WithParamInterface<bool> {
  protected:
   TabGridViewControllerTest() {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{kTabGroupSync},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{kTabGroupSync});
-    }
     InitializeViewController(TabGridPageConfiguration::kAllPagesEnabled);
 
     profile_ = TestProfileIOS::Builder().Build();
@@ -85,11 +69,7 @@ class TabGridViewControllerTest : public PlatformTest,
     third_panel_grid_ = [[GridContainerViewController alloc] init];
     view_controller_.incognitoGridContainerViewController = incognito_grid_;
     view_controller_.regularGridContainerViewController = regular_grid_;
-    if (IsTabGroupSyncEnabled()) {
-      view_controller_.tabGroupsGridContainerViewController = third_panel_grid_;
-    } else {
-      view_controller_.remoteGridContainerViewController = third_panel_grid_;
-    }
+    view_controller_.tabGroupsGridContainerViewController = third_panel_grid_;
     view_controller_.pinnedTabsViewController =
         [[PinnedTabsViewController alloc] init];
 
@@ -109,7 +89,6 @@ class TabGridViewControllerTest : public PlatformTest,
     EXPECT_EQ(user_action_tester_.GetActionCount(user_action), 1);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::UserActionTester user_action_tester_;
@@ -123,12 +102,12 @@ class TabGridViewControllerTest : public PlatformTest,
 };
 
 // Checks that TabGridViewController returns key commands.
-TEST_P(TabGridViewControllerTest, ReturnsKeyCommands) {
+TEST_F(TabGridViewControllerTest, ReturnsKeyCommands) {
   EXPECT_GT(view_controller_.keyCommands.count, 0u);
 }
 
 // Checks whether TabGridViewController can perform the actions to open tabs.
-TEST_P(TabGridViewControllerTest, CanPerform_OpenTabsActions) {
+TEST_F(TabGridViewControllerTest, CanPerform_OpenTabsActions) {
   NSArray<NSString*>* actions = @[
     @"keyCommand_openNewTab",
     @"keyCommand_openNewRegularTab",
@@ -147,7 +126,8 @@ TEST_P(TabGridViewControllerTest, CanPerform_OpenTabsActions) {
     EXPECT_TRUE(CanPerform(action));
   }
 
-  [view_controller_ setCurrentPageAndPageControl:ThirdPanelPage() animated:NO];
+  [view_controller_ setCurrentPageAndPageControl:TabGridPageTabGroups
+                                        animated:NO];
   for (NSString* action in actions) {
     EXPECT_FALSE(CanPerform(action));
   }
@@ -160,7 +140,7 @@ TEST_P(TabGridViewControllerTest, CanPerform_OpenTabsActions) {
 }
 
 // Checks that opening regular tabs can't be performed when disabled.
-TEST_P(TabGridViewControllerTest, CantPerform_OpenRegularTab_WhenDisabled) {
+TEST_F(TabGridViewControllerTest, CantPerform_OpenRegularTab_WhenDisabled) {
   InitializeViewController(TabGridPageConfiguration::kIncognitoPageOnly);
 
   EXPECT_FALSE(CanPerform(@"keyCommand_openNewRegularTab"));
@@ -170,7 +150,7 @@ TEST_P(TabGridViewControllerTest, CantPerform_OpenRegularTab_WhenDisabled) {
 }
 
 // Checks that opening incognito tabs can't be performed when disabled.
-TEST_P(TabGridViewControllerTest, CantPerform_OpenIncognitoTab_WhenDisabled) {
+TEST_F(TabGridViewControllerTest, CantPerform_OpenIncognitoTab_WhenDisabled) {
   InitializeViewController(TabGridPageConfiguration::kIncognitoPageDisabled);
 
   EXPECT_FALSE(CanPerform(@"keyCommand_openNewIncognitoTab"));
@@ -181,7 +161,7 @@ TEST_P(TabGridViewControllerTest, CantPerform_OpenIncognitoTab_WhenDisabled) {
 
 // Checks that opening a tab on the current page can't be performed if the page
 // is disabled.
-TEST_P(TabGridViewControllerTest,
+TEST_F(TabGridViewControllerTest,
        CantPerform_OpenTab_OnCurrentPage_WhenDisabled) {
   InitializeViewController(TabGridPageConfiguration::kIncognitoPageDisabled);
 
@@ -192,7 +172,7 @@ TEST_P(TabGridViewControllerTest,
 }
 
 // Checks that TabGridViewController implements the following actions.
-TEST_P(TabGridViewControllerTest, ImplementsActions) {
+TEST_F(TabGridViewControllerTest, ImplementsActions) {
   // Load the view.
   std::ignore = view_controller_.view;
 
@@ -212,15 +192,15 @@ TEST_P(TabGridViewControllerTest, ImplementsActions) {
   EXPECT_OCMOCK_VERIFY(mock_mutator_);
   EXPECT_EQ(TabGridPageRegularTabs, view_controller_.currentPage);
 
-  OCMStub([mock_mutator_ pageChanged:ThirdPanelPage()
+  OCMStub([mock_mutator_ pageChanged:TabGridPageTabGroups
                          interaction:TabSwitcherPageChangeInteraction::kNone]);
   [view_controller_ keyCommand_select3];
   EXPECT_OCMOCK_VERIFY(mock_mutator_);
-  EXPECT_EQ(ThirdPanelPage(), view_controller_.currentPage);
+  EXPECT_EQ(TabGridPageTabGroups, view_controller_.currentPage);
 }
 
 // Checks that metrics are correctly reported.
-TEST_P(TabGridViewControllerTest, Metrics) {
+TEST_F(TabGridViewControllerTest, Metrics) {
   // Load the view.
   std::ignore = view_controller_.view;
   ExpectUMA(@"keyCommand_openNewTab", "MobileKeyCommandOpenNewTab");
@@ -229,9 +209,5 @@ TEST_P(TabGridViewControllerTest, Metrics) {
   ExpectUMA(@"keyCommand_openNewIncognitoTab",
             "MobileKeyCommandOpenNewIncognitoTab");
 }
-
-INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
-                         TabGridViewControllerTest,
-                         testing::Bool());
 
 }  // namespace

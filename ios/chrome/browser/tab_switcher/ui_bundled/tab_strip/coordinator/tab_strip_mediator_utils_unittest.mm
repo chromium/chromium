@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_mediator_utils.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -15,7 +14,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift.h"
@@ -47,7 +45,6 @@ std::unique_ptr<web::WebState> CreateWebState() {
 class TabStripMediatorUtilsTest : public PlatformTest {
  public:
   TabStripMediatorUtilsTest() {
-    feature_list_.InitWithFeatures({kTabGroupSync}, {});
     TestProfileIOS::Builder profile_builder;
     profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
@@ -73,7 +70,6 @@ class TabStripMediatorUtilsTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<WebStateList> web_state_list_;

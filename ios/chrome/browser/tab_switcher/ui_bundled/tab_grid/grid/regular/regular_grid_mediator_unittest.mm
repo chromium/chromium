@@ -71,8 +71,6 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
-            kTabGroupSync,
-            kTabGroupIndicator,
             data_sharing::features::kDataSharingFeature,
         },
         /*disable_features=*/{});

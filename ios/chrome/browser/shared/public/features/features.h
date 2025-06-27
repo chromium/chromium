@@ -520,14 +520,8 @@ extern const char kDeliveredNAUMaxPerSession[];
 // Feature flag to enable a more stable fullscreen.
 BASE_DECLARE_FEATURE(kFullscreenImprovement);
 
-// Feature flag to enable Tab Group Sync.
-BASE_DECLARE_FEATURE(kTabGroupSync);
-
 // Whether the tab groups should be syncing.
 bool IsTabGroupSyncEnabled();
-
-// Feature flag to enable Tab Group Indicator.
-BASE_DECLARE_FEATURE(kTabGroupIndicator);
 
 // Whether the Tab Group Indicator feature is enabled.
 bool IsTabGroupIndicatorEnabled();

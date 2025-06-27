@@ -17,9 +17,6 @@ namespace tab_groups {
 class TabGroupSyncServiceFactoryTest : public PlatformTest {
  public:
   TabGroupSyncServiceFactoryTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kTabGroupSync},
-        /*disable_features=*/{});
     TestProfileIOS::Builder builder;
     profile_ = std::move(builder).Build();
   }

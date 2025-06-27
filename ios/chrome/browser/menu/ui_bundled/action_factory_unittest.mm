@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
@@ -15,7 +14,6 @@
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -46,7 +44,6 @@ class ActionFactoryTest : public PlatformTest {
         CGSizeMake(10, 10), [UIColor blueColor]);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   NSString* test_title_;
@@ -368,10 +365,7 @@ TEST_F(ActionFactoryTest, CloseAllTabsAction) {
   UIImage* expectedImage =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
-      IsTabGroupSyncEnabled()
-          ? l10n_util::GetNSString(
-                IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS)
-          : l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS);
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS);
 
   UIAction* action = [factory actionToCloseAllTabsWithBlock:^{
   }];
@@ -514,7 +508,6 @@ TEST_F(ActionFactoryTest, AddTabsToGroupNoGroups) {
 
 // Tests the different sub elements of the menu when moving a tab to a group.
 TEST_F(ActionFactoryTest, MoveTabFromGroup) {
-  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -565,7 +558,6 @@ TEST_F(ActionFactoryTest, MoveTabFromGroup) {
 
 // Tests that the ungroup tab group action has the right title and image.
 TEST_F(ActionFactoryTest, UngroupTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -583,7 +575,6 @@ TEST_F(ActionFactoryTest, UngroupTabGroup) {
 
 // Tests that the delete tab group action has the right title and image.
 TEST_F(ActionFactoryTest, DeleteTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -602,7 +593,6 @@ TEST_F(ActionFactoryTest, DeleteTabGroup) {
 
 // Tests that the close tab group action has the right title and image.
 TEST_F(ActionFactoryTest, CloseTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -621,7 +611,6 @@ TEST_F(ActionFactoryTest, CloseTabGroup) {
 
 // Tests that the manage tab group action has the right title and image.
 TEST_F(ActionFactoryTest, ManageTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -639,7 +628,6 @@ TEST_F(ActionFactoryTest, ManageTabGroup) {
 
 // Tests that the share tab group action has the right title and image.
 TEST_F(ActionFactoryTest, ShareTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -657,7 +645,6 @@ TEST_F(ActionFactoryTest, ShareTabGroup) {
 
 // Tests that the leave shared tab group action has the right title and image.
 TEST_F(ActionFactoryTest, LeaveSharedTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -676,7 +663,6 @@ TEST_F(ActionFactoryTest, LeaveSharedTabGroup) {
 
 // Tests that the delete shared tab group action has the right title and image.
 TEST_F(ActionFactoryTest, DeleteSharedTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 

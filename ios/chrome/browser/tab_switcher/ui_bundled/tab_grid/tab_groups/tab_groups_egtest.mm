@@ -278,12 +278,6 @@ UIViewController* TopPresentedViewController() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupIndicator);
-  if ([self isRunningTest:@selector(testCloseFromSelectionSyncDisabled)]) {
-    config.features_disabled.push_back(kTabGroupSync);
-  } else {
-    config.features_enabled.push_back(kTabGroupSync);
-  }
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
   config.features_enabled.push_back(kContainedTabGroup);
@@ -1870,48 +1864,6 @@ UIViewController* TopPresentedViewController() {
   // Check that the snackbar is displayed.
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests closing a group in grid using the selection mode with kTabGroupSync
-// disabled.
-- (void)testCloseFromSelectionSyncDisabled {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
-  // Create a tab cell with `Tab 1` as its title.
-  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
-  [ChromeEarlGreyUI openTabGrid];
-
-  CreateDefaultFirstGroupFromTabCellAtIndex(0);
-
-  // Tap on "Edit" then "Select tabs".
-  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
-      performAction:grey_tap()];
-
-  // Select the group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(
-                                          l10n_util::GetPluralNSStringF(
-                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
-                                          1)] performAction:grey_tap()];
-
-  // Tap on the "Close Tab" button and confirm.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridEditCloseTabsButton()]
-      performAction:grey_tap()];
-  NSString* closeTabsButtonText =
-      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-          IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
-          /*number=*/1));
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
-                                   closeTabsButtonText)]
-      performAction:grey_tap()];
-
-  // Make sure that the tab grid is empty.
-  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
 }
 
 // Tests renaming a group from the overflow menu in the group view.
