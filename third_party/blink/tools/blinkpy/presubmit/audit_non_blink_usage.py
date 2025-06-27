@@ -777,8 +777,11 @@ _CONFIG = [
             'net::CookieSameSite',
             'net::CookieSourceScheme',
 
-            # HTTP status codes
+            # Net error codes
+            'net::OK',
             'net::ERR_.*',
+
+            # HTTP status codes
             'net::HTTP_.+',
 
             # For ConnectionInfo enumeration

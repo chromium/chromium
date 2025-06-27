@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
@@ -176,6 +177,11 @@ enum class FetchLaterRendererMetricType {
 
 void LogFetchLaterMetric(const FetchLaterRendererMetricType& type) {
   base::UmaHistogramEnumeration("FetchLater.Renderer.Metrics", type);
+}
+
+void RecordBlobFetchNetErrorCode(int net_error_code) {
+  base::UmaHistogramSparse("Net.BlobFetch.ResponseNetErrorCode",
+                           net_error_code);
 }
 
 // Tells whether the FetchLater request should use BackgroundSync permission to
@@ -693,6 +699,12 @@ bool FetchManager::Loader::WillFollowRedirect(
 void FetchManager::Loader::DidReceiveResponse(
     uint64_t,
     const ResourceResponse& response) {
+  // Record the blob fetch request status.
+  if (GetFetchRequestData() &&
+      GetFetchRequestData()->Url().ProtocolIs("blob")) {
+    RecordBlobFetchNetErrorCode(net::OK);
+  }
+
   // Verify that we're dealing with the URL we expect (which could be an
   // HTTPS-upgraded variant of `url_list_.back()`.
   DCHECK(
@@ -846,8 +858,7 @@ void FetchManager::Loader::DidFail(uint64_t identifier,
   // Record the failures for blob fetch request.
   if (GetFetchRequestData() &&
       GetFetchRequestData()->Url().ProtocolIs("blob")) {
-    base::UmaHistogramSparse("Net.BlobFetch.ResponseNetErrorCode",
-                             -error.ErrorCode());
+    RecordBlobFetchNetErrorCode(-error.ErrorCode());
   }
 
   if (GetFetchRequestData() && GetFetchRequestData()->TrustTokenParams()) {
