@@ -246,16 +246,15 @@ gfx::Rect ProgressValueRectFor(const LayoutProgress& layout_progress,
 
 std::optional<SkColor> GetAccentColor(const ComputedStyle& style,
                                       const Document& document) {
-  std::optional<Color> css_accent_color = style.AccentColorResolved();
-  if (css_accent_color)
-    return css_accent_color->Rgb();
+  std::optional<Color> accent_color = style.AccentColorResolved();
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  LayoutTheme& layout_theme = LayoutTheme::GetTheme();
 
   // We should not allow the system accent color to be rendered in image
   // contexts because it could be read back by the page and used for
   // fingerprinting.
-  if (!document.GetPage()->GetChromeClient().IsIsolatedSVGChromeClient()) {
-    mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-    LayoutTheme& layout_theme = LayoutTheme::GetTheme();
+  if (!accent_color &&
+      !document.GetPage()->GetChromeClient().IsIsolatedSVGChromeClient()) {
     if (!document.InForcedColorsMode() &&
         RuntimeEnabledFeatures::CSSSystemAccentColorEnabled() &&
         layout_theme.IsAccentColorCustomized(color_scheme)) {
@@ -263,7 +262,26 @@ std::optional<SkColor> GetAccentColor(const ComputedStyle& style,
     }
   }
 
-  return std::nullopt;
+  if (!accent_color) {
+    return std::nullopt;
+  }
+
+  // Transparency should be removed by transposing on top of the "Canvas" CSS
+  // color:
+  // https://issues.chromium.org/issues/40859651
+  // https://github.com/w3c/csswg-drafts/issues/9852
+  if (!accent_color->IsOpaque()) {
+    SkColor background_color =
+        layout_theme
+            .SystemColor(CSSValueID::kCanvas, color_scheme,
+                         document.GetColorProviderForPainting(color_scheme),
+                         document.IsInWebAppScope())
+            .Rgb();
+    return color_utils::GetResultingPaintColor(accent_color->Rgb(),
+                                               background_color);
+  }
+
+  return accent_color->Rgb();
 }
 
 }  // namespace

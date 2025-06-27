@@ -3597,8 +3597,6 @@ crbug.com/347071495 external/wpt/svg/animations/conditional-processing-01.html [
 crbug.com/347071495 external/wpt/svg/animations/switch-animation-02.html [ Failure ]
 crbug.com/347804255 [ Mac14 ] virtual/force-renderer-accessibility/external/wpt/accessibility/crashtests/slot-assignment-lockup.html [ Crash ]
 crbug.com/347804255 [ Win11-arm64 ] virtual/force-renderer-accessibility/external/wpt/accessibility/crashtests/slot-assignment-lockup.html [ Crash ]
-crbug.com/347055263 external/wpt/css/css-ui/transparent-accent-color-001.html [ Failure ]
-crbug.com/347055263 external/wpt/css/css-ui/transparent-accent-color-002.html [ Failure ]
 crbug.com/347055177 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Timeout ]
 crbug.com/347055177 external/wpt/geolocation/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Failure Timeout ]
 crbug.com/347055177 external/wpt/geolocation/getCurrentPosition_permission_allow.https.html [ Timeout ]
