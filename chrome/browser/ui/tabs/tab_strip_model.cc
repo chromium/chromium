@@ -1046,6 +1046,14 @@ tabs::TabInterface* TabStripModel::GetActiveTab() const {
   return nullptr;
 }
 
+std::vector<tabs::TabInterface*> TabStripModel::GetVisibleTabs() const {
+  tabs::TabInterface* active_tab = GetActiveTab();
+  if (active_tab->IsSplit()) {
+    return GetSplitData(active_tab->GetSplit().value())->ListTabs();
+  }
+  return {active_tab};
+}
+
 WebContents* TabStripModel::GetWebContentsAt(int index) const {
   if (ContainsIndex(index)) {
     return GetTabAtIndex(index)->GetContents();

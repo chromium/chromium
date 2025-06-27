@@ -280,9 +280,12 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
   if (web_contents()->GetVisibility() == content::Visibility::VISIBLE)
     decision_details->AddReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
 #else
-  // Do not discard the tab if it is currently active in its window.
-  if (tab_strip_model_->GetActiveWebContents() == web_contents())
+  // Do not discard the tab if it is currently active in its window, or if it is
+  // in the same split as the currently active tab.
+  if (base::Contains(tab_strip_model_->GetVisibleTabs(), web_contents(),
+                     &tabs::TabInterface::GetContents)) {
     decision_details->AddReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Do not discard tabs in which the user has entered text in a form.

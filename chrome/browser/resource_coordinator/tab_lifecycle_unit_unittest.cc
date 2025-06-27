@@ -32,6 +32,7 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
@@ -258,6 +259,54 @@ TEST_F(TabLifecycleUnitTest, SetFocused) {
   // Advance time enough that the tab is urgent discardable.
   test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
+}
+
+TEST_F(TabLifecycleUnitTest, SetFocusedSplit) {
+  TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(),
+                                      web_contents_, tab_strip_model_.get());
+
+  // Create a new web contents that will be combined to a split tab with the
+  // webcontents at index 0.
+  content::WebContents* split_inactive_contents =
+      AddNewHiddenWebContentsToTabStrip();
+  auto* tester = content::WebContentsTester::For(split_inactive_contents);
+  tester->SetLastActiveTimeTicks(NowTicks());
+  tester->SetLastActiveTime(Now());
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://www.example.com"), split_inactive_contents);
+  navigation->SetKeepLoading(true);
+  navigation->Commit();
+  TabLifecycleUnit tab_lifecycle_unit_inactive(GetTabLifecycleUnitSource(),
+                                               split_inactive_contents,
+                                               tab_strip_model_.get());
+  tab_strip_model_->ActivateTabAt(0);
+  tab_strip_model_->AddToNewSplit(
+      {tab_strip_model_->GetIndexOfWebContents(split_inactive_contents)},
+      split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Reactivate the original active tab, so that the split is in the background.
+  tab_strip_model_->ActivateTabAt(2);
+
+  EXPECT_EQ(NowTicks(), tab_lifecycle_unit_inactive.GetLastFocusedTimeTicks());
+  EXPECT_EQ(Now(), tab_lifecycle_unit_inactive.GetLastFocusedTime());
+  // Advance time enough that the tab is urgent discardable.
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
+  test_clock_.Advance(kBackgroundUrgentProtectionTime);
+  ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit_inactive);
+
+  tab_lifecycle_unit.SetFocused(true);
+  tab_strip_model_->ActivateTabAt(0);
+  split_inactive_contents->WasShown();
+  ExpectCanDiscardFalseAllReasons(&tab_lifecycle_unit_inactive,
+                                  DecisionFailureReason::LIVE_STATE_VISIBLE);
+
+  tab_lifecycle_unit.SetFocused(false);
+  tab_strip_model_->ActivateTabAt(2);
+  split_inactive_contents->WasHidden();
+  // Advance time enough that the tab is urgent discardable.
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
+  ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit_inactive);
 }
 
 TEST_F(TabLifecycleUnitTest, AutoDiscardable) {

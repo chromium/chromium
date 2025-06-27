@@ -422,6 +422,10 @@ class TabStripModel {
   // Returns the currently active Tab, or NULL if there is none.
   tabs::TabInterface* GetActiveTab() const;
 
+  // Returns the currently active tab or if it is a split tab, all the tabs in
+  // that split. Doesn't take into account occlusion.
+  std::vector<tabs::TabInterface*> GetVisibleTabs() const;
+
   // Returns the WebContents at the specified index, or NULL if there is
   // none.
   content::WebContents* GetWebContentsAt(int index) const;
