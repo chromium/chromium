@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/linear_animation.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -145,34 +147,6 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
   return dialog_bounds;
 }
 
-void UpdateModalDialogBoundsInternal(
-    views::Widget* widget,
-    BrowserWindowInterface* host_browser_window,
-    const gfx::Size& size) {
-  // Do not forcibly update the dialog widget position if it is being dragged.
-  if (widget->HasCapture()) {
-    return;
-  }
-
-  auto* host_view_widget = host_browser_window->TopContainer()->GetWidget();
-
-  // If the host view's widget is minimized, don't update any positions.
-  if (host_view_widget && host_view_widget->IsMinimized()) {
-    return;
-  }
-
-  // If the host view is not backed by a Views::Widget, just update the widget
-  // size. This can happen on MacViews under the Cocoa browser where the window
-  // modal dialogs are displayed as sheets, and their position is managed by a
-  // ConstrainedWindowSheetController instance.
-  if (!host_view_widget) {
-    widget->SetSize(size);
-    return;
-  }
-
-  widget->SetBounds(GetModalDialogBounds(widget, host_browser_window, size));
-}
-
 void ConfigureDesiredBoundsDelegate(
     views::Widget* widget,
     BrowserWindowInterface* host_browser_window) {
@@ -274,6 +248,13 @@ std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
 
 void TabDialogManager::ShowDialog(views::Widget* widget,
                                   std::unique_ptr<Params> params) {
+  // An autosized widget handles its own bounds, while `animated` bounds changes
+  // are handled by `TabDialogManager` and not the widget. They are not
+  // compatible.
+  // TODO(crbug.com/427759111): allow animated autosizing widgets.
+  CHECK(!(params->animated && widget->is_autosized()))
+      << "Animated widgets are not compatible with autosized.";
+
   widget_ = widget;
   params_ = std::move(params);
   auto* browser_window_interface = tab_interface_->GetBrowserWindowInterface();
@@ -332,6 +313,7 @@ void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   tab_dialog_widget_observer_.reset();
   scoped_ignore_input_events_.reset();
   browser_window_widget_observer_.reset();
+  bounds_animation_.reset();
   tab_interface_->GetBrowserWindowInterface()
       ->capabilities()
       ->SetWebContentsBlocked(tab_interface_->GetContents(), /*blocked=*/false);
@@ -344,13 +326,49 @@ views::Widget* TabDialogManager::GetHostWidget() const {
 }
 
 void TabDialogManager::UpdateModalDialogBounds() {
+  if (bounds_animation_) {
+    bounds_animation_->Stop();
+  }
+
   if (!widget_) {
     return;
   }
 
-  UpdateModalDialogBoundsInternal(widget_.get(),
-                                  tab_interface_->GetBrowserWindowInterface(),
-                                  widget_->GetRootView()->GetPreferredSize({}));
+  // Do not forcibly update the dialog widget position if it is being dragged.
+  if (widget_->HasCapture()) {
+    return;
+  }
+
+  auto* host_browser_window = tab_interface_->GetBrowserWindowInterface();
+  auto* host_widget = GetHostWidget();
+  const gfx::Size size = widget_->GetRootView()->GetPreferredSize({});
+
+  if (!host_widget) {
+    widget_->SetSize(size);
+    return;
+  }
+
+  // If the host view's widget is minimized, don't update any positions.
+  if (host_widget->IsMinimized()) {
+    return;
+  }
+
+  gfx::Rect target_bounds =
+      GetModalDialogBounds(widget_.get(), host_browser_window, size);
+
+  if (params_->animated && gfx::Animation::ShouldRenderRichAnimation() &&
+      widget_->IsVisible()) {
+    if (!bounds_animation_) {
+      bounds_animation_ = std::make_unique<gfx::LinearAnimation>(this);
+      bounds_animation_->SetDuration(
+          gfx::Animation::RichAnimationDuration(base::Milliseconds(120)));
+    }
+    animation_start_bounds_ = widget_->GetWindowBoundsInScreen();
+    animation_target_bounds_ = target_bounds;
+    bounds_animation_->Start();
+  } else {
+    widget_->SetBounds(target_bounds);
+  }
 }
 
 void TabDialogManager::DidFinishNavigation(
@@ -387,7 +405,6 @@ void TabDialogManager::DidFinishNavigation(
 
 void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
   if (widget_) {
-    UpdateModalDialogBounds();
     browser_window_widget_observer_ =
         std::make_unique<BrowserWindowWidgetObserver>(this, tab_interface_,
                                                       widget_.get());
@@ -399,11 +416,15 @@ void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
     }
     widget_->SetVisible(
         GetDialogWidgetVisibility(/*activated=*/true, widget_->IsMinimized()));
+    UpdateModalDialogBounds();
   }
 }
 
 void TabDialogManager::TabWillEnterBackground(TabInterface* tab_interface) {
   if (widget_) {
+    if (bounds_animation_ && bounds_animation_->is_animating()) {
+      bounds_animation_->Stop();
+    }
     widget_->SetVisible(false);
     browser_window_widget_observer_.reset();
   }
@@ -413,6 +434,20 @@ void TabDialogManager::TabWillDetach(TabInterface* tab_interface,
                                      TabInterface::DetachReason reason) {
   if (widget_ && params_->close_on_detach) {
     CloseDialog();
+  }
+}
+
+void TabDialogManager::AnimationProgressed(const gfx::Animation* animation) {
+  if (animation == bounds_animation_.get()) {
+    gfx::Rect new_bounds = animation->CurrentValueBetween(
+        animation_start_bounds_, animation_target_bounds_);
+    widget_->SetBounds(new_bounds);
+  }
+}
+
+void TabDialogManager::AnimationEnded(const gfx::Animation* animation) {
+  if (animation == bounds_animation_.get()) {
+    widget_->SetBounds(animation_target_bounds_);
   }
 }
 

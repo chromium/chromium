@@ -166,8 +166,17 @@ void PasswordChangeUIController::UpdateState(
     // Close the existing dialog before showing toast. This is needed in
     // PasswordChangeToastBrowserTest.InvokeUi_Toast.
     CloseDialogWidget(views::Widget::ClosedReason::kUnspecified);
-    CloseToastWidget(views::Widget::ClosedReason::kUnspecified);
-    ShowToast(std::move(std::get<ToastOptions>(configuration)));
+    if (toast_view_) {
+      // If already showing a toast, update its layout.
+      toast_view_->UpdateLayout(std::move(std::get<ToastOptions>(configuration)));
+      // Manually trigger a bounds update since the widget is not auto-sized.
+      tab_interface_->GetTabFeatures()
+          ->tab_dialog_manager()
+          ->UpdateModalDialogBounds();
+    } else {
+      // If not showing a toast, show a new one.
+      ShowToast(std::move(std::get<ToastOptions>(configuration)));
+    }
     return;
   }
 
@@ -282,6 +291,8 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
   // Disable the system shadow. BubbleFrameView will draw a custom shadow.
   init_params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   init_params.remove_standard_frame = true;
+  // `autosize` is not compatible with TabDialogManager's `animated`.
+  init_params.autosize = false;
   init_params.name = "PasswordChangeToast";
   widget->Init(std::move(init_params));
 
@@ -289,6 +300,7 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
   tab_dialog_params->close_on_navigate = false;
   tab_dialog_params->close_on_detach = false;
   tab_dialog_params->disable_input = false;
+  tab_dialog_params->animated = true;
 
   tab_dialog_manager->ShowDialog(widget.get(), std::move(tab_dialog_params));
 

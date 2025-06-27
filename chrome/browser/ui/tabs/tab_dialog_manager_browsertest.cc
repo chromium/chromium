@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,6 +35,8 @@ namespace tabs {
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWidgetContentsViewElementId);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<gfx::Rect>,
+                                    kWidgetBoundsState);
 
 std::unique_ptr<views::Widget> CreateWidgetWithNoNonClientView() {
   auto content_view = std::make_unique<views::View>();
@@ -288,6 +291,46 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
           "Verify origin is updated"));
 }
 
+// Tests that the widget is repositioned after its preferred size is changed
+// when `Params::animated` is true.
+IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest, AnimatedBoundsChange) {
+  std::unique_ptr<views::Widget> widget;
+  // `kInitialSize` is the same as the size defined in
+  // CreateWidgetWithNoNonClientView().
+  const gfx::Size kInitialSize(500, 500);
+  const gfx::Size kNewSize(200, 200);
+  gfx::Rect initial_bounds;
+
+  RunTestSequence(
+      Do([&, this]() {
+        widget = CreateWidgetWithNoNonClientView();
+        TabDialogManager* manager = GetTabDialogManager();
+        auto params = std::make_unique<tabs::TabDialogManager::Params>();
+        params->animated = true;
+        manager->ShowDialog(widget.get(), std::move(params));
+      }),
+      InAnyContext(WaitForShow(kWidgetContentsViewElementId)),
+      CheckResult([&]() { return widget && widget->IsVisible(); }, true,
+                  "Verify widget is visible"),
+      CheckResult(
+          [&]() { return widget->GetClientAreaBoundsInScreen().size(); },
+          kInitialSize, "Verify initial size"),
+      Do([&]() { initial_bounds = widget->GetClientAreaBoundsInScreen(); }),
+      PollState(
+          kWidgetBoundsState,
+          [&widget]() { return widget->GetClientAreaBoundsInScreen(); }),
+      Do([&]() {
+        widget->GetContentsView()->SetPreferredSize(kNewSize);
+        // With animated=true and autosize=false, we must manually update
+        // bounds.
+        GetTabDialogManager()->UpdateModalDialogBounds();
+      }),
+      WaitForState(kWidgetBoundsState,
+                   testing::AllOf(testing::Property(&gfx::Rect::size, kNewSize),
+                                  testing::Property(
+                                      &gfx::Rect::origin,
+                                      testing::Ne(initial_bounds.origin())))));
+}
 class TabDialogManagerPixelTest : public DialogBrowserTest {
  public:
   TabDialogManagerPixelTest() = default;

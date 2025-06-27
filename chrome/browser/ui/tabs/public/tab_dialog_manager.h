@@ -15,6 +15,12 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/gfx/animation/animation_delegate.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace gfx {
+class LinearAnimation;
+}  // namespace gfx
 
 namespace views {
 class Widget;
@@ -29,7 +35,8 @@ class BrowserWindowWidgetObserver;
 
 // Class provides a mechanism to show a tab-scoped dialog on desktop platforms.
 // Please file a bug if you encounter any issues.
-class TabDialogManager : public content::WebContentsObserver {
+class TabDialogManager : public content::WebContentsObserver,
+                         public gfx::AnimationDelegate {
  public:
   explicit TabDialogManager(TabInterface* tab_interface);
   TabDialogManager(const TabDialogManager&) = delete;
@@ -47,6 +54,12 @@ class TabDialogManager : public content::WebContentsObserver {
 
     // Disable input on the underlying WebContents.
     bool disable_input = true;
+
+    // If true, the dialog will animate its bounds changes. This is not
+    // compatible with `views::Widget::InitParams::autosize`. The client is
+    // responsible for calling `UpdateModalDialogBounds()` when the dialog size
+    // changes to trigger the animation.
+    bool animated = false;
   };
 
   // Create a dialog widget from the given DialogDelegate suitable for showing
@@ -86,8 +99,14 @@ class TabDialogManager : public content::WebContentsObserver {
   // as the parent for tab-scoped widgets.
   views::Widget* GetHostWidget() const;
 
-  // Updates the bounds of the modal dialog.
+  // Updates the bounds of the modal dialog. If `Params::animated` is true, this
+  // will animate the bounds change. Clients with non-autosized dialogs should
+  // call this when the dialog's preferred size changes.
   void UpdateModalDialogBounds();
+
+  // Overridden from gfx::AnimationDelegate:
+  void AnimationProgressed(const gfx::Animation* animation) override;
+  void AnimationEnded(const gfx::Animation* animation) override;
 
  private:
   // Overridden from content::WebContentObserver:
@@ -113,6 +132,11 @@ class TabDialogManager : public content::WebContentsObserver {
   std::unique_ptr<BrowserWindowWidgetObserver> browser_window_widget_observer_;
   std::unique_ptr<ScopedTabModalUI> showing_modal_ui_;
   std::unique_ptr<Params> params_;
+
+  // For animating the dialog bounds.
+  gfx::Rect animation_start_bounds_;
+  gfx::Rect animation_target_bounds_;
+  std::unique_ptr<gfx::LinearAnimation> bounds_animation_;
 };
 
 }  // namespace tabs
