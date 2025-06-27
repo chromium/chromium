@@ -287,6 +287,88 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, TestBlobFetchRequestError) {
                                       -net::Error::ERR_FILE_NOT_FOUND, 1u);
 }
 
+// Regression test for crbug.com/426787402, where navigations to blob URLs with
+// a media mime type also result in a resource load for the corresponding blob
+// URL.
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
+                       NoPartitioningForMediaBlobUrlNavigations) {
+  GURL main_url = embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b(c)");
+  WebContents* web_contents = shell()->web_contents();
+  EXPECT_TRUE(NavigateToURL(web_contents, main_url));
+
+  RenderFrameHost* rfh_b = web_contents->GetPrimaryMainFrame();
+  RenderFrameHost* rfh_c_in_b = ChildFrameAt(rfh_b, 0);
+
+  Shell* new_shell;
+  {
+    ShellAddedObserver new_shell_observer;
+    EXPECT_TRUE(
+        ExecJs(rfh_c_in_b,
+               "var blob_url;"
+               "var data_url = 'data:audio/wav;base64,"
+               "UklGRnQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVAAA"
+               "ACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAkI"
+               "CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';"
+               "fetch(data_url).then(async (res) => {"
+               "  const blob = await res.blob();"
+               "  blob_url = URL.createObjectURL(blob);"
+               "  window.open(blob_url);"
+               "});"));
+
+    new_shell = new_shell_observer.GetShell();
+    WebContents* new_contents = new_shell->web_contents();
+    EXPECT_TRUE(WaitForLoadStop(new_contents));
+  }
+
+  static constexpr char check_video_element_status_js[] =
+      "function check_video_element_status() {"
+      "  const video = document.getElementsByTagName('video')[0];"
+      "  if (video.readyState === 4) {"
+      "    return video.readyState;"
+      "  }"
+      "  return new Promise(resolve => {"
+      "    video.addEventListener('canplaythrough', () => {"
+      "      resolve(video.readyState);"
+      "    });"
+      "  });"
+      "}"
+      "new Promise(resolve => {"
+      "  if (document.readyState === 'complete') {"
+      "    resolve(check_video_element_status());"
+      "  } else {"
+      "    window.addEventListener('load', () => {"
+      "      resolve(check_video_element_status());"
+      "    });"
+      "  }"
+      "});";
+
+  int ready_state =
+      EvalJs(new_shell, check_video_element_status_js).ExtractInt();
+  // From local testing the HTMLMediaElement.readyState property returned 0
+  // (HTMLMediaElement.HAVE_NOTHING) when partitioning blocked the resource load
+  // and otherwise returned 4 (HTMLMediaElement.HAVE_ENOUGH_DATA). It's possible
+  // that some intermediate states might be reached before the readyState is 4,
+  // so our test code will wait for that. This means that if the bug is present
+  // the call above will timeout, but otherwise readyState should equal 4 here.
+  EXPECT_EQ(ready_state, 4);
+
+  // This should also work if a site appends a fragment identifier to the blob
+  // URL for some reason.
+  {
+    ShellAddedObserver new_shell_observer;
+    EXPECT_TRUE(ExecJs(rfh_c_in_b, "window.open(blob_url + '#foo');"));
+
+    new_shell = new_shell_observer.GetShell();
+    WebContents* new_contents = new_shell->web_contents();
+    EXPECT_TRUE(WaitForLoadStop(new_contents));
+  }
+
+  ready_state = EvalJs(new_shell, check_video_element_status_js).ExtractInt();
+  // See comment above for why we check that `ready_state` is 4 here.
+  EXPECT_EQ(ready_state, 4);
+}
+
 class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
  protected:
   BlobUrlDevToolsIssueTest() {

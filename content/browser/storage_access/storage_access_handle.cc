@@ -156,20 +156,24 @@ void StorageAccessHandle::BindBlobStorage(
   static_cast<RenderFrameHostImpl&>(render_frame_host())
       .GetStoragePartition()
       ->GetBlobUrlRegistry()
-      ->AddReceiver(blink::StorageKey::CreateFirstParty(
-                        render_frame_host().GetStorageKey().origin()),
-                    render_frame_host().GetLastCommittedOrigin(),
-                    render_frame_host().GetProcess()->GetDeprecatedID(),
-                    std::move(receiver),
-                    /*partitioning_blob_url_closure=*/base::DoNothing(),
-                    // In the case that a context is granted storage access, the
-                    // StorageAccessHandle context still shouldn't bypass
-                    // partitioning check. (eg. using a Blob URL created with
-                    // URL.createObjectURL in the third-party context with the
-                    // StorageAccessHandle's SharedWorker constructor.)
-                    /*storage_access_check_callback= */
-                    base::BindRepeating([]() -> bool { return false; }),
-                    /*partitioning_disabled_by_policy=*/false);
+      ->AddReceiver(
+          blink::StorageKey::CreateFirstParty(
+              render_frame_host().GetStorageKey().origin()),
+          render_frame_host().GetLastCommittedOrigin(),
+          render_frame_host().GetProcess()->GetDeprecatedID(),
+          std::move(receiver),
+          /*partitioning_blob_url_closure=*/base::DoNothing(),
+          // In the case that a context is granted storage access, the
+          // StorageAccessHandle context still shouldn't bypass the partitioning
+          // check (e.g. using a Blob URL created with URL.createObjectURL in
+          // the third-party context with the StorageAccessHandle's SharedWorker
+          // constructor.)
+          /*storage_access_check_callback=*/
+          base::BindRepeating([]() -> bool { return false; }),
+          // A StorageAccessHandle is not a top-level blob document, so always
+          // pass std::nullopt here.
+          /*top_level_blob_document_url=*/std::nullopt,
+          /*partitioning_disabled_by_policy=*/false);
 }
 
 void StorageAccessHandle::BindBroadcastChannel(

@@ -89,6 +89,7 @@ BlobURLStoreImpl::BlobURLStoreImpl(
         void(const GURL&, std::optional<blink::mojom::PartitioningBlobURLInfo>)>
         partitioning_blob_url_closure,
     base::RepeatingCallback<bool()> storage_access_check_callback,
+    std::optional<GURL> top_level_blob_document_url,
     bool partitioning_disabled_by_policy)
     : storage_key_(storage_key),
       renderer_origin_(renderer_origin),
@@ -97,6 +98,8 @@ BlobURLStoreImpl::BlobURLStoreImpl(
       validity_check_behavior_(validity_check_behavior),
       partitioning_blob_url_closure_(std::move(partitioning_blob_url_closure)),
       storage_access_check_callback_(std::move(storage_access_check_callback)),
+      top_level_blob_document_url_(
+          std::move(top_level_blob_document_url)),
       partitioning_disabled_by_policy_(partitioning_disabled_by_policy) {}
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {
@@ -171,20 +174,31 @@ void BlobURLStoreImpl::FinishResolveAsURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     ResolveAsURLLoaderFactoryCallback callback,
     bool has_storage_access_handle) {
-  const BlobUrlRegistry::MappingStatus mapping_status =
-      registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url), storage_key_);
-  if (IsBlobUrlAccessCrossPartitionSameOrigin(mapping_status)) {
-    if (ShouldPartitionBlobUrlAccess(has_storage_access_handle,
-                                     mapping_status)) {
-      partitioning_blob_url_closure_.Run(url,
-                                         blink::mojom::PartitioningBlobURLInfo::
-                                             kBlockedCrossPartitionFetching);
-      BlobURLLoaderFactory::Create(mojo::NullRemote(), url,
-                                   std::move(receiver));
-      std::move(callback).Run(std::nullopt, std::nullopt);
-      return;
+  // If a top-level blob URL document is fetching itself, then don't enforce
+  // partitioning. This is needed to ensure navigations to blob URLs with media
+  // mime types (which result in a resource load for the URL as well) don't get
+  // blocked by partitioning. For more information, see crbug.com/426787402.
+  bool is_top_level_blob_document_self_fetch =
+  top_level_blob_document_url_.has_value() &&
+  top_level_blob_document_url_.value() == url;
+
+  if (!is_top_level_blob_document_self_fetch) {
+    const BlobUrlRegistry::MappingStatus mapping_status =
+        registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
+                               storage_key_);
+    if (IsBlobUrlAccessCrossPartitionSameOrigin(mapping_status)) {
+      if (ShouldPartitionBlobUrlAccess(has_storage_access_handle,
+                                       mapping_status)) {
+        partitioning_blob_url_closure_.Run(
+            url, blink::mojom::PartitioningBlobURLInfo::
+                     kBlockedCrossPartitionFetching);
+        BlobURLLoaderFactory::Create(mojo::NullRemote(), url,
+                                     std::move(receiver));
+        std::move(callback).Run(std::nullopt, std::nullopt);
+        return;
+      }
+      partitioning_blob_url_closure_.Run(url, std::nullopt);
     }
-    partitioning_blob_url_closure_.Run(url, std::nullopt);
   }
 
   BlobURLLoaderFactory::Create(registry_->GetBlobFromUrl(url), url,

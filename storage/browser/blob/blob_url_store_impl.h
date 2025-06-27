@@ -42,6 +42,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
           partitioning_blob_url_closure = base::DoNothing(),
       base::RepeatingCallback<bool()> storage_access_check_closure =
           base::BindRepeating([]() -> bool { return false; }),
+      std::optional<GURL> top_level_blob_document_url =
+          std::nullopt,
       bool partitioning_disabled_by_policy = false);
 
   BlobURLStoreImpl(const BlobURLStoreImpl&) = delete;
@@ -111,6 +113,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
       partitioning_blob_url_closure_;
 
   base::RepeatingCallback<bool()> storage_access_check_callback_;
+
+  // Set when this BlobURLStoreImpl corresponds to a top-level document created
+  // by navigating to a blob URL.
+  std::optional<GURL> top_level_blob_document_url_;
 
   const bool partitioning_disabled_by_policy_;
 
