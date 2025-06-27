@@ -8331,23 +8331,6 @@
             ]
         }
     ],
-    "DirectCompositorThreadIpcMacLinuxChromeOS": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DirectCompositorThreadIpc"
-                    ]
-                }
-            ]
-        }
-    ],
     "DirtyWritebackMaxBytes": [
         {
             "platforms": [
