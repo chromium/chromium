@@ -123,11 +123,13 @@ public class HubToolbarView extends LinearLayout {
 
             int buttonSize =
                     getResources().getDimensionPixelSize(R.dimen.hub_toolbar_action_button_size);
+            int startMarginPx =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.hub_toolbar_action_button_start_margin);
+
             FrameLayout.LayoutParams params =
                     (FrameLayout.LayoutParams) mActionButton.getLayoutParams();
-            params.leftMargin =
-                    getResources()
-                            .getDimensionPixelSize(R.dimen.hub_toolbar_action_button_left_margin);
+            params.setMarginStart(startMarginPx);
             params.width = buttonSize;
             params.height = buttonSize;
             params.gravity = Gravity.START | Gravity.CENTER_VERTICAL;
