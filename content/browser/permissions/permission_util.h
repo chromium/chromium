@@ -35,11 +35,6 @@ class PermissionUtil {
   CONTENT_EXPORT static const url::Origin& ExtractDomainOverride(
       const blink::mojom::PermissionDescriptorPtr& descriptor);
 
-  // Determine whether the domain override mechanism is enabled by features. The
-  // override mechanism is currently only used by one permission type,
-  // specifically storage access requests on behalf of another domain.
-  CONTENT_EXPORT static bool IsDomainOverrideEnabled();
-
   // For a domain override, determines whether it is valid. The override
   // mechanism is currently only used by one permission type, specifically
   // storage access requests on behalf of another domain.
