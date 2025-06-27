@@ -206,6 +206,16 @@ uint32_t StrToHash32Bit(std::string_view str) {
   return PackBytes(base::span(digest).first<4>());
 }
 
+int32_t StrToHash3Bit(std::string_view str) {
+  const base::SHA1Digest digest = base::SHA1Hash(base::as_byte_span(str));
+  // Keep only the first 3 bits of the SHA1 hash.
+  return static_cast<int32_t>((digest[0] >> 5) & 0x07);
+}
+
+int32_t StrToHash3Bit(std::u16string_view str) {
+  return StrToHash3Bit(base::UTF16ToUTF8(str));
+}
+
 int64_t HashFormSignature(FormSignature form_signature) {
   return static_cast<uint64_t>(form_signature.value()) % 1021;
 }

@@ -58,6 +58,12 @@ uint64_t StrToHash64Bit(std::string_view str);
 // Returns 32-bit hash of the string.
 uint32_t StrToHash32Bit(std::string_view str);
 
+// Returns 3-bit hash of the string.
+int32_t StrToHash3Bit(std::string_view str);
+
+// Returns 3-bit hash of a UTF-16 string.
+int32_t StrToHash3Bit(std::u16string_view str);
+
 // Reduce FieldSignature space (in UKM) to a small range for privacy reasons.
 int64_t HashFormSignature(FormSignature form_signature);
 
