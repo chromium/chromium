@@ -1461,7 +1461,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.{PermissionType}.{Disposition}.Ignored.DidShowBubble"
-    enum="Boolean" expires_after="2025-07-06">
+    enum="Boolean" expires_after="2026-06-24">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
