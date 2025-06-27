@@ -217,7 +217,11 @@ GtkUiPlatform* GtkUi::GetPlatform() {
 }
 
 bool GtkUi::Initialize() {
-  if (!LoadGtk() || !GtkCheckVersion(3, 20)) {
+  const auto* delegate = ui::LinuxUiDelegate::GetInstance();
+  DCHECK(delegate);
+  const auto backend = delegate->GetBackend();
+
+  if (!LoadGtk(backend) || !GtkCheckVersion(3, 20)) {
     return false;
   }
 
@@ -225,9 +229,7 @@ bool GtkUi::Initialize() {
   // Retrieve global FontConfig config here to call FcInit() with configuration we control.
   gfx::GetGlobalFontConfig();
 
-  auto* delegate = ui::LinuxUiDelegate::GetInstance();
-  DCHECK(delegate);
-  platform_ = CreateGtkUiPlatform(delegate->GetBackend());
+  platform_ = CreateGtkUiPlatform(backend);
 
   // Avoid GTK initializing atk-bridge, and let AuraLinux implementation
   // do it once it is ready.
