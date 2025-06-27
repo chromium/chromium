@@ -11,9 +11,6 @@ include_rules = [
   "-v8",
   "+v8/include",
 
-  # Limit what we include from nacl.
-  "-native_client",
-
   # Individual subdirectories of chrome/ must explicitly declare their
   # dependencies on other subdirectories of chrome/.
   "-chrome",

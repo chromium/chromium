@@ -8616,25 +8616,6 @@ TEST_F(ExtensionServiceTest, ReloadingExtensionFromNotification) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Regression test for crbug.com/460699. Ensure PluginManager doesn't crash even
-// if OnExtensionUnloaded is invoked twice in succession.
-TEST_F(ExtensionServiceTest, PluginManagerCrash) {
-  InitializeEmptyExtensionService();
-  PluginManager manager(profile());
-
-  // Load an extension using a NaCl module.
-  const Extension* extension =
-      PackAndInstallCRX(data_dir().AppendASCII("native_client"), INSTALL_NEW);
-  registrar()->DisableExtension(extension->id(),
-                                {disable_reason::DISABLE_USER_ACTION});
-
-  // crbug.com/708230: This will cause OnExtensionUnloaded to be called
-  // redundantly for a disabled extension.
-  registrar()->BlockAllExtensions();
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 // Test that blocking extension doesn't trigger unload notification for disabled
 // extensions. (crbug.com/708230)
 TEST_F(ExtensionServiceTest, BlockDisabledExtensionNotification) {

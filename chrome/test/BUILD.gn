@@ -10751,7 +10751,6 @@ if (!is_android) {
       "//components/javascript_dialogs",
       "//components/keyed_service/content",
       "//components/metrics:test_support",
-      "//components/nacl/common:switches",
       "//components/omnibox/browser",
       "//components/os_crypt/async/browser:key_provider_interface",
       "//components/os_crypt/sync:test_support",

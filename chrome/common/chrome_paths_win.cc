@@ -17,7 +17,6 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_util.h"
-#include "components/nacl/common/nacl_switches.h"
 
 namespace chrome {
 

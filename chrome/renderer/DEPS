@@ -34,8 +34,6 @@ include_rules = [
   "+components/language_detection/core",
   "+components/lens/lens_metadata.mojom.h",
   "+components/metrics/call_stacks/call_stack_profile_builder.h",
-  "+components/nacl/common",
-  "+components/nacl/renderer",
   "+components/network_hints/renderer",
   "+components/network_session_configurator/common",
   "+components/no_state_prefetch/common",

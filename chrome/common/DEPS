@@ -30,7 +30,6 @@ include_rules = [
   "+components/metrics/metadata_recorder.h",
   "+components/metrics/metrics_pref_names.h",
   "+components/metrics/public",
-  "+components/nacl/common",
   "+components/lens",
   "+components/net_log",
   "+components/network_session_configurator/common",
