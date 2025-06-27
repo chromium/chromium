@@ -318,15 +318,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   // Force a cleanup pass.
   MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
 
-  // Should clean up cluster even if persisted cluster id hasn't been received
-  // yet since there are no other visits tied to that cluster.
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 1, 1);
-
   // Do not expect any calls to history service.
   history_service_->RunLastClusterIdCallbackWithClusterId(cluster_id);
 
@@ -341,8 +332,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   int64_t cluster_id = 123;
 
   {
-    base::HistogramTester histogram_tester;
-
     history::ClusterVisit got_cluster_visit;
     EXPECT_CALL(*history_service_, ReserveNextClusterIdWithVisit(
                                        _, base::test::IsNotNullCallback(), _))
@@ -361,15 +350,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 
     // Force a cleanup pass.
     MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-    // Should not actually clean up any clusters.
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 1, 1);
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 1, 1);
-    // Though it should have been up for clean up.
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 1, 1);
   }
 
   {
@@ -401,21 +381,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
         "History.Clusters.ContextClusterer."
         "NumUnpersistedVisitsBeforeClusterPersisted",
         1, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-
-    // Force a cleanup pass.
-    MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-    // Cluster should have already been cleaned up.
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 0);
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 0);
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 0);
   }
 }
 
@@ -714,14 +679,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, CleansUpClusters) {
     // Force a cleanup pass.
     MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
 
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 3, 1);
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 2, 1);
-    // Should not finalize cluster with visit 10.
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 1, 1);
-
     histogram_tester.ExpectTotalCount(
         "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlVisited",
         5);
@@ -737,16 +694,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, CleansUpClusters) {
 
   // Expect only one more cluster to be created, which makes 4 total.
   EXPECT_EQ(4, GetNumClustersCreated());
-
-  // Make sure everything is cleaned up eventually.
-  {
-    base::HistogramTester histogram_tester;
-
-    MoveClockForwardBy(2 * GetConfig().cluster_navigation_time_cutoff);
-
-    histogram_tester.ExpectBucketCount(
-        "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 0, 1);
-  }
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, DeleteAllHistory) {
@@ -760,15 +707,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, DeleteAllHistory) {
 
   // Force a cleanup pass.
   MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-  // There should be nothing to clean up so it shouldn't even initiate a clean
-  // up pass.
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 0);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 0);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 0);
 
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlsDeleted",
@@ -789,14 +727,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, DeleteSelectURLs) {
 
   // Force a cleanup pass.
   MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-  // There should be 1 cluster untouched by the deletion.
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 1, 1);
 
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlsDeleted",

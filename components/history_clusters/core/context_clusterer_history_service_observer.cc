@@ -364,10 +364,6 @@ void ContextClustererHistoryServiceObserver::CleanUpClusters() {
     return;
   }
 
-  base::UmaHistogramCounts1000(
-      "History.Clusters.ContextClusterer.NumClusters.AtCleanUp",
-      in_progress_clusters_.size());
-
   // See which clusters we need to clean up.
   base::flat_set<int64_t> clusters_to_finalize;
   for (const auto& cluster_id_and_cluster : in_progress_clusters_) {
@@ -382,13 +378,6 @@ void ContextClustererHistoryServiceObserver::CleanUpClusters() {
     FinalizeCluster(cluster_id);
   }
 
-  base::UmaHistogramCounts1000(
-      "History.Clusters.ContextClusterer.NumClusters.CleanedUp",
-      clusters_to_finalize.size());
-
-  base::UmaHistogramCounts1000(
-      "History.Clusters.ContextClusterer.NumClusters.PostCleanUp",
-      in_progress_clusters_.size());
 }
 
 void ContextClustererHistoryServiceObserver::FinalizeCluster(
