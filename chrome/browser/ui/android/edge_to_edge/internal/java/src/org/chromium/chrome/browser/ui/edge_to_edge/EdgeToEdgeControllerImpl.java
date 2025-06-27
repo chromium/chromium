@@ -895,14 +895,22 @@ public class EdgeToEdgeControllerImpl
     private static Insets getSystemInsets(
             WindowInsetsCompat windowInsets, boolean hasSeenNonZeroNavigationBarInsets) {
         Insets systemBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+        if (!EdgeToEdgeUtils.isUseBackupNavbarInsetsEnabled()) return systemBarInsets;
+
         if (systemBarInsets.left == 0
                 && systemBarInsets.right == 0
                 && systemBarInsets.bottom == 0) {
             @Nullable Insets backupNavbarInsets =
-                    EdgeToEdgeUtils.getBackupNavbarInsets(
+                    EdgeToEdgeManager.getBackupNavbarInsets(
                             hasSeenNonZeroNavigationBarInsets,
                             windowInsets,
-                            BackupNavbarInsetsCallSite.EDGE_TO_EDGE_CONTROLLER);
+                            BackupNavbarInsetsCallSite.EDGE_TO_EDGE_CONTROLLER,
+                            EdgeToEdgeFieldTrialImpl.getBackupNavbarInsetsOverrides(),
+                            ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsUseTappable
+                                    .getValue(),
+                            ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsUseGestures
+                                    .getValue());
             // If applicable, apply backup navbar insets to the left, right, and bottom (not the
             // top, as that's always the status bar).
             if (backupNavbarInsets != null) {

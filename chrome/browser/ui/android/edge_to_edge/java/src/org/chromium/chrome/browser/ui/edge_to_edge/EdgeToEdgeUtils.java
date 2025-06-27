@@ -33,13 +33,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController.SafeAreaInsetsTracker;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager.BackupNavbarInsetsCallSite;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver;
-import org.chromium.ui.insets.WindowInsetsUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -63,8 +61,6 @@ public class EdgeToEdgeUtils {
             "scrollable_when_stacking";
     private static final String MISSING_NAVBAR_INSETS_HISTOGRAM =
             "Android.EdgeToEdge.MissingNavbarInsets2";
-    private static final String BACKUP_NAVBAR_INSETS_HISTOGRAM_BASE =
-            "Android.EdgeToEdge.BackupNavbarInsets.";
 
     /** The reason of why the current session is not eligible for edge to edge. */
     @IntDef({
@@ -102,27 +98,6 @@ public class EdgeToEdgeUtils {
         int IN_FULLSCREEN = 3;
         int ACTIVITY_NOT_VISIBLE = 4;
         int SYSTEM_BAR_INSETS_EMPTY = 5;
-
-        int NUM_ENTRIES = 5;
-    }
-
-    /** The source of insets used as a backup for missing navbar insets. */
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({
-        BackupNavbarInsetsSource.NO_APPLICABLE_BACKUP,
-        BackupNavbarInsetsSource.TAPPABLE_ELEMENT,
-        BackupNavbarInsetsSource.MANDATORY_SYSTEM_GESTURES,
-        BackupNavbarInsetsSource.FILTERED_EXPLICITLY_DISABLED,
-        BackupNavbarInsetsSource.FILTERED_WEAKER_SIGNALS,
-        BackupNavbarInsetsSource.NUM_ENTRIES
-    })
-    public @interface BackupNavbarInsetsSource {
-        int NO_APPLICABLE_BACKUP = 0;
-        int TAPPABLE_ELEMENT = 1;
-        int MANDATORY_SYSTEM_GESTURES = 2;
-        int FILTERED_EXPLICITLY_DISABLED = 3;
-        int FILTERED_WEAKER_SIGNALS = 4;
 
         int NUM_ENTRIES = 5;
     }
@@ -519,83 +494,6 @@ public class EdgeToEdgeUtils {
         return tappableElementInsets.bottom > 0
                 || tappableElementInsets.left > 0
                 || tappableElementInsets.right > 0;
-    }
-
-    /** Records the backup navbar insets histogram for the given callsite. */
-    private static void recordBackupNavbarInsetsHistogram(
-            @BackupNavbarInsetsCallSite String callSite, @BackupNavbarInsetsSource int source) {
-        RecordHistogram.recordEnumeratedHistogram(
-                BACKUP_NAVBAR_INSETS_HISTOGRAM_BASE + callSite,
-                source,
-                BackupNavbarInsetsSource.NUM_ENTRIES);
-    }
-
-    /**
-     * Returns backup insets for the navigation bars, if possible. These backup insets will be
-     * informed by other insets, such as the tappableElements insets or the system gestures insets.
-     * This will return null if no backup insets are appropriate given the current window insets.
-     *
-     * @param hasSeenNonZeroNavigationBarInsets Whether a non-zero navigation bar has been seen.
-     * @param windowInsets The window insets containing the most recent insets from the window.
-     * @param callSite The caller requesting backup insets, used for metrics.
-     */
-    public static @Nullable Insets getBackupNavbarInsets(
-            boolean hasSeenNonZeroNavigationBarInsets,
-            WindowInsetsCompat windowInsets,
-            @BackupNavbarInsetsCallSite String callSite) {
-        if (!isUseBackupNavbarInsetsEnabled()) return null;
-        if (!EdgeToEdgeFieldTrialImpl.getBackupNavbarInsetsOverrides()
-                .isEnabledForManufacturerVersion()) {
-            recordBackupNavbarInsetsHistogram(
-                    callSite, BackupNavbarInsetsSource.FILTERED_EXPLICITLY_DISABLED);
-            return null;
-        }
-
-        // Check clearer signals, like the tappable element, first.
-
-        Insets tappableInsets = windowInsets.getInsets(WindowInsetsCompat.Type.tappableElement());
-        // A single non-zero tappable inset is most likely the navigation bar, even if the
-        // navigation bar insets are missing for some reason. Tappable elements are strong
-        // signals for the presence of tappable system bars, and are used to distinguish between
-        // gesture and tappable navigation, and thus should be a reliable signal for detecting a
-        // navigation bar, even if the navigation bar inset is missing for some reason.
-        // The top inset should be ignored, as that would correspond to the status bar.
-        if (WindowInsetsUtils.hasOneNonZeroInsetExcludingTop(tappableInsets)
-                && ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsUseTappable.getValue()) {
-            recordBackupNavbarInsetsHistogram(callSite, BackupNavbarInsetsSource.TAPPABLE_ELEMENT);
-            return Insets.of(tappableInsets.left, 0, tappableInsets.right, tappableInsets.bottom);
-        }
-
-        // Restrict less clear signals, like the system gestures, if non-zero navigation bar insets
-        // have previously been seen during the session for this Activity / window.
-        if (hasSeenNonZeroNavigationBarInsets) {
-            recordBackupNavbarInsetsHistogram(
-                    callSite, BackupNavbarInsetsSource.FILTERED_WEAKER_SIGNALS);
-            return null;
-        }
-
-        Insets mandatorySystemGesturesInsets =
-                windowInsets.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
-        // A single non-zero mandatory system gestures inset likely indicates the navigation bar.
-        // This is not as clear a signal as the tappable element, though, since mandatory system
-        // gestures represent the area of a window where system gestures have priority and may
-        // consume touch input, but they aren't intended to be used by the app for padding. Thus,
-        // these mandatory system gestures only imply the presence of a navigation bar, they don't
-        // definitively indicate it. Note, however, that the mandatory system gestures are not
-        // always consistent with the system bar insets - the gesture insets may exceed the
-        // typical navigation bar insets, leading to somewhat different UX.
-        if (WindowInsetsUtils.hasOneNonZeroInsetExcludingTop(mandatorySystemGesturesInsets)
-                && ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsUseGestures.getValue()) {
-            recordBackupNavbarInsetsHistogram(
-                    callSite, BackupNavbarInsetsSource.MANDATORY_SYSTEM_GESTURES);
-            return Insets.of(
-                    mandatorySystemGesturesInsets.left,
-                    0,
-                    mandatorySystemGesturesInsets.right,
-                    mandatorySystemGesturesInsets.bottom);
-        }
-        recordBackupNavbarInsetsHistogram(callSite, BackupNavbarInsetsSource.NO_APPLICABLE_BACKUP);
-        return null;
     }
 
     /**

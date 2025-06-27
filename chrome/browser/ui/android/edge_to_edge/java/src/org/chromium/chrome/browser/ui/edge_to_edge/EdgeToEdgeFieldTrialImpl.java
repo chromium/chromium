@@ -74,8 +74,12 @@ public final class EdgeToEdgeFieldTrialImpl implements EdgeToEdgeFieldTrial {
         return sEverywhereOverrides;
     }
 
+    /**
+     * Returns the EdgeToEdgeFieldTrial for the UseBackUpNavbarInsets feature, for verifying whether
+     * the feature is enabled on the current device's manufacturer.
+     */
     @UiThread
-    static EdgeToEdgeFieldTrial getBackupNavbarInsetsOverrides() {
+    public static EdgeToEdgeFieldTrial getBackupNavbarInsetsOverrides() {
         if (sBackupNavbarInsetsOverrides == null) {
             String oemString = ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsOemList.getValue();
             String minVersionString =

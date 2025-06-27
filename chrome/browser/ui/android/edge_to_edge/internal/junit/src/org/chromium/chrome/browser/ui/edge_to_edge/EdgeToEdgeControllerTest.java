@@ -1340,7 +1340,7 @@ public class EdgeToEdgeControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController",
-                                EdgeToEdgeUtils.BackupNavbarInsetsSource.TAPPABLE_ELEMENT)
+                                EdgeToEdgeManager.BackupNavbarInsetsSource.TAPPABLE_ELEMENT)
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(SYSTEM_BARS_WITH_TAPPABLE_MISSING_NAVBAR);
@@ -1399,7 +1399,7 @@ public class EdgeToEdgeControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController",
-                                EdgeToEdgeUtils.BackupNavbarInsetsSource.FILTERED_WEAKER_SIGNALS)
+                                EdgeToEdgeManager.BackupNavbarInsetsSource.FILTERED_WEAKER_SIGNALS)
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(GESTURE_NAV_INSETS_MISSING_NAVBAR);
@@ -1439,7 +1439,8 @@ public class EdgeToEdgeControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController",
-                                EdgeToEdgeUtils.BackupNavbarInsetsSource.MANDATORY_SYSTEM_GESTURES)
+                                EdgeToEdgeManager.BackupNavbarInsetsSource
+                                        .MANDATORY_SYSTEM_GESTURES)
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(GESTURE_NAV_INSETS_MISSING_NAVBAR);
@@ -1478,7 +1479,7 @@ public class EdgeToEdgeControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController",
-                                EdgeToEdgeUtils.BackupNavbarInsetsSource.NO_APPLICABLE_BACKUP)
+                                EdgeToEdgeManager.BackupNavbarInsetsSource.NO_APPLICABLE_BACKUP)
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(GESTURE_NAV_INSETS_MISSING_ALL_BOTTOM_INSETS);
