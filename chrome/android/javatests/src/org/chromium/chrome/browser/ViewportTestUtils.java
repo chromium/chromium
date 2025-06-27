@@ -56,7 +56,7 @@ public final class ViewportTestUtils {
         int expectedOffset = shown ? 0 : -topControlsHeight;
 
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
-                mActivityTestRule, expectedOffset);
+                mActivityTestRule.getActivity(), expectedOffset);
     }
 
     public void hideBrowserControls() throws Throwable {
@@ -73,9 +73,7 @@ public final class ViewportTestUtils {
         int initialPageHeight = getPageInnerHeightPx();
         int initialBottomInset = getBottomInsetHeightDp();
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
-                mActivityTestRule,
-                mActivityTestRule.getActivity().getActivityTab(),
-                /* showControls= */ false);
+                mActivityTestRule.getActivity(), /* showControls= */ false);
 
         // Also wait for the browser controls to resize Blink before returning.
         int finalHeight = initialPageHeight + getTopControlsHeightDp() + initialBottomInset;

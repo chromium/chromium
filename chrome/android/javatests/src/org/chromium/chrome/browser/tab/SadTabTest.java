@@ -188,13 +188,11 @@ public class SadTabTest {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.loadUrl(LONG_HTML_TEST_PAGE);
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
-                mActivityTestRule.getActivityTestRule(),
-                mActivityTestRule.getActivity().getActivityTab());
-        FullscreenManagerTestUtils.scrollBrowserControls(
-                mActivityTestRule.getActivityTestRule(), false);
+                mActivityTestRule.getActivity());
+        FullscreenManagerTestUtils.scrollBrowserControls(mActivityTestRule.getActivity(), false);
         simulateRendererKilled(mActivityTestRule.getActivity().getActivityTab(), true);
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
-                mActivityTestRule.getActivityTestRule(), 0);
+                mActivityTestRule.getActivity(), 0);
     }
 
     /** Helper method that kills the renderer on a UI thread. */

@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -326,19 +327,17 @@ public class ScreenshotCaptureTest {
         ThreadUtils.runOnUiThreadBlocking(
                 TabStateBrowserControlsVisibilityDelegate::disablePageLoadDelayForTests);
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+        NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.loadUrl(LONG_HTML_TEST_PAGE);
-        BrowserControlsManager browserControlManager =
-                mActivityTestRule.getActivity().getBrowserControlsManager();
+        BrowserControlsManager browserControlManager = activity.getBrowserControlsManager();
         int browserControlsHeight = browserControlManager.getTopControlsHeight();
-        FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
-                mActivityTestRule, mActivityTestRule.getActivity().getActivityTab());
-        FullscreenManagerTestUtils.scrollBrowserControls(mActivityTestRule, false);
+        FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(activity);
+        FullscreenManagerTestUtils.scrollBrowserControls(activity, false);
 
-        FullscreenManagerTestUtils.waitForBrowserControlsPosition(
-                mActivityTestRule, -browserControlsHeight);
+        FullscreenManagerTestUtils.waitForBrowserControlsPosition(activity, -browserControlsHeight);
         GestureNavigationTestUtils mNavUtils = new GestureNavigationTestUtils(mActivityTestRule);
         mNavUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
 
