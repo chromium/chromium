@@ -36,7 +36,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
-namespace WTF {
+namespace blink {
 
 template <typename CharType>
 bool SkipExactly(base::span<const CharType> chars,
@@ -127,12 +127,6 @@ template <typename CharType, bool predicate(CharType)>
   return position;
 }
 
-}  // namespace WTF
-
-using WTF::SkipExactly;
-using WTF::SkipToken;
-using WTF::SkipUntil;
-using WTF::SkipWhile;
-using WTF::ReverseSkipWhile;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_PARSING_UTILITIES_H_
