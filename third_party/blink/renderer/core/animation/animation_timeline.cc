@@ -220,6 +220,11 @@ void AnimationTimeline::AddAnimationTrigger(AnimationTrigger* trigger) {
   update_triggers_ = true;
 }
 
+void AnimationTimeline::RemoveAnimationTrigger(AnimationTrigger* trigger) {
+  DCHECK(trigger && trigger->GetTimelineInternal() == this);
+  triggers_.erase(trigger);
+}
+
 void AnimationTimeline::ServiceAnimationTriggers() {
   DCHECK(RuntimeEnabledFeatures::AnimationTriggerEnabled());
   PhaseAndTime current_phase_and_time = CurrentPhaseAndTime();

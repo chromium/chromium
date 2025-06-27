@@ -760,6 +760,7 @@ class CORE_EXPORT Animation : public EventTarget,
                            NoCompositeWithoutCompositedElementId);
   FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestNoCompositing,
                            PendingActivityWithFinishedEventListener);
+  friend class ScriptedAnimationTriggerTest;
 };
 
 }  // namespace blink

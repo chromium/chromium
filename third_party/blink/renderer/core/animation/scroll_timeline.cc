@@ -219,7 +219,7 @@ void ScrollTimeline::AnimationAttached(Animation* animation) {
 void ScrollTimeline::AnimationDetached(Animation* animation) {
   AnimationTimeline::AnimationDetached(animation);
 
-  if (RetainingElement() && !HasAnimations()) {
+  if (RetainingElement() && !HasAnimations() && triggers_.empty()) {
     RetainingElement()->UnregisterScrollTimeline(this);
   }
 }
@@ -285,6 +285,20 @@ std::optional<double> ScrollTimeline::GetCurrentScrollPosition() const {
       ToPhysicalScrollOrientation(GetAxis(), *scroll_container);
   return (physical_orientation == kHorizontalScroll) ? scroll_offset.x()
                                                      : scroll_offset.y();
+}
+
+void ScrollTimeline::AddAnimationTrigger(AnimationTrigger* trigger) {
+  AnimationTimeline::AddAnimationTrigger(trigger);
+  if (RetainingElement()) {
+    RetainingElement()->RegisterScrollTimeline(this);
+  }
+}
+
+void ScrollTimeline::RemoveAnimationTrigger(AnimationTrigger* trigger) {
+  AnimationTimeline::RemoveAnimationTrigger(trigger);
+  if (RetainingElement() && triggers_.empty() && !HasAnimations()) {
+    RetainingElement()->UnregisterScrollTimeline(this);
+  }
 }
 
 // static

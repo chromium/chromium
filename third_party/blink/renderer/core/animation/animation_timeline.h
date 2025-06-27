@@ -152,7 +152,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
     return std::nullopt;
   }
 
-  void AddAnimationTrigger(AnimationTrigger* trigger);
+  virtual void AddAnimationTrigger(AnimationTrigger* trigger);
+  virtual void RemoveAnimationTrigger(AnimationTrigger* trigger);
   void ServiceAnimationTriggers();
 
  protected:
@@ -174,7 +175,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // All animations attached to this timeline.
   HeapHashSet<WeakMember<Animation>> animations_;
   // Triggers which depend on this timeline.
-  HeapHashSet<WeakMember<AnimationTrigger>> triggers_;
+  HeapHashSet<Member<AnimationTrigger>> triggers_;
 
   scoped_refptr<cc::AnimationTimeline> compositor_timeline_;
 

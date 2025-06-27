@@ -10,6 +10,7 @@
 #include "cc/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -105,6 +106,9 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
   Element* ComputeSourceNoLayout() const;
 
   Element* GetReferenceElement() const { return reference_element_.Get(); }
+
+  void AddAnimationTrigger(AnimationTrigger* trigger) override;
+  void RemoveAnimationTrigger(AnimationTrigger* trigger) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
