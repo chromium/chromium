@@ -422,7 +422,8 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
   KeepAliveURLLoaderService& loader_service() {
     if (!loader_service_) {
       loader_service_ = std::make_unique<KeepAliveURLLoaderService>(
-          main_rfh()->GetBrowserContext());
+          static_cast<StoragePartitionImpl*>(
+              main_rfh()->GetStoragePartition()));
     }
     return *loader_service_;
   }

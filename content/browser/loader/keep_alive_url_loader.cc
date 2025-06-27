@@ -24,7 +24,6 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/keep_alive_request_tracker.h"
@@ -196,29 +195,6 @@ bool IsRedirectAllowedByCSP(
                       has_followed_redirect, empty_source_location, disposition,
                       /*is_form_submission=*/false)
       .IsAllowed();
-}
-
-bool LiveDocumentWithSameNetworkIsolationKeyExists(
-    const net::NetworkIsolationKey& key) {
-  bool live_document_with_same_key_exists = false;
-  for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
-    web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
-        [&live_document_with_same_key_exists,
-         &key](RenderFrameHost* render_frame_host) {
-          if (!render_frame_host->IsActive()) {
-            return RenderFrameHost::FrameIterationAction::kSkipChildren;
-          }
-          if (render_frame_host->GetNetworkIsolationKey() == key) {
-            live_document_with_same_key_exists = true;
-            return RenderFrameHost::FrameIterationAction::kStop;
-          }
-          return RenderFrameHost::FrameIterationAction::kContinue;
-        });
-    if (live_document_with_same_key_exists) {
-      break;
-    }
-  }
-  return live_document_with_same_key_exists;
 }
 
 bool IsNetErrorEligibleForRetry(int net_error) {
@@ -428,7 +404,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
     WeakDocumentPtr weak_document_ptr,
     net::NetworkIsolationKey network_isolation_key,
     std::optional<ukm::SourceId> ukm_source_id,
-    BrowserContext* browser_context,
+    StoragePartitionImpl* storage_partition,
     URLLoaderThrottlesGetter throttles_getter,
     base::PassKey<KeepAliveURLLoaderService>,
     std::unique_ptr<KeepAliveAttributionRequestHelper>
@@ -455,7 +431,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
                                   // `this` owns `request_tracker_`, so it is
                                   // safe to use.
                                   base::Unretained(this)))),
-      browser_context_(browser_context),
+      storage_partition_(storage_partition),
       initial_url_(resource_request.url),
       last_url_(resource_request.url),
       throttles_getter_(throttles_getter),
@@ -464,7 +440,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
   CHECK(network_loader_factory_);
   CHECK(policy_container_host_);
   CHECK(!resource_request.trusted_params);
-  CHECK(browser_context_);
+  CHECK(storage_partition_);
   TRACE_EVENT("loading", "KeepAliveURLLoader::KeepAliveURLLoader", "request_id",
               request_id_, "url", last_url_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("loading", "KeepAliveURLLoader",
@@ -513,7 +489,8 @@ void KeepAliveURLLoader::StartInternal(bool is_retry) {
     }
   }
 
-  GetContentClient()->browser()->OnKeepaliveRequestStarted(browser_context_);
+  GetContentClient()->browser()->OnKeepaliveRequestStarted(
+      storage_partition_->browser_context());
 
   // Asks the network service to create a URL loader with passed in params.
   url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
@@ -1021,12 +998,11 @@ void KeepAliveURLLoader::AttemptRetryIfAllowed() {
   // key as the initiator of the load, to avoid privacy concerns of revealing
   // information about the user (that their browser is up, and their current
   // IP address) to the destination origin, while there is no active document.
-  if (!LiveDocumentWithSameNetworkIsolationKeyExists(network_isolation_key_)) {
+  if (!storage_partition_->GetActiveDocumentCount(network_isolation_key_)) {
     // No active document with the same NetworkIsolationKey exists. Wait until
     // we see such a document, or delete ourselves when we can't attempt a retry
-    // anymore (we reached the max age of retries).
-    // TODO(crbug.com/417930271): Implement the
-    // same-NetworkIsolationKey-Document trigger.
+    // anymore (we reached the max age of retries, which will run self-deletion
+    // when we first scheduled the retry attempt).
     retry_state_ = RetryState::kWaitingForSameNetworkIsolationKeyDocument;
     return;
   }
@@ -1056,6 +1032,20 @@ void KeepAliveURLLoader::AttemptRetryIfAllowed() {
                               base::Unretained(this)));
 
   StartInternal(/*is_retry=*/true);
+}
+
+void KeepAliveURLLoader::DidObserveNewlyActiveDocumentWithNIK(
+    const net::NetworkIsolationKey& nik) {
+  if (nik == network_isolation_key_ &&
+      retry_state_ == RetryState::kWaitingForSameNetworkIsolationKeyDocument) {
+    // We previously wanted to retry but couldn't due to there being no active
+    // document with the same Network Isolation Key. Now that we observe such a
+    // document, we can attempt the retry.
+    retry_state_ = RetryState::kRetryScheduled;
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&KeepAliveURLLoader::AttemptRetryIfAllowed,
+                                  base::Unretained(this)));
+  }
 }
 
 bool KeepAliveURLLoader::HasReceivedResponse() const {

@@ -549,6 +549,12 @@ class CONTENT_EXPORT StoragePartitionImpl
       const base::TimeDelta& delay,
       base::RepeatingClosure callback);
 
+  // Increments/decrements/gets the active document count tracked in
+  // `active_document_per_nik_count_`.
+  void IncrementActiveDocumentCount(const net::NetworkIsolationKey& nik);
+  void DecrementActiveDocumentCount(const net::NetworkIsolationKey& nik);
+  int GetActiveDocumentCount(const net::NetworkIsolationKey& nik);
+
   enum class ContextType {
     kRenderFrameHostContext,
     kNavigationRequestContext,
@@ -953,6 +959,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   // execute when the task completes in order to test it.
   base::RepeatingClosure clear_nonces_in_network_context_callback_for_testing_ =
       base::DoNothing();
+
+  // Tracks the number of active documents within the same StoragePartition,
+  // keyed by NetworkIsolationKeys.
+  std::map<net::NetworkIsolationKey, int> active_document_per_nik_count_;
 
   base::WeakPtrFactory<StoragePartitionImpl> weak_factory_{this};
 };

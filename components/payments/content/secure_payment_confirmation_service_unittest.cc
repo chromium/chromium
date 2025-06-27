@@ -63,13 +63,14 @@ static const int32_t kAnotherAlgorithmIdentifier = 2;
 // service under test.
 class SecurePaymentConfirmationServiceTestBase {
  public:
-  SecurePaymentConfirmationServiceTestBase() {
-    web_contents_ = web_contents_factory_.CreateWebContents(&context_);
-  }
+  SecurePaymentConfirmationServiceTestBase() = default;
 
  protected:
   void InitializeSecurePaymentConfirmationService(
-      bool with_authenticator = true) {
+      bool with_authenticator = true,
+      bool is_off_the_record = false) {
+    context_.set_is_off_the_record(is_off_the_record);
+    web_contents_ = web_contents_factory_.CreateWebContents(&context_);
     CHECK(!mock_internal_authenticator_);
     CHECK(!spc_service_);
 
@@ -261,8 +262,9 @@ class SecurePaymentConfirmationServiceCredentialTest
         blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   }
 
-  void SetUp() override {
-    InitializeSecurePaymentConfirmationService();
+  void SetUpTest(bool is_off_the_record) {
+    InitializeSecurePaymentConfirmationService(/*with_authenticator=*/true,
+                                               is_off_the_record);
     auto passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
         fake_browser_bound_key_store_, mock_web_data_service_);
     passkey_browser_binder->SetRandomBytesAsVectorCallbackForTesting(
@@ -369,6 +371,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(SecurePaymentConfirmationServiceCredentialTest,
        MakePaymentCredentialAddsBrowserBoundKey) {
+  SetUpTest(/*is_off_the_record=*/false);
   fake_browser_bound_key_store_->PutFakeKey(GetParam().fake_key);
   ::blink::mojom::PublicKeyCredentialCreationOptionsPtr creation_options =
       GetPublicKeyCredentialCreationOptions();
@@ -415,7 +418,7 @@ TEST_P(SecurePaymentConfirmationServiceCredentialTest,
 
 TEST_P(SecurePaymentConfirmationServiceCredentialTest,
        MakePaymentCredentialDoesNotAddBrowserBoundKeyWhenOffTheRecord) {
-  context_.set_is_off_the_record(true);
+  SetUpTest(/*is_off_the_record=*/true);
   fake_browser_bound_key_store_->PutFakeKey(GetParam().fake_key);
   ::blink::mojom::PublicKeyCredentialCreationOptionsPtr creation_options =
       GetPublicKeyCredentialCreationOptions();

@@ -69,8 +69,7 @@ static constexpr char kCredentialIdBase64[] = "cccc";
 class SecurePaymentConfirmationAppTest : public testing::Test,
                                          public PaymentApp::Delegate {
  protected:
-  SecurePaymentConfirmationAppTest()
-      : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {
+  SecurePaymentConfirmationAppTest() {
     mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
     details->total = mojom::PaymentItem::New();
     details->total->amount = mojom::PaymentCurrencyAmount::New();
@@ -145,6 +144,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
 };
 
 TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
 
@@ -340,8 +340,9 @@ auto InvokeAuthenticatorCallback(std::vector<uint8_t> client_data_json) {
 
 TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
        AddsBrowserBoundKeyAndSignature) {
-  base::HistogramTester histograms;
   context_.set_is_off_the_record(GetParam().is_off_the_record);
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
+  base::HistogramTester histograms;
   base::test::ScopedFeatureList features(
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   auto authenticator =
@@ -447,6 +448,7 @@ Matcher<blink::mojom::ShownPaymentEntityLogoPtr> IsShownPaymentEntityLogo(
 }
 
 TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest, NoCredentials) {
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
       payment_instrument_details_,
@@ -465,6 +467,7 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest, NoCredentials) {
 // Test that the SPC app returns HasEnrolledInstrument true when the ux refresh
 // feature is enabled but there are credentials (i.e. no fallback).
 TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest, WithCredentials) {
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
   SecurePaymentConfirmationApp app(
@@ -483,6 +486,7 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest, WithCredentials) {
 }
 TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
        AddsPaymentEntitiesLogosAndDetailsToPaymentOptions) {
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
   auto authenticator =
@@ -534,6 +538,7 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
 
 TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
        IgnoresPaymentEntitiesLogosWithoutBitmapsWhenAddingToPaymentOptions) {
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
   auto authenticator =
@@ -586,6 +591,7 @@ class SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest
 
 TEST_F(SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest,
        DoesNotAddPaymentEntitiesLogosAndDetailsToPaymentOptions) {
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
   auto authenticator =
@@ -622,6 +628,7 @@ TEST_F(SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest,
 // Test that OnInstrumentDetailsError is called when the authenticator returns
 // an error.
 TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
 
@@ -664,6 +671,7 @@ class SecurePaymentConfirmationAppFallbackTest
 
 // Test that the SPC app can be created without credentials.
 TEST_F(SecurePaymentConfirmationAppFallbackTest, NoCredentials) {
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
       payment_instrument_details_,
@@ -682,6 +690,7 @@ TEST_F(SecurePaymentConfirmationAppFallbackTest, NoCredentials) {
 // Test that the SPC app returns HasEnrolledInstrument true when the fallback
 // feature is enabled but there are credentials (i.e. no fallback).
 TEST_F(SecurePaymentConfirmationAppFallbackTest, WithCredentials) {
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
   SecurePaymentConfirmationApp app(
