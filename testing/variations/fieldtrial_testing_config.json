@@ -16177,7 +16177,8 @@
     "OmniboxMobileParityUpdate": [
         {
             "platforms": [
-                "android"
+                "android",
+                "ios"
             ],
             "experiments": [
                 {
