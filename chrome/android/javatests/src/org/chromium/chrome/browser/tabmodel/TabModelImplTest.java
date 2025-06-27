@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroidJni
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -720,6 +721,58 @@ public class TabModelImplTest {
                     // Tab should be frozen as a result.
                     assertTrue(tab.isFrozen());
                 });
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseIncognitoTabSwitchesToNormalModelAndUpdatesIncognitoIndex() {
+        TabModel incognitoTabModel =
+                mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
+        TabModel normalTabModel =
+                mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+
+        Tab regularTab = createTab();
+        assertEquals(2, normalTabModel.getCount()); // Initial blank page + new tab
+        assertEquals(0, incognitoTabModel.getCount());
+
+        mPage = Journeys.createIncognitoTabsWithWebPages(mPage, List.of(mTestUrl, mTestUrl));
+        assertEquals(2, incognitoTabModel.getCount());
+
+        // Switch to the incognito model and select the first incognito tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
+                    incognitoTabModel.setIndex(0, TabSelectionType.FROM_USER);
+                });
+        assertTrue(incognitoTabModel.isActiveModel());
+        assertEquals(0, incognitoTabModel.index());
+
+        Tab incognitoTab1 = incognitoTabModel.getTabAt(0);
+        Tab incognitoTab2 = incognitoTabModel.getTabAt(1);
+        assertNotNull(incognitoTab1);
+        assertNotNull(incognitoTab2);
+
+        // Close the first incognito tab (which is currently selected).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    incognitoTabModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(incognitoTab1)
+                                            .recommendedNextTab(regularTab)
+                                            .build(),
+                                    /* allowDialog= */ false);
+                });
+
+        // Verify that the regular model is now active and the regular tab is selected.
+        assertFalse(incognitoTabModel.isActiveModel());
+        assertTrue(normalTabModel.isActiveModel());
+        assertEquals(regularTab, normalTabModel.getCurrentTabSupplier().get());
+
+        assertEquals(1, incognitoTabModel.getCount());
+        assertEquals(incognitoTab2, incognitoTabModel.getTabAt(0));
+        assertEquals(0, incognitoTabModel.index());
+        assertEquals(incognitoTab2, incognitoTabModel.getCurrentTabSupplier().get());
     }
 
     private void assertMoveTabToIndex(

@@ -849,6 +849,7 @@ public class TabModelImpl extends TabModelJniBridge {
         if (nextTab != currentTabInModel) {
             if (nextIsIncognito != isIncognito()) {
                 mIndex = indexOf(adjacentTabInModel);
+                mCurrentTabSupplier.set(adjacentTabInModel);
             }
 
             TabModel nextModel = mModelDelegate.getModel(nextIsIncognito);
