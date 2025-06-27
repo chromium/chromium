@@ -7,7 +7,7 @@ An overview of key concepts and features of accessibility (AX) support for a
 
 ## AXMode flags
 
-[`AXMode`](//ui/accessibility/ax_mode.h) is a bitfield that specifies how much
+[`AXMode`](/ui/accessibility/ax_mode.h) is a bitfield that specifies how much
 AX data the browser needs from renderers. The browser's own UI becomes
 accessible when the `kNativeAPIs` bit is set (this is typically called "native
 accessibility"). The pages displayed in `WebContents` become accessible when the
