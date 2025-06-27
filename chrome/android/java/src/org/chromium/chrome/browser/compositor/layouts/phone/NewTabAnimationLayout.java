@@ -551,8 +551,7 @@ public class NewTabAnimationLayout extends Layout {
                 startRadii[0] = 0;
                 mCompositorViewHolder.getWindowViewport(compositorViewportRectf);
                 finalRect.bottom = Math.round(compositorViewportRectf.bottom);
-                finalRect.top =
-                        rectStart == RectStart.TOP ? hostViewRect.top - 1 : finalRect.top - 1;
+                finalRect.top = rectStart == RectStart.TOP ? -1 : finalRect.top - 1;
             } else {
                 startRadii[2] = 0;
                 finalRect.top = hostViewRect.top;
