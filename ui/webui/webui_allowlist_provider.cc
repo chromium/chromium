@@ -48,7 +48,7 @@ bool WebUIAllowlistProvider::SetWebsiteSetting(
     base::Value&& value,
     const content_settings::ContentSettingConstraints& constraints,
     const content_settings::PartitionKey& partition_key) {
-  // WebUIAllowlistProvider doesn't support settings Website settings.
+  // WebUIAllowlistProvider doesn't support setting Website settings.
   return false;
 }
 
