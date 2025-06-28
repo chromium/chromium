@@ -8,6 +8,8 @@ mojom("mojo_bindings") {
   sources = [ "omnibox_internals.mojom" ]
   webui_module_path = "/chrome/browser/ui/webui/omnibox"
 
+  deps = [ "//url/mojom:url_mojom_gurl" ]
+
   cpp_typemaps = [
     {
       types = [

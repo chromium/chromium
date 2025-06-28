@@ -4,6 +4,8 @@
 
 module mojom;
 
+import "url/mojom/url.mojom";
+
 // The structures here roughly mirror those from autocomplete.
 
 struct ACMatchClassification {
@@ -73,10 +75,10 @@ struct AutocompleteMatch {
   bool deletable;
   string fill_into_edit;
   string inline_autocompletion;
-  string destination_url;
-  string stripped_destination_url;
-  string icon;
-  string image;
+  url.mojom.Url destination_url;
+  url.mojom.Url stripped_destination_url;
+  url.mojom.Url icon;
+  url.mojom.Url image;
   string contents;
   array<ACMatchClassification> contents_class;
   string description;
@@ -141,6 +143,9 @@ interface OmniboxPageHandler {
                     bool zero_suggest,
                     bool prevent_inline_autocomplete,
                     bool prefer_keyword,
+                    // TODO(crbug.com/410069237): This should be url.mojom.Url,
+                    // but it is unclear exactly where this comes from, and if
+                    // it's guaranteed to a valid URL if non-empty.
                     string current_url,
                     int32 page_classification);
   // Gets the ML model version.
@@ -174,6 +179,6 @@ interface OmniboxPage {
   // omnibox responses.
   HandleAnswerIconImageData(
     AutocompleteControllerType autocomplete_controller_type,
-    string image_url,
+    url.mojom.Url image_url,
     string image_data);
 };
