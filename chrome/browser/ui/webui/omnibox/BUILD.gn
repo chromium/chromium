@@ -15,6 +15,10 @@ mojom("mojo_bindings") {
           mojom = "mojom.ACMatchClassification"
           cpp = "::AutocompleteMatch::ACMatchClassification"
         },
+        {
+          mojom = "mojom.Signals"
+          cpp = "::AutocompleteMatch::ScoringSignals"
+        },
       ]
       traits_headers = [ "omnibox_mojom_traits.h" ]
 

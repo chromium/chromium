@@ -65,7 +65,8 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
                          const std::string& current_url,
                          int32_t page_classification) override;
   void GetMlModelVersion(GetMlModelVersionCallback callback) override;
-  void StartMl(mojom::SignalsPtr signals, StartMlCallback callback) override;
+  void StartMl(const ::AutocompleteMatch::ScoringSignals& signals,
+               StartMlCallback callback) override;
 
  private:
   void OnBitmapFetched(mojom::AutocompleteControllerType type,
