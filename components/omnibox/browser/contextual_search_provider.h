@@ -89,11 +89,8 @@ class ContextualSearchProvider : public BaseSearchProvider {
   // when no other matches are available yet.
   void AddDefaultVerbatimMatch(const AutocompleteInput& input);
 
-  // Conditionally appends a special toolbelt match with various actions.
-  // The `input_starter_pack_engine` may be nullptr and its value can affect the
-  // actions included on the toolbelt. Returns true if toolbelt with the lens
-  // action is added; false otherwise.
-  bool MaybeAddToolbeltMatch(const AutocompleteInput& input);
+  // Appends the toolbelt match with specified `actions`.
+  void AddToolbeltMatch(std::vector<scoped_refptr<OmniboxAction>> actions);
 
   // Gets the '@page' starter pack engine using `input_keyword_`.
   const TemplateURL* GetKeywordTemplateURL() const;
