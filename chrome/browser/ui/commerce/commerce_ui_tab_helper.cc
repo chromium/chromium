@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/discounts_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -575,6 +576,16 @@ void CommerceUiTabHelper::ShowDiscountBubble(
 }
 
 void CommerceUiTabHelper::UpdateDiscountsIconView() {
+  if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
+    tab()
+        .GetTabFeatures()
+        ->commerce_discounts_page_action_view_controller()
+        ->UpdatePageIcon(
+            ShouldShowDiscountsIconView(),
+            ShouldExpandPageActionIcon(PageActionIconType::kDiscounts));
+    return;
+  }
+
   UpdatePageActionIconView(PageActionIconType::kDiscounts);
 }
 
@@ -599,6 +610,10 @@ views::View* CommerceUiTabHelper::GetDiscountsIconView() {
   auto* toolbar_button_provider = browser_view->toolbar_button_provider();
   if (!toolbar_button_provider) {
     return nullptr;
+  }
+
+  if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
+    return toolbar_button_provider->GetPageActionView(kActionCommerceDiscounts);
   }
 
   return toolbar_button_provider->GetPageActionIconView(

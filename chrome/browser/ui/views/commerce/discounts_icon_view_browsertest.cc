@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -69,6 +70,13 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
       EXPECT_CALL(*mock_tab_helper, ShouldExpandPageActionIcon)
           .WillRepeatedly(testing::Return(false));
     }
+
+    // Manually trigger the discounts page action.
+    browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->commerce_ui_tab_helper()
+        ->UpdateDiscountsIconView();
   }
 
   void ShowUi(const std::string& name) override {
@@ -77,7 +85,6 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
 
   bool VerifyUi() override {
     auto* icon = GetIcon();
-
     if (!icon) {
       return false;
     }
@@ -105,14 +112,14 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  DiscountsIconView* GetIcon() {
+  IconLabelBubbleView* GetIcon() {
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForView(GetLocationBarView());
     views::View* matched_view =
         views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
             kDiscountsChipElementId, context);
 
-    return matched_view ? views::AsViewClass<DiscountsIconView>(matched_view)
+    return matched_view ? views::AsViewClass<IconLabelBubbleView>(matched_view)
                         : nullptr;
   }
 

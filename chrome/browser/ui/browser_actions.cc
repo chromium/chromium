@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_util.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -66,6 +67,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/commerce/core/metrics/discounts_metric_collector.h"
 #include "components/lens/lens_features.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
@@ -366,6 +368,37 @@ void BrowserActions::InitializeBrowserActions() {
               IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT))
           .SetImage(ui::ImageModel::FromVectorIcon(
               vector_icons::kShoppingBagRefreshIcon))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* tab_features =
+                    browser->GetActiveTabInterface()->GetTabFeatures();
+                CHECK(tab_features);
+
+                tab_features->commerce_discounts_page_action_view_controller()
+                    ->MaybeShowBubble(/*from_user=*/true);
+
+                auto* commerce_ui_tab_helper =
+                    tab_features->commerce_ui_tab_helper();
+                CHECK(commerce_ui_tab_helper);
+
+                commerce::metrics::DiscountsMetricCollector::
+                    RecordDiscountsPageActionIconClicked(
+                        commerce_ui_tab_helper->IsPageActionIconExpanded(
+                            PageActionIconType::kDiscounts),
+                        commerce_ui_tab_helper->GetDiscounts());
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionCommerceDiscounts)
+          .SetText(l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT))
+          .SetTooltipText(
+              l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT))
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(vector_icons::kShoppingmodeIcon))
           .Build());
 
   //------- Chrome Menu Actions --------//

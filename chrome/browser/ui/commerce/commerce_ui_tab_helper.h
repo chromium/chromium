@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -30,6 +31,7 @@ class SidePanelEntryScope;
 class SidePanelRegistry;
 class SidePanelUI;
 class DiscountsBubbleCoordinator;
+class DiscountsIconViewBrowserTest;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -179,6 +181,7 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
 
  private:
   friend class CommerceUiTabHelperTest;
+  friend class ::DiscountsIconViewBrowserTest;
 
   void UpdateUiForShoppingServiceReady(ShoppingService* service);
 

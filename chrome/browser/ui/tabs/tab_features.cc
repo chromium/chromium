@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
@@ -272,6 +273,16 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }  // IsInNormalWindow() end.
+
+  // This block instantiates the page action controllers that depends on the
+  // `commerce_ui_tab_helper_` and not need to be created before.
+  if (commerce_ui_tab_helper_) {
+    if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
+      commerce_discounts_page_action_view_controller_ =
+          std::make_unique<commerce::DiscountsPageActionViewController>(
+              tab, *page_action_controller_, *commerce_ui_tab_helper_);
+    }
+  }
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);

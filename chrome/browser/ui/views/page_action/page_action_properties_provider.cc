@@ -86,6 +86,14 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               },
           },
           {
+              kActionCommerceDiscounts,
+              {
+                  .histogram_name = "Discounts",
+                  .type = PageActionIconType::kDiscounts,
+                  .element_identifier = kDiscountsChipElementId,
+              },
+          },
+          {
               kActionShowPasswordsBubbleOrPage,
               {
                   .histogram_name = "ManagePasswords",
