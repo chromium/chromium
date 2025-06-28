@@ -75,7 +75,6 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private final Paint mFaviconBackgroundPaint;
     private final Paint mSelectedEmptyThumbnailPaint;
     private final Paint mSelectedTextPaint;
-    private final int mFaviconBackgroundPaintColor;
 
     private @ColorInt int mMiniThumbnailPlaceholderColor;
     private @Nullable @ColorInt Integer mGroupTintedMiniThumbnailPlaceholderColor;
@@ -429,10 +428,10 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 TabCardThemeUtil.getTabGroupNumberTextColor(
                         context, false, true, /* colorId */ null));
 
-        mFaviconBackgroundPaintColor = context.getColor(R.color.favicon_background_color);
         mFaviconBackgroundPaint = new Paint();
         mFaviconBackgroundPaint.setAntiAlias(true);
-        mFaviconBackgroundPaint.setColor(mFaviconBackgroundPaintColor);
+        mFaviconBackgroundPaint.setColor(
+                TabUiThemeProvider.getFaviconBackgroundColor(context, /* isIncognito= */ false));
         mFaviconBackgroundPaint.setStyle(Paint.Style.FILL);
         mFaviconBackgroundPaint.setShadowLayer(
                 resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_radius),
