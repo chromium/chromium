@@ -50,6 +50,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
@@ -1142,6 +1143,10 @@ public class FirstRunIntegrationTest {
     @Test
     @SmallTest
     @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    // TODO(crbug.com/428056054): Top content is blocked by system UI on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testLargeContentLayout() {
         DialogWhenLargeContentLayout.enableShouldShowAsDialogForTesting(
                 /* shouldShowAsDialog= */ true);

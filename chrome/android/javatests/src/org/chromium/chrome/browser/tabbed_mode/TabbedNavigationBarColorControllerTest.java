@@ -40,6 +40,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -149,6 +150,10 @@ public class TabbedNavigationBarColorControllerTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testToggleIncognito() {
         assertEquals(
                 "Navigation bar should match the tab background on normal tabs.",
@@ -217,6 +222,10 @@ public class TabbedNavigationBarColorControllerTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testSetNavigationBarScrimFraction() {
         assertEquals(
                 "Navigation bar should match the tab background on normal tabs.",

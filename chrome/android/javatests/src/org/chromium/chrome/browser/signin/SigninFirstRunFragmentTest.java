@@ -1077,6 +1077,10 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    // TODO(crbug.com/428056054): The top content is blocked by system UI on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testFragmentWhenAddingAnotherAccount() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment();
@@ -1095,6 +1099,10 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    // TODO(crbug.com/428056054): The top content is blocked by system UI on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testFragmentWhenAddingDefaultAccount() {
         launchActivityWithFragment();
 

@@ -52,9 +52,9 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.insets.InsetObserver;
@@ -237,7 +237,10 @@ public class AppModalPresenterTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testFullscreenDarkStyle() {
         PropertyModel dialog =
                 createDialogWithDialogStyle(
@@ -255,11 +258,9 @@ public class AppModalPresenterTest {
         assertEquals(
                 sActivity.getColor(R.color.toolbar_background_primary_dark),
                 window.getNavigationBarColor());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            assertEquals(
-                    sActivity.getColor(R.color.bottom_system_nav_divider_color_light),
-                    window.getNavigationBarDividerColor());
-        }
+        assertEquals(
+                sActivity.getColor(R.color.bottom_system_nav_divider_color_light),
+                window.getNavigationBarDividerColor());
     }
 
     @Test

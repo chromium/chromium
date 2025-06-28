@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.test.filters.SmallTest;
@@ -23,6 +24,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -53,6 +55,10 @@ import org.chromium.ui.base.DeviceFormFactor;
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
+// TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+@DisableIf.Build(
+        sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+        message = "crbug.com/428056054")
 public class BrandColorTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

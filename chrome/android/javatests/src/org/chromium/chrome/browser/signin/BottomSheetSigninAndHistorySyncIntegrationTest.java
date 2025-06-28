@@ -31,6 +31,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
@@ -49,6 +50,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -85,6 +87,10 @@ import org.chromium.ui.test.util.ViewUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test relies on native initialization")
 @EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
+// TODO(crbug.com/428056054): Test content is blocked by system UI on B+.
+@DisableIf.Build(
+        sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+        message = "crbug.com/428056054")
 public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

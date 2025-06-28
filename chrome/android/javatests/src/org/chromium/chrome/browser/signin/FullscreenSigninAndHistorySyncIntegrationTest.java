@@ -28,6 +28,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.widget.ProgressBar;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -50,6 +51,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -518,6 +520,10 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/428056054): The top content is blocked by system UI on B+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428056054")
     public void testAddAccount() {
         launchActivity();
 
