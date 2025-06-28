@@ -14,11 +14,12 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace content {
+
+class WebContents;
 
 // Encapsulates the permission state and logic associated with the Captured
 // Surface Control API. Objects of this class live on the IO thread.

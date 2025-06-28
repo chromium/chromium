@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/host_access_request_helper.h"
 #include "extensions/common/extension_id.h"
 #include "url/origin.h"
@@ -23,6 +22,7 @@ class BrowserContextKeyedServiceFactory;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }
 
 namespace user_prefs {

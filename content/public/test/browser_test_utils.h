@@ -159,6 +159,7 @@ class RenderWidgetHost;
 class RenderWidgetHostImpl;
 class RenderWidgetHostView;
 class ScopedAllowRendererCrashes;
+class ScreenOrientationDelegate;
 class ToRenderFrameHost;
 class WebContents;
 

@@ -13,8 +13,11 @@
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_capability_type.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace performance_manager {
 
