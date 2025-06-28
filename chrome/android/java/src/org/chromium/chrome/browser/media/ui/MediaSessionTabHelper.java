@@ -27,7 +27,7 @@ import org.chromium.url.GURL;
  * behavior.
  */
 public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
-    private Tab mTab;
+    private @Nullable Tab mTab;
     @VisibleForTesting MediaSessionHelper mMediaSessionHelper;
 
     @VisibleForTesting
@@ -111,11 +111,15 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
 
     @Override
     public void hideMediaNotification() {
+        if (mTab == null) return;
+
         MediaNotificationManager.hide(mTab.getId(), R.id.media_playback_notification);
     }
 
     @Override
     public void activateAndroidMediaSession() {
+        if (mTab == null) return;
+
         MediaNotificationManager.activateAndroidMediaSession(
                 mTab.getId(), R.id.media_playback_notification);
     }
