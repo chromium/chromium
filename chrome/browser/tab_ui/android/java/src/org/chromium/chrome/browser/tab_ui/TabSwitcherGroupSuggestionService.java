@@ -191,7 +191,9 @@ public class TabSwitcherGroupSuggestionService {
 
     /** Shows tab group suggestions if needed. */
     public void maybeShowSuggestions() {
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         clearSuggestions();
+        if (filter == null || isIncognitoMode(filter)) return;
 
         CachedSuggestions cachedSuggestions =
                 mGroupSuggestionsService.getCachedSuggestions(mWindowId);
@@ -219,6 +221,10 @@ public class TabSwitcherGroupSuggestionService {
         showSuggestion(groupSuggestionsList.get(0), userResponseCallback);
     }
 
+    private boolean isIncognitoMode(TabGroupModelFilter filter) {
+        return filter.getTabModel().isIncognitoBranded();
+    }
+
     /** Clears tab group suggestions if present. */
     public void clearSuggestions() {
         mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
@@ -230,7 +236,9 @@ public class TabSwitcherGroupSuggestionService {
                 : "Forcing suggestions is only allowed in test mode.";
 
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        assumeNonNull(filter);
+        clearSuggestions();
+        if (filter == null) return;
+
         TabModel tabModel = filter.getTabModel();
         List<Integer> tabIds = new ArrayList<>();
 
