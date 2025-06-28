@@ -117,7 +117,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
 
       subtitle_: {type: String},
 
-      // <if expr="not chromeos_ash">
+      // <if expr="not is_chromeos">
       managementNoticeHtml_: {type: String},
       // </if>
 
@@ -150,7 +150,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
 
   protected accessor subtitle_: string = '';
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   protected accessor managementNoticeHtml_: TrustedHTML =
       window.trustedTypes!.emptyHTML;
   // </if>
@@ -480,7 +480,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
       this.managedWebsitesSubtitle_ = data.managedWebsitesSubtitle;
       this.applicationReportingSubtitle_ = data.applicationReportingSubtitle;
       this.subtitle_ = data.pageSubtitle;
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       this.customerLogo_ = data.customerLogo;
       this.managementOverview_ = data.overview;
       this.eolMessage_ = data.eolMessage;
@@ -497,7 +497,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
         this.eolAdminMessage_ = '';
       }
       // </if>
-      // <if expr="not chromeos_ash">
+      // <if expr="not is_chromeos">
       this.managementNoticeHtml_ = sanitizeInnerHtml(
           data.browserManagementNotice, {attrs: ['aria-label']});
       // </if>

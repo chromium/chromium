@@ -42,7 +42,7 @@ export class AdapterPage extends Page {
       this.pageDiv.dispatchEvent(new CustomEvent('refreshpressed'));
     });
 
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     const restartBluetoothBtn = $('restart-bluetooth-btn');
     restartBluetoothBtn.addEventListener('click', () => {
       restartBluetoothBtn.disabled = true;
@@ -62,7 +62,7 @@ export class AdapterPage extends Page {
       delete info.systemName;
     }
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     // floss and extendedAdvertisementSupport is only set in ChromeOS anyway,
     // so it's irrelevant on other platforms. Delete them.
     if (info.hasOwnProperty('floss')) {

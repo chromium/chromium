@@ -254,12 +254,12 @@
       </if>
 
       <!-- About Flags UI -->
-      <if expr="not chromeos_ash">
+      <if expr="not is_chromeos">
         <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" desc="Notifies the user that they need to relaunch Chrome. Shown next to a button that says 'Relaunch Now'.">
           Your changes will take effect the next time you relaunch Chrome.
         </message>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" desc="Notifies the user that they need to restart ChromeOS. Shown next to a button that says 'Restart Now'.">
           Your changes will take effect the next time you restart your device.
         </message>
@@ -279,7 +279,7 @@
         Chrome is made possible by the <ph name="BEGIN_LINK_CHROMIUM">&lt;a target="_blank" href="$1"&gt;</ph>Chromium<ph name="END_LINK_CHROMIUM">&lt;/a&gt;</ph> open source project and other <ph name="BEGIN_LINK_OSS">&lt;a target="_blank" href="$2"&gt;</ph>open source software<ph name="END_LINK_OSS">&lt;/a&gt;</ph>.
       </message>
 
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <message name="IDS_VERSION_UI_LICENSE_CHROMIUM" desc="The label below the copyright message, containing the link to the Chromium project.">
           Chrome is made possible by the <ph name="BEGIN_LINK_CHROMIUM">&lt;a target="_blank" href="$1"&gt;</ph>Chromium<ph name="END_LINK_CHROMIUM">&lt;/a&gt;</ph> open source project.
         </message>

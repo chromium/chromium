@@ -22,7 +22,7 @@
   </if>
 
   <!-- Subtitles of the ChromeOS version of the management page -->
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED" desc="Title of chrome://management page, shows when device is managed by an unknown manager">
       Your <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> is managed
     </message>
@@ -35,7 +35,7 @@
   </if>
 
   <!-- Subtitles of the browser version of the management page -->
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment. MANAGER can be a domain or an email address.">
       Your browser is managed by <ph name="MANAGER">$1<ex>example.com</ex></ph>
     </message>
@@ -61,7 +61,7 @@
 
   <if expr="not is_ios">
     <!-- Browser managed status section -->
-    <if expr="not chromeos_ash">
+    <if expr="not is_chromeos">
       <if expr="_google_chrome">
         <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the (Google-branded) Chrome browser is managed, it indicates what the administrator can do on the browser.">
         Your administrator can make changes to your profile and browser remotely, analyze information about the browser through reporting, and perform other necessary tasks. Activity on this device may also be managed outside of Chrome.  <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>

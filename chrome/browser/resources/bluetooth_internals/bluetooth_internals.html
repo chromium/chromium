@@ -21,7 +21,7 @@
     </header>
     <section id="adapter" class="flex" hidden>
       <div class="header-extras">
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
         <button id="restart-bluetooth-btn">Restart system Bluetooth</button>
 </if>
         <button id="adapter-refresh-btn">Refresh</button>
@@ -73,7 +73,7 @@
   </div>
 </template>
 
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
 <template id="btsnoop-template">
   <div>
     <div>

@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// <if expr="not chromeos_ash">
+// <if expr="not is_chromeos">
 import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {$, appendParam} from 'chrome://resources/js/util.js';
 // </if>
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';

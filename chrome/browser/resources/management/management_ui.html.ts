@@ -24,7 +24,7 @@ export function getHtml(this: ManagementUiElement) {
         </cr-icon-button>
         <h2 class="cr-title-text">${this.subtitle_}</h2>
       </section>
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
       <section class="eol-section" ?hidden="${!this.eolMessage_}">
         <div class="eol-warning-icon">
           <cr-icon icon="cr20:banner-warning"></cr-icon>
@@ -41,13 +41,13 @@ export function getHtml(this: ManagementUiElement) {
       </section>
 </if>
 
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
       <section class="overview-section">
         <div .innerHTML="${this.managementNoticeHtml_}"></div>
       </section>
 </if>
 
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
       <section class="overview-section" ?hidden="${!this.managementOverview_}">
         <div class="overview-container">
           <img .src="${this.customerLogo_}" alt="" aria-hidden="true"

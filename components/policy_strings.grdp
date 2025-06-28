@@ -199,7 +199,7 @@
   <message name="IDS_POLICY_EMPTY_ORIGIN_LIST_ERROR" desc="The text displayed in the status column for the policy AutoLaunchProtocolsFromOrigins when the origin list is empty">
     Origin list is empty.
   </message>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_POLICY_DUPLICATE_FILE_EXTENSION_ERROR" desc="The text displayed in the status column for the policy DefaultHandlersForFileExtensions when a file extension is assigned to more than one handler.">
       Duplicate handlers for file_extension "<ph name="FILE_EXTENSION">$1<ex>txt</ex></ph>" referenced by apps "<ph name="POLICY_IDS_LIST">$2<ex>https://google.com/maps, pnomlkjighijklmnopabcdefghijklff</ex></ph>".
     </message>
@@ -288,7 +288,7 @@
   <message name="IDS_POLICY_INVALID_PROXY_MODE_ERROR" desc="The text displayed in the status column when the value for ProxyMode is invalid.">
     Invalid proxy mode.
   </message>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_POLICY_UNKNOWN_ARC_MANAGED_CONFIGURATION_VARIABLE" desc="The warning text displayed in the status column when the managed configuration of an ARC application contains an unknown variable.">
       Unknown variable "<ph name="VARIABLE">$1<ex>${UNKNOWN_VARIABLE}</ex></ph>" in the managed configuration of "<ph name="APPLICATION_ID">$2<ex>com.dropbox.android</ex></ph>".
     </message>
@@ -341,7 +341,7 @@
   <message name="IDS_POLICY_USER_IS_NOT_AFFILIATED_ERROR" desc="The text displayed in the status column when a user cloud policy is ignored due to user is not affiliated to the machine management.">
     Ignored because user is not affiliated to the machine management or the machine is not managed.
   </message>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_POLICY_NETWORK_CONFIG_PARSE_FAILED" desc="The text displayed in the status column when the corresponding network configuration policy failed to parse.">
       Network configuration failed to be parsed (invalid JSON).
     </message>

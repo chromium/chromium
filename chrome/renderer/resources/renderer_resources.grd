@@ -69,7 +69,7 @@
           <include name="IDR_MOJO_URL_MOJOM_LITE_JS" file="${mojom_root}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
 
         </if>
-        <if expr="chromeos_ash">
+        <if expr="is_chromeos">
           <include name="IDR_FILE_MANAGER_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\file_manager_private_custom_bindings.js" type="BINDATA" />
           <include name="IDR_TERMINAL_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\terminal_private_custom_bindings.js" type="BINDATA" />
 

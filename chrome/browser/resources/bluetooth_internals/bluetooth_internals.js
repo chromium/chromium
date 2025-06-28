@@ -195,7 +195,7 @@ function setupAdapterSystem(response) {
     });
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   adapterPage.pageDiv.addEventListener('restart-bluetooth-click', function() {
     const restartBluetoothBtn =
         document.querySelector('#restart-bluetooth-btn');

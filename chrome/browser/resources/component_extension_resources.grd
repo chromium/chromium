@@ -37,13 +37,13 @@
       </if>
 
       <!-- Desk API extension, enabled on managed ChromeOS devices -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <include name="IDR_DESK_API_TEMPLATES_ICON" file="chromeos/desk_api/templates_icon.png" type="BINDATA" />
         <!-- Compiled TS -->
         <include name="IDR_DESK_API_DESK_API_BUNDLE_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/desk_api/desk_api_bundle.js" use_base_dir="false" resource_path="chromeos/desk_api/desk_api_bundle.js" type="BINDATA" />
       </if>
 
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <include name="IDR_ARC_SUPPORT_BACKGROUND_JS" file="chromeos/arc_support/background.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_BUBBLE_CSS" file="chromeos/arc_support/bubble.css" flattenhtml="true" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_BUBBLE_JS" file="chromeos/arc_support/bubble.js" type="BINDATA" />
@@ -77,7 +77,7 @@
 
     <!-- Game Controls lottie json files -->
     <structures>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <structure type="lottie" name="IDR_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON" file="chromeos/arc_input_overlay/onboarding_illustration_dark.json" compress="gzip" />
         <structure type="lottie" name="IDR_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_LIGHT_JSON" file="chromeos/arc_input_overlay/onboarding_illustration_light.json" compress="gzip" />
         <structure type="lottie" name="IDR_ARC_INPUT_OVERLAY_KEY_EDIT_NUDGE_JSON" file="chromeos/arc_input_overlay/key_edit_nudge.json" compress="gzip" />

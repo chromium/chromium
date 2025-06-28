@@ -43,7 +43,7 @@ export interface SecureDnsSetting {
   mode: SecureDnsMode;
   config: string;
   managementMode: SecureDnsUiManagementMode;
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   // Secure DNS mode and config of ChromeOS might differ with Chrome. This is
   // necessary when the DoH included or excluded domains config is set
   // (b/351091814).
@@ -62,7 +62,7 @@ export interface SecureDnsSetting {
 }
 
 export interface PrivacyPageBrowserProxy {
-  // <if expr="_google_chrome and not chromeos_ash">
+  // <if expr="_google_chrome and not is_chromeos">
   getMetricsReporting(): Promise<MetricsReporting>;
   setMetricsReportingEnabled(enabled: boolean): void;
 
@@ -85,7 +85,7 @@ export interface PrivacyPageBrowserProxy {
 }
 
 export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
-  // <if expr="_google_chrome and not chromeos_ash">
+  // <if expr="_google_chrome and not is_chromeos">
   getMetricsReporting() {
     return sendWithPromise('getMetricsReporting');
   }

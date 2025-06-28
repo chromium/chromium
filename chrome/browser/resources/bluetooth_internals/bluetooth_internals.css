@@ -59,7 +59,7 @@ h1 {
   top: 0;
 }
 
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
 #restart-bluetooth-btn {
   margin-inline-end: 6px;
 }

@@ -35,7 +35,7 @@ export class DebugLogPage extends Page {
     this.bluetoothInternalsHandler_ = bluetoothInternalsHandler;
     this.btsnoopInterface_ = null;
 
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     this.prepareBtsnoopTemplate();
     // </if>
 

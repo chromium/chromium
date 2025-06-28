@@ -96,10 +96,10 @@ export class ReadAnythingLogger {
     } else if (isEspeak(voice)) {
       voiceType = ReadAnythingVoiceType.ESPEAK;
     } else {
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       voiceType = ReadAnythingVoiceType.CHROMEOS;
       // </if>
-      // <if expr="not chromeos_ash">
+      // <if expr="not is_chromeos">
       voiceType = ReadAnythingVoiceType.SYSTEM;
       // </if>
     }

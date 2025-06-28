@@ -197,7 +197,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
       controlledSettingParent:
           loadTimeData.getString('controlledSettingParent'),
 
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       controlledSettingShared:
           loadTimeData.getString('controlledSettingShared'),
       controlledSettingWithOwner:

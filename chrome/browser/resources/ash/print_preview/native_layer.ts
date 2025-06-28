@@ -244,7 +244,7 @@ export class NativeLayerImpl implements NativeLayer {
     chrome.send('saveAppState', [appStateStr]);
   }
 
-  // <if expr="not chromeos_ash and not is_win">
+  // <if expr="not is_chromeos and not is_win">
   showSystemDialog() {
     chrome.send('showSystemDialog');
   }

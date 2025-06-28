@@ -4,7 +4,7 @@
 
 import '/strings.m.js';
 import './feedback_shared_styles.css.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import './js/jelly_colors.js';
 
 // </if>
@@ -357,7 +357,7 @@ export class AppElement extends CrLitElement {
    * @param fileSelectedEvent The onChanged event for the file input box.
    */
   private onFileSelected(fileSelectedEvent: Event) {
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     // This is needed on CrOS. Otherwise, the feedback window will stay behind
     // the Chrome window.
     FeedbackBrowserProxyImpl.getInstance().showDialog();

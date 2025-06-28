@@ -131,7 +131,7 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
         return name.length > 0 ?
             CrPolicyStrings.controlledSettingExtension!.replace('$1', name) :
             CrPolicyStrings.controlledSettingExtensionWithoutName!;
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       case CrPolicyIndicatorType.PRIMARY_USER:
         return CrPolicyStrings.controlledSettingShared!.replace('$1', name);
       case CrPolicyIndicatorType.OWNER:

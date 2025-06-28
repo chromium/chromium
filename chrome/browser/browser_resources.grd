@@ -43,7 +43,7 @@
         <include name="IDR_ABOUT_CONFLICTS_WARNING_SVG" file="resources\conflicts\warning.svg" type="BINDATA" />
       </if>
       <include name="IDR_AD_NETWORK_HASHES" file="resources\ad_networks.dat" type="BINDATA" />
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <include name="IDR_CHROME_APP_MANIFEST" file="resources\chrome_app\manifest.json" type="BINDATA" />
         <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
 
@@ -194,7 +194,7 @@
       </if>
 
       <!-- Desk API extension, enabled on managed ChromeOS devices -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <include name="IDR_DESK_API_MANIFEST" file="resources\chromeos\desk_api\manifest.json" type="BINDATA" />
       </if>
 

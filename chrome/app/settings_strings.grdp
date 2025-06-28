@@ -182,7 +182,7 @@
       Select the More Gestures tab, then turn on Swipe between pages to navigate back and forward
     </message>
   </if>
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_ACCESSIBILITY_TOAST_FREQUENCY_TITLE" desc="Title for a setting that allows you to change what type of feedback messages you receive.">
       Copied to clipboard confirmations
     </message>

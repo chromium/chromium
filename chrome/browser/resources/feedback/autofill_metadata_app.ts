@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '/shared/key_value_pair_viewer/key_value_pair_viewer.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import './js/jelly_colors.js';
 
 // </if>

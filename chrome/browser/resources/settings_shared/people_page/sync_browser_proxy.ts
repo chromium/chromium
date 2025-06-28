@@ -178,7 +178,7 @@ export interface ChromeSigninUserChoiceInfo {
 }
 
 export interface SyncBrowserProxy {
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   /**
    * Starts the signin process for the user. Does nothing if the user is
    * already signed in.
@@ -196,7 +196,7 @@ export interface SyncBrowserProxy {
   pauseSync(): void;
   // </if>
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   /**
    * Signs the user out.
    */
@@ -310,7 +310,7 @@ export interface SyncBrowserProxy {
 }
 
 export class SyncBrowserProxyImpl implements SyncBrowserProxy {
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   startSignIn() {
     chrome.send('SyncSetupStartSignIn');
   }
@@ -324,7 +324,7 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
   }
   // </if>
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   attemptUserExit() {
     chrome.send('AttemptUserExit');
   }

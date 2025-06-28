@@ -45,12 +45,12 @@
   <message name="IDS_FLAGS_UI_NOT_AVAILABLE_ON_PLATFORM" desc="Message stating that an experiment is not available for the current platform.">
     Not available on your platform.
   </message>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_FLAGS_UI_RELAUNCH" desc="Label for button that restarts ChromeOS.">
       Restart
     </message>
   </if>
-  <if expr="not chromeos_ash">
+  <if expr="not is_chromeos">
     <message name="IDS_FLAGS_UI_RELAUNCH" desc="Label for button that relaunches chrome.">
       Relaunch
     </message>

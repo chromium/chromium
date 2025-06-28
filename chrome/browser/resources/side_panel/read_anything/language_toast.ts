@@ -60,8 +60,8 @@ export class LanguageToastElement extends LanguageToastElementBase implements
   accessor numAvailableVoices: number = 0;
 
   notify(type: NotificationType, language?: string) {
-    // <if expr="chromeos_ash">
-    // We only use this variable on chromeos_ash
+    // <if expr="is_chromeos">
+    // We only use this variable on is_chromeos
     const previousNotification =
         language ? this.notifications_.get(language) : undefined;
     // </if>
@@ -94,7 +94,7 @@ export class LanguageToastElement extends LanguageToastElementBase implements
         this.setErrorTitle_('allocationErrorHighQuality');
         break;
       case NotificationType.DOWNLOADED:
-        // <if expr="chromeos_ash">
+        // <if expr="is_chromeos">
         // Only show a notification for a newly completed download.
         if (language && previousNotification === NotificationType.DOWNLOADING) {
           const lang =

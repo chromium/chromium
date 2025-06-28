@@ -54,7 +54,7 @@ main {
   margin-inline-start: -10px;
 }
 
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
 .eol-section {
   border: 1px solid var(--google-grey-300);
   border-radius: var(--cr-card-border-radius);
