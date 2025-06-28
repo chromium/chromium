@@ -6,12 +6,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
+#include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "content/public/test/browser_test.h"
@@ -52,6 +55,60 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsControllerTest,
   // The icon should show in the new state.
   ASSERT_TRUE(GetIcon());
   EXPECT_TRUE(GetIcon()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(ManagePasswordsControllerTest, AutoPopupAndIconState) {
+  // Set up the controller to be in a pending password state, which should
+  // trigger an automatic bubble pop-up.
+  SetupPendingPassword();
+  // Verify that the password bubble is now showing.
+  EXPECT_TRUE(PasswordBubbleViewBase::manage_password_bubble());
+  ASSERT_TRUE(GetIcon());
+  EXPECT_TRUE(GetIcon()->GetVisible());
+  // The tooltip should be empty because the bubble is showing.
+  EXPECT_EQ(GetIcon()->GetTooltipText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(ManagePasswordsControllerTest,
+                       CredentialRequestDialogIconState) {
+  // Start in a MANAGE_STATE with some credentials, so the icon is visible.
+  SetupManagingPasswords();
+  EXPECT_EQ(GetController()->GetState(), password_manager::ui::MANAGE_STATE);
+  // Verify initial icon visibility and tooltip.
+  ASSERT_TRUE(GetIcon());
+  EXPECT_TRUE(GetIcon()->GetVisible());
+  EXPECT_EQ(GetIcon()->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE));
+  // Simulate a credential request, which opens a modal dialog.
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      local_credentials;
+  local_credentials.push_back(
+      std::make_unique<password_manager::PasswordForm>(*test_form()));
+  url::Origin origin = url::Origin::Create(test_form()->url);
+
+  // Use a simple callback to allow the dialog creation to complete.
+  base::RunLoop run_loop;
+  ManagePasswordsState::CredentialsCallback callback = base::BindOnce(
+      [](base::OnceClosure quit_closure,
+         const password_manager::PasswordForm* form) {
+        std::move(quit_closure).Run();
+      },
+      run_loop.QuitClosure());
+
+  // OnChooseCredentials creates and shows the credential request dialog, and
+  // sets the controller's state to CREDENTIAL_REQUEST_STATE.
+  EXPECT_TRUE(GetController()->OnChooseCredentials(
+      std::move(local_credentials), origin, std::move(callback)));
+
+  // The omnibox bubble should NOT be showing, as the credential request is a
+  // separate modal dialog.
+  EXPECT_FALSE(PasswordBubbleViewBase::manage_password_bubble());
+
+  // The controller's state should have changed to CREDENTIAL_REQUEST_STATE,
+  // which hides the icon and clears the tooltip.
+  EXPECT_EQ(GetController()->GetState(),
+            password_manager::ui::CREDENTIAL_REQUEST_STATE);
+  EXPECT_FALSE(GetIcon()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(ManagePasswordsControllerTest,

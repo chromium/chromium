@@ -104,8 +104,6 @@ void ManagePasswordsPageActionController::UpdateVisibility(
     bool is_blocklisted,
     ManagePasswordsUIController& passwords_ui_controller,
     actions::ActionItem& passwords_action_item) {
-  // Determines if the password management feature is generally active for this
-  // page.
   bool should_be_visible =
       !(state == password_manager::ui::INACTIVE_STATE ||
         state == password_manager::ui::PASSWORD_CHANGE_STATE);

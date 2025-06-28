@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
+#include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -1176,11 +1177,35 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     CHECK(tab_features);
     auto* const controller =
         tab_features->manage_passwords_page_action_controller();
+
+    password_manager::ui::State state = GetState();
+    const bool is_blocklisted = IsExplicitlyBlocklisted();
+
+    if (dialog_controller_ &&
+        state == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
+      state = password_manager::ui::INACTIVE_STATE;
+    }
+
+    if (state != last_page_action_state_ ||
+        is_blocklisted != last_page_action_is_blocklisted_) {
+      PasswordBubbleViewBase::CloseCurrentBubble();
+    }
+    last_page_action_state_ = state;
+    last_page_action_is_blocklisted_ = is_blocklisted;
+
+    if (IsAutomaticallyOpeningBubble() ||
+        bubble_status_ == BubbleStatus::SHOULD_POP_UP_WITH_FOCUS) {
+      // This will detach any existing bubble so OnBubbleHidden() isn't called.
+      weak_ptr_factory_.InvalidateWeakPtrs();
+      ShowBubbleWithoutUserInteraction();
+      // If the bubble appeared then the status is updated in OnBubbleShown().
+      ClearPopUpFlagForBubble();
+    }
     actions::ActionItem* passwords_action_item =
         actions::ActionManager::Get().FindAction(
             kActionShowPasswordsBubbleOrPage,
             browser->browser_actions()->root_action_item());
-    controller->UpdateVisibility(GetState(), IsExplicitlyBlocklisted(), *this,
+    controller->UpdateVisibility(state, is_blocklisted, *this,
                                  *passwords_action_item);
   } else {
     browser->window()->UpdatePageActionIcon(
