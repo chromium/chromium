@@ -16,6 +16,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/browsing_data/core/features.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -98,6 +100,15 @@ bool IsRemovalPermitted(uint64_t removal_mask, PrefService* prefs) {
 bool BrowsingDataSettingsFunction::isDataTypeSelected(
     BrowsingDataType data_type,
     ClearBrowsingDataTab tab) {
+  if (data_type == BrowsingDataType::PASSWORDS
+#if !BUILDFLAG(IS_ANDROID)
+      &&
+      base::FeatureList::IsEnabled(browsing_data::features::kDbdRevampDesktop)
+#endif  // !BUILDFLAG(IS_ANDROID)
+  ) {
+    return false;
+  }
+
   std::string pref_name;
   bool success = GetDeletionPreferenceFromDataType(data_type, tab, &pref_name);
   return success && prefs_->GetBoolean(pref_name);
