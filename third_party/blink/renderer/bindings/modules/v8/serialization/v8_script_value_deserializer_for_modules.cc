@@ -337,8 +337,6 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
     }
     case kEd25519KeyTag:
     case kX25519KeyTag: {
-      if (!RuntimeEnabledFeatures::WebCryptoCurve25519Enabled())
-        break;
       uint32_t raw_id;
       WebCryptoAlgorithmId id;
       uint32_t raw_key_type;

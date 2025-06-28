@@ -201,11 +201,6 @@ std::optional<WebCryptoAlgorithmId> LookupAlgorithmIdByName(
 
   WebCryptoAlgorithmId id = it->algorithm_id;
 
-  if (!RuntimeEnabledFeatures::WebCryptoCurve25519Enabled()) {
-    if (id == kWebCryptoAlgorithmIdX25519) {
-      return std::nullopt;
-    }
-  }
   if (!RuntimeEnabledFeatures::WebCryptoEd25519Enabled()) {
     if (id == kWebCryptoAlgorithmIdEd25519) {
       return std::nullopt;
