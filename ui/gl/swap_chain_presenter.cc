@@ -1899,7 +1899,9 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
                               kDestSizeTolerance) &&
       params.z_order > 0;
 
-  if (is_fullscreen_letterboxing_overlay_scenario) {
+  if (is_fullscreen_letterboxing_overlay_scenario &&
+      base::FeatureList::IsEnabled(
+          features::kDesktopPlaneRemovalForMFFullScreenLetterbox)) {
     const gfx::Rect monitor_rect =
         gfx::Rect(gfx::ToRoundedSize(dest_size.value()));
     mapped_rect = monitor_rect;

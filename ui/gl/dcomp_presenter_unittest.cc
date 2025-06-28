@@ -3375,12 +3375,19 @@ class DCompPresenterLetterboxingTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
+    // TODO(crbug.com/428158600): For now set up
+    // kDesktopPlaneRemovalForMFFullScreenLetterbox flag by
+    // following kDirectCompositionLetterboxVideoOptimization flag.
     if (GetTestParam().use_letterbox_video_optimization) {
       DCompPresenterTestBase::EnableFeature(
           features::kDirectCompositionLetterboxVideoOptimization);
+      DCompPresenterTestBase::EnableFeature(
+          features::kDesktopPlaneRemovalForMFFullScreenLetterbox);
     } else {
       DCompPresenterTestBase::DisableFeature(
           features::kDirectCompositionLetterboxVideoOptimization);
+      DCompPresenterTestBase::DisableFeature(
+          features::kDesktopPlaneRemovalForMFFullScreenLetterbox);
     }
   }
 

@@ -227,6 +227,14 @@ BASE_FEATURE(kDirectCompositionLetterboxVideoOptimization,
              "DirectCompositionLetterboxVideoOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Remove the topmost desktop plane for Media Foundation full screen
+// letterboxing. This is a kill switch for the desktop plane removal
+// optimization for Media Foundation Renderer, which should be enabled by
+// default when crbug.com/406175378 is resolved.
+BASE_FEATURE(kDesktopPlaneRemovalForMFFullScreenLetterbox,
+             "DesktopPlaneRemovalForMFFullScreenLetterbox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Do not consider hardware YUV overlay count when promoting quads to DComp
 // visuals. If there are more videos than hardware overlay planes, there may be
 // a performance hit compared to drawing all the videos into a single swap
