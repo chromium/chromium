@@ -92,7 +92,10 @@ void EventsMetricsManager::OnScopedMonitorEnded(
   active_scoped_monitors_.pop_back();
 
   if (metrics) {
-    if (metrics->type() == EventMetrics::EventType::kGestureScrollUpdate) {
+    if (metrics->type() == EventMetrics::EventType::kGestureScrollUpdate ||
+        metrics->type() == EventMetrics::EventType::kFirstGestureScrollUpdate ||
+        metrics->type() ==
+            EventMetrics::EventType::kInertialGestureScrollUpdate) {
       auto* scroll_update = metrics->AsScrollUpdate();
       scroll_update->set_did_scroll(did_scroll_);
     }

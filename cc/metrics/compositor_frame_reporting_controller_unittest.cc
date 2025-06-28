@@ -2419,6 +2419,10 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
   base::TimeTicks event2_generation_ts = metrics_2->GetDispatchStageTimestamp(
       EventMetrics::DispatchStage::kGenerated);
 
+  std::unique_ptr<EventMetrics> metrics_3 = CreateScrollUpdateEventMetrics(
+      ui::ScrollInputType::kWheel, /*is_inertial=*/true,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, std::nullopt);
+
   std::unique_ptr<EventMetrics> non_scroll_event =
       CreateEventMetrics(ui::EventType::kTouchPressed, std::nullopt);
 
@@ -2452,14 +2456,26 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
   SimulateBeginImplFrame();  // BF3
   reporting_controller_.OnFinishImplFrame(current_id_);
   EventMetrics::List metrics_list_3;
-  metrics_list_3.push_back(std::move(non_scroll_event));
+  metrics_list_3.push_back(std::move(metrics_3));
   SimulateSubmitCompositorFrame({{}, std::move(metrics_list_3), {}});
 
   viz::FrameTimingDetails details_3 = {};
   details_3.presentation_feedback.timestamp =
-      details_2.presentation_feedback.timestamp + args_.interval;
+      details_2.presentation_feedback.timestamp + 2 * args_.interval;
   reporting_controller_.DidPresentCompositorFrame(*current_token_,
                                                   details_3);  // PF3
+
+  SimulateBeginImplFrame();  // BF4
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  EventMetrics::List metrics_list_4;
+  metrics_list_4.push_back(std::move(non_scroll_event));
+  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_4), {}});
+
+  viz::FrameTimingDetails details_4 = {};
+  details_4.presentation_feedback.timestamp =
+      details_3.presentation_feedback.timestamp + args_.interval;
+  reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                  details_4);  // PF4
 
   absl::Status status = ttp.StopAndParseTrace();
   ASSERT_TRUE(status.ok()) << status.message();
@@ -2484,6 +2500,7 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
               ::testing::ElementsAre(
                   std::vector<std::string>{"is_janky", "is_janky_v3"},
                   std::vector<std::string>{"0", "0"},
+                  std::vector<std::string>{"1", "1"},
                   std::vector<std::string>{"1", "1"},
                   std::vector<std::string>{"[NULL]", "[NULL]"}));
 }
