@@ -23,6 +23,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "ENABLE_DEVTOOLS_FRONTEND=$enable_devtools_frontend",
+    "ENABLE_PLUGINS=$enable_plugins",
     "ENABLE_SCREEN_CAPTURE=$enable_screen_capture",
     "LOAD_WEBUI_FROM_DISK=$load_webui_from_disk",
   ]

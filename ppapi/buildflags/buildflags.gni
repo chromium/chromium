@@ -21,4 +21,4 @@ declare_args() {
   enable_ppapi = false
 }
 
-assert(enable_plugins || !enable_ppapi)
+assert(!enable_ppapi)
