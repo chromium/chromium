@@ -26,6 +26,19 @@ public class VersioningMessageControllerImpl implements VersioningMessageControl
     }
 
     @Override
+    public boolean isInitialized() {
+        if (mNativePtr == 0) return false;
+        return VersioningMessageControllerImplJni.get().isInitialized(mNativePtr, this);
+    }
+
+    @Override
+    public boolean shouldShowMessageUi(int messageType) {
+        if (mNativePtr == 0) return false;
+        return VersioningMessageControllerImplJni.get()
+                .shouldShowMessageUi(mNativePtr, this, messageType);
+    }
+
+    @Override
     public void shouldShowMessageUiAsync(@MessageType int messageType, Callback<Boolean> callback) {
         if (mNativePtr == 0) {
             callback.onResult(false);
@@ -55,6 +68,15 @@ public class VersioningMessageControllerImpl implements VersioningMessageControl
 
     @NativeMethods
     interface Natives {
+        boolean isInitialized(
+                long nativeVersioningMessageControllerAndroid,
+                VersioningMessageControllerImpl caller);
+
+        boolean shouldShowMessageUi(
+                long nativeVersioningMessageControllerAndroid,
+                VersioningMessageControllerImpl caller,
+                int messageType);
+
         void shouldShowMessageUiAsync(
                 long nativeVersioningMessageControllerAndroid,
                 VersioningMessageControllerImpl caller,
