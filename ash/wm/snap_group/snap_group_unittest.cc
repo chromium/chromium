@@ -9532,9 +9532,9 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplays) {
   w2->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true,
                      GetEventGenerator());
-  auto* snap_group_divider = SnapGroupController::Get()
-                                 ->GetSnapGroupForGivenWindow(w1.get())
-                                 ->snap_group_divider();
+  EXPECT_TRUE(SnapGroupController::Get()
+                  ->GetSnapGroupForGivenWindow(w1.get())
+                  ->snap_group_divider());
   const int64_t primary_id = GetPrimaryDisplay().id();
   display::Screen* screen = display::Screen::GetScreen();
   ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(w1.get()).id());
@@ -9549,18 +9549,20 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplays) {
   EXPECT_EQ(mru_window, w1.get());
 
   PressAndReleaseKey(ui::VKEY_M, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-
   const int64_t secondary_id = GetSecondaryDisplay().id();
   ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
-  // Ungrouped window will stay in the primary.
-  EXPECT_EQ(primary_id, screen->GetDisplayNearestWindow(w2.get()).id());
-  EXPECT_FALSE(snap_group_divider->GetDividerWindow());
+  auto list = Shell::Get()->mru_window_tracker()->BuildMruWindowList(
+      DesksMruType::kActiveDesk);
+  ASSERT_EQ(2u, list.size());
 
-  // `w1` and 'w2'  will be on different displays, and will not share the same
-  // same parent.
-  EXPECT_FALSE(window_util::GetTopMostWindow(
-      mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk)));
+  // `w2` will be the topmost window. With the window stacking fixed by
+  // `window_util::FixWindowStackingAccordingToGlobalMru()`, the `w2` that gets
+  // moved after will be stacked above `w1`.
+  EXPECT_EQ(w2.get(), window_util::GetTopMostWindow(list));
 }
 
 // Verifies that when an `OverviewGroupItem` is dragged between displays in
@@ -9609,9 +9611,10 @@ TEST_F(SnapGroupMultiDisplayTest,
   event_generator->MoveMouseTo(point_in_display1);
   event_generator->ReleaseLeftButton();
 
+  // Verify that the snapgroup will be kept when it is move back to the original
+  // display.
   EXPECT_TRUE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
-
   display::Screen* screen = display::Screen::GetScreen();
   EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w1.get()).id());
   EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w2.get()).id());
@@ -9621,7 +9624,7 @@ TEST_F(SnapGroupMultiDisplayTest,
 // windows will be moved to the destination display properly.
 TEST_F(SnapGroupMultiDisplayTest,
        MoveSnapGroupToAnotherDisplayWithSnapGroupInOverview) {
-  UpdateDisplay("800x700,801+0-800x700");
+  UpdateDisplay("800x700,800x700");
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   const auto& displays = display_manager->active_display_list();
   ASSERT_EQ(2U, displays.size());
@@ -9672,12 +9675,12 @@ TEST_F(SnapGroupMultiDisplayTest,
   EXPECT_FALSE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
   EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
-  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
 
   EXPECT_FALSE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w3.get(), w4.get()));
   EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w3.get()).id());
-  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w4.get()).id());
+  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w4.get()).id());
 }
 
 // Tests that dragging an `OverviewGroupItem` to a different desk in another
@@ -9734,10 +9737,9 @@ TEST_F(SnapGroupMultiDisplayTest,
   EXPECT_FALSE(GetTopmostSnapGroupDivider());
   display::Screen* screen = display::Screen::GetScreen();
   EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
-  // The snapgroup will be removed and w2 should stay on display 1.
-  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w2.get()).id());
-  EXPECT_TRUE(desks_util::IsActiveDeskContainer(w1->parent()));
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
 
+  EXPECT_TRUE(desks_util::IsActiveDeskContainer(w1->parent()));
   EXPECT_TRUE(desks_util::IsActiveDeskContainer(w2->parent()));
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());

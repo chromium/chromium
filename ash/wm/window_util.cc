@@ -29,6 +29,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/scoped_windows_mover.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -322,9 +323,12 @@ bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {
     NOTREACHED();
   }
 
+  ScopedWindowsMover mover(display_id);
   // If snapped , breake it.
   if (auto* snap_group =
           SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
+    mover.add_window(snap_group->window1() == window ? snap_group->window2()
+                                                     : snap_group->window1());
     SnapGroupController::Get()->RemoveSnapGroup(
         snap_group, SnapGroupExitPoint::kMoveToAnotherDisplay);
   }

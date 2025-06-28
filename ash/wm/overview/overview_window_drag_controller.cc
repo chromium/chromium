@@ -25,6 +25,9 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/scoped_float_container_stacker.h"
+#include "ash/wm/scoped_windows_mover.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
@@ -34,6 +37,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -197,9 +201,15 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
   // item ended, so it looks like it is the same item. Then the item is animated
   // from there to its proper position in the grid.
   OverviewItemMoveHelper(aura::Window* window,
+                         aura::Window* another_window,
                          const gfx::RectF& target_item_bounds)
-      : window_(window), target_item_bounds_(target_item_bounds) {
+      : window_(window),
+        another_window_(another_window),
+        target_item_bounds_(target_item_bounds) {
     window->AddObserver(this);
+    if (another_window_) {
+      another_window_->AddObserver(this);
+    }
   }
   OverviewItemMoveHelper(const OverviewItemMoveHelper&) = delete;
   OverviewItemMoveHelper& operator=(const OverviewItemMoveHelper&) = delete;
@@ -213,12 +223,16 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
 
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override {
-    DCHECK_EQ(window_, window);
-    delete this;
+    DCHECK(window_ == window || another_window_ == window);
+    ResetWindow(window);
+    if (!window_ && !another_window_) {
+      delete this;
+    }
   }
   void OnWindowAddedToRootWindow(aura::Window* window) override {
-    DCHECK_EQ(window_, window);
+    DCHECK(window_ == window || another_window_ == window);
     window->RemoveObserver(this);
+    bool is_another_window = another_window_ == window;
     OverviewController* overview_controller = OverviewController::Get();
     if (overview_controller->InOverviewSession()) {
       // OverviewSession::AddItemInMruOrder() will add |window| to the grid
@@ -228,17 +242,36 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
       session->AddItemInMruOrder(window, /*reposition=*/false,
                                  /*animate=*/false, /*restack=*/false,
                                  /*use_spawn_animation=*/false);
-      OverviewItemBase* item = session->GetOverviewItemForWindow(window);
-      DCHECK(item);
-      item->SetBounds(target_item_bounds_, OVERVIEW_ANIMATION_NONE);
-      item->set_should_restack_on_animation_end(true);
+      if (!is_another_window) {
+        OverviewItemBase* item = session->GetOverviewItemForWindow(window);
+        DCHECK(item);
+        item->SetBounds(target_item_bounds_, OVERVIEW_ANIMATION_NONE);
+        item->set_should_restack_on_animation_end(true);
+      } else if (overview_controller->InOverviewSession()) {
+        // Don't animate another window as its origin bounds isn't specified.
+        overview_controller->overview_session()->PositionWindows(
+            /*animate=*/false);
+      }
       // The destructor will call OverviewSession::PositionWindows().
     }
-    delete this;
+    ResetWindow(window);
+    if (!window_ && !another_window_) {
+      delete this;
+    }
   }
 
  private:
-  const raw_ptr<aura::Window> window_;
+  void ResetWindow(aura::Window* window) {
+    if (window_ == window) {
+      window_ = nullptr;
+    }
+    if (another_window_ == window) {
+      another_window_ = nullptr;
+    }
+  }
+
+  raw_ptr<aura::Window> window_;
+  raw_ptr<aura::Window> another_window_;
   const gfx::RectF target_item_bounds_;
 };
 
@@ -844,11 +877,27 @@ OverviewWindowDragController::CompleteNormalDrag(
   if (is_dragged_to_other_display &&
       !(dragged_item_is_visible_on_all_desks &&
         item_intersects_other_display_desk_bar)) {
+    int64_t target_display_id =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(target_root).id();
+    ScopedWindowsMover mover(target_display_id);
+
     // Get the window and bounds from |item_| before removing it from its grid.
     aura::Window* window = item_->GetWindow();
     const gfx::RectF target_item_bounds = item_->target_bounds();
     // Remove |item_| from overview. Leave the repositioning to the
     // |OverviewItemMoveHelper|.
+
+    // If snapped , breake it now.
+    if (auto* snap_group =
+            SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
+      mover.add_window(snap_group->window1() == window ? snap_group->window2()
+                                                       : snap_group->window1());
+      SnapGroupController::Get()->RemoveSnapGroup(
+          snap_group, SnapGroupExitPoint::kMoveToAnotherDisplay);
+
+      // Temporarily update the item.
+      item_ = overview_session_->GetOverviewItemForWindow(window);
+    }
 
     // For the window that controls its bounds directly, wait until client moves
     // the window.
@@ -860,13 +909,13 @@ OverviewWindowDragController::CompleteNormalDrag(
     event_source_item_ = nullptr;
     // The |OverviewItemMoveHelper| will self destruct when we move |window| to
     // |target_root|.
-    new OverviewItemMoveHelper(window, target_item_bounds);
-    // Move |window| to |target_root|. The |OverviewItemMoveHelper| will take
-    // care of the rest.
-    window_util::MoveWindowToDisplay(window,
-                                     display::Screen::GetScreen()
-                                         ->GetDisplayNearestWindow(target_root)
-                                         .id());
+    new OverviewItemMoveHelper(
+        window, mover.windows().empty() ? nullptr : mover.windows()[0],
+        target_item_bounds);
+    // Move windows to the destination. The |OverviewItemMoveHelper| will take
+    // care of the rest when the window is moved to another display's window
+    // tree.
+    mover.add_window(window);
   } else {
     item_->set_should_restack_on_animation_end(true);
     overview_session_->PositionWindows(/*animate=*/true);

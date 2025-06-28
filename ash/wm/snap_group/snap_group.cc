@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/scoped_windows_mover.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -298,13 +299,17 @@ void SnapGroup::OnWindowParentChanged(aura::Window* window,
 
   aura::Window* to_be_moved_window = window == window1_ ? window2_ : window1_;
   bool did_parent_change = false;
+  bool did_ungroup = false;
+  ScopedWindowsMover mover(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(parent).id());
   if (window->GetRootWindow() != to_be_moved_window->GetRootWindow()) {
     base::RecordAction(
         base::UserMetricsAction("SnapGroups_MoveSnapGroupToDisplay"));
-    window_util::MoveWindowToDisplay(
-        to_be_moved_window,
-        display::Screen::GetScreen()->GetDisplayNearestWindow(parent).id());
+    SnapGroupController::Get()->RemoveSnapGroup(
+        this, SnapGroupExitPoint::kMoveToAnotherDisplay);
+    mover.add_window(to_be_moved_window);
     did_parent_change = true;
+    did_ungroup = true;
   } else if (parent != to_be_moved_window->parent()) {
     base::RecordAction(
         base::UserMetricsAction("SnapGroups_MoveSnapGroupToDesk"));
@@ -319,14 +324,18 @@ void SnapGroup::OnWindowParentChanged(aura::Window* window,
   // asynchronous.
   if (did_parent_change && desks_util::IsDeskContainer(parent) &&
       !desks_util::IsWindowVisibleOnAllWorkspaces(to_be_moved_window)) {
-    window_util::FixWindowStackingAccordingToGlobalMru(to_be_moved_window);
+    mover.set_callback(
+        base::BindOnce(&window_util::FixWindowStackingAccordingToGlobalMru,
+                       to_be_moved_window));
   }
 
-  // Restore the divider visibility after both windows are moved to the target
-  // parent container.
-  snap_group_divider_.SetVisible(cached_divider_visibility);
+  if (!did_ungroup) {
+    // Restore the divider visibility after both windows are moved to the target
+    // parent container.
+    snap_group_divider_.SetVisible(cached_divider_visibility);
 
-  RefreshSnapGroup();
+    RefreshSnapGroup();
+  }
 }
 
 void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,

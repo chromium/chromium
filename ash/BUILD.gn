@@ -3110,6 +3110,8 @@ component("ash") {
     "wm/root_window_layout_manager.h",
     "wm/scoped_window_tucker.cc",
     "wm/scoped_window_tucker.h",
+    "wm/scoped_windows_mover.cc",
+    "wm/scoped_windows_mover.h",
     "wm/screen_dimmer.cc",
     "wm/screen_dimmer.h",
     "wm/screen_pinning_controller.cc",
