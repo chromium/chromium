@@ -132,6 +132,10 @@ class LensSearchController {
   // nice if the overlay is visible when this is called.
   virtual void CloseLensSync(lens::LensOverlayDismissalSource dismissal_source);
 
+  // Hides the Lens overlay. This does not close the side panel. If the overlay
+  // is open without the side panel, this will end the Lens session.
+  void HideOverlay(lens::LensOverlayDismissalSource dismissal_source);
+
   // Launches the survey if the user has not already seen it.
   void MaybeLaunchSurvey();
 
@@ -253,6 +257,10 @@ class LensSearchController {
   // Shared logic for cleanup that is called after all features have finished
   // cleaning up.
   void CloseLensPart2(lens::LensOverlayDismissalSource dismissal_source);
+
+  // The final step for closing the overlay. This is called after the lens
+  // overlay has faded out.
+  void OnOverlayHidden(lens::LensOverlayDismissalSource dismissal_source);
 
   // Called before the lens results panel begins hiding. This is called before
   // any side panel closing animations begin.

@@ -263,7 +263,7 @@ LensOverlayController* LensOverlayController::FromTabWebContents(
       tabs::TabInterface::GetFromContents(tab_web_contents));
 }
 
-void LensOverlayController::TriggerOverlayCloseAnimation(
+void LensOverlayController::TriggerOverlayFadeOutAnimation(
     base::OnceClosure callback) {
   if (state_ == State::kOff || IsOverlayClosing()) {
     return;
@@ -1613,21 +1613,6 @@ void LensOverlayController::ShowOverlay() {
       ->AddObserver(this);
 }
 
-void LensOverlayController::HideOverlay() {
-  // Hide the overlay view, but keep the web view attached to the overlay view
-  // so that the overlay can be re-shown without creating a new web view.
-  preselection_widget_anchor_->SetVisible(false);
-  overlay_web_view_->SetVisible(false);
-  MaybeHideSharedOverlayView();
-
-  SetLiveBlur(false);
-  HidePreselectionBubble();
-  // Re-enable mouse and keyboard events to the tab contents web view.
-  auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
-  CHECK(contents_web_view);
-  contents_web_view->SetEnabled(true);
-}
-
 void LensOverlayController::MaybeHideSharedOverlayView() {
   if (!overlay_view_) {
     return;
@@ -2167,11 +2152,23 @@ void LensOverlayController::AddBackgroundBlur() {
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {
+  if (lens::features::IsLensOverlayBackToPageEnabled()) {
+    lens_search_controller_->HideOverlay(
+        lens::LensOverlayDismissalSource::kOverlayCloseButton);
+    return;
+  }
+
   lens_search_controller_->CloseLensAsync(
       lens::LensOverlayDismissalSource::kOverlayCloseButton);
 }
 
 void LensOverlayController::CloseRequestedByOverlayBackgroundClick() {
+  if (lens::features::IsLensOverlayBackToPageEnabled()) {
+    lens_search_controller_->HideOverlay(
+        lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
+    return;
+  }
+
   lens_search_controller_->CloseLensAsync(
       lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
 }
@@ -2561,6 +2558,26 @@ void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
 
   results_side_panel_coordinator_->SetPageContentUploadProgress(
       total > 0 ? static_cast<float>(position) / total : 1.0f);
+}
+
+void LensOverlayController::HideOverlay() {
+  // Hide the overlay view, but keep the web view attached to the overlay view
+  // so that the overlay can be re-shown without creating a new web view.
+  preselection_widget_anchor_->SetVisible(false);
+  overlay_web_view_->SetVisible(false);
+  MaybeHideSharedOverlayView();
+
+  SetLiveBlur(false);
+  HidePreselectionBubble();
+  // Re-enable mouse and keyboard events to the tab contents web view.
+  auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
+  CHECK(contents_web_view);
+  contents_web_view->SetEnabled(true);
+
+  // If the side panel is open, set the overlay state to kLivePageAndResults.
+  if (results_side_panel_coordinator_->IsSidePanelBound()) {
+    state_ = State::kLivePageAndResults;
+  }
 }
 
 void LensOverlayController::MaybeLaunchSurvey() {

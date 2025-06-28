@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 
 namespace lens {
@@ -39,6 +40,12 @@ bool LensOverlayEventHandler::HandleKeyboardEvent(
   }
 
   if (IsEscapeEvent(event)) {
+    if (lens::features::IsLensOverlayBackToPageEnabled()) {
+      lens_search_controller_->HideOverlay(
+          lens::LensOverlayDismissalSource::kEscapeKeyPress);
+      return true;
+    }
+
     lens_search_controller_->CloseLensAsync(
         lens::LensOverlayDismissalSource::kEscapeKeyPress);
     return true;

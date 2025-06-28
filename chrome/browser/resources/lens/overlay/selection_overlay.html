@@ -144,6 +144,28 @@
     position: absolute;
   }
 
+  #closeButton {
+    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-size: 36px;
+    --cr-icon-button-fill-color: white;
+    --cr-icon-image: url("icon_clear.svg");
+    background-color: #00000060;
+    height: 36px;
+    inset-inline-end: -11px;
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    pointer-events: all;
+    position: absolute;
+    top: -8px;
+    width: 36px;
+    z-index: 6;
+  }
+
+  :host(:not([is-back-to-page-enabled])) #closeButton,
+  :host(:not([side-panel-opened])) #closeButton {
+    display: none;
+  }
+
   #cursor {
     align-items: center;
     background: var(--color-selection-element);
@@ -360,6 +382,11 @@
   on-pointerenter="handlePointerEnter"
   on-pointerleave="handlePointerLeave"
 >
+  <cr-icon-button id="closeButton" on-click="onCloseButtonClick"
+    aria-label="$i18n{close}" title="$i18n{close}"
+    on-pointerenter="handlePointerEnterButton"
+    on-pointerleave="handlePointerLeaveButton"
+  ></cr-icon-button>
   <canvas
     id="backgroundImageCanvas"
     style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"
@@ -418,8 +445,8 @@
       role="menu"
       style$="[[getContextMenuStyle(selectedTextContextMenuX,
                                       selectedTextContextMenuY)]]"
-      on-pointerenter="handlePointerEnterContextMenu"
-      on-pointerleave="handlePointerLeaveContextMenu"
+      on-pointerenter="handlePointerEnterButton"
+      on-pointerleave="handlePointerLeaveButton"
     >
       <div
         class="context-menu-item" role="menuitem" tabindex="0"
@@ -442,8 +469,8 @@
       role="menu"
       style$="[[selectedRegionContextMenuHorizontalStyle]]
                 [[selectedRegionContextMenuVerticalStyle]]"
-      on-pointerenter="handlePointerEnterContextMenu"
-      on-pointerleave="handlePointerLeaveContextMenu"
+      on-pointerenter="handlePointerEnterButton"
+      on-pointerleave="handlePointerLeaveButton"
     >
       <div
         id="copyDetectedTextContextMenuItem"
