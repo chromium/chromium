@@ -52,7 +52,8 @@ class GlicWindowResizeAnimationTest : public test::InteractiveGlicTest {
  public:
   void SetUpOnMainThread() override {
     test::InteractiveGlicTest::SetUpOnMainThread();
-    RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+    RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                    WaitForCanResizeEnabled(/*enabled=*/true));
   }
 
   void ExpectRectBetween(const gfx::Rect& current_rect,

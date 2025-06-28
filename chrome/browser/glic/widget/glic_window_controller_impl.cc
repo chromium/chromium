@@ -391,7 +391,7 @@ void GlicWindowControllerImpl::OnWidgetUserResizeEnded() {
   }
 
   if (GetGlicWidget()) {
-    glic_size_ = GetGlicWidget()->GetSize();
+    glic_size_ = GetGlicWidget()->GetClientAreaBoundsInScreen().size();
     SaveWidgetPosition(/*user_modified=*/true);
   }
 
@@ -985,9 +985,44 @@ void GlicWindowControllerImpl::EnableDragResize(bool enabled) {
     SetGlicWindowToFloatingMode(!enabled);
   }
 
-  GetGlicWidget()->widget_delegate()->SetCanResize(enabled);
+  MaybeSetWidgetCanResize();
   GetGlicView()->UpdateBackgroundColor();
   glic_window_animator_->MaybeAnimateToTargetSize();
+}
+
+void GlicWindowControllerImpl::MaybeSetWidgetCanResize() {
+  if (!GetGlicWidget()) {
+    return;
+  }
+  if (GetGlicWidget()->widget_delegate()->CanResize() == user_resizable_ ||
+      glic_window_animator_->IsAnimating()) {
+    // If the resize state is already correct or the widget is animating do not
+    // update the resize state.
+    return;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows when resize is enabled there is an invisible border added
+  // around the client area. We need to make the widget larger or smaller to
+  // keep the visible client area the same size.
+  gfx::Rect previous_client_bounds =
+      GetGlicWidget()->GetClientAreaBoundsInScreen();
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Update resize state on widget delegate.
+  GetGlicWidget()->widget_delegate()->SetCanResize(user_resizable_);
+
+#if BUILDFLAG(IS_WIN)
+  if (user_resizable_) {
+    // Resizable so the widget area is larger than the client area.
+    gfx::Rect new_widget_bounds =
+        GetGlicWidget()->VisibleToWidgetBounds(previous_client_bounds);
+    GetGlicWidget()->SetBoundsConstrained(new_widget_bounds);
+  } else {
+    // Not resizable so the client and widget areas are the same.
+    GetGlicWidget()->SetBoundsConstrained(previous_client_bounds);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 gfx::Size GlicWindowControllerImpl::GetSize() {

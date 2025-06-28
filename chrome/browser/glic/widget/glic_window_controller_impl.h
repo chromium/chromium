@@ -85,6 +85,7 @@ class GlicWindowControllerImpl
               base::TimeDelta duration,
               base::OnceClosure callback) override;
   void EnableDragResize(bool enabled) override;
+  void MaybeSetWidgetCanResize() override;
   gfx::Size GetSize() override;
   void SetDraggableAreas(
       const std::vector<gfx::Rect>& draggable_areas) override;

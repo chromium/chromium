@@ -35,6 +35,7 @@ class MockGlicWindowController
               (const gfx::Size&, base::TimeDelta, base::OnceClosure),
               (override));
   MOCK_METHOD(void, EnableDragResize, (bool), (override));
+  MOCK_METHOD(void, MaybeSetWidgetCanResize, (), (override));
   MOCK_METHOD(gfx::Size, GetSize, (), (override));
   MOCK_METHOD(void,
               SetDraggableAreas,

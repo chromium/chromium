@@ -6,9 +6,11 @@
 
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/polling_state_observer.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace glic::test {
 
@@ -31,6 +33,19 @@ GlicWindowControllerStateObserver::~GlicWindowControllerStateObserver() =
 
 DEFINE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
                               kGlicWindowControllerState);
+
+GlicWindowContorllerResizeObserver::GlicWindowContorllerResizeObserver(
+    GlicWindowController& controller)
+    : PollingStateObserver([&controller]() {
+        return controller.GetGlicWidget()
+                   ? controller.GetGlicWidget()->widget_delegate()->CanResize()
+                   : false;
+      }) {}
+GlicWindowContorllerResizeObserver::~GlicWindowContorllerResizeObserver() =
+    default;
+
+DEFINE_STATE_IDENTIFIER_VALUE(GlicWindowContorllerResizeObserver,
+                              kGlicWindowControllerResizeState);
 
 GlicAppStateObserver::GlicAppStateObserver(Host* host)
     : ObservationStateObserver(host) {

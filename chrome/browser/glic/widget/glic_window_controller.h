@@ -109,6 +109,11 @@ class GlicWindowController : public Host::Delegate {
   // if the widget doesn't exist or the feature flag is disabled.
   virtual void EnableDragResize(bool enabled) = 0;
 
+  // Update the resize state of the widget if it is needed and safe to do so.
+  // On Windows make sure that the client area size remains the same even if
+  // the widget size changes because the widget is resizable.
+  virtual void MaybeSetWidgetCanResize() = 0;
+
   // Returns the current size of the glic window.
   virtual gfx::Size GetSize() = 0;
 

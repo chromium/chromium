@@ -81,6 +81,10 @@ gfx::Rect GlicWindowAnimator::GetCurrentTargetBounds() {
   }
 }
 
+bool GlicWindowAnimator::IsAnimating() const {
+  return window_resize_animation_ != nullptr;
+}
+
 void GlicWindowAnimator::ResetLastTargetSize() {
   last_target_size_ = gfx::Size();
 }
@@ -98,6 +102,7 @@ void GlicWindowAnimator::MaybeAnimateToTargetSize() {
 void GlicWindowAnimator::ResizeFinished() {
   // Destroy window_resize_animation_.
   window_resize_animation_.reset();
+  window_controller_->MaybeSetWidgetCanResize();
 }
 
 }  // namespace glic

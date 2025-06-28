@@ -49,12 +49,10 @@ gfx::Outsets GetTargetOutsets(const gfx::Rect& bounds) {
   int frame_thickness = ui::GetResizableFrameThicknessFromMonitorInDIP(
       MonitorFromRect(&bounds_rect, MONITOR_DEFAULTTONEAREST),
       /*has_caption=*/false);
-  // On Windows, the presence of a frame means that we need to adjust both the
-  // width and height of the widget by 2*frame thickness, and center the content
-  // horizontally.
-  outsets.set_left(frame_thickness);
-  outsets.set_right(frame_thickness);
-  outsets.set_bottom(2 * frame_thickness);
+  // On Windows, the presence of a frame means that we need to adjust the left,
+  // right and bottom by frame thickness.
+  outsets.set_left_right(frame_thickness, frame_thickness);
+  outsets.set_bottom(frame_thickness);
 #endif
   return outsets;
 }
