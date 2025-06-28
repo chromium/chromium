@@ -57,6 +57,7 @@ class WaylandDataDragController;
 class WaylandEventSource;
 class WaylandOutputManager;
 class WaylandSeat;
+class WaylandTabletManager;
 class WaylandWindowDragController;
 class WaylandZcrColorManager;
 class WaylandZwpPointerConstraints;
@@ -157,6 +158,8 @@ class WaylandConnection {
   WaylandOutputManager* wayland_output_manager() const {
     return output_manager_.get();
   }
+
+  WaylandTabletManager* tablet_manager() const { return tablet_manager_.get(); }
 
   // Returns the cursor position, which may be null.
   WaylandCursorPosition* wayland_cursor_position() const {
@@ -317,6 +320,7 @@ class WaylandConnection {
   friend class WaylandDataDeviceManager;
   friend class WaylandOutput;
   friend class WaylandSeat;
+  friend class WaylandTabletManager;
   friend class WaylandZwpPointerConstraints;
   friend class WaylandZwpPointerGestures;
   friend class WaylandZwpRelativePointerManager;
@@ -435,6 +439,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandCursor> cursor_;
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_;
   std::unique_ptr<WaylandOutputManager> output_manager_;
+  std::unique_ptr<WaylandTabletManager> tablet_manager_;
   std::unique_ptr<WaylandCursorPosition> cursor_position_;
   std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
   std::unique_ptr<WaylandCursorShape> cursor_shape_;

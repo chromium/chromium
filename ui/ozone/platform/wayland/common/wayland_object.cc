@@ -25,6 +25,7 @@
 #include <primary-selection-unstable-v1-client-protocol.h>
 #include <relative-pointer-unstable-v1-client-protocol.h>
 #include <single-pixel-buffer-v1-client-protocol.h>
+#include <tablet-unstable-v2-client-protocol.h>
 #include <text-input-extension-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v3-client-protocol.h>
@@ -237,6 +238,11 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_primary_selection_offer_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_primary_selection_source_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_relative_pointer_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_relative_pointer_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_tablet_manager_v2)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_tablet_pad_v2)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_tablet_seat_v2)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_tablet_tool_v2)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_tablet_v2)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_text_input_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_text_input_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_text_input_manager_v3)

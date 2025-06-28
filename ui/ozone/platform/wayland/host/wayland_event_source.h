@@ -24,6 +24,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_tablet_tool.h"
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
@@ -53,6 +54,7 @@ class WaylandEventSource : public PlatformEventSource,
                            public WaylandWindowObserver,
                            public WaylandKeyboard::Delegate,
                            public WaylandPointer::Delegate,
+                           public WaylandTabletTool::Delegate,
                            public WaylandTouch::Delegate,
                            public WaylandZwpPointerGestures::Delegate,
                            public WaylandZwpRelativePointerManager::Delegate {
@@ -133,6 +135,20 @@ class WaylandEventSource : public PlatformEventSource,
   bool IsPointerButtonPressed(EventFlags button) const override;
   void ReleasePressedPointerButtons(WaylandWindow* window,
                                     base::TimeTicks timestamp) override;
+
+  // WaylandTabletTool::Delegate:
+  void OnTabletToolProximityIn(WaylandWindow* window,
+                               const gfx::PointF& location,
+                               const PointerDetails& details,
+                               base::TimeTicks time) override;
+  void OnTabletToolProximityOut(base::TimeTicks time) override;
+  void OnTabletToolMotion(const gfx::PointF& location,
+                          const PointerDetails& details,
+                          base::TimeTicks time) override;
+  void OnTabletToolButton(int32_t button,
+                          bool pressed,
+                          const PointerDetails& details,
+                          base::TimeTicks time) override;
 
   // WaylandTouch::Delegate
   void OnTouchPressEvent(WaylandWindow* window,
@@ -282,6 +298,15 @@ class WaylandEventSource : public PlatformEventSource,
   // to the surface/location where they happened.
   struct TouchPoint;
   base::flat_map<PointerId, std::unique_ptr<TouchPoint>> touch_points_;
+
+  // The window that currently has tablet tool focus.
+  base::WeakPtr<WaylandWindow> tablet_tool_focused_window_;
+
+  // Last known tablet tool location.
+  gfx::PointF tablet_tool_location_;
+
+  // Bitmask of EventFlags used to keep track of the the tablet tool state.
+  int tablet_tool_buttons_ = 0;
 
   std::unique_ptr<WaylandEventWatcher> event_watcher_;
 };
