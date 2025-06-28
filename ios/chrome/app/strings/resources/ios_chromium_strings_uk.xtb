@@ -174,6 +174,7 @@
 <translation id="5203244847421322551">Зберігайте паролі й автоматично заповнюйте їх у Chromium</translation>
 <translation id="5224391634244552924">Немає збережених паролів. Chromium зможе перевірити ваші паролі, коли ви їх збережете.</translation>
 <translation id="5259423875997548710">Візуальний пошук у Chromium.</translation>
+<translation id="5284913972719948193">Імпортуйте дані, щоб використовувати паролі, історію, закладки й кредитні картки в Chromium</translation>
 <translation id="5308226104666789935">Chromium не може перевірити наявність оновлень</translation>
 <translation id="5311557153294205270">Додає введені URL-адреси до закладок у Chromium.</translation>
 <translation id="5383251701169024761">Щоб легко вводити збережені паролі в інших додатках, увімкніть автозаповнення в Chromium.</translation>
@@ -307,6 +308,7 @@
 <translation id="865600487977764604">Захищає вас у Chromium і може покращувати безпеку в інших додатках Google після того, як ви ввійшли в обліковий запис.</translation>
 <translation id="8663480472502753423">Користуйтеся найновішою версією Chromium</translation>
 <translation id="8685813584220679697">Увійдіть в облікові записи цього сайту та Chromium.</translation>
+<translation id="8698780336333802489">Імпорт у Chromium</translation>
 <translation id="8730503818204408000">Відкриває налаштування, де можна зробити Chromium веб-переглядачем за умовчанням.</translation>
 <translation id="8754966941001340678">Chromium рекомендує покращений захист</translation>
 <translation id="8759037115129007407">Зараз учасник вашої сімейної групи не може отримувати паролі. Попросіть його оновити Chromium і синхронізувати паролі. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>

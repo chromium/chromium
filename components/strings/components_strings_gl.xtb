@@ -420,6 +420,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1706625117072057435">Niveis de zoom</translation>
 <translation id="1706922226983368260">Clave de acceso • <ph name="PHONE_NAME" /></translation>
 <translation id="1706954506755087368">{1,plural, =1{Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza supostamente é válido a partir de mañá. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.}other{Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza supostamente é válido dentro de # días. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.}}</translation>
+<translation id="1709711942721576168">Botón Modo IA, activar para facer preguntas no modo IA</translation>
 <translation id="1710259589646384581">Sistema operativo</translation>
 <translation id="1711234383449478798">Ignorouse porque a política <ph name="POLICY_NAME" /> non se definiu co valor <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">O URL <ph name="URL" /> quere almacenar datos de forma permanente no teu ordenador local</translation>
@@ -2158,6 +2159,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4635278307999235413">Enviando datos á consola de administración</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4640225694041297329">Mostrar os resultados dos últimos 7 días</translation>
+<translation id="4642296966515958616">Para poderes unirte a este grupo de pestanas, actualiza Chrome</translation>
 <translation id="464342062220857295">Busca funcións</translation>
 <translation id="4644567637638438744">Os ficheiros só se poden cargar se tes a sesión iniciada en Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Orde inversa cara abaixo</translation>
@@ -2931,6 +2933,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5967592137238574583">Edita a información de contacto</translation>
 <translation id="5967867314010545767">Eliminar do historial</translation>
 <translation id="5968022600320704045">Non hai resultados da busca</translation>
+<translation id="5968400720580217226">Modo IA</translation>
 <translation id="5969199813874624822">Gardar e facer seguimento do prezo</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sexto rolo</translation>
@@ -3026,6 +3029,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6108849843016142864">Réptiles e anfibios</translation>
 <translation id="610911394827799129">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">As túas buscas, o mellores resultados e o contido das páxinas envíanse a Google. Ademais, os membros do equipo de revisión poden velos para mellorar esta función.</translation>
+<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Introducir para facer preguntas co modo IA</translation>
 <translation id="6116338172782435947">Ver o texto e as imaxes que se copian no portapapeis</translation>
 <translation id="6117833587752089929">Foto (satinado)</translation>
 <translation id="6118782133429281336">A lista de orixe está baleira.</translation>
@@ -3151,6 +3155,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6326947323444967009">Establecer Chrome como navegador predeterminado do sistema na configuración de iOS</translation>
 <translation id="6327065120806001832">acceso á rede local</translation>
 <translation id="6328639280570009161">Proba a desactivar a predición da rede</translation>
+<translation id="6329815962353376655">&lt;Escribe unha pregunta&gt;</translation>
 <translation id="6334834493885103305">Xa podes pagar a prazos con Affirm, Zip ou Klarna</translation>
 <translation id="6335029926534404762">Zapatillas deportivas</translation>
 <translation id="6336948221660696475">Non se permitiu a RV</translation>
@@ -3317,6 +3322,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6587893660316489419">Sobre B5</translation>
 <translation id="6587923378399804057">Ligazón que copiaches</translation>
 <translation id="6591833882275308647">O teu <ph name="DEVICE_TYPE" /> non está xestionado</translation>
+<translation id="6595495738567740002">Para eliminar cookies de Google desde este dispositivo, <ph name="BEGIN_LINK" />pecha sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Opcións de cifrado</translation>
 <translation id="6596573334527383067">Mostrar os resultados de onte</translation>
 <translation id="6597665340361269064">90 graos</translation>
@@ -3863,6 +3869,7 @@ Detalles adicionais:
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Poderás usalo nos produtos de Google</translation>
 <translation id="7523408071729642236">Fabricación</translation>
+<translation id="7524958309155133228">Preguntar a <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Crear</translation>
 <translation id="7525804896095537619">O nome non pode estar baleiro</translation>
 <translation id="7526934274050461096">A túa conexión a este sitio non é privada</translation>
@@ -4707,6 +4714,7 @@ Detalles adicionais:
 <translation id="9004367719664099443">Sesión de RV en curso</translation>
 <translation id="9005998258318286617">Produciuse un erro ao cargar o documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Ningún}=1{De 1 sitio}other{De # sitios}}</translation>
 <translation id="9012194306129927220">Xa podes pagar a prazos con Affirm ou Zip</translation>
 <translation id="9014705027639070815">Os sitios que visites poderán solicitarlle a Chrome información que lles sirva de axuda para medir o rendemento dos seus anuncios. Chrome permite que os sitios recompilen certo tipo de datos (por exemplo, se fixeches unha compra despois de visitar un sitio).</translation>
 <translation id="9018120810758822233">Indica o código de seguranza de <ph name="CREDIT_CARD" /></translation>
@@ -4729,6 +4737,7 @@ Detalles adicionais:
 <translation id="9042617223719777575">Gran capacidade</translation>
 <translation id="9042827002460091668">Comproba a conexión a Internet e téntao de novo</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />: <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> quere buscar calquera dispositivo da túa rede local ou conectarse a el</translation>
 <translation id="9046864189129893978">Micrófonos (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Estas accións esixen que a política <ph name="POLICY_NAME" /> se defina como <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 in</translation>

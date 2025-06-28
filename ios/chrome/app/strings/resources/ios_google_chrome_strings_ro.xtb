@@ -90,6 +90,7 @@ Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum
 <translation id="2957447865124070833">Selectează <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Adaugă marcaje în Chrome</translation>
 <translation id="3030414234702425231">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chrome de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
+<translation id="3042447686908081308">Importă în Chrome</translation>
 <translation id="3051521853355903257">Gestionează parolele în Chrome</translation>
 <translation id="309672519329227863">Accesează parolele Chrome și multe altele în alte aplicații.</translation>
 <translation id="3109170945534582468">Acțiuni Chrome</translation>
@@ -337,6 +338,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="9176561303811134420">Gestionează metodele de plată în Chrome</translation>
 <translation id="9181628561061032322">Deschide filele recente din Chrome.</translation>
 <translation id="948597495737267756">Deschide pagina Istoricul Chrome.</translation>
+<translation id="954347330803595209">Importă datele pentru a folosi parolele, istoricul, marcajele și cardurile de credit în Chrome</translation>
 <translation id="97300214378190234">Folosește Chrome de fiecare dată când atingi linkuri în alte aplicații.</translation>
 <translation id="997929539742564806">Conectează-te rapid la aplicații și site-uri completând automat parolele și cheile de acces din Chrome</translation>
 <translation id="998677222109959694">Gestionează setările Chrome</translation>

@@ -174,6 +174,7 @@
 <translation id="5203244847421322551">บันทึกและป้อนรหัสผ่านอัตโนมัติใน Chromium</translation>
 <translation id="5224391634244552924">ไม่มีรหัสผ่านที่บันทึกไว้ Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="5259423875997548710">ค้นหาภาพใน Chromium</translation>
+<translation id="5284913972719948193">นําเข้าข้อมูลเพื่อใช้รหัสผ่าน ประวัติการเข้าชม บุ๊กมาร์ก และบัตรเครดิตใน Chromium</translation>
 <translation id="5308226104666789935">Chromium ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="5311557153294205270">เพิ่ม URL ที่ป้อนไปยังบุ๊กมาร์กใน Chromium</translation>
 <translation id="5383251701169024761">หากต้องการเรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปอื่นๆ ได้อย่างง่ายดาย ให้เลือก Chromium สำหรับการป้อนข้อความอัตโนมัติ</translation>
@@ -307,6 +308,7 @@
 <translation id="865600487977764604">รักษาความปลอดภัยของคุณใน Chromium และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>
 <translation id="8663480472502753423">อัปเดต Chromium อยู่เสมอ</translation>
 <translation id="8685813584220679697">ลงชื่อเข้าใช้เว็บไซต์นี้และ Chromium</translation>
+<translation id="8698780336333802489">นำเข้าไปยัง Chromium</translation>
 <translation id="8730503818204408000">เปิดการตั้งค่า Chromium เพื่อตั้งค่า Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="8754966941001340678">Chromium ขอแนะนําการปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="8759037115129007407">สมาชิกในครอบครัวของคุณไม่สามารถรับรหัสผ่านได้ในขณะนี้ ขอให้สมาชิกอัปเดต Chromium และซิงค์รหัสผ่าน <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>

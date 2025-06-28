@@ -80,6 +80,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> тобун жабуу, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> тобун жабуу, түсү: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Кызгылт көгүш</translation>
+<translation id="4203448675570432781">Автоматтык түрдө жок кылуу өтмөктөрүндөгү өзгөртүүлөр тууралуу эскертүү жабылды.</translation>
 <translation id="427987768447457592">Жаңы өтмөктөр тобу</translation>
 <translation id="4371591986692297148">Жигерсиз</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Өтмөктү калыбына келтирүү}other{Өтмөктөрдү калыбына келтирүү}}</translation>
@@ -121,6 +122,7 @@
 <translation id="6051432659151380973">Өтмөк топторуңуз автоматтык түрдө сакталат</translation>
 <translation id="6054741997831917303"><ph name="PREVIOUS_PRICE" /> турган бул нерсенин баасы <ph name="NEW_PRICE" /> болуп калды</translation>
 <translation id="6109251075362363230">Эми эң акыркы колдонулгандан башка бардык кайталанма өтмөктөр архивделет.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Топту жаңы терезеге жылдыруу}other{Топту башка терезеге жылдыруу}}</translation>
 <translation id="6220820548421939212">Ооба</translation>
 <translation id="6228793724645064692">(дүкөндүн рейтинги)</translation>
@@ -154,6 +156,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" өтмөктөр тобу мындан ары жеткиликсиз</translation>
 <translation id="7452985128687107478">Өтмөк топтору автоматтык түрдө сакталып, бардык түзмөктөрдө жаңыртылат</translation>
 <translation id="747459581954555080">Баарын калыбына келтирүү</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү калыбына келтирүү}other{Тандалган<ph name="TABS_COUNT_MANY" />өтмөктү калыбына келтирүү}}</translation>
 <translation id="753732157349120914">Өтмөк которуштургуч</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'да жазылган <ph name="REVIEWS_COUNT_ONE" /> сын-пикир}other{Google'да жазылган <ph name="REVIEWS_COUNT_MANY" /> сын-пикир}}</translation>
 <translation id="7559245342362162951">Топтун өтмөктөрүн толук экрандагы торчодо көрсөтүү</translation>
@@ -183,6 +186,7 @@
 <translation id="8205266828577616993">Өтмөктү жогору жылдыруу</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> мүнөт мурун жаңыртылган}other{<ph name="NUM_MINS_MANY" /> мүнөт мурун жаңыртылган}}</translation>
 <translation id="8236097722223016103">Кыстармаларга кошуу</translation>
+<translation id="827881768507898324">Автоматтык түрдө жок кылуу өтмөктөрүндөгү өзгөртүүлөр тууралуу эскертүү толук ачылды.</translation>
 <translation id="8338427544764842461">Өтмөк топтору ушул жерде сакталып, аккаунтка кирип турган бардык түзмөктөрдө жаңыртылат</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган жалпы өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган жалпы өтмөктөр тобун жайып көрсөтүү, түсү:<ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
@@ -203,6 +207,7 @@
 <translation id="9090098097337832354">Бул дүкөн тууралуу маалымат жабык</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> түсүндөгү <ph name="TITLE_OF_GROUP" /> өтмөктөр тобу үчүн өтмөктөр тобунун аракет менюсун ачыңыз.</translation>
 <translation id="9169594135889675189">Топко жаңы өтмөк кошуу</translation>
+<translation id="9187834032751045001">Автоматтык түрдө жок кылуу өтмөктөрүндөгү өзгөртүүлөр тууралуу эскертүү жарым экранда ачылды.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="992256792861109788">Кызгылтым</translation>

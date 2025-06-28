@@ -156,6 +156,7 @@
 <translation id="7369451074646620503">Η ομάδα καρτελών <ph name="TAB_GROUP_NAME" /> δεν διατίθεται πλέον</translation>
 <translation id="7452985128687107478">Οι ομάδες καρτελών αποθηκεύονται και ενημερώνονται αυτόματα σε όλες τις συσκευές σας</translation>
 <translation id="747459581954555080">Επαναφορά όλων</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> στοιχείο}other{<ph name="TABS_COUNT_MANY" /> στοιχεία}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Επαναφορά <ph name="TABS_COUNT_ONE" /> επιλεγμένου στοιχείου}other{Επαναφορά <ph name="TABS_COUNT_MANY" /> επιλεγμένων στοιχείων}}</translation>
 <translation id="753732157349120914">Εναλλαγή καρτελών</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> έλεγχος από την Google}other{<ph name="REVIEWS_COUNT_MANY" /> έλεγχοι από την Google}}</translation>

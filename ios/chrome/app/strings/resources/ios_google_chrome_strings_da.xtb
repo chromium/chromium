@@ -90,6 +90,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="2957447865124070833">Vælg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Føj bogmærker til Chrome</translation>
 <translation id="3030414234702425231">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chrome-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
+<translation id="3042447686908081308">Importér til Chrome</translation>
 <translation id="3051521853355903257">Administrer adgangskoder i Chrome</translation>
 <translation id="309672519329227863">Få adgang til dine Chrome-adgangskoder og meget mere i andre apps.</translation>
 <translation id="3109170945534582468">Chrome-handlinger</translation>
@@ -337,6 +338,7 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="9176561303811134420">Administrer betalingsmetoder i Chrome</translation>
 <translation id="9181628561061032322">Åbner de seneste faner i Chrome.</translation>
 <translation id="948597495737267756">Åbner siden med din Chrome-historik.</translation>
+<translation id="954347330803595209">Importér dine data for at bruge dine adgangskoder, din historik, dine bogmærker og dine kreditkort i Chrome</translation>
 <translation id="97300214378190234">Brug Chrome, hver gang du trykker på links i andre apps.</translation>
 <translation id="997929539742564806">Log hurtigt ind i apps og på websites ved at udfylde dine adgangskoder og adgangsnøgler automatisk fra Chrome</translation>
 <translation id="998677222109959694">Administrer Chrome-indstillinger</translation>

@@ -90,6 +90,7 @@ Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će s
 <translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Dodavanje oznaka u Chrome</translation>
 <translation id="3030414234702425231">S obzirom na to da se odjavljujete s računa kojim upravlja domena <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromea će se izbrisati s ovog uređaja. Vaši podaci će ostati na vašem Google računu.</translation>
+<translation id="3042447686908081308">Uvezi u Chrome</translation>
 <translation id="3051521853355903257">Upravljanje lozinkama u Chromeu</translation>
 <translation id="309672519329227863">Pristupite lozinkama u Chromeu i ostalom u drugim aplikacijama.</translation>
 <translation id="3109170945534582468">Radnje u Chromeu</translation>
@@ -337,6 +338,7 @@ Vaši podaci su šifrirani vašim pristupnim izrazom <ph name="TIME" />. Unesite
 <translation id="9176561303811134420">Upravljanje načinima plaćanja u Chromeu</translation>
 <translation id="9181628561061032322">Otvaranje nedavne kartice u Chromeu.</translation>
 <translation id="948597495737267756">Otvara stranicu s historijom Chromea.</translation>
+<translation id="954347330803595209">Uvezite podatke da koristite lozinke, historiju, oznake i kreditne kartice u Chromeu</translation>
 <translation id="97300214378190234">Koristite Chrome svaki put kada dodirnete linkove u drugim aplikacijama.</translation>
 <translation id="997929539742564806">Brzo se prijavite u aplikacije i na web lokacije automatskim popunjavanjem lozinki i pristupnih ključeva iz Chromea</translation>
 <translation id="998677222109959694">Upravljajte postavkama Chromea</translation>

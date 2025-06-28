@@ -90,6 +90,7 @@ Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verr
 <translation id="2957447865124070833">Seleziona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Aggiungi preferiti a Chrome</translation>
 <translation id="3030414234702425231">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chrome verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
+<translation id="3042447686908081308">Importa in Chrome</translation>
 <translation id="3051521853355903257">Gestisci le password in Chrome</translation>
 <translation id="309672519329227863">Accedi alle tue password di Chrome e ad altri dati in altre app.</translation>
 <translation id="3109170945534582468">Azioni di Chrome</translation>
@@ -337,6 +338,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="9176561303811134420">Gestisci i metodi di pagamento in Chrome</translation>
 <translation id="9181628561061032322">Apre le schede recenti di Chrome.</translation>
 <translation id="948597495737267756">Apre la pagina Cronologia di Chrome.</translation>
+<translation id="954347330803595209">Importa i tuoi dati per utilizzare password, cronologia, preferiti e carte di credito su Chrome</translation>
 <translation id="97300214378190234">Utilizza Chrome ogni volta che tocchi i link in altre app.</translation>
 <translation id="997929539742564806">Accedi rapidamente ad app e siti inserendo automaticamente le password e le passkey da Chrome</translation>
 <translation id="998677222109959694">Gestisci le impostazioni di Chrome</translation>

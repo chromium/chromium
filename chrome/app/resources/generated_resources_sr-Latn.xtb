@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Nevažeća ili oštećena datoteka</translation>
 <translation id="1040761927998636252">Neimenovani obeleživač za <ph name="URL" /></translation>
 <translation id="1041175011127912238">Ova stranica ne reaguje</translation>
+<translation id="1041181446722933623">Obeleživač <ph name="LOCAL_BOOKMARK" /> je sačuvan samo na ovom uređaju. Da biste ga koristili na drugim uređajima, sačuvajte ga u folderu <ph name="ACCOUNT_FOLDER" /> na nalogu.</translation>
 <translation id="1041263367839475438">Dostupni uređaji</translation>
 <translation id="1041607257468256895">Upravljajte dozvolama za lokaciju za veb-sajtove u Chrome-u</translation>
 <translation id="1042174272890264476">Uz računar takođe dobijate ugrađenu RLZ biblioteku proizvoda <ph name="SHORT_PRODUCT_NAME" />. RLZ dodeljuje nejedinstvenu oznaku pomoću koje vas nije moguće lično identifikovati da bi izmerio pretrage i korišćenje proizvoda <ph name="SHORT_PRODUCT_NAME" /> koji su podstaknuti određenom promotivnom kampanjom. Te oznake se ponekad prikazuju u upitima Google pretrage u proizvodu <ph name="PRODUCT_NAME" />.</translation>
@@ -610,6 +611,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1418559532423038045">Uklanja <ph name="VM_NAME" /> sa uređaja <ph name="DEVICE_TYPE" />. Time ćete izbrisati sve aplikacije i podatke na virtuelnoj mašini.</translation>
 <translation id="1418882096915998312">Registracija za preduzeća je u toku</translation>
 <translation id="1418954524306642206">Pregledajte da biste naveli PPD štampača</translation>
+<translation id="1419086691207546433">Dodajte dodatke da biste ostali organizovani, pojednostavili zadatke i poboljšali pregledanje</translation>
 <translation id="1421334842435688311">Informacije o lokaciji mobilnog operatera</translation>
 <translation id="1421514190500081936">Unesite razlog za preuzimanje ovih podataka:</translation>
 <translation id="1422159345171879700">Učitavaj nebezbedne skripte</translation>
@@ -3325,6 +3327,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3309330461362844500">ID profila sertifikata</translation>
 <translation id="3310379801837527592">Pridružite se grupi kartica sa korisnikom <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUM_OTHER_MEMBERS" /> osobom</translation>
 <translation id="331080746368555063">Privatni sajtovi mogu da obuhvataju stvari kao što je intranet preduzeća</translation>
+<translation id="3311007761540106761">Podrazumevan sistemski</translation>
 <translation id="3311445899360743395">Podaci povezani sa ovom aplikacijom će se možda ukloniti sa ovog uređaja.</translation>
 <translation id="3312470654018965389">Konfiguriše se Linux kontejner</translation>
 <translation id="3312883087018430408">Da biste pretraživali određeni sajt ili deo Chrome-a, unesite njegovu prečicu u traku za adresu i svoju željenu tastersku prečicu. Na primer, da biste pretraživali samo obeleživače, unesite „@bookmarks“, pa pritisnite Tab ili taster za razmak.</translation>
@@ -9686,6 +9689,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7830833461614351956">Želite da kopirate <ph name="NUM_OF_FILES" /> fajl(ov)a u <ph name="CLOUD_PROVIDER" /> da biste ih otvorili?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Sačuvane prilagođene reči će se pojaviti ovde</translation>
+<translation id="7834832693620032149">Da biste delili zvuk, delite karticu ili prozor</translation>
 <translation id="7836577093182643605">Lista tema koje ste blokirali i za koje ne želite da se dele sa sajtovima</translation>
 <translation id="7836745198769390202">Trenutno imate <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> i drugo. Organizacija će moći da vidi ove podatke i upravlja njima</translation>
 <translation id="7836850009646241041">Ponovo dodirnite bezbednosni ključ</translation>
@@ -10556,6 +10560,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8425213833346101688">Promeni</translation>
 <translation id="8425492902634685834">Prikači na traku zadataka</translation>
 <translation id="8425768983279799676">Možete da koristite PIN za otključavanje uređaja.</translation>
+<translation id="8426697201161711396">Prijavite se u Chrome da bi vam lozinke i drugi sadržaj bili dostupni na svim uređajima</translation>
 <translation id="8427213022735114808">Diktiranje šalje glas Google-u da bi se omogućilo pisanje glasom u poljima za tekst.</translation>
 <translation id="8427292751741042100">ugrađeno na bilo kom hostu</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
@@ -11295,6 +11300,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8940081510938872932">Računar trenutno radi previše stvari. Probajte ponovo kasnije.</translation>
 <translation id="8940888110818450052">Opcije za prijavljivanje</translation>
 <translation id="8941173171815156065">Opozovite dozvolu „<ph name="PERMISSION" />“</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> deli prozor i zvuk.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> je isključena</translation>
 <translation id="894191600409472540">Napravite jake lozinke</translation>
 <translation id="8942714513622077633">Želite li da otkažete podešavanje Microsoft-a 365?</translation>

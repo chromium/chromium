@@ -357,6 +357,7 @@
 <translation id="1232569758102978740">უსათაურო</translation>
 <translation id="1233497634904001272">მოთხოვნის დასასრულებლად შეეხეთ უსაფრთხოების გასაღებს.</translation>
 <translation id="1233721473400465416">ლოკალი</translation>
+<translation id="1233835246554936745">{0,plural, =1{1 ერთეულის ანგარიშში შენახვა}other{# ერთეულის ანგარიშში შენახვა}}</translation>
 <translation id="1234736487471201993">ამ სურათისთვის QR კოდის შექმნა</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">ცნობილი ქსელები</translation>
@@ -5645,6 +5646,7 @@
 <translation id="4918844574251943176">სურათი დაკოპირდა</translation>
 <translation id="4921348630401250116">ტექსტის გახმოვანება</translation>
 <translation id="4922104989726031751">პაროლების მმართველის თქვენს ოპერაციულ სისტემასთან გამოსაყენებლად ხელახლა გაუშვით Chromium და მიანიჭეთ მას წვდომა თქვენი კომპიუტერის პაროლების მმართველზე. ხელახლა გაშვების შემდეგ თქვენი ჩანართები თავიდან გაიხსნება.</translation>
+<translation id="4923561999941435531">{0,plural, =1{1 ერთეულის ანგარიშში შენახვა}other{# ერთეულის ანგარიშში შენახვა}}</translation>
 <translation id="492363500327720082">მიმდინარეობს <ph name="APP_NAME" />-ის დეინსტალაცია...</translation>
 <translation id="4923977675318667854">ჩანართების ჯგუფების ჩვენება</translation>
 <translation id="4924002401726507608">გამოხმაურება</translation>
@@ -7062,6 +7064,7 @@
 <translation id="5965607173855879702">მონაცემების წაშლა...</translation>
 <translation id="5966511985653515929">საიტების მონაცემები წაიშლება თქვენი მოწყობილობიდან  ყველა ფანჯრის დახურვისას</translation>
 <translation id="5968022600320704045">ძიების შედეგები ვერ მოიძებნა</translation>
+<translation id="5968400720580217226">ხელოვნური ინტელექტის რეჟიმი</translation>
 <translation id="5969364029958154283">შეიტყვეთ მეტი პარამეტრების გადაყენების შესახებ</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FOLDERNAME" />“-ში ფაილების ნახვა</translation>
 <translation id="5969728632630673489">კლავიატურის მალსახმობების შესახებ შეტყობინება დაიხურა</translation>
@@ -9525,6 +9528,7 @@
 <translation id="7722040605881499779">განახლებისთვის საჭიროა: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">ნაგულისხმევ Chrome-ზე გადაყენება</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
+<translation id="7724711098786238351">დემო-რეჟიმი განკუთვნილია 18 წელს მიღწეული მომხმარებლებისთვის და მასზე ვრცელდება Google-ის მომსახურების პირობები და კონფიდენციალურობის დებულება. ამ მოწყობილობაში შეტანილი მონაცემები შეიძლება ნახონ სხვებმა პერიოდულ გასუფთავებებს შორის.</translation>
 <translation id="7726288096350730168">ამ მოწყობილობიდან წაშლა</translation>
 <translation id="7726391492136714301">ნახეთ თქვენი ტელეფონის შეტყობინებები და აპები</translation>
 <translation id="7727898923446098954">ჩანართი დამალულია</translation>
@@ -9682,6 +9686,7 @@
 <translation id="7830833461614351956">დაკოპირდეს <ph name="NUM_OF_FILES" /> ფაილი <ph name="CLOUD_PROVIDER" />-ში გასახსნელად?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">შენახული მორგებული სიტყვები აქ გამოჩნდება</translation>
+<translation id="7834832693620032149">აუდიოს გასაზიარებლად გააზიარეთ ჩანართი ან ფანჯარა</translation>
 <translation id="7836577093182643605">თქვენ მიერ დაბლოკილი იმ თემების სია, რომლებიც არ გსურთ, გაზიარდეს საიტებთან</translation>
 <translation id="7836745198769390202">თქვენ ახლა გაქვთ <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> და სხვა. თქვენი ორგანიზაცია შეძლებს ამ მონაცემების ნახვას და მართვას</translation>
 <translation id="7836850009646241041">ხელახლა სცადეთ თქვენს უსაფრთხოების გასაღებზე შეხება</translation>
@@ -11019,6 +11024,7 @@
 <translation id="8749805710397399240">თქვენი ეკრანის ტრანსლირება ვერ ხერხდება. შეამოწმეთ ეკრანის ჩაწერის ნებართვა სისტემის პარამეტრებიდან.</translation>
 <translation id="8749826920799243530">მოწყობილობა რეგისტრირებული არ არის</translation>
 <translation id="8749863574775030885">USB მოწყობილობებზე უცნობი ვენდორისაგან წვდომა</translation>
+<translation id="8749865622265861882">თქვენ იყენებთ დემო მოწყობილობას</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> ითხოვს დაკავშირებას თანმიმდევრულ პორტთან</translation>
 <translation id="8750346984209549530">ფიჭური APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex-ის აუდიოს პარამეტრების მართვა</translation>
@@ -11288,6 +11294,7 @@
 <translation id="8940081510938872932">თქვენს კომპიუტერი ძალიან ბევრ რამეს აკეთებს ახლა. სცადეთ მოგვიანებით.</translation>
 <translation id="8940888110818450052">სისტემაში შესვლის ვარიანტები</translation>
 <translation id="8941173171815156065">ნებართვის „<ph name="PERMISSION" />“ გაუქმება</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> აზიარებს ფანჯარას და აუდიოს.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> გამორთულია</translation>
 <translation id="894191600409472540">შექმენით ძლიერი პაროლები</translation>
 <translation id="8942714513622077633">გსურთ, გააუქმოთ Microsoft 365-ის დაყენება?</translation>

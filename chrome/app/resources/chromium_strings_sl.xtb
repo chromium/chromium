@@ -41,6 +41,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1547469039832541117">Konča označeno opravilo.</translation>
 <translation id="1553461853655228091">Chromium potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Ta razširitev ni več podprta. Chromium priporoča, da jo odstranite.}one{Te razširitve niso več podprte. Chromium priporoča, da jih odstranite.}two{Te razširitve niso več podprte. Chromium priporoča, da jih odstranite.}few{Te razširitve niso več podprte. Chromium priporoča, da jih odstranite.}other{Te razširitve niso več podprte. Chromium priporoča, da jih odstranite.}}</translation>
+<translation id="1562320819937089394">Pripni Chromium</translation>
 <translation id="1574377791422810894">Varnostna orodja v Chromiumu</translation>
 <translation id="1594928384848033697">Chromium želi izbrisati podatke upravitelja gesel. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimnih oken se ne bo znova odprlo.}}</translation>
@@ -523,6 +524,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
 <translation id="8010081455002666927">Samodejno zaznavanje</translation>
 <translation id="8013436988911883588">Ko bo imel Chromium dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
+<translation id="8031714377769448844">Pripnite Chromium v opravilno vrstico, da lahko kadar koli hitro dostopate do njega</translation>
 <translation id="80471789339884597">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati vse brskalnike.</translation>
 <translation id="8054112667659782652">Vedno pokaži bližnjico za slikovno iskanje</translation>
 <translation id="8077498902115777962">Onemogoči Chromium, ki se izvaja v ozadju za aplikacije</translation>
@@ -578,6 +580,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8704119203788522458">To je vaš Chromium</translation>
 <translation id="8719993436687031146">Se želite prijaviti v Chromium?</translation>
 <translation id="8747073452963259673">spodnji levi kot območja za iskanje: levo <ph name="LEFT" /> %, spodaj <ph name="BOTTOM" /> %</translation>
+<translation id="8768722695577490596">Gesla je mogoče izbrisati samo zunaj Chromiuma</translation>
 <translation id="878572486461146056">Napaka pri namestitvi: Skrbnik omrežja je uveljavil pravilnik skupine, ki preprečuje namestitev: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium potrebuje dovoljenje za dostop do fotoaparata in mikrofona za to spletno mesto</translation>
 <translation id="8818550178040858407">Ali se želite prijaviti v Chromium?</translation>

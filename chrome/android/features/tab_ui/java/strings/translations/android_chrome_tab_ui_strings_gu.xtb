@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">અન્ય ડિવાઇસમાંથી ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે ખોલો</translation>
 <translation id="1075622780330595106">હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> વર્ષ પહેલાં બનાવ્યું}one{<ph name="NUM_YEARS_MANY" /> વર્ષ પહેલાં બનાવ્યું}other{<ph name="NUM_YEARS_MANY" /> વર્ષ પહેલાં બનાવ્યું}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{નિષ્ક્રિય ટૅબ અને ગ્રૂપ 1 મહિના પછી બંધ કરવામાં આવશે}one{નિષ્ક્રિય ટૅબ અને ગ્રૂપ <ph name="MONTH_COUNT_MANY" /> મહિના પછી બંધ કરવામાં આવશે}other{નિષ્ક્રિય ટૅબ અને ગ્રૂપ <ph name="MONTH_COUNT_MANY" /> મહિના પછી બંધ કરવામાં આવશે}}</translation>
 <translation id="1173894706177603556">નામ બદલો</translation>
 <translation id="1197088940767939838">નારંગી</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> ટૅબ ધરાવતું <ph name="TITLE_OF_GROUP" /> ખોલો}one{<ph name="TAB_COUNT2" /> ટૅબ ધરાવતું <ph name="TITLE_OF_GROUP" /> ખોલો}other{<ph name="TAB_COUNT2" /> ટૅબ ધરાવતું <ph name="TITLE_OF_GROUP" /> ખોલો}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપના વિકલ્પો</translation>
+<translation id="1300188005269437765">ટૅબ અને ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે ક્યારે નિષ્ક્રિય વિભાગમાં ખસેડવામાં આવે તે પસંદ કરો.</translation>
 <translation id="1329584516321524826">હમણા જ અપડેટ કર્યું</translation>
 <translation id="1340839264183302272">ગ્રૂપ છોડો</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતું,<ph name="COLOR_NAME" /> રંગનું, <ph name="CARD_LABEL" />વાળું <ph name="TITLE_OF_GROUP" /> ટૅબનું ગ્રૂપ મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતું,<ph name="COLOR_NAME" /> રંગનું, <ph name="CARD_LABEL" />વાળું <ph name="TITLE_OF_GROUP" /> ટૅબનું ગ્રૂપ મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા,<ph name="COLOR_NAME" /> રંગના, <ph name="CARD_LABEL" />વાળા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ટૅબનું ગ્રૂપ બનાવ્યું</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="1909810060368225529">નોટિસ: શેર કરેલા ટૅબના આ ગ્રૂપમાં કરવામાં આવેલા ફેરફારો દરેક વ્યક્તિ જોઈ શકે છે. દરેક વ્યક્તિ તમારા શેર કરેલા ટૅબના ગ્રૂપમાં ફેરફારો કરી શકે છે</translation>
+<translation id="1982637982196732906">નિષ્ક્રિય વિભાગમાં ખસેડો</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બુકમાર્ક કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}}</translation>
 <translation id="2055057176188061528">ટૅબનું ગ્રૂપ પસંદ કરો અથવા ટૅબનું નવું ગ્રૂપ બનાવો</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{નિષ્ક્રિય વિભાગમાંની જે આઇટમનો તમે <ph name="AUTO_DELETE_DELAY_ONE" /> મહિનામાં ઉપયોગ ન કર્યો હોય, તેને Chrome ઑટોમૅટિક રીતે બંધ કરે છે. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.}one{Chrome નિષ્ક્રિય વિભાગમાંની આઇટમને ઑટોમૅટિક રીતે બંધ કરે છે, જેનો તમારા <ph name="AUTO_DELETE_DELAY_MANY" /> મહિનામાં ઉપયોગ ન કર્યો હોય. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.}other{Chrome નિષ્ક્રિય વિભાગમાંની આઇટમને ઑટોમૅટિક રીતે બંધ કરે છે, જેનો તમારા <ph name="AUTO_DELETE_DELAY_MANY" /> મહિનામાં ઉપયોગ ન કર્યો હોય. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.}}</translation>
 <translation id="2118649612461486615">સ્ટોરની માહિતી</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારું છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}one{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારું # છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}other{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારા # છૂપા ટૅબ ઉપલબ્ધ રહેશે નહીં.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> પર હવે <ph name="CURRENT_PRICE" /> કિંમત છે</translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">ગ્રૂપના નામમાં ફેરફાર કરો</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ટૅબને બુકમાર્ક કરો}one{ટૅબને બુકમાર્ક કરો}other{ટૅબને બુકમાર્ક કરો}}</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
+<translation id="2371084566192454134">ટૅબ અને ટૅબના ગ્રૂપ</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2498435670446402865">ટૅબ ગ્રૂપનું નામ બદલો</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" અને "<ph name="TAB_GROUP_NAME_2" />" ટૅબના ગ્રૂપ હવે ઉપલબ્ધ નથી</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="257674075312929031">જૂથ</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ, રંગ <ph name="COLOR_NAME" /> ધરાવતા ટૅબના ગ્રૂપ રિસ્ટોર કરો અને ખોલો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ, રંગ <ph name="COLOR_NAME" /> ધરાવતા ટૅબના ગ્રૂપ રિસ્ટોર કરો અને ખોલો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ, રંગ <ph name="COLOR_NAME" /> ધરાવતા ટૅબના ગ્રૂપ રિસ્ટોર કરો અને ખોલો.}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ</translation>
 <translation id="266935134738038806">સાઇટની મુલાકાત લો</translation>
 <translation id="2671423594960767771">જૂથ શેર કરો</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">રેટિંગ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ગ્રૂપમાં ઉમેરો}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ગ્રૂપમાં ઉમેરો}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ગ્રૂપમાં ઉમેરો}}</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 દિવસ પછી નિષ્ક્રિય}one{<ph name="DAY_COUNT_MANY" /> દિવસ પછી નિષ્ક્રિય}other{<ph name="DAY_COUNT_MANY" /> દિવસ પછી નિષ્ક્રિય}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> નવું ટૅબ}one{<ph name="MANY_ADDED" /> નવું ટૅબ}other{<ph name="MANY_ADDED" /> નવા ટૅબ}}</translation>
 <translation id="3613492231657284463">નિષ્ક્રિય ટૅબ સંવાદ છુપાવો</translation>
 <translation id="3619255692378312441">ઍક્સેસ મેનેજ કરો</translation>
@@ -94,6 +101,7 @@
 <translation id="4861953997778766866">દરેક વ્યક્તિ તમારા શેર કરેલા ટૅબ ગ્રૂપમાં ફેરફાર કરી શકે છે</translation>
 <translation id="4870911314065352661">શું બધી ટૅબ બંધ કરીએ?</translation>
 <translation id="4871719318659334896">ગ્રૂપ બંધ કરો</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ, રંગ <ph name="COLOR_NAME" /> ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપ રિસ્ટોર કરો અને ખોલો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ, રંગ <ph name="COLOR_NAME" /> ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપ રિસ્ટોર કરો અને ખોલો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ, રંગ <ph name="COLOR_NAME" /> ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપ રિસ્ટોર કરો અને ખોલો.}}</translation>
 <translation id="4881695831933465202">ખોલો</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ટૅબ બંધ કરો}one{ટૅબ બંધ કરો}other{ટૅબ બંધ કરો}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> ગ્રૂપ સાચવવામાં આવ્યા (આનાથી ટૅબ બંધ થઈ જશે અને ગ્રૂપ ડિલીટ થઈ જશે)</translation>
@@ -114,6 +122,7 @@
 <translation id="5627941783489838464">ટૅબ સંબંધી કોઈ અપડેટ નથી</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeમાંથી <ph name="TABS_COUNT_ONE" /> લિંક}one{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}other{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}}</translation>
 <translation id="5746204836956568669">વધુ ઝડપથી કામ કરવા માટે <ph name="NUMBER_OF_TABS" />ને ગ્રૂપ કરીએ?</translation>
+<translation id="5773295109010386583">ઑટોમૅટિક રીતે નિષ્ક્રિય આઇટમ બંધ કરો</translation>
 <translation id="58326064309361797">ટૅબનું ગ્રૂપ બનાવવા માટે તેને ખેંચો</translation>
 <translation id="5901630391730855834">પીળો</translation>
 <translation id="5972844218283131174">તમામને નાપસંદ કરો</translation>

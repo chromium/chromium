@@ -36,6 +36,7 @@
 <translation id="141901961143729572">तुमचे विचार शेअर करा</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is done updating. You can use the latest version as soon as you relaunch. After, your current tabs will reopen.}=1{Chrome अपडेट केले आहे. तुम्ही पुन्हा लाँच केल्यावर नवीनतम आवृत्ती वापरू शकता. त्यानंतर, तुमचे सद्य टॅब पुन्हा उघडतील. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{Chrome अपडेट केले आहे. तुम्ही पुन्हा लाँच केल्यावर नवीनतम आवृत्ती वापरू शकता. त्यानंतर, तुमचे सद्य टॅब पुन्हा उघडतील. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
+<translation id="1439793550875056299">Chrome पिन करा</translation>
 <translation id="146866447420868597">Chrome मध्ये साइन इन करायचे आहे का?</translation>
 <translation id="1492280395845991349">Chrome अपडेट पूर्ण करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="1497802159252041924">इंस्टॉलसंबंधित एरर: <ph name="INSTALL_ERROR" /></translation>
@@ -123,6 +124,7 @@
 <translation id="2569974318947988067">Chrome हे नेव्हिगेशन HTTPS वर अपग्रेड करण्याचा प्रयत्न करेल</translation>
 <translation id="2571392474191184472">तुमची संस्था Chrome व्यवस्थापित करते</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chrome प्रोफाइलमध्ये साइन इन केलेले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, Chrome तुमच्याकरिता तुमची स्वतःची प्रोफाइल तयार करू शकते.</translation>
+<translation id="2579190314336775785">पासवर्ड फक्त Chrome च्या बाहेर हटवले जाऊ शकतात</translation>
 <translation id="2580411288591421699">सध्या चालत असलेली Google Chrome ची समान आवृत्ती इंस्टॉल करू शकत नाही. कृपया Google Chrome बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2586406160782125153">हे या डिव्‍हाइस मधून तुमचा ब्राउझिंग डेटा हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="259935314519650377">डाउनलोड केलेला इंस्टॉलर कॅशे करता आला नाही. एरर: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -358,6 +360,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5566025111015594046">Google Chrome (mDNS-मध्ये)</translation>
 <translation id="5579324208890605088">स्टार्टअप एरर: कृपया अ‍ॅडमिनिस्ट्रेटर म्हणून नव्हे, तर नियमित वापरकर्ता म्हणून इंस्टॉलर रन करा.</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
+<translation id="5600352656975192682">Chrome कधीही झटपट अ‍ॅक्सेस करण्यासाठी, ते तुमच्या टास्कबारमध्ये पिन करा</translation>
 <translation id="5602351063754773347">तुम्ही ते काढून टाकावे अशी Chrome शिफारस करते. <ph name="BEGIN_LINK" />सपोर्ट असलेल्या एक्स्टेंशनविषयी अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Chrome प्रोफाइल वापरून तुम्ही तुमच्या सर्व गोष्टी Chrome वर वेगवेगळ्या ठेवू शकता. मित्रमैत्रिणी आणि कुटुंबासाठी प्रोफाइल तयार करा किंवा त्यांची काम व मनोरंजन यामध्ये विभागणी करा.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> धोकादायक असू शकते, त्यामुळे Chrome ने ती ब्लॉक केली आहे.</translation>

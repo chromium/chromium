@@ -186,6 +186,7 @@
 <translation id="1740650426894359238">Mudar para outro perfil</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Rejeitar alterações</translation>
+<translation id="1748975028205587434">Selecionar ficheiro</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opção para a morada disponível acima do teclado.}other{{count} opções para a morada disponíveis acima do teclado.}}</translation>
 <translation id="1750238553597293878">Continue a usar as palavras-passe na sua Conta Google</translation>
 <translation id="17513872634828108">Separadores abertos</translation>
@@ -389,6 +390,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="251837347827266434">A sua sessão vai ser terminada, os separadores vão ser fechados e os dados de navegação vão ser eliminados</translation>
 <translation id="2520787026086861736">Para desativar esta funcionalidade, aceda a <ph name="BEGIN_LINK" />Preenchimento automático e palavras-passe<ph name="END_LINK" /></translation>
 <translation id="2523295204312809179">Quando fecha um grupo de separadores, este é guardado automaticamente aqui</translation>
+<translation id="2524699375503213836">Importe os seus dados do Safari</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Pode usar palavras-passe guardadas em qualquer dispositivo. São guardadas no Gestor de Palavras-passe da Google de <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Palavra-passe oculta</translation>
@@ -527,6 +529,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3119874402040566234">A sua sessão vai ser terminada e os dados de navegação vão ser eliminados</translation>
 <translation id="3124568093781685165">Partilhe as suas palavras-passe com a sua família</translation>
 <translation id="3130863904455712965">Histórico e muito mais</translation>
+<translation id="3132584647087998639">Importe os seus dados</translation>
 <translation id="313283613037595347">Crie um novo separador de navegação anónima.</translation>
 <translation id="3136739222562075778">Este cartão mostra as quedas de preço dos produtos nos seus separadores abertos</translation>
 <translation id="3138611310073113613">Rejeitar seleção</translation>
@@ -1116,6 +1119,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="560322036295180549">Desativado pela sua entidade</translation>
 <translation id="5611398002774823980">Guardar na conta</translation>
+<translation id="561269594905823128">Toque em <ph name="BEGIN_BOLD" />Selecionar ficheiro<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordenar por mais recente</translation>
 <translation id="5614553682702429503">Guardar a palavra-passe?</translation>
 <translation id="5619871095170816857">Este cartão mostra o último separador aberto usado em todos os seus dispositivos sincronizados nas últimas 24 horas.</translation>
@@ -1564,6 +1568,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7367530036083223701">Aceda às suas palavras-passe em segurança a partir do ecrã principal com o widget do Gestor de Palavras-passe.</translation>
 <translation id="7369285139974632858">Adicionar aos marcadores</translation>
 <translation id="7380220816562673297">Por enquanto, só pode partilhar palavras-passe com membros da família. <ph name="BEGIN_LINK" />Crie um grupo familiar<ph name="END_LINK" /> com um máximo de 6 membros e receba mais dos seus produtos e subscrições na rede Google.</translation>
+<translation id="7380698179418029202">Selecione o ficheiro <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> de exportação do Safari</translation>
 <translation id="739101637685146669">Que URL quer adicionar aos marcadores?</translation>
 <translation id="7393747756726387725">Aumentar</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 site}other{# sites}}</translation>
@@ -1702,6 +1707,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7887552845761062935">Toque duas vezes sem soltar para abrir mais opções</translation>
 <translation id="7889910613639381518">Acesso fácil e seguro com o widget do Gestor de Palavras-passe da Google.</translation>
 <translation id="7899199123054742721">Marcar tudo como não lido</translation>
+<translation id="7908957400505794782">Toque em <ph name="BEGIN_BOLD" />Concluir<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">A sua entidade não permite que sincronize tudo.</translation>
 <translation id="792357691529995513">Nenhum problema encontrado</translation>
 <translation id="7925108652071887026">Dados de preenchimento automático</translation>

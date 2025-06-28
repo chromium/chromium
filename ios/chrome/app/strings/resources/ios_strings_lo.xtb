@@ -1237,12 +1237,14 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6074656473835429958">ຮັບການແຈ້ງເຕືອນ</translation>
 <translation id="607620096698446287">ບໍ່ສາມາດອັບໂຫຼດ <ph name="FILENAME" /> (<ph name="FILESIZE" />) ໄດ້</translation>
 <translation id="6077126322656614846">ອະນຸຍາດສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບແລ້ວ</translation>
+<translation id="607730456154980869">ຮັບຄຳຕອບໄວຂຶ້ນດ້ວຍ Gemini ໃນ Chrome</translation>
 <translation id="6078236141387574983">ປັບຄວາມສູງຂອງຊີດໃໝ່</translation>
 <translation id="6084848228346514841">ເລືອກແຖບ</translation>
 <translation id="6089212833343035912">PIN ຂອງຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="6090760257419195752">ຄຳເຕືອນທີ່ປິດໄວ້ແລ້ວ</translation>
 <translation id="6096965253650248286">ພົບ <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">ເຂົ້າສູ່ລະບົບເປັນ <ph name="USER_EMAIL" /> ແລ້ວ. ເປີດການຕັ້ງຄ່າ.</translation>
+<translation id="610083648014322104">ຮັບຄໍາຕອບທີ່ກ່ຽວຂ້ອງໂດຍອີງໃສ່ເນື້ອຫາຂອງໜ້າທີ່ທ່ານກໍາລັງຢູ່ໃນ</translation>
 <translation id="6103540626693881831">ການເຂົ້າລະຫັດຢູ່ອຸປະກອນ</translation>
 <translation id="611361228753138223">ເວັບໄຊທີ່ທ່ານໄດ້ເຂົ້າເບິ່ງສຸດທ້າຍຢູ່ອຸປະກອນນີ້</translation>
 <translation id="611705554202268369">ກົດຄ້າງໄວ້ເພື່ອເພີ່ມໃສ່ກຸ່ມແຖບ</translation>
@@ -1495,6 +1497,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6979737339423435258">ທຸກເວລາ</translation>
 <translation id="6983306615164277634">ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດແຕະແຖບທີ່ຢູ່ຄ້າງໄວ້ເພື່ອປ່ຽນຕຳແໜ່ງໄດ້ນຳ.</translation>
 <translation id="6987201788018524855">ສຳຫຼວດຄຸນສົມບັດທີ່ເປັນປະໂຫຍດທີ່ທ່ານພາດໄປ</translation>
+<translation id="6989636517316575338">ຖາມກ່ຽວກັບໜ້າຕ່າງໆ</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">ຕິດຕາມລາຄາຜະລິດຕະພັນ ແລະ ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຕ່ຳລົງຢູ່ເວັບໄຊໃດກໍຕາມ</translation>
 <translation id="7004032350256606903">ອົງການຂອງທ່ານກຳນົດໃຫ້ທ່ານທ່ອງເວັບແບບເປັນສ່ວນຕົວ.
@@ -1752,6 +1755,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8058655154417507695">ປີໝົດອາຍຸ</translation>
 <translation id="8059533439631660104">ຫຍໍ້​ສ່ວນ​ລົງ.</translation>
 <translation id="8061584726507121204">ປະຫວັດ</translation>
+<translation id="8069168488983557089">ຮັບຄໍາແນະນໍາທີ່ສໍາຄັນ ແລະ ຂໍ້ມູນເຈາະເລິກທີ່ຊ່ວຍໃຫ້ທ່ານເຂົ້າໃຈຫົວຂໍ້ຕ່າງໆ</translation>
 <translation id="8069394452933076548">ເລືອກເວລາທີ່ຈະຍ້າຍແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໃນປັດຈຸບັນໄປໄວ້ໃນພາກສ່ວນແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້.</translation>
 <translation id="8073670137947914548">ສຳເລັດການດາວໂຫຼດແລ້ວ</translation>
 <translation id="8076492880354921740">ແຖບ</translation>

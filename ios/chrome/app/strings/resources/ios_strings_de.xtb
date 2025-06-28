@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Bitte den Absender um einen neuen Link</translation>
 <translation id="1013952917065545813">Hier kannst du kürzlich geschlossene Tabs wieder öffnen</translation>
 <translation id="1016495303386450659">Element aktualisiert</translation>
+<translation id="1017735584092444011">Lesemodus anzeigen</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Passwortmanager öffnen</translation>
 <translation id="1035980983510608210">Wenn du alle Tabs schließt, werden auch angepinnte Tabs geschlossen.</translation>
@@ -389,6 +390,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="251837347827266434">Du wirst abgemeldet, Tabs werden geschlossen und Browserdaten gelöscht</translation>
 <translation id="2520787026086861736">Wenn du die Funktion deaktivieren möchtest, gehe zu <ph name="BEGIN_LINK" />Autom. ausfüllen &amp; Passwörter<ph name="END_LINK" /></translation>
 <translation id="2523295204312809179">Wenn du eine Tabgruppe schließt, wird sie automatisch hier gespeichert</translation>
+<translation id="2524699375503213836">Daten aus Safari importieren</translation>
 <translation id="2529021024822217800">Alle öffnen</translation>
 <translation id="2536991091671391962">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="2538103551183528357">Ausgeblendetes Passwort</translation>
@@ -1236,12 +1238,14 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6074656473835429958">Benachrichtigungen erhalten</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) konnte nicht hochgeladen werden</translation>
 <translation id="6077126322656614846">Kamerazugriff gewährt</translation>
+<translation id="607730456154980869">Mit Gemini in Chrome schneller Antworten erhalten</translation>
 <translation id="6078236141387574983">Höhe des Tabellenblatts wieder anpassen</translation>
 <translation id="6084848228346514841">Tabs auswählen</translation>
 <translation id="6089212833343035912">PIN für Google Passwortmanager</translation>
 <translation id="6090760257419195752">Geschlossene Warnungen</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> gefunden</translation>
 <translation id="6100617279104942061">Angemeldet als <ph name="USER_EMAIL" />. Die Einstellungen werden geöffnet.</translation>
+<translation id="610083648014322104">Hol dir relevante Antworten basierend auf dem Inhalt der aktuellen Seite</translation>
 <translation id="6103540626693881831">Verschlüsselung auf dem Gerät</translation>
 <translation id="611361228753138223">Websites, die du auf diesem Gerät zuletzt besucht hast</translation>
 <translation id="611705554202268369">Lange drücken, um einer Tabgruppe Tabs hinzuzufügen</translation>
@@ -1494,6 +1498,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6979737339423435258">Gesamte Zeit</translation>
 <translation id="6983306615164277634">Alternativ kannst du auch die Adressleiste gedrückt halten, um die Position zu ändern.</translation>
 <translation id="6987201788018524855">Entdecke hilfreiche Funktionen, die du bisher verpasst hast</translation>
+<translation id="6989636517316575338">Fragen zu einer beliebigen Seite stellen</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Du kannst Preise von Produkten beobachten und dich benachrichtigen lassen, wenn der Preis auf einer Website sinkt</translation>
 <translation id="7004032350256606903">Deine Organisation verlangt, dass du im privaten Modus surfst.
@@ -1695,6 +1700,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7863211248337747225">App herunterladen</translation>
 <translation id="7865127013871431856">Übersetzungsoptionen</translation>
 <translation id="7866872729285243843">Wenn du deine Leseliste auf allen deinen Geräten sehen möchtest, aktiviere in den Einstellungen die Option „Leseliste“.</translation>
+<translation id="787364769771947486">Lesemodus ausblenden</translation>
 <translation id="7874107544081154809">Formular mit <ph name="CELL_ACCESSIBILITY_LABEL" /> automatisch ausfüllen</translation>
 <translation id="7883882164760409935">Du nutzt wiederverwendete Passwörter.</translation>
 <translation id="7887174313503389866">Sieh dir eine Demo der wichtigsten Datenschutz- und Sicherheitseinstellungen an. Weitere Optionen findest du in den jeweiligen Einstellungen.</translation>
@@ -1751,6 +1757,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8058655154417507695">Ablaufjahr</translation>
 <translation id="8059533439631660104">Abschnitt minimieren</translation>
 <translation id="8061584726507121204">Verlauf</translation>
+<translation id="8069168488983557089">Hol dir wichtige Informationen und Erkenntnisse, die dir dabei helfen, jedes Thema zu verstehen</translation>
 <translation id="8069394452933076548">Lege fest, wann Tabs, die länger nicht verwendet wurden, in den Bereich „Inaktive Tabs“ verschoben werden sollen.</translation>
 <translation id="8073670137947914548">Download abgeschlossen</translation>
 <translation id="8076492880354921740">Tabs</translation>

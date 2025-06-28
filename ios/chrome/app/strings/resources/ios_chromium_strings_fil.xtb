@@ -174,6 +174,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="5203244847421322551">Mag-save at mag-autofill ng mga password sa Chromium</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="5259423875997548710">Maghanap ng mga visual sa Chromium.</translation>
+<translation id="5284913972719948193">I-import ang iyong data para magamit ang mga password, history, bookmark, at credit card mo sa Chromium</translation>
 <translation id="5308226104666789935">Hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="5311557153294205270">Idaragdag ang mga in-input na URL sa iyong mga bookmark sa Chromium.</translation>
 <translation id="5383251701169024761">Para madaling makuha ang iyong mga naka-save na password sa iba pang app, piliin ang Chromium para sa Autofill.</translation>
@@ -307,6 +308,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="865600487977764604">Pinapanatili kang ligtas sa Chromium at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka.</translation>
 <translation id="8663480472502753423">Panatilihing up to date ang Chromium</translation>
 <translation id="8685813584220679697">Mag-sign in sa site na ito at sa Chromium.</translation>
+<translation id="8698780336333802489">I-import sa Chromium</translation>
 <translation id="8730503818204408000">Mabubuksan ang Setting ng Chromium para itakda ang Chromium bilang Default na Browser.</translation>
 <translation id="8754966941001340678">Inirerekomenda ng Chromium ang pinaigting na proteksyon</translation>
 <translation id="8759037115129007407">Hindi makakatanggap ng mga password ang iyong miyembro ng pamilya sa ngayon. Hilingin sa kanilang i-update ang Chromium at i-sync ang mga password nila. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>

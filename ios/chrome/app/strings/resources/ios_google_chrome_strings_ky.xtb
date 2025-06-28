@@ -90,6 +90,7 @@
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome’ду<ph name="END_BOLD" /> тандаңыз</translation>
 <translation id="2986402782150919988">Кыстармаларды Chrome'го кошуу</translation>
 <translation id="3030414234702425231">Сиз <ph name="SIGNOUT_MANAGED_DOMAIN" /> домениндеги аккаунтуңуздан чыгып жатканыңызга байланыштуу, Chrome'догу дайын-даректериңиз бул түзмөктөн өчүрүлөт. Бирок дайын-даректериңиз Google аккаунтуңузда сакталып калат.</translation>
+<translation id="3042447686908081308">Chrome'го өткөрүп алуу</translation>
 <translation id="3051521853355903257">Chrome'да сырсөздөрдү тескөө</translation>
 <translation id="309672519329227863">Chrome сырсөздөрүңүзгө жана башка дайындарга башка колдонмолордон кириңиз.</translation>
 <translation id="3109170945534582468">Chrome'догу аракеттер</translation>
@@ -337,6 +338,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="9176561303811134420">Төлөм ыкмаларын Chrome'до тескөө</translation>
 <translation id="9181628561061032322">Chrome'догу акыркы өтмөктөр ачылат.</translation>
 <translation id="948597495737267756">Chrome таржымалынын бетин ачат.</translation>
+<translation id="954347330803595209">Chrome'до сырсөздөрдү, таржымалды, кыстармаларды жана насыя карталарын колдонуу үчүн маалыматыңызды өткөрүп алыңыз</translation>
 <translation id="97300214378190234">Эми башка колдонмолордогу шилтемелерди Chrome'до ача аласыз.</translation>
 <translation id="997929539742564806">Chrome'догу сырсөздөрүңүз менен киргизүүчү ачкычтарыңызды автотолтуруп, колдонмолорго жана сайттарга тез кириңиз</translation>
 <translation id="998677222109959694">Chrome параметрлерин башкаруу</translation>

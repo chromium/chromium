@@ -357,6 +357,7 @@
 <translation id="1232569758102978740">Без наслов</translation>
 <translation id="1233497634904001272">Допрете го безбедносниот клуч повторно за да се комплетира барањето.</translation>
 <translation id="1233721473400465416">Локал</translation>
+<translation id="1233835246554936745">{0,plural, =1{Зачувајте 1 ставка во сметката}one{Зачувајте # ставка во сметката}other{Зачувајте # ставки во сметката}}</translation>
 <translation id="1234736487471201993">Создајте QR-код за сликава</translation>
 <translation id="1234808891666923653">Услужни работници</translation>
 <translation id="1235458158152011030">Познати мрежи</translation>
@@ -5656,6 +5657,7 @@
 <translation id="4918844574251943176">Сликата е копирана</translation>
 <translation id="4921348630401250116">Од текст во говор</translation>
 <translation id="4922104989726031751">За да користите Password Manager со вашиот оперативен систем, рестартирајте го Chromium и дозволете пристап до Password Manager на вашиот компјутер. Вашите картички ќе се отворат повторно по рестартирањето.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Зачувајте 1 ставка во сметката}one{Зачувајте # ставка во сметката}other{Зачувајте # ставки во сметката}}</translation>
 <translation id="492363500327720082">Се деинсталира <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">Прикажи ги групите картички</translation>
 <translation id="4924002401726507608">Испратете повратни информации</translation>
@@ -7073,6 +7075,7 @@
 <translation id="5965607173855879702">Се бришат податоците…</translation>
 <translation id="5966511985653515929">Податоците од сајтовите се бришат од вашиот уред кога ќе ги затворите сите прозорци</translation>
 <translation id="5968022600320704045">Нема резултати од пребарувањето</translation>
+<translation id="5968400720580217226">AI-режим</translation>
 <translation id="5969364029958154283">Дознајте повеќе за ресетирањето на поставките</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> може да прегледува датотеки во <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Известувањето за кратенка од тастатурата е отфрлено</translation>
@@ -7891,6 +7894,7 @@
 <translation id="6560151649238390891">Предлогот е внесен</translation>
 <translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Датотекава од видот <ph name="TYPE" /> може да биде опасна. Зачувајте ја датотекава само ако имате доверба во <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Складирајте системска евиденција во директориумот „Преземања“.</translation>
 <translation id="656293578423618167">Патеката на датотеката или нејзиното име се многу долги. Зачувајте ја со пократко име или на друга локација.</translation>
 <translation id="6563002009564846727">Прегледајте ги увезените сертификати од Windows</translation>
@@ -9538,6 +9542,7 @@
 <translation id="7722040605881499779">Потребно за ажурирање: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Ресетирајте на стандардните поставки за Chrome</translation>
 <translation id="7724603315864178912">Исечи</translation>
+<translation id="7724711098786238351">Демо‑режимот е наменет за корисници над 18 години и подлежи на „Условите за користење“ и „Политиката за приватност“ на Google. Податоците внесени во уредов може да ги прегледуваат други лица меѓу повремените трајни бришења.</translation>
 <translation id="7726288096350730168">Избриши од уредов</translation>
 <translation id="7726391492136714301">Прегледувајте ги известувањата и апликациите од телефонот</translation>
 <translation id="7727898923446098954">Картичката е скриена</translation>
@@ -9695,6 +9700,7 @@
 <translation id="7830833461614351956">Да се копираат <ph name="NUM_OF_FILES" /> датотеки во <ph name="CLOUD_PROVIDER" /> за да се отворат?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Зачуваните приспособени зборови ќе се појават тука</translation>
+<translation id="7834832693620032149">За да споделите аудио, наместо тоа споделете картичка или прозорец</translation>
 <translation id="7836577093182643605">Список со блокирани теми што не сакате да се споделуваат со сајтови</translation>
 <translation id="7836745198769390202">Во моментов имате <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> и друго. Вашата организација ќе може да ги гледа и да управува со податоциве</translation>
 <translation id="7836850009646241041">Допрете го безбедносниот клуч пак</translation>
@@ -11034,6 +11040,7 @@
 <translation id="8749805710397399240">Не може да се емитува екранот. Проверете ја дозволата за „Снимање на екранот“ во „Поставките за системот“.</translation>
 <translation id="8749826920799243530">Уредот не е регистриран</translation>
 <translation id="8749863574775030885">Пристапувајте до USB-уреди од непознат продавач</translation>
+<translation id="8749865622265861882">Користите демо-уред</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> сака да се поврзе со сериска порта</translation>
 <translation id="8750346984209549530">Мрежна APN</translation>
 <translation id="8750786237117206586">Управувајте со поставките за аудио на ChromeOS Flex</translation>
@@ -11304,6 +11311,7 @@
 <translation id="8940081510938872932">Компјутерот во моментов прави премногу работи. Обидете се повторно подоцна.</translation>
 <translation id="8940888110818450052">Опции за најавување</translation>
 <translation id="8941173171815156065">Отповикај ја дозволата „<ph name="PERMISSION" />“</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> споделува прозорец и аудио.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> е исклучена</translation>
 <translation id="894191600409472540">Создајте силни лозинки</translation>
 <translation id="8942714513622077633">Да се откаже поставувањето на Microsoft 365?</translation>

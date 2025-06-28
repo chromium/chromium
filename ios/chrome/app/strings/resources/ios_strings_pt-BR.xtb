@@ -1237,12 +1237,14 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6074656473835429958">Receber notificações</translation>
 <translation id="607620096698446287">Não foi possível fazer upload do arquivo <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Acesso permitido à câmera</translation>
+<translation id="607730456154980869">Receba respostas mais rapidamente com o Gemini no Chrome</translation>
 <translation id="6078236141387574983">Reajustar a altura da planilha</translation>
 <translation id="6084848228346514841">Selecionar guias</translation>
 <translation id="6089212833343035912">PIN do Gerenciador de senhas do Google</translation>
 <translation id="6090760257419195752">Avisos dispensados</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> encontrado</translation>
 <translation id="6100617279104942061">Login feito como <ph name="USER_EMAIL" />. Abre as configurações.</translation>
+<translation id="610083648014322104">Receba respostas relevantes com base no conteúdo da página em que você está</translation>
 <translation id="6103540626693881831">Criptografia no dispositivo</translation>
 <translation id="611361228753138223">Os sites acessados recentemente neste dispositivo</translation>
 <translation id="611705554202268369">Toque e mantenha pressionado para adicionar a um grupo de guias</translation>
@@ -1495,6 +1497,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6979737339423435258">Todo o período</translation>
 <translation id="6983306615164277634">Você também pode tocar na barra de endereço e mantê-la pressionada para mudar a posição.</translation>
 <translation id="6987201788018524855">Conheça recursos úteis que você pode ter deixado passar</translation>
+<translation id="6989636517316575338">Pergunte sobre qualquer página</translation>
 <translation id="6990519590575500580">Converse por FaceTime</translation>
 <translation id="6998251471716094661">Monitore os preços dos produtos e receba alertas quando houver uma redução em algum site</translation>
 <translation id="7004032350256606903">Sua organização requer o uso do modo de navegação privada.
@@ -1752,6 +1755,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8058655154417507695">Ano de expiração</translation>
 <translation id="8059533439631660104">Recolhe a seção.</translation>
 <translation id="8061584726507121204">Histórico</translation>
+<translation id="8069168488983557089">Receba insights e conclusões importantes que ajudam você a entender qualquer tema</translation>
 <translation id="8069394452933076548">Escolha quando as guias que não foram usadas recentemente serão movidas para a seção de guias inativas.</translation>
 <translation id="8073670137947914548">Download concluído</translation>
 <translation id="8076492880354921740">Guias</translation>

@@ -90,6 +90,7 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="2957447865124070833">Válassza ki a <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> böngészőt.</translation>
 <translation id="2986402782150919988">Könyvjelzők hozzáadása a Chrome-hoz</translation>
 <translation id="3030414234702425231">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chrome-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
+<translation id="3042447686908081308">Importálás a Chrome-ba</translation>
 <translation id="3051521853355903257">Jelszavak kezelése a Chrome-ban</translation>
 <translation id="309672519329227863">Hozzáférhet Chrome-jelszavaihoz és egyebekhez más alkalmazásokban.</translation>
 <translation id="3109170945534582468">Chrome-műveletek</translation>
@@ -337,6 +338,7 @@ Adatai titkosítva lettek összetett jelszavával a következő időpontban: <ph
 <translation id="9176561303811134420">Fizetési módok kezelése a Chrome-ban</translation>
 <translation id="9181628561061032322">Megnyitja a Chrome legutóbbi lapjait.</translation>
 <translation id="948597495737267756">Megnyitja a Chrome-előzmények oldalát.</translation>
+<translation id="954347330803595209">Importálja adatait, hogy használhassa jelszavait, előzményeit, könyvjelzőit és bankkártyáit a Chrome-ban.</translation>
 <translation id="97300214378190234">Bármikor használhatja a Chrome-ot, amikor más alkalmazásokban linkekre kattint.</translation>
 <translation id="997929539742564806">Gyorsan bejelentkezhet az alkalmazásokba és a webhelyekre a Chrome-ból származó jelszavak és azonosítókulcsok automatikus kitöltésével</translation>
 <translation id="998677222109959694">A Chrome beállításainak kezelése</translation>

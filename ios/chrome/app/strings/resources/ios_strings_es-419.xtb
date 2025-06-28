@@ -1237,12 +1237,14 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6074656473835429958">Recibe notificaciones</translation>
 <translation id="607620096698446287">No se pudo cargar <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Acceso a la cámara permitido</translation>
+<translation id="607730456154980869">Obtén respuestas más rápido con Gemini en Chrome</translation>
 <translation id="6078236141387574983">Ajustar la altura de la hoja</translation>
 <translation id="6084848228346514841">Seleccionar pestañas</translation>
 <translation id="6089212833343035912">PIN del Administrador de contraseñas de Google</translation>
 <translation id="6090760257419195752">Advertencias descartadas</translation>
 <translation id="6096965253650248286">Se encontraron <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Accediste como <ph name="USER_EMAIL" />. Abre la configuración.</translation>
+<translation id="610083648014322104">Obtén respuestas pertinentes basadas en el contenido de la página en la que te encuentras</translation>
 <translation id="6103540626693881831">Encriptación integrada en el dispositivo</translation>
 <translation id="611361228753138223">Los sitios que visitaste recientemente en este dispositivo</translation>
 <translation id="611705554202268369">Mantén presionada la pestaña para agregarla a un grupo de pestañas</translation>
@@ -1495,6 +1497,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6979737339423435258">Todos</translation>
 <translation id="6983306615164277634">También puedes mantener presionada la barra de direcciones para cambiar la posición.</translation>
 <translation id="6987201788018524855">Explora funciones útiles que te perdiste</translation>
+<translation id="6989636517316575338">Pregunta sobre cualquier página</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Haz un seguimiento de los precios de los productos y recibe alertas cuando bajen en cualquier sitio</translation>
 <translation id="7004032350256606903">Tu organización requiere que navegues de forma privada.
@@ -1752,6 +1755,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8058655154417507695">Año de vencimiento</translation>
 <translation id="8059533439631660104">Contrae la sección.</translation>
 <translation id="8061584726507121204">Historial</translation>
+<translation id="8069168488983557089">Obtén información y estadísticas clave que te ayudarán a comprender cualquier tema</translation>
 <translation id="8069394452933076548">Elige cuándo quieres que las pestañas que no se usaron recientemente pasen a la sección de pestañas inactivas.</translation>
 <translation id="8073670137947914548">Descarga completa</translation>
 <translation id="8076492880354921740">Pestañas</translation>

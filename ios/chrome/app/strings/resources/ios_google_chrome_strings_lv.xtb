@@ -90,6 +90,7 @@ Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, ši
 <translation id="2957447865124070833">Atlasiet <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="2986402782150919988">Grāmatzīmju pievienošana pārlūkā Chrome</translation>
 <translation id="3030414234702425231">Jūs izrakstāties no konta, kas tiek pārvaldīts domēnā <ph name="SIGNOUT_MANAGED_DOMAIN" />, tādēļ jūsu Chrome dati tiks dzēsti no šīs ierīces. Dati joprojām būs pieejami jūsu Google kontā.</translation>
+<translation id="3042447686908081308">Importēt pārlūkā Chrome</translation>
 <translation id="3051521853355903257">Paroļu pārvaldība pārlūkā Chrome</translation>
 <translation id="309672519329227863">Piekļūstiet savām Chrome parolēm un citiem datiem dažādās lietotnēs.</translation>
 <translation id="3109170945534582468">Darbības pārlūkā Chrome</translation>
@@ -337,6 +338,7 @@ Jūsu dati tika šifrēti, izmantojot jūsu ieejas frāzi, šādā datumā: <ph 
 <translation id="9176561303811134420">Maksājumu veidu pārvaldīšana pārlūkā Chrome</translation>
 <translation id="9181628561061032322">Pārlūkā Chrome atver nesen atvērtās cilnes.</translation>
 <translation id="948597495737267756">Atver pārlūka Chrome vēstures lapu.</translation>
+<translation id="954347330803595209">Importējiet savus datus, lai pārlūkā Chrome izmantotu paroles, vēsturi, grāmatzīmes un kredītkartes.</translation>
 <translation id="97300214378190234">Izmantojiet pārlūku Chrome ikreiz, kad pieskaraties saitēm citās lietotnēs.</translation>
 <translation id="997929539742564806">Ātri pierakstieties lietotnēs un vietnēs, automātiski aizpildot paroles un piekļuves atslēgas no pārlūka Chrome.</translation>
 <translation id="998677222109959694">Pārvaldīt Chrome iestatījumus</translation>

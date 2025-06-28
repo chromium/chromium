@@ -7890,6 +7890,7 @@
 <translation id="6560151649238390891">సూచన చేర్చబడింది</translation>
 <translation id="656065428026159829">మరిన్ని చూడండి</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">ఈ (<ph name="TYPE" />) రకం ఫైల్, ప్రమాదకరం కావచ్చు. మీరు <ph name="ORIGIN" />‌ను విశ్వసిస్తేనే ఈ ఫైల్‌ను సేవ్ చేయండి</translation>
 <translation id="6562117348069327379">'డౌన్‌లోడ్స్' డైరెక్టరీలో సిస్టమ్ లాగ్స్‌ను స్టోర్ చేయండి.</translation>
 <translation id="656293578423618167">ఫైల్ పాత్ లేదా పేరు చాలా పొడవుగా ఉంది. దయచేసి చిన్న పేరుతో, లేదా మరొక స్థానానికి సేవ్ చేయండి.</translation>
 <translation id="6563002009564846727">Windows నుండి దిగుమతి చేసిన సర్టిఫికెట్‌లను చూడండి</translation>
@@ -9693,6 +9694,7 @@
 <translation id="7830833461614351956">తెరవడానికి <ph name="NUM_OF_FILES" /> ఫైల్స్‌ను <ph name="CLOUD_PROVIDER" />కి కాపీ చేయాలా?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">సేవ్ చేసిన అనుకూల పదాలు ఇక్కడ కనిపిస్తాయి</translation>
+<translation id="7834832693620032149">ఆడియోను షేర్ చేయడానికి, బదులుగా ట్యాబ్ లేదా విండోను షేర్ చేయండి</translation>
 <translation id="7836577093182643605">సైట్‌లతో షేర్ చేయకూడదు అనే ఉద్దేశ్యంతో మీరు బ్లాక్ చేసిన టాపిక్‌ల యొక్క లిస్ట్</translation>
 <translation id="7836745198769390202">మీరు ప్రస్తుతం <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, ఇంకా మరిన్ని కలిగి ఉన్నారు. మీ సంస్థ ఈ డేటాను చూడగలదు, మేనేజ్ చేయగలదు</translation>
 <translation id="7836850009646241041">మీ సెక్యూరిటీ కీని మళ్లీ తాకి చూడండి</translation>
@@ -11297,6 +11299,7 @@
 <translation id="8940081510938872932">ప్రస్తుతం మీ కంప్యూటర్ అనేక చర్యలను అమలు చేస్తోంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8940888110818450052">సైన్ ఇన్ ఆప్షన్‌లు</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' అనుమతిని ఉపసంహరించు</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> విండోను, ఆడియోను షేర్ చేస్తోంది.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> ఆఫ్‌లో ఉంది</translation>
 <translation id="894191600409472540">శక్తివంతమైన పాస్‌వర్డ్‌లను క్రియేట్ చేయండి</translation>
 <translation id="8942714513622077633">Microsoft 365 సెటప్‌ను రద్దు చేయాలా?</translation>

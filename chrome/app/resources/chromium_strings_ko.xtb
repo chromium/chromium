@@ -577,6 +577,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8704119203788522458">나만의 Chromium</translation>
 <translation id="8719993436687031146">Chromium에 로그인하시겠습니까?</translation>
 <translation id="8747073452963259673">검색 영역의 왼쪽 하단: 왼쪽 <ph name="LEFT" />%, 하단 <ph name="BOTTOM" />%</translation>
+<translation id="8768722695577490596">비밀번호는 Chromium 외부에서만 삭제할 수 있습니다</translation>
 <translation id="878572486461146056">설치 오류: 네트워크 관리자가 설치를 방지하는 그룹 정책을 적용했습니다: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">이 사이트에서 카메라와 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>
 <translation id="8818550178040858407">Chromium에 로그인하시겠습니까?</translation>

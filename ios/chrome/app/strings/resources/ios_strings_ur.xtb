@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">نیا لنک طلب کرنے کے لیے ارسال کنندہ سے رابطہ کریں</translation>
 <translation id="1013952917065545813">آپ ان ٹیبز کو دوبارہ کھولنے کے لیے یہاں واپس آ سکتے ہیں جنہیں آپ نے حال ہی میں بند کر دیا ہے</translation>
 <translation id="1016495303386450659">آئٹم اپ ڈيٹ ہوگیا</translation>
+<translation id="1017735584092444011">ریڈنگ موڈ دکھائیں</translation>
 <translation id="102916930470544692">پاس کی</translation>
 <translation id="1030376737535466765">پاس ورڈ مینیجر کھولیں</translation>
 <translation id="1035980983510608210">سبھی ٹیبز کو بند کرنے سے پن کردہ ٹیبز بھی بند ہو جائیں گے۔</translation>
@@ -1237,12 +1238,14 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6074656473835429958">اطلاعات حاصل کریں</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) کو اپ لوڈ نہیں کیا جا سکا</translation>
 <translation id="6077126322656614846">کیمرے تک رسائی کی اجازت ہے</translation>
+<translation id="607730456154980869">‏‫Chrome میں Gemini کے ساتھ تیزی سے جوابات حاصل کریں</translation>
 <translation id="6078236141387574983">شیٹ کی اونچائی کو دوبارہ ایڈجسٹ کریں</translation>
 <translation id="6084848228346514841">ٹیبز منتخب کریں</translation>
 <translation id="6089212833343035912">‏‫Google پاس ورڈ مینیجر کا PIN</translation>
 <translation id="6090760257419195752">برخاست کردہ وارننگز</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> ملے</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> کے بطور سائن ان کردہ۔ اس سے ترتیبات کھلتی ہیں۔</translation>
+<translation id="610083648014322104">آپ جس صفحہ پر ہیں اس کے مواد کی بنیاد پر متعلقہ جوابات حاصل کریں</translation>
 <translation id="6103540626693881831">آلے پر مرموزکاری</translation>
 <translation id="611361228753138223">وہ سائٹس جو آپ نے حال ہی میں اس آلے پر دیکھی ہیں</translation>
 <translation id="611705554202268369">ٹیب گروپ میں شامل کرنے کے لیے دیر تک دبائے رکھیں</translation>
@@ -1495,6 +1498,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6979737339423435258">ہر وقت</translation>
 <translation id="6983306615164277634">آپ پوزیشن تبدیل کرنے کے لیے ایڈریس بار کو چھو سکتے ہیں اور دبا کر رکھ سکتے ہیں۔</translation>
 <translation id="6987201788018524855">مفید خصوصیات کو دریافت کریں جن سے آپ محروم ہو چکے ہیں</translation>
+<translation id="6989636517316575338">کسی بھی صفحے کے بارے میں پوچھیں</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">پروڈکٹس کی قیمتوں کو ٹریک کریں اور کسی بھی سائٹ پر قیمت کم ہونے پر الرٹس حاصل کریں</translation>
 <translation id="7004032350256606903">آپ کی تنظیم چاہتی ہے کہ آپ نجی طور پر براؤز کریں۔
@@ -1696,6 +1700,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7863211248337747225">ایپ حاصل کریں</translation>
 <translation id="7865127013871431856">ترجمہ کے اختیارات</translation>
 <translation id="7866872729285243843">اپنے تمام آلات پر اپنی پڑھنے کی فہرست حاصل کرنے کے لیے، ترتیبات میں "پڑھنے کی فہرست" کو آن کریں۔</translation>
+<translation id="787364769771947486">ریڈنگ موڈ چھپائیں</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> کے ساتھ فارم آٹو فل کریں</translation>
 <translation id="7883882164760409935">آپ کے پاس دوبارہ استعمال کردہ پاس ورڈز ہیں۔</translation>
 <translation id="7887174313503389866">کلیدی رازداری اور سیکیورٹی کنٹرولز کا ایک زیر رہنمائی ٹور کریں۔ مزید اختیارات کے لیے، انفرادی ترتیبات پر جائیں۔</translation>
@@ -1752,6 +1757,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8058655154417507695">میعاد کے اختتام کا سال</translation>
 <translation id="8059533439631660104">سیکشن کو سکیڑیں۔</translation>
 <translation id="8061584726507121204">سرگزشت</translation>
+<translation id="8069168488983557089">اہم نکات اور بصیرتیں حاصل کریں جو کسی بھی موضوع کو سمجھنے میں آپ کی مدد کرتی ہیں</translation>
 <translation id="8069394452933076548">منتخب کریں کہ وہ ٹیبز جو حال ہی میں استعمال نہیں ہوئے ہیں انہیں غیر فعال ٹیب سیکشن میں کب منتقل کیا جائے۔</translation>
 <translation id="8073670137947914548">ڈاؤن لوڈ کا عمل مکمل ہو گیا</translation>
 <translation id="8076492880354921740">ٹیبز</translation>

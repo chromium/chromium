@@ -90,6 +90,7 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="2957447865124070833">Izberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Dodajanje zaznamkov v Chrome</translation>
 <translation id="3030414234702425231">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
+<translation id="3042447686908081308">Uvozi v Chrome</translation>
 <translation id="3051521853355903257">Upravljanje gesel v Chromu</translation>
 <translation id="309672519329227863">Dostopajte do gesel v Chromu in drugega v drugih aplikacijah.</translation>
 <translation id="3109170945534582468">Dejanja v Chromu</translation>
@@ -337,6 +338,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="9176561303811134420">Upravljanje plačilnih sredstev v Chromu</translation>
 <translation id="9181628561061032322">Odpiranje nedavnih zavihkov v Chromu.</translation>
 <translation id="948597495737267756">Odpre stran zgodovine v Chromu.</translation>
+<translation id="954347330803595209">Uvozite podatke, če želite v Chromu uporabljati gesla, zgodovino, zaznamke in kreditne kartice</translation>
 <translation id="97300214378190234">Chrome lahko uporabljate, kadar koli se dotaknete povezav v drugih aplikacijah.</translation>
 <translation id="997929539742564806">Hitro se prijavite v aplikacije in na spletnih mestih s samodejnim izpolnjevanjem gesel in ključev za dostop prek Chroma</translation>
 <translation id="998677222109959694">Upravljanje Chromovih nastavitev</translation>

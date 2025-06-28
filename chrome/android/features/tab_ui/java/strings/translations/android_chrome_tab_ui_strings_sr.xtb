@@ -165,6 +165,7 @@
 <translation id="7369451074646620503">Група картица <ph name="TAB_GROUP_NAME" /> више није доступна</translation>
 <translation id="7452985128687107478">Групе картица се аутоматски чувају и ажурирају на свим уређајима</translation>
 <translation id="747459581954555080">Врати све</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ставка}one{<ph name="TABS_COUNT_MANY" /> ставка}few{<ph name="TABS_COUNT_MANY" /> ставке}other{<ph name="TABS_COUNT_MANY" /> ставки}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Вратите <ph name="TABS_COUNT_ONE" /> изабрану ставку}one{Вратите <ph name="TABS_COUNT_MANY" /> изабрану ставку}few{Вратите <ph name="TABS_COUNT_MANY" /> изабране ставке}other{Вратите <ph name="TABS_COUNT_MANY" /> изабраних ставки}}</translation>
 <translation id="753732157349120914">Пребацивач картица</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> рецензија из Google-а}one{<ph name="REVIEWS_COUNT_MANY" /> рецензија из Google-а}few{<ph name="REVIEWS_COUNT_MANY" /> рецензије из Google-а}other{<ph name="REVIEWS_COUNT_MANY" /> рецензија из Google-а}}</translation>

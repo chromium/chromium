@@ -90,6 +90,7 @@
 <translation id="2957447865124070833">Ընտրեք <ph name="BEGIN_BOLD" />Chrome-ը<ph name="END_BOLD" />։</translation>
 <translation id="2986402782150919988">Ավելացնել էջանիշներ Chrome-ում</translation>
 <translation id="3030414234702425231">Դուք դուրս եք գալիս <ph name="SIGNOUT_MANAGED_DOMAIN" /> տիրույթի ադմինիստրատորի կողմից կառավարվող հաշվից: Նկատի առեք, որ Chrome-ի տվյալները սարքից կհեռացվեն, սակայն կմնան ձեր Google հաշվում:</translation>
+<translation id="3042447686908081308">Ներմուծել Chrome</translation>
 <translation id="3051521853355903257">Գաղտնաբառերի կառավարում Chrome-ում</translation>
 <translation id="309672519329227863">Օգտագործեք Chrome-ում պահված գաղտնաբառերը և այլ տվյալներ ուրիշ հավելվածներում։</translation>
 <translation id="3109170945534582468">Գործողություններ Chrome-ում</translation>
@@ -337,6 +338,7 @@
 <translation id="9176561303811134420">Կառավարել վճարման եղանակները Chrome-ում</translation>
 <translation id="9181628561061032322">Բացում է Chrome-ի վերջերս բեռնած ներդիրների ցանկը։</translation>
 <translation id="948597495737267756">Բացում է Chrome-ի պատմության էջը։</translation>
+<translation id="954347330803595209">Ներմուծեք ձեր գաղտնաբառերը, որոնման պատմությունը, էջանիշները և վարկային քարտի տվյալները Chrome</translation>
 <translation id="97300214378190234">Օգտագործեք Chrome-ը՝ այլ հավելվածներում առկա հղումները բացելու համար։</translation>
 <translation id="997929539742564806">Արագ մուտք գործեք հավելվածներ և կայքեր՝ ավտոմատ լրացնելով ձեր գաղտնաբառերն ու մուտքի բանալիները Chrome-ից</translation>
 <translation id="998677222109959694">Կառավարել Chrome-ի կարգավորումները</translation>

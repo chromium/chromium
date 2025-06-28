@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Neplatný alebo poškodený súbor</translation>
 <translation id="1040761927998636252">Záložka bez názvu pre <ph name="URL" /></translation>
 <translation id="1041175011127912238">Táto stránka nereaguje</translation>
+<translation id="1041181446722933623">Záložka <ph name="LOCAL_BOOKMARK" /> je uložená iba v tomto zariadení. Ak ju chcete používať v iných zariadeniach, uložte si ju v účte do priečinka <ph name="ACCOUNT_FOLDER" />.</translation>
 <translation id="1041263367839475438">Dostupné zariadenia</translation>
 <translation id="1041607257468256895">Správa udeľovania prístupu k polohe webom v Chrome</translation>
 <translation id="1042174272890264476">Váš počítač má tiež vstavanú knižnicu RLZ prehliadača <ph name="SHORT_PRODUCT_NAME" />. Knižnica RLZ priradí nejedinečnú značku, pomocou ktorej sa nedá zistiť totožnosť, na meranie výsledkov a použitia prehliadača <ph name="SHORT_PRODUCT_NAME" /> vyplývajúceho z konkrétnej propagačnej kampane. Tieto menovky sa niekedy zobrazujú v dopytoch Vyhľadávania Google v prehliadači <ph name="PRODUCT_NAME" />.</translation>
@@ -610,6 +611,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1418559532423038045">Virtuálny počítač <ph name="VM_NAME" /> bude zo zariadenia <ph name="DEVICE_TYPE" /> odstránený. Odstránite tým všetky aplikácie a údaje vo virtuálnom počítači.</translation>
 <translation id="1418882096915998312">Prebieha registrácia podniku</translation>
 <translation id="1418954524306642206">Vyhľadajte v počítači súbor PPD vašej tlačiarne</translation>
+<translation id="1419086691207546433">Pridajte si rozšírenia, aby ste si udržali poriadok, zjednodušili si úlohy a zlepšili prehliadanie</translation>
 <translation id="1421334842435688311">Informácie o polohe základňovej stanice</translation>
 <translation id="1421514190500081936">Zadajte dôvod sťahovania týchto údajov:</translation>
 <translation id="1422159345171879700">Načítať nebezpečné skripty</translation>
@@ -3329,6 +3331,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3309330461362844500">Identifikátor profilu certifikátu</translation>
 <translation id="3310379801837527592">Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> ďalším</translation>
 <translation id="331080746368555063">Súkromné weby môžu zahŕňať rôzny obsah, napríklad intranet vašej firmy</translation>
+<translation id="3311007761540106761">Predvolené systémom</translation>
 <translation id="3311445899360743395">Dáta spojené s touto aplikáciou budú odstránené zo zariadenia.</translation>
 <translation id="3312470654018965389">Konfiguruje sa kontajner systému Linux</translation>
 <translation id="3312883087018430408">Ak chcete hľadať na konkrétnom webe alebo v časti Chromu, zadajte jej odkaz do panela s adresou a použite preferovanú klávesovú skratku. Ak chcete napríklad hľadať iba v záložkách, zadajte @bookmarks a stlačte Tab alebo medzerník.</translation>
@@ -7880,6 +7883,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6560151649238390891">Návrh bol vložený</translation>
 <translation id="656065428026159829">Zobraziť viac</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Tento súbor typu (<ph name="TYPE" />) môže byť nebezpečný. Uložte ho, iba keď je pre vás zdroj <ph name="ORIGIN" /> dôveryhodný.</translation>
 <translation id="6562117348069327379">Ukladajte denníky systému do priečinka Stiahnuté.</translation>
 <translation id="656293578423618167">Názov súboru alebo cesta má veľa znakov. Uložte súbor pod kratším názvom alebo inde.</translation>
 <translation id="6563002009564846727">Zobraziť certifikáty importované zo systému Windows</translation>
@@ -9687,6 +9691,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7830833461614351956">Chcete skopírovať niekoľko súborov (<ph name="NUM_OF_FILES" />) do služby <ph name="CLOUD_PROVIDER" /> a otvoriť?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Tu sa zobrazia uložené vlastné slová</translation>
+<translation id="7834832693620032149">Ak chcete zdieľať zvuk, zdieľajte kartu alebo okno</translation>
 <translation id="7836577093182643605">Zoznam tém, ktorých zdieľanie s webmi ste zablokovali</translation>
 <translation id="7836745198769390202">Momentálne máte <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> a ďalšie Vaša organizácia si bude môcť tieto údaje zobraziť a spravovať.</translation>
 <translation id="7836850009646241041">Skúste znova klepnúť na svoj bezpečnostný kľúč</translation>
@@ -10557,6 +10562,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8425213833346101688">Zmeniť</translation>
 <translation id="8425492902634685834">Pripnúť na panel úloh</translation>
 <translation id="8425768983279799676">Kódom PIN môžete odomknúť zariadenie.</translation>
+<translation id="8426697201161711396">Prihláste sa do Chromu a získajte svoje heslá a ďalší obsah vo všetkých zariadeniach</translation>
 <translation id="8427213022735114808">Diktovanie odosiela váš hlas do Googlu a umožňuje tak hlasové zadávanie do všetkých textových polí.</translation>
 <translation id="8427292751741042100">vložené do ľubovoľného webu</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
@@ -11296,6 +11302,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8940081510938872932">Počítač momentálne vykonáva priveľa úloh.  Skúste to neskôr.</translation>
 <translation id="8940888110818450052">Možnosti prihlásenia</translation>
 <translation id="8941173171815156065">Odvolať povolenie „<ph name="PERMISSION" />“</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> zdieľa okno a zvuk.</translation>
 <translation id="8941688920560496412">Zariadenie <ph name="DEVICE_NAME" /> je vypnuté</translation>
 <translation id="894191600409472540">Vytvárajte si silné heslá</translation>
 <translation id="8942714513622077633">Chcete zrušiť nastavovanie súpravy Microsoft 365?</translation>

@@ -41,6 +41,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1547469039832541117">Beëindig die gemerkte taak.</translation>
 <translation id="1553461853655228091">Chromium moet toestemming hê om toegang te kry tot jou kamera om 'n 3D-kaart van jou omgewing te skep</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Hierdie uitbreiding word nie meer gesteun nie. Chromium beveel aan dat jy dit verwyder.}other{Hierdie uitbreidings word nie meer gesteun nie. Chromium beveel aan dat jy hulle verwyder.}}</translation>
+<translation id="1562320819937089394">Speld Chromium vas</translation>
 <translation id="1574377791422810894">Chromium se veiligheidnutsgoed</translation>
 <translation id="1594928384848033697">Chromium wil jou Wagwoordbestuurder-data uitvee. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas}=1{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas. Jou incognitovenster sal nie weer oopgemaak word nie.}other{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
@@ -523,6 +524,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8004582292198964060">Blaaier</translation>
 <translation id="8010081455002666927">Outobespeur</translation>
 <translation id="8013436988911883588">Sodra Chromium toegang het, sal webwerwe jou kan vra vir toegang.</translation>
+<translation id="8031714377769448844">Speld Chromium vas op jou taakbalk om enige tyd vinnig daarby uit te kom</translation>
 <translation id="80471789339884597">Dankie dat jy geïnstalleer het. Jy moet al jou blaaiers herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="8054112667659782652">Wys altyd kortpad vir Prentsoektog</translation>
 <translation id="8077498902115777962">Deaktiveer Chromium wat op die agtergrond vir apps loop</translation>
@@ -578,6 +580,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8704119203788522458">Dit is jou Chromium</translation>
 <translation id="8719993436687031146">Meld by Chromium aan?</translation>
 <translation id="8747073452963259673">onderste linkerhoek van soekgebied: links <ph name="LEFT" />%, onder <ph name="BOTTOM" />%</translation>
+<translation id="8768722695577490596">Wagwoorde kan net buite Chromium uitgevee word</translation>
 <translation id="878572486461146056">Installeerfout: Jou netwerkadmin het ’n groepbeleid toegepas wat installasie verhinder: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium het toestemming nodig om toegang te kry tot jou kamera en mikrofoon vir hierdie werf</translation>
 <translation id="8818550178040858407">Meld aan by Chromium?</translation>

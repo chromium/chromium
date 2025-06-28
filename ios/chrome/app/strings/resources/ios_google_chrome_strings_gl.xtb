@@ -90,6 +90,7 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Engadir os marcadores a Chrome</translation>
 <translation id="3030414234702425231">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chrome deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
+<translation id="3042447686908081308">Importar a Chrome</translation>
 <translation id="3051521853355903257">Xestiona os contrasinais en Chrome</translation>
 <translation id="309672519329227863">Accede aos teus contrasinais de Chrome e moito máis noutras aplicacións.</translation>
 <translation id="3109170945534582468">Accións de Chrome</translation>
@@ -337,6 +338,7 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="9176561303811134420">Xestiona os métodos de pago en Chrome</translation>
 <translation id="9181628561061032322">Abre as pestanas recentes de Chrome.</translation>
 <translation id="948597495737267756">Abre a páxina do teu historial de Chrome.</translation>
+<translation id="954347330803595209">Importa os teus datos para usar os teus contrasinais, o historial, os marcadores e as tarxetas de crédito en Chrome</translation>
 <translation id="97300214378190234">Utiliza Chrome sempre que toques ligazóns noutras aplicacións.</translation>
 <translation id="997929539742564806">Autocompleta os contrasinais e as claves de acceso de Chrome para iniciar sesión rapidamente en aplicacións e sitios</translation>
 <translation id="998677222109959694">Xestiona a configuración de Chrome</translation>

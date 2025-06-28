@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">دوسرے آلات سے ٹیب گروپس کو خودکار طور پر کھولیں</translation>
 <translation id="1075622780330595106">آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> سال پہلے تخلیق کیا گیا}other{<ph name="NUM_YEARS_MANY" /> سال پہلے تخلیق کیا گیا}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{غیر فعال ٹیبز اور گروپس کو 1 ماہ کے بعد بند کر دیا جائے گا}other{غیر فعال ٹیبز اور گروپس کو <ph name="MONTH_COUNT_MANY" /> ماہ بعد بند کر دیا جائے گا}}</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{‫<ph name="TAB_COUNT2" /> ٹیب کے ساتھ <ph name="TITLE_OF_GROUP" /> کھولیں}other{‫<ph name="TAB_COUNT2" /> ٹیبز کے ساتھ <ph name="TITLE_OF_GROUP" /> کھولیں}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ٹیب گروپ کے اختیارات</translation>
+<translation id="1300188005269437765">منتخب کریں کہ کب ٹیبز اور ٹیب گروپس خود بخود غیر فعال سیکشن میں منتقل ہو جاتے ہیں۔</translation>
 <translation id="1329584516321524826">ابھی اپ ڈیٹ ہوا ہے</translation>
 <translation id="1340839264183302272">گروپ چھوڑیں</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، رنگ <ph name="COLOR_NAME" />، لیبل <ph name="CARD_LABEL" /> کے ساتھ اشتراک کردہ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، رنگ <ph name="COLOR_NAME" />، لیبل <ph name="CARD_LABEL" /> کے ساتھ اشتراک کردہ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ٹیب کا گروپ بن گیا</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="1909810060368225529">نوٹس: اس مشترکہ ٹیب گروپ میں ہونے والی تبدیلیاں ہر کسی کو نظر آتی ہیں۔ ہر کوئی آپ کے مشترکہ ٹیب گروپس میں تبدیلیاں کر سکتا ہے</translation>
+<translation id="1982637982196732906">غیر فعال سیکشن میں جائیں</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو بُک مارک کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو بُک مارک کریں}}</translation>
 <translation id="2055057176188061528">ٹیب گروپ منتخب کریں یا نیا ٹیب گروپ تخلیق کریں</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome خودکار طور پر غیر فعال سیکشن میں ان آئٹمز کو بند کر دیتا ہے جنہیں آپ نے <ph name="AUTO_DELETE_DELAY_ONE" /> ماہ سے استعمال نہیں کیا ہے۔ آپ ترتیبات میں اسے ابھی یا کسی بھی وقت آف کر سکتے ہیں۔}other{‏‫Chrome غیر فعال سیکشن میں موجود ان آئٹمز کو خودکار طور پر بند کر دیتا ہے جنہیں آپ نے <ph name="AUTO_DELETE_DELAY_MANY" /> ماہ سے استعمال نہیں کیا ہے۔ آپ ترتیبات میں اسے ابھی یا کسی بھی وقت آف کر سکتے ہیں۔}}</translation>
 <translation id="2118649612461486615">اسٹور کی معلومات</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{آپ کے بند ٹیبز اور گروپس کو حالیہ ٹیبز سیکشن اور ٹیب گروپس سیکشن سے دوبارہ کھولا جا سکتا ہے۔ آپ کا پوشیدگی ٹیب دستیاب نہیں ہوگا۔}other{آپ کے بند ٹیبز اور گروپس کو حالیہ ٹیبز سیکشن اور ٹیب گروپس سیکشن سے دوبارہ کھولا جا سکتا ہے۔ آپ کے # پوشیدگی ٹیبز دستیاب نہیں ہوں گے۔}}</translation>
 <translation id="2162620598375156287">اب <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> پر</translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">گروپ کے نام میں ترمیم کریں</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ٹیب کو بُک مارک کریں}other{ٹیبز کو بُک مارک کریں}}</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
+<translation id="2371084566192454134">ٹیبز اور ٹیب گروپس</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="TABS_COUNT_ONE" /> ٹیب کے ساتھ سکیڑیں۔}other{<ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
 <translation id="2498435670446402865">ٹیب گروپ کا نام بدلیں</translation>
 <translation id="2536366509642644298">اب "<ph name="TAB_GROUP_NAME_1" />" اور "<ph name="TAB_GROUP_NAME_2" />" "ٹیب گروپس دستیاب نہیں ہیں</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
 <translation id="2569352796411618312">تجویز: آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
 <translation id="257674075312929031">گروپ</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{‫<ph name="TABS_COUNT_ONE" /> ٹیب، رنگ <ph name="COLOR_NAME" /> کے ساتھ ٹیب گروپ کو بحال اور کھولیں۔}other{‫<ph name="TABS_COUNT_MANY" /> ٹیبز، رنگ <ph name="COLOR_NAME" /> کے ساتھ ٹیب گروپ کو بحال اور کھولیں۔}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی</translation>
 <translation id="266935134738038806">سائٹ ملاحظہ کریں</translation>
 <translation id="2671423594960767771">گروپ کا اشتراک کریں</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">درجہ بندی</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> ٹیب کو گروپ میں شامل کریں}other{‫<ph name="TABS_COUNT_MANY" /> ٹیبز کو گروپ میں شامل کریں}}</translation>
 <translation id="3328308545011660196">تجویز: <ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{‫1 دن غیر فعال ہونے کے بعد}other{‫<ph name="DAY_COUNT_MANY" /> دن غیر فعال ہونے کے بعد}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> نیا ٹیب}other{‫<ph name="MANY_ADDED" /> نئے ٹیبز}}</translation>
 <translation id="3613492231657284463">غیر فعال ٹیبز کا ڈائیلاگ چھپائیں</translation>
 <translation id="3619255692378312441">رسائی کا نظم کریں</translation>
@@ -94,6 +101,7 @@
 <translation id="4861953997778766866">ہر کوئی آپ کے مشترکہ ٹیب گروپس میں تبدیلیاں کر سکتا ہے</translation>
 <translation id="4870911314065352661">سبھی ٹیبز بند کریں؟</translation>
 <translation id="4871719318659334896">گروپ بند کریں</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{‫<ph name="TABS_COUNT_ONE" /> ٹیب، رنگ <ph name="COLOR_NAME" /> کے ساتھ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو بحال اور کھولیں۔}other{‫<ph name="TABS_COUNT_MANY" /> ٹیبز، رنگ <ph name="COLOR_NAME" /> کے ساتھ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو بحال اور کھولیں۔}}</translation>
 <translation id="4881695831933465202">کھولیں</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ٹیب بند کریں}other{ٹیبز بند کریں}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> گروپس کو محفوظ کیا گیا (ٹیبز کو بند کر دیا جائے گا اور گروپس کو حذف کر دیا جائے گا)</translation>
@@ -114,6 +122,7 @@
 <translation id="5627941783489838464">کوئی ٹیب اپ ڈیٹ نہیں ہے</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏Chrome سے <ph name="TABS_COUNT_ONE" /> لنک}other{‏Chrome سے <ph name="TABS_COUNT_MANY" /> لنکس}}</translation>
 <translation id="5746204836956568669">زیادہ تیز کام کرنے کیلئے، <ph name="NUMBER_OF_TABS" /> ٹیبز کو گروپ بند کریں؟</translation>
+<translation id="5773295109010386583">غیر فعال آئٹمز کو خودکار طور پر بند کریں</translation>
 <translation id="58326064309361797">ان کی گروپ بندی کرنے کے لیے ٹیبز کو گھسیٹیں</translation>
 <translation id="5901630391730855834">پیلا</translation>
 <translation id="5972844218283131174">سبھی کو غیر منتخب کریں</translation>
@@ -156,6 +165,7 @@
 <translation id="7369451074646620503">اب "<ph name="TAB_GROUP_NAME" />" ٹیب گروپ دستیاب نہیں ہے</translation>
 <translation id="7452985128687107478">ٹیب گروپس آپ کے تمام آلات پر خودکار طور پر محفوظ اور اپ ڈیٹ ہوتے ہیں</translation>
 <translation id="747459581954555080">سبھی کو بحال کریں</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> آئٹم}other{‫<ph name="TABS_COUNT_MANY" /> آئٹمز}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{منتخب کردہ <ph name="TABS_COUNT_ONE" /> آئٹم کو بحال کریں}other{منتخب کردہ <ph name="TABS_COUNT_MANY" /> آئٹمز کو بحال کریں}}</translation>
 <translation id="753732157349120914">ٹیب سوئچر</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{‏Google سے <ph name="REVIEWS_COUNT_ONE" /> جائزہ}other{‏Google سے <ph name="REVIEWS_COUNT_MANY" /> جائزے}}</translation>

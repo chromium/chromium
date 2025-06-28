@@ -90,6 +90,7 @@
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Добавяне на отметки към Chrome</translation>
 <translation id="3030414234702425231">Тъй като излизате от профил, управляван от <ph name="SIGNOUT_MANAGED_DOMAIN" />, данните ви в Chrome ще бъдат изтрити от това устройство, но ще останат в профила ви в Google.</translation>
+<translation id="3042447686908081308">Импортиране в Chrome</translation>
 <translation id="3051521853355903257">Управление на паролите в Chrome</translation>
 <translation id="309672519329227863">Направете паролите и другите си данни в Chrome достъпни в други приложения.</translation>
 <translation id="3109170945534582468">Действия от Chrome</translation>
@@ -337,6 +338,7 @@
 <translation id="9176561303811134420">Управление на начините на плащане в Chrome</translation>
 <translation id="9181628561061032322">Отваря скорошните раздели в Chrome.</translation>
 <translation id="948597495737267756">Отваря страницата с историята ви в Chrome.</translation>
+<translation id="954347330803595209">Импортирайте данните си, за да използвате паролите, историята, отметките и кредитните си карти в Chrome</translation>
 <translation id="97300214378190234">Използвайте Chrome всеки път, когато докоснете връзки в други приложения.</translation>
 <translation id="997929539742564806">Влизайте бързо в приложения и сайтове, като автоматично попълвате паролите и ключовете си за достъп от Chrome</translation>
 <translation id="998677222109959694">Управление на настройките на Chrome</translation>
