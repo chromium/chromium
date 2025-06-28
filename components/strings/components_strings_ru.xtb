@@ -730,7 +730,7 @@
 <translation id="2219735899272417925">требуется сбросить настройки устройства</translation>
 <translation id="2221227930294879156">Мероприятия, связанные с продовольственными товарами</translation>
 <translation id="2222604080869344662">Войдите в OneDrive, чтобы продолжить скачивание</translation>
-<translation id="2224337661447660594">Нет подключения к Интернету</translation>
+<translation id="2224337661447660594">Нет подключения к интернету</translation>
 <translation id="2225927550500503913">Виртуальная карта включена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Вход<ph name="END_LINK" /> в сеть Wi-Fi</translation>
 <translation id="2227758700723188171">Стипендии и гранты на образование</translation>
@@ -1607,7 +1607,7 @@
 <translation id="3713277100229669269">Теперь перед оплатой вы можете видеть информацию о преимуществах карты</translation>
 <translation id="371420189621607696">Киберспорт</translation>
 <translation id="3714633008798122362">веб-календарь</translation>
-<translation id="3714780639079136834">Включите Wi-Fi или мобильный Интернет.</translation>
+<translation id="3714780639079136834">Включите Wi-Fi или мобильный интернет.</translation>
 <translation id="3715016660240337709">{0,plural, =1{Файл нельзя загрузить}one{<ph name="FILE_COUNT" /> файл нельзя загрузить}few{<ph name="FILE_COUNT" /> файла нельзя загрузить}many{<ph name="FILE_COUNT" /> файлов нельзя загрузить}other{<ph name="FILE_COUNT" /> файла нельзя загрузить}}</translation>
 <translation id="3715597595485130451">Подключение к Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проверьте настройки прокси-сервера, брандмауэра и DNS<ph name="END_LINK" />.</translation>
