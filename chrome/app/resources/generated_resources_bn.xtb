@@ -1615,6 +1615,7 @@
 <translation id="2096716221239095980">সব ডেটা মুছুন</translation>
 <translation id="2097950021134740304">সাবস্ক্রিপশন সরিয়ে দেওয়া বাতিল করুন</translation>
 <translation id="2098805196501063469">বাকি পাসওয়ার্ড চেক করুন</translation>
+<translation id="2099883893520019102">গত ১৫ মিনিট</translation>
 <translation id="2101225219012730419">ভার্সন:</translation>
 <translation id="2102396546234652240">সাইটগুলিকে আপনার মাইক্রোফোন ব্যবহার করার অনুমতি দেয় না</translation>
 <translation id="2102495993840063010">Android অ্যাপ্লিকেশানগুলি</translation>
@@ -2177,6 +2178,7 @@
 <translation id="2476901513051581836">অফলাইন স্টোরেজের সাইজ না জানা পর্যন্ত স্টোরেজ মোছা যাচ্ছে না।</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> আনইনস্টল করার জন্য Windows বন্ধ করুন।</translation>
 <translation id="2477065602824695373">আপনি একাধিক সুইচ সেট আপ করার জন্য, অটো-স্ক্যান বন্ধ হয়ে গেছে।</translation>
+<translation id="2477607419416067650">অন্য Google ডেটা</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" এর জন্য মিডিয়া-ফাইলের অনুমতি</translation>
 <translation id="24786041351753425">ডেটা আগের অবস্থায় ফেরানোর পরিষেবা চালু করুন।</translation>
 <translation id="2479541499757560845">অ্যাক্সেসিবিলিটি কীবোর্ডের সেটিংস</translation>
@@ -2295,6 +2297,7 @@
 <translation id="2552966063069741410">সময় অঞ্চল</translation>
 <translation id="2553290675914258594">অ্যাক্সেস যাচাই করা হয়েছে</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />, <ph name="NETWORK_ID" /> এর সাথে সংযোগ স্থাপনে অক্ষম ছিল৷ দয়া করে অন্য একটি নেটওয়ার্ক বেছে নিন বা আবার চেষ্টা করুন৷</translation>
+<translation id="2553352788023127673">সার্চ ইতিহাস এবং পাসওয়ার্ড তাদের ম্যানেজমেন্ট সেটিংস থেকে মুছে ফেলা হতে পারে</translation>
 <translation id="2553440850688409052">এই প্লাগ-ইনটি লুকান</translation>
 <translation id="2554553592469060349">নির্বাচিত ফাইল খুবই বড়  (সর্বোচ্চ আকার: 3MB )৷</translation>
 <translation id="2555802059188792472"><ph name="TOTAL_NUM_APPS" />টির মধ্যে <ph name="NUM_ALLOWED_APPS" />টি অ্যাপ বিজ্ঞপ্তি পাঠাতে পারবে</translation>
@@ -3472,6 +3475,7 @@
 <translation id="3408555740610481810">ক্যামেরা ও মাইক্রোফোন ব্যবহার করা হচ্ছে</translation>
 <translation id="3409157109901479672">বাঁদিক</translation>
 <translation id="3409513286451883969">&amp;বেছে নেওয়া টেক্সট <ph name="LANGUAGE" />-এ অনুবাদ করুন</translation>
+<translation id="3410151451624226773">Google Password Manager-এ ম্যানেজ করুন</translation>
 <translation id="3412265149091626468">নির্বাচনে যান</translation>
 <translation id="3413122095806433232">CA ইস্যুকারীগণ: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">মাপ:</translation>
@@ -5900,6 +5904,7 @@
 <translation id="5102244391872941183">সিস্টেম সার্ভিসের পাশাপাশি যেসব অ্যাপ ও ওয়েবসাইটের লোকেশন অ্যাক্সেস করার অনুমতি আছে, সেগুলি আপনার লোকেশন ব্যবহার করতে পারবে</translation>
 <translation id="5103311607312269661">ডিসপ্লের উজ্জ্বলতা বাড়ানো</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{গ্রুপ মুছুন}one{গ্রুপ মুছুন}other{গ্রুপ মুছুন}}</translation>
+<translation id="5105442806410269908">অন্য Google ডেটা ম্যানেজ করুন</translation>
 <translation id="5106350808162641062">সরান</translation>
 <translation id="510695978163689362">Family Link <ph name="USER_EMAIL" /> তত্ত্বাবধান করে। অভিভাবকীয় তত্ত্বাবধান সহ স্কুল রিসোর্স অ্যাক্সেস করার জন্য আপনি স্কুলের অ্যাকাউন্ট যোগ করতে পারবেন।</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> কখনও দেখতে চাই না</translation>
@@ -6204,6 +6209,7 @@
 <translation id="5320135788267874712">নতুন ডিভাইসের নাম</translation>
 <translation id="532247166573571973">সার্ভারে সংযোগ নাও হতে পারে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="5323328004379641163">Chrome ও এই পৃষ্ঠা কেমন দেখাবে তা কাস্টমাইজ করুন</translation>
+<translation id="5323501626199324454">আপনার Google অ্যাকাউন্ট থেকে ম্যানেজ করুন</translation>
 <translation id="5324300749339591280">অ্যাপ তালিকা</translation>
 <translation id="5324780743567488672">আপনার লোকেশন ব্যবহার করে স্বয়ংক্রিয়ভাবে সময় অঞ্চল সেট করুন</translation>
 <translation id="5327248766486351172">নাম</translation>
@@ -6551,6 +6557,7 @@
 <translation id="557722062034137776">আপনার ডিভাইসকে আবার রিসেট করলে তা আপনার Google অ্যাকাউন্টগুলি বা এই অ্যাকাউন্টগুলিতে সিঙ্ক হওয়া যেকোনো ডেটাতে প্রভাব ফেলবে না৷ যদিও, স্থানীয়ভাবে সেভ করা সমস্ত ফাইল মুছে ফেলা হবে৷</translation>
 <translation id="5578059481725149024">অটো সাইন-ইন</translation>
 <translation id="5578387000057347457">ছবি তৈরি করতে কাস্টম করা প্রম্পট লিখুন অথবা টেক্সট হাইলাইট করুন</translation>
+<translation id="5579225964082017560"><ph name="SECTION_HEADER" /> তালিকা থেকে <ph name="SITE" /> সরান</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> ভাষায় অনুবাদ করা হয়ে গেছে</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification </translation>
 <translation id="5581972110672966454">ডোমেনে ডিভাইসটি যোগ করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
@@ -8855,6 +8862,7 @@
 <translation id="7250616558727237648">আপনি যে ডিভাইস শেয়ার করছেন সেটি থেকে কোনও প্রতিক্রিয়া পাওয়া যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="725109152065019550">দুঃখিত, আপনার প্রশাসক আপনার অ্যাকাউন্টে এক্সটার্নাল স্টোরেজ বন্ধ করেছে৷</translation>
 <translation id="7251635775446614726">আপনার অ্যাডমিনিস্ট্রেটরের বক্তব্য হল: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7252424535852086046">এই ডেটা মুছতে, এটির ম্যানেজমেন্ট সেটিংসে যান</translation>
 <translation id="7253521419891527137">এবং আরও জানুন</translation>
 <translation id="7254951428499890870">আপনি কি ডায়গনিস্টিক মোডে "<ph name="APP_NAME" />" লঞ্চ করার বিষয়ে নিশ্চিত?</translation>
 <translation id="725497546968438223">'বুকমার্ক ফোল্ডার' বোতাম</translation>
@@ -9141,6 +9149,7 @@
 <translation id="7450761244949417357">এখন <ph name="ALTERNATIVE_BROWSER_NAME" /> চালু হচ্ছে</translation>
 <translation id="7450926666485653189">URL-এর অস্পষ্ট করা একটি অংশ গোপনীয় সার্ভারের মাধ্যমে Google-এ পাঠায়, এই সার্ভার আপনার IP অ্যাড্রেস লুকিয়ে রাখে</translation>
 <translation id="7453008956351770337">এই প্রিন্টারটি নির্বাচন করে, আপনি নিম্নল্লিখিত এক্সটেনশনটিকে আপনার প্রিন্টারে অ্যাক্সেস করার অনুমতি দিচ্ছেন:</translation>
+<translation id="7453032093368223821">অন্য ডেটা ম্যানেজ করুন</translation>
 <translation id="7454548535253569100">পোর্টাল: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">আপনার প্রতিষ্ঠান পাসওয়ার্ড সেভ করার ফিচার বন্ধ করে রেখেছে</translation>
 <translation id="7455730275746867420">অতিরিক্ত কন্টেনার ম্যানেজ করুন</translation>
@@ -9542,6 +9551,7 @@
 <translation id="7723388585204724670">ডিফল্ট Chrome-এ রিসেট করুন</translation>
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7724711098786238351">ডেমো মোড এমন ব্যবহারকারীদের জন্য উপলভ্য যাদের বয়স ১৮ বছরের বেশি এবং এটি Google-এর পরিষেবার শর্তাবলী এবং গোপনীয়তা নীতি দ্বারা পরিচালিত। এই ডিভাইসে লেখা ডেটা নির্দিষ্ট সময় অন্তর অন্যরা দেখতে পেতে পারেন।</translation>
+<translation id="7726288096350730168">এই ডিভাইস থেকে মুছে ফেলুন</translation>
 <translation id="7726391492136714301">আপনার ফোনের বিজ্ঞপ্তি ও অ্যাপ দেখুন</translation>
 <translation id="7727898923446098954">ট্যাব লুকানো আছে</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{এই ট্যাব পজ করুন}one{এই ট্যাব পজ করুন}other{এই ট্যাবগুলি পজ করুন}}</translation>
@@ -11098,6 +11108,7 @@
 <translation id="8791157330927639737">আপডেট সম্পর্কে আরও জানুন</translation>
 <translation id="8791534160414513928">আপনার ব্রাউজিং ট্র্যাফিকের মাধ্যমে একটি 'Do Not Track' অনুরোধ পাঠান</translation>
 <translation id="8793390639824829328">শেয়ার করা ট্যাবে স্ক্রল ও সেটি জুম করার জন্য সাইট এই ফিচার ব্যবহার করে</translation>
+<translation id="8793895150509408038"><ph name="SECTION_HEADER" /> তালিকা থেকে <ph name="SITE" />-এর জন্য সাইটের বিবরণ দেখুন</translation>
 <translation id="879413103056696865">হটস্পট চালু থাকা অবস্থায়, আপনার <ph name="PHONE_NAME" /> যা করবে:</translation>
 <translation id="8794548468611058947">সাইন-ইন করার জন্য আপনার Google অ্যাকাউন্ট পাসওয়ার্ড লেখার পরিবর্তে এই <ph name="DEVICE_TYPE" />-এর জন্য পিন তৈরি করতে পারেন</translation>
 <translation id="8795916974678578410">নতুন উইন্ডো</translation>

@@ -2163,6 +2163,7 @@
 <translation id="4635278307999235413">Տվյալներն ուղարկվում են ադմինիստրատորի վահանակին</translation>
 <translation id="4636930964841734540">Տեղեկություններ</translation>
 <translation id="4640225694041297329">Ցույց տալ վերջին 7 օրվա համար արդյունքները</translation>
+<translation id="4642296966515958616">Ներդիրների այս խմբին միանալու համար թարմացրեք Chrome-ը</translation>
 <translation id="464342062220857295">Որոնման գործառույթներ</translation>
 <translation id="4644567637638438744">Ֆայլեր կարող եք վերբեռնել, եթե մուտք եք գործել Microsoft OneDrive հաշիվ</translation>
 <translation id="4644670975240021822">Հակառակ հերթականությամբ՝ երեսի կողմով ներքև</translation>
@@ -2939,6 +2940,7 @@
 <translation id="5967592137238574583">Փոփոխեք կոնտակտային տվյալները</translation>
 <translation id="5967867314010545767">Հեռացնել պատմությունից</translation>
 <translation id="5968022600320704045">Որոնման արդյունքներ չկան</translation>
+<translation id="5968400720580217226">ԱԲ ռեժիմ</translation>
 <translation id="5969199813874624822">Պահել և հետագծել գինը</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Վեցերորդ գլանափաթեթ</translation>
@@ -3159,6 +3161,7 @@
 <translation id="6326947323444967009">Դարձրեք Chrome-ը համակարգի կանխադրված դիտարկիչ iOS-ի կարգավորումներում</translation>
 <translation id="6327065120806001832">լոկալ ցանցի հասանելիություն</translation>
 <translation id="6328639280570009161">Անջատեք ցանցի գործողությունների կանխատեսումը</translation>
+<translation id="6329815962353376655">&lt;Մուտքագրեք հարց&gt;</translation>
 <translation id="6334834493885103305">Այժմ Affirm-ի, Zip-ի կամ Klarna-ի օգնությամբ կարող եք տարաժամկետ վճարումներ կատարել</translation>
 <translation id="6335029926534404762">Սպորտային կոշիկներ</translation>
 <translation id="6336948221660696475">VR-ի օգտագործման թույլտվությունը մերժվել է</translation>
@@ -3325,6 +3328,7 @@
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">Ձեր պատճենած հղումը</translation>
 <translation id="6591833882275308647">Ձեր <ph name="DEVICE_TYPE" /> սարքը չի կառավարվում</translation>
+<translation id="6595495738567740002">Google-ի քուքիներն այս սարքից հեռացնելու համար <ph name="BEGIN_LINK" />դուրս եկեք Chrome-ից<ph name="END_LINK" />։</translation>
 <translation id="6596325263575161958">Գաղտնագրման ընտրանքներ</translation>
 <translation id="6596573334527383067">Ցույց տալ երեկվա համար արդյունքները</translation>
 <translation id="6597665340361269064">90 աստիճան</translation>
@@ -3871,6 +3875,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Այն կարող եք օգտագործել Google-ի արտադրանքներում</translation>
 <translation id="7523408071729642236">Արդյունաբերություն</translation>
+<translation id="7524958309155133228">Հարցրեք <ph name="ENGINE" />ին</translation>
 <translation id="7525067979554623046">Ստեղծել</translation>
 <translation id="7525804896095537619">Անվանման դաշտը չի կարող դատարկ լինել</translation>
 <translation id="7526934274050461096">Կայքին կապակցումը պաշտպանված չէ</translation>
@@ -4715,6 +4720,7 @@
 <translation id="9004367719664099443">VR աշխատաշրջանն ակտիվ է</translation>
 <translation id="9005998258318286617">Չհաջողվեց բեռնել PDF փաստաթուղթը։</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Կայքեր չկան}=1{1 կայքից}one{# կայքից}other{# կայքից}}</translation>
 <translation id="9012194306129927220">Այժմ Affirm-ի կամ Zip-ի օգնությամբ կարող եք տարաժամկետ վճարումներ կատարել</translation>
 <translation id="9014705027639070815">Կայքերը, որոնք այցելում եք, կարող են տեղեկություններ խնդրել Chrome-ից՝ օգնելու գնահատել իրենց գովազդի արդյունավետությունը։ Chrome-ը կայքերին թույլատրում է հավաքել որոշակի տվյալներ, օրինակ՝ արդյոք դուք գնում եք կատարել կայք այցելելուց հետո։</translation>
 <translation id="9018120810758822233">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի ձեր անվտանգության կոդը</translation>
@@ -4737,6 +4743,7 @@
 <translation id="9042617223719777575">Մեծ տարողություն</translation>
 <translation id="9042827002460091668">Ստուգեք ձեր ինտերնետ կապը և նորից փորձեք</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> կայքը հայցում է լոկալ ցանցում սարքեր փնտրելու և դրանց միանալու թույլտվություն</translation>
 <translation id="9046864189129893978">Խոսափողներ (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Այս գործողությունները պահանջում են, որ <ph name="POLICY_NAME" /> կանոնի համար սահմանվի <ph name="POLICY_VALUE" /> արժեքը՝ <ph name="ACTION_LIST" />։</translation>
 <translation id="9048662076076074925">24 x 36 դյույմ</translation>

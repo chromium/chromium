@@ -129,6 +129,7 @@
 <translation id="2490684707762498678">Адміністратор сімейної групи: <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Довідка й відгуки</translation>
 <translation id="2501278716633472235">Назад</translation>
+<translation id="2533138527374486328">Якщо цей перемикач увімкнено, сайти можуть запитувати дозвіл на підключення до пристроїв у вашій локальній мережі. Якщо його вимкнено, сайти не можуть підключатися до пристроїв у вашій локальній мережі.</translation>
 <translation id="2546283357679194313">Файли cookie й дані сайтів</translation>
 <translation id="2570922361219980984">На цьому пристрої також вимкнено доступ до геоданих. Увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Розгорнуто – натисніть, щоб згорнути.</translation>
@@ -424,6 +425,7 @@
 <translation id="5968921426641056619">Введіть веб-адресу</translation>
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5976059395673079613">"<ph name="PERMISSION" />" – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Увімкнути стрічку рекомендацій</translation>
 <translation id="6015775454662021376">Керуйте доступом цього сайту до вашого пристрою</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6042308850641462728">Більше</translation>
@@ -511,6 +513,7 @@
 <translation id="7188508872042490670">Дані сайтів на пристрої</translation>
 <translation id="7201549776650881587">У результаті буде видалено всі дані й файли cookie, збережені сайтами в групі сайту <ph name="ORIGIN" /> або додатками на головному екрані</translation>
 <translation id="7203150201908454328">Розгорнуто</translation>
+<translation id="7213166370492037743">Заборонити сайтам підключатися до пристроїв у вашій локальній мережі</translation>
 <translation id="7219254577985949841">Видалити дані сайту?</translation>
 <translation id="723171743924126238">Вибрати зображення</translation>
 <translation id="7243308994586599757">Опції можна знайти внизу екрана</translation>

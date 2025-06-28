@@ -90,6 +90,7 @@ Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä d
 <translation id="2957447865124070833">Valitse <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Lisää kirjanmerkkejä Chromeen</translation>
 <translation id="3030414234702425231">Koska kirjaudut ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> ylläpitämältä tililtä, Chrome-datasi poistetaan tältä laitteelta. Se säilyy edelleen Google-tililläsi.</translation>
+<translation id="3042447686908081308">Tuo Chromeen</translation>
 <translation id="3051521853355903257">Hallinnoi salasanoja Chromessa</translation>
 <translation id="309672519329227863">Käytä Chrome-salasanojasi ja muita ominaisuuksia eri sovelluksissa.</translation>
 <translation id="3109170945534582468">Chrome-pikavalinnat</translation>
@@ -337,6 +338,7 @@ Datasi salataan tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käytt
 <translation id="9176561303811134420">Hallinnoi maksutapoja Chromessa</translation>
 <translation id="9181628561061032322">Avaa Chromen viimeaikaiset välilehdet.</translation>
 <translation id="948597495737267756">Avaa Chromen historiasivun.</translation>
+<translation id="954347330803595209">Tuo data, jotta voit käyttää salasanoja, historiaa, kirjanmerkkejä ja credit-kortteja Chromessa</translation>
 <translation id="97300214378190234">Käytä Chromea aina, kun napautat linkkejä muissa sovelluksissa.</translation>
 <translation id="997929539742564806">Kirjaudu sovelluksiin ja sivustoille nopeasti täyttämällä salasanat ja avainkoodit automaattisesti Chromesta</translation>
 <translation id="998677222109959694">Muuta Chromen asetuksia</translation>

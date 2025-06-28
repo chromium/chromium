@@ -174,6 +174,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="5203244847421322551">Desa i emplena automàticament les contrasenyes a Chromium</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="5259423875997548710">Cerca elements visuals a Chromium.</translation>
+<translation id="5284913972719948193">Importa les teves dades per utilitzar les teves contrasenyes, historial, adreces d'interès i targetes de crèdit a Chromium</translation>
 <translation id="5308226104666789935">Chromium no pot cercar actualitzacions</translation>
 <translation id="5311557153294205270">Afegeix els URL introduïts a les adreces d'interès de Chromium.</translation>
 <translation id="5383251701169024761">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, tria Chromium per a l'Emplenament automàtic.</translation>
@@ -307,6 +308,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="865600487977764604">Et protegeix a Chromium i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualitzat</translation>
 <translation id="8685813584220679697">Inicia la sessió en aquest lloc web i a Chromium.</translation>
+<translation id="8698780336333802489">Importa a Chromium</translation>
 <translation id="8730503818204408000">Obre la configuració de Chromium per establir Chromium com a navegador predeterminat.</translation>
 <translation id="8754966941001340678">Chromium recomana la protecció millorada</translation>
 <translation id="8759037115129007407">El membre de la teva família no pot rebre contrasenyes en aquest moment. Demana-li que actualitzi Chromium i que sincronitzi les seves contrasenyes. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>

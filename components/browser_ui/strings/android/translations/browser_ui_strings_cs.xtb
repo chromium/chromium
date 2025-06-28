@@ -129,6 +129,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2490684707762498678">Spravováno aplikací <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Nápověda a zpětná vazba</translation>
 <translation id="2501278716633472235">Zpět</translation>
+<translation id="2533138527374486328">Pokud je tato možnost zapnutá, mohou weby požádat o připojení k libovolnému zařízení ve vaší místní síti. Pokud je vypnutá, weby se k zařízením ve vaší místní síti připojit nemohou.</translation>
 <translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
 <translation id="2570922361219980984">Přístup k poloze je vypnut také v tomto zařízení. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozbaleno – kliknutím sbalíte</translation>
@@ -424,6 +425,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="5968921426641056619">Zadejte webovou adresu</translation>
 <translation id="5975083100439434680">Oddálit</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Zapnout feed Objevit</translation>
 <translation id="6015775454662021376">Spravujte přístup tohoto webu k vašemu zařízení</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6042308850641462728">Více</translation>
@@ -511,6 +513,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="7188508872042490670">Data webu v zařízení</translation>
 <translation id="7201549776650881587">Touto akcí vymažete veškerá data a soubory cookie, které uložily weby v doméně <ph name="ORIGIN" /> nebo její aplikací na ploše</translation>
 <translation id="7203150201908454328">Rozbaleno</translation>
+<translation id="7213166370492037743">Nepovolovat webům připojení k zařízením v místní síti</translation>
 <translation id="7219254577985949841">Vymazat data webu?</translation>
 <translation id="723171743924126238">Vyberte fotky</translation>
 <translation id="7243308994586599757">Možnosti jsou k dispozici ve spodní části obrazovky</translation>

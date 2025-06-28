@@ -357,6 +357,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1232569758102978740">Sem título</translation>
 <translation id="1233497634904001272">Toque na chave de segurança novamente para concluir a solicitação.</translation>
 <translation id="1233721473400465416">Localidade</translation>
+<translation id="1233835246554936745">{0,plural, =1{Salvar 1 item na Conta}one{Salvar # item na Conta}other{Salvar # itens na Conta}}</translation>
 <translation id="1234736487471201993">Criar QR code para esta imagem</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
@@ -5663,6 +5664,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4918844574251943176">Imagem copiada</translation>
 <translation id="4921348630401250116">Conversão de texto em voz</translation>
 <translation id="4922104989726031751">Para usar o Gerenciador de senhas com seu sistema operacional, reinicie o Chromium e permita o acesso ao gerenciador de senhas do computador. Suas guias serão reabertas após a reinicialização.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Salvar 1 item na conta}one{Salvar # item na conta}other{Salvar # itens na conta}}</translation>
 <translation id="492363500327720082">Desinstalando <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">Mostrar grupos de guias</translation>
 <translation id="4924002401726507608">Enviar feedback</translation>
@@ -9548,6 +9550,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="7722040605881499779">Atualização necessária: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Redefinir para o Chrome padrão</translation>
 <translation id="7724603315864178912">Recortar</translation>
+<translation id="7724711098786238351">O modo de demonstração é destinado a usuários com 18 anos ou mais e é regido pelos Termos de Serviço e pela Política de Privacidade do Google. Os dados inseridos neste dispositivo podem ser acessados por outras pessoas entre as limpezas periódicas remotas.</translation>
 <translation id="7726288096350730168">Excluir deste dispositivo</translation>
 <translation id="7726391492136714301">Veja notificações e apps do smartphone</translation>
 <translation id="7727898923446098954">Guia oculta</translation>
@@ -11043,6 +11046,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8749805710397399240">Não foi possível transmitir a tela. Verifique a permissão do Gravador de tela nas preferências do sistema.</translation>
 <translation id="8749826920799243530">O dispositivo não está registrado</translation>
 <translation id="8749863574775030885">Acessar dispositivos USB de um fornecedor desconhecido</translation>
+<translation id="8749865622265861882">Você está usando um dispositivo de demonstração</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> quer se conectar a uma porta serial</translation>
 <translation id="8750346984209549530">APN da rede celular</translation>
 <translation id="8750786237117206586">Gerenciar as configurações de áudio do ChromeOS Flex</translation>

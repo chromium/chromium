@@ -2157,6 +2157,7 @@
 <translation id="4635278307999235413">管理コンソールにデータを送信しています</translation>
 <translation id="4636930964841734540">情報</translation>
 <translation id="4640225694041297329">過去 7 日間の結果を表示</translation>
+<translation id="4642296966515958616">このタブグループに参加するには、Chrome を更新してください</translation>
 <translation id="464342062220857295">検索機能</translation>
 <translation id="4644567637638438744">Microsoft OneDrive にログインしている場合のみ、ファイルをアップロードできます</translation>
 <translation id="4644670975240021822">逆の順序（下向き）</translation>
@@ -2930,6 +2931,7 @@
 <translation id="5967592137238574583">連絡先情報の編集</translation>
 <translation id="5967867314010545767">履歴から削除</translation>
 <translation id="5968022600320704045">検索結果はありません</translation>
+<translation id="5968400720580217226">AI モード</translation>
 <translation id="5969199813874624822">保存して価格をトラッキング</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ロール 6</translation>
@@ -3150,6 +3152,7 @@
 <translation id="6326947323444967009">iOS 設定で Chrome をシステムの既定のブラウザとして設定します</translation>
 <translation id="6327065120806001832">ローカル ネットワークへのアクセス</translation>
 <translation id="6328639280570009161">ネットワーク予測を無効にしてみてください</translation>
+<translation id="6329815962353376655">&lt;質問を入力&gt;</translation>
 <translation id="6334834493885103305">Affirm、Zip、または Klarna の分割払いを使用できます</translation>
 <translation id="6335029926534404762">スポーツ シューズ</translation>
 <translation id="6336948221660696475">VR は許可されていません</translation>
@@ -3865,6 +3868,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Google サービス全体で使用できます</translation>
 <translation id="7523408071729642236">製造</translation>
+<translation id="7524958309155133228"><ph name="ENGINE" /> に質問する</translation>
 <translation id="7525067979554623046">作成</translation>
 <translation id="7525804896095537619">名前を空白にすることはできません</translation>
 <translation id="7526934274050461096">このサイトへの接続ではプライバシーが保護されません</translation>
@@ -4733,6 +4737,7 @@
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9042827002460091668">インターネット接続を確認してもう一度お試しください</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> はローカル ネットワーク上のデバイスの検出と接続を要求しています</translation>
 <translation id="9046864189129893978">マイク（<ph name="MICS_COUNT" />）</translation>
 <translation id="9048035366624198823">これらの動作を行うには、<ph name="POLICY_NAME" /> ポリシーを <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" /> に設定する必要があります。</translation>
 <translation id="9048662076076074925">24x36 インチ</translation>

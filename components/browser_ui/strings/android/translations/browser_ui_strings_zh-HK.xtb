@@ -129,6 +129,7 @@
 <translation id="2490684707762498678">由 <ph name="APP_NAME" /> 管理</translation>
 <translation id="2498359688066513246">說明和意見反映</translation>
 <translation id="2501278716633472235">返回</translation>
+<translation id="2533138527374486328">開咗之後，網站可以要求連線至區域網絡上嘅任何裝置。閂咗之後，網站就唔可以連線至區域網絡上嘅裝置。</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2570922361219980984">此裝置的位置資訊存取權亦已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="257931822824936280">已展開 - 點擊即可收合。</translation>
@@ -512,6 +513,7 @@
 <translation id="7188508872042490670">裝置上的網站資料</translation>
 <translation id="7201549776650881587">此操作會刪除 <ph name="ORIGIN" /> 底下所有網站或該網站在主畫面上的應用程式儲存的所有資料和 Cookie</translation>
 <translation id="7203150201908454328">已展開</translation>
+<translation id="7213166370492037743">不允許網站連線至區域網絡上的任何裝置</translation>
 <translation id="7219254577985949841">要刪除網站資料嗎？</translation>
 <translation id="723171743924126238">選取圖片</translation>
 <translation id="7243308994586599757">您可在畫面底部附近找到選項</translation>

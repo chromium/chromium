@@ -734,7 +734,7 @@
 <translation id="2219735899272417925">требуется сбросить настройки устройства</translation>
 <translation id="2221227930294879156">Мероприятия, связанные с продовольственными товарами</translation>
 <translation id="2222604080869344662">Войдите в OneDrive, чтобы продолжить скачивание</translation>
-<translation id="2224337661447660594">Нет подключения к Интернету</translation>
+<translation id="2224337661447660594">Нет подключения к интернету</translation>
 <translation id="2225927550500503913">Виртуальная карта включена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Вход<ph name="END_LINK" /> в сеть Wi-Fi</translation>
 <translation id="2227758700723188171">Стипендии и гранты на образование</translation>
@@ -1626,7 +1626,7 @@
 <translation id="3713277100229669269">Теперь перед оплатой вы можете видеть информацию о преимуществах карты</translation>
 <translation id="371420189621607696">Киберспорт</translation>
 <translation id="3714633008798122362">веб-календарь</translation>
-<translation id="3714780639079136834">Включите Wi-Fi или мобильный Интернет.</translation>
+<translation id="3714780639079136834">Включите Wi-Fi или мобильный интернет.</translation>
 <translation id="3715016660240337709">{0,plural, =1{Файл нельзя загрузить}one{<ph name="FILE_COUNT" /> файл нельзя загрузить}few{<ph name="FILE_COUNT" /> файла нельзя загрузить}many{<ph name="FILE_COUNT" /> файлов нельзя загрузить}other{<ph name="FILE_COUNT" /> файла нельзя загрузить}}</translation>
 <translation id="3715597595485130451">Подключение к Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проверьте настройки прокси-сервера, брандмауэра и DNS<ph name="END_LINK" />.</translation>
@@ -2156,6 +2156,7 @@
 <translation id="4635278307999235413">Данные передаются в консоль администратора</translation>
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4640225694041297329">Показать результаты за последние 7 дней</translation>
+<translation id="4642296966515958616">Чтобы получить доступ к этой группе вкладок, обновите Chrome.</translation>
 <translation id="464342062220857295">Функции поиска</translation>
 <translation id="4644567637638438744">Чтобы продолжить, войдите в Microsoft OneDrive.</translation>
 <translation id="4644670975240021822">В обратном порядке лицевой стороной вниз</translation>
@@ -2929,6 +2930,7 @@
 <translation id="5967592137238574583">Измените контактную информацию</translation>
 <translation id="5967867314010545767">Удалить из истории</translation>
 <translation id="5968022600320704045">Ничего не найдено.</translation>
+<translation id="5968400720580217226">Режим ИИ</translation>
 <translation id="5969199813874624822">Сохранить и включить отслеживание цены</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шестой рулон</translation>
@@ -3149,6 +3151,7 @@
 <translation id="6326947323444967009">Сделать Chrome браузером по умолчанию в настройках iOS</translation>
 <translation id="6327065120806001832">доступ к локальной сети</translation>
 <translation id="6328639280570009161">Отключите предсказание сетевых действий</translation>
+<translation id="6329815962353376655">&lt;Введите вопрос&gt;</translation>
 <translation id="6334834493885103305">Теперь платить в рассрочку можно с помощью сервисов Affirm, Zip и Klarna.</translation>
 <translation id="6335029926534404762">Спортивная обувь</translation>
 <translation id="6336948221660696475">Запрос на использование VR отклонен</translation>
@@ -3863,6 +3866,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Вы сможете использовать его в продуктах Google.</translation>
 <translation id="7523408071729642236">Производство</translation>
+<translation id="7524958309155133228">Спросить <ph name="ENGINE" />.</translation>
 <translation id="7525067979554623046">Создать</translation>
 <translation id="7525804896095537619">Нужно указать название.</translation>
 <translation id="7526934274050461096">Подключение к сайту не защищено</translation>
@@ -4730,6 +4734,7 @@
 <translation id="9042617223719777575">Большая емкость</translation>
 <translation id="9042827002460091668">Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> запрашивает разрешение на поиск устройств в локальной сети и подключение к ним.</translation>
 <translation id="9046864189129893978">Микрофоны (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Чтобы выполнить действия (<ph name="ACTION_LIST" />), установите для правила <ph name="POLICY_NAME" /> значение <ph name="POLICY_VALUE" />.</translation>
 <translation id="9048662076076074925">24 x 36 дюймов</translation>

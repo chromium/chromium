@@ -2156,6 +2156,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4635278307999235413">Slanje podataka na administratorsku konzolu</translation>
 <translation id="4636930964841734540">Informacije</translation>
 <translation id="4640225694041297329">Prikaži rezultate iz posljednjih 7 dana</translation>
+<translation id="4642296966515958616">Da biste se pridružili ovoj grupi kartica, ažurirajte Chrome</translation>
 <translation id="464342062220857295">Značajke pretraživanja</translation>
 <translation id="4644567637638438744">Datoteke se mogu prenijeti samo ako ste prijavljeni na Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Suprotnim redoslijedom prema dolje</translation>
@@ -2929,6 +2930,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5967592137238574583">Uredite podatke za kontakt</translation>
 <translation id="5967867314010545767">Ukloni iz povijesti</translation>
 <translation id="5968022600320704045">Nema rezultata pretraživanja</translation>
+<translation id="5968400720580217226">AI način</translation>
 <translation id="5969199813874624822">Spremi i prati cijenu</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Šesti kolut</translation>
@@ -3149,6 +3151,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6326947323444967009">Postavite Chrome kao zadani preglednik sustava u postavkama iOS-a</translation>
 <translation id="6327065120806001832">pristup lokalnoj mreži</translation>
 <translation id="6328639280570009161">Pokušajte onemogućiti predviđanja mreže</translation>
+<translation id="6329815962353376655">&lt;Upišite pitanje&gt;</translation>
 <translation id="6334834493885103305">Sada možete plaćati u ratama pomoću usluge Affirm, Zip ili Klarna</translation>
 <translation id="6335029926534404762">Tenisice</translation>
 <translation id="6336948221660696475">Virtualna stvarnost nije dopuštena</translation>
@@ -3315,6 +3318,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6587893660316489419">Omotnica B5</translation>
 <translation id="6587923378399804057">Veza koju ste kopirali</translation>
 <translation id="6591833882275308647">Uređaj <ph name="DEVICE_TYPE" /> nije upravljani uređaj</translation>
+<translation id="6595495738567740002">Da biste izbrisali Googleove kolačiće s ovog uređaja, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Opcije šifriranja</translation>
 <translation id="6596573334527383067">Prikažite rezultate od jučer</translation>
 <translation id="6597665340361269064">90 stupnjeva</translation>
@@ -3862,6 +3866,7 @@ Dodatne pojedinosti:
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Možete je upotrebljavati na svim Googleovim proizvodima</translation>
 <translation id="7523408071729642236">Proizvodnja</translation>
+<translation id="7524958309155133228">Pitajte <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Stvori</translation>
 <translation id="7525804896095537619">Polje s nazivom ne može biti prazno</translation>
 <translation id="7526934274050461096">Veza s web-lokacijom nije privatna</translation>
@@ -4707,6 +4712,7 @@ Dodatne pojedinosti:
 <translation id="9004367719664099443">U tijeku je VR sesija</translation>
 <translation id="9005998258318286617">Učitavanje PDF dokumenta nije uspjelo.</translation>
 <translation id="9008201768610948239">Zanemari</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Ništa}=1{S jedne web-lokacije}one{S # web-lokacije}few{S # web-lokacije}other{S # web-lokacija}}</translation>
 <translation id="9012194306129927220">Sada možete plaćati u ratama pomoću Affirma ili Zipa</translation>
 <translation id="9014705027639070815">Web-lokacije koje posjećujete mogu od Chromea tražiti informacije kako bi lakše izmjerile izvedbu svojih oglasa. Chrome web-lokacijama omogućuje prikupljanje ograničenih vrsta podataka, primjerice jeste li izvršili kupnju nakon posjeta web-lokaciji.</translation>
 <translation id="9018120810758822233">Unesite sigurnosni kôd za karticu <ph name="CREDIT_CARD" /></translation>
@@ -4729,6 +4735,7 @@ Dodatne pojedinosti:
 <translation id="9042617223719777575">Veliki kapacitet</translation>
 <translation id="9042827002460091668">Provjerite internetsku vezu i pokušajte ponovo</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> želi tražiti bilo koji uređaj na vašoj lokalnoj mreži i povezati se s njim</translation>
 <translation id="9046864189129893978">Mikrofoni (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Za ove radnje potrebno je postaviti pravilo <ph name="POLICY_NAME" /> na <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 inča</translation>

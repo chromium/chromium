@@ -174,6 +174,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromi
 <translation id="5203244847421322551">Salvează și completează automat parolele în Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5259423875997548710">Caută imagini în Chromium.</translation>
+<translation id="5284913972719948193">Importă datele pentru a folosi parolele, istoricul, marcajele și cardurile de credit în Chromium</translation>
 <translation id="5308226104666789935">Chromium nu poate căuta actualizări.</translation>
 <translation id="5311557153294205270">Adaugă adresele URL introduse la marcajele din Chromium.</translation>
 <translation id="5383251701169024761">Pentru a accesa cu ușurință parolele salvate în alte aplicații, alege Chromium pentru completare automată.</translation>
@@ -307,6 +308,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="865600487977764604">Te protejează în Chromium și poate fi folosit pentru a spori securitatea în alte aplicații Google dacă te-ai conectat.</translation>
 <translation id="8663480472502753423">Menține browserul Chromium actualizat</translation>
 <translation id="8685813584220679697">Conectează-te la acest site și la Chromium.</translation>
+<translation id="8698780336333802489">Importă în Chromium</translation>
 <translation id="8730503818204408000">Deschide setarea Chromium pentru a seta Chromium ca browser prestabilit.</translation>
 <translation id="8754966941001340678">Chromium recomandă protecția îmbunătățită</translation>
 <translation id="8759037115129007407">Momentan, membrul familiei nu poate primi parole. Solicită-i să actualizeze Chromium și să-și sincronizeze parolele. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>

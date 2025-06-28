@@ -129,6 +129,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="2490684707762498678">Haldab <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Abi ja tagasiside</translation>
 <translation id="2501278716633472235">Mine tagasi</translation>
+<translation id="2533138527374486328">Kui see on sisse lülitatud, saavad saidid küsida luba ühenduse loomiseks mis tahes seadmega teie kohalikus võrgus. Kui see on välja lülitatud, ei saa saidid teie kohalikus võrgus seadmetega ühendust luua.</translation>
 <translation id="2546283357679194313">Küpsised ja saidi andmed</translation>
 <translation id="2570922361219980984">Ka juurdepääs asukohale on selle seadme puhul välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Laiendatud – ahendamiseks klõpsake.</translation>
@@ -512,6 +513,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="7188508872042490670">Seadmes olevad saidiandmed</translation>
 <translation id="7201549776650881587">See toiming kustutab teie avakuval kõik saidigrupi <ph name="ORIGIN" /> alla kuuluvate saitide või selle rakenduse salvestatud andmed ja küpsised</translation>
 <translation id="7203150201908454328">Laiendatud</translation>
+<translation id="7213166370492037743">Ära luba saitidel luua ühendust ühegi seadmega minu kohalikus võrgus</translation>
 <translation id="7219254577985949841">Kas kustutada saidi andmed?</translation>
 <translation id="723171743924126238">Kujutiste valimine</translation>
 <translation id="7243308994586599757">Valikud on saadaval ekraani allosas</translation>

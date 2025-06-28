@@ -356,6 +356,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1232569758102978740">Sin título</translation>
 <translation id="1233497634904001272">Vuelve a tocar tu llave de seguridad para completar la solicitud.</translation>
 <translation id="1233721473400465416">Configuración regional</translation>
+<translation id="1233835246554936745">{0,plural, =1{Guardar 1 elemento en la cuenta}other{Guardar # elementos en la cuenta}}</translation>
 <translation id="1234736487471201993">Crear código QR para esta imagen</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Redes conocidas</translation>
@@ -5648,6 +5649,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4918844574251943176">Imagen copiada</translation>
 <translation id="4921348630401250116">Conversión de texto a voz</translation>
 <translation id="4922104989726031751">Para usar el Gestor de contraseñas con tu sistema operativo, reinicia Chromium y permite el acceso al gestor de contraseñas de tu ordenador. Las pestañas que tuvieras abiertas se reabrirán después de reiniciar.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Guardar 1 elemento en la cuenta}other{Guardar # elementos en la cuenta}}</translation>
 <translation id="492363500327720082">Desinstalando <ph name="APP_NAME" />...</translation>
 <translation id="4923977675318667854">Mostrar grupos de pestañas</translation>
 <translation id="4924002401726507608">Enviar comentarios</translation>
@@ -9529,6 +9531,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="7722040605881499779">Espacio necesario para la actualización: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Restablecer tema predeterminado de Chrome</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7724711098786238351">El modo Demo está pensado para usuarios mayores de 18 años y se rige por los Términos del Servicio y la Política de Privacidad de Google. Otros usuarios podrían ver los datos introducidos en este dispositivo antes de que se eliminen.</translation>
 <translation id="7726288096350730168">Eliminar de este dispositivo</translation>
 <translation id="7726391492136714301">Consulta las notificaciones y aplicaciones de tu teléfono</translation>
 <translation id="7727898923446098954">Pestaña oculta</translation>
@@ -11024,6 +11027,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8749805710397399240">No se puede enviar tu pantalla. Comprueba el permiso de grabación de pantalla en Preferencias del Sistema.</translation>
 <translation id="8749826920799243530">El dispositivo no está registrado</translation>
 <translation id="8749863574775030885">Acceder a dispositivos USB desde un proveedor desconocido</translation>
+<translation id="8749865622265861882">Estás usando un dispositivo de demostración</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> solicita conectarse a un puerto serie</translation>
 <translation id="8750346984209549530">APN de la red móvil</translation>
 <translation id="8750786237117206586">Gestionar la configuración de audio de ChromeOS Flex</translation>

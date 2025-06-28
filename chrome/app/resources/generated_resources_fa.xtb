@@ -88,7 +88,7 @@
 <translation id="1054187194995068149">سلام. این پیش‌نمایش است</translation>
 <translation id="1054502481659725522">برنامه‌ها، وب‌سایت‌ها، و خدمات سیستم می‌توانند از مکان شما استفاده کنند</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{ظرف ۱ هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}one{ظرف {NUM_WEEKS} هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}other{ظرف {NUM_WEEKS} هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}}</translation>
-<translation id="1055606969515662982">برای توقف پخش محتوا، از کنترل از دور استفاده کنید</translation>
+<translation id="1055606969515662982">برای توقف پخش محتوا، از کنترل از راه دور استفاده کنید</translation>
 <translation id="1056898198331236512">اخطار</translation>
 <translation id="1056980582064308040">با تغییر تنظیمات، نقطه اتصال بازراه‌اندازی خواهد شد. ارتباط دستگاه‌هایی که از نقطه اتصال استفاده می‌کنند قطع خواهد شد.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -1611,6 +1611,7 @@
 <translation id="2096716221239095980">حذف همه داده‌ها</translation>
 <translation id="2097950021134740304">لغو فراموش کردن اشتراک</translation>
 <translation id="2098805196501063469">بررسی گذرواژه‌های باقی‌مانده</translation>
+<translation id="2099883893520019102">‫۱۵ دقیقه گذشته</translation>
 <translation id="2101225219012730419">نسخه:</translation>
 <translation id="2102396546234652240">به سایت‌ها اجازه داده نشود از میکروفون استفاده کنند</translation>
 <translation id="2102495993840063010">‏برنامه‌های Android</translation>
@@ -2173,6 +2174,7 @@
 <translation id="2476901513051581836">تا زمانی که اندازه فضای ذخیره‌سازی آفلاین مشخص نشود نمی‌توان فضای ذخیره‌سازی را پاک کرد.</translation>
 <translation id="2476974672882258506">‏برای حذف نصب <ph name="PARALLELS_DESKTOP" />، ‏Windows را خاموش کنید.</translation>
 <translation id="2477065602824695373">چون چند کلید راه‌اندازی کرده‌اید، اسکن خودکار خاموش شده است.</translation>
+<translation id="2477607419416067650">‏سایر داده‌های Google</translation>
 <translation id="2478176599153288112">مجوزهای فایل رسانه‌ای برای «<ph name="EXTENSION" />»</translation>
 <translation id="24786041351753425">فعال کردن سرویس بازیابی داده.</translation>
 <translation id="2479541499757560845">تنظیمات صفحه‌کلید دسترس‌پذیری</translation>
@@ -2291,6 +2293,7 @@
 <translation id="2552966063069741410">منطقه زمانی</translation>
 <translation id="2553290675914258594">دسترسی تأییدشده</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> نتوانست به <ph name="NETWORK_ID" /> متصل شود. لطفاً یک شبکه دیگر را انتخاب کرده یا دوباره امتحان کنید.</translation>
+<translation id="2553352788023127673">سابقه جستجو و گذرواژه‌ها را می‌توان در تنظیمات مدیریت آن حذف کرد</translation>
 <translation id="2553440850688409052">پنهان کردن این افزایه</translation>
 <translation id="2554553592469060349">فایل انتخابی بیش از حد بزرگ است (حداکثر اندازه: ۳ مگابایت).</translation>
 <translation id="2555802059188792472">‫<ph name="NUM_ALLOWED_APPS" /> برنامه از <ph name="TOTAL_NUM_APPS" /> برنامه می‌تواند اعلان ارسال کند</translation>
@@ -3468,6 +3471,7 @@
 <translation id="3408555740610481810">دوربین و میکروفون درحال استفاده هستند</translation>
 <translation id="3409157109901479672">سمت چپ</translation>
 <translation id="3409513286451883969">ترجمه ناحیه انتخاب‌شده به <ph name="LANGUAGE" /></translation>
+<translation id="3410151451624226773">‏مدیریت در «مدیر گذرواژه Google»</translation>
 <translation id="3412265149091626468">پرش به انتخاب</translation>
 <translation id="3413122095806433232">‏صادرکنندگان CA: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">اندازه:</translation>
@@ -5896,6 +5900,7 @@
 <translation id="5102244391872941183">برنامه‌ها و وب‌سایت‌های دارای اجازه مکان، و همچنین خدمات سیستم می‌توانند از مکان شما استفاده کنند</translation>
 <translation id="5103311607312269661">افزایش روشنایی نمایشگر</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{گروه را حذف می‌کنم}one{گروه را حذف می‌کنم}other{گروه‌ها را حذف می‌کنم}}</translation>
+<translation id="5105442806410269908">‏مدیریت سایر داده‌های Google</translation>
 <translation id="5106350808162641062">برداشتن</translation>
 <translation id="510695978163689362">‏<ph name="USER_EMAIL" /> تحت نظارت Family Link است. برای دسترسی به منابع مدرسه با نظارت والدین، می‌توانید حساب‌های محل تحصیل اضافه کنید.</translation>
 <translation id="5107093668001980925">هرگز <ph name="MODULE_NAME" /> نشان داده نشود</translation>
@@ -6200,6 +6205,7 @@
 <translation id="5320135788267874712">نام دستگاه جدید</translation>
 <translation id="532247166573571973">ممکن است سرور در دسترس نباشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="5323328004379641163">‏سفارشی‌سازی ظاهر Chrome و این صفحه</translation>
+<translation id="5323501626199324454">‏مدیریت در «حساب Google»</translation>
 <translation id="5324300749339591280">فهرست برنامه‌ها</translation>
 <translation id="5324780743567488672">تنظیم خودکار منطقه زمانی با استفاده از موقعیت مکانی شما</translation>
 <translation id="5327248766486351172">نام</translation>
@@ -6547,6 +6553,7 @@
 <translation id="557722062034137776">‏بازنشانی دستگاهتان بر حساب‌های Google شما یا هر گونه داده همگام‌سازی شده با این حساب‌ها تأثیری نمی‌گذارد. اگرچه، همه فایل‌هایی که به‌صورت محلی در دستگاهتان ذخیره شده‌اند، حذف خواهند شد.</translation>
 <translation id="5578059481725149024">ورود به سیستم خودکار</translation>
 <translation id="5578387000057347457">برای ایجاد تصویر، پیام‌واره‌ای سفارشی وارد کنید یا نوشتار را برجسته کنید</translation>
+<translation id="5579225964082017560">برداشتن <ph name="SITE" /> از فهرست <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">ترجمه به <ph name="LANGUAGE" /> تکمیل شد</translation>
 <translation id="558170650521898289">‏تأیید درایور سخت‌افزار Microsoft Windows</translation>
 <translation id="5581972110672966454">نمی‌توان دستگاه را به دامنه وصل کرد. لطفاً دوباره امتحان کنید یا با سرپرست یا مالک دستگاه تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
@@ -8850,6 +8857,7 @@
 <translation id="7250616558727237648">دستگاهی که درحال هم‌رسانی با آن هستید پاسخی نداد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="725109152065019550">متأسفیم، سرپرست سیستم، حافظه خارجی را برای حساب شما غیرفعال کرده است.</translation>
 <translation id="7251635775446614726">پیام سرپرست: «<ph name="CUSTOM_MESSAGE" />»</translation>
+<translation id="7252424535852086046">برای حذف کردن این داده‌ها، به تنظیمات مدیریت آن بروید</translation>
 <translation id="7253521419891527137">&amp;بیشتر بیاموزید</translation>
 <translation id="7254951428499890870">مطمئنید می‌خواهید «<ph name="APP_NAME" />» را در حالت تشخیص راه‌اندازی کنید؟</translation>
 <translation id="725497546968438223">دکمه نشانک‌گذاری پوشه</translation>
@@ -9136,6 +9144,7 @@
 <translation id="7450761244949417357">اکنون درحال باز کردن در <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7450926666485653189">‏بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق یک سرور حافظ حریم خصوصی که نشانی IP شما را پنهان می‌کند به Google ارسال می‌کند</translation>
 <translation id="7453008956351770337">با انتخاب این چاپگر، به افزونه زیر اجازه دسترسی به چاپگرتان را می‌دهید:</translation>
+<translation id="7453032093368223821">مدیریت داده‌های دیگر</translation>
 <translation id="7454548535253569100">پورتال: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">سازمانتان ذخیره‌سازی گذرواژه‌ها را خاموش کرده است</translation>
 <translation id="7455730275746867420">مدیریت محتوی‌های اضافه</translation>
@@ -9537,6 +9546,7 @@
 <translation id="7723388585204724670">‏بازنشانی به Chrome پیش‌فرض</translation>
 <translation id="7724603315864178912">برش</translation>
 <translation id="7724711098786238351">‏حالت نمایشی برای کاربران بالای ۱۸ سال طراحی شده است و تحت کنترل «خط‌مشی رازداری» و «شرایط خدمات Google» است. ممکن است دیگران بتوانند داده‌های واردشده در این دستگاه را پیش‌از رسیدن زمان محو کردن دوره‌ای داده مشاهده کنند.</translation>
+<translation id="7726288096350730168">حذف از این دستگاه</translation>
 <translation id="7726391492136714301">مشاهده کردن اعلان‌ها و برنامه‌های تلفن شما</translation>
 <translation id="7727898923446098954">برگه پنهان شد</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{توقف موقت این زبانه}one{توقف موقت این زبانه}other{توقف موقت این زبانه‌ها}}</translation>
@@ -11093,6 +11103,7 @@
 <translation id="8791157330927639737">درباره به‌روزرسانی بیشتر بدانید</translation>
 <translation id="8791534160414513928">‏ارسال درخواست «Do Not Track» با ترافیک مرور</translation>
 <translation id="8793390639824829328">سایت‌ها از این ویژگی برای پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده استفاده می‌کنند</translation>
+<translation id="8793895150509408038">مشاهده جزئیات سایت <ph name="SITE" /> از فهرست <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">وقتی نقطه اتصال روشن است، <ph name="PHONE_NAME" /> شما:</translation>
 <translation id="8794548468611058947">‏به‌جای وارد کردن گذرواژه «حساب Google» برای ورود به سیستم، می‌توانید پین برای این <ph name="DEVICE_TYPE" /> ایجاد کنید</translation>
 <translation id="8795916974678578410">پنجرهٔ جدید</translation>

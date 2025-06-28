@@ -2157,6 +2157,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4635278307999235413">Envoi de données à la console d'administrateur en cours…</translation>
 <translation id="4636930964841734540">Renseignements</translation>
 <translation id="4640225694041297329">Afficher les résultats des 7 derniers jours</translation>
+<translation id="4642296966515958616">Pour rejoindre ce groupe d'onglets, mettez à jour Chrome</translation>
 <translation id="464342062220857295">Rechercher des fonctionnalités</translation>
 <translation id="4644567637638438744">Les fichiers peuvent être téléversés uniquement si vous êtes connecté à Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordre inversé, face vers le bas</translation>
@@ -2930,6 +2931,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5967592137238574583">Modifier les coordonnées</translation>
 <translation id="5967867314010545767">Supprimer de l'historique</translation>
 <translation id="5968022600320704045">Aucun résultat de recherche</translation>
+<translation id="5968400720580217226">Mode IA</translation>
 <translation id="5969199813874624822">Enregistrer et suivre le prix</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sixième rouleau</translation>
@@ -3150,6 +3152,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6326947323444967009">Définir Chrome comme navigateur par défaut du système dans les réglages iOS</translation>
 <translation id="6327065120806001832">accès au réseau local</translation>
 <translation id="6328639280570009161">Essayez de désactiver la prédiction du réseau</translation>
+<translation id="6329815962353376655">&lt;Tapez une question&gt;</translation>
 <translation id="6334834493885103305">Vous pouvez maintenant payer au fil du temps avec Affirm, Zip ou Klarna</translation>
 <translation id="6335029926534404762">Chaussures de sport</translation>
 <translation id="6336948221660696475">RV non autorisée</translation>
@@ -3316,6 +3319,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6587893660316489419">Enveloppe B5</translation>
 <translation id="6587923378399804057">Le lien que vous avez copié</translation>
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>
+<translation id="6595495738567740002">Pour supprimer les témoins Google de cet appareil, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Options de chiffrement</translation>
 <translation id="6596573334527383067">Afficher les résultats d'hier</translation>
 <translation id="6597665340361269064">90 degrés</translation>
@@ -3862,6 +3866,7 @@ Détails supplémentaires :
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Vous pouvez l'utiliser dans tous les produits Google</translation>
 <translation id="7523408071729642236">Fabrication</translation>
+<translation id="7524958309155133228">Demander à <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Créer</translation>
 <translation id="7525804896095537619">Le champ du nom ne peut pas être vide</translation>
 <translation id="7526934274050461096">Votre connexion à ce site n'est pas privée</translation>
@@ -4706,6 +4711,7 @@ Détails supplémentaires :
 <translation id="9004367719664099443">Séance de RV en cours</translation>
 <translation id="9005998258318286617">Échec du chargement du document PDF.</translation>
 <translation id="9008201768610948239">OK</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Aucun}=1{À partir de 1 site}one{À partir de # site}other{À partir de # sites}}</translation>
 <translation id="9012194306129927220">Vous pouvez maintenant payer au fil du temps avec Affirm ou Zip</translation>
 <translation id="9014705027639070815">Les sites que vous visitez peuvent demander à Chrome des renseignements pour les aider à mesurer la performance de leurs annonces. Chrome permet aux sites de recueillir des types de données restreints, par exemple si vous avez effectué un achat après avoir visité un site.</translation>
 <translation id="9018120810758822233">Entrer votre code de sécurité pour <ph name="CREDIT_CARD" /></translation>
@@ -4728,6 +4734,7 @@ Détails supplémentaires :
 <translation id="9042617223719777575">Grande capacité</translation>
 <translation id="9042827002460091668">Vérifiez votre connexion Internet et réessayez</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> souhaite rechercher n'importe quel appareil sur votre réseau local et s'y connecter</translation>
 <translation id="9046864189129893978">Microphones (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Ces actions nécessitent que la politique <ph name="POLICY_NAME" /> soit définie sur <ph name="POLICY_VALUE" /> : <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 po x 36 po</translation>

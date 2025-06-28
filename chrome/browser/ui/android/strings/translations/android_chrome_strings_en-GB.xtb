@@ -256,6 +256,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2184272387334793084">Sign in to get your passwords and more on all your devices</translation>
 <translation id="218608176142494674">Sharing</translation>
+<translation id="2186779861549045980">You can choose what data to save in your Google Account.\nYou can also view and manage these items in your bookmarks, reading list or password manager.</translation>
 <translation id="219283042927675668">Tabs in group</translation>
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="22091350895006575">Add username</translation>
@@ -264,6 +265,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2230777942707397948">Empty window</translation>
 <translation id="223356358902285214">Web &amp; App Activity</translation>
 <translation id="2234827758954819389">Privacy guide</translation>
+<translation id="2238038374973843156">Move group to new window</translation>
 <translation id="2239812875700136898">Control your stories from the 'Options for Discover' button</translation>
 <translation id="2247789808226901522">Card expired</translation>
 <translation id="2248941474044011069">Your passwords are encrypted on your device before they’re saved to Google Password Manager</translation>
@@ -391,6 +393,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2819849308549746319">Unsubscribe all</translation>
+<translation id="2820047235535485532">You can choose what data to save in your Google Account, <ph name="ACCOUNT_EMAIL" />.\nYou can also view and manage these items in your bookmarks, reading list or password manager.</translation>
 <translation id="2826576843404243001">For sites that don't support secure connections, get warned before visiting the site. You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">Clipboard contents hidden</translation>
@@ -498,6 +501,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3280562213547448728">Voice search</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tabs}}</translation>
+<translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 password is saved only to this device. To use it on your other devices, save it in your Google Account.}other{# passwords are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
 <translation id="3293181007446299124">Your browsing history is kept private on your device and reports are sent with a delay to protect your identity</translation>
 <translation id="3301936297336370235">Password suggestion confirmation</translation>
 <translation id="3302615849591357577">Restore tab group <ph name="TITLE_OF_GROUP" />, colour <ph name="COLOR_NAME" />, as a new background tab group.</translation>
@@ -581,6 +585,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="368329460027487650">Signed out. Opens options to sign in.</translation>
 <translation id="3684540848053703310">Price insights bottom sheet closed</translation>
 <translation id="3687645719033307815">You are viewing a preview of this page</translation>
+<translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account.}other{# bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
 <translation id="3697705478071004188">Sort by site</translation>
 <translation id="3699022356773522638">Download file?</translation>
@@ -781,6 +786,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
 <translation id="4634124774493850572">Use password</translation>
+<translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 password and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}other{# passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 compromised password}other{# compromised passwords}}</translation>
 <translation id="4641919525231168205">Go to next page</translation>
 <translation id="4642472735733036929">Price tracking stopped</translation>
@@ -863,6 +869,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4913169188695071480">Stop refreshing</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">You can save images and files to view offline or share in other apps</translation>
+<translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}other{# bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
 <translation id="4932247056774066048">Because you're signing out of an account managed by <ph name="DOMAIN_NAME" />, your Chrome data will be deleted from this device. It will remain in your Google account.</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">No results</translation>
@@ -1233,6 +1240,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6545017243486555795">Clear All Data</translation>
 <translation id="6546511553472444032">File might be harmful</translation>
 <translation id="6550891580932862748">Does not protect you against dangerous websites, downloads and extensions. Your Safe Browsing settings in other Google products won't be affected.</translation>
+<translation id="6554822972009632311">Content filter is on</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> and <ph name="TAB_COUNT_ONE" /> more tab will be closed}other{<ph name="TAB_TITLE" /> and <ph name="TAB_COUNT_MANY" /> more tabs will be closed}}</translation>
 <translation id="6560414384669816528">Search with Sogou</translation>
 <translation id="656065428026159829">See more</translation>
@@ -1321,6 +1329,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="687838958001010630">Anyone with the link can edit all tabs</translation>
 <translation id="6880903702195291049">Permissions look good</translation>
 <translation id="6883204995689174413">Share</translation>
+<translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{1 item is saved only to this device. To use it on your other devices, save it in your Google Account.}other{# items are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
 <translation id="6883606786470492001">Manage your ad topics and other settings to limit what sites can learn about you to show you personalised ads</translation>
 <translation id="6883906387682976294">Unsubscribe notifications from this site</translation>
 <translation id="688398477366397178">Let websites know the languages that you speak. They'll show content in those languages, when possible.</translation>
@@ -1389,6 +1398,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="71503698506017927">Passphrase encryption doesn't include payment methods and addresses from Google Pay.
 
 To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
+<translation id="7165972437814027679">Learn more about why Chrome blocks some files</translation>
 <translation id="7168323970702333693">Signed in as <ph name="USER_NAME" />. Opens settings.</translation>
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7173338713290252554">Price history across the web</translation>
@@ -1683,6 +1693,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8348430946834215779">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it</translation>
 <translation id="8354977102499939946">Quickly search with your voice. To edit this shortcut, go to Settings.</translation>
+<translation id="8357329300499507091">You can have up to <ph name="MAX_WINDOW_COUNT" /> total windows. To restore a new window, reduce the total number of windows across active and inactive to <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> or fewer. Inactive windows are deleted after 6 months.</translation>
 <translation id="8361737703487394103">Jump to a specific tab (1–8)</translation>
 <translation id="8368001212524806591">Track price</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> tab group}other{<ph name="TAB_GROUPS_MANY" /> tab groups}}</translation>
@@ -1707,6 +1718,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8439974325294139057"><ph name="LANG" /> – Language ready, restart <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">No stories available</translation>
 <translation id="8443209985646068659">Chrome can’t update</translation>
+<translation id="8443600937324357591">Move tab to another window</translation>
 <translation id="8445448999790540984">Can’t export passwords</translation>
 <translation id="8446884382197647889">Learn More</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Permissions removed from 1 site}other{Permissions removed from # sites}}</translation>
@@ -1744,6 +1756,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8565021320663436446">Remove <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">File can’t be downloaded securely</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
+<translation id="8576426273246268132">You can have up to <ph name="MAX_WINDOW_COUNT" /> total windows. To open a new window, reduce the total number of windows across active and inactive to <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> or fewer.</translation>
 <translation id="8580435650274205305">Expiry date required</translation>
 <translation id="8582529315803410153">You'll find your tabs from other devices here</translation>
 <translation id="8585103689515290060">Autofill services</translation>

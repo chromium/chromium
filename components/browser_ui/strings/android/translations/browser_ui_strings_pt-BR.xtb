@@ -129,6 +129,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="2490684707762498678">Gerenciadas por <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ajuda e feedback</translation>
 <translation id="2501278716633472235">Voltar</translation>
+<translation id="2533138527374486328">Quando está ativado, os sites podem pedir para se conectar a qualquer dispositivo na sua rede local. Quando está desativado, os sites não podem se conectar a dispositivos na sua rede local.</translation>
 <translation id="2546283357679194313">Cookies e dados de sites</translation>
 <translation id="2570922361219980984">O acesso ao local também está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Visualização expandida. Clique para recolher</translation>
@@ -512,6 +513,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="7188508872042490670">Dados do site no dispositivo</translation>
 <translation id="7201549776650881587">Essa ação vai excluir todos os dados e cookies armazenados por todos os sites relacionados a <ph name="ORIGIN" /> ou pelo app na sua tela inicial</translation>
 <translation id="7203150201908454328">Expandido</translation>
+<translation id="7213166370492037743">Não permitir que os sites se conectem aos dispositivos na sua rede local</translation>
 <translation id="7219254577985949841">Excluir dados do site?</translation>
 <translation id="723171743924126238">Selecionar imagens</translation>
 <translation id="7243308994586599757">Opções disponíveis perto da parte inferior da tela</translation>

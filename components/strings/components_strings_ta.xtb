@@ -2153,6 +2153,7 @@
 <translation id="4635278307999235413">நிர்வாகிக் கன்சோலுக்குத் தரவு அனுப்பப்படுகிறது</translation>
 <translation id="4636930964841734540">தகவல்</translation>
 <translation id="4640225694041297329">கடந்த 7 நாட்களின் முடிவுகளைக் காட்டும்</translation>
+<translation id="4642296966515958616">இந்தப் பக்கக் குழுவில் சேர, Chromeமைப் புதுப்பிக்கவும்</translation>
 <translation id="464342062220857295">தேடல் அம்சங்கள்</translation>
 <translation id="4644567637638438744">நீங்கள் Microsoft OneDriveவில் உள்நுழைந்திருந்தால் மட்டுமே ஃபைல்களைப் பதிவேற்ற முடியும்</translation>
 <translation id="4644670975240021822">பின்னோக்கிய வரிசையில் கீழ்நோக்கிய பாணி</translation>
@@ -2926,6 +2927,7 @@
 <translation id="5967592137238574583">தொடர்புத் தகவலைத் திருத்தவும்</translation>
 <translation id="5967867314010545767">வரலாற்றிலிருந்து அகற்று</translation>
 <translation id="5968022600320704045">முடிவுகள் எதுவுமில்லை</translation>
+<translation id="5968400720580217226">AI மோடு</translation>
 <translation id="5969199813874624822">விலை விவரத்தைச் சேமித்துக் கண்காணியுங்கள்</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ரோல் 6</translation>
@@ -3145,6 +3147,7 @@
 <translation id="6326947323444967009">iOS அமைப்புகளுக்குச் சென்று சிஸ்டத்தின் இயல்பு உலாவியாக Chromeமை அமைக்கலாம்</translation>
 <translation id="6327065120806001832">லோக்கல் நெட்வொர்க் அணுகல்</translation>
 <translation id="6328639280570009161">நெட்வொர்க் யூகத்தை முடக்க முயலவும்</translation>
+<translation id="6329815962353376655">&lt;கேள்வியை டைப் செய்யவும்&gt;</translation>
 <translation id="6334834493885103305">நீங்கள் இப்போது Affirm, Zip, Klarna ஆகியவற்றின் மூலம் பிறகு பணம் செலுத்தலாம்</translation>
 <translation id="6335029926534404762">தடகள வீரர்களுக்கான ஷூக்கள்</translation>
 <translation id="6336948221660696475">VR அனுமதிக்கப்படவில்லை</translation>
@@ -3311,6 +3314,7 @@
 <translation id="6587893660316489419">என்வெலப் B5</translation>
 <translation id="6587923378399804057">நீங்கள் நகலெடுத்த இணைப்பு</translation>
 <translation id="6591833882275308647">உங்கள் <ph name="DEVICE_TYPE" /> சாதனம் நிர்வகிக்கப்படவில்லை</translation>
+<translation id="6595495738567740002">Google குக்கீகளை இந்தச் சாதனத்தில் இருந்து அகற்ற <ph name="BEGIN_LINK" />Chromeமில் இருந்து வெளியேறவும்<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">என்க்ரிப்ஷன் விருப்பங்கள்</translation>
 <translation id="6596573334527383067">நேற்றைய முடிவுகளைக் காட்டும்</translation>
 <translation id="6597665340361269064">90 டிகிரி</translation>
@@ -3858,6 +3862,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Google தயாரிப்புகள் முழுவதிலும் இதை நீங்கள் பயன்படுத்தலாம்</translation>
 <translation id="7523408071729642236">உற்பத்தி</translation>
+<translation id="7524958309155133228"><ph name="ENGINE" /> ஐக் கேளுங்கள்</translation>
 <translation id="7525067979554623046">உருவாக்கு</translation>
 <translation id="7525804896095537619">பெயர் காலியாக இருக்கக்கூடாது</translation>
 <translation id="7526934274050461096">இந்தத் தளத்திற்கான உங்கள் இணைப்பு தனிப்பட்டதல்ல</translation>
@@ -4702,6 +4707,7 @@
 <translation id="9004367719664099443">VR அமர்வு செயல்பாட்டிலுள்ளது</translation>
 <translation id="9005998258318286617">PDF ஆவணத்தை ஏற்ற முடியவில்லை.</translation>
 <translation id="9008201768610948239">புறக்கணி</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{எதுவுமில்லை}=1{1 தளத்திலிருந்து}other{# தளங்களிலிருந்து}}</translation>
 <translation id="9012194306129927220">நீங்கள் இப்போது Affirm அல்லது Zip மூலம் பிறகு பணம் செலுத்தலாம்</translation>
 <translation id="9014705027639070815">நீங்கள் பார்வையிடும் தளங்களில் காட்டப்படும் விளம்பரங்களின் செயல்திறனை அளவிட உதவும் தகவலை அந்தத் தளங்கள் Chrome உலாவியில் இருந்து பெற முடியும். குறிப்பிட்ட வகையான தரவை மட்டுமே சேகரிக்க தளங்களை Chrome அனுமதிக்கும். உதாரணமாக, ஒரு தளத்தைப் பார்த்த பிறகு நீங்கள் பர்சேஸ் செய்தீர்களா என்பது போன்ற தரவு.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> கார்டுக்கான பாதுகாப்புக் குறியீட்டை உள்ளிடுங்கள்</translation>
@@ -4724,6 +4730,7 @@
 <translation id="9042617223719777575">அதிகக் கொள்ளளவு</translation>
 <translation id="9042827002460091668">இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618">உங்கள் லோக்கல் நெட்வொர்க்கில் உள்ள எந்தவொரு சாதனத்தையும் தேடி அதனுடன் இணைக்க <ph name="URL" /> விரும்புகிறது</translation>
 <translation id="9046864189129893978">மைக்ரோஃபோன்கள் (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">இந்தச் செயல்களைச் செய்ய <ph name="POLICY_NAME" /> கொள்கை <ph name="POLICY_VALUE" /> என அமைக்கப்பட வேண்டும்: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 இன்ச்</translation>

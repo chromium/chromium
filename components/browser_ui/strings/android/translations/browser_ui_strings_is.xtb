@@ -129,6 +129,7 @@
 <translation id="2490684707762498678">Stýrt af <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hjálp og ábendingar</translation>
 <translation id="2501278716633472235">Fara til baka</translation>
+<translation id="2533138527374486328">Ef kveikt er á þessu geta vefsvæði beðið um að tengjast hvaða tæki sem er á staðarnetinu þínu. Þegar slökkt er á þessu geta vefsvæði ekki tengst tækjum á staðarnetinu þínu.</translation>
 <translation id="2546283357679194313">Fótspor og gögn vefsvæða</translation>
 <translation id="2570922361219980984">Einnig er slökkt á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Stækkað – smelltu til að minnka.</translation>
@@ -424,6 +425,7 @@
 <translation id="5968921426641056619">Sláðu inn vefslóð</translation>
 <translation id="5975083100439434680">Minnka aðdrátt</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Kveikja á tillögustraumi</translation>
 <translation id="6015775454662021376">Stjórnaðu aðgangi þessa vefsvæðis að tækinu þínu</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6042308850641462728">Meira</translation>
@@ -511,6 +513,7 @@
 <translation id="7188508872042490670">Vefsvæðagögn í tækinu</translation>
 <translation id="7201549776650881587">Þessi aðgerð eyðir öllum gögnum og fótsporum sem eru vistuð á öllum vefsvæðum undir <ph name="ORIGIN" /> eða í forriti þess á heimaskjánum hjá þér</translation>
 <translation id="7203150201908454328">Stækkað</translation>
+<translation id="7213166370492037743">Vefsvæði mega ekki tengjast neinu tæki á staðarnetinu þínu.</translation>
 <translation id="7219254577985949841">Eyða vefsvæðagögnum?</translation>
 <translation id="723171743924126238">Veldu myndir</translation>
 <translation id="7243308994586599757">Valkostir eru neðst á skjánum</translation>

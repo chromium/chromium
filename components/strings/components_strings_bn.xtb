@@ -3319,6 +3319,7 @@
 <translation id="6587893660316489419">এনভেলপ B5</translation>
 <translation id="6587923378399804057">আপনার কপি করা লিঙ্ক</translation>
 <translation id="6591833882275308647">আপনার <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়নি</translation>
+<translation id="6595495738567740002">এই ডিভাইস থেকে Google কুকি মুছতে, <ph name="BEGIN_LINK" />Chrome থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>
 <translation id="6596325263575161958">এনক্রিপশন বিকল্পগুলি</translation>
 <translation id="6596573334527383067">গতকালের ফলাফল দেখুন</translation>
 <translation id="6597665340361269064">৯০ ডিগ্রী</translation>
@@ -4711,6 +4712,7 @@
 <translation id="9004367719664099443">ভিআর (VR) সেশন চলছে</translation>
 <translation id="9005998258318286617">পিডিএফ ডকুমেন্ট লোড করা যায়নি।</translation>
 <translation id="9008201768610948239">উপেক্ষা করুন</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{কোনওটিই নয়}=1{১টি সাইট থেকে}one{#টি সাইট থেকে}other{#টি সাইট থেকে}}</translation>
 <translation id="9012194306129927220">আপনি এখন Affirm বা Zip ব্যবহার করে কিস্তিতে পেমেন্ট করতে পারবেন</translation>
 <translation id="9014705027639070815">আপনি যে সাইটগুলি ভিজিট করেন সেগুলি Chrome-এর কাছে তাদের বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করতে সাহায্য করে এমন তথ্য চাইতে পারে। Chrome সাইটগুলিকে সীমিত ধরনের ডেটা সংগ্রহ করতে দেয়, যেমন আপনি কোনও সাইটে যাওয়ার পর কেনাকাটা করেছেন কিনা সেই সম্পর্কিত ডেটা।</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" />-এর জন্য আপনার নিরাপত্তা কোড লিখুন</translation>

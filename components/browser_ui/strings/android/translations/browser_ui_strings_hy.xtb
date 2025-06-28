@@ -129,6 +129,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="2490684707762498678">Կառավարվում է <ph name="APP_NAME" /> հավելվածի կողմից</translation>
 <translation id="2498359688066513246">Օգնություն և հետադարձ կապ</translation>
 <translation id="2501278716633472235">Վերադառնալ</translation>
+<translation id="2533138527374486328">Երբ գործառույթը միացված է, կայքերը կարող են լոկալ ցանցում սարքերին միանալու հարցում ուղարկել։ Երբ գործառույթն անջատված է, կայքերը չեն կարող միանալ սարքերին լոկալ ցանցում։</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
 <translation id="2570922361219980984">Այս սարքի տեղորոշումը նույնպես անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="257931822824936280">Ընդարձակված - կոծկելու համար սեղմեք:</translation>
@@ -424,6 +425,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="5968921426641056619">Մուտքագրեք վեբ հասցեն</translation>
 <translation id="5975083100439434680">Փոքրացնել</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Միացնել Discover ֆիդը</translation>
 <translation id="6015775454662021376">Կառավարեք այս կայքի՝ ձեր սարքն օգտագործելու թույլտվությունները</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6042308850641462728">Ավելին</translation>
@@ -511,6 +513,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="7188508872042490670">Կայքերի տվյալները սարքում</translation>
 <translation id="7201549776650881587">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք հիմնական էկրանին են պահվել <ph name="ORIGIN" /> կայքերի խմբի կամ դրա հավելվածի կողմից</translation>
 <translation id="7203150201908454328">Ընդլայնված</translation>
+<translation id="7213166370492037743">Արգելել կայքերին միանալ ձեր լոկալ ցանցի սարքերին</translation>
 <translation id="7219254577985949841">Ջնջե՞լ կայքի տվյալները</translation>
 <translation id="723171743924126238">Ընտրեք պատկերներ</translation>
 <translation id="7243308994586599757">Ընտրանքները հասանելի են էկրանի ստորին հատվածում</translation>

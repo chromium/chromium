@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">Suggestion : <ph name="NUMBER_OF_TABS" /> de vos onglets n'ont pas été utilisés récemment. Les fermer?</translation>
 <translation id="257674075312929031">Groupe</translation>
 <translation id="2662028055331606429">Note : <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{Chrome ferme automatiquement les éléments de la section inactive que vous n'avez pas utilisés depuis <ph name="AUTO_DELETE_DELAY_ONE" /> jour. Vous pouvez désactiver cette option maintenant ou à tout moment dans les paramètres.}one{Chrome ferme automatiquement les éléments de la section inactive que vous n'avez pas utilisés depuis <ph name="AUTO_DELETE_DELAY_MANY" /> jour. Vous pouvez désactiver cette option maintenant ou à tout moment dans les paramètres.}other{Chrome ferme automatiquement les éléments de la section inactive que vous n'avez pas utilisés depuis <ph name="AUTO_DELETE_DELAY_MANY" /> jours. Vous pouvez désactiver cette option maintenant ou à tout moment dans les paramètres.}}</translation>
 <translation id="266935134738038806">Visiter le site</translation>
 <translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Mis à jour il y a <ph name="NUM_WEEKS_ONE" /> semaine}one{Mis à jour il y a <ph name="NUM_WEEKS_MANY" /> semaine}other{Mis à jour il y a <ph name="NUM_WEEKS_MANY" /> semaines}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">Liste des groupes d'onglets, ouverte à pleine hauteur</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper?</translation>
 <translation id="4159784952369912983">Mauve</translation>
+<translation id="4203448675570432781">Avis sur les modifications apportées à la suppression automatique des onglets fermé.</translation>
 <translation id="427987768447457592">Nouveau groupe d'onglets</translation>
 <translation id="4371591986692297148">Inactif</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Restaurer l'élément}one{Restaurer l'élément}other{Restaurer les éléments}}</translation>
@@ -121,6 +123,7 @@
 <translation id="6051432659151380973">Vos groupes d'onglets sont automatiquement enregistrés</translation>
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Tous les onglets en double seront désormais également archivés, à l'exception de la copie la plus récemment utilisée.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> élément sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> élément sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> éléments sélectionnés}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Déplacer le groupe vers la nouvelle fenêtre}one{Déplacer le groupe vers une autre fenêtre}other{Déplacer le groupe vers une autre fenêtre}}</translation>
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6220820548421939212">Oui. Accepter</translation>
@@ -157,6 +160,7 @@
 <translation id="7369451074646620503">Le gr. d'onglets « <ph name="TAB_GROUP_NAME" /> » n'est plus access.</translation>
 <translation id="7452985128687107478">Les groupes d'onglets sont automatiquement enregistrés et mis à jour sur tous vos appareils</translation>
 <translation id="747459581954555080">Tout restaurer</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Restaurer <ph name="TABS_COUNT_ONE" /> élément sélectionné}one{Restaurer <ph name="TABS_COUNT_MANY" /> élément sélectionné}other{Restaurer <ph name="TABS_COUNT_MANY" /> éléments sélectionnés}}</translation>
 <translation id="753732157349120914">Gestionnaire d'onglets</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> avis de Google}one{<ph name="REVIEWS_COUNT_MANY" /> avis de Google}other{<ph name="REVIEWS_COUNT_MANY" /> avis de Google}}</translation>
 <translation id="7559245342362162951">Afficher les onglets du groupe dans une grille plein écran</translation>
@@ -187,6 +191,7 @@
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Mis à jour il y a <ph name="NUM_MINS_ONE" /> minute}one{Mis à jour il y a <ph name="NUM_MINS_MANY" /> minute}other{Mis à jour il y a <ph name="NUM_MINS_MANY" /> minutes}}</translation>
 <translation id="8236097722223016103">Ajouter aux favoris</translation>
+<translation id="827881768507898324">Avis sur la suppression automatique des onglets à pleine hauteur.</translation>
 <translation id="8338427544764842461">Vos groupes d'onglets sont enregistrés ici et sont mis à jour sur tous les appareils sur lesquels vous êtes connecté à votre compte</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
@@ -207,6 +212,7 @@
 <translation id="9090098097337832354">Les renseignements à propos de ce magasin sont fermés</translation>
 <translation id="9114502155681725011">Ouvrir le menu Action du groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Ajouter un onglet au groupe</translation>
+<translation id="9187834032751045001">Avis sur la suppression automatique des onglets à mi-hauteur.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="992256792861109788">Rose</translation>

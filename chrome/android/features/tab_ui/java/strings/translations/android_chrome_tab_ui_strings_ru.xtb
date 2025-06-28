@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">Группы вкладок сохраняются автоматически.</translation>
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Все одинаковые вкладки также будут добавляться в архив, за исключением недавно открытой</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Закрыть <ph name="TABS_COUNT_ONE" /> выбранный элемент}one{Закрыть <ph name="TABS_COUNT_MANY" /> выбранный элемент}few{Закрыть <ph name="TABS_COUNT_MANY" /> выбранных элемента}many{Закрыть <ph name="TABS_COUNT_MANY" /> выбранных элементов}other{Закрыть <ph name="TABS_COUNT_MANY" /> выбранного элемента}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Переместить группу в новое окно}one{Переместить группу в другое окно}few{Переместить группу в другое окно}many{Переместить группу в другое окно}other{Переместить группу в другое окно}}</translation>
 <translation id="6193448654517602979">Выбрать вкладки</translation>
 <translation id="6220820548421939212">Да</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">Группа вкладок "<ph name="TAB_GROUP_NAME" />" больше не доступна.</translation>
 <translation id="7452985128687107478">Группы вкладок автоматически сохраняются и обновляются на всех ваших устройствах.</translation>
 <translation id="747459581954555080">Восстановить все</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Восстановить <ph name="TABS_COUNT_ONE" /> выбранный элемент}one{Восстановить <ph name="TABS_COUNT_MANY" /> выбранный элемент}few{Восстановить <ph name="TABS_COUNT_MANY" /> выбранных элемента}many{Восстановить <ph name="TABS_COUNT_MANY" /> выбранных элементов}other{Восстановить <ph name="TABS_COUNT_MANY" /> выбранного элемента}}</translation>
 <translation id="753732157349120914">Переключатель вкладок</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> отзыв из Google}one{<ph name="REVIEWS_COUNT_MANY" /> отзыв из Google}few{<ph name="REVIEWS_COUNT_MANY" /> отзыва из Google}many{<ph name="REVIEWS_COUNT_MANY" /> отзывов из Google}other{<ph name="REVIEWS_COUNT_MANY" /> отзыва из Google}}</translation>
 <translation id="7559245342362162951">Показать сетку с вкладками группы на весь экран</translation>

@@ -3319,6 +3319,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">Link copiado por si</translation>
 <translation id="6591833882275308647">O seu <ph name="DEVICE_TYPE" /> não é gerido.</translation>
+<translation id="6595495738567740002">Para eliminar os cookies da Google deste dispositivo, <ph name="BEGIN_LINK" />termine sessão no Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Opções de encriptação</translation>
 <translation id="6596573334527383067">Mostrar resultados de ontem</translation>
 <translation id="6597665340361269064">90 graus</translation>
@@ -4711,6 +4712,7 @@ Detalhes adicionais:
 <translation id="9004367719664099443">Sessão de RV em curso</translation>
 <translation id="9005998258318286617">Falha ao carregar o documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Nenhum}=1{De 1 site}other{De # sites}}</translation>
 <translation id="9012194306129927220">Já pode pagar em prestações com a Affirm ou a Zip</translation>
 <translation id="9014705027639070815">Os sites que visitar podem pedir ao Chrome informações para os ajudar a medir o desempenho dos respetivos anúncios. O Chrome permite que os sites recolham tipos de dados limitados, por exemplo, se fez uma compra depois de visitar um site.</translation>
 <translation id="9018120810758822233">Introduza o código de segurança do cartão <ph name="CREDIT_CARD" /></translation>

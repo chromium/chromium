@@ -2157,6 +2157,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4635278307999235413">Enviando datos a la consola de administración</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4640225694041297329">Mostrar resultados de los últimos 7 días</translation>
+<translation id="4642296966515958616">Para unirte a este grupo de pestañas, actualiza Chrome</translation>
 <translation id="464342062220857295">Buscar funciones</translation>
 <translation id="4644567637638438744">Solo puedes subir archivos si has iniciado sesión en Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Orden inverso boca abajo</translation>
@@ -2930,6 +2931,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5967592137238574583">Edita la información de contacto</translation>
 <translation id="5967867314010545767">Eliminar del historial</translation>
 <translation id="5968022600320704045">No hay resultados de búsqueda</translation>
+<translation id="5968400720580217226">Modo IA</translation>
 <translation id="5969199813874624822">Guardar y seguir precio</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sexto rollo</translation>
@@ -3150,6 +3152,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6326947323444967009">Establece Chrome como navegador predeterminado del sistema en los ajustes de iOS</translation>
 <translation id="6327065120806001832">acceso a la red local</translation>
 <translation id="6328639280570009161">Prueba a inhabilitar la predicción de red</translation>
+<translation id="6329815962353376655">&lt;Escribe una pregunta&gt;</translation>
 <translation id="6334834493885103305">Ahora puedes pagar a plazos con Affirm, Zip o Klarna</translation>
 <translation id="6335029926534404762">Calzado deportivo</translation>
 <translation id="6336948221660696475">Realidad virtual no permitida</translation>
@@ -3864,6 +3867,7 @@ Más información:
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Puedes usarla en los productos de Google</translation>
 <translation id="7523408071729642236">Fabricación</translation>
+<translation id="7524958309155133228">Preguntar a <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Crear</translation>
 <translation id="7525804896095537619">El nombre no puede estar vacío</translation>
 <translation id="7526934274050461096">Tu conexión con este sitio web no es privada</translation>
@@ -3874,7 +3878,7 @@ Más información:
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Con la tecnología de Google</translation>
 <translation id="7537536606612762813">Obligatoria</translation>
-<translation id="7543525346216957623">Pide permiso a uno de tus padres</translation>
+<translation id="7543525346216957623">Pide permiso a tu padre o madre</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Solucionar errores de conexión</translation>
 <translation id="7549584377607005141">Esta página web necesita los datos introducidos anteriormente para mostrarse correctamente. Puedes volver a enviar los datos, pero se repetirán las acciones que haya realizado la página.</translation>
@@ -4731,6 +4735,7 @@ Más información:
 <translation id="9042617223719777575">Gran capacidad</translation>
 <translation id="9042827002460091668">Comprueba tu conexión a Internet y vuelve a intentarlo</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />: <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> quiere buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="9046864189129893978">Micrófonos (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Es necesario asignar el valor <ph name="POLICY_VALUE" /> a la política <ph name="POLICY_NAME" /> para realizar estas acciones: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24x36 pulgadas</translation>

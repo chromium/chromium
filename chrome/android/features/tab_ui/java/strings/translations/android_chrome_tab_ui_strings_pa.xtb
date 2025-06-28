@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">ਸੁਝਾਅ: ਤੁਹਾਡੀਆਂ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਦੀ ਹਾਲ ਹੀ ਵਿੱਚ ਵਰਤੋਂ ਨਹੀਂ ਹੋਈ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="257674075312929031">ਸਮੂਹ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ਰੇਟਿੰਗ</translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{Chrome ਆਪਣੇ ਅਕਿਰਿਆਸ਼ੀਲ ਸੈਕਸ਼ਨ ਵਿੱਚ ਉਨ੍ਹਾਂ ਆਈਟਮਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਕਰ ਦਿੰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ <ph name="AUTO_DELETE_DELAY_ONE" /> ਦਿਨ ਤੋਂ ਨਹੀਂ ਵਰਤਿਆ। ਤੁਸੀਂ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਹੁਣੇ ਜਾਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।}one{Chrome ਆਪਣੇ ਅਕਿਰਿਆਸ਼ੀਲ ਸੈਕਸ਼ਨ ਵਿੱਚ ਉਨ੍ਹਾਂ ਆਈਟਮਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਕਰ ਦਿੰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ <ph name="AUTO_DELETE_DELAY_MANY" /> ਦਿਨ ਤੋਂ ਨਹੀਂ ਵਰਤਿਆ। ਤੁਸੀਂ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਹੁਣੇ ਜਾਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।}other{Chrome ਆਪਣੇ ਅਕਿਰਿਆਸ਼ੀਲ ਸੈਕਸ਼ਨ ਵਿੱਚ ਉਨ੍ਹਾਂ ਆਈਟਮਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਕਰ ਦਿੰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ <ph name="AUTO_DELETE_DELAY_MANY" /> ਦਿਨਾਂ ਤੋਂ ਨਹੀਂ ਵਰਤਿਆ। ਤੁਸੀਂ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਹੁਣੇ ਜਾਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।}}</translation>
 <translation id="266935134738038806">ਸਾਈਟ 'ਤੇ ਜਾਓ</translation>
 <translation id="2671423594960767771">ਗਰੁੱਪ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ਹਫ਼ਤਾ ਪਹਿਲਾਂ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ}one{<ph name="NUM_WEEKS_MANY" /> ਹਫ਼ਤਾ ਪਹਿਲਾਂ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ}other{<ph name="NUM_WEEKS_MANY" /> ਹਫ਼ਤੇ ਪਹਿਲਾਂ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">ਟੈਬ ਗਰੁੱਪ ਸੂਚੀ, ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਸੰਬੰਧਿਤ ਲੱਗਦੀਆਂ ਹਨ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰਨਾ ਹੈ?</translation>
 <translation id="4159784952369912983">ਜਾਮਨੀ</translation>
+<translation id="4203448675570432781">ਟੈਬਾਂ ਨੂੰ ਸਵੈਚਲਿਤ-ਮਿਟਾਉਣ ਦੀ ਸੁਵਿਧਾ ਦੀ ਪ੍ਰੋਮੋ ਸ਼ੀਟ ਨੂੰ ਬੰਦ ਕਰਨ ਬਾਰੇ ਨੋਟਿਸ।</translation>
 <translation id="427987768447457592">ਨਵਾਂ ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="4371591986692297148">ਅਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{ਆਈਟਮ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ}one{ਆਈਟਮ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ}other{ਆਈਟਮਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ}}</translation>
@@ -121,6 +123,7 @@
 <translation id="6051432659151380973">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰੱਖਿਅਤ ਹੋ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="6054741997831917303">ਇਸ ਆਈਟਮ ਦੀ ਕੀਮਤ ਹਾਲ ਹੀ ਵਿੱਚ <ph name="PREVIOUS_PRICE" /> ਤੋਂ ਘੱਟ ਕੇ <ph name="NEW_PRICE" /> ਹੋ ਗਈ ਹੈ</translation>
 <translation id="6109251075362363230">ਹੁਣ ਸਾਰੀਆਂ ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ ਨੂੰ ਵੀ ਪੁਰਾਲੇਖਬੱਧ ਕੀਤਾ ਜਾਵੇਗਾ, ਪਰ ਇਸ ਵਿੱਚ ਸਭ ਤੋਂ ਹਾਲੀਆ ਵਰਤੀ ਗਈ ਕਾਪੀ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_ONE" /> ਆਈਟਮ ਬੰਦ ਕਰੋ}one{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਆਈਟਮ ਬੰਦ ਕਰੋ}other{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਆਈਟਮਾਂ ਬੰਦ ਕਰੋ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ਗਰੁੱਪ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}one{ਗਰੁੱਪ ਨੂੰ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}other{ਗਰੁੱਪ ਨੂੰ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}}</translation>
 <translation id="6193448654517602979">ਟੈਬਾਂ ਚੁਣੋ</translation>
 <translation id="6220820548421939212">ਹਾਂ। ਮੈਂ ਸਹਿਮਤ ਹਾਂ</translation>
@@ -157,6 +160,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="7452985128687107478">ਟੈਬ ਗਰੁੱਪ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਰੱਖਿਅਤ ਅਤੇ ਅੱਪਡੇਟ ਹੁੰਦੇ ਹਨ</translation>
 <translation id="747459581954555080">ਸਾਰੇ ਰੀਸਟੋਰ ਕਰੋ</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_ONE" /> ਆਈਟਮ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ}one{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਆਈਟਮ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ}other{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਆਈਟਮਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ}}</translation>
 <translation id="753732157349120914">ਟੈਬ ਸਵਿੱਚਰ</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google ਤੋਂ <ph name="REVIEWS_COUNT_ONE" /> ਸਮੀਖਿਆ}one{Google ਤੋਂ <ph name="REVIEWS_COUNT_MANY" /> ਸਮੀਖਿਆ}other{Google ਤੋਂ <ph name="REVIEWS_COUNT_MANY" /> ਸਮੀਖਿਆਵਾਂ}}</translation>
 <translation id="7559245342362162951">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਗ੍ਰਿਡ ਵਿੱਚ ਗਰੁੱਪ ਦੀਆਂ ਟੈਬਾਂ ਦਿਖਾਓ</translation>
@@ -187,6 +191,7 @@
 <translation id="8205266828577616993">ਟੈਬ ਨੂੰ ਉੱਪਰ ਲਿਜਾਓ</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> ਮਿੰਟ ਪਹਿਲਾਂ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ}one{<ph name="NUM_MINS_MANY" /> ਮਿੰਟ ਪਹਿਲਾਂ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ}other{<ph name="NUM_MINS_MANY" /> ਮਿੰਟ ਪਹਿਲਾਂ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="8236097722223016103">ਬੁੱਕਮਾਰਕਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="827881768507898324">ਟੈਬਾਂ ਨੂੰ ਸਵੈਚਲਿਤ-ਮਿਟਾਉਣ ਦੀ ਸੁਵਿਧਾ ਦੀ ਪ੍ਰੋਮੋ ਸ਼ੀਟ ਨੂੰ ਪੂਰੀ ਉਚਾਈ 'ਤੇ ਦਿਖਾਉਣ ਬਾਰੇ ਨੋਟਿਸ</translation>
 <translation id="8338427544764842461">ਤੁਹਾਡੇ ਟੈਬ ਗਰੱਪ ਇੱਥੇ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ ਅਤੇ ਤੁਹਾਡੇ ਸਾਰੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਅੱਪਡੇਟ ਹੋ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਵਾਲੇ ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}one{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਵਾਲੇ ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}other{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਵਾਲੇ ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਬੰਦ ਕਰੋ}one{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਬੰਦ ਕਰੋ}other{ਚੁਣੀਆਂ ਹੋਈਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਬੰਦ ਕਰੋ}}</translation>
@@ -207,6 +212,7 @@
 <translation id="9090098097337832354">ਇਸ ਸਟੋਰ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਵਾਲੀ ਸਕ੍ਰੀਨ ਬੰਦ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="9114502155681725011">ਟੈਬ ਗਰੁੱਪ <ph name="TITLE_OF_GROUP" />, ਰੰਗ <ph name="COLOR_NAME" /> ਲਈ, ਟੈਬ ਗਰੁੱਪ ਕਾਰਵਾਈ ਮੀਨੂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="9169594135889675189">ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="9187834032751045001">ਟੈਬਾਂ ਨੂੰ ਸਵੈਚਲਿਤ-ਮਿਟਾਉਣ ਦੀ ਸੁਵਿਧਾ ਦੀ ਪ੍ਰੋਮੋ ਸ਼ੀਟ ਨੂੰ ਅੱਧੀ ਉਚਾਈ 'ਤੇ ਦਿਖਾਉਣ ਬਾਰੇ ਨੋਟਿਸ।</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}one{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}other{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}}</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="992256792861109788">ਗੁਲਾਬੀ</translation>

@@ -256,6 +256,7 @@
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="218608176142494674">共用</translation>
+<translation id="2186779861549045980">你可以選擇要在 Google 帳戶中儲存哪些資料。\n你也可以查看及管理這些書籤、閱讀清單或密碼管理工具項目。</translation>
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">注意事項</translation>
 <translation id="22091350895006575">新增使用者名稱</translation>
@@ -264,6 +265,7 @@
 <translation id="2230777942707397948">空白視窗</translation>
 <translation id="223356358902285214">網路和應用程式活動</translation>
 <translation id="2234827758954819389">隱私權指南</translation>
+<translation id="2238038374973843156">將群組移到其他視窗</translation>
 <translation id="2239812875700136898">按一下 [探索的選項] 按鈕來控管你的報導</translation>
 <translation id="2247789808226901522">信用卡已過期</translation>
 <translation id="2248941474044011069">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員</translation>
@@ -391,6 +393,7 @@
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="281504910091592009">你可以查看及管理 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中儲存的密碼</translation>
 <translation id="2819849308549746319">全部取消訂閱</translation>
+<translation id="2820047235535485532">你可以選擇要將哪些資料儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。\n你也可以查看及管理這些書籤、閱讀清單或密碼管理工具項目。</translation>
 <translation id="2826576843404243001">如果網站不支援安全連線，系統會在造訪前發出警告。由於「進階保護」已啟用，因此你無法變更這項設定。</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">已隱藏剪貼簿內容</translation>
@@ -1237,6 +1240,7 @@
 <translation id="6545017243486555795">清除所有資料</translation>
 <translation id="6546511553472444032">檔案可能有害</translation>
 <translation id="6550891580932862748">無法防範危險的網站、下載內容和擴充功能。其他 Google 產品的安全瀏覽設定不會受到影響。</translation>
+<translation id="6554822972009632311">內容篩選器已開啟</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉「<ph name="TAB_TITLE" />」和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="6560414384669816528">使用 Sogou 搜尋</translation>
 <translation id="656065428026159829">顯示更多</translation>
@@ -1394,6 +1398,7 @@
 <translation id="71503698506017927">通關密語加密資料不包括 Google Pay 中的付款方式和地址。
 
 如要變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
+<translation id="7165972437814027679">進一步瞭解為何 Chrome 會封鎖某些檔案</translation>
 <translation id="7168323970702333693">目前登入的帳戶是<ph name="USER_NAME" />。開啟設定。</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7173338713290252554">網路上的價格記錄</translation>
@@ -1713,6 +1718,7 @@
 <translation id="8439974325294139057"><ph name="LANG" /> - 這個語言套件已下載完成，請重新啟動 <ph name="APP_NAME" />。</translation>
 <translation id="8442258441309440798">沒有任何報導</translation>
 <translation id="8443209985646068659">無法更新 Chrome</translation>
+<translation id="8443600937324357591">將分頁移到其他視窗</translation>
 <translation id="8445448999790540984">無法匯出密碼</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{已移除 1 個網站的權限}other{已移除 # 個網站的權限}}</translation>

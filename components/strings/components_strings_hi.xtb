@@ -2157,6 +2157,7 @@
 <translation id="4635278307999235413">Admin console को डेटा भेजा जा रहा है</translation>
 <translation id="4636930964841734540">जानकारी</translation>
 <translation id="4640225694041297329">पिछले सात दिनों में की गई खोजों की जानकारी दिखाएं</translation>
+<translation id="4642296966515958616">इस टैब ग्रुप में शामिल होने के लिए, Chrome को अपडेट करें</translation>
 <translation id="464342062220857295">खोज सुविधाएं</translation>
 <translation id="4644567637638438744">Microsoft OneDrive में साइन इन करने के बाद ही फ़ाइलें अपलोड की जा सकती हैं</translation>
 <translation id="4644670975240021822">दूसरी तरफ़ उलटा करके रखें</translation>
@@ -2930,6 +2931,7 @@
 <translation id="5967592137238574583">संपर्क जानकारी में बदलाव करें</translation>
 <translation id="5967867314010545767">इतिहास से हटाएं</translation>
 <translation id="5968022600320704045">खोज का कोई नतीजा नहीं मिला</translation>
+<translation id="5968400720580217226">एआई मोड</translation>
 <translation id="5969199813874624822">कीमत सेव करके उसे ट्रैक करें</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">छठा रोल</translation>
@@ -3150,6 +3152,7 @@
 <translation id="6326947323444967009">iOS की सेटिंग में, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करें</translation>
 <translation id="6327065120806001832">लोकल नेटवर्क का ऐक्सेस</translation>
 <translation id="6328639280570009161">नेटवर्क पूर्वानुमान को अक्षम करके देखें</translation>
+<translation id="6329815962353376655">&lt;कोई सवाल टाइप करें&gt;</translation>
 <translation id="6334834493885103305">अब Affirm, Zip या Klarna का इस्तेमाल करके, किस्तों में पेमेंट किया जा सकता है</translation>
 <translation id="6335029926534404762">ऐथलेटिक जूते</translation>
 <translation id="6336948221660696475">वीआर इस्तेमाल करने की अनुमति नहीं है</translation>
@@ -3864,6 +3867,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">इसका इस्तेमाल, Google के सभी प्रॉडक्ट में किया जा सकता है</translation>
 <translation id="7523408071729642236">मैन्युफ़ैक्चरिंग</translation>
+<translation id="7524958309155133228"><ph name="ENGINE" /> से पूछें</translation>
 <translation id="7525067979554623046">बनाएं</translation>
 <translation id="7525804896095537619">नाम वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="7526934274050461096">इस साइट से आपका कनेक्‍शन निजी नहीं है</translation>
@@ -4732,6 +4736,7 @@
 <translation id="9042617223719777575">ज़्यादा क्षमता</translation>
 <translation id="9042827002460091668">अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> को अपने लोकल नेटवर्क पर मौजूद किसी भी डिवाइस को खोजने और उससे कनेक्ट करने की अनुमति चाहिए</translation>
 <translation id="9046864189129893978">माइक्रोफ़ोन (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">इन कार्रवाइयों के लिए, <ph name="POLICY_NAME" /> नीति को <ph name="POLICY_VALUE" /> पर सेट करना ज़रूरी है: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 इंच</translation>

@@ -2158,6 +2158,7 @@
 <translation id="4635278307999235413">စီမံခန့်ခွဲသူကွန်ဆိုးလ်သို့ ဒေတာပို့နေသည်</translation>
 <translation id="4636930964841734540">အချက်အလက်</translation>
 <translation id="4640225694041297329">ပြီးခဲ့သော ၇ ရက်မှ ရလဒ်များပြပါ</translation>
+<translation id="4642296966515958616">ဤတဘ်အုပ်စုတွင် ပါဝင်ရန် Chrome ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="464342062220857295">ရှာဖွေရေး ဝန်ဆောင်မှုများ</translation>
 <translation id="4644567637638438744">Microsoft OneDrive သို့ လက်မှတ်ထိုးဝင်မှသာ ဖိုင်များကို အပ်လုဒ်လုပ်နိုင်သည်</translation>
 <translation id="4644670975240021822">ပြောင်းပြန်အစဉ်ဖြင့် မှောက်ထားရန်</translation>
@@ -2931,6 +2932,7 @@
 <translation id="5967592137238574583">အဆက်အသွယ် အချက်အလက်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="5967867314010545767">သမိုင်းမှ ဖယ်ရှားရန်</translation>
 <translation id="5968022600320704045">ရှာဖွေမှု ရလဒ်များ မရှိပါ</translation>
+<translation id="5968400720580217226">AI မုဒ်</translation>
 <translation id="5969199813874624822">ဈေးနှုန်းကို သိမ်းပြီး စောင့်ကြည့်ရန်</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ခြောက်ခုမြောက်အလိပ်</translation>
@@ -3150,6 +3152,7 @@
 <translation id="6326947323444967009">Chrome ကို iOS ဆက်တင်များတွင် စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="6327065120806001832">အိမ်တွင်းကွန်ရက် သုံးခွင့်</translation>
 <translation id="6328639280570009161">ကွန်ရက် ခန့်မှန်းမှုကို ပိတ်ထားရန် ကြိုးစားပါ</translation>
+<translation id="6329815962353376655">&lt;မေးခွန်း ရိုက်ထည့်ပါ&gt;</translation>
 <translation id="6334834493885103305">Affirm၊ Zip (သို့) Klarna သုံးပြီး အရစ်ကျပေးချေနိုင်ပြီ</translation>
 <translation id="6335029926534404762">အားကစား ဖိနပ်</translation>
 <translation id="6336948221660696475">VR ကို ခွင့်ပြုမထားပါ</translation>
@@ -3316,6 +3319,7 @@
 <translation id="6587893660316489419">B5 စာအိတ်</translation>
 <translation id="6587923378399804057">သင် မိတ္တူကူးထားသော လင့်ခ်</translation>
 <translation id="6591833882275308647">သင်၏ <ph name="DEVICE_TYPE" /> ကို စီမံခန့်ခွဲမထားပါ</translation>
+<translation id="6595495738567740002">ဤစက်မှ Google ကွတ်ကီးများကို ဖျက်ရန် <ph name="BEGIN_LINK" />Chrome မှ ထွက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="6596325263575161958">လုံခြုံအောင်ပြုလုပ်ခြင်း ရွေးချယ်မှုများ</translation>
 <translation id="6596573334527383067">မနေ့က ရလဒ်များပြပါ</translation>
 <translation id="6597665340361269064">၉၀ ဒီဂရီ</translation>
@@ -3863,6 +3867,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Google ထုတ်ကုန်များတွင် ၎င်းကို သုံးနိုင်သည်</translation>
 <translation id="7523408071729642236">ကုန်ထုတ်လုပ်မှု</translation>
+<translation id="7524958309155133228"><ph name="ENGINE" /> အသုံးပြုနိုင်သည်</translation>
 <translation id="7525067979554623046">ပြုလုပ်ရန်</translation>
 <translation id="7525804896095537619">အမည်သည် အလွတ်ဖြစ်၍မရပါ</translation>
 <translation id="7526934274050461096">ဤဝဘ်ဆိုက်သို့ သင့်ချိတ်ဆက်ထားမှုသည် သီးသန့်မဟုတ်ပါ</translation>
@@ -4708,6 +4713,7 @@
 <translation id="9004367719664099443">VR စက်ရှင် ဖွင့်ထားသည်</translation>
 <translation id="9005998258318286617">PDF ဖိုင်ကို ဖွင့်၍မရပါ</translation>
 <translation id="9008201768610948239">လျစ်လျူရှုရန်</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{မရှိ}=1{ဝဘ်ဆိုက် ၁ ခုမှ}other{ဝဘ်ဆိုက် # ခုမှ}}</translation>
 <translation id="9012194306129927220">Affirm (သို့) Zip သုံးပြီး ငွေခွဲ၍ပေးချေနိုင်ပါပြီ</translation>
 <translation id="9014705027639070815">သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်များက ၎င်းတို့၏ ကြော်ငြာစွမ်းဆောင်ရည်ကို တိုင်းတာရာ၌ အထောက်အကူဖြစ်စေရန် Chrome ထံမှ အချက်အလက်များ တောင်းဆိုနိုင်သည်။ ဝဘ်ဆိုက်တစ်ခုအား သင်ဝင်ကြည့်ပြီးနောက် ဝယ်ယူခြင်း ရှိ၊ မရှိကဲ့သို့သော ကန့်သတ်ဒေတာအမျိုးအစားများကို Chrome က ဝဘ်ဆိုက်များအား စုစည်းခွင့်ပေးသည်။</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> အတွက် လုံခြုံရေးကုဒ် ထည့်ပါ</translation>
@@ -4730,6 +4736,7 @@
 <translation id="9042617223719777575">ကြီးမားသည့်ပမာဏ</translation>
 <translation id="9042827002460091668">အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> သည် အိမ်သုံးကွန်ရက်ရှိ မည်သည့်စက်ကိုမဆို ရှာဖွေချိတ်ဆက်လိုသည်</translation>
 <translation id="9046864189129893978">မိုက်ခရိုဖုန်း (<ph name="MICS_COUNT" />) ခု</translation>
 <translation id="9048035366624198823"><ph name="POLICY_VALUE" /> အဖြစ် သတ်မှတ်ရန် ဤလုပ်ဆောင်ချက်များက <ph name="POLICY_NAME" /> မူဝါဒလိုအပ်သည်- <ph name="ACTION_LIST" />။</translation>
 <translation id="9048662076076074925">၂၄ x ၃၆ လက်မ</translation>

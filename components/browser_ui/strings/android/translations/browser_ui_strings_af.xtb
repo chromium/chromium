@@ -129,6 +129,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="2490684707762498678">Bestuur deur <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hulp en terugvoer</translation>
 <translation id="2501278716633472235">Gaan terug</translation>
+<translation id="2533138527374486328">Wanneer dit aan is, kan werwe vra om aan enige toestel op jou plaaslike netwerk te koppel. Wanneer dit af is, kan werwe nie aan toestelle op jou plaaslike netwerk koppel nie.</translation>
 <translation id="2546283357679194313">Webkoekies en werfdata</translation>
 <translation id="2570922361219980984">Liggingtoegang is ook af vir hierdie toestel. Skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="257931822824936280">Uitgevou – klik om in te vou.</translation>
@@ -424,6 +425,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="5968921426641056619">Voer webadres in</translation>
 <translation id="5975083100439434680">Zoem uit</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Skakel Ontdek-stroom aan</translation>
 <translation id="6015775454662021376">Beheer hierdie werf se toegang tot jou toestel</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6042308850641462728">Meer</translation>
@@ -511,6 +513,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="7188508872042490670">Werfdata op toestel</translation>
 <translation id="7201549776650881587">Hierdie handeling sal alle data en webkoekies uitvee wat deur alle werwe onder <ph name="ORIGIN" /> of deur sy app op jou Tuisskerm geberg is</translation>
 <translation id="7203150201908454328">Uitgevou</translation>
+<translation id="7213166370492037743">Moenie toelaat dat werwe aan enige toestel op jou plaaslike netwerk koppel nie</translation>
 <translation id="7219254577985949841">Vee werfdata uit?</translation>
 <translation id="723171743924126238">Kies prente</translation>
 <translation id="7243308994586599757">Opsies is naby die onderkant van die skerm beskikbaar</translation>

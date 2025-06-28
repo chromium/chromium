@@ -129,6 +129,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" />-с удирддаг</translation>
 <translation id="2498359688066513246">Тусламж болон санал хүсэлт</translation>
 <translation id="2501278716633472235">Буцаах</translation>
+<translation id="2533138527374486328">Асаалттай үед сайт таны дотоод сүлжээн дээрх дурын төхөөрөмжид холбогдохыг хүсэж болно. Унтраалттай үед сайт таны дотоод сүлжээн дээрх төхөөрөмжид холбогдох боломжгүй.</translation>
 <translation id="2546283357679194313">Cookies болон сайтын дата</translation>
 <translation id="2570922361219980984">Энэ төхөөрөмжид байршлын хандалт мөн адил унтраалттай байна. Үүнийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" /> хэсэгт асаана уу.</translation>
 <translation id="257931822824936280">Өргөжсөн, энд дарж задална уу.</translation>
@@ -424,6 +425,7 @@
 <translation id="5968921426641056619">Веб хаяг оруулна уу</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Discover-н хангамжийг асаах</translation>
 <translation id="6015775454662021376">Таны төхөөрөмж рүү хандах энэ сайтын хандалтыг удирдах</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6042308850641462728">Илүү их</translation>
@@ -511,6 +513,7 @@
 <translation id="7188508872042490670">Төхөөрөмж дээрх сайтын өгөгдөл</translation>
 <translation id="7201549776650881587">Энэ үйлдэл <ph name="ORIGIN" />-н доорх бүх сайтын эсвэл таны Үндсэн нүүрэн дээрх аппынх нь хадгалсан бүх өгөгдөл, күүкиг устгана</translation>
 <translation id="7203150201908454328">Өргөтгөсөн</translation>
+<translation id="7213166370492037743">Сайтад таны дотоод сүлжээн дээрх ямар нэг төхөөрөмжид холбогдохыг бүү зөвшөөр</translation>
 <translation id="7219254577985949841">Сайтын өгөгдлийг устгах уу?</translation>
 <translation id="723171743924126238">Зураг сонгох</translation>
 <translation id="7243308994586599757">Дэлгэцийн доод хэсэгт сонголт боломжтой</translation>

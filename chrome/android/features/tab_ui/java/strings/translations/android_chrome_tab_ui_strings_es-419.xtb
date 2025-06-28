@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">Tus grupos de pestañas se guardan automáticamente</translation>
 <translation id="6054741997831917303">El precio de este artículo recientemente bajó de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia más reciente.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Cerrar <ph name="TABS_COUNT_ONE" /> elemento seleccionado}other{Cerrar <ph name="TABS_COUNT_MANY" /> elementos seleccionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo a ventana nueva}other{Mover grupo a otra ventana}}</translation>
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6220820548421939212">Sí. Acepto</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">El grupo "<ph name="TAB_GROUP_NAME" />" ya no está disponible</translation>
 <translation id="7452985128687107478">Los grupos de pestañas se guardan y actualizan automáticamente en todos tus dispositivos</translation>
 <translation id="747459581954555080">Restaurar todo</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Restablecer <ph name="TABS_COUNT_ONE" /> elemento seleccionado}other{Restablecer <ph name="TABS_COUNT_MANY" /> elementos seleccionados}}</translation>
 <translation id="753732157349120914">Alternador de pestañas</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> opinión de Google}other{<ph name="REVIEWS_COUNT_MANY" /> opiniones de Google}}</translation>
 <translation id="7559245342362162951">Muestra las pestañas del grupo en la cuadrícula de pantalla completa</translation>
@@ -210,7 +212,7 @@
 <translation id="9090098097337832354">La hoja de información sobre esta tienda está cerrada</translation>
 <translation id="9114502155681725011">Abrir el menú de acciones del grupo de pestañas <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Agrega una pestaña nueva al grupo</translation>
-<translation id="9187834032751045001">Aviso sobre la función de eliminación automática de pestañas a media altura.</translation>
+<translation id="9187834032751045001">Aviso sobre la función de eliminación automática de pestañas a media altura</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Expandir el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />.}other{Expandir el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="992256792861109788">Rosa</translation>

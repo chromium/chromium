@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">タブグループは自動的に保存されます</translation>
 <translation id="6054741997831917303">このアイテムの価格は最近 <ph name="PREVIOUS_PRICE" /> から <ph name="NEW_PRICE" /> に下がりました</translation>
 <translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブもアーカイブされるようになりました。</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のアイテムを閉じる}other{選択した <ph name="TABS_COUNT_MANY" /> 個のアイテムを閉じる}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{グループを新しいウィンドウに移動}other{グループを別のウィンドウに移動}}</translation>
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6220820548421939212">はい。オンにします。</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">「<ph name="TAB_GROUP_NAME" />」タブグループは使用できなくなりました</translation>
 <translation id="7452985128687107478">タブグループは自動的に保存され、すべてのデバイスで更新されます</translation>
 <translation id="747459581954555080">すべて復元</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のアイテムを復元する}other{選択した <ph name="TABS_COUNT_MANY" /> 個のアイテムを復元する}}</translation>
 <translation id="753732157349120914">タブ切り替え機能</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google による審査 <ph name="REVIEWS_COUNT_ONE" /> 件}other{Google による審査 <ph name="REVIEWS_COUNT_MANY" /> 件}}</translation>
 <translation id="7559245342362162951">グループのタブを全画面グリッドで表示</translation>

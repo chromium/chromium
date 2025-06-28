@@ -129,6 +129,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="2490684707762498678">Hanteras av <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hjälp och feedback</translation>
 <translation id="2501278716633472235">Föregående</translation>
+<translation id="2533138527374486328">När detta är aktiverat kan webbplatser begära tillstånd att ansluta till enheter i det lokala nätverket. När detta är inaktiverat får webbplatser inte ansluta till enheter i det lokala nätverket.</translation>
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
 <translation id="2570922361219980984">Platsåtkomst har inaktiverats på enheten också. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vyn har expanderats. Komprimera den genom att klicka.</translation>
@@ -424,6 +425,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5968921426641056619">Ange webbadress</translation>
 <translation id="5975083100439434680">Zooma ut</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Aktivera Förslag-flödet</translation>
 <translation id="6015775454662021376">Styr webbplatsens åtkomst till enheten</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6042308850641462728">Mer</translation>
@@ -511,6 +513,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7188508872042490670">Webbplatsdata på enheten</translation>
 <translation id="7201549776650881587">När du gör detta raderas all data och alla cookies som lagras av alla underordnade webbplatser för <ph name="ORIGIN" /> eller tillhörande app på startskärmen</translation>
 <translation id="7203150201908454328">Utökat</translation>
+<translation id="7213166370492037743">Tillåt inte att webbplatser ansluter till enheter i det lokala nätverket</translation>
 <translation id="7219254577985949841">Vill du radera webbplatsdata?</translation>
 <translation id="723171743924126238">Välj bilder</translation>
 <translation id="7243308994586599757">Alternativ visas nära skärmens nedre kant</translation>

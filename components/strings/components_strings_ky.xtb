@@ -2156,6 +2156,7 @@
 <translation id="4635278307999235413">Маалымат администратор консолуна жөнөтүлүүдө</translation>
 <translation id="4636930964841734540">Маалымат</translation>
 <translation id="4640225694041297329">Соңку 7 күнкү жыйынтыктарды көрсөтүү</translation>
+<translation id="4642296966515958616">Бул өтмөктөр тобуна кошулуу үчүн Chrome'ду жаңыртыңыз</translation>
 <translation id="464342062220857295">Функцияларды издөө</translation>
 <translation id="4644567637638438744">Файлдарды Microsoft OneDrive'га кирип турганда гана жүктөп бере аласыз</translation>
 <translation id="4644670975240021822">Тескери иретте алдыңкы бетин ылдый каратып</translation>
@@ -2929,6 +2930,7 @@
 <translation id="5967592137238574583">Байланыш маалыматын түзөтүү</translation>
 <translation id="5967867314010545767">Таржымалдан алып салуу</translation>
 <translation id="5968022600320704045">Эч нерсе табылган жок</translation>
+<translation id="5968400720580217226">ЖИ режими</translation>
 <translation id="5969199813874624822">Сактап, баасына көз салуу</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Алтынчы барабан</translation>
@@ -3149,6 +3151,7 @@
 <translation id="6326947323444967009">iOS параметрлеринен Chrome'ду системанын демейки серепчиси катары коюу</translation>
 <translation id="6327065120806001832">жергиликтүү тармактан кирүү</translation>
 <translation id="6328639280570009161">Тармакты алдын-ала божомолдоо мүмкүнчүлүгүн өчүрүп көрүңүз</translation>
+<translation id="6329815962353376655">&lt;Суроону териңиз&gt;</translation>
 <translation id="6334834493885103305">Эми Affirm, Zip же Klarna кызматын колдонуп, кийинчерээк төлөй аласыз</translation>
 <translation id="6335029926534404762">Спорттук бут кийим</translation>
 <translation id="6336948221660696475">VR'га тыюу салынат</translation>
@@ -3315,6 +3318,7 @@
 <translation id="6587893660316489419">Конверт B5</translation>
 <translation id="6587923378399804057">Сиз көчүргөн шилтеме</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> түзмөгүңүз башкарылган жок</translation>
+<translation id="6595495738567740002">Бул түзмөктөн Google cookie файлдарын жок кылуу үчүн, <ph name="BEGIN_LINK" />Chrome'дон чыгыңыз<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Шифрлөө параметрлери</translation>
 <translation id="6596573334527383067">Кечээки күнкү жыйынтыктарды көрсөтүү</translation>
 <translation id="6597665340361269064">90 градус</translation>
@@ -3861,6 +3865,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Аны Google кызматтарында колдоно аласыз</translation>
 <translation id="7523408071729642236">Өндүрүш</translation>
+<translation id="7524958309155133228">Төмөнкүдөн суроо: <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Түзүү</translation>
 <translation id="7525804896095537619">Аталышы бош болбошу керек</translation>
 <translation id="7526934274050461096">Бул сайтка туташуу кооптуу</translation>
@@ -4705,6 +4710,7 @@
 <translation id="9004367719664099443">VR сеансы жүрүүдө</translation>
 <translation id="9005998258318286617">PDF документи жүктөлбөй калды.</translation>
 <translation id="9008201768610948239">Этибарга албоо</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Жок}=1{1 сайттан}other{# сайттан}}</translation>
 <translation id="9012194306129927220">Эми Affirm же Zip кызматын колдонуп, кийинчерээк төлөй аласыз</translation>
 <translation id="9014705027639070815">Жарнамаларынын майнаптуулугун талдоо үчүн сиз баш баккан сайттар Chrome'дон маалымат сурашы мүмкүн. Chrome сайттарга товарды сайтка өткөндөн кийин сатып алганыңыз сыяктуу чектелген маалымат түрлөрүн чогултууга уруксат берет.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> картаңыз үчүн коопсуздук кодун киргизиңиз</translation>
@@ -4727,6 +4733,7 @@
 <translation id="9042617223719777575">Сыйымдуулугу чоң</translation>
 <translation id="9042827002460091668">Интернет байланышыңызды текшерип, кайталап көрүңүз</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> жергиликтүү тармактагы түзмөктөрдү издөөгө жана аларга туташууга уруксат суроодо</translation>
 <translation id="9046864189129893978">Микрофондор (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823"><ph name="ACTION_LIST" /> аракети үчүн <ph name="POLICY_NAME" /> саясаты <ph name="POLICY_VALUE" /> дегенге өзгөртүлүшү керек.</translation>
 <translation id="9048662076076074925">24 x 36 дюйм</translation>

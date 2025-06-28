@@ -2157,6 +2157,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4635278307999235413">Mengirim data ke konsol admin</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4640225694041297329">Tampilkan hasil dari 7 hari terakhir</translation>
+<translation id="4642296966515958616">Untuk bergabung ke grup tab ini, update Chrome</translation>
 <translation id="464342062220857295">Fitur penelusuran</translation>
 <translation id="4644567637638438744">File hanya dapat diupload jika Anda login ke Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Urutan yang berkebalikan menghadap ke bawah</translation>
@@ -2930,6 +2931,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5967592137238574583">Edit Info Kontak</translation>
 <translation id="5967867314010545767">Hapus dari histori</translation>
 <translation id="5968022600320704045">Tidak ada hasil penelusuran</translation>
+<translation id="5968400720580217226">Mode AI</translation>
 <translation id="5969199813874624822">Simpan dan Pantau Harga</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Rol Keenam</translation>
@@ -3150,6 +3152,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6326947323444967009">Setel Chrome sebagai browser default sistem di setelan iOS</translation>
 <translation id="6327065120806001832">akses jaringan lokal</translation>
 <translation id="6328639280570009161">Coba nonaktifkan prediksi jaringan</translation>
+<translation id="6329815962353376655">&lt;Ketik pertanyaan&gt;</translation>
 <translation id="6334834493885103305">Anda kini dapat melakukan pembayaran dengan cicilan menggunakan Affirm, Zip, atau Klarna</translation>
 <translation id="6335029926534404762">Sepatu Atletik</translation>
 <translation id="6336948221660696475">VR tidak diizinkan</translation>
@@ -3316,6 +3319,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">Link yang Anda salin</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> Anda tidak dikelola</translation>
+<translation id="6595495738567740002">Untuk menghapus cookie Google dari perangkat ini, <ph name="BEGIN_LINK" />logout dari Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Opsi enkripsi</translation>
 <translation id="6596573334527383067">Tampilkan hasil dari kemarin</translation>
 <translation id="6597665340361269064">90 derajat</translation>
@@ -3861,6 +3865,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Anda dapat menggunakannya di seluruh produk Google</translation>
 <translation id="7523408071729642236">Manufaktur</translation>
+<translation id="7524958309155133228">Tanya <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Buat</translation>
 <translation id="7525804896095537619">Nama harus diisi</translation>
 <translation id="7526934274050461096">Koneksi Anda ke situs ini tidak bersifat pribadi</translation>
@@ -4703,6 +4708,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9004367719664099443">Sesi VR sedang berlangsung</translation>
 <translation id="9005998258318286617">Gagal memuat dokumen PDF.</translation>
 <translation id="9008201768610948239">Abaikan</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs}other{Dari # situs}}</translation>
 <translation id="9012194306129927220">Anda kini dapat melakukan pembayaran dengan cicilan menggunakan Affirm atau Zip</translation>
 <translation id="9014705027639070815">Situs yang Anda buka dapat meminta informasi kepada Chrome untuk membantunya mengukur performa iklan. Chrome memungkinkan situs mengumpulkan jenis data tertentu, seperti apakah Anda melakukan pembelian setelah mengunjungi situs.</translation>
 <translation id="9018120810758822233">Masukkan kode keamanan untuk <ph name="CREDIT_CARD" /></translation>
@@ -4725,6 +4731,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9042617223719777575">Kapasitas Besar</translation>
 <translation id="9042827002460091668">Periksa koneksi internet Anda, lalu coba lagi</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> ingin mencari dan terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="9046864189129893978">Mikrofon (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Tindakan ini mengharuskan kebijakan <ph name="POLICY_NAME" /> disetel ke <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 inci (60 x 91 cm)</translation>

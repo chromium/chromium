@@ -3319,6 +3319,7 @@
 <translation id="6587893660316489419">پاکت بی۵</translation>
 <translation id="6587923378399804057">پیوندی که کپی کرده‌اید</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> شما تحت مدیریت نیست</translation>
+<translation id="6595495738567740002">‏برای حذف کردن کوکی‌های Google از این دستگاه، <ph name="BEGIN_LINK" />از سیستم Chrome خارج شوید<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">گزینه‌های رمزگذاری</translation>
 <translation id="6596573334527383067">نمایش نتایج دیروز</translation>
 <translation id="6597665340361269064">۹۰ درجه</translation>
@@ -4711,6 +4712,7 @@
 <translation id="9004367719664099443">‏جلسه VR درحال انجام است</translation>
 <translation id="9005998258318286617">‏سند PDF بارگیری نشد.</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{هیچ‌کدام}=1{از ۱ سایت}one{از # سایت}other{از # سایت}}</translation>
 <translation id="9012194306129927220">‏ازاین‌پس می‌توانید بااستفاده از Affirm یا Zip قسطی پرداخت کنید</translation>
 <translation id="9014705027639070815">‏سایت‌هایی که بازدید می‌کنید می‌توانند برای کمک به سنجش عملکرد آگهی‌هایشان، اطلاعاتی از Chrome درخواست کنند. ‫Chrome به سایت‌ها اجازه می‌دهد انواع محدودی از داده را جمع‌آوری کنند؛ مثلاً آیا پس‌از بازدید از سایت خریدی انجام داده‌اید یا نه.</translation>
 <translation id="9018120810758822233">کد امنیتی خود را برای <ph name="CREDIT_CARD" /> وارد کنید</translation>

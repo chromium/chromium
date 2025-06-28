@@ -915,7 +915,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2512101340618156538">İzin verilmiyor (varsayılan)</translation>
 <translation id="2512413427717747692">Chrome'u varsayılan tarayıcı olarak ayarlama düğmesi, Chrome'u iOS ayarlarından sistemin varsayılan tarayıcısı olarak ayarlamak için Enter'a basın</translation>
 <translation id="2514548229949738417">Ev ve Bahçe</translation>
-<translation id="2515629240566999685">Bulunduğunuz bölgedeki sinyali kontrol etme</translation>
+<translation id="2515629240566999685">Bulunduğunuz bölgedeki sinyali kontrol edin</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> kullanan web sitelerinde Touch ID ile doğrulamayı seçtiniz. Bu sağlayıcı, ödeme yönteminizle ilgili bilgileri depolamış olabilir. Bu bilgilerin <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Bu kart kullanılamıyor. Lütfen kart sağlayıcınızla iletişime geçin.</translation>
 <translation id="2519250377986324805">Nasıl yapılacağını öğrenin:</translation>
@@ -1627,7 +1627,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3713277100229669269">Artık ödeme yapmadan önce kart avantajlarını görebilirsiniz</translation>
 <translation id="371420189621607696">Rekabetçi Video Oyunları</translation>
 <translation id="3714633008798122362">web takvimi</translation>
-<translation id="3714780639079136834">Mobil veriyi veya kablosuz bağlantıyı açma</translation>
+<translation id="3714780639079136834">Mobil veriyi veya kablosuz bağlantıyı açın</translation>
 <translation id="3715016660240337709">{0,plural, =1{Dosyanın yüklenmesi engellendi}other{<ph name="FILE_COUNT" /> dosyanın yüklenmesi engellendi}}</translation>
 <translation id="3715597595485130451">Kablosuz Ağ Bağlantısı</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxy, güvenlik duvarı ve DNS yapılandırmasını kontrol etme<ph name="END_LINK" /></translation>
@@ -2143,7 +2143,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="460848736049414407">Yönetici tarafından engellendi</translation>
 <translation id="4610279718074907952">Bu site, <ph name="SET_OWNER" /> tarafından tanımlanmış, etkinliğinizi görebilen bir grupta bulunuyor</translation>
 <translation id="46128681529823442">Futbol Gereçleri</translation>
-<translation id="4612904677925722054">Bu sitede erişkinlere uygun içerikler bulunabilir. Bir anne veya babanın ya da velinin, bu web sitesini ziyaret etmenizin uygun olduğunu belirtmesi gerekir.</translation>
+<translation id="4612904677925722054">Bu sitede erişkinlere uygun içerikler bulunabilir. Annenizin/babanızın veya velinizin, bu web sitesini ziyaret etmenizin uygun olduğunu belirtmesi gerekir.</translation>
 <translation id="4619564267100705184">Kimliğinizi doğrulayın</translation>
 <translation id="4622292761762557753">Yine de aktar</translation>
 <translation id="4622647778991854660">Bildirim Merkezi'nden bildirimleri etkinleştirin. <ph name="LINK" /> sayfasını aç</translation>
@@ -2289,7 +2289,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="485902285759009870">Kod doğrulanıyor...</translation>
 <translation id="4860260582253463350">YouTube'a devam edebilmeniz için kimliğinizi doğrulamamız gerekiyor. Anne veya babanızın ya da velinizin Family Link'te belirlediği ayarları kullanırsınız.</translation>
 <translation id="4864406669374375262">Sürüm dizesi, panoya kopyalandı</translation>
-<translation id="486459320933704969">Bir anne veya babanın ya da velinin, bu web sitesini ziyaret etmenizin uygun olduğunu belirtmesi gerekir</translation>
+<translation id="486459320933704969">Annenizin/babanızın veya velinizin, bu web sitesini ziyaret etmenizin uygun olduğunu belirtmesi gerekir.</translation>
 <translation id="4864801646102013152">Ev Tadilatı</translation>
 <translation id="4866506163384898554">İmlecinizi göstermek için |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| tuşlarına basın</translation>
 <translation id="4873616204573862158">Gözlükler</translation>
@@ -3057,7 +3057,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6159908896951210943">Resmi</translation>
 <translation id="6160391204859821737">Reklam gizlilik özelliklerini etkinleştirme</translation>
 <translation id="6162403104168428984">Adres güncellensin mi?</translation>
-<translation id="6164605812717770913">Ebeveyniniz ya da veliniz bu siteyi ziyaret etmenize izin vermiyor. Dilerseniz sitenin engelini kaldırmasını isteyebilirsiniz.</translation>
+<translation id="6164605812717770913">Anneniz/babanız ya da veliniz bu siteyi ziyaret etmenize izin vermiyor. Dilerseniz sitenin engelini kaldırmasını isteyebilirsiniz.</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6167577165590485365">Son getirme girişimi:</translation>
 <translation id="617256461084925519">Google Chrome ödeme bilgilerinizi girebilmek için kimliğinizi doğrulamaya çalışıyor.</translation>
@@ -4356,7 +4356,7 @@ Ek ayrıntılar:
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8352849934814541340">Bu cihazın yöneticisi diğer işlevler için uygulamalar yüklemiş. Söz konusu uygulamaların bazı verilerinize erişimi bulunuyor.</translation>
 <translation id="8355270400102541638">Yerel Kilitlenme Bağlamı:</translation>
-<translation id="8363502534493474904">Uçak modunu kapatma</translation>
+<translation id="8363502534493474904">Uçak modunu kapatın</translation>
 <translation id="8363929499301563123">Web sitesi çerezleri (son zamanlarda ziyaret ettiğiniz web sitelerinde oturum açma durumu korunur)</translation>
 <translation id="8364627913115013041">Henüz ayarlanmadı.</translation>
 <translation id="8366057325711477500">Dünya Haberleri</translation>

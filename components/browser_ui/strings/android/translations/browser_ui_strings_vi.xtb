@@ -128,6 +128,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="2490684707762498678">Do <ph name="APP_NAME" /> quản lý</translation>
 <translation id="2498359688066513246">Trợ giúp và phản hồi</translation>
 <translation id="2501278716633472235">Quay lại</translation>
+<translation id="2533138527374486328">Khi tuỳ chọn này bật, các trang web có thể yêu cầu kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn. Khi tuỳ chọn này tắt, các trang web không thể kết nối với thiết bị trên mạng cục bộ của bạn.</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="2570922361219980984">Quyền truy cập vị trí cũng đã bị tắt đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Đã mở rộng - nhấp để thu gọn.</translation>
@@ -423,6 +424,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="5968921426641056619">Nhập địa chỉ web</translation>
 <translation id="5975083100439434680">Thu nhỏ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Bật nguồn cấp dữ liệu khám phá</translation>
 <translation id="6015775454662021376">Kiểm soát quyền truy cập của trang web này vào thiết bị của bạn</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
@@ -510,6 +512,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7188508872042490670">Dữ liệu trang web trên thiết bị</translation>
 <translation id="7201549776650881587">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do tất cả trang web thuộc miền <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ</translation>
 <translation id="7203150201908454328">Được mở rộng</translation>
+<translation id="7213166370492037743">Không cho phép các trang web kết nối với bất kỳ thiết bị nào trên mạng cục bộ của bạn</translation>
 <translation id="7219254577985949841">Xoá dữ liệu trang web?</translation>
 <translation id="723171743924126238">Chọn hình ảnh</translation>
 <translation id="7243308994586599757">Có các tùy chọn ở gần cuối màn hình</translation>

@@ -81,7 +81,7 @@
 <translation id="4076226664360336092">टैब ग्रुप की सूची, पूरी स्क्रीन पर खोल दी गई है</translation>
 <translation id="4133493477912226187">ऐसा लगता है कि <ph name="NUMBER_OF_TABS" /> टैब एक-दूसरे से मिलते-जुलते हैं. इनका ग्रुप बनाएं?</translation>
 <translation id="4159784952369912983">बैंगनी</translation>
-<translation id="4203448675570432781">टैब के अपने-आप मिटने की सुविधा की प्रोमो बॉटम शीट बंद कर दी गई है.</translation>
+<translation id="4203448675570432781">टैब के अपने-आप मिटने की सुविधा में बदलाव से जुड़ी प्रोमो बॉटम शीट बंद कर दी गई है.</translation>
 <translation id="427987768447457592">नया टैब ग्रुप</translation>
 <translation id="4371591986692297148">चालू नहीं है</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{आइटम को वापस लाएं}one{आइटम को वापस लाएं}other{आइटम वापस लाएं}}</translation>
@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">आपके टैब ग्रुप अपने-आप सेव होते हैं</translation>
 <translation id="6054741997831917303">इस आइटम की कीमत <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है</translation>
 <translation id="6109251075362363230">अब सभी डुप्लीकेट टैब भी संग्रहित किए जाएंगे. हालांकि, सबसे हाल ही में इस्तेमाल किए गए डुप्लीकेट टैब को संग्रहित नहीं किया जाएगा.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> आइटम बंद करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> आइटम बंद करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> आइटम बंद करें}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ग्रुप को दूसरी विंडो पर ले जाएं}one{ग्रुप को दूसरी विंडो पर ले जाएं}other{ग्रुप को दूसरी विंडो पर ले जाएं}}</translation>
 <translation id="6193448654517602979">टैब चुनें</translation>
 <translation id="6220820548421939212">हां. मैं सहमत हूं</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" टैब ग्रुप अब मौजूद नहीं है</translation>
 <translation id="7452985128687107478">टैब ग्रुप आपके सभी डिवाइसों पर, अपने-आप सेव और अपडेट हो जाते हैं</translation>
 <translation id="747459581954555080">सभी को पुनर्स्थापित करें</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> आइटम वापस लाएं}one{चुना गया <ph name="TABS_COUNT_MANY" /> आइटम वापस लाएं}other{चुने गए <ph name="TABS_COUNT_MANY" /> आइटम वापस लाएं}}</translation>
 <translation id="753732157349120914">टैब बदलने की सुविधा</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google से मिली <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}one{Google से मिली <ph name="REVIEWS_COUNT_MANY" /> समीक्षा}other{Google से मिली <ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं}}</translation>
 <translation id="7559245342362162951">समूह के टैब फ़ुलस्क्रीन ग्रिड में दिखाएं</translation>

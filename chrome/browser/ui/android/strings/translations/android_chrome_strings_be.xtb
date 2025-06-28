@@ -256,6 +256,7 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2184272387334793084">Увайдзіце, каб атрымаць доступ да пароляў і іншых даных на ўсіх сваіх прыладах</translation>
 <translation id="218608176142494674">Абагульванне</translation>
+<translation id="2186779861549045980">Вы можаце выбраць, якія даныя захоўваць ва Уліковым запісе Google.\nВы таксама можаце праглядаць гэтыя даныя і кіраваць імі ў закладках, спісе на прагляд і менеджары пароляў.</translation>
 <translation id="219283042927675668">Укладкі ў групе</translation>
 <translation id="2194856509914051091">Інфармацыя для разгляду</translation>
 <translation id="22091350895006575">Дадаць імя карыстальніка</translation>
@@ -264,6 +265,7 @@
 <translation id="2230777942707397948">Пустое акно</translation>
 <translation id="223356358902285214">Дзеянні ў інтэрнэце і праграмах</translation>
 <translation id="2234827758954819389">Дапаможнік па прыватнасці</translation>
+<translation id="2238038374973843156">Перамясціць групу ўкладак у іншае акно</translation>
 <translation id="2239812875700136898">Кіруйце паказам артыкулаў з дапамогай кнопкі "Параметры рэкамендацый"</translation>
 <translation id="2247789808226901522">Тэрмін дзеяння карткі скончыўся</translation>
 <translation id="2248941474044011069">Вашы паролі шыфруюцца на прыладзе і толькі потым захоўваюцца ў Менеджары пароляў Google</translation>
@@ -391,6 +393,7 @@
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="281504910091592009">Праглядайце захаваныя паролі і кіруйце імі праз <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>
 <translation id="2819849308549746319">Адпісацца ад усіх</translation>
+<translation id="2820047235535485532">Вы можаце выбраць, якія даныя захоўваць ва Уліковым запісе Google <ph name="ACCOUNT_EMAIL" />.\nВы таксама можаце праглядаць гэтыя даныя і кіраваць імі ў закладках, спісе на прагляд і менеджары пароляў.</translation>
 <translation id="2826576843404243001">Атрымліваць папярэджанне, перш чым наведваць сайт, які не падтрымлівае бяспечнае падключэнне. Паколькі ўключана Палепшаная абарона, вы не можаце змяніць гэту наладу.</translation>
 <translation id="2827278682606527653">Меню карткі стужкі адкрыта на палову вышыні</translation>
 <translation id="2830783625999891985">Змесціва буфера абмену схавана</translation>
@@ -1237,6 +1240,7 @@
 <translation id="6545017243486555795">Ачысціць усе даныя</translation>
 <translation id="6546511553472444032">Файл можа быць шкодным</translation>
 <translation id="6550891580932862748">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Гэты рэжым не паўплывае на налады Бяспечнага прагляду ў іншых прадуктах Google.</translation>
+<translation id="6554822972009632311">Уключаны фільтр змесціва</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_ONE" /> укладка будуць закрыты}one{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладка будуць закрыты}few{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}many{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладак будуць закрыты}other{Укладка "<ph name="TAB_TITLE" />" і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі будуць закрыты}}</translation>
 <translation id="6560414384669816528">Пошук праз Sogou</translation>
 <translation id="656065428026159829">Яшчэ</translation>
@@ -1394,6 +1398,7 @@
 <translation id="71503698506017927">Шыфраванне фразай-паролем не прымяняецца да спосабаў аплаты і адрасоў з Google Pay.
 
 Каб змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chrome з уліковага запісу<ph name="END_LINK" />.</translation>
+<translation id="7165972437814027679">Даведацца больш пра тое, чаму Chrome блакіруе некаторыя файлы</translation>
 <translation id="7168323970702333693">Вы ўвайшлі як <ph name="USER_NAME" />. Кнопка адкрывае налады.</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7173338713290252554">Гісторыя цаны ў інтэрнэце</translation>
@@ -1713,6 +1718,7 @@
 <translation id="8439974325294139057"><ph name="LANG" /> – мова гатовая да выкарыстання, перазапусціце <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Няма новых артыкулаў</translation>
 <translation id="8443209985646068659">Немагчыма абнавіць Chrome</translation>
+<translation id="8443600937324357591">Перамясціць укладку ў іншае акно</translation>
 <translation id="8445448999790540984">Не ўдалося экспартаваць паролі</translation>
 <translation id="8446884382197647889">Даведацца больш</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Дазволы адкліканы ў 1 сайта}one{Дазволы адкліканы ў # сайта}few{Дазволы адкліканы ў # сайтаў}many{Дазволы адкліканы ў # сайтаў}other{Дазволы адкліканы ў # сайта}}</translation>

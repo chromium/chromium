@@ -129,6 +129,7 @@
 <translation id="2490684707762498678">จัดการโดย <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">ความช่วยเหลือและความคิดเห็น</translation>
 <translation id="2501278716633472235">ย้อนกลับ</translation>
+<translation id="2533138527374486328">เมื่อเปิด เว็บไซต์จะขอเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณได้ เมื่อปิด เว็บไซต์จะเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณไม่ได้</translation>
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="2570922361219980984">การเข้าถึงตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดการเข้าถึงได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="257931822824936280">ขยาย - คลิกเพื่อยุบ</translation>
@@ -424,6 +425,7 @@
 <translation id="5968921426641056619">ป้อนที่อยู่เว็บ</translation>
 <translation id="5975083100439434680">ย่อ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">เปิดฟีดสำรวจ</translation>
 <translation id="6015775454662021376">ควบคุมสิทธิ์ของเว็บไซต์นี้ในการเข้าถึงอุปกรณ์ของคุณ</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
@@ -511,6 +513,7 @@
 <translation id="7188508872042490670">ข้อมูลเว็บไซต์ในอุปกรณ์</translation>
 <translation id="7201549776650881587">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดที่ทุกเว็บไซต์จาก <ph name="ORIGIN" /> หรือแอปในหน้าจอหลักจัดเก็บไว้</translation>
 <translation id="7203150201908454328">ขยาย</translation>
+<translation id="7213166370492037743">ไม่อนุญาตให้เว็บไซต์เชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณ</translation>
 <translation id="7219254577985949841">ลบข้อมูลเว็บไซต์ใช่ไหม</translation>
 <translation id="723171743924126238">เลือกภาพ</translation>
 <translation id="7243308994586599757">มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>

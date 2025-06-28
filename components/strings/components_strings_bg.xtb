@@ -2157,6 +2157,7 @@
 <translation id="4635278307999235413">Данните се изпращат до конзолата за администратори</translation>
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4640225694041297329">Показване на резултатите от последните 7 дни</translation>
+<translation id="4642296966515958616">За да се присъедините към тази група раздели, актуализирайте Chrome</translation>
 <translation id="464342062220857295">Функции за търсене</translation>
 <translation id="4644567637638438744">Можете да качвате файлове само ако сте влезли в Microsoft OneDrive</translation>
 <translation id="4644670975240021822">В обратен ред с отпечатаната страна надолу</translation>
@@ -2930,6 +2931,7 @@
 <translation id="5967592137238574583">Редактиране на информацията за връзка</translation>
 <translation id="5967867314010545767">Премахване от историята</translation>
 <translation id="5968022600320704045">Няма резултати от търсенето</translation>
+<translation id="5968400720580217226">Режим с AI</translation>
 <translation id="5969199813874624822">Запазване и проследяване на цената</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шеста ролка</translation>
@@ -3150,6 +3152,7 @@
 <translation id="6326947323444967009">Задаване на Chrome като браузъра по подразбиране за системата в настройките на iOS</translation>
 <translation id="6327065120806001832">достъп в локалната мрежа</translation>
 <translation id="6328639280570009161">Опитайте да деактивирате предвижданията за мрежата</translation>
+<translation id="6329815962353376655">&lt;Въведете въпрос&gt;</translation>
 <translation id="6334834493885103305">Вече можете да плащате на вноски чрез Affirm, Zip или Klarna</translation>
 <translation id="6335029926534404762">Спортни обувки</translation>
 <translation id="6336948221660696475">Не е разрешено използването на VR</translation>
@@ -3316,6 +3319,7 @@
 <translation id="6587893660316489419">Плик B5</translation>
 <translation id="6587923378399804057">Копирана от вас връзка</translation>
 <translation id="6591833882275308647">Устройството ви <ph name="DEVICE_TYPE" /> не е управлявано</translation>
+<translation id="6595495738567740002">За да изтриете „бисквитките“ на Google от това устройство, <ph name="BEGIN_LINK" />излезте от профила си в Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Опции за шифроване</translation>
 <translation id="6596573334527383067">Показване на резултатите от вчера</translation>
 <translation id="6597665340361269064">90 градуса</translation>
@@ -3863,6 +3867,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Можете да го използвате в продуктите на Google</translation>
 <translation id="7523408071729642236">Производство</translation>
+<translation id="7524958309155133228">Попитайте <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Създаване</translation>
 <translation id="7525804896095537619">Трябва да въведете име</translation>
 <translation id="7526934274050461096">Връзката ви с този сайт не е частна</translation>
@@ -4707,6 +4712,7 @@
 <translation id="9004367719664099443">Сесията за VR е в ход</translation>
 <translation id="9005998258318286617">Зареждането на PDF документа не бе успешно.</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Няма}=1{От 1 сайт}other{От # сайта}}</translation>
 <translation id="9012194306129927220">Вече можете да плащате на вноски чрез Affirm или Zip</translation>
 <translation id="9014705027639070815">Сайтовете, които посещавате, могат да поискат от Chrome информация, с чиято помощ да измерват ефективността на рекламите си. Браузърът дава възможност на сайтовете да събират ограничени типове данни, като например дали сте направили покупка, след като сте посетили даден сайт.</translation>
 <translation id="9018120810758822233">Въведете кода си за сигурност за <ph name="CREDIT_CARD" /></translation>
@@ -4729,6 +4735,7 @@
 <translation id="9042617223719777575">Тава с голяма вместимост</translation>
 <translation id="9042827002460091668">Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> иска да търси и да се свързва с устройства в локалната ви мрежа</translation>
 <translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Тези действия изискват за правилото <ph name="POLICY_NAME" /> да бъде зададено <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 инча</translation>

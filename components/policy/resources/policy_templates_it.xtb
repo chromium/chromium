@@ -2789,6 +2789,7 @@ Se il valore viene impostato su false, non potranno accedere alla funzionalità.
 <translation id="2987155890997901449">Attiva ARC</translation>
 <translation id="2987227569419001736">Controlla l'utilizzo dell'API Web Bluetooth</translation>
 <translation id="2989404644164421834">Ricarica pagine</translation>
+<translation id="299127280603727143">Un gruppo di policy relative alle impostazioni di accesso alla rete locale.  Visita la pagina https://developer.chrome.com/blog/local-network-access</translation>
 <translation id="299446489108785864">Elenco di URL che specifica a quali URL verrà applicata la policy <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Questa policy non influisce sui valori di apertura automatica impostati dagli utenti.
 
       Se la policy viene impostata, i file verranno aperti automaticamente in base alla policy soltanto se l'URL fa parte di questo insieme e il tipo di file è elencato nella policy <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Se una delle condizioni è falsa, i file scaricati non verranno aperti automaticamente in base alla policy.
@@ -3351,6 +3352,15 @@ Se la policy viene impostata su false, all'utente non verrà concesso l'accesso 
       Per un elenco di varianti che possono essere utilizzate, vai all'indirizzo https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Se la policy non viene configurata, viene utilizzato il percorso del profilo predefinito e l'utente può ignorarlo con il flag della riga di comando "--user-data-dir".</translation>
+<translation id="3375276983689987930">Scegli di archiviare i dati coperti di Chrome Enterprise dei tuoi utenti in una posizione geografica specifica.
+
+Se questa policy non viene configurata o se viene impostata su <ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" /> (valore 0), i dati coperti potrebbero essere archiviati in qualsiasi posizione geografica.
+
+Se questa policy viene impostata su <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME" /> (valore 1), i dati coperti verranno archiviati negli Stati Uniti.
+
+Se questa policy viene impostata su <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (valore 2), i dati coperti verranno archiviati nell'Unione Europea.
+
+Questa policy può essere impostata solo in <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> andando su Dati &gt; Conformità &gt; Regioni di dati &gt; Regione &gt; Dati at rest.</translation>
 <translation id="3379326579027180941">Consenti ai siti di chiedere all'utente l'autorizzazione di accesso alle stampanti locali tramite l'API WebPrinting</translation>
 <translation id="3379368498958498146">Attiva o disattiva la funzionalità di scrittura predittiva sulla tastiera fisica.
 
@@ -3368,6 +3378,15 @@ Se viene disattivata, la funzionalità di scrittura predittiva sulla tastiera fi
 <translation id="3387999258705169775">Comportamento predefinito per il blocco nidificato della funzione setTimeout().</translation>
 <translation id="3388628790024977864">Non consentire il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Attiva l'autenticazione Gnubby per l'host di accesso remoto</translation>
+<translation id="3393332712712388726">Elenco di pattern URL. Le richieste avviate da siti web pubblicati da origini corrispondenti non sono soggette ai controlli di <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se un'origine è coperta sia da questa policy sia da LocalNetworkAccessBlockedForUrls, quest'ultima ha la precedenza.
+
+Per le origini non coperte dai pattern specificati qui, verrà applicata la configurazione personale dell'utente.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Visita la pagina https://github.com/explainers-by-googlers/local-network-access per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="3395744872155955051">Consenti di scegliere i file direttamente da <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Non mostrare consigli delle app in Avvio app di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportamento predefinito del sistema (dipende dalle dimensioni dello schermo)</translation>
@@ -5220,6 +5239,7 @@ Se è impostata su None o non è configurata, per le app ARC non sono disponibil
 <translation id="471269469779289997">Consenti l'immagine in linea senza migliorare i modelli di AI.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo non sarà disponibile.</translation>
 <translation id="4715773950737036924">Controlla la disponibilità di estensioni non pubblicate sul Chrome Web Store.</translation>
+<translation id="4716374625338793065">Impostazioni di accesso alla rete locale</translation>
 <translation id="4722122254122249791">Attiva isolamento dei siti per origini specificate
 </translation>
 <translation id="4722761845551711583">Consente di configurare il tempo di visualizzazione in secondi di un'immagine quando il salvaschermo per la schermata di accesso ha diverse immagini da visualizzare.
@@ -5850,6 +5870,27 @@ Se la policy viene attivata o se non viene configurata, la funzionalità Generat
 
 Se la policy viene disattivata, la funzionalità Generatore codice QR viene disabilitata.</translation>
 <translation id="5170018694841697392">Non viene forzato l'uso di SafeSearch nella Ricerca Google</translation>
+<translation id="5172109919208094208">Questa policy fornisce un elenco di siti che gli utenti possono cercare rapidamente utilizzando le scorciatoie nella barra degli indirizzi. Gli utenti possono avviare una ricerca digitando nella barra degli indirizzi la scorciatoia o @scorciatoia (ad esempio @lavoro) e premendo la barra spaziatrice o il tasto Tab.
+
+I seguenti campi sono obbligatori per ogni sito: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
+
+Il campo <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> corrisponde al nome del sito o del motore di ricerca da mostrare all'utente nella barra degli indirizzi.
+
+<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> può includere parole e caratteri semplici, ma non può includere spazi o iniziare con il simbolo @. Anche le scorciatoie devono essere univoche.
+
+Per ogni voce, il campo <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> consente di specificare l'URL del motore di ricerca utilizzato durante una ricerca con la parola chiave corrispondente. L'URL deve includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca dell'utente. Le voci non valide e quelle con scorciatoie duplicate vengono ignorate.
+
+Le voci di ricerca sui siti configurate come in primo piano vengono visualizzate nella barra degli indirizzi quando l'utente digita "@". È possibile selezionare fino a tre voci in primo piano.
+
+Per una voce di ricerca sui siti in cui <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" /> è true, gli utenti hanno la possibilità di modificare o disattivare la voce. Tuttavia, i motori in primo piano (che iniziano con "@") possono essere solo disattivati. Se un utente modifica una voce creata inizialmente da questa policy, la voce non sarà più gestita dalla policy e verrà trattata come una scorciatoia creata dall'utente. Se la policy <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" /> è impostata su false o non viene specificata per una voce di ricerca sui siti, gli utenti non possono modificare o disattivare la voce. L'impostazione per consentire l'override da parte dell'utente è supportata solo su M139 e versioni successive; in quelle precedenti, l'override da parte dell'utente verrà disattivato per impostazione predefinita.
+
+Gli utenti non possono creare nuove voci di ricerca sui siti con una scorciatoia creata in precedenza tramite questa policy, a meno che la policy <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" /> non sia impostata su true per la voce di ricerca sui siti.
+
+In caso di conflitto con una scorciatoia creata in precedenza dall'utente, l'impostazione dell'utente ha la precedenza. Tuttavia, gli utenti possono comunque attivare l'opzione creata tramite la policy digitando "@" nella barra di ricerca. Ad esempio, se l'utente ha già definito "lavoro" come scorciatoia per URL1 e la policy definisce "lavoro" come scorciatoia per URL2, quando nella barra di ricerca si digita "lavoro" verrà attivata una ricerca su URL1, ma quando si digita "@lavoro" verrà attivata una ricerca su URL2.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5172841243186654432">A meno che la policy <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> non sia impostata per ripristinare in modo permanente gli URL delle sessioni precedenti, l'impostazione di <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ti consente di creare un elenco di pattern URL che specificano i siti che possono o meno impostare i cookie per una sessione.
 
       Se la policy non viene configurata, viene usata <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente. In caso di URL non interessati dai pattern specificati, vengono applicate le impostazioni predefinite.
@@ -6921,6 +6962,17 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="5860010874344790473">Se la policy viene impostata su Attivata, i log di sistema vengono inviati al server di gestione per consentire agli amministratori di monitorarli.
 
       Se la policy viene impostata su Disattivata o se non viene configurata, i log di sistema non vengono segnalati.</translation>
+<translation id="5860520143792505638">Elenco di pattern URL. Le richieste inoltrate da siti web pubblicati da origini corrispondenti non possono effettuare richieste di <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se un'origine è coperta sia da questa policy sia da LocalNetworkAccessAllowedForUrls, questa policy ha la precedenza.
+
+A seconda della fase di implementazione di <ph name="LOCAL_NETWORK_ACCESS" />, potrebbe essere necessario abilitare anche LocalNetworkAccessRestrictionsEnabled per consentire a questa policy di bloccare le richieste di <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Per le origini non coperte dai pattern specificati qui, verrà applicata la configurazione personale dell'utente.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Visita la pagina https://github.com/explainers-by-googlers/local-network-access per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="5861856285460256766">Configurazione codice di accesso genitori</translation>
 <translation id="5864898931148094192">Controlla la visibilità dell'attribuzione dell'estensione nella pagina Nuova scheda</translation>
 <translation id="5868414965372171132">Configurazione di rete a livello di utente</translation>
@@ -9200,6 +9252,7 @@ Se questa policy viene disattivata o se non viene configurata, le impostazioni r
 
       Questa policy si applica solo ai dispositivi ARM che eseguono la migrazione ad ARC VM.</translation>
 <translation id="731208205557053914">Segnala informazioni sui VPD</translation>
+<translation id="7312630060538223455">Consenti ai siti di effettuare richieste agli endpoint della rete locale.</translation>
 <translation id="7313672174502374994">L'hash SHA-256 dell'immagine di sfondo.</translation>
 <translation id="7317472245305274219">Specifica se la creazione della passkey verrà utilizzata per impostazione predefinita sul portachiavi iCloud.</translation>
 <translation id="7318503436349210241">Attivato: lo zoom CSS è conforme alla specifica standard.</translation>
@@ -10522,6 +10575,7 @@ Se la policy non viene configurata, inizialmente i controlli con il volto sono d
 
       Il valore della norma deve essere specificato in millisecondi.</translation>
 <translation id="8330437518362176921">Utilizza solo l'URL di aggiornamento fornito dalla policy durante il download e l'aggiornamento delle app di Chrome Kiosk</translation>
+<translation id="8331421240786531350">Impedisci ai siti di effettuare richieste agli endpoint della rete locale.</translation>
 <translation id="8331479227794770304">Attiva tasti permanenti</translation>
 <translation id="8332822245414537447">Disattiva il controllo dell'utilizzo delle chiavi RSA</translation>
 <translation id="8334685561819743286">Disattiva la correzione automatica sulla tastiera fisica durante la digitazione da parte degli utenti</translation>

@@ -173,6 +173,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="5203244847421322551">Ukládat a automaticky vyplňovat hesla v prohlížeči Chromium</translation>
 <translation id="5224391634244552924">Nemáte žádná uložená hesla. Chromium může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="5259423875997548710">Vyhledat obrazový materiál v prohlížeči Chromium.</translation>
+<translation id="5284913972719948193">Pokud chcete v Chromiu používat svá hesla, historii a záložky, importujte svá data</translation>
 <translation id="5308226104666789935">Chromium nemůže vyhledat dostupné aktualizace</translation>
 <translation id="5311557153294205270">Přidá zadané adresy URL do záložek v prohlížeči Chromium.</translation>
 <translation id="5383251701169024761">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, vyberte Chromium pro automatické vyplňování.</translation>
@@ -306,6 +307,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="865600487977764604">Zajišťuje vám bezpečí v prohlížeči Chromium a může zvýšit vaši bezpečnost v jiných aplikacích Google, když jste přihlášeni.</translation>
 <translation id="8663480472502753423">Udržují prohlížeč Chromium aktuální</translation>
 <translation id="8685813584220679697">Přihlaste se na tento web a do prohlížeče Chromium.</translation>
+<translation id="8698780336333802489">Importovat do Chromia</translation>
 <translation id="8730503818204408000">Otevře nastavení prohlížeče Chromium, pomocí něhož ho lze nastavit jako výchozí prohlížeč.</translation>
 <translation id="8754966941001340678">Chromium doporučuje vylepšenou ochranu</translation>
 <translation id="8759037115129007407">Člen vaší rodiny momentálně nemůže přijímat hesla. Požádejte ho, aby aktualizoval Chromium a synchronizoval svá hesla. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>

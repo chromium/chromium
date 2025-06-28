@@ -2719,6 +2719,7 @@ Si la règle est définie sur "False", les enseignants ne peuvent pas accéder �
 <translation id="2987155890997901449">Activer ARC</translation>
 <translation id="2987227569419001736">Contrôler l'utilisation de l'API Web Bluetooth</translation>
 <translation id="2989404644164421834">Actualiser les pages</translation>
+<translation id="299127280603727143">Groupe de règles liées aux paramètres d'accès au réseau local.  Consultez https://developer.chrome.com/blog/local-network-access</translation>
 <translation id="299446489108785864">Liste d'URL indiquant les URL pour lesquelles la règle <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> s'applique. Cette règle n'a aucune incidence sur les valeurs définies par les utilisateurs pour l'ouverture automatique.
 
       Si cette règle est configurée, les fichiers seront ouverts automatiquement à condition que la règle s'applique à l'URL et que le type de fichier figure dans <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Si l'une des deux conditions est fausse, le fichier téléchargé ne s'ouvrira pas automatiquement suivant cette règle.
@@ -3265,6 +3266,15 @@ Si la règle est définie sur "False", l'utilisateur n'a pas accès à la racine
       Pour connaître la liste des variables acceptées, consultez cette page : https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Si cette règle n'est pas définie, le chemin de profil par défaut sera utilisé, et l'utilisateur pourra le remplacer avec le flag de ligne de commande "--user-data-dir".</translation>
+<translation id="3375276983689987930">Permet de spécifier la région dans laquelle stocker les données utilisateur Chrome Enterprise couvertes.
+
+Si cette règle est définie sur <ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" /> (valeur 0) ou n'est pas configurée, les données couvertes pourront être stockées dans n'importe quelle région.
+
+Si cette règle est définie sur <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME" /> (valeur 1), les données couvertes sont stockées aux États-Unis.
+
+Si cette règle est définie sur <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" /> (valeur 2), les données couvertes sont stockées dans l'Union européenne.
+
+Cette règle ne peut être configurée que dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> via Données &gt; Conformité &gt; Régions de données &gt; Région &gt; Données au repos.</translation>
 <translation id="3379326579027180941">Autoriser les sites à demander aux utilisateurs l'accès aux imprimantes locales via l'API WebPrinting</translation>
 <translation id="3379368498958498146">Permet d'activer ou de désactiver la fonctionnalité d'écriture prédictive sur le clavier physique.
 
@@ -3282,6 +3292,15 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
 <translation id="3387999258705169775">Comportement par défaut pour la limitation imbriquée de la fonction setTimeout().</translation>
 <translation id="3388628790024977864">Interdire le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="GOOGLE_DRIVE_NAME" /> et <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Activer l'authentification gnubby pour l'hôte d'accès à distance</translation>
+<translation id="3393332712712388726">Liste de formats d'URL. Les requêtes initiées à partir de sites desservis par des origines qui figurent sur la liste ne sont pas soumises aux contrôles d‘<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Si une origine est couverte à la fois par cette règle et par LocalNetworkAccessBlockedForUrls, LocalNetworkAccessBlockedForUrls prévaut.
+
+Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration personnelle de l'utilisateur s'applique.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Pour connaître les restrictions d‘<ph name="LOCAL_NETWORK_ACCESS" />, consultez https://github.com/explainers-by-googlers/local-network-access.</translation>
 <translation id="3395744872155955051">Autoriser le choix de fichiers directement dans <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Ne pas afficher de recommandations d'applis dans le lanceur de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportement système par défaut (varie en fonction de la taille d'écran)</translation>
@@ -5119,6 +5138,7 @@ Si elle est définie sur "None" ou n'est pas définie, les certificats <ph name=
 <translation id="471269469779289997">Autoriser Inline Image sans améliorer les modèles d'IA.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo ne sera pas disponible.</translation>
 <translation id="4715773950737036924">Contrôlez la disponibilité des extensions dont la publication a été annulée sur le Chrome Web Store.</translation>
+<translation id="4716374625338793065">Paramètres d'accès au réseau local</translation>
 <translation id="4722122254122249791">Activer l'isolation des sites pour des origines définies</translation>
 <translation id="4722761845551711583">Configure l'intervalle d'affichage des images, en secondes, lorsque l'économiseur d'écran de l'écran de connexion doit afficher plusieurs images.
 
@@ -5742,6 +5762,27 @@ Si vous activez cette règle ou ne la configurez pas, la fonctionnalité de gén
 
 Si vous désactivez cette règle, la fonctionnalité de générateur de QR code est désactivée.</translation>
 <translation id="5170018694841697392">N'appliquez pas l'utilisation de SafeSearch dans la recherche Google</translation>
+<translation id="5172109919208094208">Cette règle liste des sites sur lesquels les utilisateurs peuvent effectuer des recherches rapides à l'aide de raccourcis dans la barre d'adresse. Les utilisateurs peuvent lancer une recherche en saisissant dans la barre d'adresse le raccourci ou raccourci précédé du caractère @ (par exemple, @travail), puis en appuyant sur la barre d'espace ou la touche de tabulation.
+
+Les champs suivants sont obligatoires pour chaque site : <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
+
+Le champ <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> correspond au nom du site ou du moteur de recherche à présenter à l'utilisateur dans la barre d'adresse.
+
+Le champ <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> peut contenir des mots et caractères bruts, mais il ne peut pas inclure d'espaces ni commencer par le symbole @. Les raccourcis doivent également être uniques.
+
+Pour chaque entrée, le champ <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> indique l'URL du moteur de recherche utilisé lors d'une recherche avec le mot clé correspondant. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur. Les entrées non valides et celles comportant des raccourcis en double sont ignorées.
+
+Les entrées de recherche sur site configurées comme mises en avant sont affichées dans la barre d'adresse quand l'utilisateur saisit "@". Jusqu'à trois entrées peuvent être sélectionnées comme mises en avant.
+
+Pour une entrée de recherche sur site où <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" /> est défini sur "true", les utilisateurs peuvent modifier ou désactiver cette entrée. Toutefois, les moteurs mis en avant (commençant par "@") ne peuvent être que désactivés. Si un utilisateur modifie une entrée créée initialement par cette règle, elle ne sera plus gérée par la règle et sera traitée comme un raccourci créé par l'utilisateur. Lorsque <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" /> est défini sur "false" ou n'est pas spécifié pour une entrée de recherche sur site, l'utilisateur ne peut pas modifier ni désactiver cette entrée. Le paramètre permettant d'autoriser le remplacement par l'utilisateur n'est compatible qu'avec M139 et les versions ultérieures. Les versions antérieures désactivent par défaut le remplacement par l'utilisateur.
+
+L'utilisateur ne peut pas créer d'entrées de recherche sur site avec un raccourci créé précédemment à l'aide de cette règle, sauf si <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" /> est définie sur "true" pour l'entrée de recherche sur site.
+
+En cas de conflit avec un raccourci que l'utilisateur a créé précédemment, le paramètre de l'utilisateur prévaut. Toutefois, l'utilisateur peut toujours déclencher l'option créée par la règle en saisissant le caractère @ dans la barre de recherche. Par exemple, si l'utilisateur a déjà défini "travail" comme raccourci vers l'URL1 et que la règle définit "travail" comme raccourci vers l'URL2, saisir "travail" dans la barre de recherche déclenchera une recherche sur l'URL1, mais saisir "@travail" dans la barre de recherche déclenchera une recherche sur l'URL2.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5172841243186654432">La règle <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> vous permet de dresser la liste des formats d'URL indiquant les sites autorisés ou non à placer des cookies lors d'une session, à moins que la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> soit définie pour restaurer définitivement les URL des sessions précédentes.
 
       Si cette règle n'est pas configurée, <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> est utilisé pour tous les sites (si configuré). Sinon, le paramètre défini par l'utilisateur s'applique. Si le format d'URL concerné ne figure pas dans la liste établie, le paramètre par défaut est utilisé.
@@ -6821,6 +6862,17 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="5860010874344790473">Si cette règle est activée, les journaux système sont envoyés au serveur de gestion pour permettre aux administrateurs de les contrôler.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, aucun journal système n'est communiqué.</translation>
+<translation id="5860520143792505638">Liste de formats d'URL. Les requêtes d‘<ph name="LOCAL_NETWORK_ACCESS" /> initiées à partir de sites desservis par des origines qui figurent sur la liste sont bloquées.
+
+Si une origine est couverte à la fois par cette règle et par LocalNetworkAccessAllowedForUrls, la présente règle prévaut.
+
+Selon le stade de déploiement de l‘<ph name="LOCAL_NETWORK_ACCESS" />, il peut aussi être nécessaire d'activer LocalNetworkAccessRestrictionsEnabled pour que cette règle bloque les requêtes d‘<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration personnelle de l'utilisateur s'applique.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Pour connaître les restrictions d‘<ph name="LOCAL_NETWORK_ACCESS" />, consultez https://github.com/explainers-by-googlers/local-network-access.</translation>
 <translation id="5861856285460256766">Configuration du code d'accès parental</translation>
 <translation id="5864898931148094192">Contrôler la visibilité de l'attribution à l'extension sur la page "Nouvel onglet"</translation>
 <translation id="5868414965372171132">Configuration réseau au niveau de l'utilisateur</translation>
@@ -9039,6 +9091,7 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de co
 
       Cette règle ne s'applique qu'aux appareils ARM migrant vers ARCVM.</translation>
 <translation id="731208205557053914">Transmettre des informations sur les données VPD</translation>
+<translation id="7312630060538223455">Autoriser les sites à envoyer des requêtes à des points de terminaison du réseau local.</translation>
 <translation id="7313672174502374994">Hachage SHA-256 du fond d'écran.</translation>
 <translation id="7317472245305274219">Contrôler si la création de clés d'accès se fera par défaut dans le trousseau iCloud.</translation>
 <translation id="7318503436349210241">Activé : le zoom CSS suit la spécification standard.</translation>
@@ -10344,6 +10397,7 @@ Si cette règle n'est pas configurée, la commande par le visage est désactivé
 
        La valeur de cette règle est définie en millisecondes.</translation>
 <translation id="8330437518362176921">N'utiliser que l'URL de mise à jour fournie par la règle pour télécharger et mettre à jour les applis Chrome Kiosk</translation>
+<translation id="8331421240786531350">Empêcher les sites d'envoyer des requêtes à des points de terminaison du réseau local.</translation>
 <translation id="8331479227794770304">Activer les touches rémanentes</translation>
 <translation id="8332822245414537447">Désactiver la vérification de l'utilisation des clés RSA</translation>
 <translation id="8334685561819743286">Désactiver la correction automatique lors de la saisie au clavier physique</translation>

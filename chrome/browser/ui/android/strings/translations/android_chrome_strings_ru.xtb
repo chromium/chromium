@@ -256,6 +256,7 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2184272387334793084">Войдите, чтобы получить доступ к своим паролям и другой информации на всех устройствах.</translation>
 <translation id="218608176142494674">Совместный доступ</translation>
+<translation id="2186779861549045980">Выберите, какие данные сохранить в аккаунте Google.\nВы сможете найти и изменить их в закладках, списке для чтения или Менеджере паролей.</translation>
 <translation id="219283042927675668">Вкладки в группе</translation>
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="22091350895006575">Добавить имя пользователя</translation>
@@ -264,6 +265,7 @@
 <translation id="2230777942707397948">Пустое окно</translation>
 <translation id="223356358902285214">История приложений и веб-поиска</translation>
 <translation id="2234827758954819389">Руководство по конфиденциальности</translation>
+<translation id="2238038374973843156">Переместить группу в другое окно</translation>
 <translation id="2239812875700136898">Управляйте контентом с помощью кнопки "Параметры рекомендаций".</translation>
 <translation id="2247789808226901522">Срок действия карты истек</translation>
 <translation id="2248941474044011069">Ваши пароли шифруются на устройстве и только потом сохраняются в Google Менеджере паролей.</translation>
@@ -391,6 +393,7 @@
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="281504910091592009">Просматривать сохраненные пароли и управлять ими можно на странице <ph name="BEGIN_LINK" />Аккаунт Google<ph name="END_LINK" />.</translation>
 <translation id="2819849308549746319">Отписаться от всех</translation>
+<translation id="2820047235535485532">Выберите, какие данные сохранить в аккаунте Google <ph name="ACCOUNT_EMAIL" />.\nВы сможете найти и изменить их в закладках, списке для чтения или Менеджере паролей.</translation>
 <translation id="2826576843404243001">Получать предупреждения о сайтах, которые не поддерживают защищенное подключение, до их открытия. Этот параметр нельзя изменить, поскольку включена Дополнительная защита.</translation>
 <translation id="2827278682606527653">Меню карточки из ленты открыто наполовину</translation>
 <translation id="2830783625999891985">Содержимое буфера обмена скрыто</translation>
@@ -1237,6 +1240,7 @@
 <translation id="6545017243486555795">Удалить все данные</translation>
 <translation id="6546511553472444032">Файл может быть опасным</translation>
 <translation id="6550891580932862748">Не защищает вас от опасных сайтов, расширений и скачиваемых файлов. Этот вариант не повлияет на настройки Безопасного просмотра в других продуктах Google.</translation>
+<translation id="6554822972009632311">Фильтр контента включен</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
 <translation id="6560414384669816528">Поиск в Sogou</translation>
 <translation id="656065428026159829">Ещё</translation>
@@ -1394,6 +1398,7 @@
 <translation id="71503698506017927">Шифрование кодовой фразой не применяется к способам оплаты и адресам из Google Pay.
 
 Чтобы это изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
+<translation id="7165972437814027679">Подробнее о том, почему Chrome блокирует некоторые файлы</translation>
 <translation id="7168323970702333693">Вы вошли как <ph name="USER_NAME" />. Открывает настройки.</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7173338713290252554">История изменения цен в интернете</translation>
@@ -1713,6 +1718,7 @@
 <translation id="8439974325294139057"><ph name="LANG" /> – языковой пакет скачан. Перезапустите <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Нет рекомендаций</translation>
 <translation id="8443209985646068659">Не удалось обновить Chrome</translation>
+<translation id="8443600937324357591">Переместить вкладку в другое окно</translation>
 <translation id="8445448999790540984">Не удалось экспортировать пароли</translation>
 <translation id="8446884382197647889">Подробнее...</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Разрешения отозваны у 1 сайта}one{Разрешения отозваны у # сайта}few{Разрешения отозваны у # сайтов}many{Разрешения отозваны у # сайтов}other{Разрешения отозваны у # сайта}}</translation>

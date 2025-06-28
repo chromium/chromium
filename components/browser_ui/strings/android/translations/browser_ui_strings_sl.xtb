@@ -129,6 +129,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="2490684707762498678">Upravlja aplikacija <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Pomoč in povratne inform.</translation>
 <translation id="2501278716633472235">Nazaj</translation>
+<translation id="2533138527374486328">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo vzpostavitev povezave s katero koli napravo v lokalnem omrežju. Če je ta možnost izklopljena, spletna mesta ne smejo vzpostavljati povezav z napravami v lokalnem omrežju.</translation>
 <translation id="2546283357679194313">Piškotki in podatki spletnih mest</translation>
 <translation id="2570922361219980984">Dostop do lokacije je tudi izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Razširjeno – kliknite, če želite strniti.</translation>
@@ -424,6 +425,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5968921426641056619">Vnesite spletni naslov</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Vklop vira Odkrivanje</translation>
 <translation id="6015775454662021376">Nadziranje dostopa spletnega mesta do naprave</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6042308850641462728">Več</translation>
@@ -511,6 +513,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7188508872042490670">Podatki spletnih mest v napravi</translation>
 <translation id="7201549776650881587">To dejanje bo izbrisalo vse podatke in piškotke, ki so jih shranila vsa spletna mesta v skupini <ph name="ORIGIN" /> ali z njo povezana aplikacija na začetnem zaslonu.</translation>
 <translation id="7203150201908454328">Razširjeno</translation>
+<translation id="7213166370492037743">Spletnim mestom ni dovoljeno vzpostavljanje povezav z napravami v lokalnem omrežju</translation>
 <translation id="7219254577985949841">Želite izbrisati podatke spletnega mesta?</translation>
 <translation id="723171743924126238">Izberite slike</translation>
 <translation id="7243308994586599757">Možnosti so na voljo pri dnu zaslona</translation>

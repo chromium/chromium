@@ -388,6 +388,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="251837347827266434">Vous allez être déconnecté. Les onglets seront fermés et les données de navigation seront supprimées.</translation>
 <translation id="2520787026086861736">Pour désactiver cette option, accédez à <ph name="BEGIN_LINK" />Remplissage automatique et mots de passe<ph name="END_LINK" /></translation>
 <translation id="2523295204312809179">Lorsque vous fermez un groupe d'onglets, il est automatiquement enregistré ici</translation>
+<translation id="2524699375503213836">Transférer vos données depuis Safari</translation>
 <translation id="2529021024822217800">Tout ouvrir</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Masqué, mot de passe</translation>
@@ -1741,7 +1742,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8023878949384262191">Développe la section.</translation>
 <translation id="8027581147000338959">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="8029092694585014252">Créer un rappel</translation>
-<translation id="8032569120109842252">Suivi</translation>
+<translation id="8032569120109842252">Suivis</translation>
 <translation id="8035133914807600019">Nouveau dossier…</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8040407350301524547">Pour afficher les options d'itinéraire, appuyez sur "Obtenir un itinéraire".</translation>

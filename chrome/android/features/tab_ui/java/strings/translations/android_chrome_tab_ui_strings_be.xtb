@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">Групы ўкладак аўтаматычна захоўваюцца</translation>
 <translation id="6054741997831917303">Цана на гэты тавар нядаўна знізілася з <ph name="PREVIOUS_PRICE" /> да <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Цяпер усе паўторныя ўкладкі будуць таксама адпраўляцца ў архіў, за выключэннем той, якая выкарыстоўвалася апошняй.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Закрыць <ph name="TABS_COUNT_ONE" /> выбраны элемент}one{Закрыць <ph name="TABS_COUNT_MANY" /> выбраны элемент}few{Закрыць <ph name="TABS_COUNT_MANY" /> выбраныя элементы}many{Закрыць <ph name="TABS_COUNT_MANY" /> выбраных элементаў}other{Закрыць <ph name="TABS_COUNT_MANY" /> выбранага элемента}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Перамясціць групу ўкладак у новае акно}one{Перамясціць групу ўкладак у яшчэ адно акно}few{Перамясціць групу ўкладак у яшчэ адно акно}many{Перамясціць групу ўкладак у яшчэ адно акно}other{Перамясціць групу ўкладак у яшчэ адно акно}}</translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
 <translation id="6220820548421939212">Так. Згаджаюся</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">Група ўкладак "<ph name="TAB_GROUP_NAME" />" больш не даступная</translation>
 <translation id="7452985128687107478">Групы ўкладак аўтаматычна захоўваюцца і абнаўляюцца на ўсіх вашых прыладах</translation>
 <translation id="747459581954555080">Аднавіць усе</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Аднавіць <ph name="TABS_COUNT_ONE" /> выбраны элемент}one{Аднавіць <ph name="TABS_COUNT_MANY" /> выбраны элемент}few{Аднавіць <ph name="TABS_COUNT_MANY" /> выбраныя элементы}many{Аднавіць <ph name="TABS_COUNT_MANY" /> выбраных элементаў}other{Аднавіць <ph name="TABS_COUNT_MANY" /> выбранага элемента}}</translation>
 <translation id="753732157349120914">Пераключальнік укладак</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> водгук з Google}one{<ph name="REVIEWS_COUNT_MANY" /> водгук з Google}few{<ph name="REVIEWS_COUNT_MANY" /> водгукі з Google}many{<ph name="REVIEWS_COUNT_MANY" /> водгукаў з Google}other{<ph name="REVIEWS_COUNT_MANY" /> водгуку з Google}}</translation>
 <translation id="7559245342362162951">Паказваць укладкі групы ў поўнаэкраннай сетцы</translation>

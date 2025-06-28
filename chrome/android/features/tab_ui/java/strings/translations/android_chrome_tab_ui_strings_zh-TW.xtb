@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">系統會自動儲存分頁群組</translation>
 <translation id="6054741997831917303">這個商品的價格最近從 <ph name="PREVIOUS_PRICE" />降為 <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">現在也會封存所有重複的分頁 (最近使用的重複分頁除外)。</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選項目}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選項目}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{將群組移到新視窗}other{將群組移到其他視窗}}</translation>
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6220820548421939212">是，我同意</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">「<ph name="TAB_GROUP_NAME" />」分頁群組已無法使用</translation>
 <translation id="7452985128687107478">分頁群組會自動儲存並同步至所有裝置</translation>
 <translation id="747459581954555080">全部還原</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{還原 <ph name="TABS_COUNT_ONE" /> 個所選項目}other{還原 <ph name="TABS_COUNT_MANY" /> 個所選項目}}</translation>
 <translation id="753732157349120914">分頁切換工具</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> 則來自 Google 的評論}other{<ph name="REVIEWS_COUNT_MANY" /> 則來自 Google 的評論}}</translation>
 <translation id="7559245342362162951">以全螢幕格狀檢視顯示群組的分頁</translation>

@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">Mae eich grwpiau tab yn cadw'n awtomatig</translation>
 <translation id="6054741997831917303">Gwnaeth pris yr eitem hon ostwng yn ddiweddar o <ph name="PREVIOUS_PRICE" /> i <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Bydd pob tab dyblyg nawr yn cael ei archifo hefyd, ac eithrio'r copi a ddefnyddiwyd yn fwyaf diweddar.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Cau'r <ph name="TABS_COUNT_ONE" /> eitem a ddewiswyd}zero{Cau'r <ph name="TABS_COUNT_MANY" /> eitemau a ddewiswyd}two{Cau'r <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}few{Cau'r <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}many{Cau'r <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}other{Cau'r <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Symud grŵp i ffenestr newydd}zero{Symud grŵp i ffenestr arall}two{Symud grŵp i ffenestr arall}few{Symud grŵp i ffenestr arall}many{Symud grŵp i ffenestr arall}other{Symud grŵp i ffenestr arall}}</translation>
 <translation id="6193448654517602979">Dewis tabiau</translation>
 <translation id="6220820548421939212">Ie. Iawn</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">Nid yw <ph name="TAB_GROUP_NAME" /> grŵp tabiau ar gael mwyach</translation>
 <translation id="7452985128687107478">Mae grwpiau tabiau yn cael eu cadw a'u diweddaru'n awtomatig ar draws eich holl ddyfeisiau</translation>
 <translation id="747459581954555080">Adfer popeth</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Adfer yr <ph name="TABS_COUNT_ONE" /> eitem a ddewiswyd}zero{Adfer y <ph name="TABS_COUNT_MANY" /> eitemau a ddewiswyd}two{Adfer y <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}few{Adfer y <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}many{Adfer y <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}other{Adfer y <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}}</translation>
 <translation id="753732157349120914">Newidiwr Tabiau</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> adolygiad gan Google}zero{<ph name="REVIEWS_COUNT_MANY" /> adolygiad gan Google}two{<ph name="REVIEWS_COUNT_MANY" /> adolygiad gan Google}few{<ph name="REVIEWS_COUNT_MANY" /> adolygiad gan Google}many{<ph name="REVIEWS_COUNT_MANY" /> adolygiad gan Google}other{<ph name="REVIEWS_COUNT_MANY" /> adolygiad gan Google}}</translation>
 <translation id="7559245342362162951">Dangos tabiau'r grŵp mewn grid sgrîn lawn</translation>

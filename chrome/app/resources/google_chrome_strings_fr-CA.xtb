@@ -124,6 +124,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2569974318947988067">Chrome tentera de mettre à niveau les navigations vers le protocole HTTPS</translation>
 <translation id="2571392474191184472">Votre organisation gère Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> est déjà connecté à ce profil Chrome. Pour maintenir votre navigation séparée, Chrome peut créer un profil pour vous.</translation>
+<translation id="2579190314336775785">Les mots de passe ne peuvent être supprimés qu'à l'extérieur de Chrome</translation>
 <translation id="2580411288591421699">Vous ne pouvez pas installer la version de Google Chrome qui est en cours d'exécution. Veuillez fermer Google Chrome et essayez de nouveau.</translation>
 <translation id="2586406160782125153">Cette action entraînera la suppression de vos données de navigation sur cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>

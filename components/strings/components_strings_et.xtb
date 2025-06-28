@@ -2157,6 +2157,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4635278307999235413">Andmete saatmine administraatorikonsooli</translation>
 <translation id="4636930964841734540">Teave</translation>
 <translation id="4640225694041297329">Viimase seitsme päeva tulemuste kuvamine</translation>
+<translation id="4642296966515958616">Selle vahelehegrupiga liitumiseks värskendage Chrome'i</translation>
 <translation id="464342062220857295">Otsingufunktsioonid</translation>
 <translation id="4644567637638438744">Failide üleslaadimiseks peate olema Microsoft OneDrive’i sisse logitud</translation>
 <translation id="4644670975240021822">Vastupidine järjestus, esikülg allapoole</translation>
@@ -2930,6 +2931,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5967592137238574583">Kontaktteabe muutmine</translation>
 <translation id="5967867314010545767">Eemalda ajaloost</translation>
 <translation id="5968022600320704045">Otsingutulemused puuduvad</translation>
+<translation id="5968400720580217226">AI-režiim</translation>
 <translation id="5969199813874624822">Salvesta ja jälgi hinda</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Kuues rull</translation>
@@ -3150,6 +3152,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6326947323444967009">iOS-i seadetes Chrome'i süsteemi vaikebrauseriks määramine</translation>
 <translation id="6327065120806001832">juurdepääs kohalikule võrgule</translation>
 <translation id="6328639280570009161">Proovige keelata võrguprognoos</translation>
+<translation id="6329815962353376655">&lt;Sisestage küsimus&gt;</translation>
 <translation id="6334834493885103305">Nüüd saate tasuda Affirmi, Zipi või Klarna järelmaksuga</translation>
 <translation id="6335029926534404762">Spordijalatsid</translation>
 <translation id="6336948221660696475">VR ei ole lubatud</translation>
@@ -3864,6 +3867,7 @@ Lisateave:
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Saate seda kasutada kõigis Google'i teenustes</translation>
 <translation id="7523408071729642236">Tööstus</translation>
+<translation id="7524958309155133228">Küsige mudelilt <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Loo</translation>
 <translation id="7525804896095537619">Nime väli ei tohi olla tühi</translation>
 <translation id="7526934274050461096">Teie ühendus selle saidiga pole privaatne</translation>
@@ -4731,6 +4735,7 @@ Lisateave:
 <translation id="9042617223719777575">Suur mahutavus</translation>
 <translation id="9042827002460091668">Kontrollige internetiühendust ja proovige uuesti</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> soovib teie kohalikus võrgus otsida mis tahes seadet ja sellega ühendust luua</translation>
 <translation id="9046864189129893978">Mikrofonid (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Nende toimingute jaoks tuleb reegli <ph name="POLICY_NAME" /> väärtuseks määrata <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 × 36 tolli</translation>

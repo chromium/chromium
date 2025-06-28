@@ -356,6 +356,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1232569758102978740">Sin título</translation>
 <translation id="1233497634904001272">Vuelve a presionar tu llave de seguridad para completar la solicitud.</translation>
 <translation id="1233721473400465416">Configuración regional</translation>
+<translation id="1233835246554936745">{0,plural, =1{Guardar 1 elemento en la cuenta}other{Guardar # elementos en la cuenta}}</translation>
 <translation id="1234736487471201993">Crear un código QR para esta imagen</translation>
 <translation id="1234808891666923653">Trabajadores de servicios</translation>
 <translation id="1235458158152011030">Redes conocidas</translation>
@@ -5646,6 +5647,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4918844574251943176">Se copió la imagen</translation>
 <translation id="4921348630401250116">Texto a voz</translation>
 <translation id="4922104989726031751">Para utilizar el Administrador de contraseñas con tu sistema operativo, reinicia Chromium y permite el acceso al administrador de contraseñas de la computadora. Las pestañas se volverán a abrir después de que lo reinicies.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Guardar 1 elemento en la cuenta}other{Guardar # elementos en la cuenta}}</translation>
 <translation id="492363500327720082">Desinstalando <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">Mostrar grupos de pestañas</translation>
 <translation id="4924002401726507608">Envía comentarios</translation>
@@ -9528,6 +9530,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="7722040605881499779">Espacio necesario para la actualización: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Restablecer Chrome predeterminado</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7724711098786238351">El modo de demostración está destinado a usuarios mayores de 18 años y se rige por las Condiciones del Servicio y la Política de Privacidad de Google. Es posible que otras personas vean los datos ingresados en este dispositivo entre limpiezas periódicas.</translation>
 <translation id="7726288096350730168">Borrar de este dispositivo</translation>
 <translation id="7726391492136714301">Mira las notificaciones y apps del teléfono</translation>
 <translation id="7727898923446098954">Se ocultó la pestaña</translation>
@@ -11023,6 +11026,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8749805710397399240">No se puede transmitir tu pantalla. Revisa el permiso de grabación de pantallas en las preferencias del sistema.</translation>
 <translation id="8749826920799243530">El dispositivo no está inscrito</translation>
 <translation id="8749863574775030885">Acceder a dispositivos USB de un proveedor desconocido</translation>
+<translation id="8749865622265861882">Este es un dispositivo de demostración</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> quiere conectarse a un puerto en serie</translation>
 <translation id="8750346984209549530">APN de la red móvil</translation>
 <translation id="8750786237117206586">Administrar la configuración de audio de ChromeOS Flex</translation>

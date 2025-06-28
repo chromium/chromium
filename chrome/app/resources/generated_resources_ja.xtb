@@ -356,6 +356,7 @@
 <translation id="1232569758102978740">無題</translation>
 <translation id="1233497634904001272">リクエストを完了するには、セキュリティ キーをもう一度タップしてください。</translation>
 <translation id="1233721473400465416">言語/地域</translation>
+<translation id="1233835246554936745">{0,plural, =1{アカウントに 1 件のアイテムを保存}other{アカウントに # 件のアイテムを保存}}</translation>
 <translation id="1234736487471201993">この画像の QR コードを作成</translation>
 <translation id="1234808891666923653">サービス ワーカー</translation>
 <translation id="1235458158152011030">既知のネットワーク</translation>
@@ -5637,6 +5638,7 @@
 <translation id="4918844574251943176">画像をコピーしました</translation>
 <translation id="4921348630401250116">テキスト読み上げ</translation>
 <translation id="4922104989726031751">お使いのオペレーティング システムでパスワード マネージャーを使用するには、Chromium を再起動してパソコンのパスワード マネージャーへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
+<translation id="4923561999941435531">{0,plural, =1{アカウントに 1 件のアイテムを保存}other{アカウントに # 件のアイテムを保存}}</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> をアンインストールしています...</translation>
 <translation id="4923977675318667854">タブグループを表示</translation>
 <translation id="4924002401726507608">フィードバックを送信</translation>
@@ -9513,6 +9515,7 @@
 <translation id="7722040605881499779">更新に必要な空き容量: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">デフォルトの Chrome にリセット</translation>
 <translation id="7724603315864178912">切り取り</translation>
+<translation id="7724711098786238351">デモモードは 18 歳以上のユーザーを対象としており、Google の利用規約とプライバシー ポリシーが適用されます。このデバイスに入力されたデータは、定期的なワイプが実行されるまでの間に、他のユーザーに閲覧される可能性があります。</translation>
 <translation id="7726288096350730168">このデバイスから削除</translation>
 <translation id="7726391492136714301">スマートフォンの通知とアプリを表示します</translation>
 <translation id="7727898923446098954">タブを非表示にしました</translation>
@@ -11007,6 +11010,7 @@
 <translation id="8749805710397399240">画面をキャストできません。[システム環境設定] で画面収録が許可されているか確認してください。</translation>
 <translation id="8749826920799243530">デバイスが登録されていません</translation>
 <translation id="8749863574775030885">不明なベンダーの USB デバイスへのアクセス</translation>
+<translation id="8749865622265861882">デモデバイスを使用しています</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> がシリアルポートへの接続を要求しています</translation>
 <translation id="8750346984209549530">モバイル APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex の音声設定を管理する</translation>

@@ -2719,6 +2719,7 @@ Ist sie auf „false“ gesetzt, können sie nicht auf die Funktion zugreifen.</
 <translation id="2987155890997901449">ARC aktivieren</translation>
 <translation id="2987227569419001736">Verwendung der Web Bluetooth API steuern</translation>
 <translation id="2989404644164421834">Seiten neu laden</translation>
+<translation id="299127280603727143">Eine Gruppe von Richtlinien zu den Einstellungen für den Zugriff auf das lokale Netzwerk.  Siehe https://developer.chrome.com/blog/local-network-access</translation>
 <translation id="299446489108785864">Eine Liste von URLs, die angibt, auf welche URLs die Richtlinie <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> angewendet wird. Diese Richtlinie hat keine Auswirkung auf automatisch geöffnete Werte, die von Nutzern festgelegt werden.
 
       Wenn diese Richtlinie konfiguriert ist, werden Dateien nur automatisch von ihr geöffnet, wenn die URL Teil dieses Satzes ist und der Dateityp in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> aufgelistet ist. Ist eine dieser Bedingungen nicht erfüllt, wird der Download nicht automatisch von der Richtlinie geöffnet.
@@ -3267,6 +3268,15 @@ Wenn sie auf „false“ gesetzt ist, wird dem Nutzer weder auf vorhandene noch 
       Unter https://support.google.com/chrome/a?p=Supported_directory_variables findest du eine Liste mit Variablen, aus denen du wählen kannst.
 
       Sollte diese Richtlinie nicht konfiguriert sein, kommt der Standardprofilpfad zum Einsatz, wobei der Nutzer dies mit dem Befehlszeilenparameter "--user-data-dir" ändern kann.</translation>
+<translation id="3375276983689987930">Du kannst festlegen, dass die abgedeckten Chrome Enterprise-Daten deiner Nutzer an einem bestimmten geografischen Standort gespeichert werden.
+
+Ist die Richtlinie auf „<ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" />“ (Wert 0) gesetzt oder nicht konfiguriert, können abgedeckte Daten an beliebigen geografischen Standorten gespeichert werden.
+
+Ist die Richtlinie auf „<ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME" />“ (Wert 1) gesetzt, werden abgedeckte Daten in den USA gespeichert.
+
+Ist die Richtlinie auf „<ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME" />“ (Wert 2) gesetzt, werden abgedeckte Daten in der Europäischen Union gespeichert.
+
+Dies kann nur in der <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> über „Daten“ &gt; „Compliance“ &gt; „Speicherorte für Daten“ &gt; „Region“ &gt; „Ruhende Daten“ festgelegt werden.</translation>
 <translation id="3379326579027180941">Websites dürfen den Nutzer um Zugriff auf lokale Drucker über die WebPrinting API bitten</translation>
 <translation id="3379368498958498146">Dadurch werden Wortvorschläge bei Nutzung der physischen Tastatur aktiviert oder deaktiviert.
 
@@ -3284,6 +3294,15 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
 <translation id="3387999258705169775">Standardverhalten für die verschachtelte Mindestverzögerung der Funktion „setTimeout()“.</translation>
 <translation id="3388628790024977864"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="GOOGLE_DRIVE_NAME" /> und <ph name="GOOGLE_WORKSPACE_NAME" /> nicht zulassen</translation>
 <translation id="3389088527709746815">Gnubby-Authentifizierung für den Host für den Remote-Zugriff aktivieren</translation>
+<translation id="3393332712712388726">Liste der URL-Muster. Anfragen, die von Websites initiiert werden, welche durch übereinstimmende Ursprünge bereitgestellt werden, unterliegen keinen <ph name="LOCAL_NETWORK_ACCESS" />-Prüfungen.
+
+Wenn ein Ursprung sowohl von dieser Richtlinie als auch von „LocalNetworkAccessBlockedForUrls“ abgedeckt wird, hat „LocalNetworkAccessBlockedForUrls“ Vorrang.
+
+Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt die persönliche Konfiguration des Nutzers zum Einsatz.
+
+Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Unter https://github.com/explainers-by-googlers/local-network-access findest du Informationen zu Einschränkungen für den <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="3395744872155955051">Auswahl von Dateien direkt aus <ph name="GOOGLE_DRIVE_NAME" /> zulassen</translation>
 <translation id="3397883909301547525">Keine App-Empfehlungen im Launcher von <ph name="PRODUCT_OS_NAME" /> anzeigen</translation>
 <translation id="3398051852031115795">Standardmäßiges Systemverhalten (abhängig von der Bildschirmgröße)</translation>
@@ -5109,6 +5128,7 @@ Ist sie auf „None“ gesetzt oder wird keine Einstellung gewählt, sind <ph na
 <translation id="471269469779289997">„Inline Image“ ohne die Verbesserung von KI-Modellen zulassen.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo ist nicht verfügbar.</translation>
 <translation id="4715773950737036924">Verfügbarkeit von Erweiterungen steuern, die nicht im Chrome Web Store veröffentlicht sind</translation>
+<translation id="4716374625338793065">Einstellungen für den Zugriff auf das lokale Netzwerk</translation>
 <translation id="4722122254122249791">Website-Isolierung für angegebene Ursprünge aktivieren</translation>
 <translation id="4722761845551711583">Dadurch wird festgelegt, für wie viele Sekunden ein Bild angezeigt wird, wenn für den Bildschirmschoner des Anmeldebildschirms mehrere Bilder verwendet werden.
 
@@ -5741,6 +5761,27 @@ Wenn du diese Richtlinie aktivierst oder nicht konfigurierst, wird die Funktion 
 
 Wenn du diese Richtlinie deaktivierst, wird die Funktion „QR‑Code‑Generator“ deaktiviert.</translation>
 <translation id="5170018694841697392">Verwendung von SafeSearch in der Google Suche nicht erzwingen</translation>
+<translation id="5172109919208094208">Mit dieser Richtlinie wird eine Liste von Websites bereitgestellt, auf denen Nutzer mithilfe von Kürzeln in der Adressleiste schnell suchen können. Nutzer können eine Suche starten, indem sie das Kürzel oder @Kürzel (z. B. @Arbeit), gefolgt von einem Leerzeichen oder Tabulatorzeichen, in die Adressleiste eingeben.
+
+Die folgenden Felder sind für jede Website Pflichtfelder: „<ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />“, „<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />“ und „<ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />“.
+
+Das Feld „<ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />“ entspricht dem Namen der Website oder der Suchmaschine, der dem Nutzer in der Adressleiste angezeigt werden soll.
+
+„<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />“ kann einfache Wörter und Zeichen enthalten, darf jedoch keine Leerzeichen enthalten und nicht mit dem @‑Symbol beginnen. Kürzel müssen außerdem eindeutig sein.
+
+Durch das Feld „<ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />“ wird für jeden Eintrag die URL der Suchmaschine angegeben, die bei einer Suchanfrage mit dem entsprechenden Suchbegriff verwendet wird. Die URL muss den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird. Ungültige Einträge und Einträge mit doppelten Kürzeln werden ignoriert.
+
+Websitesucheinträge, bei denen das Feld „featured“ auf „true“ gesetzt wurde, werden in der Adressleiste angezeigt, wenn der Nutzer „@“ eingibt. Es können bis zu drei Einträge als „featured“ ausgewählt werden.
+
+Wenn bei einem Eintrag für die Websitesuche „<ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" />“ „true“ ist, können Nutzer diesen Eintrag bearbeiten oder deaktivieren. Als „featured“ gekennzeichnete Suchmaschinen (beginnend mit „@“) können jedoch nur deaktiviert werden. Wenn ein Nutzer einen Eintrag ändert, der ursprünglich durch diese Richtlinie erstellt wurde, wird er nicht mehr durch die Richtlinie verwaltet und stattdessen wie ein vom Nutzer erstelltes Kürzel behandelt. Wenn „<ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" />“ für einen Eintrag in der Websuche auf „false“ gesetzt oder nicht konfiguriert ist, können Nutzer diesen Eintrag nicht bearbeiten oder deaktivieren. Die Einstellung, die es Nutzern erlaubt, einen Eintrag zu überschreiben, wird nur ab M139 unterstützt. Bei früheren Versionen ist diese Möglichkeit standardmäßig deaktiviert.
+
+Nutzer können keine neuen Websitesucheinträge mit einem zuvor über diese Richtlinie erstellten Kürzel erstellen – es sei denn, „<ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD" />“ ist für den Websitesucheintrag auf „true“ festgelegt.
+
+Bei Konflikten mit einem zuvor vom Nutzer erstellten Kürzel hat die Nutzereinstellung Vorrang. Nutzer können die von der Richtlinie erstellte Option jedoch trotzdem auslösen, indem sie „@“ in der Suchleiste eingeben. Wenn der Nutzer beispielsweise „Arbeit“ bereits als Kürzel für URL1 definiert hat und die Richtlinie „Arbeit“ als Kürzel für URL2 definiert, löst die Eingabe von „Arbeit“ in der Suchleiste eine Suche nach URL1 aus, aber die Eingabe von „@Arbeit“ in der Suchleiste eine Suche nach URL2.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="5172841243186654432">Wenn die Richtlinie <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> nicht so konfiguriert ist, dass URLs aus vorherigen Sitzungen dauerhaft wiederhergestellt werden, lässt sich durch die Konfiguration von <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> eine Liste von URL-Mustern erstellen, die angeben, welche Websites Cookies für eine Sitzung setzen dürfen oder nicht.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird für alle Websites <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> verwendet, sofern diese Einstellung konfiguriert ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet. Bei URLs, die nicht zu den angegebenen Mustern gehören, werden ebenfalls die Standardeinstellungen verwendet.
@@ -6808,6 +6849,17 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="5860010874344790473">Wenn die Richtlinie aktiviert ist, werden Systemprotokolle an den Verwaltungsserver gesendet, damit Administratoren die Protokolle beobachten können.
 
       Ist sie deaktiviert oder nicht konfiguriert, werden keine Systemprotokolle gemeldet.</translation>
+<translation id="5860520143792505638">Liste der URL-Muster. Anfragen, die von Websites initiiert werden, welche durch übereinstimmende Ursprünge bereitgestellt werden, können keine <ph name="LOCAL_NETWORK_ACCESS" />-Anfragen senden.
+
+Wenn ein Ursprung sowohl von dieser Richtlinie als auch von „LocalNetworkAccessAllowedForUrls“ abgedeckt wird, hat diese Richtlinie Vorrang.
+
+Je nach Stadium des Roll-outs von <ph name="LOCAL_NETWORK_ACCESS" /> muss möglicherweise auch „LocalNetworkAccessRestrictionsEnabled“ aktiviert sein, damit diese Richtlinie <ph name="LOCAL_NETWORK_ACCESS" />-Anfragen blockieren kann.
+
+Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt die persönliche Konfiguration des Nutzers zum Einsatz.
+
+Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Unter https://github.com/explainers-by-googlers/local-network-access findest du Informationen zu Einschränkungen für den <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="5861856285460256766">Konfiguration von Elternzugangscodes</translation>
 <translation id="5864898931148094192">Sichtbarkeit der Namensnennung für Erweiterungen auf der Seite „Neuer Tab“ steuern</translation>
 <translation id="5868414965372171132">Netzwerkkonfiguration auf Nutzerebene</translation>
@@ -9027,6 +9079,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind die Kontoeinstellun
 
       Diese Richtlinie gilt nur für ARM-Geräte, die zur ARC-VM migrieren.</translation>
 <translation id="731208205557053914">VPD-Informationen melden</translation>
+<translation id="7312630060538223455">Websites erlauben, Anfragen an lokale Netzwerkendpunkte zu senden.</translation>
 <translation id="7313672174502374994">SHA-256-Hash des Hintergrundbilds.</translation>
 <translation id="7317472245305274219">Festlegen, ob Passkeys standardmäßig im iCloud-Schlüsselbund erstellt werden sollen.</translation>
 <translation id="7318503436349210241">Aktiviert: CSS‑Zoom entspricht der Standardspezifikation.</translation>
@@ -10326,6 +10379,7 @@ Ist die Richtlinie nicht konfiguriert, ist die Mimik-Steuerung anfangs deaktivie
 
       Der Wert für die Richtlinie sollte in Millisekunden angegeben werden.</translation>
 <translation id="8330437518362176921">Nur die durch die Richtlinie bereitgestellte Update-URL beim Herunterladen und Aktualisieren von Kiosk-Chrome-Apps verwenden</translation>
+<translation id="8331421240786531350">Websites daran hindern, Anfragen an lokale Netzwerkendpunkte zu senden.</translation>
 <translation id="8331479227794770304">Einfingerbedienung aktivieren</translation>
 <translation id="8332822245414537447">Prüfung der RSA-Schlüsselverwendung deaktivieren</translation>
 <translation id="8334685561819743286">Autokorrektur bei Nutzung der physischen Tastatur beim Tippen deaktivieren</translation>

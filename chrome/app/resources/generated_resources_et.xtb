@@ -356,6 +356,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1232569758102978740">Pealkirjata</translation>
 <translation id="1233497634904001272">Taotluse lõpule viimiseks puudutage uuesti turvavõtit.</translation>
 <translation id="1233721473400465416">Lokaat</translation>
+<translation id="1233835246554936745">{0,plural, =1{Salvesta üks kontol olev üksus}other{Salvesta # kontol olevat üksust}}</translation>
 <translation id="1234736487471201993">Loo selle pildi jaoks QR-kood</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Teadaolevad võrgud</translation>
@@ -5653,6 +5654,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4918844574251943176">Pilt kopeeriti</translation>
 <translation id="4921348630401250116">Kõnesüntees</translation>
 <translation id="4922104989726031751">Paroolihalduri kasutamiseks oma operatsioonisüsteemiga käivitage Chromium uuesti ja lubage juurdepääs oma arvuti paroolihaldurile. Pärast uuesti käivitamist avanevad teie vahelehed taas.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Salvesta üks kontol olev üksus}other{Salvesta # kontol olevat üksust}}</translation>
 <translation id="492363500327720082">Rakenduse <ph name="APP_NAME" />desinstallimine …</translation>
 <translation id="4923977675318667854">Kuva vahelehegrupid</translation>
 <translation id="4924002401726507608">Tagasiside esitamine</translation>
@@ -9535,6 +9537,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="7722040605881499779">Värskendamiseks vajalik: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Lähtesta Chrome’i vaikekujundusele</translation>
 <translation id="7724603315864178912">Lõika</translation>
+<translation id="7724711098786238351">Demorežiim on mõeldud vähemalt 18-aastastele kasutajatele ning selle puhul kehtivad Google'i teenusetingimused ja privaatsuseeskirjad. Selles seadmes sisestatud andmeid võivad perioodiliste tühjendamiste vahelisel ajal vaadata ka teised.</translation>
 <translation id="7726288096350730168">Kustuta sellest seadmest</translation>
 <translation id="7726391492136714301">Teie telefoni märguannete ja rakenduste vaatamine</translation>
 <translation id="7727898923446098954">Vaheleht peideti</translation>
@@ -11030,6 +11033,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8749805710397399240">Ekraanikuva ei saa üle kanda. Kontrollige süsteemieelistustes ekraanisalvestuse luba.</translation>
 <translation id="8749826920799243530">Seade ei ole registreeritud</translation>
 <translation id="8749863574775030885">Juurdepääs tundmatu müüja USB-seadmetele</translation>
+<translation id="8749865622265861882">Kasutate demoseadet</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> soovib järjestikpordiga ühendust luua</translation>
 <translation id="8750346984209549530">Mobiilivõrgu APN</translation>
 <translation id="8750786237117206586">ChromeOS Flexi heliseadete haldamine</translation>

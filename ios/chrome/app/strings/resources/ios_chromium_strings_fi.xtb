@@ -174,6 +174,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="5203244847421322551">Tallenna ja täytä salasanoja automaattisesti Chromiumissa</translation>
 <translation id="5224391634244552924">Ei tallennettuja salasanoja. Chromium voi tarkistaa salasanasi, kun tallennat niitä.</translation>
 <translation id="5259423875997548710">Visuaalinen haku Chromiumissa</translation>
+<translation id="5284913972719948193">Importoi data, niin voit käyttää salasanoja, historiaa, kirjanmerkkejä ja credit-kortteja Chromiumissa</translation>
 <translation id="5308226104666789935">Chromium ei voi tarkistaa, onko päivityksiä saatavilla</translation>
 <translation id="5311557153294205270">Lisää syötetyt URL-osoitteet kirjanmerkkeihin Chromiumissa.</translation>
 <translation id="5383251701169024761">Löydät muiden sovellusten tallennetut salasanat helposti käyttämällä Chromiumia automaattiseen täyttöön.</translation>
@@ -307,6 +308,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="865600487977764604">Pitää sinut turvassa Chromiumissa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>
 <translation id="8663480472502753423">Pidä Chromium ajan tasalla</translation>
 <translation id="8685813584220679697">Kirjaudu tälle sivustolle ja Chromiumiin.</translation>
+<translation id="8698780336333802489">Tuo Chromiumiin</translation>
 <translation id="8730503818204408000">Avaa asetuksen, jolla voi valita Chromiumin oletusselaimeksi.</translation>
 <translation id="8754966941001340678">Chromium suosittelee parannettua suojausta</translation>
 <translation id="8759037115129007407">Perheenjäsen ei voi juuri nyt vastaanottaa salasanoja. Pyydä häntä päivittämään Chromium ja synkronoimaan salasanat. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>

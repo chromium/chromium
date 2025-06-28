@@ -90,6 +90,7 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="2957447865124070833">Sélectionnez <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Ajouter des favoris dans Chrome</translation>
 <translation id="3030414234702425231">Puisque vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil. Toutefois, vos données resteront dans votre compte Google.</translation>
+<translation id="3042447686908081308">Importer dans Chrome</translation>
 <translation id="3051521853355903257">Gérer les mots de passe dans Chrome</translation>
 <translation id="309672519329227863">Accédez à vos mots de passe Chrome et plus encore dans d'autres applications.</translation>
 <translation id="3109170945534582468">Actions de Chrome</translation>
@@ -337,6 +338,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="9176561303811134420">Gérer les modes de paiement dans Chrome</translation>
 <translation id="9181628561061032322">Ouvre les onglets récents de Chrome.</translation>
 <translation id="948597495737267756">Ouvre la page de votre historique Chrome.</translation>
+<translation id="954347330803595209">Importez vos données pour utiliser vos mots de passe, votre historique, vos favoris et vos cartes de crédit sur Chrome</translation>
 <translation id="97300214378190234">Utilisez Chrome chaque fois que vous touchez des liens dans d'autres applications.</translation>
 <translation id="997929539742564806">Connectez-vous rapidement aux applis et aux sites en remplissant automatiquement vos mots de passe et vos clés d'accès à partir de Chrome</translation>
 <translation id="998677222109959694">Gérer les paramètres de Chrome</translation>

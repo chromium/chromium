@@ -129,6 +129,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="2490684707762498678">Pārvalda <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Palīdzība un atsauksmes</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
+<translation id="2533138527374486328">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā. Kad šis slēdzis ir izslēgts, vietnes nevar izveidot savienojumu ar ierīcēm jūsu lokālajā tīklā.</translation>
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
 <translation id="2570922361219980984">Arī piekļuve šīs ierīces atrašanās vietai ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Izvērsts — noklikšķiniet, lai sakļautu.</translation>
@@ -424,6 +425,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="5968921426641056619">Ievadiet tīmekļa adresi</translation>
 <translation id="5975083100439434680">Tālināt</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> — <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Ieslēgt Discover plūsmu</translation>
 <translation id="6015775454662021376">Pārvaldiet šīs vietnes piekļuvi jūsu ierīcei</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6042308850641462728">Vairāk</translation>
@@ -511,6 +513,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7188508872042490670">Vietnes dati ierīcē</translation>
 <translation id="7201549776650881587">Veicot šo darbību, tiks izdzēsti visi dati un sīkfaili, ko jūsu sākuma ekrānā glabā vietņu grupa <ph name="ORIGIN" /> vai tās lietotne.</translation>
 <translation id="7203150201908454328">Izvērsts</translation>
+<translation id="7213166370492037743">Neļaut vietnēm izveidot savienojumu ne ar vienu ierīci jūsu lokālajā tīklā</translation>
 <translation id="7219254577985949841">Vai dzēst vietnes datus?</translation>
 <translation id="723171743924126238">Atlasīt attēlus</translation>
 <translation id="7243308994586599757">Opcijas, kas pieejamas ekrāna apakšējā daļā</translation>

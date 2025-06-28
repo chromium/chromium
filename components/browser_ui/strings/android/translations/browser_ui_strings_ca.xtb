@@ -129,6 +129,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2490684707762498678">Gestionades per <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ajuda i suggeriments </translation>
 <translation id="2501278716633472235">Torna</translation>
+<translation id="2533138527374486328">Quan aquesta opció està activada, els llocs web poden demanar permís per connectar-se a qualsevol dispositiu de la teva xarxa local. Quan aquesta opció està desactivada, els llocs web no poden connectar-se a dispositius de la teva xarxa local.</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
 <translation id="2570922361219980984">L'accés a la ubicació també està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vista desplegada (feu clic per replegar-la)</translation>
@@ -424,6 +425,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="5968921426641056619">Introdueix l'adreça web</translation>
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Activa el tauler de Discover</translation>
 <translation id="6015775454662021376">Controla l'accés al teu dispositiu d'aquest lloc web</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6042308850641462728">Més</translation>
@@ -511,6 +513,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7188508872042490670">Dades dels llocs web al dispositiu</translation>
 <translation id="7201549776650881587">Aquesta acció suprimirà de la pantalla d'inici totes les dades i galetes emmagatzemades per tots els llocs web de <ph name="ORIGIN" /> o per la seva aplicació</translation>
 <translation id="7203150201908454328">Ampliat</translation>
+<translation id="7213166370492037743">No permetis que els llocs web es connectin a cap dispositiu de la teva xarxa local</translation>
 <translation id="7219254577985949841">Vols suprimir les dades del lloc web?</translation>
 <translation id="723171743924126238">Selecciona imatges</translation>
 <translation id="7243308994586599757">Opcions disponibles a la part inferior de la pantalla</translation>

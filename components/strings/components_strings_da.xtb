@@ -2157,6 +2157,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4635278307999235413">Sender data til Administrationskonsol</translation>
 <translation id="4636930964841734540">Oplysninger</translation>
 <translation id="4640225694041297329">Vis resultater fra de seneste 7 dage</translation>
+<translation id="4642296966515958616">Opdater Chrome for at deltage i denne fanegruppe</translation>
 <translation id="464342062220857295">Søgefunktioner</translation>
 <translation id="4644567637638438744">Du kan kun uploade filer, hvis du er logget ind på Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Omvendt rækkefølge med forside nedad</translation>
@@ -2930,6 +2931,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5967592137238574583">Rediger kontaktoplysninger</translation>
 <translation id="5967867314010545767">Fjern fra historik</translation>
 <translation id="5968022600320704045">Ingen søgeresultater</translation>
+<translation id="5968400720580217226">AI-tilstand</translation>
 <translation id="5969199813874624822">Gem og overvåg pris</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sjette papirrulle</translation>
@@ -3150,6 +3152,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6326947323444967009">Angiv Chrome som systemets standardbrowser i iOS-indstillingerne</translation>
 <translation id="6327065120806001832">lokal netværksadgang</translation>
 <translation id="6328639280570009161">Prøv at deaktivere netværksforslag</translation>
+<translation id="6329815962353376655">&lt;Skriv et spørgsmål&gt;</translation>
 <translation id="6334834493885103305">Nu kan du betale på afbetaling med Affirm, Zip eller Klarna</translation>
 <translation id="6335029926534404762">Sportssko</translation>
 <translation id="6336948221660696475">VR er ikke tilladt</translation>
@@ -3316,6 +3319,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6587893660316489419">Konvolut B5</translation>
 <translation id="6587923378399804057">Link, du har kopieret</translation>
 <translation id="6591833882275308647">Din <ph name="DEVICE_TYPE" /> administreres ikke</translation>
+<translation id="6595495738567740002">Hvis du vil slette Google-cookies fra denne enhed, skal du <ph name="BEGIN_LINK" />logge ud af Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Krypteringsmuligheder</translation>
 <translation id="6596573334527383067">Vis resultater fra i går</translation>
 <translation id="6597665340361269064">90 grader</translation>
@@ -3863,6 +3867,7 @@ Yderligere oplysninger:
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Du kan bruge den i Google-produkter</translation>
 <translation id="7523408071729642236">Produktion</translation>
+<translation id="7524958309155133228">Spørg <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Opret</translation>
 <translation id="7525804896095537619">Navn skal udfyldes</translation>
 <translation id="7526934274050461096">Din forbindelse til dette website er ikke privat</translation>
@@ -4708,6 +4713,7 @@ Yderligere oplysninger:
 <translation id="9004367719664099443">VR-sessionen er i gang</translation>
 <translation id="9005998258318286617">PDF-dokumentet kunne ikke indlæses.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Ingen}=1{Fra 1 website}one{Fra # website}other{Fra # websites}}</translation>
 <translation id="9012194306129927220">Nu kan du betale på afbetaling med Affirm eller Zip</translation>
 <translation id="9014705027639070815">De websites, du besøger, kan anmode Chrome om oplysninger for at hjælpe dem med at måle effektiviteten af deres annoncer. Chrome giver websites mulighed for at indsamle begrænsede typer data, f.eks. om du har foretaget et køb, når du har besøgt et website.</translation>
 <translation id="9018120810758822233">Angiv din sikkerhedskode til <ph name="CREDIT_CARD" /></translation>
@@ -4730,6 +4736,7 @@ Yderligere oplysninger:
 <translation id="9042617223719777575">Stor kapacitet</translation>
 <translation id="9042827002460091668">Tjek din internetforbindelse, og prøv igen</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> vil gerne søge efter og oprette tilknytning til enheder på dit lokale netværk</translation>
 <translation id="9046864189129893978">Mikrofoner (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Disse handlinger kræver, at politikken <ph name="POLICY_NAME" /> er angivet som <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 tommer</translation>

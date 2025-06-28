@@ -129,6 +129,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="2490684707762498678">Géré par <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Aide et commentaires</translation>
 <translation id="2501278716633472235">Retour</translation>
+<translation id="2533138527374486328">Lorsque cette option est activée, les sites peuvent demander à se connecter à n'importe quel appareil sur votre réseau local. Lorsque cette option est désactivée, les sites ne peuvent pas se connecter aux appareils sur votre réseau local.</translation>
 <translation id="2546283357679194313">Cookies et données des sites</translation>
 <translation id="2570922361219980984">L'accès à la position est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Développé – Cliquer pour réduire</translation>
@@ -424,6 +425,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5968921426641056619">Saisissez une adresse Web</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Activer le flux Discover</translation>
 <translation id="6015775454662021376">Contrôler l'accès de ce site à votre appareil</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6042308850641462728">Plus</translation>
@@ -511,6 +513,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7188508872042490670">Données des sites sur l'appareil</translation>
 <translation id="7201549776650881587">L'ensemble des données et cookies stockés par tous les sites dépendant de <ph name="ORIGIN" /> ou par l'appli associée sur votre écran d'accueil seront supprimés</translation>
 <translation id="7203150201908454328">Développé</translation>
+<translation id="7213166370492037743">Ne pas autoriser les sites à se connecter aux appareils sur votre réseau local</translation>
 <translation id="7219254577985949841">Supprimer les données du site ?</translation>
 <translation id="723171743924126238">Sélectionner des images</translation>
 <translation id="7243308994586599757">Options disponibles au bas de l'écran</translation>

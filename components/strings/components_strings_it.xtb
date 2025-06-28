@@ -645,7 +645,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2088913896151127116">Aggiungi testo</translation>
 <translation id="2090451897496479509">Contatta il fornitore per ulteriori informazioni</translation>
 <translation id="2091887806945687916">Audio</translation>
-<translation id="2093184051799735948">Cerca <ph name="ENGINE_NAME" /> o digita un URL</translation>
+<translation id="2093184051799735948">Cerca con <ph name="ENGINE_NAME" /> o digita un URL</translation>
 <translation id="2093982008204312032">Google Chrome sta tentando di disattivare Windows Hello per inserire le password.</translation>
 <translation id="2094505752054353250">Dominio non corrispondente</translation>
 <translation id="2094704029599359040">Informazioni sulla versione</translation>
@@ -2154,6 +2154,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4635278307999235413">Invio dei dati alla Console di amministrazionein corso…</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4640225694041297329">Mostra i risultati degli ultimi 7 giorni</translation>
+<translation id="4642296966515958616">Per partecipare a questo gruppo di schede, aggiorna Chrome</translation>
 <translation id="464342062220857295">Funzionalità di ricerca</translation>
 <translation id="4644567637638438744">I file possono essere caricati solo se hai eseguito l'accesso a Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordine inverso a faccia in giù</translation>
@@ -2927,6 +2928,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5967592137238574583">Modifica informazioni di contatto</translation>
 <translation id="5967867314010545767">Rimuovi da cronologia</translation>
 <translation id="5968022600320704045">Nessun risultato di ricerca</translation>
+<translation id="5968400720580217226">AI Mode</translation>
 <translation id="5969199813874624822">Salva e monitora il prezzo</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sesto rullo</translation>
@@ -3146,6 +3148,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6326947323444967009">Imposta Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
 <translation id="6327065120806001832">accesso alla rete locale</translation>
 <translation id="6328639280570009161">Prova a disattivare la previsione della rete</translation>
+<translation id="6329815962353376655">&lt;Digita una domanda&gt;</translation>
 <translation id="6334834493885103305">Ora puoi pagare nel tempo utilizzando Affirm, Zip o Klarna</translation>
 <translation id="6335029926534404762">Scarpe da atletica</translation>
 <translation id="6336948221660696475">VR non consentita</translation>
@@ -3312,6 +3315,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6587893660316489419">Busta B5</translation>
 <translation id="6587923378399804057">Link copiato</translation>
 <translation id="6591833882275308647">Il tuo dispositivo <ph name="DEVICE_TYPE" /> non è gestito</translation>
+<translation id="6595495738567740002">Per eliminare i cookie di Google da questo dispositivo, <ph name="BEGIN_LINK" />esci da Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Opzioni di crittografia</translation>
 <translation id="6596573334527383067">Mostra i risultati di ieri</translation>
 <translation id="6597665340361269064">90 gradi</translation>
@@ -3859,6 +3863,7 @@ Ulteriori dettagli:
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Puoi utilizzarlo su tutti i prodotti Google</translation>
 <translation id="7523408071729642236">Produzione</translation>
+<translation id="7524958309155133228">Chiedi a <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Crea</translation>
 <translation id="7525804896095537619">Il nome non può essere vuoto</translation>
 <translation id="7526934274050461096">La connessione a questo sito non è privata</translation>
@@ -4703,6 +4708,7 @@ Ulteriori dettagli:
 <translation id="9004367719664099443">Sessione VR in corso</translation>
 <translation id="9005998258318286617">Impossibile caricare il documento PDF.</translation>
 <translation id="9008201768610948239">Ignora</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Nessuno}=1{Da 1 sito}other{Da # siti}}</translation>
 <translation id="9012194306129927220">Ora puoi pagare nel tempo utilizzando Affirm o Zip.</translation>
 <translation id="9014705027639070815">I siti che visiti possono chiedere a Chrome informazioni che li aiutino a misurare il rendimento dei loro annunci. Chrome consente ai siti di raccogliere tipi di dati limitati, ad esempio se hai effettuato un acquisto dopo aver visitato un sito.</translation>
 <translation id="9018120810758822233">Inserisci il codice di sicurezza di: <ph name="CREDIT_CARD" /></translation>
@@ -4725,6 +4731,7 @@ Ulteriori dettagli:
 <translation id="9042617223719777575">Capacità elevata</translation>
 <translation id="9042827002460091668">Controlla la connessione a Internet e riprova</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> vuole cercare e connettersi a qualsiasi dispositivo sulla tua rete locale</translation>
 <translation id="9046864189129893978">Microfoni (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Per queste azioni è necessario impostare la policy <ph name="POLICY_NAME" /> su <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">60,9 × 91,4 cm</translation>

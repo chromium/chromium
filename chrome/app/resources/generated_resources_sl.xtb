@@ -359,6 +359,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1232569758102978740">Brez naslova</translation>
 <translation id="1233497634904001272">Znova se dotaknite varnostnega ključa, da dokončate zahtevo.</translation>
 <translation id="1233721473400465416">Jezik</translation>
+<translation id="1233835246554936745">{0,plural, =1{Shrani 1 element v računu}one{Shrani # element v računu}two{Shrani # elementa v računu}few{Shrani # elemente v računu}other{Shrani # elementov v računu}}</translation>
 <translation id="1234736487471201993">Ustvari kodo QR za to sliko</translation>
 <translation id="1234808891666923653">Komponente »service worker«</translation>
 <translation id="1235458158152011030">Znana omrežja</translation>
@@ -1616,6 +1617,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2096716221239095980">Izbriši vse podatke</translation>
 <translation id="2097950021134740304">Prekliči pozabljeno naročnino</translation>
 <translation id="2098805196501063469">Preveri preostala gesla</translation>
+<translation id="2099883893520019102">Zadnjih 15 min</translation>
 <translation id="2101225219012730419">Različica:</translation>
 <translation id="2102396546234652240">Spletnim mestom ni dovoljena uporaba mikrofona.</translation>
 <translation id="2102495993840063010">Aplikacije za Android</translation>
@@ -2178,6 +2180,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2476901513051581836">Shrambe ni mogoče počistiti, dokler ni znana velikost shrambe brez povezave.</translation>
 <translation id="2476974672882258506">Zaustavite sistem Windows, če želite odmestiti program <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Ker ste nastavili več stikal, je samodejno iskanje izklopljeno.</translation>
+<translation id="2477607419416067650">Drugi podatki v Googlu</translation>
 <translation id="2478176599153288112">Dovoljenja za predstavnostne datoteke za razširitev »<ph name="EXTENSION" />«</translation>
 <translation id="24786041351753425">Omogočanje storitve za obnovitev podatkov.</translation>
 <translation id="2479541499757560845">Nastavitve tipkovnice za dostopnost</translation>
@@ -2296,6 +2299,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2552966063069741410">Časovni pas</translation>
 <translation id="2553290675914258594">Preverjen dostop</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ni uspel vzpostaviti povezave z omrežjem <ph name="NETWORK_ID" />. Izberite drugo omrežje ali poskusite znova.</translation>
+<translation id="2553352788023127673">Zgodovino iskanja in gesla lahko izbrišete v nastavitvah upravljanja</translation>
 <translation id="2553440850688409052">Skrij ta vtičnik</translation>
 <translation id="2554553592469060349">Izbrana datoteka je prevelika (največja velikost: 3 MB).</translation>
 <translation id="2555802059188792472">Obvestila lahko pošilja toliko aplikacij: <ph name="NUM_ALLOWED_APPS" /> (od skupno <ph name="TOTAL_NUM_APPS" />)</translation>
@@ -3473,6 +3477,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3408555740610481810">Kamera in mikrofon sta v uporabi</translation>
 <translation id="3409157109901479672">Leva stran</translation>
 <translation id="3409513286451883969">&amp;Prevedi izbor v jezik <ph name="LANGUAGE" /></translation>
+<translation id="3410151451624226773">Upravljanje v Googlovem upravitelju gesel</translation>
 <translation id="3412265149091626468">Skoči na izbor</translation>
 <translation id="3413122095806433232">Izdajatelji overiteljev potrdil: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Velikost:</translation>
@@ -5661,6 +5666,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4918844574251943176">Slika je kopirana</translation>
 <translation id="4921348630401250116">Pretvorba besedila v govor</translation>
 <translation id="4922104989726031751">Če želite z operacijskim sistemom uporabljati upravitelja gesel, znova zaženite Chromium in omogočite dostop do upravitelja gesel v računalniku. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Shrani 1 element v računu}one{Shrani # element v računu}two{Shrani # elementa v računu}few{Shrani # elemente v računu}other{Shrani # elementov v računu}}</translation>
 <translation id="492363500327720082">Odmeščanje aplikacije <ph name="APP_NAME" /> …</translation>
 <translation id="4923977675318667854">Prikaz skupin zavihkov</translation>
 <translation id="4924002401726507608">Pošlji povratne informacije</translation>
@@ -5900,6 +5906,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5102244391872941183">Vašo lokacijo lahko uporabljajo aplikacije in spletna mesta, ki imajo dovoljenje za lokacijo, in sistemske storitve</translation>
 <translation id="5103311607312269661">povečanje svetlosti zaslona</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Izbriši skupino}one{Izbriši skupine}two{Izbriši skupine}few{Izbriši skupine}other{Izbriši skupine}}</translation>
+<translation id="5105442806410269908">Upravljanje drugih Googlovih podatkov</translation>
 <translation id="5106350808162641062">Odstrani</translation>
 <translation id="510695978163689362">Račun <ph name="USER_EMAIL" /> se nadzira s storitvijo Family Link. Dodate lahko šolske račune za dostop do šolskih virov s starševskim nadzorom.</translation>
 <translation id="5107093668001980925">Nikoli ne pokaži tega: <ph name="MODULE_NAME" /></translation>
@@ -6204,6 +6211,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5320135788267874712">Novo ime naprave</translation>
 <translation id="532247166573571973">Strežnik morda ni dosegljiv. Poskusite znova pozneje.</translation>
 <translation id="5323328004379641163">Prilagodite videz Chroma in te strani</translation>
+<translation id="5323501626199324454">Upravljanje v računu Google</translation>
 <translation id="5324300749339591280">Seznam aplikacij</translation>
 <translation id="5324780743567488672">Samodejna nastavitev časovnega pasu na podlagi vaše lokacije</translation>
 <translation id="5327248766486351172">Ime</translation>
@@ -6551,6 +6559,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="557722062034137776">Ponastavitev naprave ne bo vplivala na vaše Google Račune ali kakršne koli druge podatke, sinhronizirane s temi računi. Izbrisani pa bodo vsi podatki, shranjeni lokalno v napravi.</translation>
 <translation id="5578059481725149024">Samodejna prijava</translation>
 <translation id="5578387000057347457">Vnesite poziv po meri ali označite besedilo, da ustvarite sliko</translation>
+<translation id="5579225964082017560">Odstranitev mesta <ph name="SITE" /> s seznama <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Prevod v jezik <ph name="LANGUAGE" /> je dokončan</translation>
 <translation id="558170650521898289">Preverjanje gonilnikov strojne opreme za sistem Microsoft Windows</translation>
 <translation id="5581972110672966454">Naprave ni mogoče pridružiti domeni. Poskusite znova ali se obrnite na lastnika ali skrbnika naprave. Koda napake: <ph name="ERROR_CODE" />.</translation>
@@ -8860,6 +8869,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7250616558727237648">Naprava, s katero delite vsebino, se ni odzvala. Poskusite znova.</translation>
 <translation id="725109152065019550">Skrbnik je žal onemogočil zunanji pomnilnik v vašem računu.</translation>
 <translation id="7251635775446614726">Sporočilo skrbnika: »<ph name="CUSTOM_MESSAGE" />«</translation>
+<translation id="7252424535852086046">Če želite izbrisati te podatke, odprite nastavitve za njihovo upravljanje</translation>
 <translation id="7253521419891527137">Več o tem</translation>
 <translation id="7254951428499890870">Ali res želite zagnati aplikacijo »<ph name="APP_NAME" />« v diagnostičnem načinu?</translation>
 <translation id="725497546968438223">Gumb za mape z zaznamki</translation>
@@ -9146,6 +9156,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7450761244949417357">Odpiranje v brskalniku <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7450926666485653189">Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP</translation>
 <translation id="7453008956351770337">Če izberete ta tiskalnik, daste tej razširitvi dovoljenje za dostop do tiskalnika:</translation>
+<translation id="7453032093368223821">Upravljanje drugih podatkov</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Vaša organizacija je izklopila shranjevanje gesel</translation>
 <translation id="7455730275746867420">Upravljanje dodatnih vsebnikov</translation>
@@ -9546,6 +9557,8 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="7722040605881499779">Potrebno za posodobitev: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Ponastavitev na privzeti Chrome</translation>
 <translation id="7724603315864178912">Izreži</translation>
+<translation id="7724711098786238351">Predstavitveni način je namenjen uporabnikom, starejšim od 18 let. Urejajo ga Googlovi pogoji storitve in pravilnik o zasebnosti. Podatke, vnesene v tej napravi, si lahko med rednimi brisanji ogledajo tudi drugi.</translation>
+<translation id="7726288096350730168">Izbris iz te naprave</translation>
 <translation id="7726391492136714301">Ogled obvestil in aplikacij telefona</translation>
 <translation id="7727898923446098954">Zavihek je skrit</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{Začasno zaustavi ta zavihek}one{Začasno zaustavi te zavihke}two{Začasno zaustavi te zavihke}few{Začasno zaustavi te zavihke}other{Začasno zaustavi te zavihke}}</translation>
@@ -11040,6 +11053,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8749805710397399240">Zaslona ni mogoče predvajati. V nastavitvah sistema označite dovoljenje za snemanje zaslona »Screen Recording«.</translation>
 <translation id="8749826920799243530">Naprava ni včlanjena.</translation>
 <translation id="8749863574775030885">Dostop do naprav USB neznanega prodajalca</translation>
+<translation id="8749865622265861882">Uporabljate predstavitveno napravo</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> se želi povezati z zaporednimi vrati</translation>
 <translation id="8750346984209549530">APN mobilnega omrežja</translation>
 <translation id="8750786237117206586">Upravljanje nastavitev zvoka za ChromeOS Flex</translation>
@@ -11104,6 +11118,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8791157330927639737">Preberite več o posodabljanju</translation>
 <translation id="8791534160414513928">S prometom brskanja pošlji zahtevo »Do Not Track«</translation>
 <translation id="8793390639824829328">Spletna mesta uporabljajo to funkcijo za pomikanje po deljenih zavihkih in njihovo povečavo/pomanjšavo</translation>
+<translation id="8793895150509408038">Ogled podrobnosti spletnega mesta za <ph name="SITE" /> s seznama <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">Medtem ko je dostopna točka vklopljena, bo telefon <ph name="PHONE_NAME" />:</translation>
 <translation id="8794548468611058947">Namesto vnosa gesla za račun Google lahko za prijavo ustvarite kodo PIN za to napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8795916974678578410">Novo okno</translation>

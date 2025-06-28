@@ -3320,6 +3320,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6587893660316489419">B5 vokas</translation>
 <translation id="6587923378399804057">Nukopijuota nuoroda</translation>
 <translation id="6591833882275308647">Jūsų „<ph name="DEVICE_TYPE" />“ netvarkomas</translation>
+<translation id="6595495738567740002">Jei norite ištrinti „Google“ slapukus iš šio įrenginio, <ph name="BEGIN_LINK" />atsijunkite nuo „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Šifravimo parinktys</translation>
 <translation id="6596573334527383067">Rodyti vakar dienos rezultatus</translation>
 <translation id="6597665340361269064">90 laipsnių</translation>
@@ -4713,6 +4714,7 @@ Papildoma išsami informacija:
 <translation id="9004367719664099443">Vyksta VR sesija</translation>
 <translation id="9005998258318286617">PDF dokumento įkelti nepavyko.</translation>
 <translation id="9008201768610948239">Nepaisyti</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Nėra}=1{Iš vienos svetainės}one{Iš # svetainės}few{Iš # svetainių}many{Iš # svetainės}other{Iš # svetainių}}</translation>
 <translation id="9012194306129927220">Dabar galite mokėti per tam tikrą laiką naudodami „Affirm“ arba „Zip“</translation>
 <translation id="9014705027639070815">Svetainės, kuriose lankotės, gali prašyti „Chrome“ pateikti informacijos, padedančios įvertinti skelbimų našumą. „Chrome“ leidžia svetainėms rinkti tam tikrų tipų duomenis, pvz., ar apsilankę svetainėje įsigijote pirkinį.</translation>
 <translation id="9018120810758822233">Įveskite <ph name="CREDIT_CARD" /> saugos kodą</translation>

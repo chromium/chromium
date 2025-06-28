@@ -425,6 +425,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="5968921426641056619">Unesite web adresu</translation>
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Uključivanje sažetka sadržaja Discovera</translation>
 <translation id="6015775454662021376">Upravljanje pristupom ove web lokacije vašem uređaju</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Više</translation>
@@ -512,7 +513,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="7188508872042490670">Podaci web lokacije na uređaju</translation>
 <translation id="7201549776650881587">Ova radnja će izbrisati sve podatke i kolačiće koje su pohranile sve web lokacije na domeni <ph name="ORIGIN" /> ili pripadajuća aplikacija na početnom ekranu</translation>
 <translation id="7203150201908454328">Prošireno</translation>
-<translation id="7213166370492037743">Nemoj dozvoliti web lokacijama da se povežu s bilo kojim uređajem na lokalnoj mreži</translation>
+<translation id="7213166370492037743">Nemoj dozvoliti web lokacijama da se povežu s ijednim uređajem na lokalnoj mreži</translation>
 <translation id="7219254577985949841">Izbrisati podatke web lokacije?</translation>
 <translation id="723171743924126238">Odaberi slike</translation>
 <translation id="7243308994586599757">Opcije su dostupne pri dnu ekrana</translation>

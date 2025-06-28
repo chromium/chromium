@@ -915,7 +915,7 @@
 <translation id="2512101340618156538">不得使用（默认）</translation>
 <translation id="2512413427717747692">“将 Chrome 设为默认浏览器”按钮，按下 Enter 键即可在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
 <translation id="2514548229949738417">家居与园艺</translation>
-<translation id="2515629240566999685">检查您所在区域的网络信号</translation>
+<translation id="2515629240566999685">检查所在区域的网络信号</translation>
 <translation id="2515761554693942801">您已选择在使用 <ph name="PROVIDER_ORIGIN" /> 的网站上通过触控 ID 来验证身份。此提供商可能已存储您的付款方式信息，不过您可以<ph name="LINK_TEXT" />相应信息。</translation>
 <translation id="2518584823165598232">此卡不可用，请与发卡机构联系。</translation>
 <translation id="2519250377986324805">了解具体方法</translation>
@@ -2139,7 +2139,7 @@
 <translation id="460848736049414407">已被管理员屏蔽</translation>
 <translation id="4610279718074907952">此网站属于由 <ph name="SET_OWNER" /> 定义的群组，该群组可查看您的活动记录</translation>
 <translation id="46128681529823442">足球装备</translation>
-<translation id="4612904677925722054">此网站可能含有少儿不宜的内容。必须先征得家长或监护人的同意，然后才能访问此网站。</translation>
+<translation id="4612904677925722054">此网站可能含有少儿不宜的内容。你必须获得家长或监护人的同意，才能访问此网站。</translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4622292761762557753">仍然转移</translation>
 <translation id="4622647778991854660">在通知中心内启用通知。打开<ph name="LINK" />。</translation>
@@ -2153,6 +2153,7 @@
 <translation id="4635278307999235413">正在将数据发送到管理控制台</translation>
 <translation id="4636930964841734540">信息</translation>
 <translation id="4640225694041297329">显示过去 7 天的结果</translation>
+<translation id="4642296966515958616">如需加入此标签页分组，请更新 Chrome</translation>
 <translation id="464342062220857295">搜索功能</translation>
 <translation id="4644567637638438744">您必须登录 Microsoft OneDrive 才能上传文件</translation>
 <translation id="4644670975240021822">逆转顺序，正面朝下</translation>
@@ -2926,6 +2927,7 @@
 <translation id="5967592137238574583">修改联系信息</translation>
 <translation id="5967867314010545767">从历史记录中移除</translation>
 <translation id="5968022600320704045">无搜索结果</translation>
+<translation id="5968400720580217226">AI 模式</translation>
 <translation id="5969199813874624822">保存并跟踪价格</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">第 6 卷</translation>
@@ -3050,7 +3052,7 @@
 <translation id="6159908896951210943">正式</translation>
 <translation id="6160391204859821737">开启一项广告隐私权功能</translation>
 <translation id="6162403104168428984">更新地址？</translation>
-<translation id="6164605812717770913">家长或监护人表示不允许你访问此网站。你可以要求他们取消屏蔽。</translation>
+<translation id="6164605812717770913">家长或监护人不允许你访问此网站。你可以请求对方取消屏蔽。</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6167577165590485365">上次尝试提取时的时间：</translation>
 <translation id="617256461084925519">Google Chrome 正在尝试验证您的身份，以便填写您的付款信息。</translation>
@@ -3145,6 +3147,7 @@
 <translation id="6326947323444967009">在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
 <translation id="6327065120806001832">本地网络访问权限</translation>
 <translation id="6328639280570009161">请尝试停用网络联想查询功能</translation>
+<translation id="6329815962353376655">&lt;输入问题&gt;</translation>
 <translation id="6334834493885103305">现在，您可以使用 Affirm、Zip 或 Klarna 分期付款</translation>
 <translation id="6335029926534404762">运动鞋</translation>
 <translation id="6336948221660696475">不允许使用 VR</translation>
@@ -3859,6 +3862,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">您可以在各种 Google 产品中使用该地址</translation>
 <translation id="7523408071729642236">制造</translation>
+<translation id="7524958309155133228">询问 <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">创建</translation>
 <translation id="7525804896095537619">名称不得为空</translation>
 <translation id="7526934274050461096">您与此网站的连接不是私密连接</translation>
@@ -4114,7 +4118,7 @@
 <translation id="7952327717479677595">“管理搜索引擎”按钮，激活它即可管理您的默认搜索引擎和网站搜索</translation>
 <translation id="7953236668995583915">请重新加载此页面，以便在该网站上应用更新后的设置</translation>
 <translation id="7953569069500808819">边缘装订（顶部）</translation>
-<translation id="7955105108888461311">当面申请</translation>
+<translation id="7955105108888461311">当面请求</translation>
 <translation id="7956713633345437162">移动设备书签</translation>
 <translation id="7961015016161918242">一律不</translation>
 <translation id="7962467575542381659">平台设备</translation>
@@ -4727,6 +4731,7 @@
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9042827002460091668">请检查互联网连接，然后重试</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> 想要查找并连接到本地网络中的任何设备</translation>
 <translation id="9046864189129893978">麦克风（<ph name="MICS_COUNT" /> 个）</translation>
 <translation id="9048035366624198823">以下操作需要将 <ph name="POLICY_NAME" /> 政策设置为 <ph name="POLICY_VALUE" />：<ph name="ACTION_LIST" />。</translation>
 <translation id="9048662076076074925">24 x 36 英寸</translation>

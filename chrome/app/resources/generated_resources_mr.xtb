@@ -1613,6 +1613,7 @@
 <translation id="2096716221239095980">सर्व डेटा हटवा</translation>
 <translation id="2097950021134740304">सदस्यत्व विसरणे रद्द करा</translation>
 <translation id="2098805196501063469">शिल्लक पासवर्ड तपासा</translation>
+<translation id="2099883893520019102">मागील १५ मिनिटे</translation>
 <translation id="2101225219012730419">आवृत्ती:</translation>
 <translation id="2102396546234652240">साइटना तुमचा मायक्रोफोन वापरण्याची अनुमती देऊ नका</translation>
 <translation id="2102495993840063010">Android अ‍ॅप्स</translation>
@@ -2175,6 +2176,7 @@
 <translation id="2476901513051581836">ऑफलाइन स्टोरेज जागा ज्ञात होईपर्यंत स्टोरेज साफ करू शकत नाही.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> अनइंस्टॉल करण्यासाठी Windows बंद करा.</translation>
 <translation id="2477065602824695373">तुम्ही एकाहून अधिक स्विच सेट केल्यामुळे ऑटो-स्कॅन बंद करण्यात आले आहे.</translation>
+<translation id="2477607419416067650">इतर Google डेटा</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" साठी मीडिया-फाईल परवानग्या</translation>
 <translation id="24786041351753425">डेटा रिकव्‍हरी सेवा सुरू करा.</translation>
 <translation id="2479541499757560845">अ‍ॅक्सेसिबिलिटी कीबोर्ड सेटिंग्ज</translation>
@@ -2293,6 +2295,7 @@
 <translation id="2552966063069741410">टाईमझोन</translation>
 <translation id="2553290675914258594">पडताळणी केलेला अ‍ॅक्सेस</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> <ph name="NETWORK_ID" /> शी कनेक्ट करण्यात अक्षम आहे. कृपया दुसरे नेटवर्क निवडा किंवा पुन्हा प्रयत्न करा. </translation>
+<translation id="2553352788023127673">Search इतिहास आणि पासवर्ड त्यांच्या व्यवस्थापन सेटिंग्जमधून हटवता येऊ शकतात</translation>
 <translation id="2553440850688409052">हे प्लग-इन लपवा</translation>
 <translation id="2554553592469060349">निवडलेली फाईल खूप मोठी आहे (कमाल आकार: 3mb).</translation>
 <translation id="2555802059188792472"><ph name="TOTAL_NUM_APPS" /> पैकी <ph name="NUM_ALLOWED_APPS" /> अ‍ॅप्सना सूचना पाठवू शकते</translation>
@@ -3470,6 +3473,7 @@
 <translation id="3408555740610481810">कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
 <translation id="3409157109901479672">डावी बाजू</translation>
 <translation id="3409513286451883969">निवड <ph name="LANGUAGE" /> मध्ये भाषांतरित करा</translation>
+<translation id="3410151451624226773">Google Password Manager मध्ये व्यवस्थापित करा</translation>
 <translation id="3412265149091626468">निवड वर जा</translation>
 <translation id="3413122095806433232">CA जारीकर्ता: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">आकार:</translation>
@@ -5896,6 +5900,7 @@
 <translation id="5102244391872941183">स्थान परवानगी असणारी अ‍ॅप्स आणि वेबसाइट, त्याचप्रमाणे सिस्टीम सेवा तुमचे स्थान वापरू शकतात</translation>
 <translation id="5103311607312269661">डिस्प्लेचा ब्राइटनेस वाढवा</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{गट हटवा}other{गट हटवा}}</translation>
+<translation id="5105442806410269908">इतर Google डेटा व्यवस्थापित करा</translation>
 <translation id="5106350808162641062">काढून टाका</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> हा Family Link द्वारे पर्यवेक्षित केला जातो. पालक पर्यवेक्षणासह शाळेचे स्रोत अ‍ॅक्सेस करण्यासाठी तुम्ही शाळेची खाती जोडू शकता.</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> कधीही दाखवू नका</translation>
@@ -6200,6 +6205,7 @@
 <translation id="5320135788267874712">नवीन डिव्हाइसचे नाव</translation>
 <translation id="532247166573571973">सर्व्हर कदाचित आवाक्याबाहेर असू शकते. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="5323328004379641163">Chrome आणि या पेजचे स्वरूप कस्टमाइझ करा</translation>
+<translation id="5323501626199324454">तुमच्या Google खाते मध्ये व्यवस्थापित करा</translation>
 <translation id="5324300749339591280">अ‍ॅप्स सूची</translation>
 <translation id="5324780743567488672">तुमचे स्थान वापरून स्वयंचलितपणे टाइम झोन सेट करा</translation>
 <translation id="5327248766486351172">नाव</translation>
@@ -6547,6 +6553,7 @@
 <translation id="557722062034137776">तुमचे डिव्हाइस रीसेट केल्याने या खात्यांवरील आपल्या Google खात्यांवर किंवा संकालित केलेल्या कोणत्याही डेटावर प्रभाव पडणार नाही. तथापि, आपल्या डिव्हाइसवर स्थानिकपणे सेव्ह केलेल्या सर्व फाइल हटविल्या जातील.</translation>
 <translation id="5578059481725149024">स्वयं साइन-इन</translation>
 <translation id="5578387000057347457">इमेज तयार करण्यासाठी कस्टम प्रॉम्प्ट एंटर करा किंवा मजकूर हायलाइट करा</translation>
+<translation id="5579225964082017560"><ph name="SECTION_HEADER" /> सूचीमधून <ph name="SITE" /> काढून टाका</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> मध्ये भाषांतर करणे पूर्ण झाले</translation>
 <translation id="558170650521898289">मायक्रोसॉफ्ट विंडोज हार्डवेअर ड्रायव्हर व्हेरिफिकेशन</translation>
 <translation id="5581972110672966454">डिव्हाइसला डोमेनशी जोडता आले नाही. कृपया पुन्हा प्रयत्न करा किंवा तुमच्या डिव्हाइसच्या मालकाशी अथवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
@@ -8851,6 +8858,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7250616558727237648">तुम्ही ज्या डिव्हाइससह शेअर करत आहात त्याने प्रतिसाद दिला नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="725109152065019550">क्षमस्व, तुमच्या ॲडमिनिस्ट्रेटरने तुमच्या खात्यावरील बाह्य स्टोरेज अक्षम केले आहे.</translation>
 <translation id="7251635775446614726">तुमच्या अ‍ॅडमिनिस्ट्रेटरनुसार: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7252424535852086046">हा डेटा हटवण्यासाठी, त्याच्या व्यवस्थापन सेटिंग्जवर जा</translation>
 <translation id="7253521419891527137">&amp;अधिक जाणून घ्या</translation>
 <translation id="7254951428499890870">तुम्ही निदान मोडमध्ये "<ph name="APP_NAME" />" लाँच करू इच्छिता याची तुम्हाला खात्री आहे?</translation>
 <translation id="725497546968438223">बुकमार्क फोल्डरचे बटण</translation>
@@ -9137,6 +9145,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7450761244949417357">आता <ph name="ALTERNATIVE_BROWSER_NAME" /> मध्ये उघडत आहे</translation>
 <translation id="7450926666485653189">तुमचा आयपी अ‍ॅड्रेस लपवणार्‍या गोपनीयता सर्व्हरद्वारे URL चा क्लिष्ट भाग Google ला पाठवते</translation>
 <translation id="7453008956351770337">हा प्रिंटर निवडून, तुम्ही खालील एक्स्टेंशनला तुमच्या प्रिंटरमध्‍ये ॲक्सेस करण्‍याची परवानगी देत आहात:</translation>
+<translation id="7453032093368223821">इतर डेटा व्यवस्थापित करा</translation>
 <translation id="7454548535253569100">पोर्टल: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">तुमच्या संस्थेने पासवर्ड सेव्ह करणे बंद केले आहे</translation>
 <translation id="7455730275746867420">अतिरिक्त कंटेनर व्यवस्थापित करा</translation>
@@ -9538,6 +9547,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7723388585204724670">डीफॉल्ट Chrome वर रीसेट करा</translation>
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7724711098786238351">डेमो मोड हा १८ वर्षांहून अधिक वयाच्या वापरकर्त्यांसाठी असून, तो Google च्या सेवा अटी आणि गोपनीयता धोरण यांद्वारा संचालित केला जातो. या डिव्हाइसवर एंटर केलेला डेटा वेळोवेळी पुसून टाकण्याच्या कृतीदरम्यान इतर लोक पाहू शकतात.</translation>
+<translation id="7726288096350730168">या डिव्हाइसवरून हटवा</translation>
 <translation id="7726391492136714301">तुमच्या फोनच्या सूचना आणि अ‍ॅप्स पहा</translation>
 <translation id="7727898923446098954">टॅब लपवला आहे</translation>
 <translation id="7728089752992902596">{NUM_TABS,plural, =1{हा टॅब थांबवा}other{हे टॅब थांबवा}}</translation>
@@ -11092,6 +11102,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8791157330927639737">अपडेट करण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="8791534160414513928">तुमच्या ब्राउझिंग ट्रॅफिकसह "Do Not Track" विनंती पाठवा</translation>
 <translation id="8793390639824829328">शेअर केलेले टॅब स्क्रोल आणि झूम करण्यासाठी साइट या वैशिष्ट्याचा वापर करतात</translation>
+<translation id="8793895150509408038"><ph name="SECTION_HEADER" /> सूचीमधून <ph name="SITE" /> साठी साइटचे तपशील पहा</translation>
 <translation id="879413103056696865">हॉटस्पॉट सुरू असताना, तुमचा <ph name="PHONE_NAME" /> हे करेल:</translation>
 <translation id="8794548468611058947">साइन इन करण्यासाठी तुमचा Google खाते पासवर्ड एंटर करण्याऐवजी, तुम्ही या <ph name="DEVICE_TYPE" /> साठी पिन तयार करू शकता</translation>
 <translation id="8795916974678578410">नवीन विंडो</translation>

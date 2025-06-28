@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">추천: 최근 사용하지 않은 탭이 <ph name="NUMBER_OF_TABS" />개 있습니다. 탭을 닫으시겠습니까?</translation>
 <translation id="257674075312929031">그룹화</translation>
 <translation id="2662028055331606429">평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점</translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{Chrome에서는 <ph name="AUTO_DELETE_DELAY_ONE" />일 동안 사용하지 않은 비활성 섹션의 항목을 자동으로 닫습니다. 지금 또는 언제든지 설정에서 이 기능을 사용 중지할 수 있습니다.}other{Chrome에서는 <ph name="AUTO_DELETE_DELAY_MANY" />일 동안 사용하지 않은 비활성 섹션의 항목을 자동으로 닫습니다. 지금 또는 언제든지 설정에서 이 기능을 사용 중지할 수 있습니다.}}</translation>
 <translation id="266935134738038806">사이트 방문</translation>
 <translation id="2671423594960767771">그룹 공유</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" />주 전에 업데이트됨}other{<ph name="NUM_WEEKS_MANY" />주 전에 업데이트됨}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">탭 그룹 목록이 전체 높이로 열림</translation>
 <translation id="4133493477912226187">탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="4159784952369912983">보라색</translation>
+<translation id="4203448675570432781">탭 자동 삭제 변경사항이 닫힐 때 표시되는 알림</translation>
 <translation id="427987768447457592">새 탭 그룹</translation>
 <translation id="4371591986692297148">비활성</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{항목 복원}other{항목 복원}}</translation>
@@ -121,6 +123,7 @@
 <translation id="6051432659151380973">탭 그룹이 자동으로 저장됩니다.</translation>
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">이제 가장 최근에 사용한 사본을 제외한 모든 중복 탭도 보관처리됩니다.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{선택한 항목 <ph name="TABS_COUNT_ONE" />개 닫기}other{선택한 항목 <ph name="TABS_COUNT_MANY" />개 닫기}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{그룹을 새 창으로 이동}other{그룹을 다른 창으로 이동}}</translation>
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6220820548421939212">예. 동의합니다.</translation>
@@ -157,6 +160,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" 탭 그룹을 더 이상 사용할 수 없음</translation>
 <translation id="7452985128687107478">탭 그룹이 모든 기기에서 자동으로 저장되고 업데이트됩니다.</translation>
 <translation id="747459581954555080">모두 복원</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{선택한 항목 <ph name="TABS_COUNT_ONE" />개 복원}other{선택한 항목 <ph name="TABS_COUNT_MANY" />개 복원}}</translation>
 <translation id="753732157349120914">탭 전환 도구</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google에서 찾은 리뷰 <ph name="REVIEWS_COUNT_ONE" />개}other{Google에서 찾은 리뷰 <ph name="REVIEWS_COUNT_MANY" />개}}</translation>
 <translation id="7559245342362162951">그룹 탭을 전체화면 그리드로 표시</translation>
@@ -187,6 +191,7 @@
 <translation id="8205266828577616993">탭을 위로 이동</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" />분 전에 업데이트됨}other{<ph name="NUM_MINS_MANY" />분 전에 업데이트됨}}</translation>
 <translation id="8236097722223016103">북마크에 추가</translation>
+<translation id="827881768507898324">탭 자동 삭제가 전체 높이로 열릴 때 표시되는 알림</translation>
 <translation id="8338427544764842461">탭 그룹이 여기에 저장되며 로그인된 모든 기기에서 업데이트됩니다.</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> 색상의 탭이 <ph name="TABS_COUNT_ONE" />개 포함된 공유 탭 그룹을 펼칩니다.}other{<ph name="COLOR_NAME" /> 색상의 탭이 <ph name="TABS_COUNT_MANY" />개 포함된 공유 탭 그룹을 펼칩니다.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{선택된 탭 <ph name="TABS_COUNT_ONE" />개 닫기}other{선택된 탭 <ph name="TABS_COUNT_MANY" />개 닫기}}</translation>
@@ -207,6 +212,7 @@
 <translation id="9090098097337832354">매장에 관한 정보가 닫힘</translation>
 <translation id="9114502155681725011">탭 그룹 <ph name="TITLE_OF_GROUP" />(색상: <ph name="COLOR_NAME" />)의 탭 그룹 작업 메뉴 열기</translation>
 <translation id="9169594135889675189">그룹에 새 탭 추가</translation>
+<translation id="9187834032751045001">탭 자동 삭제가 절반 높이로 열릴 때 표시되는 알림</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 펼칩니다.}other{<ph name="TABS_COUNT_MANY" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 펼칩니다.}}</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="992256792861109788">분홍색</translation>

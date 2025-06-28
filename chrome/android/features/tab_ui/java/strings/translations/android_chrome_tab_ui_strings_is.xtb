@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">Tillaga: <ph name="NUMBER_OF_TABS" /> af flipunum þínum hafa ekki verið notaðir nýlega. Viltu loka þeim?</translation>
 <translation id="257674075312929031">Hópur</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> einkunn</translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{Chrome lokar sjálfkrafa flipum í óvirka hlutanum sem hafa ekki verið notaðir í <ph name="AUTO_DELETE_DELAY_ONE" /> dag. Þú getur slökkt á þessu núna eða síðar í stillingunum.}one{Chrome lokar sjálfkrafa flipum í óvirka hlutanum sem hafa ekki verið notaðir í <ph name="AUTO_DELETE_DELAY_MANY" /> dag. Þú getur slökkt á þessu núna eða síðar í stillingunum.}other{Chrome lokar sjálfkrafa flipum í óvirka hlutanum sem hafa ekki verið notaðir í <ph name="AUTO_DELETE_DELAY_MANY" /> daga. Þú getur slökkt á þessu núna eða síðar í stillingunum.}}</translation>
 <translation id="266935134738038806">Fara á vefsvæði</translation>
 <translation id="2671423594960767771">Deila hópi</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Uppfært fyrir <ph name="NUM_WEEKS_ONE" /> viku}one{Uppfært fyrir <ph name="NUM_WEEKS_MANY" /> viku}other{Uppfært fyrir <ph name="NUM_WEEKS_MANY" /> vikum}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">Flipahópalisti, opinn í fullri hæð</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> flipar virðast vera tengdir. Viltu setja þá í hóp?</translation>
 <translation id="4159784952369912983">Purpurarauður</translation>
+<translation id="4203448675570432781">Tilkynningu um breytingar á sjálfvirkri eyðingu flipa lokað.</translation>
 <translation id="427987768447457592">Nýr flipahópur</translation>
 <translation id="4371591986692297148">Óvirkt</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Endurheimta atriði}one{Endurheimta atriði}other{Endurheimta atriði}}</translation>
@@ -121,6 +123,7 @@
 <translation id="6051432659151380973">Flipahóparnir þínir vistast sjálfkrafa</translation>
 <translation id="6054741997831917303">Verð á þessari vöru lækkaði nýlega úr <ph name="PREVIOUS_PRICE" /> í <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Allir tvíteknir flipar verða nú einnig settir í geymslu, fyrir utan það afrit sem síðast var notað.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Loka <ph name="TABS_COUNT_ONE" /> völdu atriði}one{Loka <ph name="TABS_COUNT_MANY" /> völdu atriði}other{Loka <ph name="TABS_COUNT_MANY" /> völdum atriðum}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Færa hóp í nýjan glugga}one{Færa hóp í annan glugga}other{Færa hóp í annan glugga}}</translation>
 <translation id="6193448654517602979">Velja flipa</translation>
 <translation id="6220820548421939212">Já. Ég vil vera með</translation>
@@ -157,6 +160,7 @@
 <translation id="7369451074646620503">Flipahópurinn „<ph name="TAB_GROUP_NAME" />“ er ekki tiltækur lengur</translation>
 <translation id="7452985128687107478">Flipahópar vistast og uppfærast sjálfkrafa í öllum tækjunum þínum</translation>
 <translation id="747459581954555080">Endurheimta allt</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Endurheimta <ph name="TABS_COUNT_ONE" /> valið atriði}one{Endurheimta <ph name="TABS_COUNT_MANY" /> valið atriði}other{Endurheimta <ph name="TABS_COUNT_MANY" /> valin atriði}}</translation>
 <translation id="753732157349120914">Flipaval</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> umsögn frá Google}one{<ph name="REVIEWS_COUNT_MANY" /> umsögn frá Google}other{<ph name="REVIEWS_COUNT_MANY" /> umsagnir frá Google}}</translation>
 <translation id="7559245342362162951">Sýna flipa hóps á öllum skjánum</translation>
@@ -187,6 +191,7 @@
 <translation id="8205266828577616993">Færa flipa upp</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Uppfært fyrir <ph name="NUM_MINS_ONE" /> mínútu}one{Uppfært fyrir <ph name="NUM_MINS_MANY" /> mínútu}other{Uppfært fyrir <ph name="NUM_MINS_MANY" /> mínútum}}</translation>
 <translation id="8236097722223016103">Bæta við bókamerki</translation>
+<translation id="827881768507898324">Tilkynning um sjálfvirka eyðingu flipa opnuð til fulls</translation>
 <translation id="8338427544764842461">Flipahóparnir þínir eru vistaðir hér og verða uppfærðir í öllum innskráðu tækjunum þínum</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Stækka sameiginlegan flipahóp í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_ONE" /> flipa.}one{Stækka sameiginlegan flipahóp í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}other{Stækka sameiginlegan flipahóp í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Loka <ph name="TABS_COUNT_ONE" /> völdum flipa}one{Loka <ph name="TABS_COUNT_MANY" /> völdum flipa}other{Loka <ph name="TABS_COUNT_MANY" /> völdum flipum}}</translation>
@@ -207,6 +212,7 @@
 <translation id="9090098097337832354">Upplýsingum um þessa verslun lokað</translation>
 <translation id="9114502155681725011">Opnaðu aðgerðavalmynd flipahópsins „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“.</translation>
 <translation id="9169594135889675189">Bæta nýjum flipa við hóp</translation>
+<translation id="9187834032751045001">Tilkynning um sjálfvirka eyðingu flipa opin til hálfs.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Stækka flipahóp í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_ONE" /> flipa.}one{Stækka flipahóp í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}other{Stækka flipahóp í litnum „<ph name="COLOR_NAME" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}}</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="992256792861109788">Bleikur</translation>

@@ -129,6 +129,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" />에서 관리함</translation>
 <translation id="2498359688066513246">고객센터</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>
+<translation id="2533138527374486328">사용 설정하면 사이트에서 로컬 네트워크의 모든 기기에 연결하도록 요청할 수 있습니다. 사용 중지하면 사이트에서 로컬 네트워크의 기기에 연결할 수 없습니다.</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2570922361219980984">이 기기의 위치 정보 액세스도 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="257931822824936280">펼쳐짐 - 접으려면 클릭</translation>
@@ -424,6 +425,7 @@
 <translation id="5968921426641056619">웹 주소 입력</translation>
 <translation id="5975083100439434680">축소</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">디스커버 피드 사용 설정</translation>
 <translation id="6015775454662021376">기기에 대한 이 사이트의 액세스를 제어합니다.</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6042308850641462728">자세히</translation>
@@ -511,6 +513,7 @@
 <translation id="7188508872042490670">기기 내 사이트 데이터</translation>
 <translation id="7201549776650881587">이 작업을 실행하면 <ph name="ORIGIN" />의 모든 하위 사이트 또는 홈 화면에 있는 앱에서 저장한 데이터와 쿠키가 모두 삭제됩니다.</translation>
 <translation id="7203150201908454328">펼쳐짐</translation>
+<translation id="7213166370492037743">사이트에서 로컬 네트워크의 모든 기기에 연결하도록 허용하지 않음</translation>
 <translation id="7219254577985949841">사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="723171743924126238">이미지 선택</translation>
 <translation id="7243308994586599757">화면 하단에서 옵션 선택 가능</translation>

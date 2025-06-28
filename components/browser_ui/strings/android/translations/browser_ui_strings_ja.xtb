@@ -129,6 +129,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> で管理</translation>
 <translation id="2498359688066513246">ヘルプとフィードバック</translation>
 <translation id="2501278716633472235">戻る</translation>
+<translation id="2533138527374486328">オンにすると、サイトはローカル ネットワーク上のデバイスへの接続を要求できます。オフにすると、サイトはローカル ネットワーク上のデバイスに接続できません。</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="2570922361219980984">位置情報へのアクセスがデバイスでもオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="257931822824936280">展開されています - クリックすると折りたたまれます。</translation>
@@ -512,6 +513,7 @@
 <translation id="7188508872042490670">デバイス上のサイトデータ</translation>
 <translation id="7201549776650881587">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトまたはホーム画面の同アプリにより保存されたデータと Cookie がすべて削除されます</translation>
 <translation id="7203150201908454328">展開表示中</translation>
+<translation id="7213166370492037743">サイトにローカル ネットワーク上のデバイスへの接続を許可しない</translation>
 <translation id="7219254577985949841">サイトデータを削除しますか？</translation>
 <translation id="723171743924126238">画像を選択</translation>
 <translation id="7243308994586599757">画面の下の方にオプションがあります</translation>

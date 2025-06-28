@@ -360,6 +360,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1232569758102978740">Di-deitl</translation>
 <translation id="1233497634904001272">Cyffyrddwch â'ch allwedd ddiogelwch eto i gwblhau'r cais.</translation>
 <translation id="1233721473400465416">Leoliad</translation>
+<translation id="1233835246554936745">{0,plural, =1{Cadw 1 Eitem yn y Cyfrif}zero{Cadw # Eitemau yn y Cyfrif}two{Cadw # Eitem yn y Cyfrif}few{Cadw # Eitem yn y Cyfrif}many{Cadw # Eitem yn y Cyfrif}other{Cadw # Eitem yn y Cyfrif}}</translation>
 <translation id="1234736487471201993">Creu Cod QR ar gyfer y llun hwn</translation>
 <translation id="1234808891666923653">Gweithwyr Gwasanaeth</translation>
 <translation id="1235458158152011030">Rhwydweithiau hysbys</translation>
@@ -5665,6 +5666,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4918844574251943176">Llun wedi'i gopïo</translation>
 <translation id="4921348630401250116">Testun i Leferydd</translation>
 <translation id="4922104989726031751">I ddefnyddio Rheolwr Cyfrineiriau gyda'ch system weithredu, ail-lansiwch Chromium a chaniatáu mynediad at reolwr cyfrineiriau eich cyfrifiadur. Bydd eich tabiau yn ailagor ar ôl ail-lansio.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Cadw 1 eitem yn y cyfrif}zero{Cadw # eitemau yn y cyfrif}two{Cadw # eitem yn y cyfrif}few{Cadw # eitem yn y cyfrif}many{Cadw # eitem yn y cyfrif}other{Cadw # eitem yn y cyfrif}}</translation>
 <translation id="492363500327720082">Wrthi’n dadosod <ph name="APP_NAME" />...</translation>
 <translation id="4923977675318667854">Dangos Grwpiau Tab</translation>
 <translation id="4924002401726507608">Cyflwyno Adborth</translation>
@@ -9555,6 +9557,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="7722040605881499779">Roedd angen diweddaru: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Ailosod i Chrome Ddiofyn</translation>
 <translation id="7724603315864178912">Torri</translation>
+<translation id="7724711098786238351">Mae modd demo wedi'i fwriadu ar gyfer defnyddwyr 18+ oed ac mae'n cael ei reoli gan Delerau Gwasanaeth a Pholisi Preifatrwydd Google. Gall data a roddir ar y ddyfais hon gael ei weld gan eraill rhwng y dileu cyfnodol.</translation>
 <translation id="7726288096350730168">Dileu o'r ddyfais hon</translation>
 <translation id="7726391492136714301">Gweld hysbysiadau ac apiau eich ffôn</translation>
 <translation id="7727898923446098954">Tab wedi'i guddio</translation>
@@ -11049,6 +11052,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8749805710397399240">Methu â chastio'ch sgrîn. Gwiriwch y caniatâd Recordio'r Sgrîn yn y Dewisiadau System.</translation>
 <translation id="8749826920799243530">Nid yw'r ddyfais wedi'i chofrestru</translation>
 <translation id="8749863574775030885">Cael mynediad at ddyfeisiau USB gan werthwr anhysbys</translation>
+<translation id="8749865622265861882">Rydych chi'n defnyddio dyfais demo</translation>
 <translation id="8750155211039279868">Mae <ph name="ORIGIN" /> eisiau cysylltu â phorth cyfresol</translation>
 <translation id="8750346984209549530">APN rhwydwaith symudol</translation>
 <translation id="8750786237117206586">Rheoli gosodiadau sain ChromeOS Flex</translation>

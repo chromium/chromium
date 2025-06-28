@@ -120,6 +120,7 @@
 <translation id="2569974318947988067">Chrome спробує перейти на протокол HTTPS</translation>
 <translation id="2571392474191184472">Вебпереглядачем Chrome керує адміністратор вашої організації</translation>
 <translation id="2574930892358684005">Цей профіль Chrome уже використовує <ph name="EXISTING_USER" />. Щоб переглядати веб-сторінки окремо, ви можете створити власний профіль Chrome.</translation>
+<translation id="2579190314336775785">Паролі можна видаляти лише за межами Chrome</translation>
 <translation id="2580411288591421699">Поки Google Chrome працює, неможливо встановити версію, аналогічну поточній. Закрийте Google Chrome і повторіть спробу.</translation>
 <translation id="2586406160782125153">Дані веб-перегляду буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Не вдалося кешувати завантажену програму встановлення. Помилка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>

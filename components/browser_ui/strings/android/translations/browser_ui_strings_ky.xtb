@@ -129,6 +129,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> тарабынан башкарылат</translation>
 <translation id="2498359688066513246">Жардам/пикир билдирүү</translation>
 <translation id="2501278716633472235">Артка кайтуу</translation>
+<translation id="2533138527374486328">Бул күйгүзүлсө, сайттар жергиликтүү тармактагы түзмөккө туташууга уруксат сурай алышат. Бул өчүрүлсө, сайттар жергиликтүү тармактагы түзмөктөргө туташа алышпайт.</translation>
 <translation id="2546283357679194313">Кукилер жана сайттын дайындары</translation>
 <translation id="2570922361219980984">Жайгашкан жерди аныктоо жөндөөсү бул түзмөктө өчүрүлгөн. Аны <ph name="BEGIN_LINK" />Android параметрлерине<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>
 <translation id="257931822824936280">Жайылып көрсөтүлгөн – жыйнап коюу үчүн чыкылдатыңыз.</translation>
@@ -424,6 +425,7 @@
 <translation id="5968921426641056619">Веб дарегин киргизиңиз</translation>
 <translation id="5975083100439434680">Кичирейтүү</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />, <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Сунуштар түрмөгүн күйгүзүү</translation>
 <translation id="6015775454662021376">Бул сайттын түзмөгүңүзгө кирүү мүмкүнчүлүгүн көзөмөлдөңүз</translation>
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6042308850641462728">Дагы</translation>
@@ -511,6 +513,7 @@
 <translation id="7188508872042490670">Түзмөктөгү сайттын маалыматы</translation>
 <translation id="7201549776650881587"><ph name="ORIGIN" /> менен байланышкан сайттар жана анын башкы экрандагы колдонмосу сактаган бардык маалымат жана cookie файлдары өчүрүлөт</translation>
 <translation id="7203150201908454328">Жайылып көрсөтүлгөн</translation>
+<translation id="7213166370492037743">Сайттарга жергиликтүү тармактагы түзмөккө туташууга тыюу салуу</translation>
 <translation id="7219254577985949841">Сайттагы маалымат өчүрүлсүнбү?</translation>
 <translation id="723171743924126238">Сүрөттөрдү тандаңыз</translation>
 <translation id="7243308994586599757">Параметрлер экрандын түбүндө берилген</translation>

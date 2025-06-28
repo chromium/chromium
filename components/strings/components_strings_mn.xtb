@@ -2158,6 +2158,7 @@
 <translation id="4635278307999235413">Админы консол руу өгөгдөл илгээж байна</translation>
 <translation id="4636930964841734540">Мэдээлэл</translation>
 <translation id="4640225694041297329">Сүүлийн 7 хоногийн илэрцийг харуулах</translation>
+<translation id="4642296966515958616">Энэ табын бүлэгт нэгдэхийн тулд Chrome-г шинэчилнэ үү</translation>
 <translation id="464342062220857295">Онцлогийг хайх</translation>
 <translation id="4644567637638438744">Файлуудыг зөвхөн та Microsoft OneDrive-т нэвтэрсэн тохиолдолд байршуулах боломжтой</translation>
 <translation id="4644670975240021822">Нүүрээр нь доош харуулж, хуудасны урвуу дарааллаар</translation>
@@ -2931,6 +2932,7 @@
 <translation id="5967592137238574583">Харилцагчийн мэдээллийг засах</translation>
 <translation id="5967867314010545767">Түүхэн хэсгээс устгах</translation>
 <translation id="5968022600320704045">Хайлтын илэрц байхгүй</translation>
+<translation id="5968400720580217226">ХОУ-ы горим</translation>
 <translation id="5969199813874624822">Үнийг хадгалж, хянах</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Зургаа дахь хуйлмал</translation>
@@ -3150,6 +3152,7 @@
 <translation id="6326947323444967009">iOS-н тохиргоонд Chrome-г системийн өгөгдмөл хөтөч болгон тохируулна уу</translation>
 <translation id="6327065120806001832">дотоод сүлжээний хандалт</translation>
 <translation id="6328639280570009161">Сүлжээний таамаглалыг идэвхгүй болгох гээд үзээрэй</translation>
+<translation id="6329815962353376655">&lt;Асуулт шивэх&gt;</translation>
 <translation id="6334834493885103305">Одоо та Affirm, Zip, Klarna-г ашиглан цагийн явцад төлж болно</translation>
 <translation id="6335029926534404762">Биеийн тамирын гутал</translation>
 <translation id="6336948221660696475">VR-г ашиглахыг зөвшөөрөөгүй</translation>
@@ -3316,6 +3319,7 @@
 <translation id="6587893660316489419">Дугтуй B5</translation>
 <translation id="6587923378399804057">Таны хуулсан холбоос</translation>
 <translation id="6591833882275308647">Таны <ph name="DEVICE_TYPE" />-г удирдаагүй байна</translation>
+<translation id="6595495738567740002">Энэ төхөөрөмжөөс Google-н күүкиг устгахын тулд <ph name="BEGIN_LINK" />Chrome-с гарна уу<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Шифрлэлтийн сонголтууд</translation>
 <translation id="6596573334527383067">Өчигдрийн илэрцийг харуулах</translation>
 <translation id="6597665340361269064">90 хэм</translation>
@@ -3862,6 +3866,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Та үүнийг Google-н бүтээгдэхүүнүүдэд ашиглах боломжтой</translation>
 <translation id="7523408071729642236">Үйлдвэрлэл</translation>
+<translation id="7524958309155133228"><ph name="ENGINE" />-с асуух</translation>
 <translation id="7525067979554623046">Үүсгэх</translation>
 <translation id="7525804896095537619">Нэр хоосон байж болохгүй</translation>
 <translation id="7526934274050461096">Таны энэ сайтад хийсэн холболт хувийн биш байна</translation>
@@ -4706,6 +4711,7 @@
 <translation id="9004367719664099443">Виртуал орчны (VR) харилцан үйлдлийг хийж байна</translation>
 <translation id="9005998258318286617">PDF документыг ачаалж чадсангүй.</translation>
 <translation id="9008201768610948239">Алгас</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Байхгүй}=1{1 сайтаас}other{# сайтаас}}</translation>
 <translation id="9012194306129927220">Одоо та Affirm, Zip-г ашиглан цагийн явцад төлж болно</translation>
 <translation id="9014705027639070815">Таны зочилсон сайтууд зарынхаа гүйцэтгэлийг хэмжихэд туслах мэдээллийг Chrome-с хүсэх боломжтой. Chrome таныг сайтад зочилсны дараа худалдан авалт хийсэн эсэх зэрэг хязгаарлагдмал төрлийн өгөгдлийг цуглуулахыг сайтуудад зөвшөөрдөг.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" />-н аюулгүй байдлын кодоо оруулна уу</translation>
@@ -4728,6 +4734,7 @@
 <translation id="9042617223719777575">Багтаамж ихтэй</translation>
 <translation id="9042827002460091668">Интернэт холболтоо шалгаад, дахин оролдоно уу</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> таны дотоод сүлжээн дээрх аливаа төхөөрөмжийг хайх, холбогдохыг хүсэж байна</translation>
 <translation id="9046864189129893978">Микрофонууд (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Эдгээр үйлдэлд <ph name="POLICY_NAME" /> бодлогыг <ph name="POLICY_VALUE" /> болгож тохируулсан байхыг шаардана: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 инч</translation>

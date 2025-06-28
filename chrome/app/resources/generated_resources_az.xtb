@@ -354,6 +354,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1232569758102978740">Başlıqsız</translation>
 <translation id="1233497634904001272">Sorğunu tamamlamaq üçün yenidən güvənlik açarına toxunun.</translation>
 <translation id="1233721473400465416">Lokal</translation>
+<translation id="1233835246554936745">{0,plural, =1{1 elementi hesabda yadda saxlayın}other{# elementi hesabda yadda saxlayın}}</translation>
 <translation id="1234736487471201993">Bu şəkil üçün QR kodu yaradın</translation>
 <translation id="1234808891666923653">Xidmət İşçiləri</translation>
 <translation id="1235458158152011030">Tanış şəbəkələr</translation>
@@ -5646,6 +5647,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4918844574251943176">Şəkil kopyalandı</translation>
 <translation id="4921348630401250116">Mətndən nitqə</translation>
 <translation id="4922104989726031751">Əməliyyat sisteminiz ilə Parol menecerindən istifadə üçün Chromium-u yenidən başladın və kompüterin parol menecerinə giriş imkanı verin. Yenidən başlatmadan sonra tablar təkrar açılacaq.</translation>
+<translation id="4923561999941435531">{0,plural, =1{1 elementi hesabda yadda saxlayın}other{# elementi hesabda yadda saxlayın}}</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> tətbiqinin quraşdırılması ləğv edilir...</translation>
 <translation id="4923977675318667854">Tab qruplarını göstərin</translation>
 <translation id="4924002401726507608">Rəy göndərin</translation>
@@ -9525,6 +9527,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="7722040605881499779">Güncəlləmə lazımdır: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Defolt Chrome-a sıfırlayın</translation>
 <translation id="7724603315864178912">Kəsin</translation>
+<translation id="7724711098786238351">Demo rejimi 18+ istifadəçilər üçün nəzərdə tutulub və Google-un Xidmət Şərtləri və Məxfilik Siyasəti ilə tənzimlənir. Bu cihazda daxil edilmiş məlumatlara müntəzəm silinmə dövrləri ərzində başqaları baxa bilər.</translation>
 <translation id="7726288096350730168">Bu cihazdan silin</translation>
 <translation id="7726391492136714301">Telefonunuzun bildirişlərinə və tətbiqlərinə baxın</translation>
 <translation id="7727898923446098954">Tab gizlədildi</translation>
@@ -11019,6 +11022,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8749805710397399240">Ekranınızı yayımlamaq mümkün deyil. Sistem Tərcihlərində Ekran Yazma icazəsini yoxlayın.</translation>
 <translation id="8749826920799243530">Cihaz qeydiyyatdan keçməyib</translation>
 <translation id="8749863574775030885">Naməlum vendordan USB cihazlara giriş</translation>
+<translation id="8749865622265861882">Demo cihazdan istifadə edirsiniz</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> silsilə porta qoşulmaq istəyir</translation>
 <translation id="8750346984209549530">Mobil APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex audio ayarlarını idarə edin</translation>

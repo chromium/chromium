@@ -2154,6 +2154,7 @@
 <translation id="4635278307999235413">ଆଡମିନ କନସୋଲକୁ ଡାଟା ପଠାଯାଉଛି</translation>
 <translation id="4636930964841734540">ସୂଚନା</translation>
 <translation id="4640225694041297329">ଗତ 7 ଦିନର ଫଳାଫଳ ଦେଖାନ୍ତୁ</translation>
+<translation id="4642296966515958616">ଏହି ଟାବ ଗ୍ରୁପରେ ଯୋଗ ଦେବା ପାଇଁ, Chromeକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="464342062220857295">ଫିଚରଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4644567637638438744">ଆପଣ Microsoft OneDriveରେ ସାଇନ ଇନ ଥିଲେ କେବଳ ଫାଇଲଗୁଡ଼ିକୁ ଅପଲୋଡ କରାଯାଇପାରିବ</translation>
 <translation id="4644670975240021822">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଡାଉନ୍</translation>
@@ -2927,6 +2928,7 @@
 <translation id="5967592137238574583">ଯୋଗାଯୋଗ ସୂଚନା ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="5967867314010545767">ଇତିବୃତ୍ତିରୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="5968022600320704045">କୌଣସି ସର୍ଚ୍ଚ ଫଳାଫଳ ନାହିଁ</translation>
+<translation id="5968400720580217226">AI ମୋଡ</translation>
 <translation id="5969199813874624822">ସେଭ କରି ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ଷଷ୍ଠ ରୋଲ୍</translation>
@@ -3146,6 +3148,7 @@
 <translation id="6326947323444967009">iOS ସେଟିଂସରେ Chromeକୁ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="6327065120806001832">ସ୍ଥାନୀୟ ନେଟୱାର୍କକୁ ଆକ୍ସେସ</translation>
 <translation id="6328639280570009161">ନେଟ୍‌ୱର୍କ ପୁର୍ବାନୁମାନ ଅକ୍ଷମ କରି ଦେଖନ୍ତୁ</translation>
+<translation id="6329815962353376655">&lt;ଏକ ପ୍ରଶ୍ନ ଟାଇପ କରନ୍ତୁ&gt;</translation>
 <translation id="6334834493885103305">ବର୍ତ୍ତମାନ ଆପଣ Affirm Zip କିମ୍ବା Klarna ବ୍ୟବହାର କରି ସମୟ ଅନୁସାରେ ପେମେଣ୍ଟ କରିପାରିବେ</translation>
 <translation id="6335029926534404762">ଆଥଲେଟିକ ଜୋତା</translation>
 <translation id="6336948221660696475">VRକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
@@ -3859,6 +3862,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">ଆପଣ ଏହାକୁ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="7523408071729642236">ଉତ୍ପାଦନ</translation>
+<translation id="7524958309155133228"><ph name="ENGINE" />କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="7525067979554623046">ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7525804896095537619">ନାମ ଖାଲି ରହିପାରିବ ନାହିଁ</translation>
 <translation id="7526934274050461096">ଏହି ସାଇଟ୍‌କୁ ଆପଣଙ୍କର ସଂଯୋଗ ବ୍ୟକ୍ତିଗତ ନୁହେଁ</translation>
@@ -4726,6 +4730,7 @@
 <translation id="9042617223719777575">ଅଧିକ କ୍ଷମତା</translation>
 <translation id="9042827002460091668">ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ କନେକ୍ସନ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଯେ କୌଣସି ଡିଭାଇସକୁ ଖୋଜିବା ଏବଂ କନେକ୍ଟ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="9046864189129893978">ମାଇକ୍ରୋଫୋନ (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">ଏହି କାର୍ଯ୍ୟ ପାଇଁ <ph name="POLICY_NAME" /> ନୀତିକୁ <ph name="POLICY_VALUE" />ରେ ସେଟ କରାଯିବା ଆବଶ୍ୟକ: <ph name="ACTION_LIST" />।</translation>
 <translation id="9048662076076074925">24 x 36 ଇଞ୍ଚ</translation>

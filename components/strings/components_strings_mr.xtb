@@ -3319,6 +3319,7 @@
 <translation id="6587893660316489419">एन्व्हलप बी५</translation>
 <translation id="6587923378399804057">तुम्ही कॉपी केलेली लिंक</translation>
 <translation id="6591833882275308647">तुमचे <ph name="DEVICE_TYPE" /> व्यवस्थापित केलेले नाही</translation>
+<translation id="6595495738567740002">या डिव्हाइसवरून Google कुकी हटवण्यासाठी, <ph name="BEGIN_LINK" />Chrome मधून साइन आउट करणे<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">एंक्रिप्शन पर्याय</translation>
 <translation id="6596573334527383067">कालचे परिणाम दाखवा</translation>
 <translation id="6597665340361269064">९० अंश</translation>
@@ -4711,6 +4712,7 @@
 <translation id="9004367719664099443">VR सेशन प्रगतीपथावर आहे</translation>
 <translation id="9005998258318286617">पीडीएफ दस्तऐवज लोड करण्यात अपयश आले.</translation>
 <translation id="9008201768610948239">दुर्लक्ष करा</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{काहीही नाही}=1{१ साइटकडून}other{# साइटकडून}}</translation>
 <translation id="9012194306129927220">तुम्ही आता Affirm किंवा Zip वापरून कालांतराने पेमेंट करू शकता</translation>
 <translation id="9014705027639070815">तुम्ही भेट दिलेल्या साइट या त्यांच्या जाहिरातींच्या परफॉर्मन्सचे मापन करण्यात मदत करण्यासाठी Chrome कडे माहिती मागू शकतात. साइटला भेट दिल्यावर तुम्ही खरेदी केली की नाही यासारखा मर्यादित प्रकारचा डेटा Chrome हे साइटना गोळा करू देते.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> साठी तुमचा सुरक्षा कोड एंटर करा</translation>

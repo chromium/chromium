@@ -3319,6 +3319,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6587893660316489419">Koverta B5</translation>
 <translation id="6587923378399804057">Link koji ste kopirali</translation>
 <translation id="6591833882275308647">Vašim uređajem <ph name="DEVICE_TYPE" /> se ne upravlja</translation>
+<translation id="6595495738567740002">Da izbrišete Googleove kolačiće s uređaja, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Opcije za šifriranje</translation>
 <translation id="6596573334527383067">Prikazivanje rezultata od jučer</translation>
 <translation id="6597665340361269064">90 stepeni</translation>
@@ -4711,6 +4712,7 @@ Dodatni detalji:
 <translation id="9004367719664099443">VR sesija je u toku</translation>
 <translation id="9005998258318286617">Učitavanje PDF dokumenta nije uspjelo.</translation>
 <translation id="9008201768610948239">Zanemari</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Ništa}=1{S 1 web lokacije}one{Sa # web lokacije}few{Sa # web lokacije}other{Sa # web lokacija}}</translation>
 <translation id="9012194306129927220">Sada možete plaćati u ratama putem Affirma ili Zipa</translation>
 <translation id="9014705027639070815">Web lokacije koje posjetite mogu od Chromea zatražiti informacije koje im pomažu da izmjere performanse svojih oglasa. Chrome dozvoljava web lokacijama da prikupljaju ograničene vrste podataka, npr. jeste li izvršili kupovinu nakon što ste posjetili web lokaciju.</translation>
 <translation id="9018120810758822233">Unesite sigurnosni kôd za <ph name="CREDIT_CARD" /></translation>

@@ -46,6 +46,7 @@
 <translation id="2569352796411618312">সাজেশন: সব ট্যাবের মধ্যে থেকে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্প্রতি ব্যবহার করা হয়নি। সেগুলি বন্ধ করে দিতে চান?</translation>
 <translation id="257674075312929031">গ্রুপ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> রেটিং</translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{Chrome ইনঅ্যাক্টিভ বিভাগের সেইসব আইটেম অটোমেটিক বন্ধ করে দেয়, যা আপনি <ph name="AUTO_DELETE_DELAY_ONE" /> দিন ব্যবহার করেননি। আপনি সেটিংস থেকে এটি এখনই বা যেকোনও সময় বন্ধ করতে পারবেন।}one{Chrome ইনঅ্যাক্টিভ বিভাগের সেইসব আইটেম অটোমেটিক বন্ধ করে দেয়, যা আপনি <ph name="AUTO_DELETE_DELAY_MANY" /> দিন ব্যবহার করেননি। আপনি সেটিংস থেকে এটি এখনই বা যেকোনও সময় বন্ধ করতে পারবেন।}other{Chrome ইনঅ্যাক্টিভ বিভাগের সেইসব আইটেম অটোমেটিক বন্ধ করে দেয়, যা আপনি <ph name="AUTO_DELETE_DELAY_MANY" /> দিন ব্যবহার করেননি। আপনি সেটিংস থেকে এটি এখনই বা যেকোনও সময় বন্ধ করতে পারবেন।}}</translation>
 <translation id="266935134738038806">সাইট দেখুন</translation>
 <translation id="2671423594960767771">গ্রুপ শেয়ার করুন</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> সপ্তাহ আগে আপডেট করা হয়েছে}one{<ph name="NUM_WEEKS_MANY" /> সপ্তাহ আগে আপডেট করা হয়েছে}other{<ph name="NUM_WEEKS_MANY" /> সপ্তাহ আগে আপডেট করা হয়েছে}}</translation>
@@ -80,6 +81,7 @@
 <translation id="4076226664360336092">ট্যাব গ্রুপের তালিকা, পূর্ণ উচ্চতায় খোলা আছে</translation>
 <translation id="4133493477912226187">মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
 <translation id="4159784952369912983">বেগুনি</translation>
+<translation id="4203448675570432781">'ট্যাব অটোমেটিক মুছে দেওয়া' সংক্রান্ত পরিবর্তন বন্ধ হওয়ার ব্যাপারে বিজ্ঞপ্তি।</translation>
 <translation id="427987768447457592">নতুন ট্যাব গ্রুপ</translation>
 <translation id="4371591986692297148">চালু নেই</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{আইটেম ফিরিয়ে আনুন}one{আইটেম ফিরিয়ে আনুন}other{আইটেমগুলি ফিরিয়ে আনুন}}</translation>
@@ -189,6 +191,7 @@
 <translation id="8205266828577616993">ট্যাব উপরে সরান</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> মিনিট আগে আপডেট করা হয়েছে}one{<ph name="NUM_MINS_MANY" /> মিনিট আগে আপডেট করা হয়েছে}other{<ph name="NUM_MINS_MANY" /> মিনিট আগে আপডেট করা হয়েছে}}</translation>
 <translation id="8236097722223016103">বুকমার্কে যোগ করুন</translation>
+<translation id="827881768507898324">'ট্যাব অটোমেটিক মুছে দেওয়া' সংক্রান্ত বটম শিট সম্পূর্ণরূপে খোলার বিজ্ঞপ্তি</translation>
 <translation id="8338427544764842461">আপনার ট্যাব গ্রুপ এখানে সেভ করা হয়েছে এবং আপনার সবকটি সাইন-ইন করা ডিভাইসে আপডেট হয়ে যায়</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_ONE" />টি ট্যাব বন্ধ আছে}one{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}other{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}}</translation>
@@ -209,6 +212,7 @@
 <translation id="9090098097337832354">বন্ধ হওয়া এই স্টোরের বিষয়ে তথ্য</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> রঙের ট্যাব গ্রুপ <ph name="TITLE_OF_GROUP" />-এর জন্য ট্যাব গ্রুপের অ্যাকশন মেনু খুলুন।</translation>
 <translation id="9169594135889675189">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
+<translation id="9187834032751045001">'ট্যাব অটোমেটিক মুছে দেওয়া' সংক্রান্ত বটম শিট অর্ধেক খোলার বিজ্ঞপ্তি।</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="992256792861109788">গোলাপী</translation>

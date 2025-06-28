@@ -356,6 +356,7 @@
 <translation id="1232569758102978740">未命名</translation>
 <translation id="1233497634904001272">請再次輕觸安全金鑰，即可完成要求。</translation>
 <translation id="1233721473400465416">語言代碼</translation>
+<translation id="1233835246554936745">{0,plural, =1{將 1 個項目儲存到帳戶}other{將 # 個項目儲存到帳戶}}</translation>
 <translation id="1234736487471201993">為這張圖片建立 QR 圖碼</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">已知網路</translation>
@@ -5644,6 +5645,7 @@
 <translation id="4918844574251943176">已複製圖片</translation>
 <translation id="4921348630401250116">文字轉語音</translation>
 <translation id="4922104989726031751">如要在作業系統上使用 Google 密碼管理工具，請重新啟動 Chromium，並允許存取電腦的密碼管理工具。分頁會在重新啟動之後再次開啟。</translation>
+<translation id="4923561999941435531">{0,plural, =1{將 1 個項目儲存到帳戶}other{將 # 個項目儲存到帳戶}}</translation>
 <translation id="492363500327720082">正在解除安裝「<ph name="APP_NAME" />」...</translation>
 <translation id="4923977675318667854">顯示分頁群組</translation>
 <translation id="4924002401726507608">提供意見</translation>
@@ -9520,6 +9522,7 @@
 <translation id="7722040605881499779">更新所需空間：<ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">重設為預設的 Chrome</translation>
 <translation id="7724603315864178912">剪下</translation>
+<translation id="7724711098786238351">展示模式適用於 18 歲以上的使用者，並受 Google 的《服務條款》和《隱私權政策》規範。下次系統執行定時抹除作業前，這部裝置的使用者可能都會看見輸入的資料。</translation>
 <translation id="7726288096350730168">從這部裝置刪除</translation>
 <translation id="7726391492136714301">查看手機上的通知和應用程式</translation>
 <translation id="7727898923446098954">已隱藏分頁</translation>
@@ -9857,7 +9860,7 @@
 <translation id="7953236668995583915">重新載入這個頁面，即可將更新後的設定套用到此網站</translation>
 <translation id="7953669802889559161">輸入法</translation>
 <translation id="7953955868932471628">管理快速鍵</translation>
-<translation id="7955105108888461311">親自詢問</translation>
+<translation id="7955105108888461311">當面詢問</translation>
 <translation id="7955177647836564772">如果 Smart Lock 已開啟，且手機處於解鎖狀態，你就不必輸入密碼或 PIN 碼</translation>
 <translation id="7956373551960864128">已儲存的印表機</translation>
 <translation id="7956918070009672177">裝置上沒有<ph name="LANGUAGE" />語音。請連線至網際網路，然後再試一次。</translation>
@@ -11015,6 +11018,7 @@
 <translation id="8749805710397399240">無法投放螢幕。請檢查「系統偏好設定」中的「螢幕畫面錄製」權限。</translation>
 <translation id="8749826920799243530">裝置未註冊</translation>
 <translation id="8749863574775030885">存取製造商不明的 USB 裝置</translation>
+<translation id="8749865622265861882">你正在使用展示機</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> 要求與序列埠連線</translation>
 <translation id="8750346984209549530">行動數據 APN</translation>
 <translation id="8750786237117206586">管理 ChromeOS Flex 音訊設定</translation>

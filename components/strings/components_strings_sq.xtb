@@ -2157,6 +2157,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4635278307999235413">Të dhënat po dërgohen te paneli i administratorit</translation>
 <translation id="4636930964841734540">Informacion</translation>
 <translation id="4640225694041297329">Shfaq rezultatet nga 7 ditët e fundit</translation>
+<translation id="4642296966515958616">Për t'u bashkuar në këtë grup skedash, përditëso Chrome</translation>
 <translation id="464342062220857295">Veçoritë e kërkimit</translation>
 <translation id="4644567637638438744">Skedarët mund të ngarkohen vetëm nëse je identifikuar në Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Renditja e kundërt e kthyer poshtë</translation>
@@ -2930,6 +2931,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5967592137238574583">Modifiko informacionet e kontaktit</translation>
 <translation id="5967867314010545767">Hiqe nga historiku</translation>
 <translation id="5968022600320704045">Asnjë rezultat kërkimi</translation>
+<translation id="5968400720580217226">Modaliteti i IA-së</translation>
 <translation id="5969199813874624822">Gjej dhe gjurmo çmimet</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Ruli i gjashtë</translation>
@@ -3149,6 +3151,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6326947323444967009">Cakto Chrome si shfletuesin e parazgjedhur të sistemit te cilësimet e iOS</translation>
 <translation id="6327065120806001832">qasja në rrjetin lokal</translation>
 <translation id="6328639280570009161">Provo çaktivizimin e parashikimit të rrjetit</translation>
+<translation id="6329815962353376655">&lt;Shkruaj një pyetje&gt;</translation>
 <translation id="6334834493885103305">Tani mund të paguash me kalimin e kohës duke përdorur Affirm, Zip ose Klarna</translation>
 <translation id="6335029926534404762">Atlete</translation>
 <translation id="6336948221660696475">VR-ja nuk u lejua</translation>
@@ -3315,6 +3318,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6587893660316489419">Zarf B5</translation>
 <translation id="6587923378399804057">Lidhja që kopjove</translation>
 <translation id="6591833882275308647">Pajisja jote <ph name="DEVICE_TYPE" /> nuk është e menaxhuar</translation>
+<translation id="6595495738567740002">Për të fshirë kukit e Google nga kjo pajisje, <ph name="BEGIN_LINK" />dil nga Chrome<ph name="END_LINK" />.</translation>
 <translation id="6596325263575161958">Opsionet e enkriptimit</translation>
 <translation id="6596573334527383067">Shfaq rezultatet nga dje</translation>
 <translation id="6597665340361269064">90 gradë</translation>
@@ -3861,6 +3865,7 @@ Detaje shtesë:
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Mund ta përdorësh atë nëpër produktet e Google</translation>
 <translation id="7523408071729642236">Prodhimtaria</translation>
+<translation id="7524958309155133228">Pyet <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Krijo</translation>
 <translation id="7525804896095537619">Emri nuk mund të jetë bosh</translation>
 <translation id="7526934274050461096">Lidhja jote me këtë faqe nuk është private</translation>
@@ -4705,6 +4710,7 @@ Detaje shtesë:
 <translation id="9004367719664099443">Sesioni VR në proces</translation>
 <translation id="9005998258318286617">Ngarkimi i dokumentit PDF dështoi.</translation>
 <translation id="9008201768610948239">Shpërfill</translation>
+<translation id="9011281744469077577">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt}other{Nga # sajte}}</translation>
 <translation id="9012194306129927220">Tani mund të paguash me kalimin e kohës duke përdorur Affirm ose Zip</translation>
 <translation id="9014705027639070815">Sajtet që viziton mund të kërkojnë informacione nga Chrome për t'i ndihmuar ato të matin performancën e reklamave të tyre. Chrome lejon që sajtet të mbledhin lloje të kufizuara të të dhënave, si p.sh. nëse ke bërë një blerje pas vizitës në një sajt.</translation>
 <translation id="9018120810758822233">Fut kodin tënd të sigurisë për <ph name="CREDIT_CARD" /></translation>
@@ -4727,6 +4733,7 @@ Detaje shtesë:
 <translation id="9042617223719777575">Kapacitet i madh</translation>
 <translation id="9042827002460091668">Kontrollo lidhjen e internetit dhe provo përsëri</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> dëshiron të kërkojë dhe të lidhet me çdo pajisje në rrjetin tënd lokal</translation>
 <translation id="9046864189129893978">Mikrofonat (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Këto veprime kërkojnë që politika <ph name="POLICY_NAME" /> të caktohet si "<ph name="POLICY_VALUE" />": <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 inç</translation>

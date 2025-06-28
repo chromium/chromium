@@ -129,6 +129,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="2490684707762498678">Xestionadas por <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Axuda e comentarios</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
+<translation id="2533138527374486328">Cando esta opción está activada, os sitios poden pedir permiso para conectarse a calquera dispositivo da túa rede local. Cando está desactivada, os sitios non poden establecer esa conexión.</translation>
 <translation id="2546283357679194313">Cookies e datos dos sitios</translation>
 <translation id="2570922361219980984">O acceso á localización tamén está desactivado neste dispositivo. Actívao na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vista ampliada (fai clic para contraela).</translation>
@@ -424,6 +425,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5968921426641056619">Indica o enderezo web</translation>
 <translation id="5975083100439434680">Afastar</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />: <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Activar o feed de Discover</translation>
 <translation id="6015775454662021376">Controla o acceso deste sitio ao dispositivo</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6042308850641462728">Máis</translation>
@@ -511,6 +513,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7188508872042490670">Datos dos sitios no dispositivo</translation>
 <translation id="7201549776650881587">Ao realizar esta acción, eliminaranse todos os datos e as cookies que almacenasen os subsitios de <ph name="ORIGIN" /> ou a súa aplicación na túa pantalla de inicio</translation>
 <translation id="7203150201908454328">Ampliado</translation>
+<translation id="7213166370492037743">Non permitir que os sitios se conecten a calquera dispositivo da túa rede local</translation>
 <translation id="7219254577985949841">Eliminar datos do sitio?</translation>
 <translation id="723171743924126238">Selecciona imaxes</translation>
 <translation id="7243308994586599757">Opcións dispoñibles na parte inferior da pantalla</translation>

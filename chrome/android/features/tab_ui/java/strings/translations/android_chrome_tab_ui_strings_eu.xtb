@@ -46,7 +46,7 @@
 <translation id="2569352796411618312">Iradokizuna: fitxetako <ph name="NUMBER_OF_TABS" /> ez dira erabili azkenaldian. Itxi nahi dituzu?</translation>
 <translation id="257674075312929031">Taldekatu</translation>
 <translation id="2662028055331606429">Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
-<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{Inaktiboen atalean, <ph name="AUTO_DELETE_DELAY_ONE" /> egunetan erabili ez dituzun elementuak automatikoki ixten ditu Chrome-k. Aukera hori desaktibatzeko, joan Ezarpenak atalera.}other{Inaktiboen atalean, <ph name="AUTO_DELETE_DELAY_MANY" /> egunetan erabili ez dituzun elementuak automatikoki ixten ditu Chrome-k. Aukera hori desaktibatzeko, joan Ezarpenak atalera.}}</translation>
+<translation id="2667341868736935547">{AUTO_DELETE_DELAY,plural, =1{Inaktiboen atalean, <ph name="AUTO_DELETE_DELAY_ONE" /> egunean erabili ez dituzun elementuak automatikoki ixten ditu Chrome-k. Aukera hori desaktibatzeko, joan Ezarpenak atalera.}other{Inaktiboen atalean, <ph name="AUTO_DELETE_DELAY_MANY" /> egunetan erabili ez dituzun elementuak automatikoki ixten ditu Chrome-k. Aukera hori desaktibatzeko, joan Ezarpenak atalera.}}</translation>
 <translation id="266935134738038806">Joan webgunera</translation>
 <translation id="2671423594960767771">Partekatu taldea</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Duela aste <ph name="NUM_WEEKS_ONE" /> eguneratuta}other{Duela <ph name="NUM_WEEKS_MANY" /> aste eguneratuta}}</translation>
@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">Fitxa taldeak automatikoki gordetzen dira</translation>
 <translation id="6054741997831917303">Produktu honen prezioa jaitsi egin da, eta <ph name="PREVIOUS_PRICE" /> izatetik <ph name="NEW_PRICE" /> izatera pasatu</translation>
 <translation id="6109251075362363230">Orain, fitxa bikoiztu guztiak ere artxibatuko dira, erabilitako azken kopia izan ezik.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Itxi hautatutako <ph name="TABS_COUNT_ONE" /> elementua}other{Itxi hautatutako <ph name="TABS_COUNT_MANY" /> elementuak}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Eraman taldea leiho berri batera}other{Eraman taldea beste leiho batera}}</translation>
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6220820548421939212">Bai. Ados</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" fitxa taldea jada ez dago erabilgarri</translation>
 <translation id="7452985128687107478">Fitxa taldeak automatikoki gordetzen eta eguneratzen dira zure gailu guztietan</translation>
 <translation id="747459581954555080">Leheneratu guztiak</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Leheneratu hautatutako <ph name="TABS_COUNT_ONE" /> elementua}other{Leheneratu hautatutako <ph name="TABS_COUNT_MANY" /> elementuak}}</translation>
 <translation id="753732157349120914">Fitxa-aldatzailea</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-tik datorren <ph name="REVIEWS_COUNT_ONE" /> iritzi}other{Google-tik datozen <ph name="REVIEWS_COUNT_MANY" /> iritzi}}</translation>
 <translation id="7559245342362162951">Erakutsi taldearen fitxak pantaila osoko saretan</translation>

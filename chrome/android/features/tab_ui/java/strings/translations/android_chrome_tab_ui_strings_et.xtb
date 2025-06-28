@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">Teie vahelehegrupid salvestatakse automaatselt.</translation>
 <translation id="6054741997831917303">Selle üksuse hind <ph name="PREVIOUS_PRICE" /> langes hiljuti ja uus hind on <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Nüüd arhiivitakse ka kõik vahelehtede duplikaadid, välja arvatud viimati kasutatud koopia.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> valitud üksus}other{Sule <ph name="TABS_COUNT_MANY" /> valitud üksust}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Teisaldage grupp uude aknasse}other{Teisaldage grupp uude aknasse}}</translation>
 <translation id="6193448654517602979">Valige vahelehed</translation>
 <translation id="6220820548421939212">Jah. Sobib</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">Vahelehegrupp „<ph name="TAB_GROUP_NAME" />“ ei ole enam saadaval</translation>
 <translation id="7452985128687107478">Vahelehegrupid salvestuvad automaatselt ja värskendatakse kõikides teie seadmetes</translation>
 <translation id="747459581954555080">Taasta kõik</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Taasta <ph name="TABS_COUNT_ONE" /> valitud üksus}other{Taasta <ph name="TABS_COUNT_MANY" /> valitud üksust}}</translation>
 <translation id="753732157349120914">Vahelehtede vaheti</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> arvustus Google'ist}other{<ph name="REVIEWS_COUNT_MANY" /> arvustust Google'ist}}</translation>
 <translation id="7559245342362162951">Kuva grupi vahelehed täisekraani ruudustikus</translation>

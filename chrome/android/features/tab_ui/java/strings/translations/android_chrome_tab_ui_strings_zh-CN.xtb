@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">您的标签页分组会自动保存</translation>
 <translation id="6054741997831917303">这件商品的价格最近从 <ph name="PREVIOUS_PRICE" />降至 <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">现在，所有重复的标签页也将归档，最近使用的副本除外。</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{关闭 <ph name="TABS_COUNT_ONE" /> 项所选内容}other{关闭 <ph name="TABS_COUNT_MANY" /> 项所选内容}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{将分组移至新窗口}other{将分组移至另一个窗口}}</translation>
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6220820548421939212">是，整理</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">“<ph name="TAB_GROUP_NAME" />”标签页分组已不可用</translation>
 <translation id="7452985128687107478">标签页分组会自动保存并在您的所有设备上更新</translation>
 <translation id="747459581954555080">全部恢复</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{恢复 <ph name="TABS_COUNT_ONE" /> 项所选内容}other{恢复 <ph name="TABS_COUNT_MANY" /> 项所选内容}}</translation>
 <translation id="753732157349120914">标签页切换器</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> 条来自 Google 的评价}other{<ph name="REVIEWS_COUNT_MANY" /> 条来自 Google 的评价}}</translation>
 <translation id="7559245342362162951">以全屏网格状视图显示组中的标签页</translation>

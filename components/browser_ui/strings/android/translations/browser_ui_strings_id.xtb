@@ -129,6 +129,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="2490684707762498678">Dikelola oleh <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Bantuan &amp; masukan</translation>
 <translation id="2501278716633472235">Kembali</translation>
+<translation id="2533138527374486328">Jika diaktifkan, situs dapat meminta untuk terhubung ke perangkat apa pun di jaringan lokal Anda. Jika dinonaktifkan, situs tidak dapat terhubung ke perangkat di jaringan lokal Anda.</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
 <translation id="2570922361219980984">Akses lokasi juga dinonaktifkan untuk perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Diperluas - klik untuk menciutkan</translation>
@@ -424,6 +425,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5968921426641056619">Masukkan alamat web</translation>
 <translation id="5975083100439434680">Perkecil</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Aktifkan feed Discover</translation>
 <translation id="6015775454662021376">Mengontrol akses situs ini ke perangkat Anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6042308850641462728">Lainnya</translation>
@@ -511,6 +513,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7188508872042490670">Data situs di perangkat</translation>
 <translation id="7201549776650881587">Tindakan ini akan menghapus semua data dan cookie yang disimpan oleh semua situs di bawah <ph name="ORIGIN" /> atau oleh aplikasinya di Layar utama</translation>
 <translation id="7203150201908454328">Diperluas</translation>
+<translation id="7213166370492037743">Jangan izinkan situs terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="7219254577985949841">Hapus data situs?</translation>
 <translation id="723171743924126238">Pilih gambar</translation>
 <translation id="7243308994586599757">Opsi terdapat di dekat bagian bawah layar</translation>

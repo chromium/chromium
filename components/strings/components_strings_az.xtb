@@ -2153,6 +2153,7 @@
 <translation id="4635278307999235413">Data admin konsoluna göndərilir</translation>
 <translation id="4636930964841734540">İnfo</translation>
 <translation id="4640225694041297329">Son 7 günə aid nəticələri göstərin</translation>
+<translation id="4642296966515958616">Bu tab qrupuna qoşulmaq üçün Chrome-u güncəlləyin</translation>
 <translation id="464342062220857295">Axtarış funksiyaları</translation>
 <translation id="4644567637638438744">Yalnız Microsoft OneDrive-a daxil olduqda fayllar yüklənə bilər</translation>
 <translation id="4644670975240021822">Tərs sıra ilə üzü aşağı</translation>
@@ -2926,6 +2927,7 @@
 <translation id="5967592137238574583">Kontakt Məlumatını Redaktə Edin</translation>
 <translation id="5967867314010545767">Tarixçədən silin</translation>
 <translation id="5968022600320704045">Axtarış nəticəsi yoxdur</translation>
+<translation id="5968400720580217226">Sİ Rejimi</translation>
 <translation id="5969199813874624822">Qiyməti yadda saxlayıb, izləyin</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Altıncı Rulon</translation>
@@ -3146,6 +3148,7 @@
 <translation id="6326947323444967009">iOS ayarlarında Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="6327065120806001832">lokal şəbəkə girişi</translation>
 <translation id="6328639280570009161">Şəbəkə proqnozunu deaktiv etməyə çalışın</translation>
+<translation id="6329815962353376655">&lt;Sual daxil edin&gt;</translation>
 <translation id="6334834493885103305">Artıq Affirm, Zip və ya Klarna vasitəsilə hissə-hissə ödəyə bilərsiniz</translation>
 <translation id="6335029926534404762">Atletik ayaqqabılar</translation>
 <translation id="6336948221660696475">VR icazəsi verilmədi</translation>
@@ -3859,6 +3862,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="752189128961566325">Onu Google məhsullarında istifadə edə bilərsiniz</translation>
 <translation id="7523408071729642236">İstehsalat</translation>
+<translation id="7524958309155133228">Soruşun: <ph name="ENGINE" /></translation>
 <translation id="7525067979554623046">Yaradın</translation>
 <translation id="7525804896095537619">Ad boş ola bilməz</translation>
 <translation id="7526934274050461096">Bu saytla olan bağlantınız şəxsi deyil</translation>
@@ -4726,6 +4730,7 @@
 <translation id="9042617223719777575">Geniş Tutum</translation>
 <translation id="9042827002460091668">İnternet bağlantınızı yoxlayın və yenidən sınayın</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046578823518542618"><ph name="URL" /> yerli şəbəkənizdə istənilən cihazı axtarmaq və ona qoşulmaq istəyir</translation>
 <translation id="9046864189129893978">Mikrofonlar (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Bu əməliyyatlar üçün <ph name="POLICY_NAME" /> <ph name="POLICY_VALUE" /> olaraq ayarlanmalıdır: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 düym</translation>

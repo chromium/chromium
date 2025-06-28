@@ -356,6 +356,7 @@
 <translation id="1232569758102978740">無標題</translation>
 <translation id="1233497634904001272">再次輕觸安全密鑰即可完成要求。</translation>
 <translation id="1233721473400465416">語言代碼</translation>
+<translation id="1233835246554936745">{0,plural, =1{將 1 個項目儲存至帳戶}other{將 # 個項目儲存至帳戶}}</translation>
 <translation id="1234736487471201993">為此圖片建立 QR 碼</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">已知網絡</translation>
@@ -5655,6 +5656,7 @@
 <translation id="4918844574251943176">已複製圖片</translation>
 <translation id="4921348630401250116">文字轉語音</translation>
 <translation id="4922104989726031751">如要在作業系統上使用「Google 密碼管理工具」，請重新啟動 Chromium，並允許存取電腦的密碼管理工具。分頁會在重新啟動後再次開啟。</translation>
+<translation id="4923561999941435531">{0,plural, =1{將 1 個項目儲存至帳戶}other{將 # 個項目儲存至帳戶}}</translation>
 <translation id="492363500327720082">正在解除安裝 <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">顯示分頁群組</translation>
 <translation id="4924002401726507608">提交意見</translation>
@@ -9530,6 +9532,7 @@
 <translation id="7722040605881499779">更新所需的空間：<ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">重設為預設的 Chrome</translation>
 <translation id="7724603315864178912">剪下</translation>
+<translation id="7724711098786238351">示範模式只適用於 18 歲以上的使用者，並且受 Google 的《服務條款》和《私隱權政策》管限。在系統定期抹除資料之前，其他人可能會看到在此裝置輸入的資料。</translation>
 <translation id="7726288096350730168">從這部裝置刪除</translation>
 <translation id="7726391492136714301">查看手機上的通知和應用程式</translation>
 <translation id="7727898923446098954">已隱藏分頁</translation>
@@ -11025,6 +11028,7 @@
 <translation id="8749805710397399240">無法投放螢幕。請檢查「系統偏好設定」中的「螢幕錄影」權限。</translation>
 <translation id="8749826920799243530">裝置未註冊</translation>
 <translation id="8749863574775030885">存取來自未知供應商的 USB 裝置</translation>
+<translation id="8749865622265861882">你正在使用示範裝置</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> 要求與序列連接埠連線</translation>
 <translation id="8750346984209549530">流動網絡 APN</translation>
 <translation id="8750786237117206586">管理 ChromeOS Flex 音訊設定</translation>

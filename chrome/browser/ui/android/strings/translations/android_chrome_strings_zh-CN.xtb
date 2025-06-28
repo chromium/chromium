@@ -256,6 +256,7 @@
 <translation id="2175927920773552910">二维码</translation>
 <translation id="2184272387334793084">登录后即可将密码等信息同步到您的所有设备上</translation>
 <translation id="218608176142494674">共享</translation>
+<translation id="2186779861549045980">您可以选择要将哪些数据保存到您的 Google 账号中。\n您也可在书签、阅读清单或密码管理工具中查看和管理这些内容。</translation>
 <translation id="219283042927675668">分组内的标签页</translation>
 <translation id="2194856509914051091">注意事项</translation>
 <translation id="22091350895006575">添加用户名</translation>
@@ -264,6 +265,7 @@
 <translation id="2230777942707397948">空白窗口</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
 <translation id="2234827758954819389">隐私保护指南</translation>
+<translation id="2238038374973843156">将分组移至另一个窗口</translation>
 <translation id="2239812875700136898">通过“‘探索’功能的选项”按钮控制您的报道</translation>
 <translation id="2247789808226901522">银行卡已过期</translation>
 <translation id="2248941474044011069">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理工具中</translation>
@@ -391,6 +393,7 @@
 <translation id="2805756323405976993">应用</translation>
 <translation id="281504910091592009">查看和管理您的 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" />中保存的密码</translation>
 <translation id="2819849308549746319">全部退订</translation>
+<translation id="2820047235535485532">您可以选择要将哪些数据保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。\n您也可在书签、阅读清单或密码管理工具中查看和管理这些内容。</translation>
 <translation id="2826576843404243001">在您访问不支持安全连接的网站前，系统会发出警告。您无法更改此设置，因为您已启用“高级保护”。</translation>
 <translation id="2827278682606527653">动态卡片上的菜单已半屏打开</translation>
 <translation id="2830783625999891985">已隐藏剪贴板内容</translation>
@@ -1237,6 +1240,7 @@
 <translation id="6545017243486555795">清除所有数据</translation>
 <translation id="6546511553472444032">文件可能有害</translation>
 <translation id="6550891580932862748">不会防范危险的网站、下载内容和扩展程序。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
+<translation id="6554822972009632311">内容过滤器已开启</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{系统将会关闭标签页“<ph name="TAB_TITLE" />”以及另外 <ph name="TAB_COUNT_ONE" /> 个标签页}other{系统将会关闭标签页“<ph name="TAB_TITLE" />”以及另外 <ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="6560414384669816528">改用搜狗搜索</translation>
 <translation id="656065428026159829">查看更多</translation>
@@ -1392,6 +1396,7 @@
 <translation id="7148400116894863598">从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处<ph name="BEGIN_LINK" />获取更多信息<ph name="END_LINK" />。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="71503698506017927">口令加密不涵盖 Google Pay 中的付款方式和地址。如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
+<translation id="7165972437814027679">详细了解 Chrome 为何屏蔽某些文件</translation>
 <translation id="7168323970702333693">您已使用<ph name="USER_NAME" />的身份登录。打开设置。</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7173338713290252554">网上的既往价格</translation>
@@ -1711,6 +1716,7 @@
 <translation id="8439974325294139057"><ph name="LANG" /> - 可以使用此语言了，请重启 <ph name="APP_NAME" />。</translation>
 <translation id="8442258441309440798">没有可显示的报道</translation>
 <translation id="8443209985646068659">Chrome 无法更新</translation>
+<translation id="8443600937324357591">将标签页移至另一个窗口</translation>
 <translation id="8445448999790540984">无法导出密码</translation>
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{已撤消 1 个网站的权限}other{已撤消 # 个网站的权限}}</translation>

@@ -356,6 +356,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1232569758102978740">Izengabea</translation>
 <translation id="1233497634904001272">Eskaera osatzeko, sakatu segurtasun-giltza berriro.</translation>
 <translation id="1233721473400465416">Lurraldeko ezarpenak</translation>
+<translation id="1233835246554936745">{0,plural, =1{Gorde elementu bat kontuan}other{Gorde # elementu kontuan}}</translation>
 <translation id="1234736487471201993">Sortu irudi honen QR kodea</translation>
 <translation id="1234808891666923653">Zerbitzuetako langileak</translation>
 <translation id="1235458158152011030">Sare ezagunak</translation>
@@ -5646,6 +5647,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4918844574251943176">Kopiatu da irudia</translation>
 <translation id="4921348630401250116">Testua ahots bihurtzeko eginbidea</translation>
 <translation id="4922104989726031751">Pasahitz-kudeatzailea zure sistema eragilearekin erabiltzeko, exekutatu berriro Chromium eta eman ordenagailuaren pasahitz-kudeatzailea erabiltzeko baimena. Berriro exekutatu ondoren, berriro irekiko dira fitxak.</translation>
+<translation id="4923561999941435531">{0,plural, =1{Gorde elementu bat kontuan}other{Gorde # elementu kontuan}}</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> desinstalatzen…</translation>
 <translation id="4923977675318667854">Erakutsi fitxa taldeak</translation>
 <translation id="4924002401726507608">Bidali oharrak</translation>
@@ -9522,6 +9524,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="7722040605881499779">Eguneratzeko behar dena: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">Berrezarri Chrome lehenetsia</translation>
 <translation id="7724603315864178912">Ebaki</translation>
+<translation id="7724711098786238351">Demo modua 18 urte baino gehiagoko erabiltzaileei dago zuzenduta, eta Google-ren Zerbitzu-baldintzek eta Pribatutasun-gidalerroek arautzen dute. Baliteke beste batzuek gailu honetan sartutako datuak ikustea aldizkako xahutzeen artean.</translation>
 <translation id="7726288096350730168">Ezabatu gailu honetataik</translation>
 <translation id="7726391492136714301">Ikusi telefonoko jakinarazpenak eta aplikazioak</translation>
 <translation id="7727898923446098954">Ezkutatu da fitxa</translation>
@@ -11016,6 +11019,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8749805710397399240">Ezin da igorri pantaila. Egiaztatu pantaila grabatzeko baimena sistemaren hobespenetan.</translation>
 <translation id="8749826920799243530">Gailua ez dago erregistratuta</translation>
 <translation id="8749863574775030885">Saltzaile ezezagunaren USB bidezko gailuak atzitu.</translation>
+<translation id="8749865622265861882">Demo-bertsioko gailu bat darabilzu</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> webguneak serieko ataka batera konektatu nahi du</translation>
 <translation id="8750346984209549530">APN mugikorra</translation>
 <translation id="8750786237117206586">ChromeOS Flex-en audio-ezarpenak kudeatu.</translation>

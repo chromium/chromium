@@ -123,6 +123,7 @@
 <translation id="6051432659151380973">Вашите групи картички се зачувуваат автоматски</translation>
 <translation id="6054741997831917303">Цената за производов е спуштена од <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Отсега ќе се архивираат сите дупликат картички, со исклучок на последната копија што се користела.</translation>
+<translation id="6149218574440723463">{TABS_COUNT,plural, =1{Затвори <ph name="TABS_COUNT_ONE" /> избрана ставка}one{Затвори <ph name="TABS_COUNT_MANY" /> избрана ставка}other{Затвори <ph name="TABS_COUNT_MANY" /> избрани ставки}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Преместете ја групата во нов прозорец}one{Преместете ја групата во друг прозорец}other{Преместете ја групата во друг прозорец}}</translation>
 <translation id="6193448654517602979">Изберете картички</translation>
 <translation id="6220820548421939212">Да. Прифаќам</translation>
@@ -159,6 +160,7 @@
 <translation id="7369451074646620503">Групата картички „<ph name="TAB_GROUP_NAME" />“ веќе не е достапна</translation>
 <translation id="7452985128687107478">Групите картички автоматски се зачувуваат и ажурираат на сите ваши уреди</translation>
 <translation id="747459581954555080">Поврати ги сите</translation>
+<translation id="7507010952168401940">{TABS_COUNT,plural, =1{Врати <ph name="TABS_COUNT_ONE" /> избрана ставка}one{Врати <ph name="TABS_COUNT_MANY" /> избрана ставка}other{Врати <ph name="TABS_COUNT_MANY" /> избрани ставки}}</translation>
 <translation id="753732157349120914">Менувач на картички</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> рецензија од Google}one{<ph name="REVIEWS_COUNT_MANY" /> рецензија од Google}other{<ph name="REVIEWS_COUNT_MANY" /> рецензии од Google}}</translation>
 <translation id="7559245342362162951">Прикажи ги картичките од групата во табела на цел екран</translation>

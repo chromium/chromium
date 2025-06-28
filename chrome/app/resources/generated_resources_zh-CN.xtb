@@ -356,6 +356,7 @@
 <translation id="1232569758102978740">无标题</translation>
 <translation id="1233497634904001272">请再次轻触您的安全密钥以完成请求。</translation>
 <translation id="1233721473400465416">语言区域</translation>
+<translation id="1233835246554936745">{0,plural, =1{将 1 项内容保存在账号中}other{将 # 项内容保存在账号中}}</translation>
 <translation id="1234736487471201993">为此图片创建二维码</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">已知网络</translation>
@@ -5637,6 +5638,7 @@
 <translation id="4918844574251943176">图片已复制</translation>
 <translation id="4921348630401250116">文字转语音</translation>
 <translation id="4922104989726031751">若要在您的操作系统中使用密码管理工具，请重新启动 Chromium 并允许使用计算机的密码管理工具。待 Chromium 重新启动后，您的标签页会自动重新打开。</translation>
+<translation id="4923561999941435531">{0,plural, =1{将 1 项内容保存在账号中}other{将 # 项内容保存在账号中}}</translation>
 <translation id="492363500327720082">正在卸载 <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">显示标签页分组</translation>
 <translation id="4924002401726507608">提交反馈</translation>
@@ -9515,6 +9517,7 @@
 <translation id="7722040605881499779">要更新，所需空间为：<ph name="NECESSARY_SPACE" /></translation>
 <translation id="7723388585204724670">重置为默认 Chrome</translation>
 <translation id="7724603315864178912">剪切</translation>
+<translation id="7724711098786238351">演示模式适用于年满 18 周岁的用户，并受 Google 的《服务条款》和《隐私权政策》约束。在定期擦除数据的间隔期间内，其他人可能会看到在此设备上输入的数据。</translation>
 <translation id="7726288096350730168">从此设备中删除</translation>
 <translation id="7726391492136714301">查看您手机上的通知和应用</translation>
 <translation id="7727898923446098954">标签页已隐藏</translation>
@@ -9852,7 +9855,7 @@
 <translation id="7953236668995583915">请重新加载此页面，以便在该网站上应用更新后的设置</translation>
 <translation id="7953669802889559161">输入法</translation>
 <translation id="7953955868932471628">管理快捷方式</translation>
-<translation id="7955105108888461311">当面申请</translation>
+<translation id="7955105108888461311">当面请求</translation>
 <translation id="7955177647836564772">如果 Smart Lock 已开启且您的手机处于未锁定状态，您无需输入密码或 PIN 码</translation>
 <translation id="7956373551960864128">已保存的打印机</translation>
 <translation id="7956918070009672177">您的设备上没有<ph name="LANGUAGE" />语音包。请联网，然后重试。</translation>
@@ -11010,6 +11013,7 @@
 <translation id="8749805710397399240">无法投放您的屏幕。请在“系统偏好设置”中启用“屏幕录制”权限。</translation>
 <translation id="8749826920799243530">此设备尚未注册</translation>
 <translation id="8749863574775030885">访问来自未知供应商的 USB 设备</translation>
+<translation id="8749865622265861882">您使用的是演示设备</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> 想连接到串行端口</translation>
 <translation id="8750346984209549530">移动网络 APN</translation>
 <translation id="8750786237117206586">管理 ChromeOS Flex 音频设置</translation>

@@ -129,6 +129,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2490684707762498678">Gestite da <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Guida e feedback</translation>
 <translation id="2501278716633472235">Indietro</translation>
+<translation id="2533138527374486328">Quando l'opzione è attiva, i siti possono chiedere di connettersi a qualsiasi dispositivo sulla rete locale. Quando l'opzione è disattivata, i siti non possono connettersi ai dispositivi sulla rete locale.</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
 <translation id="2570922361219980984">L'accesso alla posizione è disattivato anche per questo dispositivo. Attivalo nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Espanso. Fai clic per comprimere.</translation>
@@ -424,6 +425,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5968921426641056619">Inserisci l'indirizzo web</translation>
 <translation id="5975083100439434680">Diminuisci lo zoom</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Attiva il Feed personalizzato</translation>
 <translation id="6015775454662021376">Controlla l'accesso di questo sito al tuo dispositivo</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6042308850641462728">Altro</translation>
@@ -511,6 +513,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
 <translation id="7201549776650881587">Questa azione eliminerà tutti i dati e i cookie memorizzati da tutti i siti in <ph name="ORIGIN" /> o dalla relativa app nella schermata Home</translation>
 <translation id="7203150201908454328">Espanso</translation>
+<translation id="7213166370492037743">Non consentire ai siti di connettersi a dispositivi sulla rete locale</translation>
 <translation id="7219254577985949841">Vuoi eliminare i dati del sito?</translation>
 <translation id="723171743924126238">Seleziona immagini</translation>
 <translation id="7243308994586599757">Opzioni disponibili nella parte inferiore dello schermo</translation>

@@ -129,6 +129,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="2490684707762498678">Managed by <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Help and feedback</translation>
 <translation id="2501278716633472235">Go back</translation>
+<translation id="2533138527374486328">When on, sites can ask to connect to any device on your local network. When off, sites can't connect to devices on your local network.</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
@@ -424,6 +425,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5968921426641056619">Enter web address</translation>
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Turn on Discover feed</translation>
 <translation id="6015775454662021376">Control this site's access to your device</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6042308850641462728">More</translation>
@@ -511,6 +513,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7188508872042490670">On-device site data</translation>
 <translation id="7201549776650881587">This action will clear all data and cookies stored by all sites under <ph name="ORIGIN" /> or by its app on your Home screen</translation>
 <translation id="7203150201908454328">Expanded</translation>
+<translation id="7213166370492037743">Don't allow sites to connect to any device on your local network</translation>
 <translation id="7219254577985949841">Delete site data?</translation>
 <translation id="723171743924126238">Select images</translation>
 <translation id="7243308994586599757">Options available near bottom of the screen</translation>

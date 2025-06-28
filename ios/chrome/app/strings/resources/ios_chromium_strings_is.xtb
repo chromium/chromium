@@ -174,6 +174,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-
 <translation id="5203244847421322551">Vista og fylla aðgangsorð sjálfvirkt út í Chromium</translation>
 <translation id="5224391634244552924">Engin vistuð aðgangsorð. Chromium getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="5259423875997548710">Nota myndaleit í Chromium.</translation>
+<translation id="5284913972719948193">Flyttu gögnin þín inn til að nota aðgangsorðin þín, ferilinn, bókamerkin og kreditkortin í Chromium</translation>
 <translation id="5308226104666789935">Chromium getur ekki leitað að uppfærslum</translation>
 <translation id="5311557153294205270">Bætir innteknum vefslóðum við bókamerkin þín í Chromium.</translation>
 <translation id="5383251701169024761">Notaðu sjálfvirka útfyllingu í Chromium til að hafa greiðan aðgang að vistuðu aðgangsorðunum þínum í öðrum forritum.</translation>
@@ -307,6 +308,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="865600487977764604">Gætir öryggis þíns í Chromium og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>
 <translation id="8663480472502753423">Haltu Chromium uppfærðu</translation>
 <translation id="8685813584220679697">Skráðu þig inn á þetta vefsvæði og Chromium.</translation>
+<translation id="8698780336333802489">Flytja inn í Chromium</translation>
 <translation id="8730503818204408000">Opnar Chromium-stillingar til að stilla Chromium sem sjálfgefinn vafra.</translation>
 <translation id="8754966941001340678">Chromium mælir með aukinni vörn</translation>
 <translation id="8759037115129007407">Fjölskyldumeðlimur þinn getur ekki tekið á móti aðgangsorðum eins og er. Biddu viðkomandi um að uppfæra Chromium og samstilla aðgangsorðin sín. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
