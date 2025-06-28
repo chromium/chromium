@@ -136,6 +136,7 @@ constexpr char kBackgroundHelpers[] =
 
 using ContextType = extensions::browser_test_util::ContextType;
 
+// TODO(crbug.com/417786079): Port this test suite to desktop Android.
 class DeclarativeContentApiTest : public ExtensionApiTest {
  public:
   explicit DeclarativeContentApiTest(

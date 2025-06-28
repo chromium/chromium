@@ -5,8 +5,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -16,11 +14,14 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/rules_registry_ids.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/gfx/image/image.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -41,10 +42,7 @@ constexpr char kOneByOneImageData[] =
 
 class SetIconAPITest : public ExtensionApiTest {
  public:
-  SetIconAPITest()
-      // Set the channel to "trunk" since declarativeContent is restricted
-      // to trunk.
-      : current_channel_(version_info::Channel::UNKNOWN) {}
+  SetIconAPITest() = default;
   ~SetIconAPITest() override = default;
 
  protected:
@@ -92,12 +90,7 @@ class SetIconAPITest : public ExtensionApiTest {
         extension);
   }
 
-  content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
-  }
-
  private:
-  extensions::ScopedCurrentChannel current_channel_;
   TestExtensionDir ext_dir_;
 };
 
@@ -127,9 +120,9 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Parameter) {
   ASSERT_TRUE(extension);
 
   scoped_refptr<RulesRegistry> rules_registry =
-      extensions::RulesRegistryService::Get(browser()->profile())
-          ->GetRulesRegistry(rules_registry_ids::kDefaultRulesRegistryID,
-                             "declarativeContent.onPageChanged");
+      extensions::RulesRegistryService::Get(profile())->GetRulesRegistry(
+          rules_registry_ids::kDefaultRulesRegistryID,
+          "declarativeContent.onPageChanged");
   ASSERT_TRUE(rules_registry);
 
   std::vector<const api::events::Rule*> rules;
