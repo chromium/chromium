@@ -102,7 +102,7 @@ source_set("unittests") {
     "touchscreen_device_unittest.cc",
   ]
 
-  if (is_ios && use_blink) {
+  if (is_ios && use_blink && target_platform == "iphoneos") {
     sources += [ "input_device_observer_ios_unittest.cc" ]
   }
 
