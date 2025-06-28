@@ -61,9 +61,11 @@ class ContextualCueingServiceBrowserTestZSSFlag
     : public ContextualCueingServiceBrowserTest {
  public:
   ContextualCueingServiceBrowserTestZSSFlag() {
-    scoped_feature_list_.InitWithFeatures(
-        {kGlicZeroStateSuggestions, features::kGlic,
-         features::kTabstripComboButton},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kGlicZeroStateSuggestions,
+          {{"ZSSAllowContextualSuggestionsForSearchResultsPages", "false"}}},
+         {features::kGlic, {}},
+         {features::kTabstripComboButton, {}}},
         {});
   }
 
@@ -321,6 +323,56 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "ZeroStateSuggestions",
       0);
+}
+
+class ContextualCueingServiceBrowserTestAllowZSSForSrp
+    : public ContextualCueingServiceBrowserTest {
+ public:
+  ContextualCueingServiceBrowserTestAllowZSSForSrp() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kGlicZeroStateSuggestions,
+          {{"ZSSAllowContextualSuggestionsForSearchResultsPages", "true"}}},
+         {features::kGlic, {}},
+         {features::kTabstripComboButton, {}}},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        glic::prefs::kGlicTabContextEnabled, true);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kGlicDev);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestAllowZSSForSrp,
+                       AllowsSearchResultsPage) {
+  base::HistogramTester histogram_tester;
+
+  auto* service =
+      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      template_url_service->GenerateSearchURLForDefaultSearchProvider(u"foo")));
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  service->GetContextualGlicZeroStateSuggestions(web_contents, /*is_fre=*/false,
+                                                 /*supported_tools=*/{},
+                                                 future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
+      "ZeroStateSuggestions",
+      1);
 }
 
 class ContextualCueingServiceBrowserTestZSSHistogram

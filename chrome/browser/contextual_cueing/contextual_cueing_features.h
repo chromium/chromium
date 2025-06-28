@@ -66,6 +66,10 @@ extern const base::FeatureParam<base::TimeDelta>
 // Always return empty suggestions for same document navigations.
 extern const base::FeatureParam<bool> kReturnEmptyForSameDocumentNavigation;
 
+// Whether to allow contextual zero state suggestions for search results pages.
+extern const base::FeatureParam<bool>
+    kAllowContextualSuggestionsForSearchResultsPages;
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_

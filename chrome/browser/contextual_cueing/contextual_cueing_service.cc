@@ -200,8 +200,9 @@ bool ContextualCueingService::IsPageTypeEligibleForContextualSuggestions(
   }
 
   // Search results pages are not eligible.
-  if (template_url_service_ &&
-      template_url_service_->ExtractSearchMetadata(url)) {
+  if (!kAllowContextualSuggestionsForSearchResultsPages.Get() &&
+      (template_url_service_ &&
+       template_url_service_->ExtractSearchMetadata(url))) {
     return false;
   }
 
