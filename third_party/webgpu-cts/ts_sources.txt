@@ -260,6 +260,7 @@ src/webgpu/api/validation/capability_checks/features/query_types.spec.ts
 src/webgpu/util/create_elements.ts
 src/webgpu/api/validation/capability_checks/features/texture_formats.spec.ts
 src/webgpu/api/validation/capability_checks/features/texture_formats_tier1.spec.ts
+src/webgpu/api/validation/capability_checks/features/texture_formats_tier2.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxBindGroups.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxBindGroupsPlusVertexBuffers.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxBindingsPerBindGroup.spec.ts
