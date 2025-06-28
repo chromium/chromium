@@ -55,6 +55,7 @@ export interface SettingsClearBrowsingDataTimePicker {
   $: {
     moreButton: HTMLButtonElement,
     moreTimePeriodsMenu: CrLazyRenderElement<CrActionMenuElement>,
+    timePicker: HTMLElement,
   };
 }
 
@@ -95,24 +96,14 @@ export class SettingsClearBrowsingDataTimePicker extends
         ],
       },
 
-      /** The list of Time Periods that should be expanded by default. */
-      defaultTimePeriodList_: {
-        readOnly: true,
-        type: Array,
-        value: [
-          TimePeriod.LAST_15_MINUTES,
-          TimePeriod.LAST_HOUR,
-          TimePeriod.LAST_DAY,
-        ],
-      },
-
       /**
-       * The list of Time Period options that are expanded. These should include
-       * the default options and the currently selected time period.
+       * The list of Time Period options that are expanded by default, these
+       * should include the currently selected time period.
        */
       expandedOptionList_: {
         type: Array,
-        computed: 'computeExpandedOptionList_(selectedTimePeriod_)',
+        computed:
+            'computeExpandedOptionList_(maxChipsShown_, selectedTimePeriod_)',
       },
 
       /**
@@ -122,6 +113,15 @@ export class SettingsClearBrowsingDataTimePicker extends
       moreOptionList_: {
         type: Array,
         computed: 'computeMoreOptionList_(expandedOptionList_)',
+      },
+
+      /**
+         Maximum number of expanded chips to be shown, this should be less than
+         or equal to the `allTimePeriodList_.length` and greater than 0.
+       */
+      maxChipsShown_: {
+        type: Number,
+        value: 4,
       },
     };
   }
@@ -133,10 +133,10 @@ export class SettingsClearBrowsingDataTimePicker extends
   }
 
   declare private selectedTimePeriod_: TimePeriod;
-  declare private defaultTimePeriodList_: TimePeriod[];
   declare private allTimePeriodList_: TimePeriod[];
   declare private expandedOptionList_: TimePeriodOption[];
   declare private moreOptionList_: TimePeriodOption[];
+  declare private maxChipsShown_: number;
 
   private onTimePeriodPrefUpdated_() {
     const timePeriodValue =
@@ -158,20 +158,25 @@ export class SettingsClearBrowsingDataTimePicker extends
 
   private computeExpandedOptionList_(): TimePeriodOption[] {
     const expandedOptionsList: TimePeriodOption[] = [];
+    let selectedTimePeriodAdded = false;
 
-    // Add all options in the default list.
-    this.defaultTimePeriodList_.forEach((timePeriod) => {
+    // Add the TimePeriods to the expanded options list up to maxChipsShow_, but
+    // keep one slot for potentially the selected TimePeriod.
+    for (let i = 0; i < this.maxChipsShown_ - 1; i++) {
+      const timePeriod = this.allTimePeriodList_[i];
+      selectedTimePeriodAdded ||= (timePeriod === this.selectedTimePeriod_);
       expandedOptionsList.push(
           {value: timePeriod, label: getTimePeriodString(timePeriod)});
-    });
+    }
 
     // If the selected option is already added to the expandedOptionsList,
-    // default to LAST_WEEK as the additional expanded option, otherwise add the
-    // selected time period.
-    if (this.defaultTimePeriodList_.includes(this.selectedTimePeriod_)) {
+    // add another TimePeriod from the allTimePeriodList_ to fill the
+    // maxChipsShown_ quota, otherwise add the selected time period.
+    if (selectedTimePeriodAdded) {
+      const timePeriod = this.allTimePeriodList_[this.maxChipsShown_ - 1];
       expandedOptionsList.push({
-        value: TimePeriod.LAST_WEEK,
-        label: getTimePeriodString(TimePeriod.LAST_WEEK),
+        value: timePeriod,
+        label: getTimePeriodString(timePeriod),
       });
     } else {
       expandedOptionsList.push({
@@ -199,6 +204,14 @@ export class SettingsClearBrowsingDataTimePicker extends
     return moreOptionsList;
   }
 
+  private onTimePickerDomChanged_() {
+    // Decrease the number of visible chips if the current expanded chips' width
+    // exceeds the maximum width.
+    const timePicker = this.$.timePicker;
+    if (timePicker.scrollWidth > timePicker.clientWidth) {
+      this.maxChipsShown_--;
+    }
+  }
   private isTimePeriodSelected_(timePeriod: TimePeriod): boolean {
     return timePeriod === this.selectedTimePeriod_;
   }
