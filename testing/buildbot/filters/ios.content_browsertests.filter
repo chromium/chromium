@@ -461,3 +461,16 @@
 -PrerenderTargetHintEnabledBrowserTest.ActivateOnBothTargetHint
 -PrerenderTargetHintEnabledBrowserTest.ActivateOnOneSelfAndTwoBlankTargetHint
 -PrerenderTargetHintEnabledBrowserTest.PrerenderBothTargetHintButRemovesTargetHintSelf
+
+# TODO(crbug.com/428021765): These tests have been failing between build #100[1]
+# and #667[2].
+# [1] https://ci.chromium.org/ui/p/chromium/builders/ci/ios-blink-rel-fyi/667/overview
+# [2] https://ci.chromium.org/ui/p/chromium/builders/ci/ios-blink-rel-fyi/100/overview
+-BackForwardCacheWebHidTest.DoesNotCacheIfGetDevicesWasCalled
+-BackForwardCacheWebHidTest.DoesNotCacheIfRequestDeviceWasCalled
+-HidFencedFramesBrowserTest.BlockFromFencedFrame
+-HidTest.DeviceWithAllProtectedReportsIsExcluded
+-HidTest.DisallowRequestDevice
+-HidTest.GetDevices
+-HidTest.ProtectedReportsAreFiltered
+-HidTest.RequestDevice
