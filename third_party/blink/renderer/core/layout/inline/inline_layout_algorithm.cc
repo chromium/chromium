@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
@@ -234,6 +235,86 @@ void PlaceRelativePositionedItems(const ConstraintSpace& constraint_space,
   }
 }
 
+void ScaleLine(bool is_grow,
+               float scale_factor,
+               bool is_scaled_inline_only,
+               std::optional<float> limit,
+               LineInfo& line_info) {
+  for (auto& item : *line_info.MutableResults()) {
+    if (item.item->Type() != InlineItem::kText) {
+      continue;
+    }
+    if (limit) {
+      if (is_grow) {
+        float max_scale = *limit / item.item->Style()->ComputedFontSize();
+        item.fit_text_scale = std::min(scale_factor, max_scale);
+      } else {
+        float min_scale = *limit / item.item->Style()->ComputedFontSize();
+        item.fit_text_scale = std::max(scale_factor, min_scale);
+      }
+    } else {
+      item.fit_text_scale = scale_factor;
+    }
+    item.is_scaled_inline_only = is_scaled_inline_only;
+  }
+}
+
+// Updates text scaling factor of InlineItemResults in `line_info`.
+//
+// `NOINLINE` prevents the size growth in the fuchsia-binary-size bot.
+NOINLINE void FitLine(const InlineNode node, LineInfo& line_info) {
+  LayoutUnit epsilon =
+      LayoutUnit(2.0 * node.GetDocument().GetFrame()->DevicePixelRatio());
+  LayoutUnit original_width = line_info.Width();
+  LayoutUnit container_width = line_info.AvailableWidth();
+  LayoutUnit diff = container_width - original_width;
+  if (diff.Abs() < epsilon) {
+    return;
+  }
+  const FitText& text_grow = node.Style().TextGrow();
+  const FitText& text_shrink = node.Style().TextShrink();
+  bool apply_text_grow = text_grow.Target() == FitTextTarget::kPerLine;
+  bool apply_text_shrink = text_shrink.Target() == FitTextTarget::kPerLine;
+  if ((diff > LayoutUnit() && !apply_text_grow) ||
+      (diff < LayoutUnit() && !apply_text_shrink)) {
+    return;
+  }
+  const bool is_grow = diff > LayoutUnit();
+  const FitText& fit_text = is_grow ? text_grow : text_shrink;
+
+  LayoutUnit static_total_size;
+  LayoutUnit flexible_total_size;
+  for (auto& item : *line_info.MutableResults()) {
+    if (item.item->Type() == InlineItem::kText) {
+      flexible_total_size += item.inline_size;
+    } else {
+      static_total_size += item.inline_size;
+    }
+  }
+
+  float scale_factor =
+      (container_width - static_total_size) / flexible_total_size;
+  auto limit = fit_text.SizeLimit();
+  // TODO(crbug.com/417306102): Needs to refer to the minimum font-size if
+  // !is_grow.
+
+  switch (fit_text.Method()) {
+    case FitTextMethod::kScale:
+      ScaleLine(is_grow, scale_factor,
+                /* is_scaled_inline_only */ false, limit, line_info);
+      break;
+
+    case FitTextMethod::kScaleInline:
+      ScaleLine(is_grow, scale_factor,
+                /* is_scaled_inline_only */ true, limit, line_info);
+      break;
+
+    case FitTextMethod::kFontSize:
+    case FitTextMethod::kLetterSpacing:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 InlineLayoutAlgorithm::InlineLayoutAlgorithm(
@@ -349,6 +430,10 @@ InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info,
 void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
                                        LineInfo* line_info,
                                        LogicalLineContainer* line_container) {
+  if (apply_fit_text_) {
+    FitLine(Node(), *line_info);
+  }
+
   LogicalLineItems* line_box = &line_container->BaseLine();
   // Apply justification before placing items, because it affects size/position
   // of items, which are needed to compute inline static positions.

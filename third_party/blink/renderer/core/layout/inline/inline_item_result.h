@@ -147,6 +147,10 @@ struct CORE_EXPORT InlineItemResult {
   LineBoxStrut borders;
   LineBoxStrut padding;
 
+  // For text-grow and text-shrink.
+  float fit_text_scale = 1.0f;
+  bool is_scaled_inline_only = false;
+
   // Inside of this may be breakable. False means there are no break
   // opportunities, or has CSS properties that prohibit breaking.
   // Used only during line breaking.
