@@ -6,6 +6,7 @@ module viz.mojom;
 
 import "cc/mojom/browser_controls_params.mojom";
 import "cc/mojom/browser_controls_offset_tag_modifications.mojom";
+import "cc/mojom/layer_tree_debug_state.mojom";
 import "cc/mojom/ui_resource_id.mojom";
 import "services/viz/public/mojom/compositing/animation.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
@@ -117,6 +118,9 @@ struct LayerTreeUpdate {
 
   // The tree's viewport damage rect.
   gfx.mojom.Rect viewport_damage_rect;
+
+  // Debug state for the layer tree.
+  cc.mojom.LayerTreeDebugState debug_state;
 
   // The elastic overscroll amount applied to the layer tree.
   gfx.mojom.Vector2dF elastic_overscroll;

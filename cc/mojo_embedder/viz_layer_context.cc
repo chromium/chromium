@@ -1288,6 +1288,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->outer_scroll = property_ids.outer_scroll;
 
   update->viewport_damage_rect = viewport_damage_rect;
+  update->debug_state = host_impl_->debug_state();
 
   // Sync changes to UI resources
   {

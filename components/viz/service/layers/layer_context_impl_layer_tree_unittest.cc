@@ -4,6 +4,7 @@
 
 #include <limits>
 
+#include "cc/debug/layer_tree_debug_state.h"
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/service/layers/layer_context_impl.h"
@@ -710,6 +711,54 @@ TEST_F(LayerContextImplBrowserControlsOffsetTagTest,
             modifications.tags.bottom_controls_offset_tag);
   EXPECT_EQ(offset_tag_modifications.top_controls_additional_height, 10);
   EXPECT_EQ(offset_tag_modifications.bottom_controls_additional_height, 20);
+}
+
+class LayerContextImplDebugStateTest : public LayerContextImplTest {};
+
+TEST_F(LayerContextImplDebugStateTest, UpdateDebugState) {
+  cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
+  const cc::LayerTreeDebugState kDefaultDebugState;
+
+  // Default debug states
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(host_impl->debug_state(), kDefaultDebugState);
+
+  // Updated to enabled debug states
+  auto update2 = CreateDefaultUpdate();
+  cc::LayerTreeDebugState debug_state2;
+  debug_state2.debugger_paused = true;
+  debug_state2.show_fps_counter = true;
+  debug_state2.show_debug_borders.set(cc::DebugBorderType::RENDERPASS);
+  debug_state2.show_debug_borders.set(cc::DebugBorderType::SURFACE);
+  debug_state2.show_debug_borders.set(cc::DebugBorderType::LAYER);
+  debug_state2.show_layout_shift_regions = true;
+  debug_state2.show_paint_rects = true;
+  debug_state2.show_property_changed_rects = true;
+  debug_state2.show_surface_damage_rects = true;
+  debug_state2.show_screen_space_rects = true;
+  debug_state2.show_touch_event_handler_rects = true;
+  debug_state2.show_wheel_event_handler_rects = true;
+  debug_state2.show_scroll_event_handler_rects = true;
+  debug_state2.show_main_thread_scroll_hit_test_rects = true;
+  debug_state2.show_main_thread_scroll_repaint_rects = true;
+  debug_state2.show_raster_inducing_scroll_rects = true;
+  debug_state2.show_layer_animation_bounds_rects = true;
+  debug_state2.slow_down_raster_scale_factor = 2;
+  debug_state2.rasterize_only_visible_content = true;
+  debug_state2.highlight_non_lcd_text_layers = true;
+  debug_state2.SetRecordRenderingStats(true);
+  update2->debug_state = debug_state2;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(host_impl->debug_state(), debug_state2);
+
+  // Update back to the default states
+  auto update3 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(host_impl->debug_state(), kDefaultDebugState);
 }
 
 }  // namespace

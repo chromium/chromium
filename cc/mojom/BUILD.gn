@@ -139,6 +139,7 @@ mojom("mojom_layer_trees") {
   sources = [
     "element_id.mojom",
     "hit_test_opaqueness.mojom",
+    "layer_tree_debug_state.mojom",
     "layer_type.mojom",
     "missing_tile_reason.mojom",
     "paint_flags.mojom",
@@ -213,6 +214,15 @@ mojom("mojom_layer_trees") {
         },
       ]
       traits_headers = [ "ui_resource_id_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "cc.mojom.LayerTreeDebugState"
+          cpp = "::cc::LayerTreeDebugState"
+        },
+      ]
+      traits_headers = [ "layer_tree_debug_state_mojom_traits.h" ]
     },
   ]
   public_deps = [
