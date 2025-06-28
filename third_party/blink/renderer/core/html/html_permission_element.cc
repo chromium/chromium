@@ -959,6 +959,11 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     builder.SetBorderRightWidth(builder.FontSize());
   }
 
+  // The base `text-decoration` property must be reset for each `<permission>`
+  // element. This prevents any `text-decoration` from a parent element from
+  // being propagated to the `<permission>` element.
+  builder.SetBaseTextDecorationData(nullptr);
+
   // Cursor only allows 'pointer' (default) and 'not-allowed'. No custom images.
   builder.ClearCursorList();
   if (builder.Cursor() != ECursor::kNotAllowed) {
