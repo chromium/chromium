@@ -29,7 +29,6 @@ std::string SelectToolRequest::JournalEvent() const {
 mojom::ToolActionPtr SelectToolRequest::ToMojoToolAction() const {
   auto select = mojom::SelectAction::New();
 
-  select->target = PageToolRequest::ToMojoToolTarget(GetTarget());
   select->value = value_;
 
   return mojom::ToolAction::NewSelect(std::move(select));

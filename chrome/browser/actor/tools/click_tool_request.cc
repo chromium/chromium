@@ -32,8 +32,6 @@ std::string ClickToolRequest::JournalEvent() const {
 mojom::ToolActionPtr ClickToolRequest::ToMojoToolAction() const {
   auto click = mojom::ClickAction::New();
 
-  click->target = PageToolRequest::ToMojoToolTarget(GetTarget());
-
   switch (click_type_) {
     case ClickType::kLeft:
       click->type = actor::mojom::ClickAction::Type::kLeft;

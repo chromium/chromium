@@ -34,8 +34,6 @@ std::string TypeToolRequest::JournalEvent() const {
 mojom::ToolActionPtr TypeToolRequest::ToMojoToolAction() const {
   auto type = mojom::TypeAction::New();
 
-  type->target = PageToolRequest::ToMojoToolTarget(GetTarget());
-
   type->text = text;
   type->follow_by_enter = follow_by_enter;
 

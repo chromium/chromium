@@ -215,32 +215,6 @@ mojom::ObservedToolTargetPtr ToMojoObservedToolTarget(
   return observed_target;
 }
 
-// Set ObservedToolTarget mojom field on ToolAction.
-void SetObservedToolTarget(const mojom::ToolActionPtr& action,
-                           mojom::ObservedToolTargetPtr observed_target) {
-  switch (action->which()) {
-    case mojom::ToolAction::Tag::kClick:
-      action->get_click()->observed_target = std::move(observed_target);
-      break;
-    case mojom::ToolAction::Tag::kDragAndRelease:
-      action->get_drag_and_release()->observed_from_target =
-          std::move(observed_target);
-      break;
-    case mojom::ToolAction::Tag::kMouseMove:
-      action->get_mouse_move()->observed_target = std::move(observed_target);
-      break;
-    case mojom::ToolAction::Tag::kScroll:
-      action->get_scroll()->observed_target = std::move(observed_target);
-      break;
-    case mojom::ToolAction::Tag::kSelect:
-      action->get_select()->observed_target = std::move(observed_target);
-      break;
-    case mojom::ToolAction::Tag::kType:
-      action->get_type()->observed_target = std::move(observed_target);
-      break;
-  }
-}
-
 }  // namespace
 
 // Observer to track if the a given RenderFrameHost is changed.
@@ -326,13 +300,14 @@ void PageTool::Invoke(InvokeCallback callback) {
 
   invoke_callback_ = std::move(callback);
 
-  auto request = actor::mojom::ToolInvocation::New();
-  request->action = request_->ToMojoToolAction();
-  SetObservedToolTarget(request->action,
-                        ToMojoObservedToolTarget(observed_target_node_info_));
+  auto invocation = actor::mojom::ToolInvocation::New();
+  invocation->action = request_->ToMojoToolAction();
+  invocation->target = request_->GetTarget().ToMojoToolTarget();
+  invocation->observed_target =
+      ToMojoObservedToolTarget(observed_target_node_info_);
 
   // ToolRequest params are checked for validity at creation.
-  CHECK(request->action);
+  CHECK(invocation->action);
 
   frame.GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame_);
 
@@ -365,7 +340,7 @@ void PageTool::Invoke(InvokeCallback callback) {
   chrome_render_frame_.set_disconnect_handler(base::BindOnce(
       &PageTool::FinishInvoke, base::Unretained(this), MakeOkResult()));
   chrome_render_frame_->InvokeTool(
-      std::move(request),
+      std::move(invocation),
       base::BindOnce(&PageTool::FinishInvoke, base::Unretained(this)));
 }
 

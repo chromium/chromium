@@ -25,7 +25,9 @@ class MouseMoveTool : public ToolBase {
   MouseMoveTool(content::RenderFrame& frame,
                 Journal::TaskId task_id,
                 Journal& journal,
-                mojom::MouseMoveActionPtr action);
+                mojom::MouseMoveActionPtr action,
+                mojom::ToolTargetPtr target,
+                mojom::ObservedToolTargetPtr observed_target);
 
   ~MouseMoveTool() override;
 

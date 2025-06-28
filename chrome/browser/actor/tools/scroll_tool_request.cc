@@ -32,7 +32,6 @@ std::string ScrollToolRequest::JournalEvent() const {
 mojom::ToolActionPtr ScrollToolRequest::ToMojoToolAction() const {
   auto scroll = mojom::ScrollAction::New();
 
-  scroll->target = PageToolRequest::ToMojoToolTarget(GetTarget());
   switch (direction_) {
     case Direction::kLeft:
       scroll->direction = mojom::ScrollAction::ScrollDirection::kLeft;

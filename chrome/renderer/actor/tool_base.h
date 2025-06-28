@@ -24,9 +24,10 @@ class ToolBase {
  public:
   ToolBase(content::RenderFrame& frame,
            Journal::TaskId task_id,
-           Journal& journal)
-      : frame_(frame), task_id_(task_id), journal_(journal) {}
-  virtual ~ToolBase() = default;
+           Journal& journal,
+           mojom::ToolTargetPtr target,
+           mojom::ObservedToolTargetPtr observed_target);
+  virtual ~ToolBase();
 
   // Executes the tool and returns the result code.
   virtual mojom::ActionResultPtr Execute() = 0;
@@ -47,6 +48,8 @@ class ToolBase {
   base::raw_ref<content::RenderFrame> frame_;
   Journal::TaskId task_id_;
   base::raw_ref<Journal> journal_;
+  mojom::ToolTargetPtr target_;
+  mojom::ObservedToolTargetPtr observed_target_;
 };
 }  // namespace actor
 

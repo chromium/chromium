@@ -42,14 +42,10 @@ struct ClickAction {
   };
   Type type;
   Count count;
-  ToolTarget target;
-  ObservedToolTarget? observed_target;
 };
 
 // Information specific to a mouse move action.
 struct MouseMoveAction {
-  ToolTarget target;
-  ObservedToolTarget? observed_target;
 };
 
 // Information specific to the type (keyboard input) action.  Note: TypeAction
@@ -67,11 +63,9 @@ struct TypeAction {
   };
 
   Mode mode;
-  ToolTarget target;
   // text should be ASCII only for now.
   string text;
   bool follow_by_enter;
-  ObservedToolTarget? observed_target;
 };
 
 // Scroll action performs a scroll on the page's viewport or on a specified
@@ -94,33 +88,23 @@ struct ScrollAction {
     kDown = 4,
   };
 
-  // This target is the element to scroll. A null target implies scrolling the
-  // page's viewport. If the scroll action returns failure, it means the target
-  // isn't scrollable.
-  ToolTarget target;
   ScrollDirection direction;
   // Scroll distance in physical pixels, and it should always be positive.
   float distance;
-  ObservedToolTarget? observed_target;
 };
 
 // Action for selecting an option from a <select> element.
 struct SelectAction {
-  ToolTarget target;
-
   // The value of the option to set as the currently selected option. The action
   // fails if the given value doesn't match the value of one of the element's
   // <option> children. Case-sensitive.
   string value;
-  ObservedToolTarget? observed_target;
 };
 
 // Performs a left mouse button down on the from_target, then moves to and
 // releases on the to_target.
 struct DragAndReleaseAction {
-  ToolTarget from_target;
   ToolTarget to_target;
-  ObservedToolTarget? observed_from_target;
 };
 
 // Union of tool-specific actions.
@@ -132,6 +116,8 @@ union ToolAction {
   SelectAction select;
   TypeAction type;
 };
+
+
 
 // LINT.IfChange(ActionResultCode)
 
@@ -320,7 +306,16 @@ struct ToolInvocation {
   // The task ID owning this invocation.
   int32 task_id;
 
+  // The action to carry out in this invocation.
   ToolAction action;
+
+  // Target of this tool invocation.
+  ToolTarget target;
+
+  // Target from hit test on the last observed page content.
+  // This is optional and is used for checking if the action target has changed
+  // since last observation.
+  ObservedToolTarget? observed_target;
 };
 
 struct ActionResult {

@@ -15,20 +15,19 @@ ButtonClickHelper::ButtonClickHelper(content::WebContents* web_contents,
                                      int dom_node_id,
                                      ClickResult callback)
     : callback_(std::move(callback)) {
-  auto request = actor::mojom::ToolInvocation::New();
-
+  auto invocation = actor::mojom::ToolInvocation::New();
   auto click = actor::mojom::ClickAction::New();
-  click->target = actor::mojom::ToolTarget::NewDomNodeId(dom_node_id);
   click->type = actor::mojom::ClickAction::Type::kLeft;
   click->count = actor::mojom::ClickAction::Count::kSingle;
-  request->action = actor::mojom::ToolAction::NewClick(std::move(click));
+  invocation->action = actor::mojom::ToolAction::NewClick(std::move(click));
+  invocation->target = actor::mojom::ToolTarget::NewDomNodeId(dom_node_id);
 
   web_contents->GetPrimaryMainFrame()
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&chrome_render_frame_);
   chrome_render_frame_->InvokeTool(
-      std::move(request), base::BindOnce(&ButtonClickHelper::OnButtonClicked,
-                                         weak_ptr_factory_.GetWeakPtr()));
+      std::move(invocation), base::BindOnce(&ButtonClickHelper::OnButtonClicked,
+                                            weak_ptr_factory_.GetWeakPtr()));
 }
 
 ButtonClickHelper::~ButtonClickHelper() = default;

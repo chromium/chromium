@@ -41,8 +41,15 @@ namespace actor {
 MouseMoveTool::MouseMoveTool(content::RenderFrame& frame,
                              Journal::TaskId task_id,
                              Journal& journal,
-                             mojom::MouseMoveActionPtr action)
-    : ToolBase(frame, task_id, journal), action_(std::move(action)) {}
+                             mojom::MouseMoveActionPtr action,
+                             mojom::ToolTargetPtr target,
+                             mojom::ObservedToolTargetPtr observed_target)
+    : ToolBase(frame,
+               task_id,
+               journal,
+               std::move(target),
+               std::move(observed_target)),
+      action_(std::move(action)) {}
 
 MouseMoveTool::~MouseMoveTool() = default;
 
@@ -72,15 +79,15 @@ mojom::ActionResultPtr MouseMoveTool::Execute() {
 }
 
 std::string MouseMoveTool::DebugString() const {
-  return absl::StrFormat("MouseMoveTool[%s]", ToDebugString(action_->target));
+  return absl::StrFormat("MouseMoveTool[%s]", ToDebugString(target_));
 }
 
 MouseMoveTool::ValidatedResult MouseMoveTool::Validate() const {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
-  if (action_->target->is_coordinate()) {
-    gfx::PointF move_point = gfx::PointF(action_->target->get_coordinate());
+  if (target_->is_coordinate()) {
+    gfx::PointF move_point = gfx::PointF(target_->get_coordinate());
     if (!IsPointWithinViewport(move_point, frame_.get())) {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds,
@@ -90,8 +97,7 @@ MouseMoveTool::ValidatedResult MouseMoveTool::Validate() const {
     return move_point;
   }
 
-  blink::WebNode node =
-      GetNodeFromId(frame_.get(), action_->target->get_dom_node_id());
+  blink::WebNode node = GetNodeFromId(frame_.get(), target_->get_dom_node_id());
   if (node.IsNull()) {
     return base::unexpected(
         MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));

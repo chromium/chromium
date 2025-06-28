@@ -30,7 +30,9 @@ class DragAndReleaseTool : public ToolBase {
   DragAndReleaseTool(content::RenderFrame& frame,
                      Journal::TaskId task_id,
                      Journal& journal,
-                     mojom::DragAndReleaseActionPtr action);
+                     mojom::DragAndReleaseActionPtr action,
+                     mojom::ToolTargetPtr target,
+                     mojom::ObservedToolTargetPtr observed_target);
 
   ~DragAndReleaseTool() override;
 

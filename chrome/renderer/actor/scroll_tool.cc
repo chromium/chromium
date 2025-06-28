@@ -37,8 +37,15 @@ constexpr base::TimeDelta kSmoothScrollDelay = base::Milliseconds(700);
 ScrollTool::ScrollTool(content::RenderFrame& frame,
                        Journal::TaskId task_id,
                        Journal& journal,
-                       mojom::ScrollActionPtr action)
-    : ToolBase(frame, task_id, journal), action_(std::move(action)) {}
+                       mojom::ScrollActionPtr action,
+                       mojom::ToolTargetPtr target,
+                       mojom::ObservedToolTargetPtr observed_target)
+    : ToolBase(frame,
+               task_id,
+               journal,
+               std::move(target),
+               std::move(observed_target)),
+      action_(std::move(action)) {}
 
 ScrollTool::~ScrollTool() = default;
 
@@ -68,7 +75,7 @@ mojom::ActionResultPtr ScrollTool::Execute() {
 
 std::string ScrollTool::DebugString() const {
   return absl::StrFormat("ScrollTool[%s;direction(%s);distance(%f)]",
-                         ToDebugString(action_->target),
+                         ToDebugString(target_),
                          base::ToString(action_->direction), action_->distance);
 }
 
@@ -88,13 +95,13 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
         mojom::ActionResultCode::kArgumentsInvalid, "Negative Distance"));
   }
 
-  if (action_->target->is_coordinate()) {
+  if (target_->is_coordinate()) {
     NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
     return base::unexpected(MakeErrorResult());
   }
 
   WebElement scrolling_element;
-  int32_t dom_node_id = action_->target->get_dom_node_id();
+  int32_t dom_node_id = target_->get_dom_node_id();
   if (dom_node_id == kRootElementDomNodeId) {
     scrolling_element = web_frame->GetDocument().ScrollingElement();
     if (scrolling_element.IsNull()) {

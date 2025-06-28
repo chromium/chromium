@@ -40,8 +40,15 @@ using ::blink::WebNode;
 ClickTool::ClickTool(content::RenderFrame& frame,
                      Journal::TaskId task_id,
                      Journal& journal,
-                     mojom::ClickActionPtr action)
-    : ToolBase(frame, task_id, journal), action_(std::move(action)) {}
+                     mojom::ClickActionPtr action,
+                     mojom::ToolTargetPtr target,
+                     mojom::ObservedToolTargetPtr observed_target)
+    : ToolBase(frame,
+               task_id,
+               journal,
+               std::move(target),
+               std::move(observed_target)),
+      action_(std::move(action)) {}
 
 ClickTool::~ClickTool() = default;
 
@@ -81,17 +88,17 @@ mojom::ActionResultPtr ClickTool::Execute() {
 }
 
 std::string ClickTool::DebugString() const {
-  return absl::StrFormat(
-      "ClickTool[%s;type(%s);count(%s)]", ToDebugString(action_->target),
-      base::ToString(action_->type), base::ToString(action_->count));
+  return absl::StrFormat("ClickTool[%s;type(%s);count(%s)]",
+                         ToDebugString(target_), base::ToString(action_->type),
+                         base::ToString(action_->count));
 }
 
 ClickTool::ValidatedResult ClickTool::Validate() const {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
-  if (action_->target->is_coordinate()) {
-    gfx::PointF click_point(action_->target->get_coordinate());
+  if (target_->is_coordinate()) {
+    gfx::PointF click_point(target_->get_coordinate());
 
     if (!IsPointWithinViewport(click_point, frame_.get())) {
       return base::unexpected(
@@ -101,7 +108,7 @@ ClickTool::ValidatedResult ClickTool::Validate() const {
     return click_point;
   }
 
-  int32_t dom_node_id = action_->target->get_dom_node_id();
+  int32_t dom_node_id = target_->get_dom_node_id();
   WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
   if (node.IsNull()) {
     return base::unexpected(

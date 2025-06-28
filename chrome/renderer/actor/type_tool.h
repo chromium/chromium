@@ -31,7 +31,9 @@ class TypeTool : public ToolBase {
   TypeTool(content::RenderFrame& frame,
            Journal::TaskId task_id,
            Journal& journal,
-           mojom::TypeActionPtr action);
+           mojom::TypeActionPtr action,
+           mojom::ToolTargetPtr target,
+           mojom::ObservedToolTargetPtr observed_target);
   ~TypeTool() override;
 
   // actor::ToolBase

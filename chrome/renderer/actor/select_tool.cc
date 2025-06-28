@@ -32,8 +32,15 @@ using blink::WebString;
 SelectTool::SelectTool(content::RenderFrame& frame,
                        Journal::TaskId task_id,
                        Journal& journal,
-                       mojom::SelectActionPtr action)
-    : ToolBase(frame, task_id, journal), action_(std::move(action)) {}
+                       mojom::SelectActionPtr action,
+                       mojom::ToolTargetPtr target,
+                       mojom::ObservedToolTargetPtr observed_target)
+    : ToolBase(frame,
+               task_id,
+               journal,
+               std::move(target),
+               std::move(observed_target)),
+      action_(std::move(action)) {}
 
 SelectTool::~SelectTool() = default;
 
@@ -58,22 +65,20 @@ mojom::ActionResultPtr SelectTool::Execute() {
 }
 
 std::string SelectTool::DebugString() const {
-  return absl::StrFormat("SelectTool[%s;value(%s)]",
-                         ToDebugString(action_->target), action_->value);
+  return absl::StrFormat("SelectTool[%s;value(%s)]", ToDebugString(target_),
+                         action_->value);
 }
 
 SelectTool::ValidatedResult SelectTool::Validate() const {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
-  mojom::ToolTargetPtr& target = action_->target;
-
-  if (target->is_coordinate()) {
+  if (target_->is_coordinate()) {
     NOTIMPLEMENTED() << "Coordinate-based target is not yet supported.";
     return base::unexpected(MakeErrorResult());
   }
 
-  int32_t dom_node_id = target->get_dom_node_id();
+  int32_t dom_node_id = target_->get_dom_node_id();
 
   WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
   if (node.IsNull()) {

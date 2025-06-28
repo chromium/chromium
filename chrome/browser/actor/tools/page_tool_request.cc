@@ -30,17 +30,16 @@ PageToolRequest::Target::Target(const Target& other) = default;
 
 PageToolRequest::Target::~Target() = default;
 
-// static
-mojom::ToolTargetPtr PageToolRequest::ToMojoToolTarget(const Target& target) {
+mojom::ToolTargetPtr PageToolRequest::Target::ToMojoToolTarget() const {
   // TODO(crbug.com/419037299): This needs to take in a target RenderFrameHost&
   // and convert from WebContents-relative coordinates into Widget-local
   // coordinates.
-  if (target.is_coordinate()) {
-    return actor::mojom::ToolTarget::NewCoordinate(target.coordinate());
+  if (is_coordinate()) {
+    return actor::mojom::ToolTarget::NewCoordinate(coordinate());
   }
 
-  CHECK(target.is_node());
-  return actor::mojom::ToolTarget::NewDomNodeId(target.node().dom_node_id);
+  CHECK(is_node());
+  return actor::mojom::ToolTarget::NewDomNodeId(node().dom_node_id);
 }
 
 PageToolRequest::PageToolRequest(TabHandle tab_handle, const Target& target)

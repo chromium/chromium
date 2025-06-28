@@ -144,8 +144,15 @@ TypeTool::KeyParams::KeyParams(const KeyParams& other) = default;
 TypeTool::TypeTool(content::RenderFrame& frame,
                    Journal::TaskId task_id,
                    Journal& journal,
-                   mojom::TypeActionPtr action)
-    : ToolBase(frame, task_id, journal), action_(std::move(action)) {}
+                   mojom::TypeActionPtr action,
+                   mojom::ToolTargetPtr target,
+                   mojom::ObservedToolTargetPtr observed_target)
+    : ToolBase(frame,
+               task_id,
+               journal,
+               std::move(target),
+               std::move(observed_target)),
+      action_(std::move(action)) {}
 
 TypeTool::~TypeTool() = default;
 
@@ -323,7 +330,7 @@ mojom::ActionResultPtr TypeTool::Execute() {
 
 std::string TypeTool::DebugString() const {
   return absl::StrFormat("TypeTool[%s;text(%s);mode(%s);FollowByEnter(%v)]",
-                         ToDebugString(action_->target), action_->text,
+                         ToDebugString(target_), action_->text,
                          base::ToString(action_->mode),
                          action_->follow_by_enter);
 }
@@ -336,8 +343,7 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
-  mojom::ToolTargetPtr& target = action_->target;
-  CHECK(target);
+  CHECK(target_);
 
   if (!base::IsStringASCII(action_->text)) {
     // TODO(crbug.com/409032824): Add support beyond ASCII.
@@ -362,9 +368,9 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
     key_sequence.push_back(GetEnterKeyParams());
   }
 
-  if (target->is_coordinate()) {
+  if (target_->is_coordinate()) {
     // Injecting a click first at the coordinate.
-    gfx::PointF coordinate = gfx::PointF(target->get_coordinate());
+    gfx::PointF coordinate = gfx::PointF(target_->get_coordinate());
     if (!IsPointWithinViewport(coordinate, frame_.get())) {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds));
@@ -372,7 +378,7 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
 
     return TargetAndKeys{coordinate, std::move(key_sequence)};
   } else {
-    int32_t dom_node_id = target->get_dom_node_id();
+    int32_t dom_node_id = target_->get_dom_node_id();
     WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
     if (node.IsNull()) {
       return base::unexpected(

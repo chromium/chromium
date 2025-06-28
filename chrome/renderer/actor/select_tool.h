@@ -24,7 +24,9 @@ class SelectTool : public ToolBase {
   SelectTool(content::RenderFrame& frame,
              Journal::TaskId task_id,
              Journal& journal,
-             mojom::SelectActionPtr action);
+             mojom::SelectActionPtr action,
+             mojom::ToolTargetPtr target,
+             mojom::ObservedToolTargetPtr observed_target);
   ~SelectTool() override;
 
   // actor::ToolBase

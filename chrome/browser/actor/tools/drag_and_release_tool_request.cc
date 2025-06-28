@@ -31,8 +31,7 @@ std::string DragAndReleaseToolRequest::JournalEvent() const {
 mojom::ToolActionPtr DragAndReleaseToolRequest::ToMojoToolAction() const {
   auto drag = mojom::DragAndReleaseAction::New();
 
-  drag->from_target = PageToolRequest::ToMojoToolTarget(from_target_);
-  drag->to_target = PageToolRequest::ToMojoToolTarget(to_target_);
+  drag->to_target = to_target_.ToMojoToolTarget();
 
   return mojom::ToolAction::NewDragAndRelease(std::move(drag));
 }

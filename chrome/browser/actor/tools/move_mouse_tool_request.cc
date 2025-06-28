@@ -27,9 +27,6 @@ std::string MoveMouseToolRequest::JournalEvent() const {
 
 mojom::ToolActionPtr MoveMouseToolRequest::ToMojoToolAction() const {
   auto move_mouse = mojom::MouseMoveAction::New();
-
-  move_mouse->target = PageToolRequest::ToMojoToolTarget(GetTarget());
-
   return mojom::ToolAction::NewMouseMove(std::move(move_mouse));
 }
 

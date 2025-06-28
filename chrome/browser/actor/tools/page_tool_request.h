@@ -60,6 +60,9 @@ class PageToolRequest : public TabToolRequest {
     }
     const NodeTarget& node() const { return std::get<NodeTarget>(impl_); }
 
+    // Constructs an actor::mojom::ToolTarget.
+    mojom::ToolTargetPtr ToMojoToolTarget() const;
+
    private:
     std::variant<NodeTarget, CoordinateTarget> impl_;
   };
@@ -80,11 +83,6 @@ class PageToolRequest : public TabToolRequest {
 
   // Returns what in the page the tool should act upon.
   const Target& GetTarget() const;
-
- protected:
-  // Helper usable by child classes when implementing ToMojoToolAction.
-  // Constructs an actor::mojom::ToolTarget from a PageToolRequest::Target.
-  static mojom::ToolTargetPtr ToMojoToolTarget(const Target& target);
 
  private:
   std::optional<std::string> document_identifier_;
