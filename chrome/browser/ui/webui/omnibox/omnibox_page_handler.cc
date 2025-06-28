@@ -96,21 +96,6 @@ std::string AnswerTypeToString(int answer_type) {
 
 namespace mojo {
 
-template <>
-struct TypeConverter<std::vector<mojom::ACMatchClassificationPtr>,
-                     AutocompleteMatch::ACMatchClassifications> {
-  static std::vector<mojom::ACMatchClassificationPtr> Convert(
-      const AutocompleteMatch::ACMatchClassifications& input) {
-    std::vector<mojom::ACMatchClassificationPtr> array;
-    for (auto classification : input) {
-      auto item = mojom::ACMatchClassification::New(classification.offset,
-                                                    classification.style);
-      array.push_back(std::move(item));
-    }
-    return array;
-  }
-};
-
 // Boilerplate for `mojom.field = proto.field`.
 #define PROTO_TO_MOJOM_SIGNAL(field) \
   mojom_signals->field =             \
@@ -276,13 +261,9 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
     result->image = input.ImageUrl().spec().c_str();
 
     result->contents = base::UTF16ToUTF8(input.contents);
-    result->contents_class =
-        mojo::ConvertTo<std::vector<mojom::ACMatchClassificationPtr>>(
-            input.contents_class);
+    result->contents_class = input.contents_class;
     result->description = base::UTF16ToUTF8(input.description);
-    result->description_class =
-        mojo::ConvertTo<std::vector<mojom::ACMatchClassificationPtr>>(
-            input.description_class);
+    result->description_class = input.description_class;
     result->swap_contents_and_description = input.swap_contents_and_description;
     if (input.answer_template.has_value()) {
       omnibox::AnswerData answer_data = input.answer_template->answers(0);

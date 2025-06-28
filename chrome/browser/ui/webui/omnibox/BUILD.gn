@@ -7,4 +7,31 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "omnibox_internals.mojom" ]
   webui_module_path = "/chrome/browser/ui/webui/omnibox"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mojom.ACMatchClassification"
+          cpp = "::AutocompleteMatch::ACMatchClassification"
+        },
+      ]
+      traits_headers = [ "omnibox_mojom_traits.h" ]
+
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "omnibox_mojom_traits.cc",
+    "omnibox_mojom_traits.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings_shared_cpp_sources",
+    "//base",
+    "//components/omnibox/browser",
+  ]
 }

@@ -347,7 +347,7 @@ void FeaturedSearchProvider::AddStarterPackMatch(
       {0, ACMatchClassification::NONE},
       {template_url.keyword().size(), ACMatchClassification::DIM}};
   match.contents.clear();
-  match.contents_class = {{}};
+  match.contents_class = {};
   match.allowed_to_be_default_match = false;
   match.keyword = template_url.keyword();
   matches_.push_back(match);
@@ -405,7 +405,7 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
       {0, ACMatchClassification::NONE},
       {template_url.keyword().size(), ACMatchClassification::DIM}};
   match.contents.clear();
-  match.contents_class = {{}};
+  match.contents_class = {};
   match.allowed_to_be_default_match = false;
   match.keyword = template_url.keyword();
   if (template_url.CreatedByEnterpriseSearchAggregatorPolicy()) {

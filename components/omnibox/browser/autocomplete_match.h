@@ -195,6 +195,7 @@ struct AutocompleteMatch {
     };
     // clang-format on
 
+    ACMatchClassification() = default;
     ACMatchClassification(size_t offset, int style)
         : offset(offset), style(style) {}
 
@@ -202,10 +203,10 @@ struct AutocompleteMatch {
                            const ACMatchClassification&) = default;
 
     // Offset within the string that this classification starts
-    size_t offset;
+    size_t offset = 0;
 
     // Contains a bitmask of flags defined in enum Style.
-    int style;
+    int style = 0;
   };
 
   // SuggestTiles are used specifically with TILE_NAVSUGGEST matches.
