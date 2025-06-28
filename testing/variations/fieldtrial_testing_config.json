@@ -16348,21 +16348,6 @@
             ]
         }
     ],
-    "OomIntervention": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "OomIntervention"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptGuideBatchSRPTuning": [
         {
             "platforms": [
