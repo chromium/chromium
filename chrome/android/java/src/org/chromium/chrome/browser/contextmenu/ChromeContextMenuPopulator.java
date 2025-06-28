@@ -83,6 +83,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListItemType;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -1160,7 +1161,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     private ListItem createListItem(@Item int item, boolean showInProductHelp, boolean enabled) {
         final PropertyModel model =
-                new PropertyModel.Builder(MENU_ITEM_ID, TITLE, ENABLED, HOVER_LISTENER)
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        // TODO(crbug.com/427797271): Try to narrow down the used properties after
+                        // implementing extension-injected context menu items for selected text.
                         .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(
                                 TITLE,

@@ -4,9 +4,30 @@ Copyright 2019 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/menu_row_text"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/ContextMenuItemText" />
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:background="?attr/selectableItemBackground"
+    android:paddingHorizontal="@dimen/context_menu_list_lateral_padding">
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/menu_item_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="6dp"
+        android:gravity="center"
+        android:duplicateParentState="true"
+        android:importantForAccessibility="no"
+        android:visibility="gone"
+        android:tint="@color/default_icon_color_secondary_tint_list"
+        android:tintMode="src_in" />
+
+    <TextView
+        android:id="@+id/menu_item_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:duplicateParentState="true"
+        style="@style/ContextMenuItemText" />
+</LinearLayout>

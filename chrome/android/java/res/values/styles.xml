@@ -457,11 +457,8 @@ found in the LICENSE file.
 
     <!-- Context menu -->
     <style name="ContextMenuItemText">
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:minHeight">@dimen/min_touch_target_size</item>
-        <item name="android:paddingStart">@dimen/context_menu_list_lateral_padding</item>
-        <item name="android:paddingEnd">@dimen/context_menu_list_lateral_padding</item>
         <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">@dimen/min_touch_target_size</item>
         <item name="android:textAlignment">viewStart</item>
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
     </style>

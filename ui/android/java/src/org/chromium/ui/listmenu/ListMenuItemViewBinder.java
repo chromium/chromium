@@ -86,7 +86,7 @@ public class ListMenuItemViewBinder {
             // for an item. The click listener will be expected to be retrieved and used
             // by the component using this binder and not the binder itself.
         } else if (propertyKey == ListMenuItemProperties.HOVER_LISTENER) {
-            textView.setOnHoverListener(model.get(ListMenuItemProperties.HOVER_LISTENER));
+            view.setOnHoverListener(model.get(ListMenuItemProperties.HOVER_LISTENER));
         } else if (propertyKey == ListMenuItemProperties.INTENT) {
             // Not tracked intentionally because it's mainly for setting a custom intent
             // for an item. The intent will be expected to be retrieved and used
@@ -99,6 +99,9 @@ public class ListMenuItemViewBinder {
                         model.get(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN));
             }
         } else if (propertyKey == ListMenuItemProperties.ENABLED) {
+            // Set enabled state on view, textView, and icons (because with some layout files,
+            // textView and icons inherit state from view, and sometimes they don't)
+            view.setEnabled(model.get(ListMenuItemProperties.ENABLED));
             textView.setEnabled(model.get(ListMenuItemProperties.ENABLED));
             if (startIcon != null) startIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
             if (endIcon != null) endIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));

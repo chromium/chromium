@@ -16,10 +16,11 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:background="?attr/selectableItemBackground"
         style="@style/ContextMenuItemText" />
     <!-- We use tools:ignore instead of android:importantForAccessibility="no" here because this
          view is important for accessibility, but there is no content description yet.
-         It will bepopulated programmatically (see
+         It will be populated programmatically (see
          chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemWithIconButtonViewBinder.java). -->
     <ImageView
         android:id="@+id/menu_row_share_icon"

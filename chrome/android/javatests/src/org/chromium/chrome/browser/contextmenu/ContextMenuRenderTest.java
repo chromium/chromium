@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.contextmenu;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewStub;
 
@@ -60,6 +62,8 @@ public class ContextMenuRenderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static final String EXAMPLE_LABEL = "Example label";
 
     private static Activity sActivity;
 
@@ -155,6 +159,41 @@ public class ContextMenuRenderTest {
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testContextMenuViewWithImageLink_Popup() throws IOException {
         doTestContextMenuViewWithImageLink("context_menu_with_image_link_popup");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenu_itemsFromExtensions() throws IOException {
+        // Test types of items that can be registered by extensions.
+        // TODO(crbug.com/418807464): Add more types of items here once they are ready.
+
+        // We choose an arbitrary icon for testing.
+        Bitmap testBitmap = drawableToBitmap(sActivity.getDrawable(R.drawable.lens_icon));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mListItems.add(
+                            new ListItem(
+                                    ListItemType.CONTEXT_MENU_ITEM,
+                                    new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                            .with(ListMenuItemProperties.TITLE, EXAMPLE_LABEL)
+                                            .with(
+                                                    ListMenuItemProperties.START_ICON_BITMAP,
+                                                    testBitmap)
+                                            .with(ListMenuItemProperties.ENABLED, true)
+                                            .build()));
+                    mListItems.add(
+                            new ListItem(
+                                    ListItemType.CONTEXT_MENU_ITEM,
+                                    new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                            .with(ListMenuItemProperties.TITLE, EXAMPLE_LABEL)
+                                            .with(
+                                                    ListMenuItemProperties.START_ICON_BITMAP,
+                                                    testBitmap)
+                                            .with(ListMenuItemProperties.ENABLED, false)
+                                            .build()));
+                });
+        mRenderTestRule.render(mFrame, "context_menu_items_from_extensions");
     }
 
     private void doTestContextMenuViewWithLink(String id) throws IOException {
@@ -270,5 +309,17 @@ public class ContextMenuRenderTest {
                 .with(ContextMenuItemWithIconButtonProperties.ENABLED, true)
                 .with(ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable)
                 .build();
+    }
+
+    private static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 }
