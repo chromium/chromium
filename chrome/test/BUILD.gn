@@ -5707,6 +5707,11 @@ if (!is_android) {
         sources +=
             [ "../browser/printing/system_access_process_print_browsertest.cc" ]
       }
+
+      if (is_posix) {
+        sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_posix_browsertest.cc" ]
+      }
+
       if (is_win) {
         sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_win_browsertest.cc" ]
       }
@@ -10049,10 +10054,6 @@ test("unit_tests") {
         "../browser/ui/webui/print_preview/print_preview_ui_untrusted_unittest.cc",
         "../browser/ui/webui/print_preview/print_preview_utils_unittest.cc",
       ]
-
-      if (is_posix) {
-        sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_posix_unittest.cc" ]
-      }
 
       if (is_chromeos) {
         sources += [

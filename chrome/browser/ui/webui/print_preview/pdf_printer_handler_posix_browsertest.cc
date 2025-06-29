@@ -7,8 +7,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <ios>
-
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,9 +15,13 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace printing {
 
@@ -93,7 +95,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
 
 }  // namespace
 
-class PdfPrinterHandlerPosixTest : public BrowserWithTestWindowTest {
+class PdfPrinterHandlerPosixTest : public InProcessBrowserTest {
  public:
   PdfPrinterHandlerPosixTest() = default;
   PdfPrinterHandlerPosixTest(const PdfPrinterHandlerPosixTest&) = delete;
@@ -101,10 +103,9 @@ class PdfPrinterHandlerPosixTest : public BrowserWithTestWindowTest {
       delete;
   ~PdfPrinterHandlerPosixTest() override = default;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-
-    // Create a temp dir to work in.
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
@@ -112,7 +113,8 @@ class PdfPrinterHandlerPosixTest : public BrowserWithTestWindowTest {
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(PdfPrinterHandlerPosixTest, SaveAsPdfFilePermissions) {
+IN_PROC_BROWSER_TEST_F(PdfPrinterHandlerPosixTest, SaveAsPdfFilePermissions) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   ScopedUmaskSetter permissive_umask(0022);
 
   // Saved PDF files are not executable files, and should be readable/writeable
@@ -136,7 +138,7 @@ TEST_F(PdfPrinterHandlerPosixTest, SaveAsPdfFilePermissions) {
     base::FilePath save_to_pdf_file = save_to_dir.Append("output.pdf");
 
     auto pdf_printer = std::make_unique<FakePdfPrinterHandler>(
-        profile(), browser()->tab_strip_model()->GetActiveWebContents(),
+        GetProfile(), browser()->tab_strip_model()->GetActiveWebContents(),
         save_to_pdf_file);
     pdf_printer->StartPrintToPdf();
     EXPECT_EQ(kExpectedFileMode, GetFilePermissions(save_to_pdf_file));
