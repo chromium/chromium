@@ -45,6 +45,8 @@ public class NtpCustomizationUtils {
     public static int getSheetContentDescription(
             @NtpCustomizationCoordinator.BottomSheetType int type) {
         switch (type) {
+            case MAIN:
+                return R.string.ntp_customization_main_bottom_sheet;
             case NTP_CARDS:
                 return R.string.ntp_customization_ntp_cards_bottom_sheet;
             case FEED:

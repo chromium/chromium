@@ -84,7 +84,9 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
         // Verifies the expected content description and accessibility string when the main bottom
         // sheet is fully expanded and when it's closed.
         mBottomSheetContent.setCurrentBottomSheetTypeSupplierForTesting(() -> MAIN);
-        assertNull(mBottomSheetContent.getSheetContentDescription(mContext));
+        assertEquals(
+                "Customize your new tab page bottom sheet",
+                mBottomSheetContent.getSheetContentDescription(mContext));
         assertEquals(
                 R.string.ntp_customization_main_bottom_sheet_opened_full,
                 mBottomSheetContent.getSheetFullHeightAccessibilityStringId());

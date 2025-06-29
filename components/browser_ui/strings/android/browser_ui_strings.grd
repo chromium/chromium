@@ -1326,6 +1326,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_FEED_LIST_ITEMS_TITLE" desc="Title of the list items in the new tab page customization discover feed bottom sheet">
         Manage your feed
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the customize your new tab page bottom sheet.">
+        Customize your new tab page bottom sheet
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_NTP_CARDS_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the new tab page cards bottom sheet.">
         New tab page cards bottom sheet
       </message>
@@ -1337,6 +1340,9 @@
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_SHOW_MORE" desc="Accessibility string that describes clicking on the currently selected item will show more details about it." is_accessibility_with_no_ui="true">
         Show More
+      </message>
+      <message name="IDS_LEARN_MORE_DISCOVER_FEED" desc="Accessibility string to announce the currently selected item is a button direct to a page with more information on customizing feed" is_accessibility_with_no_ui="true">
+        Learn more about discover feed
       </message>
 
       <!-- Time Last Accessed strings -->

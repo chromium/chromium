@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
@@ -90,11 +88,6 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
 
     @Override
     public @Nullable String getSheetContentDescription(Context context) {
-        // Returns null when the current sheet is the main bottom sheet. This ensures TalkBack reads
-        // the full content of the main bottom sheet in a top-to-bottom, left-to-right order.
-        if (mCurrentBottomSheetTypeSupplier.get() == MAIN) {
-            return null;
-        }
         return context.getString(
                 NtpCustomizationUtils.getSheetContentDescription(
                         mCurrentBottomSheetTypeSupplier.get()));
