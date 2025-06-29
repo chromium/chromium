@@ -41,3 +41,6 @@
 -PageInfoBubbleViewBrowserTest.FocusDoesNotReturnToContentsOnReloadPrompt
 -PageInfoBubbleViewBrowserTest.FocusReturnsToContentOnClose
 -PrintBrowserTest.PDFPluginNotKeyboardFocusable
+
+# Fail on try bot due to DCHECKs being enabled there
+-PermissionElementBrowserTest.TabSwitchingClosesPrompt

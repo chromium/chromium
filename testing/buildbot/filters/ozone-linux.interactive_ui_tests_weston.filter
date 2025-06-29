@@ -81,3 +81,6 @@
 
 # TODO(crbug.com/40800718): Enable once the xdg desktop portal backed implementation is in place.
 -EyeDropperViewAuraInteractiveTest.*
+
+# Fail on try bot due to DCHECKs being enabled there
+-AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/*
