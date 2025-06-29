@@ -78,20 +78,13 @@ partition_alloc_remove_configs +=
 _disable_partition_alloc_everywhere =
     (!is_linux && is_component_build) || (is_win && is_debug)
 
-# - NaCl: No plans to support it.
 # - iOS: Depends on ios_partition_alloc_enabled.
-_is_partition_alloc_everywhere_platform =
-    !is_nacl && (!is_ios || ios_partition_alloc_enabled)
+_is_partition_alloc_everywhere_platform = !is_ios || ios_partition_alloc_enabled
 
 use_allocator_shim_default = true  # Updated below:
 
 # Sanitizers replace the allocator, don't use our own.
 if (is_asan || is_hwasan || is_lsan || is_tsan || is_msan) {
-  use_allocator_shim_default = false
-}
-
-# NaCl will never support the allocator shim.
-if (is_nacl) {
   use_allocator_shim_default = false
 }
 
@@ -101,8 +94,6 @@ if (is_fuchsia && _disable_partition_alloc_everywhere) {
 }
 
 # Under Windows debug build, the allocator shim is not compatible with CRT.
-# NaCl in particular does seem to link some binaries statically against the
-# debug CRT with "is_nacl=false".
 if (is_win && is_debug) {
   use_allocator_shim_default = false
 }

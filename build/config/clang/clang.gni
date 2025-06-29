@@ -14,7 +14,7 @@ declare_args() {
   # coding guidelines, etc. Only used when compiling with Chrome's Clang, not
   # Chrome OS's.
   clang_use_chrome_plugins =
-      is_clang && !is_nacl && current_os != "zos" &&
+      is_clang && current_os != "zos" &&
       default_toolchain != "//build/toolchain/cros:target" &&
       # TODO(https://crbug.com/351909443): Remove this after fixing performance
       # of Clang modules build.

@@ -46,9 +46,8 @@ declare_args() {
   # //third_party/robolectric .
   limit_android_deps = false
 
-  # Allows googletest to pretty-print various absl types.  Disabled for nacl due
-  # to lack of toolchain support.
-  gtest_enable_absl_printers = !is_nacl
+  # Allows googletest to pretty-print various absl types.
+  gtest_enable_absl_printers = true
 
   # Allow projects that wish to stay on C++17 to override Chromium's default.
   # TODO(crbug.com/40251117): evaluate removing this end of 2023
@@ -59,7 +58,7 @@ declare_args() {
 declare_args() {
   # Use Perfetto's trace processor for converting protobuf-encoded traces to
   # the legacy JSON format in base::TraceLog.
-  use_perfetto_trace_processor = !is_nacl && !is_cronet_build
+  use_perfetto_trace_processor = !is_cronet_build
 }
 
 # Allows different projects to specify their own suppression/ignore lists for

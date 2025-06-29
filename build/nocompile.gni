@@ -55,7 +55,7 @@ if (is_win) {
 }
 
 declare_args() {
-  enable_nocompile_tests = is_clang && !is_nacl
+  enable_nocompile_tests = is_clang
 }
 
 if (enable_nocompile_tests) {

@@ -64,10 +64,6 @@ declare_args() {
   # not break incremental builds.
   rustc_version = ""
 
-  # If you're using a Rust toolchain as specified by rust_sysroot_absolute,
-  # you can specify whether it supports nacl here.
-  rust_toolchain_supports_nacl = false
-
   # Whether artifacts produced by the Rust compiler can participate in ThinLTO.
   #
   # One important consideration is whether the linker uses the same LLVM
@@ -112,8 +108,8 @@ declare_args() {
 use_chromium_rust_toolchain = rust_sysroot_absolute == ""
 
 # Platform support for the Rust toolchain.
-chromium_toolchain_supports_platform = !is_nacl && !is_wasm
-custom_toolchain_supports_platform = !is_nacl || rust_toolchain_supports_nacl
+chromium_toolchain_supports_platform = !is_wasm
+custom_toolchain_supports_platform = true
 
 # Not all target triples (GN toolchains) are supported by the Rust compiler.
 # Define if we support the current GN toolchain.

@@ -28,7 +28,7 @@
 # represents the computer doing the compile and never changes. The "target"
 # represents the main thing we're trying to build. The "current" represents
 # which configuration is currently being defined, which can be either the
-# host, the target, or something completely different (like nacl). GN will
+# host, the target, or something completely different. GN will
 # run the same build file multiple times for the different required
 # configuration in the same build.
 #
@@ -327,7 +327,12 @@ is_fuchsia = current_os == "fuchsia"
 is_ios = current_os == "ios"
 is_linux = current_os == "linux"
 is_mac = current_os == "mac"
-is_nacl = current_os == "nacl"
+
+# TODO(crbug.com/40511454): Remove is_nacl from all build files, then
+#                           remove the is_nacl variable.
+assert(current_os != "nacl")
+is_nacl = false
+
 is_wasm = current_os == "emscripten"
 is_watchos = current_os == "watchos"
 is_win = current_os == "win" || current_os == "winuwp"
