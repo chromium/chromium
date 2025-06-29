@@ -280,38 +280,6 @@ std::optional<AlignedByteLength<OperandId>> CalculateAlignedByteLength(
       .key_to_d3d12_range_map = std::move(key_to_d3d12_range_map)};
 }
 
-// Same as above, but given a map of names to descriptors.
-std::optional<AlignedByteLength<std::string>>
-CalculateAlignedByteLengthFromDescriptors(
-    const base::flat_map<std::string, OperandDescriptor>&
-        names_to_descriptors) {
-  base::CheckedNumeric<size_t> total_byte_length(0);
-  absl::flat_hash_map<std::string, D3D12_RANGE> key_to_d3d12_range_map;
-
-  for (auto& [name, descriptor] : names_to_descriptors) {
-    auto& d3d12_range = key_to_d3d12_range_map[name];
-    d3d12_range.Begin = total_byte_length.ValueOrDie();
-
-    // The buffer has a minimum base address alignment requirement of 16 bytes
-    // in the macro `DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT`:
-    // https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-directml-constants
-    total_byte_length += base::bits::AlignUp<size_t>(
-        descriptor.PackedByteLength(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
-    if (!total_byte_length.IsValid()) {
-      LOG(ERROR) << "[WebNN] Failed to calculate the total byte length.";
-      return std::nullopt;
-    }
-
-    // The aligned byte length calculated with `End` sub `Begin` attribute is
-    // used to set the `SizeInBytes` field of `DML_BUFFER_BINDING`.
-    d3d12_range.End = total_byte_length.ValueOrDie();
-  }
-
-  return AlignedByteLength<std::string>{
-      .total_byte_length = total_byte_length.ValueOrDie(),
-      .key_to_d3d12_range_map = std::move(key_to_d3d12_range_map)};
-}
-
 struct UploadAndDefaultBuffers {
   ComPtr<ID3D12Resource> upload_buffer;
   ComPtr<ID3D12Resource> default_buffer;
@@ -387,28 +355,6 @@ UploadAndCreateConstantBufferBinding(
   }
 
   return key_to_buffer_binding_map;
-}
-
-HRESULT MapAndCopyInputDataToBuffer(
-    const base::flat_map<std::string, mojo_base::BigBuffer>& named_inputs,
-    const absl::flat_hash_map<std::string, D3D12_RANGE>&
-        input_name_to_d3d12_range_map,
-    ID3D12Resource* buffer) {
-  // Map entire resource to copy the array buffer of input one by one
-  // with byte offset.
-  void* mapped_buffer = nullptr;
-  CHECK(buffer);
-  RETURN_IF_FAILED(buffer->Map(0, nullptr, &mapped_buffer));
-
-  for (auto& [name, input] : named_inputs) {
-    // Copy the input data to the upload heap with byte offset
-    const auto& d3d12_range = input_name_to_d3d12_range_map.at(name);
-    memcpy(static_cast<uint8_t*>(mapped_buffer) + d3d12_range.Begin,
-           input.data(), input.size());
-  }
-  buffer->Unmap(0, nullptr);
-
-  return S_OK;
 }
 
 const Operand& GetOperand(const std::vector<OperandPtr>& operands,

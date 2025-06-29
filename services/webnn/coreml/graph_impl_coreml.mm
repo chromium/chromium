@@ -79,45 +79,6 @@ namespace webnn::coreml {
 
 namespace {
 
-
-// Compute strides which may be used to construct an `MLMultiArray` given
-// `multi_array_constraint`.
-// See https://developer.apple.com/documentation/coreml/mlmultiarray/strides.
-//
-// For example, given a 4D input `shape`, its strides would be as follows:
-// [
-//   shape[1] * shape[2] * shape[3],
-//   shape[2] * shape[3],
-//   shape[3],
-//   1
-// ];
-NSMutableArray* CalculateStrides(
-    MLMultiArrayConstraint* multi_array_constraint) {
-  // Empty shapes are not supported for input or output operands.
-  CHECK_GT(multi_array_constraint.shape.count, 0u);
-
-  NSMutableArray* strides =
-      [NSMutableArray arrayWithCapacity:multi_array_constraint.shape.count];
-
-  // Fill `strides` in reverse order, then return the list in reverse.
-
-  // The last stride is always 1.
-  uint32_t current_stride = 1;
-  [strides addObject:@(current_stride)];
-
-  for (uint32_t i = multi_array_constraint.shape.count - 1; i > 0; --i) {
-    // Overflow checks are not needed here because this calculation will always
-    // result in a value less than the similar calculation performed (with
-    // overflow checks) in `OperandDescriptor::Create()` - and
-    // `multi_array_constraint` corresponds to an `OperandDescriptor`.
-    current_stride *= multi_array_constraint.shape[i].unsignedIntegerValue;
-
-    [strides addObject:@(current_stride)];
-  }
-
-  return [[[strides reverseObjectEnumerator] allObjects] mutableCopy];
-}
-
 API_AVAILABLE(macos(12.3))
 base::flat_map<std::string,
                scoped_refptr<QueueableResourceState<BufferContent>>>
