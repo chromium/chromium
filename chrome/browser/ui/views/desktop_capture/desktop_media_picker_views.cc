@@ -327,6 +327,23 @@ int getHintId(bool is_system_audio_offered, bool is_window_audio_offered) {
   return IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB;
 }
 
+int GetLabelForShareSystemAudioToggle(bool suppress_local_audio_playback,
+                                      bool restrict_own_audio) {
+  if (suppress_local_audio_playback) {
+    return IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN_WITH_MUTE_WARNING;
+  }
+#if BUILDFLAG(IS_WIN)
+  // Due to an API limitation on Windows we must share all output audio
+  // devices when restrict_own_audio is used. We use another string for that
+  // scenario.
+  return restrict_own_audio
+             ? IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_ALL_AUDIO_OUTPUT
+             : IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO;
+#else
+  return IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO;
+#endif
+}
+
 }  // namespace
 
 bool DesktopMediaPickerDialogView::AudioSupported(
@@ -405,7 +422,11 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
           params.window_audio_preference !=
               blink::mojom::WindowAudioPreference::kExclude &&
           AudioSupported(DesktopMediaList::Type::kWindow)),
-      suppress_local_audio_playback_(params.suppress_local_audio_playback),
+      // Only restrict_own_audio is used if both suppress_local_audio_playback
+      // and restrict_own_audio are true. We need to make this choice since
+      // there is no implementation for using both at the same time.
+      suppress_local_audio_playback_(params.suppress_local_audio_playback &&
+                                     !params.restrict_own_audio),
       restrict_own_audio_(params.restrict_own_audio),
       capturer_global_id_(
           params.web_contents
@@ -759,16 +780,12 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
 
   switch (category.type) {
     case DesktopMediaList::Type::kScreen: {
-      return l10n_util::GetStringUTF16(
-          suppress_local_audio_playback_
-              ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN_WITH_MUTE_WARNING
-              : IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO);
+      return l10n_util::GetStringUTF16(GetLabelForShareSystemAudioToggle(
+          suppress_local_audio_playback_, restrict_own_audio_));
     }
     case DesktopMediaList::Type::kWindow:
-      return l10n_util::GetStringUTF16(
-          suppress_local_audio_playback_
-              ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN_WITH_MUTE_WARNING
-              : IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO);
+      return l10n_util::GetStringUTF16(GetLabelForShareSystemAudioToggle(
+          suppress_local_audio_playback_, restrict_own_audio_));
     case DesktopMediaList::Type::kWebContents:
       return l10n_util::GetStringUTF16(
           IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_TAB_AUDIO);

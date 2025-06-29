@@ -16045,6 +16045,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO" desc="Text for the audio toggle in the window picker dialog which is displayed when attempting to share a screen.">
         Also share system audio
       </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_ALL_AUDIO_OUTPUT" desc="Text for the audio toggle in the window picker dialog which is displayed when attempting to share a screen. This string is used when we share all output audio devices, rather than just the default device">
+        Also share all audio outputs
+      </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_TAB_AUDIO" desc="Text for the audio toggle in the window picker dialog which is displayed when attempting to share a tab.">
         Also share tab audio
       </message>
