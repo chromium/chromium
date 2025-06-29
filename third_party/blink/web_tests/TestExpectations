@@ -1610,7 +1610,6 @@ crbug.com/1250257 external/wpt/css/css-text/tab-size/tab-size-block-ancestor.htm
 crbug.com/921318 external/wpt/css/css-text/tab-size/tab-size-spacing-001.html [ Failure ]
 crbug.com/921318 external/wpt/css/css-text/tab-size/tab-size-spacing-002.html [ Failure ]
 crbug.com/921318 external/wpt/css/css-text/tab-size/tab-size-spacing-003.html [ Failure ]
-crbug.com/970200 external/wpt/css/css-text/text-indent/text-indent-tab-positions-001.html [ Failure ]
 crbug.com/1030452 external/wpt/css/css-text/text-transform/text-transform-upperlower-016.html [ Failure ]
 
 crbug.com/1008029 [ Mac ] external/wpt/css/css-text/white-space/pre-wrap-018.html [ Failure ]

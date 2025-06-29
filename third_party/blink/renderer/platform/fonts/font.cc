@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
@@ -471,7 +472,13 @@ float Font::TabWidth(const SimpleFontData* font_data,
   if (!base_tab_width)
     return GetFontDescription().LetterSpacing();
 
-  float distance_to_tab_stop = base_tab_width - fmodf(position, base_tab_width);
+  float modulized_position = fmodf(position, base_tab_width);
+  if (RuntimeEnabledFeatures::TabWidthNegativePositionEnabled() &&
+      modulized_position < 0) [[unlikely]] {
+    modulized_position += base_tab_width;
+  }
+
+  float distance_to_tab_stop = base_tab_width - modulized_position;
 
   // Let the minimum width be the half of the space width so that it's always
   // recognizable.  if the distance to the next tab stop is less than that,
@@ -490,8 +497,14 @@ LayoutUnit Font::TabWidth(const TabSize& tab_size, LayoutUnit position) const {
   if (!base_tab_width)
     return LayoutUnit::FromFloatCeil(GetFontDescription().LetterSpacing());
 
-  LayoutUnit distance_to_tab_stop = LayoutUnit::FromFloatFloor(
-      base_tab_width - fmodf(position, base_tab_width));
+  float modulized_position = fmodf(position, base_tab_width);
+  if (RuntimeEnabledFeatures::TabWidthNegativePositionEnabled() &&
+      modulized_position < 0) [[unlikely]] {
+    modulized_position += base_tab_width;
+  }
+
+  LayoutUnit distance_to_tab_stop =
+      LayoutUnit::FromFloatFloor(base_tab_width - modulized_position);
 
   // Let the minimum width be the half of the space width so that it's always
   // recognizable.  if the distance to the next tab stop is less than that,

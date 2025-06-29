@@ -185,6 +185,14 @@ TEST_F(FontTest, TextIntercepts) {
   }
 }
 
+TEST_F(FontTest, TabWidthNegativePosition) {
+  Font* font = CreateTestFont(AtomicString("Ahem"),
+                              test::PlatformTestDataPath("Ahem.woff"), 10);
+  TabSize tab_size(8);
+  EXPECT_EQ(font->TabWidth(tab_size, -12.0f), 12.0f);
+  EXPECT_EQ(font->TabWidth(tab_size, LayoutUnit(-12.0f)), LayoutUnit(12.0f));
+}
+
 TEST_F(FontTest, TabWidthZero) {
   Font* font = CreateTestFont(AtomicString("Ahem"),
                               test::PlatformTestDataPath("Ahem.woff"), 0);

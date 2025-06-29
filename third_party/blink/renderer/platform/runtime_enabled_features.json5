@@ -4698,6 +4698,10 @@
       name: "TableIsAutoFixedLayout",
       status: "test",
     },
+    {
+      name: "TabWidthNegativePosition",
+      status: "stable",
+    },
     // For unit tests.
     {
       // This is for testing copied_from_base_feature_if.
