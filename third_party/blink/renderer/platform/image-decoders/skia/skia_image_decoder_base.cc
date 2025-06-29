@@ -87,13 +87,14 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
 
     switch (codec_creation_result) {
       case SkCodec::kSuccess: {
-        segment_stream_ = segment_stream_ptr;
         // OnCreateSkCodec needs to read enough of the image to create
         // SkEncodedInfo so now is an okay time to ask the `codec_` about 1) the
         // image size and 2) the color profile.
         SkImageInfo image_info = codec_->getInfo();
         if (!SetSize(static_cast<unsigned>(image_info.width()),
                      static_cast<unsigned>(image_info.height()))) {
+          codec_.reset();
+          SetFailed();
           return;
         }
         if (!IgnoresColorSpace()) {
@@ -101,12 +102,14 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
             SetEmbeddedColorProfile(std::make_unique<ColorProfile>(*profile));
           }
         }
+        segment_stream_ = segment_stream_ptr;
         orientation_ = static_cast<ImageOrientationEnum>(codec_->getOrigin());
         return;
       }
 
       case SkCodec::kIncompleteInput:
         if (IsAllDataReceived()) {
+          codec_.reset();
           SetFailed();
         }
         return;
@@ -491,6 +494,16 @@ void SkiaImageDecoderBase::SetFailedFrameIndex(wtf_size_t index) {
 
 bool SkiaImageDecoderBase::IsFailedFrameIndex(wtf_size_t index) const {
   return decode_failed_frames_.contains(index);
+}
+
+bool SkiaImageDecoderBase::SetSize(unsigned width, unsigned height) {
+  DCHECK(!IsDecodedSizeAvailable());
+  // Protect against large images. See http://bugzil.la/251381 for more details.
+  // The limit of `1000000` has been copied from `blink::PNGImageDecoder` and
+  // originates all the way back in WebKit.
+  const uint32_t kMaxSize = 1000000;
+  return (width <= kMaxSize) && (height <= kMaxSize) &&
+         ImageDecoder::SetSize(width, height);
 }
 
 }  // namespace blink

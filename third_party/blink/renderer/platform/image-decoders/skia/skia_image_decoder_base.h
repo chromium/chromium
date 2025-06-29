@@ -61,6 +61,7 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
   // we can't take over the data in that case. Before calling this method, the
   // caller must verify that the frame exists.
   bool CanReusePreviousFrameBuffer(wtf_size_t) const final;
+  bool SetSize(unsigned width, unsigned height) final;
 
   // When a frame depends on a previous frame's content, there is a list of
   // candidate reference frames. This function will find a previous frame from
