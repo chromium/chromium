@@ -54,9 +54,6 @@ class ExtensionBrowserTestPlatformDelegate {
   const Extension* LoadAndLaunchApp(const base::FilePath& path,
                                     bool uses_guest_view);
 
-  // Wait for the number of visible page actions to change to `count`.
-  bool WaitForPageActionVisibilityChangeTo(int count);
-
  private:
   // The parent test. Owns `this`.
   raw_ref<ExtensionBrowserTest> parent_;

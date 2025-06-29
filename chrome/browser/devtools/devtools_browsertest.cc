@@ -571,7 +571,7 @@ class DevToolsExtensionTest : public DevToolsTest {
     observer.WaitForExtensionLoaded();
 
     // Wait for any additional extension views to load.
-    extensions::ChromeExtensionTestNotificationObserver(browser())
+    extensions::ChromeExtensionTestNotificationObserver(browser()->profile())
         .WaitForExtensionViewsToLoad();
 
     return GetExtensionByPath(registry->enabled_extensions(), path);

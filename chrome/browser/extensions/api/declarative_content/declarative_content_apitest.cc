@@ -348,18 +348,18 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, Overview) {
   // Observer to track page action visibility. This helps avoid
   // flakes by waiting to check visibility until there is an
   // actual update to the page action.
-  ChromeExtensionTestNotificationObserver test_observer(browser());
+  ChromeExtensionTestNotificationObserver test_observer(profile());
 
   // TODO(crbug.com/40764017): Understand why these are EXPECT_FALSE.
   EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test1/")));
   // The declarative API should show the page action instantly, rather
   // than waiting for the extension to run.
-  test_observer.WaitForPageActionVisibilityChangeTo(1);
+  test_observer.WaitForPageActionVisibilityChangeTo(tab, 1);
   EXPECT_TRUE(action->GetIsVisible(tab_id));
 
   // Make sure leaving a matching page unshows the page action.
   EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://not_checked/")));
-  test_observer.WaitForPageActionVisibilityChangeTo(0);
+  test_observer.WaitForPageActionVisibilityChangeTo(tab, 0);
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 
   // Insert a password field to make sure that's noticed.
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, Overview) {
       tab, R"(document.body.innerHTML = '<input type="password">';
               document.body.offsetTop;)"));
 
-  test_observer.WaitForPageActionVisibilityChangeTo(1);
+  test_observer.WaitForPageActionVisibilityChangeTo(tab, 1);
   EXPECT_TRUE(action->GetIsVisible(tab_id))
       << "Adding a matching element should show the page action.";
 
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, Overview) {
   ASSERT_TRUE(content::ExecJs(tab, R"(document.body.innerHTML = 'Hello world';
                                      document.body.offsetTop;)"));
 
-  test_observer.WaitForPageActionVisibilityChangeTo(0);
+  test_observer.WaitForPageActionVisibilityChangeTo(tab, 0);
   EXPECT_FALSE(action->GetIsVisible(tab_id))
       << "Removing the matching element should hide the page action again.";
 }
@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   // Observer to track page action visibility. This helps avoid
   // flakes by waiting to check visibility until there is an
   // actual update to the page action.
-  ChromeExtensionTestNotificationObserver test_observer(browser());
+  ChromeExtensionTestNotificationObserver test_observer(profile());
 
   const ExtensionAction* action =
       ExtensionActionManager::Get(browser()->profile())
@@ -782,11 +782,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
 
   // TODO(crbug.com/40764017): Understand why these are EXPECT_FALSE.
   EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test_normal/")));
-  test_observer.WaitForPageActionVisibilityChangeTo(1);
+  test_observer.WaitForPageActionVisibilityChangeTo(tab, 1);
   EXPECT_TRUE(action->GetIsVisible(tab_id));
 
   EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test_split/")));
-  test_observer.WaitForPageActionVisibilityChangeTo(0);
+  test_observer.WaitForPageActionVisibilityChangeTo(tab, 0);
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 
   ExtensionTestMessageListener ready_split("second run ready (split)");
@@ -799,19 +799,19 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   const int incognito_tab_id = ExtensionTabUtil::GetTabId(incognito_tab);
 
   ChromeExtensionTestNotificationObserver incognito_test_observer(
-      incognito_browser);
+      incognito_tab->GetBrowserContext());
 
   const ExtensionAction* incognito_action =
-      ExtensionActionManager::Get(incognito_browser->profile())
+      ExtensionActionManager::Get(incognito_tab->GetBrowserContext())
           ->GetExtensionAction(*extension);
   ASSERT_TRUE(incognito_action);
 
   EXPECT_FALSE(NavigateInRenderer(incognito_tab, GURL("http://test_split/")));
-  incognito_test_observer.WaitForPageActionVisibilityChangeTo(1);
+  incognito_test_observer.WaitForPageActionVisibilityChangeTo(incognito_tab, 1);
   EXPECT_TRUE(incognito_action->GetIsVisible(incognito_tab_id));
 
   EXPECT_FALSE(NavigateInRenderer(incognito_tab, GURL("http://test_normal/")));
-  incognito_test_observer.WaitForPageActionVisibilityChangeTo(0);
+  incognito_test_observer.WaitForPageActionVisibilityChangeTo(incognito_tab, 0);
   EXPECT_FALSE(incognito_action->GetIsVisible(incognito_tab_id));
 }
 
@@ -893,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
 
   // Observer to track page action visibility. This helps avoid flakes by
   // waiting to check visibility until there is an update to the page action.
-  ChromeExtensionTestNotificationObserver test_observer(browser());
+  ChromeExtensionTestNotificationObserver test_observer(profile());
 
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
@@ -911,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   EXPECT_EQ("rule0",
             ExecuteScriptInBackgroundPage(extension->id(), kRuleScript));
 
-  test_observer.WaitForPageActionVisibilityChangeTo(1);
+  test_observer.WaitForPageActionVisibilityChangeTo(tab, 1);
   EXPECT_FALSE(tab->IsCrashed());
   EXPECT_TRUE(action->GetIsVisible(tab_id))
       << "Loading an extension when an open page matches its rules "
@@ -923,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
          });)";
   EXPECT_EQ("removed",
             ExecuteScriptInBackgroundPage(extension->id(), kRemoveScript));
-  test_observer.WaitForPageActionVisibilityChangeTo(0);
+  test_observer.WaitForPageActionVisibilityChangeTo(tab, 0);
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 }
 

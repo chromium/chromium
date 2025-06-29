@@ -6,7 +6,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_browsertest_platform_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,20 +64,6 @@ const Extension* ExtensionBrowserTestPlatformDelegate::LoadAndLaunchApp(
   app_loaded_observer.Wait();
 
   return app;
-}
-
-bool ExtensionBrowserTestPlatformDelegate::WaitForPageActionVisibilityChangeTo(
-    int count) {
-  // Note: It's okay if the visibility is already at `count` (i.e., that we're
-  // constructing this observer "late"); the observer handles that case
-  // gracefully.
-  std::unique_ptr<ChromeExtensionTestNotificationObserver> observer =
-      parent_->browser()
-          ? std::make_unique<ChromeExtensionTestNotificationObserver>(
-                parent_->browser())
-          : std::make_unique<ChromeExtensionTestNotificationObserver>(
-                GetProfile());
-  return observer->WaitForPageActionVisibilityChangeTo(count);
 }
 
 }  // namespace extensions

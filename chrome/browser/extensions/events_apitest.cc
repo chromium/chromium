@@ -607,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(ChromeUpdatesEventsApiTest, PRE_ChromeUpdates) {
 // Test that we only dispatch the onInstalled event triggered by a chrome update
 // to extensions that have a registered onInstalled listener.
 IN_PROC_BROWSER_TEST_F(ChromeUpdatesEventsApiTest, ChromeUpdates) {
-  ChromeExtensionTestNotificationObserver(browser())
+  ChromeExtensionTestNotificationObserver(profile())
       .WaitForExtensionViewsToLoad();
 
   content::RunAllPendingInMessageLoop();

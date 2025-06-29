@@ -8,8 +8,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_utils.h"
@@ -21,10 +19,9 @@ namespace extensions {
 namespace {
 
 bool HasPageActionActivityReachedTarget(
-    Browser* browser,
+    content::WebContents* web_contents,
     size_t target_visible_page_action_count) {
-  return extension_action_test_util::GetActivePageActionCount(
-             browser->tab_strip_model()->GetActiveWebContents()) ==
+  return extension_action_test_util::GetActivePageActionCount(web_contents) ==
          target_visible_page_action_count;
 }
 
@@ -34,13 +31,8 @@ bool HasPageActionActivityReachedTarget(
 // ExtensionTestNotificationObserver
 
 ChromeExtensionTestNotificationObserver::
-    ChromeExtensionTestNotificationObserver(Browser* browser)
-    : ExtensionTestNotificationObserver(browser ? browser->profile() : nullptr),
-      browser_(browser) {}
-
-ChromeExtensionTestNotificationObserver::
     ChromeExtensionTestNotificationObserver(content::BrowserContext* context)
-    : ExtensionTestNotificationObserver(context), browser_(nullptr) {}
+    : ExtensionTestNotificationObserver(context) {}
 
 ChromeExtensionTestNotificationObserver::
     ~ChromeExtensionTestNotificationObserver() = default;
@@ -48,24 +40,21 @@ ChromeExtensionTestNotificationObserver::
 content::BrowserContext*
 ChromeExtensionTestNotificationObserver::GetBrowserContext() {
   if (!context_) {
-    if (browser_)
-      context_ = browser_->profile();
-    else
-      context_ = ProfileManager::GetLastUsedProfileIfLoaded();
+    context_ = ProfileManager::GetLastUsedProfileIfLoaded();
   }
   return context_;
 }
 
 bool ChromeExtensionTestNotificationObserver::
-    WaitForPageActionVisibilityChangeTo(int count) {
-  DCHECK(browser_);
+    WaitForPageActionVisibilityChangeTo(content::WebContents* web_contents,
+                                        int count) {
   base::ScopedObservation<ExtensionActionDispatcher,
                           ExtensionActionDispatcher::Observer>
       observer(this);
   observer.Observe(ExtensionActionDispatcher::Get(GetBrowserContext()));
-  WaitForCondition(
-      base::BindRepeating(&HasPageActionActivityReachedTarget, browser_, count),
-      nullptr);
+  WaitForCondition(base::BindRepeating(&HasPageActionActivityReachedTarget,
+                                       web_contents, count),
+                   /*notification_set=*/nullptr);
   return true;
 }
 

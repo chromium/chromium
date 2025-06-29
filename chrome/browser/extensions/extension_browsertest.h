@@ -336,6 +336,8 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   // These match the methods in ExtensionBrowserTestPlatformDelegate:
   const Extension* LoadAndLaunchApp(const base::FilePath& path,
                                     bool uses_guest_view = false);
+
+  // Waits for the number of visible page actions to change to `count`.
   bool WaitForPageActionVisibilityChangeTo(int count);
 
   // Lower case to match the style of InProcessBrowserTest.

@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_future.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -1005,7 +1006,12 @@ bool ExtensionBrowserTest::WaitForExtensionNotIdle(
 }
 
 bool ExtensionBrowserTest::WaitForPageActionVisibilityChangeTo(int count) {
-  return platform_delegate_.WaitForPageActionVisibilityChangeTo(count);
+  // Note: It's okay if the visibility is already at `count` (i.e., that we're
+  // constructing this observer "late"); the observer handles that case
+  // gracefully.
+  ChromeExtensionTestNotificationObserver observer(GetProfile());
+  return observer.WaitForPageActionVisibilityChangeTo(GetActiveWebContents(),
+                                                      count);
 }
 
 const Extension* ExtensionBrowserTest::LoadAndLaunchApp(

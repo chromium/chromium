@@ -48,10 +48,4 @@ const Extension* ExtensionBrowserTestPlatformDelegate::LoadAndLaunchApp(
   NOTREACHED() << "Cannot use platform apps on desktop android.";
 }
 
-bool ExtensionBrowserTestPlatformDelegate::WaitForPageActionVisibilityChangeTo(
-    int count) {
-  NOTIMPLEMENTED() << "Page action count not yet implemented.";
-  return false;
-}
-
 }  // namespace extensions
