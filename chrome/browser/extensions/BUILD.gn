@@ -1552,6 +1552,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "chrome_extension_test_notification_observer.cc",
+    "chrome_extension_test_notification_observer.h",
     "chrome_test_extension_loader.cc",
     "chrome_test_extension_loader.h",
     "extension_action_test_util.cc",
@@ -1592,6 +1594,7 @@ static_library("test_support") {
     "//components/sessions",
     "//components/signin/public/identity_manager:test_support",
     "//components/value_store:test_support",
+    "//content/test:test_support",
     "//extensions:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
@@ -1603,8 +1606,6 @@ static_library("test_support") {
       "api/messaging/native_messaging_test_util.h",
       "api/passwords_private/test_passwords_private_delegate.cc",
       "api/passwords_private/test_passwords_private_delegate.h",
-      "chrome_extension_test_notification_observer.cc",
-      "chrome_extension_test_notification_observer.h",
       "menu_manager_test_observer.cc",
       "menu_manager_test_observer.h",
       "mock_crx_installer.cc",
@@ -1627,7 +1628,6 @@ static_library("test_support") {
       "//components/crx_file",
       "//components/safe_browsing/core/browser/db:v4_test_util",
       "//content/public/browser",
-      "//content/test:test_support",
       "//extensions:test_support",
       "//extensions/browser",
       "//extensions/browser:test_support",
