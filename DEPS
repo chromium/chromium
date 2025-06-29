@@ -3099,7 +3099,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'twWRTk8yeLeUtj1XL3kitVEUK77BNr_XLzRmuAjOfr4C',
+        'version': 'TSBUm2fttyOeGb3mCJ6ApivPPeQ-28CX2cQmiqmh6hUC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
