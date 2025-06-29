@@ -5983,7 +5983,6 @@
   {
     "name": "ios-soft-lock",
     "owners": [
-      "rubindl@chromium.org",
       "alimariam@google.com",
       "chrome-browser-privacy-team@google.com"
     ],
@@ -6382,7 +6381,6 @@
   {
     "name": "linked-services-setting-ios",
     "owners": [
-      "rubindl@chromium.org",
       "chrome-privacy-controls@google.com",
       "bling-flags@google.com"
     ],
@@ -7901,7 +7899,6 @@
   {
     "name": "privacy-guide-android-3",
     "owners": [
-      "rubindl@chromium.org",
       "msramek@chromium.org",
       "chrome-privacy-controls@google.com"],
     "expiry_milestone": 123
@@ -7909,7 +7906,7 @@
   {
     "name": "privacy-guide-ios",
     "owners": [
-      "rubindl@chromium.org",
+      "arabm@google.com",
       "chrome-privacy-controls@google.com"
     ],
     "expiry_milestone": 130
@@ -7917,7 +7914,6 @@
   {
     "name": "privacy-guide-preload-android",
     "owners": [
-      "rubindl@chromium.org",
       "msramek@chromium.org",
       "chrome-privacy-controls@google.com"],
     "expiry_milestone": 124
@@ -8605,7 +8601,6 @@
   {
     "name": "safety-hub-magic-stack",
     "owners": [
-      "rubindl@chromium.org",
       "sideyilmaz@chromium.org",
       "chrome-browser-privacy-team@google.com"
     ],

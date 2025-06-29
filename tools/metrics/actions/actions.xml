@@ -15381,7 +15381,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.IncognitoLock.Overlay.CloseIncognitoTabs">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
@@ -15391,7 +15390,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.IncognitoLock.Overlay.ContinueInIncognito">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
@@ -15401,7 +15399,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.IncognitoLock.Overlay.SeeOtherTabs">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
@@ -15411,7 +15408,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.IncognitoLock.Overlay.UnlockWithReauth">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
@@ -15805,7 +15801,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.Settings.IncognitoLock.DoNotHide">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
@@ -15815,7 +15810,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.Settings.IncognitoLock.HideWithReauth">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
@@ -15825,7 +15819,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.Settings.IncognitoLock.HideWithSoftLock">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
@@ -36671,7 +36664,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.AdMeasurement.Disabled">
-  <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -36681,7 +36673,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.AdMeasurement.Enabled">
-  <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -36877,7 +36868,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.AllSitesOpened">
-  <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -36887,7 +36877,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.BlockedSitesOpened">
-  <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -36897,7 +36886,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.Disabled">
-  <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -36906,7 +36894,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.Enabled">
-  <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -36925,7 +36912,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.Opened">
-  <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -36934,7 +36920,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.SiteAdded">
-  <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -36943,7 +36928,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.SiteRemoved">
-  <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -37268,7 +37252,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.BlockedTopicsOpened">
-  <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -37278,7 +37261,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Disabled">
-  <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -37287,7 +37269,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Enabled">
-  <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -37346,7 +37327,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Opened">
-  <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -37355,7 +37335,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.TopicAdded">
-  <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -37364,7 +37343,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.TopicRemoved">
-  <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -39333,7 +39311,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_AccountSettings_LinkedGoogleServicesClicked">
-  <owner>rubindl@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <description>
     Recorded when the user clicks the &quot;Linked Google Services&quot; link
@@ -39343,7 +39320,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_AccountSettings_PersonalizeGoogleServicesClicked">
-  <owner>rubindl@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <description>
     Recorded when the user clicks the &quot;Personalize Google Services&quot;
@@ -40444,7 +40420,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_MyGoogleUI_LinkedServicesControls">
-  <owner>rubindl@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <description>
     Recorded when the user opens MyGoogleUI linked services Controls.

@@ -2248,7 +2248,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.IncognitoLockImpression"
     enum="IncognitoLockImpressionType" expires_after="2025-08-24">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>Logged when the Incognito lock overlay is displayed.</summary>
@@ -2256,7 +2255,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.IncognitoLockOverlayInteraction"
     enum="IncognitoLockOverlayInteractionType" expires_after="2025-12-14">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -2266,7 +2264,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.IncognitoLockSettingInteraction"
     enum="IncognitoLockSettingInteractionType" expires_after="2025-03-31">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -2276,7 +2273,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.IncognitoLockSettingStartupState"
     enum="IncognitoLockSettingStartupState" expires_after="2025-12-14">
-  <owner>rubindl@chromium.org</owner>
   <owner>alimariam@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
