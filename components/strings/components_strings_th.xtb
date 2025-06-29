@@ -1953,6 +1953,7 @@
 <translation id="425582637250725228">ระบบอาจไม่ได้บันทึกการเปลี่ยนแปลงของคุณ</translation>
 <translation id="4258748452823770588">ลายเซ็นไม่เหมาะสม</translation>
 <translation id="4261046003697461417">เอกสารที่มีการป้องกันจะใส่หมายเหตุไม่ได้</translation>
+<translation id="4265635050210404830">บัตรสะสมคะแนนของคุณ</translation>
 <translation id="4265872034478892965">อนุญาตโดยผู้ดูแลระบบ</translation>
 <translation id="4269029136757623689">พัดลมใช้ในบ้าน</translation>
 <translation id="4269264543938335308">ชุดว่ายน้ำ</translation>
@@ -2228,6 +2229,7 @@
 <translation id="4754461935447132332">ไม่อนุญาตสำหรับเว็บไซต์ที่ไม่ปลอดภัย</translation>
 <translation id="4756388243121344051">&amp;ประวัติการเข้าชม</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">รหัสไม่ถูกต้อง</translation>
 <translation id="4757993714154412917">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chromium ขอแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อรักษาความปลอดภัยของบัญชี</translation>
 <translation id="4758311279753947758">เพิ่มข้อมูลติดต่อ</translation>
 <translation id="4761326898079498987">ตรวจสอบเพื่อดูรายละเอียดเพิ่มเติม</translation>
@@ -2293,6 +2295,7 @@
 <translation id="486459320933704969">พ่อแม่หรือผู้ปกครองต้องระบุว่าคุณเข้าชมเว็บไซต์นี้ได้</translation>
 <translation id="4864801646102013152">การปรับปรุงบ้าน</translation>
 <translation id="4866506163384898554">กด |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| เพื่อแสดงเคอร์เซอร์</translation>
+<translation id="4868277513442568587">หากต้องการใช้กลุ่มแท็บที่แชร์ต่อ ให้อัปเดต Chrome</translation>
 <translation id="4873616204573862158">แว่น</translation>
 <translation id="4873807733347502026">ล็อกและใช้เมาส์</translation>
 <translation id="4876305945144899064">ไม่มีชื่อผู้ใช้</translation>
@@ -3747,6 +3750,7 @@
 <translation id="7346048084945669753">เป็นพาร์ทเนอร์:</translation>
 <translation id="7346062987309535530">ชุดจานชาม</translation>
 <translation id="7346081071264046066">"ตอบรับคำเชิญงานแต่งนี้อย่างตื่นเต้น"</translation>
+<translation id="7347640536700429009">ชื่อบนบัตรไม่ถูกต้อง</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7353601530677266744">บรรทัดคำสั่ง </translation>
 <translation id="7359588939039777303">บล็อกโฆษณา</translation>

@@ -1954,6 +1954,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="425582637250725228">Maaaring hindi ma-save ang mga pagbabagong ginawa mo.</translation>
 <translation id="4258748452823770588">Maling lagda</translation>
 <translation id="4261046003697461417">Hindi maaaring i-annotate ang mga protektadong dokumento</translation>
+<translation id="4265635050210404830">Ang mga loyalty card mo</translation>
 <translation id="4265872034478892965">Pinayagan ng iyong administrator</translation>
 <translation id="4269029136757623689">Mga Bentilador sa Bahay</translation>
 <translation id="4269264543938335308">Kasuotang Panlangoy</translation>
@@ -2229,6 +2230,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4754461935447132332">Hindi pinapayagan para sa mga hindi secure na site</translation>
 <translation id="4756388243121344051">&amp;History</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Invalid ang code</translation>
 <translation id="4757993714154412917">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Para ma-secure ang iyong mga account, inirerekomenda ng Chromium na suriin mo ang iyong mga na-save na password.</translation>
 <translation id="4758311279753947758">Magdagdag ng impormasyon sa pakikipag-ugnayan</translation>
 <translation id="4761326898079498987">Suriin para sa higit pang detalye</translation>
@@ -2294,6 +2296,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="486459320933704969">Kailangang sabihin ng magulang o tagapag-alaga na OK na bisitahin mo ang website na ito</translation>
 <translation id="4864801646102013152">Pagpapaganda ng Bahay</translation>
 <translation id="4866506163384898554">Pindutin ang |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para ipakita ang iyong cursor</translation>
+<translation id="4868277513442568587">Para patuloy na magamit ang iyong mga naka-share na grupo ng tab, i-update ang Chrome</translation>
 <translation id="4873616204573862158">Kasuotan sa Mata</translation>
 <translation id="4873807733347502026">I-lock at gamitin ang iyong mouse</translation>
 <translation id="4876305945144899064">Walang username</translation>
@@ -3748,6 +3751,7 @@ Mga karagdagang detalye:
 <translation id="7346048084945669753">Naka-affiliate:</translation>
 <translation id="7346062987309535530">Mga Gamit sa Pagkain</translation>
 <translation id="7346081071264046066">"masayang sumagot ng oo sa imbitasyon sa kasal na ito"</translation>
+<translation id="7347640536700429009">Invalid ang pangalan sa card</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7353601530677266744">Command Line</translation>
 <translation id="7359588939039777303">Na-block ang mga ad.</translation>

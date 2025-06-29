@@ -7894,6 +7894,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6560151649238390891">Inilagay ang suhestyon</translation>
 <translation id="656065428026159829">Tumingin pa</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Puwedeng mapanganib ang ganitong uri ng file (<ph name="TYPE" />). I-save lang ang file na ito kung pinagkakatiwalaan mo ang <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Mag-store ng mga log ng system sa directory na Mga Download.</translation>
 <translation id="656293578423618167">Masyadong mahaba ang path o pangalan ng file.  Mangyaring i-save nang may mas maikling pangalan o sa isa pang lokasyon.</translation>
 <translation id="6563002009564846727">Tingnan ang mga in-import na certificate mula sa Windows</translation>
@@ -9700,6 +9701,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7830833461614351956">Kopyahin ang <ph name="NUM_OF_FILES" /> (na) file sa <ph name="CLOUD_PROVIDER" /> para buksan?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Lalabas dito ang mga na-save na custom na salita</translation>
+<translation id="7834832693620032149">Para i-share ang audio, mag-share na lang ng tab o window</translation>
 <translation id="7836577093182643605">Listahan ng mga paksang na-block mo na ayaw mong ibahagi sa mga site</translation>
 <translation id="7836745198769390202">Kasalukuyan kang mayroong <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, at higit pa. Makikita at mapapamahalaan ng iyong organisasyon ang data na ito</translation>
 <translation id="7836850009646241041">Subukang pindutin ulit ang iyong security key</translation>
@@ -11310,6 +11312,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8940081510938872932">Maraming ginagawa ang iyong computer sa ngayon.  Subukang muli sa ibang pagkakataon.</translation>
 <translation id="8940888110818450052">Mga opsyon sa pag-sign in</translation>
 <translation id="8941173171815156065">Bawiin ang pahintulot na '<ph name="PERMISSION" />'</translation>
+<translation id="8941209844691374403">Nagshe-share ang <ph name="APP_NAME" /> ng window at audio.</translation>
 <translation id="8941688920560496412">Naka-off ang <ph name="DEVICE_NAME" /></translation>
 <translation id="894191600409472540">Gumawa ng malalakas na password</translation>
 <translation id="8942714513622077633">Kanselahin ang pag-set up ng Microsoft 365?</translation>

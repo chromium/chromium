@@ -7900,6 +7900,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6560151649238390891">Siūlymas įterptas</translation>
 <translation id="656065428026159829">Žr. daugiau</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Šio tipo failas (<ph name="TYPE" />) gali būti pavojingas. Išsaugokite šį failą, tik jei pasitikite <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Sistemos žurnalai išsaugomi kataloge „Atsisiuntimai“.</translation>
 <translation id="656293578423618167">Failo kelias arba pavadinimas per ilgas. Išsaugokite nurodę trumpesnį pavadinimą arba kitoje vietoje.</translation>
 <translation id="6563002009564846727">Peržiūrėti iš „Windows“ importuotus sertifikatus</translation>
@@ -9710,6 +9711,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7830833461614351956">Kopijuoti failus (iš viso: <ph name="NUM_OF_FILES" />) į „<ph name="CLOUD_PROVIDER" />“, kad būtų atidaryti?</translation>
 <translation id="7831754656372780761">„<ph name="TAB_TITLE" />“ <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Išsaugoti tinkinti žodžiai bus rodomi čia</translation>
+<translation id="7834832693620032149">Jei norite bendrinti garso įrašą, bendrinkite skirtuką ar langą</translation>
 <translation id="7836577093182643605">Užblokuotų temų, kurių nenorite bendrinti su svetainėmis, sąrašas</translation>
 <translation id="7836745198769390202">Šiuo metu turite <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> ir kt. Jūsų organizacija galės peržiūrėti ir tvarkyti šiuos duomenis.</translation>
 <translation id="7836850009646241041">Pabandykite dar kartą paliesti saugos raktą</translation>
@@ -11321,6 +11323,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="8940081510938872932">Kompiuteriu atliekama per daug veiksmų šiuo metu. Vėliau bandykite dar kartą.</translation>
 <translation id="8940888110818450052">Prisijungimo parinktys</translation>
 <translation id="8941173171815156065">Anuliuoti leidimą „<ph name="PERMISSION" />“</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> bendrina langą ir garso įrašą.</translation>
 <translation id="8941688920560496412">Įrenginys (<ph name="DEVICE_NAME" />) išjungtas</translation>
 <translation id="894191600409472540">Kurkite sudėtingus slaptažodžius</translation>
 <translation id="8942714513622077633">Atšaukti „Microsoft 365“ sąranką?</translation>

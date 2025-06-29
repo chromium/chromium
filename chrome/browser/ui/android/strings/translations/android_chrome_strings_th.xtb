@@ -152,6 +152,7 @@
 <translation id="1671236975893690980">การดาวน์โหลดรอดำเนินการ…</translation>
 <translation id="1672586136351118594">ไม่ต้องแสดงอีก</translation>
 <translation id="1680919990519905526">ช็อปจากภาพกับ Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020และปิดหลังจากผ่านไป <ph name="MONTHS_ARCHIVED" /> เดือน</translation>
 <translation id="1687482373098770139">เร็วๆ นี้ คุณจะเห็นเนื้อหาจาก และเกี่ยวกับ <ph name="SITE_NAME" /> ใน "กำลังติดตาม" ระบบจะบันทึกเว็บไซต์และการค้นหาที่คุณติดตามไว้ในบัญชี Google คุณจัดการการติดตามในการตั้งค่าได้ทุกเมื่อ</translation>
 <translation id="1689333818294560261">ชื่อเล่น</translation>
 <translation id="1696555181932908973">คุณลองดำเนินการต่อใน <ph name="SITE_ETLD_PLUS_ONE" /> ด้วยวิธีอื่นๆ ได้</translation>
@@ -352,6 +353,7 @@
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="260403163289591229">กำลังติดตาม</translation>
 <translation id="2604446170045642109">คุณปิดธีมมืดสำหรับเว็บไซต์ได้ในการตั้งค่า</translation>
+<translation id="2605017215201958293">ฟังหน้านี้ด้วย AI</translation>
 <translation id="2607441479295509868">ตอนนี้ได้ออกจากระบบแล้ว โปรดลงชื่อเข้าใช้อีกครั้งหากต้องการใช้บุ๊กมาร์ก รหัสผ่าน และข้อมูลอื่นๆ ในบัญชี</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> เชิญคุณให้เข้าถึงรายการที่แชร์</translation>
 <translation id="2625189173221582860">คัดลอกรหัสผ่านแล้ว</translation>
@@ -876,6 +878,7 @@
 <translation id="496607651705915226">หากต้องการบันทึกและใช้รหัสผ่านใหม่ในบัญชี Google โปรดอัปเดตบริการ Google Play</translation>
 <translation id="4971753085054504448">ลองค้นหาอย่างอื่นหรือเปิดประวัติการเข้าชมใน Chrome แบบเต็มเพื่อดูผลการค้นหาเพิ่มเติม</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
+<translation id="497983151715419057">ตรวจสอบแท็บและกลุ่มที่ไม่ได้ใช้งานที่นี่</translation>
 <translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
 <translation id="4987271110129728827">ไม่พบหน้านั้น โปรดตรวจสอบตัวสะกดหรือลองค้นเว็บ</translation>
 <translation id="4988526792673242964">หน้า</translation>
@@ -1064,6 +1067,7 @@
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5833984609253377421">แชร์ลิงก์</translation>
 <translation id="5839058148541733625">ไดโนเสาร์ Chrome</translation>
+<translation id="5842871376175639063">แท็บและกลุ่มแท็บที่คุณไม่ได้ใช้งานเป็นเวลา <ph name="DAYS_INACTIVE" /> วันจะย้ายมาที่นี่<ph name="AUTODELETE_SECTION" /> คุณเปลี่ยนตัวเลือกนี้ได้ทุกเมื่อใน<ph name="SETTINGS_TITLE" /></translation>
 <translation id="5848257610304005265">เปิด PDF ด้วย "<ph name="APP_NAME" />" ใช่ไหม</translation>
 <translation id="5849288995120328556">หยุดการแชร์ใช่ไหม</translation>
 <translation id="5853623416121554550">หยุดชั่วคราว</translation>
@@ -1432,6 +1436,7 @@
 <translation id="7304873321153398381">ออฟไลน์ Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="7313188324932846546">แตะเพื่อตั้งค่าการซิงค์</translation>
 <translation id="7314734791127433392">ตรวจสอบรหัสผ่านไม่ได้</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{แท็บและกลุ่มแท็บที่ไม่ได้ใช้งานเป็นเวลา 1 วันขึ้นไป}other{แท็บและกลุ่มแท็บที่ไม่ได้ใช้งานเป็นเวลา # วันขึ้นไป}}</translation>
 <translation id="7324354302972299151">ส่งคำขอ Do Not Track</translation>
 <translation id="7333041109965360609">ยกเลิกการสมัครรับข้อมูลจากการแจ้งเตือนแล้ว</translation>
 <translation id="7336259382292148213">การแจ้งเตือนไม่มีปัญหา</translation>
@@ -1643,6 +1648,7 @@
 <translation id="8137562778192957619">คุณไม่ต้องจำรหัสผ่านนี้ เพราะระบบจะบันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="8152331954420209374">ไปที่ Lens</translation>
 <translation id="8163820386638255770">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{รายการที่ไม่ได้ใช้งาน 1 รายการ}other{รายการที่ไม่ได้ใช้งาน # รายการ}}</translation>
 <translation id="8186512483418048923">เหลืออีก <ph name="FILES" /> ไฟล์</translation>
 <translation id="8190358571722158785">เหลือ 1 วัน</translation>
 <translation id="8192765420340770300">Bottom Sheet การลงชื่อเข้าใช้เปิดแบบเต็มหน้า</translation>

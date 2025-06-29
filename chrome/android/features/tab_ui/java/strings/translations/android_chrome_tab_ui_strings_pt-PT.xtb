@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">Abra automaticamente grupos de separadores de outros dispositivos</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Quer fechá-los?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_YEARS_ONE" /> ano}other{Criado há <ph name="NUM_YEARS_MANY" /> anos}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Os separadores e os grupos inativos são fechados após 1 mês}other{Os separadores e os grupos inativos são fechados após <ph name="MONTH_COUNT_MANY" /> meses}}</translation>
 <translation id="1173894706177603556">Mudar nome</translation>
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Abra o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TAB_COUNT2" /> separador}other{Abra o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TAB_COUNT2" /> separadores}}</translation>
 <translation id="1273910660700874265">Opções do grupo de separadores <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1300188005269437765">Escolha quando os separadores e os grupos de separadores são movidos automaticamente para a secção inativa.</translation>
 <translation id="1329584516321524826">Atualizado mesmo agora</translation>
 <translation id="1340839264183302272">Sair do grupo</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Expanda o grupo de separadores partilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />, com a etiqueta <ph name="CARD_LABEL" />.}other{Expanda o grupo de separadores partilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />, com a etiqueta <ph name="CARD_LABEL" />.}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> separador agrupado</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="1909810060368225529">Aviso: as alterações a este grupo de separadores partilhado são visíveis para todos. Todos podem fazer alterações aos seus grupos de separadores partilhados</translation>
+<translation id="1982637982196732906">Mova para a secção inativa</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador selecionado aos marcadores}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores selecionados aos marcadores}}</translation>
 <translation id="2055057176188061528">Selecione um grupo de separadores ou crie um novo grupo de separadores</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{O Chrome fecha automaticamente os itens na secção inativa que não usa há <ph name="AUTO_DELETE_DELAY_ONE" /> mês. Pode desativar esta funcionalidade agora ou em qualquer altura nas Definições.}other{O Chrome fecha automaticamente os itens na secção inativa que não usa há <ph name="AUTO_DELETE_DELAY_MANY" /> meses. Pode desativar esta funcionalidade agora ou em qualquer altura nas Definições.}}</translation>
 <translation id="2118649612461486615">Informações da loja</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores. O separador de navegação anónima não vai estar disponível.}other{É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores. Os # separadores de navegação anónima não vão estar disponíveis.}}</translation>
 <translation id="2162620598375156287">Agora a <ph name="CURRENT_PRICE" /> em <ph name="SOURCE_WEBSITE" /></translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">Editar nome do grupo</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Adic. separ. aos marcadores}other{Adic. separ. aos marcadores}}</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2371084566192454134">Separadores e grupos de separadores</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="2498435670446402865">Mude nome grupo separad.</translation>
 <translation id="2536366509642644298">Os grupos de separadores "<ph name="TAB_GROUP_NAME_1" />" e "<ph name="TAB_GROUP_NAME_2" />" já não estão disponíveis</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Quer fechá-los?</translation>
 <translation id="257674075312929031">Grupo</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Restaure e abra o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Restaure e abra o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar site</translation>
 <translation id="2671423594960767771">Partilhar grupo</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">classificação</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores ao grupo}}</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Quer agrupá-los?</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{Após 1 dia de inatividade}other{Após <ph name="DAY_COUNT_MANY" /> dias de inatividade}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> novo separador}other{<ph name="MANY_ADDED" /> novos separadores}}</translation>
 <translation id="3613492231657284463">Ocultar caixa de diálogo de separadores inativos</translation>
 <translation id="3619255692378312441">Faça a gestão do acesso</translation>
@@ -94,6 +101,7 @@
 <translation id="4861953997778766866">Todos podem fazer alterações aos seus grupos de separadores partilhados</translation>
 <translation id="4870911314065352661">Fechar todos os separadores?</translation>
 <translation id="4871719318659334896">Fechar grupo</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Restaure e abra o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Restaure e abra o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Fechar separador}other{Fechar separadores}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grupos guardados (fecha os separadores e elimina os grupos)</translation>
@@ -114,6 +122,7 @@
 <translation id="5627941783489838464">Nenhuma atualização de separadores</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link do Chrome}other{<ph name="TABS_COUNT_MANY" /> links do Chrome}}</translation>
 <translation id="5746204836956568669">Agrupar <ph name="NUMBER_OF_TABS" /> separadores para trabalhar mais rapidamente?</translation>
+<translation id="5773295109010386583">Fechar automaticamente itens inativos</translation>
 <translation id="58326064309361797">Arraste os separadores para os agrupar.</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>

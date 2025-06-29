@@ -7876,6 +7876,7 @@
 <translation id="6560151649238390891">แทรกรายการแนะนำแล้ว</translation>
 <translation id="656065428026159829">ดูเพิ่มเติม</translation>
 <translation id="6561726789132298588">ป้อน</translation>
+<translation id="6561877237303825108">ไฟล์ประเภทนี้ (<ph name="TYPE" />) อาจเป็นอันตราย บันทึกไฟล์นี้ต่อเมื่อคุณเชื่อถือ <ph name="ORIGIN" /> เท่านั้น</translation>
 <translation id="6562117348069327379">จัดเก็บบันทึกระบบไปยังไดเรกทอรี "การดาวน์โหลด"</translation>
 <translation id="656293578423618167">เส้นทางหรือชื่อของไฟล์ยาวเกินไป โปรดบันทึกด้วยชื่อที่สั้นกว่านี้หรือบันทึกลงในตำแหน่งอื่น</translation>
 <translation id="6563002009564846727">ดูใบรับรองที่นำเข้าจาก Windows</translation>
@@ -9679,6 +9680,7 @@
 <translation id="7830833461614351956">คัดลอก <ph name="NUM_OF_FILES" /> ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" /> เพื่อเปิดใช่ไหม</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">คำที่กำหนดเองที่บันทึกไว้จะแสดงที่นี่</translation>
+<translation id="7834832693620032149">หากต้องการแชร์เสียง ให้แชร์แท็บหรือหน้าต่างแทน</translation>
 <translation id="7836577093182643605">รายการหัวข้อที่คุณบล็อกและไม่ต้องการแชร์กับเว็บไซต์</translation>
 <translation id="7836745198769390202">ขณะนี้คุณมี <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> และอื่นๆ องค์กรของคุณจะสามารถดูและจัดการข้อมูลนี้ได้</translation>
 <translation id="7836850009646241041">ลองแตะคีย์ความปลอดภัยอีกครั้ง</translation>
@@ -11287,6 +11289,7 @@
 <translation id="8940081510938872932">คอมพิวเตอร์ของคุณทำงานหลายอย่างเกินไปในขณะนี้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="8940888110818450052">ตัวเลือกการลงชื่อเข้าใช้</translation>
 <translation id="8941173171815156065">เพิกถอนสิทธิ์ "<ph name="PERMISSION" />"</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> กำลังแชร์หน้าต่างและเสียง</translation>
 <translation id="8941688920560496412">"<ph name="DEVICE_NAME" />" ปิดอยู่</translation>
 <translation id="894191600409472540">สร้างรหัสผ่านที่รัดกุม</translation>
 <translation id="8942714513622077633">ยกเลิกการตั้งค่า Microsoft 365 ไหม</translation>

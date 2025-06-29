@@ -152,6 +152,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1671236975893690980">Transferência pendente…</translation>
 <translation id="1672586136351118594">Não mostrar de novo</translation>
 <translation id="1680919990519905526">Comprar imagem com o Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020e fechados após <ph name="MONTHS_ARCHIVED" /> meses</translation>
 <translation id="1687482373098770139">Em breve, vai ver conteúdo de e sobre o site <ph name="SITE_NAME" /> no separador A seguir. Os sites e as pesquisas que segue são guardados na sua Conta Google. Pode gerir o que segue nas definições em qualquer altura.</translation>
 <translation id="1689333818294560261">Alcunha</translation>
 <translation id="1696555181932908973">Pode experimentar outras formas de continuar em <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -352,6 +353,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2593272815202181319">Monoespaço</translation>
 <translation id="260403163289591229">A seguir</translation>
 <translation id="2604446170045642109">Pode desativar o tema escuro para sites nas suas definições.</translation>
+<translation id="2605017215201958293">Ouça esta página com IA</translation>
 <translation id="2607441479295509868">Sessão terminada. Volte a iniciar sessão para usar os marcadores, as palavras-passe e muito mais na sua conta.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> enviou-lhe um convite para aceder a um item partilhado.</translation>
 <translation id="2625189173221582860">Palavra-passe copiada</translation>
@@ -876,6 +878,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="496607651705915226">Para guardar e usar novas palavras-passe na sua Conta Google, atualize os Serviços do Google Play</translation>
 <translation id="4971753085054504448">Experimente pesquisar outro conteúdo ou abra o Histórico do Chrome completo para ver mais resultados.</translation>
 <translation id="497421865427891073">Avançar</translation>
+<translation id="497983151715419057">Reveja os seus separadores e grupos inativos aqui</translation>
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todos os separadores.</translation>
 <translation id="4987271110129728827">Não é possível encontrar a página. Verifique a ortografia ou experimente pesquisar na Web.</translation>
 <translation id="4988526792673242964">Páginas </translation>
@@ -1064,6 +1067,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5833984609253377421">Partilhar link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842871376175639063">Os separadores e os grupos de separadores que não usa há <ph name="DAYS_INACTIVE" /> dias são movidos para aqui<ph name="AUTODELETE_SECTION" />. Pode alterar esta definição em qualquer altura nas <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Abrir o PDF com a app <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Parar a partilha?</translation>
 <translation id="5853623416121554550">em pausa</translation>
@@ -1431,6 +1435,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7304873321153398381">Está offline. O Chrome não consegue verificar as suas palavras-passe.</translation>
 <translation id="7313188324932846546">Toque para configurar a sincronização.</translation>
 <translation id="7314734791127433392">Não é possível verificar as palavras-passe</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Separadores e grupos de separadores que não são usados há 1 dia ou mais}other{Separadores e grupos de separadores não usados há # dias ou mais}}</translation>
 <translation id="7324354302972299151">Enviar um pedido "Do Not Track"</translation>
 <translation id="7333041109965360609">Anulou a subscrição de notificações</translation>
 <translation id="7336259382292148213">As notificações parecem estar corretas</translation>
@@ -1642,6 +1647,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8137562778192957619">Não vai ter de memorizar esta palavra-passe. Vai ser guardada no Gestor de Palavras-passe da Google.</translation>
 <translation id="8152331954420209374">Aceder ao Lens</translation>
 <translation id="8163820386638255770">Para usar e guardar palavras-passe na sua Conta Google, valide a sua identidade</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) item inativo}other{(#) itens inativos}}</translation>
 <translation id="8186512483418048923">Faltam <ph name="FILES" /> ficheiros</translation>
 <translation id="8190358571722158785">Falta 1 dia</translation>
 <translation id="8192765420340770300">Secção inferior de início de sessão aberta à altura total</translation>

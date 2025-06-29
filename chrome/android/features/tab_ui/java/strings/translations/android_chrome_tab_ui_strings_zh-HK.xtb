@@ -156,6 +156,7 @@
 <translation id="7369451074646620503">「<ph name="TAB_GROUP_NAME" />」分頁群組已無法使用</translation>
 <translation id="7452985128687107478">分頁群組會自動儲存並同步至所有裝置</translation>
 <translation id="747459581954555080">全部還原</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個項目}other{<ph name="TABS_COUNT_MANY" /> 個項目}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{還原 <ph name="TABS_COUNT_ONE" /> 個所選項目}other{還原 <ph name="TABS_COUNT_MANY" /> 個所選項目}}</translation>
 <translation id="753732157349120914">分頁切換工具</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> 個來自 Google 的評論}other{<ph name="REVIEWS_COUNT_MANY" /> 個來自 Google 的評論}}</translation>

@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">檔案無效或損毀</translation>
 <translation id="1040761927998636252"><ph name="URL" /> 嘅未命名書籤</translation>
 <translation id="1041175011127912238">此網頁沒有回應</translation>
+<translation id="1041181446722933623">「<ph name="LOCAL_BOOKMARK" />」只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至帳戶的「<ph name="ACCOUNT_FOLDER" />」。</translation>
 <translation id="1041263367839475438">可用的裝置</translation>
 <translation id="1041607257468256895">在 Chrome 中管理網站位置存取權</translation>
 <translation id="1042174272890264476">您的電腦也內置了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 資料庫。RLZ 可指定非重複、非個人的可識別標記，以評估特定宣傳廣告活動所提升的搜尋數量與 <ph name="SHORT_PRODUCT_NAME" /> 使用量。這些標籤有時也會顯示在 <ph name="PRODUCT_NAME" /> 的 Google 搜尋查詢中。</translation>
@@ -608,6 +609,7 @@
 <translation id="1418559532423038045">由 <ph name="DEVICE_TYPE" /> 移除 <ph name="VM_NAME" />。咁做會刪除虛擬機器入面嘅所有應用程式同資料！</translation>
 <translation id="1418882096915998312">註冊緊 Chrome Enterprise 升級版</translation>
 <translation id="1418954524306642206">選擇打印機嘅 PPD 檔案</translation>
+<translation id="1419086691207546433">新增擴充程式，保持井然有序、簡化工作及提升瀏覽體驗</translation>
 <translation id="1421334842435688311">流動網絡位置資料</translation>
 <translation id="1421514190500081936">請提供下載這些資料的原因：</translation>
 <translation id="1422159345171879700">載入不安全的指令碼</translation>
@@ -3337,6 +3339,7 @@
 <translation id="3309330461362844500">憑證設定檔 ID</translation>
 <translation id="3310379801837527592">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的分頁群組</translation>
 <translation id="331080746368555063">私人網站可能包括公司內部網絡等項目</translation>
+<translation id="3311007761540106761">系統預設</translation>
 <translation id="3311445899360743395">系統可能會從裝置中移除與此應用程式相關的資料。</translation>
 <translation id="3312470654018965389">正在設定 Linux 容器</translation>
 <translation id="3312883087018430408">如要搜尋特定網站或 Chrome，請在網址列中輸入相關的快捷字詞，然後按下您偏好的鍵盤快速鍵。舉例來說，如果只要搜尋書籤，請輸入「@bookmarks」，然後按下 Tab 鍵或空白鍵。</translation>
@@ -10553,6 +10556,7 @@
 <translation id="8425213833346101688">變更</translation>
 <translation id="8425492902634685834">固定至工作列</translation>
 <translation id="8425768983279799676">您可以使用 PIN 解鎖裝置。</translation>
+<translation id="8426697201161711396">只要登入 Chrome，即可在所有裝置上使用你的密碼和其他資料</translation>
 <translation id="8427213022735114808">「語音聽寫」將您的語音傳送給 Google，以便透過語音輸入填寫任何文字欄位。</translation>
 <translation id="8427292751741042100">嵌入至任何主機</translation>
 <translation id="8428213095426709021">設定</translation>

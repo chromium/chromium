@@ -37,6 +37,7 @@
 <translation id="141901961143729572">分享你的想法</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟您目前的分頁。}=1{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟您目前的分頁，但您的無痕式視窗不會重新開啟。}other{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟您目前的分頁，但有 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
+<translation id="1439793550875056299">固定 Chrome</translation>
 <translation id="146866447420868597">要登入 Chrome 嗎？</translation>
 <translation id="1492280395845991349">重新啟動即可完成 Chrome 更新</translation>
 <translation id="1497802159252041924">安裝錯誤：<ph name="INSTALL_ERROR" /></translation>
@@ -360,6 +361,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者 (而非管理員) 身分執行安裝程式。</translation>
 <translation id="5596627076506792578">更多選項</translation>
+<translation id="5600352656975192682">將 Chrome 固定至工作列，隨時都能快速存取</translation>
 <translation id="5602351063754773347">Chrome 建議你移除此擴充程式。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充程式<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">透過 Chrome 設定檔，你可將所有 Chrome 內容分門別類，例如建立親朋好友專屬的設定檔，或劃分工作和娛樂內容。</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此 Chrome 已封鎖此檔案。</translation>

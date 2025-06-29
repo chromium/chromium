@@ -1238,12 +1238,14 @@
 <translation id="6074656473835429958">รับการแจ้งเตือน</translation>
 <translation id="607620096698446287">อัปโหลด <ph name="FILENAME" /> (<ph name="FILESIZE" />) ไม่ได้</translation>
 <translation id="6077126322656614846">อนุญาตให้เข้าถึงกล้อง</translation>
+<translation id="607730456154980869">ค้นหาคำตอบได้เร็วขึ้นด้วย Gemini ใน Chrome</translation>
 <translation id="6078236141387574983">ปรับความสูงของชีตใหม่</translation>
 <translation id="6084848228346514841">เลือกแท็บ</translation>
 <translation id="6089212833343035912">PIN ของเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6090760257419195752">คำเตือนที่ถูกปิด</translation>
 <translation id="6096965253650248286">พบ <ph name="COUNT" /> แท็บ</translation>
 <translation id="6100617279104942061">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> เปิดการตั้งค่า</translation>
+<translation id="610083648014322104">รับคำตอบที่เกี่ยวข้องตามเนื้อหาของหน้าที่คุณดูอยู่</translation>
 <translation id="6103540626693881831">การเข้ารหัสในอุปกรณ์</translation>
 <translation id="611361228753138223">เว็บไซต์ที่คุณเข้าชมเมื่อเร็วๆ นี้ในอุปกรณ์เครื่องนี้</translation>
 <translation id="611705554202268369">กดค้างเพื่อเพิ่มไปยังกลุ่มแท็บ</translation>
@@ -1496,6 +1498,7 @@
 <translation id="6979737339423435258">ตั้งแต่ต้น</translation>
 <translation id="6983306615164277634">คุณยังสามารถแตะแถบที่อยู่ค้างไว้เพื่อเปลี่ยนตำแหน่งได้อีกด้วย</translation>
 <translation id="6987201788018524855">สำรวจฟีเจอร์ที่มีประโยชน์ที่คุณพลาดไป</translation>
+<translation id="6989636517316575338">ถามเกี่ยวกับหน้าใดก็ได้</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">ติดตามราคาของผลิตภัณฑ์และรับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="7004032350256606903">องค์กรกำหนดให้คุณท่องเว็บแบบส่วนตัว
@@ -1754,6 +1757,7 @@
 <translation id="8058655154417507695">ปีที่หมดอายุ</translation>
 <translation id="8059533439631660104">ยุบส่วนนี้</translation>
 <translation id="8061584726507121204">ประวัติการเข้าชม</translation>
+<translation id="8069168488983557089">รับข้อมูลสำคัญและข้อมูลเชิงลึกที่จะช่วยให้คุณเข้าใจหัวข้อต่างๆ</translation>
 <translation id="8069394452933076548">เลือกว่าตอนไหนที่จะย้ายแท็บที่ไม่ได้ใช้งานเมื่อเร็วๆ นี้ไปไว้ในส่วนแท็บที่ไม่ได้ใช้งาน</translation>
 <translation id="8073670137947914548">ดาวน์โหลดเสร็จแล้ว</translation>
 <translation id="8076492880354921740">แท็บ</translation>

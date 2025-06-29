@@ -152,6 +152,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1671236975893690980">Laukiama atsisiuntimo...</translation>
 <translation id="1672586136351118594">Daugiau neberodyti</translation>
 <translation id="1680919990519905526">Pirkti „Google Lens“ <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020ir uždaryta po <ph name="MONTHS_ARCHIVED" /> mėn.</translation>
 <translation id="1687482373098770139">Netrukus skiltyje „Stebima“ matysite turinį iš kanalo <ph name="SITE_NAME" /> ir apie jį. Stebimos svetainės ir paieškos išsaugomos „Google“ paskyroje. Stebimą turinį galite bet kada tvarkyti nustatymuose.</translation>
 <translation id="1689333818294560261">Slapyvardis</translation>
 <translation id="1696555181932908973">Galite išbandyti kitus būdus tęsti veiklą <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -352,6 +353,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2593272815202181319">Lygiaplotis</translation>
 <translation id="260403163289591229">Stebima</translation>
 <translation id="2604446170045642109">Galite išjungti svetainių tamsiąją temą nustatymuose.</translation>
+<translation id="2605017215201958293">Klausyti šio puslapio naudojant DI</translation>
 <translation id="2607441479295509868">Atsijungta. Vėl prisijunkite, kad paskyroje naudotumėte žymes, slaptažodžius ir kt.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> pakvietė jus pasiekti bendrinamą elementą.</translation>
 <translation id="2625189173221582860">Slaptažodis nukopijuotas</translation>
@@ -876,6 +878,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="496607651705915226">Jei norite išsaugoti ir naudoti naujus slaptažodžius „Google“ paskyroje, atnaujinkite „Google Play“ paslaugas</translation>
 <translation id="4971753085054504448">Bandykite ieškoti ko nors kito arba atidarykite visą „Chrome“ istoriją, kur matysite daugiau rezultatų.</translation>
 <translation id="497421865427891073">Eiti pirmyn</translation>
+<translation id="497983151715419057">Čia peržiūrėkite neaktyvius skirtukus ir grupes</translation>
 <translation id="498624032394115435">Visi nuorodą turintys žmonės gali redaguoti visus skirtukus.</translation>
 <translation id="4987271110129728827">Nepavyko rasti šio puslapio. Patikrinkite rašybą arba pabandykite naudoti žiniatinklio paiešką.</translation>
 <translation id="4988526792673242964">Psl.</translation>
@@ -1064,6 +1067,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="583281660410589416">Nežinoma</translation>
 <translation id="5833984609253377421">Bendrinti nuorodą</translation>
 <translation id="5839058148541733625">„Chrome“ dinozauras</translation>
+<translation id="5842871376175639063">Čia perkeliami skirtukai ir skirtukų grupės, kurių nenaudojote <ph name="DAYS_INACTIVE" /> d.<ph name="AUTODELETE_SECTION" /> Galite bet kada tai pakeisti skiltyje „<ph name="SETTINGS_TITLE" />“.</translation>
 <translation id="5848257610304005265">Atidaryti PDF naudojant „<ph name="APP_NAME" />“?</translation>
 <translation id="5849288995120328556">Nebebendrinti?</translation>
 <translation id="5853623416121554550">pristabdyta</translation>
@@ -1432,6 +1436,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7304873321153398381">Neprisijungta. „Chrome“ negali patikrinti jūsų slaptažodžių.</translation>
 <translation id="7313188324932846546">Palieskite, kad nustatytumėte sinchronizavimą</translation>
 <translation id="7314734791127433392">Nepavyko patikrinti slaptažodžių</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Skirtukai ir skirtukų grupės, kurie nebuvo naudojami vieną dieną ar ilgiau}one{Skirtukai ir skirtukų grupės, kurie nebuvo naudojami # dieną ar ilgiau}few{Skirtukai ir skirtukų grupės, kurie nebuvo naudojami # dienas ar ilgiau}many{Skirtukai ir skirtukų grupės, kurie nebuvo naudojami # dienos ar ilgiau}other{Skirtukai ir skirtukų grupės, kurie nebuvo naudojami # dienų ar ilgiau}}</translation>
 <translation id="7324354302972299151">Užklausos „Do Not Track“ siuntimas</translation>
 <translation id="7333041109965360609">Atšaukta pranešimų prenumerata</translation>
 <translation id="7336259382292148213">Pranešimai atrodo gerai</translation>
@@ -1643,6 +1648,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8137562778192957619">Jums nereikės prisiminti šio slaptažodžio. Jis bus išsaugotas „Google“ slaptažodžių tvarkyklėje.</translation>
 <translation id="8152331954420209374">Eiti į „Lens“</translation>
 <translation id="8163820386638255770">Jei norite naudoti ir saugoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) neaktyvus elementas}one{(#) neaktyvus elementas}few{(#) neaktyvūs elementai}many{(#) neaktyvaus elemento}other{(#) neaktyvių elementų}}</translation>
 <translation id="8186512483418048923">Liko failų: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Liko 1 d.</translation>
 <translation id="8192765420340770300">Prisijungimo apatinis lapas atidarytas per visą ekrano aukštį</translation>

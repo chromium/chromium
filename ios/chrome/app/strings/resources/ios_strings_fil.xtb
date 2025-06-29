@@ -1237,12 +1237,14 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6074656473835429958">Makatanggap ng mga notification</translation>
 <translation id="607620096698446287">Hindi ma-upload ang <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Pinapayagan ang access sa Camera</translation>
+<translation id="607730456154980869">Makakuha ng mga sagot nang mas mabilis gamit ang Gemini sa Chrome</translation>
 <translation id="6078236141387574983">I-adjust ulit ang taas ng sheet</translation>
 <translation id="6084848228346514841">Pumili ng Mga Tab</translation>
 <translation id="6089212833343035912">PIN ng Google Password Manager</translation>
 <translation id="6090760257419195752">Mga na-dismiss na babala</translation>
 <translation id="6096965253650248286">Nahanap ang <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Naka-sign in bilang <ph name="USER_EMAIL" />. Binubuksan ang mga setting.</translation>
+<translation id="610083648014322104">Makakuha ng mga nauugnay na sagot batay sa content ng page kung nasaan ka</translation>
 <translation id="6103540626693881831">On-device na Pag-encrypt</translation>
 <translation id="611361228753138223">Mga site na binisita mo kamakailan sa device na ito</translation>
 <translation id="611705554202268369">Pindutin nang matagal para idagdag sa isang grupo ng tab</translation>
@@ -1495,6 +1497,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6979737339423435258">Lahat ng oras</translation>
 <translation id="6983306615164277634">Puwede mo ring pindutin nang matagal ang address bar para baguhin ang posisyon.</translation>
 <translation id="6987201788018524855">I-explore ang mga kapaki-pakinabang na feature na napalampas mo</translation>
+<translation id="6989636517316575338">Magtanong tungkol sa anumang page</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Subaybayan ang mga presyo ng mga produkto at makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site</translation>
 <translation id="7004032350256606903">Ipinag-aatas sa iyo ng organisasyon mo na mag-browse nang pribado.
@@ -1752,6 +1755,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8058655154417507695">Taon ng pag-expire</translation>
 <translation id="8059533439631660104">Kino-collapse ang seksyon.</translation>
 <translation id="8061584726507121204">History</translation>
+<translation id="8069168488983557089">Makakuha ng mga pangunahing takeaway at insight na makakatulong sa iyong maunawaan ang anumang paksa</translation>
 <translation id="8069394452933076548">Piliin kung kailan ililipat ang mga tab na hindi ginamit kamakailan sa seksyon ng hindi aktibong tab.</translation>
 <translation id="8073670137947914548">Tapos na ang pag-download</translation>
 <translation id="8076492880354921740">Mga Tab</translation>

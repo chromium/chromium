@@ -1240,12 +1240,14 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6074656473835429958">Receber notificações</translation>
 <translation id="607620096698446287">Não foi possível carregar <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Acesso à câmara permitido</translation>
+<translation id="607730456154980869">Veja respostas mais rapidamente com o Gemini no Chrome</translation>
 <translation id="6078236141387574983">Reajuste a altura da página</translation>
 <translation id="6084848228346514841">Selecionar separadores</translation>
 <translation id="6089212833343035912">PIN do Gestor de Palavras-passe da Google</translation>
 <translation id="6090760257419195752">Avisos ignorados</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> encontrado(s)</translation>
 <translation id="6100617279104942061">Com sessão iniciada como <ph name="USER_EMAIL" />. Abre as definições.</translation>
+<translation id="610083648014322104">Veja respostas relevantes com base no conteúdo da página em que se encontra</translation>
 <translation id="6103540626693881831">Encriptação no dispositivo</translation>
 <translation id="611361228753138223">Sites que visitou recentemente neste dispositivo</translation>
 <translation id="611705554202268369">Mantenha o separador premido para o adicionar a um grupo de separadores</translation>
@@ -1498,6 +1500,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6979737339423435258">Sempre</translation>
 <translation id="6983306615164277634">Também pode tocar sem soltar na barra de endereço para alterar a posição.</translation>
 <translation id="6987201788018524855">Explore funcionalidades úteis que ainda não conhece</translation>
+<translation id="6989636517316575338">Faça perguntas sobre qualquer página</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Acompanhe os preços dos produtos e receba alertas quando o preço descer em qualquer site</translation>
 <translation id="7004032350256606903">A sua entidade requer que navegue em privado.
@@ -1757,6 +1760,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8058655154417507695">Ano de expiração</translation>
 <translation id="8059533439631660104">Reduz a secção.</translation>
 <translation id="8061584726507121204">Histórico</translation>
+<translation id="8069168488983557089">Veja as principais conclusões e estatísticas que ajudam a compreender qualquer tópico</translation>
 <translation id="8069394452933076548">Escolha quando os separadores que não foram usados recentemente são movidos para a secção de separadores inativos.</translation>
 <translation id="8073670137947914548">Transferência concluída</translation>
 <translation id="8076492880354921740">Separadores</translation>

@@ -1238,12 +1238,14 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6074656473835429958">Gauti pranešimus</translation>
 <translation id="607620096698446287">Nepavyko įkelti „<ph name="FILENAME" />“ (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Leidžiama pasiekti kamerą</translation>
+<translation id="607730456154980869">Greičiau gaukite atsakymus naudodami „Gemini“ naršyklėje „Chrome“</translation>
 <translation id="6078236141387574983">Pakoreguokite lapo aukštį</translation>
 <translation id="6084848228346514841">Skirtukų pasirinkimas</translation>
 <translation id="6089212833343035912">„Google“ slaptažodžių tvarkyklės PIN kodas</translation>
 <translation id="6090760257419195752">Perspėjimai, kurių atsisakyta</translation>
 <translation id="6096965253650248286">Rasta: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Prisijungta kaip <ph name="USER_EMAIL" />. Atidaromi nustatymai.</translation>
+<translation id="610083648014322104">Gaukite atitinkamų atsakymų pagal puslapio, kuriame esate, turinį</translation>
 <translation id="6103540626693881831">Šifruotė įrenginyje</translation>
 <translation id="611361228753138223">Šiame įrenginyje neseniai aplankytos svetainės</translation>
 <translation id="611705554202268369">Ilgai paspauskite, kad pridėtumėte prie skirtukų grupės</translation>
@@ -1496,6 +1498,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6979737339423435258">Visas laikotarpis</translation>
 <translation id="6983306615164277634">Be to, jei norite pakeisti poziciją, galite paliesti ir palaikyti adreso juostą.</translation>
 <translation id="6987201788018524855">Peržiūrėkite naudingas funkcijas, kurias praleidote</translation>
+<translation id="6989636517316575338">Klauskite apie bet kurį puslapį</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Stebėkite produktų kainas ir gaukite įspėjimus, kai kaina sumažės bet kurioje svetainėje</translation>
 <translation id="7004032350256606903">Jūsų organizacija reikalauja, kad naršytumėte privačiai.
@@ -1754,6 +1757,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8058655154417507695">Galiojimo laiko pabaigos metai</translation>
 <translation id="8059533439631660104">Sutraukia skiltį.</translation>
 <translation id="8061584726507121204">Istorija</translation>
+<translation id="8069168488983557089">Gaukite pagrindinių išvadų ir įžvalgų, kurios padės suprasti bet kurią temą</translation>
 <translation id="8069394452933076548">Pasirinkite, kada pastaruoju metu nenaudojami skirtukai bus perkelti į neaktyvių skirtukų skiltį.</translation>
 <translation id="8073670137947914548">Atsisiuntimas užbaigtas</translation>
 <translation id="8076492880354921740">Skirtukai</translation>
