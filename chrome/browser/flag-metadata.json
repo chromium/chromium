@@ -7821,16 +7821,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "prerender2-warm-up-compositor",
-    "owners": [
-      "taiyo@chromium.org",
-      "lingqi@chromium.org",
-      "nhiroki@chromium.org",
-      "//content/browser/preloading/prerender/OWNERS"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "press-and-hold-esc-to-exit-browser-fullscreen",
     "owners": ["muyaoxu@google.com", "takumif@chromium.org"],
     "expiry_milestone": 134
