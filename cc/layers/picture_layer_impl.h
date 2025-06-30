@@ -214,7 +214,6 @@ class CC_EXPORT PictureLayerImpl
   bool CanRecreateHighResTilingForLCDTextAndRasterTransform(
       const PictureLayerTiling& high_res) const;
   void UpdateTilingsForRasterScaleAndTranslation(bool adjusted_raster_scale);
-  void AddLowResolutionTilingIfNeeded();
   bool ShouldAdjustRasterScale() const;
   void RecalculateRasterScales();
   void AdjustRasterScaleForTransformAnimation(
