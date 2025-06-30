@@ -1791,13 +1791,9 @@ void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
     switch (request_type) {
       case permissions::RequestType::kNotifications:
         delegate()->ShowContentSettingsPage(ContentSettingsType::NOTIFICATIONS);
-        base::RecordAction(base::UserMetricsAction(
-            "Permissions.Prompt.QuietBubble.Notifications.ManageClicked"));
         break;
       case permissions::RequestType::kGeolocation:
         delegate()->ShowContentSettingsPage(ContentSettingsType::GEOLOCATION);
-        base::RecordAction(base::UserMetricsAction(
-            "Permissions.Prompt.QuietBubble.Geolocation.ManageClicked"));
         break;
       default:
         NOTREACHED();
@@ -1845,10 +1841,6 @@ void ContentSettingQuietRequestBubbleModel::OnDoneButtonClicked() {
     case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
       manager->Accept();
-      base::RecordAction(base::UserMetricsAction(
-          request_type == permissions::RequestType::kNotifications
-              ? "Permissions.Prompt.QuietBubble.Notifications.AllowClicked"
-              : "Permissions.Prompt.QuietBubble.Geolocation.AllowClicked"));
       break;
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:

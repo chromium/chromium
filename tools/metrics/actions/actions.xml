@@ -33544,6 +33544,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Permissions.Prompt.QuietBubble.Geolocation.AllowClicked">
+  <obsolete>Deprecated.</obsolete>
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <description>
@@ -33555,6 +33556,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Permissions.Prompt.QuietBubble.Geolocation.ManageClicked">
+  <obsolete>Deprecated.</obsolete>
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <description>
@@ -33566,6 +33568,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Permissions.Prompt.QuietBubble.Notifications.AllowClicked">
+  <obsolete>Deprecated.</obsolete>
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <description>
@@ -33577,6 +33580,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Permissions.Prompt.QuietBubble.Notifications.ManageClicked">
+  <obsolete>Deprecated.</obsolete>
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <description>

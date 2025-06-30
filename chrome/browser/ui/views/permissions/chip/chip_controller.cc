@@ -744,9 +744,6 @@ void ChipController::OnRequestChipButtonPressed() {
     if (permission_prompt_model_->GetPromptStyle() ==
         PermissionPromptStyle::kChip) {
       RecordRequestChipButtonPressed("Permissions.Chip.TimeToInteraction");
-    } else if (permission_prompt_model_->GetPromptStyle() ==
-               PermissionPromptStyle::kQuietChip) {
-      RecordRequestChipButtonPressed("Permissions.QuietChip.TimeToInteraction");
     }
   }
 

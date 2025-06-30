@@ -1636,19 +1636,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.QuietChip.TimeToInteraction" units="ms"
-    expires_after="2025-02-04">
-  <owner>elklm@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <summary>
-    Records how long it takes for the user to click on the quiet chip after it
-    was shown. Chip framework is only available on Desktop. Recorded only if the
-    user clicks on the quiet chip. We can learn what % of prompts get ignored by
-    comparing this metric and
-    `PermissionPromptDisposition.LocationBarLeftQuietChip`.
-  </summary>
-</histogram>
-
 <histogram
     name="Permissions.QuietNotificationPrompts.EnabledStateInPrefsChangedTo"
     enum="BooleanEnabled" expires_after="2025-09-01">
