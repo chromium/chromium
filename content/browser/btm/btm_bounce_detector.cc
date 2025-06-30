@@ -1048,8 +1048,17 @@ void BtmBounceDetector::DidFinishNavigation(
 
   std::vector<BtmRedirectInfoPtr> redirects;
   std::vector<BtmDataAccessType> access_types;
-  server_state->filter.Filter(navigation_handle->GetRedirectChain(),
-                              access_types);
+
+  // Cookie accesses can race each other causing order of navigations to not
+  // match the order of cookie accesses. When this happens Filter() will return
+  // false and assume all kUnknown accesses.
+  //
+  // TODO: crbug.com/407710083 - `CHECK` the result of `filter_.Filter` once
+  // the race is fixed.
+  const bool were_all_accesses_matched = server_state->filter.Filter(
+      navigation_handle->GetRedirectChain(), access_types);
+  base::UmaHistogramBoolean("Privacy.DIPS.BtmBounceDetector.AllAccessesMatched",
+                            were_all_accesses_matched);
 
   // The length of the redirect chain should be equal to the number of server
   // redirects observed by the `DidRedirectNavigation` handler (plus one

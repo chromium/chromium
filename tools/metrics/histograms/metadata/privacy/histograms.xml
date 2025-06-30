@@ -620,6 +620,20 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
+<histogram name="Privacy.DIPS.{Source}.AllAccessesMatched" enum="Boolean"
+    expires_after="2026-07-01">
+  <owner>liu@chromium.org</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
+  <summary>
+    Counts the number of times all cookie accesses were correctly matched and
+    the number of times they weren't.
+  </summary>
+  <token key="Source">
+    <variant name="BtmBounceDetector"/>
+    <variant name="PageVisitObserver"/>
+  </token>
+</histogram>
+
 <histogram name="Privacy.DoNotTrackSetting2" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: tracked as an important privacy metric. -->
