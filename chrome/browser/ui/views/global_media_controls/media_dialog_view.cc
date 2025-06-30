@@ -569,6 +569,17 @@ void MediaDialogView::InitializeLiveCaptionSection() {
   live_caption_title_ =
       live_caption_container->AddChildView(std::move(live_caption_title));
 
+  const bool is_managed =
+      profile_->GetPrefs()->IsManagedPreference(prefs::kLiveCaptionEnabled);
+  if (is_managed) {
+    auto* enterprise_icon = live_caption_container->AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            vector_icons::kBusinessIcon, ui::kColorIconSecondary,
+            kImageWidthDip)));
+    enterprise_icon->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_CONTROLLED_SETTING_POLICY));
+  }
+
   auto live_caption_button = std::make_unique<views::ToggleButton>(
       base::BindRepeating(&MediaDialogView::OnLiveCaptionButtonPressed,
                           base::Unretained(this)));
@@ -576,6 +587,7 @@ void MediaDialogView::InitializeLiveCaptionSection() {
       profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   live_caption_button->GetViewAccessibility().SetName(
       std::u16string(live_caption_title_->GetText()));
+  live_caption_button->SetEnabled(!is_managed);
   live_caption_button_ =
       live_caption_container->AddChildView(std::move(live_caption_button));
 
@@ -616,6 +628,17 @@ void MediaDialogView::InitializeLiveTranslateSection() {
   live_translate_label_wrapper_ = live_translate_container->AddChildView(
       std::move(live_translate_label_wrapper));
 
+  const bool is_managed =
+      profile_->GetPrefs()->IsManagedPreference(prefs::kLiveTranslateEnabled);
+  if (is_managed) {
+    auto* enterprise_icon = live_translate_container->AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            vector_icons::kBusinessIcon, ui::kColorIconSecondary,
+            kImageWidthDip)));
+    enterprise_icon->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_CONTROLLED_SETTING_POLICY));
+  }
+
   auto live_translate_button = std::make_unique<views::ToggleButton>(
       base::BindRepeating(&MediaDialogView::OnLiveTranslateButtonPressed,
                           base::Unretained(this)));
@@ -623,6 +646,7 @@ void MediaDialogView::InitializeLiveTranslateSection() {
       profile_->GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled));
   live_translate_button->GetViewAccessibility().SetName(
       std::u16string(live_translate_title_->GetText()));
+  live_translate_button->SetEnabled(!is_managed);
   auto* live_translate_container_layout =
       live_translate_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(

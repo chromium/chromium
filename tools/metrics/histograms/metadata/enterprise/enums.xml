@@ -2241,6 +2241,7 @@ chromium-metrics-reviews@google.com.
   <int value="1371" label="LocalNetworkAccessAllowedForUrls"/>
   <int value="1372" label="LocalNetworkAccessBlockedForUrls"/>
   <int value="1373" label="DeviceBluetoothJustWorksPairingEnabled"/>
+  <int value="1374" label="LiveCaptionEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

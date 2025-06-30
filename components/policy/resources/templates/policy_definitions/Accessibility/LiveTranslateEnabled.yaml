@@ -10,6 +10,8 @@ desc: |-
   If you set this policy as mandatory, users cannot change or override it.
 
   If this policy is left unset, Live Translate is disabled initially but can be enabled by the user anytime.
+
+  In <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME">LiveCaptionEnabled</ph> is set to Disabled, Live Translate will be disabled regardless of this policy setting.
 example_value: true
 features:
   can_be_recommended: true

@@ -1372,6 +1372,8 @@ policies:
   1371: LocalNetworkAccessAllowedForUrls
   1372: LocalNetworkAccessBlockedForUrls
   1373: DeviceBluetoothJustWorksPairingEnabled
+  1374: LiveCaptionEnabled
+atomic_groups:
 atomic_groups:
   1: Homepage
   2: RemoteAccess
