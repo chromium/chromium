@@ -34,6 +34,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
@@ -555,6 +556,9 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
     if (disallow_script_for_synthetic_response_ &&
         csp.header->source == ContentSecurityPolicySource::kMeta) {
       disallow_script_for_synthetic_response_ = false;
+      base::UmaHistogramCounts100(
+          kSyntheticResponseBlockedResourceCountHistogramName,
+          blocked_count_for_synthetic_response_);
     }
   }
 }
@@ -613,6 +617,10 @@ bool ContentSecurityPolicy::AllowInline(
         break;
     }
     if (!message.empty()) {
+      blocked_count_for_synthetic_response_++;
+      base::UmaHistogramEnumeration(
+          kSyntheticResponseBlockedInlineResourceTypeHistogramName,
+          inline_type);
       LogToConsole(StrCat(
           {"Refused to ", message, kWarningMessageForSyntheticResponse}));
       return false;
@@ -923,13 +931,20 @@ bool ContentSecurityPolicy::AllowFromSource(
   else if (type == CSPDirectiveName::StyleSrcElem)
     area = SchemeRegistry::kPolicyAreaStyle;
 
-  if (disallow_script_for_synthetic_response_ &&
-      (type == CSPDirectiveName::ScriptSrcElem ||
-       type == CSPDirectiveName::WorkerSrc)) {
-    LogToConsole(
-
-        StrCat({"The script from ", url.GetString(), " was blocked.",
-                kWarningMessageForSyntheticResponse}));
+  if (disallow_script_for_synthetic_response_) {
+    SyntheticResponseBlockedSrcType blocked_src_type =
+        type == CSPDirectiveName::ScriptSrcElem
+            ? SyntheticResponseBlockedSrcType::kScriptSrcElm
+        : type == CSPDirectiveName::WorkerSrc
+            ? SyntheticResponseBlockedSrcType::kWorkerSrc
+            : SyntheticResponseBlockedSrcType::kUnspecified;
+    if (blocked_src_type != SyntheticResponseBlockedSrcType::kUnspecified) {
+      blocked_count_for_synthetic_response_++;
+      base::UmaHistogramEnumeration(
+          kSyntheticResponseBlockedSrcTypeHistogramName, blocked_src_type);
+      LogToConsole(StrCat({"The script from ", url.GetString(), " was blocked.",
+                           kWarningMessageForSyntheticResponse}));
+    }
     return false;
   }
 

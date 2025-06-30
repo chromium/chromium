@@ -1850,6 +1850,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.BlockedInlineResourceType"
+    enum="ContentSecurityPolicyInlineType" expires_after="2025-08-31">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The type of inline resource, that is blocked by Content Security Policy when
+    the synthetic response is enabled before receiving a Content Security Policy
+    in a meta tag.
+
+    This is recorded when the inline resource is blocked by the synthetic
+    response.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.SyntheticResponse.BlockedResourceCount"
+    units="count" expires_after="2025-08-31">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The total count of blocked resources by the synthetic response.
+
+    This is recorded, once per document/page, when the synthetic response is
+    enabled and at the time when the first Content Security Policy delivered in
+    a meta tag is parsed. Measures the count of resources that have been blocked
+    by Content Security Policy because of synthetic response until that point.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.SyntheticResponse.BlockedSrcType"
+    enum="SyntheticResponseBlockedSrcType" expires_after="2025-08-31">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The type of source of scripts that is blocked by the synthetic response.
+
+    This is recorded when the resource from the source is blocked by the
+    synthetic response.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.UpdateResourceSha256ChecksumsResult"
     enum="ServiceWorkerStatusCode" expires_after="2025-09-28">
   <owner>sisidovski@chromium.org</owner>

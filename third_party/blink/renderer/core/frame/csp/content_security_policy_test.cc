@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "services/network/public/cpp/features.h"
@@ -1610,6 +1611,7 @@ TEST_F(ContentSecurityPolicyTest, ExemptSpeculationRulesFromHeader) {
 class SyntheticResponseContentSecurityPolicyTest
     : public ContentSecurityPolicyTest {
  protected:
+  using InlineType = ContentSecurityPolicy::InlineType;
   void SetUp() override {
     dummy_ = std::make_unique<DummyPageHolder>();
     secure_origin = secure_origin->DeriveNewOpaqueOrigin();
@@ -1628,9 +1630,25 @@ class SyntheticResponseContentSecurityPolicyTest
                             context_line);
   }
 
+  void ExpectBlockedInlineResourceTypeHistogram(InlineType type, int count) {
+    histogram_tester().ExpectBucketCount(
+        kSyntheticResponseBlockedInlineResourceTypeHistogramName, type, count);
+  }
+
+  void ExpectBlockedSrcTypeHistogram(SyntheticResponseBlockedSrcType type,
+                                     int count) {
+    histogram_tester().ExpectBucketCount(
+        kSyntheticResponseBlockedSrcTypeHistogramName, type, count);
+  }
+
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
  private:
   LocalDOMWindow* window() const { return dummy_->GetFrame().DomWindow(); }
   std::unique_ptr<DummyPageHolder> dummy_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(SyntheticResponseContentSecurityPolicyTest, DisallowScript) {
@@ -1687,6 +1705,19 @@ TEST_F(SyntheticResponseContentSecurityPolicyTest, DisallowScript) {
       ResourceRequest::RedirectStatus::kNoRedirect,
       ReportingDisposition::kReport,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
+
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kScript, 1);
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kScriptAttribute, 1);
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kScriptSpeculationRules,
+                                           1);
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kNavigation, 1);
+  ExpectBlockedSrcTypeHistogram(SyntheticResponseBlockedSrcType::kScriptSrcElm,
+                                1);
+  histogram_tester().ExpectTotalCount(
+      kSyntheticResponseBlockedResourceCountHistogramName, 1);
+  EXPECT_EQ(histogram_tester().GetTotalSum(
+                kSyntheticResponseBlockedResourceCountHistogramName),
+            5);
 }
 
 TEST_F(SyntheticResponseContentSecurityPolicyTest,
@@ -1714,6 +1745,17 @@ TEST_F(SyntheticResponseContentSecurityPolicyTest,
       ResourceRequest::RedirectStatus::kNoRedirect,
       ReportingDisposition::kReport,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
+
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kScript, 2);
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kScriptAttribute, 1);
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kScriptSpeculationRules,
+                                           1);
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kNavigation, 1);
+  ExpectBlockedSrcTypeHistogram(SyntheticResponseBlockedSrcType::kScriptSrcElm,
+                                1);
+  // The total count is not recorded until the new policy is added via <meta>.
+  histogram_tester().ExpectTotalCount(
+      kSyntheticResponseBlockedResourceCountHistogramName, 0);
 }
 
 TEST_F(SyntheticResponseContentSecurityPolicyTest,
@@ -1751,5 +1793,18 @@ TEST_F(SyntheticResponseContentSecurityPolicyTest,
       ResourceRequest::RedirectStatus::kNoRedirect,
       ReportingDisposition::kReport,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
+
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kScript, 2);
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kScriptAttribute, 0);
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kScriptSpeculationRules,
+                                           0);
+  ExpectBlockedInlineResourceTypeHistogram(InlineType::kNavigation, 0);
+  ExpectBlockedSrcTypeHistogram(SyntheticResponseBlockedSrcType::kScriptSrcElm,
+                                0);
+  histogram_tester().ExpectTotalCount(
+      kSyntheticResponseBlockedResourceCountHistogramName, 1);
+  EXPECT_EQ(histogram_tester().GetTotalSum(
+                kSyntheticResponseBlockedResourceCountHistogramName),
+            2);
 }
 }  // namespace blink
