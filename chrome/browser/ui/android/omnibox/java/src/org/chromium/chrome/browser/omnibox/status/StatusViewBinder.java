@@ -37,9 +37,6 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             applyStatusIconAndTooltipProperties(model, view);
         } else if (StatusProperties.STATUS_VIEW_BACKGROUND.equals(propertyKey)) {
             applyStatusIconAndTooltipProperties(model, view);
-        } else if (StatusProperties.SHOW_STATUS_ICON_BACKGROUND.equals(propertyKey)) {
-            view.setStatusIconBackgroundVisibility(
-                    model.get(StatusProperties.SHOW_STATUS_ICON_BACKGROUND));
         } else if (StatusProperties.STATUS_CLICK_LISTENER.equals(propertyKey)) {
             view.setStatusClickListener(model.get(StatusProperties.STATUS_CLICK_LISTENER));
         } else if (StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES.equals(propertyKey)) {

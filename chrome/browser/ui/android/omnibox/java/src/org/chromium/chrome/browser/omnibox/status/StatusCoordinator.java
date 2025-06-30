@@ -193,13 +193,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     /**
-     * @param show Whether the status icon background should be VISIBLE, otherwise INVISIBLE.
-     */
-    public void setStatusIconBackgroundVisibility(boolean show) {
-        mMediator.setStatusIconBackgroundVisibility(show);
-    }
-
-    /**
      * Set the url focus change percent.
      *
      * @param percent The current focus percent.
