@@ -687,6 +687,12 @@ const char kAutofillEnableBuyNowPayLaterDescription[] =
     "When enabled, users will have the option to pay with buy now pay later on "
     "specific merchant webpages.";
 
+const char kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarnaName[] =
+    "Enable buy now pay later for externally linked Klarna";
+const char kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarnaDescription[] =
+    "When enabled, users will have the option to pay with buy now pay later "
+    "with externally linked Klarna on specific merchant webpages.";
+
 const char kAutofillEnableBuyNowPayLaterForKlarnaName[] =
     "Enable buy now pay later on Autofill for Klarna";
 const char kAutofillEnableBuyNowPayLaterForKlarnaDescription[] =

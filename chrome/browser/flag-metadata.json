@@ -685,6 +685,11 @@
     "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
   },
+ {
+    "name": "autofill-enable-buy-now-pay-later-for-externally-linked-klarna",
+    "owners": ["wilsonlow@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 150
+  },
   {
     "name": "autofill-enable-buy-now-pay-later-for-klarna",
     "owners": ["wilsonlow@google.com", "payments-autofill-team@google.com"],

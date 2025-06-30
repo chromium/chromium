@@ -439,6 +439,10 @@ extern const char kAutofillEnableAmountExtractionTestingDescription[];
 extern const char kAutofillEnableBuyNowPayLaterName[];
 extern const char kAutofillEnableBuyNowPayLaterDescription[];
 
+extern const char kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarnaName[];
+extern const char
+    kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarnaDescription[];
+
 extern const char kAutofillEnableBuyNowPayLaterForKlarnaName[];
 extern const char kAutofillEnableBuyNowPayLaterForKlarnaDescription[];
 

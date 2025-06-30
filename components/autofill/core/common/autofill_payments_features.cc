@@ -53,6 +53,12 @@ BASE_FEATURE(kAutofillEnableBuyNowPayLater,
              "AutofillEnableBuyNowPayLater",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, buy now pay later (BNPL) for externally linked Klarna in
+// Autofill will be offered.
+BASE_FEATURE(kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarna,
+             "AutofillEnableBuyNowPayLaterForExternallyLinkedKlarna",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, buy now pay later (BNPL) for Klarna in Autofill will be
 // offered.
 BASE_FEATURE(kAutofillEnableBuyNowPayLaterForKlarna,

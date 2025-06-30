@@ -12738,8 +12738,22 @@ const FeatureEntry kFeatureEntries[] = {
     {"offer-migration-to-dice-users",
      flag_descriptions::kOfferMigrationToDiceUsersName,
      flag_descriptions::kOfferMigrationToDiceUsersDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(switches::kOfferMigrationToDiceUsers)}
+     FEATURE_VALUE_TYPE(switches::kOfferMigrationToDiceUsers)},
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"autofill-enable-buy-now-pay-later-for-externally-linked-klarna",
+     flag_descriptions::
+         kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarnaName,
+     flag_descriptions::
+         kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarnaDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarna)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     // Add new entries above this line.
 

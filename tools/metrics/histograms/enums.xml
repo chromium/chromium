@@ -9916,6 +9916,8 @@ from previous Chrome versions.
   <int value="-1520645293" label="InterestFeedNoticeCardAutoDismiss:disabled"/>
   <int value="-1520630395" label="DefaultPassthroughCommandDecoder:disabled"/>
   <int value="-1520542714" label="AccessibilityManifestV3GoogleTts:enabled"/>
+  <int value="-1519741393"
+      label="AutofillEnableBuyNowPayLaterForExternallyLinkedKlarna:enabled"/>
   <int value="-1519536015" label="enable-hls-playback:disabled"/>
   <int value="-1517929127" label="DelegatedCompositing:enabled"/>
   <int value="-1517518406" label="force-update-menu-type"/>
@@ -18598,6 +18600,8 @@ from previous Chrome versions.
   <int value="1697189972" label="WebPaymentsSingleAppUiSkip:disabled"/>
   <int value="1697576315" label="ZeroSuggestPrefetchingOnWeb:enabled"/>
   <int value="1698089268" label="WebXRMultiGpu:disabled"/>
+  <int value="1698093940"
+      label="AutofillEnableBuyNowPayLaterForExternallyLinkedKlarna:disabled"/>
   <int value="1699134522" label="LensFullscreenSearch:enabled"/>
   <int value="1699180023" label="PaymentRequestOptionalTotal:disabled"/>
   <int value="1699182601" label="DockedMagnifier:disabled"/>
