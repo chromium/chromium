@@ -254,7 +254,7 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
                            range:gradientRange];
 
   UIFont* gradientStringFont =
-      ios::provider::GetBrandedProductRegularFont(labelFont.pointSize);
+      ios::provider::GetBrandedProductMediumFont(labelFont.pointSize);
   [attributedString addAttribute:NSFontAttributeName
                            value:gradientStringFont
                            range:gradientRange];
