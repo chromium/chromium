@@ -92,10 +92,6 @@ class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
       const LocalTabGroupID& local_tab_group_id) override;
 
  private:
-  // Retrieves the browser associated with the scene with the highest level of
-  // activation.
-  Browser* GetMostActiveSceneBrowser();
-
   // Inserts the `distant_tab` using `tab_insertion_browser_agent` at
   // `web_state_index`.
   web::WebState* InsertDistantTab(

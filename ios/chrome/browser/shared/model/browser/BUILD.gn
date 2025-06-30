@@ -32,6 +32,19 @@ source_set("browser") {
   ]
 }
 
+source_set("utils") {
+  sources = [
+    "browser_list_utils.h",
+    "browser_list_utils.mm",
+  ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

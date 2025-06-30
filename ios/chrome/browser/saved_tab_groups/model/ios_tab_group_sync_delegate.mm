@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -458,27 +459,6 @@ IOSTabGroupSyncDelegate::CreateSavedTabGroupFromLocalGroup(
       /*position=*/std::nullopt, saved_tab_group_id, tab_group->tab_group_id());
 }
 
-Browser* IOSTabGroupSyncDelegate::GetMostActiveSceneBrowser() {
-  std::set<Browser*> all_browsers =
-      browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular);
-
-  Browser* browser = nullptr;
-  for (Browser* browser_to_check : all_browsers) {
-    // The pointer to the scene state is weak, so it could be nil. In that case,
-    // the activation level will be 0 (lowest).
-    if (browser && browser->GetSceneState().activationLevel >=
-                       browser_to_check->GetSceneState().activationLevel) {
-      continue;
-    }
-    browser = browser_to_check;
-    if (browser_to_check->GetSceneState().activationLevel ==
-        SceneActivationLevelForegroundActive) {
-      break;
-    }
-  }
-  return browser;
-}
-
 web::WebState* IOSTabGroupSyncDelegate::InsertDistantTab(
     const SavedTabGroupTab& tab,
     TabInsertionBrowserAgent* tab_insertion_browser_agent,
@@ -588,7 +568,9 @@ std::optional<LocalTabGroupID> IOSTabGroupSyncDelegate::CreateLocalTabGroupImpl(
   }
 
   // If no browser was passed, get the most active one.
-  browser = browser ? browser : GetMostActiveSceneBrowser();
+  browser = browser
+                ? browser
+                : browser_list_utils::GetMostActiveSceneBrowser(browser_list_);
 
   if (!browser) {
     return std::nullopt;
