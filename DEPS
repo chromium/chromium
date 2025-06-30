@@ -2453,7 +2453,7 @@ deps = {
     Var('chromium_git') + '/webm/libwebp.git' + '@' +  '2af6c034ac871c967e04c8c9f8bf2dbc2e271b18',
 
   'src/third_party/libyuv':
-    Var('chromium_git') + '/libyuv/libyuv.git' + '@' + '9519b7df0e00787bca84ab311f6ff8fea68860eb',
+    Var('chromium_git') + '/libyuv/libyuv.git' + '@' + '007b920232baa76e8f37ad1a184409a5ecb70836',
 
   'src/third_party/lighttpd': {
       'url': Var('chromium_git') + '/chromium/deps/lighttpd.git' + '@' + Var('lighttpd_revision'),
