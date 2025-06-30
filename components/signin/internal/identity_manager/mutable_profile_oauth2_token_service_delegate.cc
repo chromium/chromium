@@ -359,6 +359,7 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
     // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.
     auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         consumer, url_loader_factory, gaia_id, refresh_token,
+        is_refresh_token_bound,
         signin::GetSigninScopedDeviceId(client_->GetPrefs()),
         std::string(version_info::GetVersionNumber()),
         std::string(
@@ -645,13 +646,13 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
 
     if (load_account) {
       if (!revoke_token && should_reencrypt) {
-          did_reencrypt = true;
-          PersistCredentials(account_id, refresh_token
+        did_reencrypt = true;
+        PersistCredentials(account_id, refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                             ,
-                             wrapped_binding_key
+                           ,
+                           wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-          );
+        );
       }
       RecordAccountAvailabilityStartup(account_id, refresh_token);
 

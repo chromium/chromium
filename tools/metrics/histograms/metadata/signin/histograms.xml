@@ -2253,41 +2253,6 @@ the browser and content area. -->
   </summary>
 </histogram>
 
-<histogram
-    name="Signin.OAuth2MintToken.BoundFetchAuthError{TokenBindingAssertionValue}"
-    enum="GoogleServiceAuthError" expires_after="2025-10-26">
-  <owner>alexilin@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records an error code (or none) for a single OAuth2MintToken API fetch with
-    a bound refresh token. Recorded for requests with
-    {TokenBindingAssertionValue}, after the response is processed. Desktop only.
-  </summary>
-  <token key="TokenBindingAssertionValue">
-    <variant name="" summary="any token binding assertion value"/>
-    <variant name=".AssertionFailed"
-        summary="a &quot;signature failed&quot; placeholder in place of a
-                 token binding assertion"/>
-    <variant name=".ChallengeSentinel"
-        summary="a challenge sentinel in place of a token binding assertion"/>
-    <variant name=".NoAssertion" summary="an empty token binding assertion"/>
-    <variant name=".SignedAssertion" summary="a successfully signed assertion"/>
-  </token>
-</histogram>
-
-<histogram name="Signin.OAuth2MintToken.BoundFetchEncryptionError"
-    enum="TokenBindingResponseEncryptionError" expires_after="2025-10-26">
-  <owner>alexilin@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records an encryption failure (or lack of any) that occured during
-    OAuth2MintToken API fetch with a bound refresh token. Recorded after the
-    response is processed. Desktop only.
-  </summary>
-</histogram>
-
 <histogram name="Signin.OAuth2MintToken.Response" enum="OAuth2Response"
     expires_after="2025-10-26">
   <owner>alexilin@chromium.org</owner>
@@ -2302,6 +2267,49 @@ the browser and content area. -->
     &quot;Signin.OAuth2MintToken.ApiCallResult&quot; but uses the same result
     type as &quot;Gaia.ResponseForOAuth2AccessToken&quot;.
   </summary>
+</histogram>
+
+<histogram
+    name="Signin.OAuth2MintToken.{BindingState}FetchAuthError{TokenBindingAssertionValue}"
+    enum="GoogleServiceAuthError" expires_after="2025-10-26">
+  <owner>alexilin@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records an error code (or none) for a single OAuth2MintToken API fetch with
+    {BindingState} refresh token. Recorded for requests with
+    {TokenBindingAssertionValue}, after the response is processed. Desktop only.
+  </summary>
+  <token key="TokenBindingAssertionValue">
+    <variant name="" summary="any token binding assertion value"/>
+    <variant name=".AssertionFailed"
+        summary="a &quot;signature failed&quot; placeholder in place of a
+                 token binding assertion"/>
+    <variant name=".ChallengeSentinel"
+        summary="a challenge sentinel in place of a token binding assertion"/>
+    <variant name=".NoAssertion" summary="an empty token binding assertion"/>
+    <variant name=".SignedAssertion" summary="a successfully signed assertion"/>
+  </token>
+  <token key="BindingState">
+    <variant name="Bound" summary="a bound"/>
+    <variant name="Unbound" summary="an unbound"/>
+  </token>
+</histogram>
+
+<histogram name="Signin.OAuth2MintToken.{BindingState}FetchEncryptionError"
+    enum="TokenBindingResponseEncryptionError" expires_after="2025-10-26">
+  <owner>alexilin@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records an encryption failure (or lack of any) that occured during
+    OAuth2MintToken API fetch with {BindingState} refresh token. Recorded after
+    the response is processed. Desktop only.
+  </summary>
+  <token key="BindingState">
+    <variant name="Bound" summary="a bound"/>
+    <variant name="Unbound" summary="an unbound"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.OAuth2TokenGetResult" enum="GoogleServiceAuthError"

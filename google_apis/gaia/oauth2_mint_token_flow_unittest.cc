@@ -664,7 +664,7 @@ TEST_F(OAuth2MintTokenFlowTest, CreateApiCallHeaders) {
 
 TEST_F(OAuth2MintTokenFlowTest,
        CreateApiCallBodyClientAccessTokenFlowWithBoundOAuthToken) {
-  CreateClientFlow(/*bound_oauth_token=*/std::string());
+  CreateClientFlow("test_bound_oauth_token");
   std::string body = flow_->CreateApiCallBody();
   std::string expected_body(
       "force=false"

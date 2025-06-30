@@ -180,13 +180,17 @@ class MutableProfileOAuth2TokenServiceDelegateTest
     token_web_data_->Init(base::NullCallback());
   }
 
+  // "/GetToken" is a default endpoint for issuing access tokens.
   void AddSuccessfulOAuthTokenResponse() {
     client_->GetTestURLLoaderFactory()->AddResponse(
         GaiaUrls::GetInstance()->oauth2_token_url().spec(),
         GetValidTokenResponse("token", 3600));
   }
 
-  void AddSuccessfulBoundTokenResponse() {
+  // "/IssueToken" is an endpoint for issuing access tokens used with bound
+  // refresh tokens or when `switches::kUseIssueTokenToFetchAccessTokens` is
+  // enabled.
+  void AddSuccessfulIssueTokenResponse() {
     client_->GetTestURLLoaderFactory()->AddResponse(
         GaiaUrls::GetInstance()->oauth2_issue_token_url().spec(),
         GetValidBoundTokenResponse("access_token", base::Seconds(3600),
@@ -1940,7 +1944,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
       kFakeWrappedBindingKey);
 
-  AddSuccessfulBoundTokenResponse();
+  AddSuccessfulIssueTokenResponse();
 
   EXPECT_EQ(0, access_token_success_count_);
   EXPECT_EQ(0, access_token_failure_count_);
@@ -1970,9 +1974,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
       account_id, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
-  // Even though the token is not bound, the delegate will use the same fetcher
-  // because `kUseIssueTokenToFetchAccessTokens` is enabled.
-  AddSuccessfulBoundTokenResponse();
+  AddSuccessfulIssueTokenResponse();
 
   EXPECT_EQ(0, access_token_success_count_);
   EXPECT_EQ(0, access_token_failure_count_);

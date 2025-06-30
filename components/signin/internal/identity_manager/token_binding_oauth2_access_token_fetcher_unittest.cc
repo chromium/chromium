@@ -38,6 +38,7 @@ class MockOAuth2MintAccessTokenFetcherAdapter
                                             nullptr,
                                             GaiaId(),
                                             "",
+                                            true,
                                             "",
                                             "",
                                             "") {}

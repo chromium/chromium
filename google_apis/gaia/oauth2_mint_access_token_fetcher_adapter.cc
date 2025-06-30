@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,9 +24,14 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
-void RecordEncryptionError(TokenBindingResponseEncryptionError error) {
+void RecordEncryptionError(TokenBindingResponseEncryptionError error,
+                           bool is_refresh_token_bound) {
+  static constexpr std::string_view kBoundHistogram =
+      "Signin.OAuth2MintToken.BoundFetchEncryptionError";
+  static constexpr std::string_view kUnboundHistogram =
+      "Signin.OAuth2MintToken.UnboundFetchEncryptionError";
   base::UmaHistogramEnumeration(
-      "Signin.OAuth2MintToken.BoundFetchEncryptionError", error);
+      is_refresh_token_bound ? kBoundHistogram : kUnboundHistogram, error);
 }
 
 std::string_view GetAssertionTypeHistogramSuffix(
@@ -47,14 +53,20 @@ std::string_view GetAssertionTypeHistogramSuffix(
 }
 
 void RecordFetchAuthError(const GoogleServiceAuthError& error,
+                          bool is_refresh_token_bound,
                           const std::string& binding_key_assertion) {
-  static constexpr std::string_view kFetchAuthErrorHistogram =
+  static constexpr std::string_view kBoundFetchAuthErrorHistogram =
       "Signin.OAuth2MintToken.BoundFetchAuthError";
-  base::UmaHistogramEnumeration(kFetchAuthErrorHistogram, error.state(),
+  static constexpr std::string_view kUnboundFetchAuthErrorHistogram =
+      "Signin.OAuth2MintToken.UnboundFetchAuthError";
+  std::string_view histogram_name = is_refresh_token_bound
+                                        ? kBoundFetchAuthErrorHistogram
+                                        : kUnboundFetchAuthErrorHistogram;
+  base::UmaHistogramEnumeration(histogram_name, error.state(),
                                 GoogleServiceAuthError::NUM_STATES);
 
   base::UmaHistogramEnumeration(
-      base::StrCat({kFetchAuthErrorHistogram,
+      base::StrCat({histogram_name,
                     GetAssertionTypeHistogramSuffix(binding_key_assertion)}),
       error.state(), GoogleServiceAuthError::NUM_STATES);
 }
@@ -65,6 +77,7 @@ OAuth2MintAccessTokenFetcherAdapter::OAuth2MintAccessTokenFetcherAdapter(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GaiaId& user_gaia_id,
     const std::string& refresh_token,
+    bool is_refresh_token_bound,
     const std::string& device_id,
     const std::string& client_version,
     const std::string& client_channel)
@@ -72,6 +85,7 @@ OAuth2MintAccessTokenFetcherAdapter::OAuth2MintAccessTokenFetcherAdapter(
       url_loader_factory_(std::move(url_loader_factory)),
       user_gaia_id_(user_gaia_id),
       refresh_token_(refresh_token),
+      is_refresh_token_bound_(is_refresh_token_bound),
       device_id_(device_id),
       client_version_(client_version),
       client_channel_(client_channel) {}
@@ -83,19 +97,19 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
     const std::string& client_id,
     const std::string& client_secret,
     const std::vector<std::string>& scopes) {
-  if (binding_key_assertion_.empty()) {
-    // The sentinel should be attached only if the `refresh_token_` is bound.
-    // For now, `OAuth2MintAccessTokenFetcherAdapter` is only used with bound
-    // tokens, so we can attach it unconditionally. This needs to be revised in
-    // the future.
+  if (is_refresh_token_bound_ && binding_key_assertion_.empty()) {
     binding_key_assertion_ = GaiaConstants::kTokenBindingAssertionSentinel;
   }
-  std::string bound_oauth_token = gaia::CreateBoundOAuthToken(
-      user_gaia_id_, refresh_token_, binding_key_assertion_);
+  std::string bound_oauth_token =
+      is_refresh_token_bound_
+          ? gaia::CreateBoundOAuthToken(user_gaia_id_, refresh_token_,
+                                        binding_key_assertion_)
+          : std::string();
   auto params = OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
       client_id, std::vector<std::string_view>(scopes.begin(), scopes.end()),
       client_version_, client_channel_, device_id_, bound_oauth_token);
   if (mint_token_flow_factory_for_testing_) {
+    CHECK_IS_TEST();
     mint_token_flow_ =
         mint_token_flow_factory_for_testing_.Run(this, std::move(params));
   } else {
@@ -112,6 +126,7 @@ void OAuth2MintAccessTokenFetcherAdapter::CancelRequest() {
 void OAuth2MintAccessTokenFetcherAdapter::SetBindingKeyAssertion(
     std::string assertion) {
   CHECK(!assertion.empty());
+  CHECK(is_refresh_token_bound_);
   binding_key_assertion_ = std::move(assertion);
 }
 
@@ -133,7 +148,8 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
   if (result.is_token_encrypted) {
     if (token_decryptor_.is_null()) {
       RecordEncryptionError(
-          TokenBindingResponseEncryptionError::kResponseUnexpectedlyEncrypted);
+          TokenBindingResponseEncryptionError::kResponseUnexpectedlyEncrypted,
+          is_refresh_token_bound_);
       RecordMetricsAndFireError(
           GoogleServiceAuthError::FromUnexpectedServiceResponse(
               "Unexpectedly received an encrypted token"));
@@ -142,19 +158,22 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
     std::string decryption_result = token_decryptor_.Run(result.access_token);
     if (decryption_result.empty()) {
       RecordEncryptionError(
-          TokenBindingResponseEncryptionError::kDecryptionFailed);
+          TokenBindingResponseEncryptionError::kDecryptionFailed,
+          is_refresh_token_bound_);
       RecordMetricsAndFireError(
           GoogleServiceAuthError::FromUnexpectedServiceResponse(
               "Failed to decrypt token"));
       return;
     } else {
       RecordEncryptionError(
-          TokenBindingResponseEncryptionError::kSuccessfullyDecrypted);
+          TokenBindingResponseEncryptionError::kSuccessfullyDecrypted,
+          is_refresh_token_bound_);
     }
     decrypted_token = std::move(decryption_result);
   } else {
     RecordEncryptionError(
-        TokenBindingResponseEncryptionError::kSuccessNoEncryption);
+        TokenBindingResponseEncryptionError::kSuccessNoEncryption,
+        is_refresh_token_bound_);
     decrypted_token = std::move(result.access_token);
   }
   // The token will expire in `time_to_live` seconds. Take a 10% error margin to
@@ -164,7 +183,7 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
   response_builder.WithAccessToken(decrypted_token)
       .WithExpirationTime(expiration_time);
   RecordFetchAuthError(GoogleServiceAuthError::AuthErrorNone(),
-                       binding_key_assertion_);
+                       is_refresh_token_bound_, binding_key_assertion_);
   FireOnGetTokenSuccess(response_builder.build());
 }
 void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenFailure(
@@ -181,6 +200,6 @@ void OAuth2MintAccessTokenFetcherAdapter::OnRemoteConsentSuccess(
 
 void OAuth2MintAccessTokenFetcherAdapter::RecordMetricsAndFireError(
     const GoogleServiceAuthError& error) {
-  RecordFetchAuthError(error, binding_key_assertion_);
+  RecordFetchAuthError(error, is_refresh_token_bound_, binding_key_assertion_);
   FireOnGetTokenFailure(error);
 }
