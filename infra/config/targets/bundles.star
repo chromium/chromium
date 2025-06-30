@@ -5598,6 +5598,25 @@ targets.bundle(
     ],
 )
 
+# This is essentially ios_eg2_cq_tests but runs on more shards,
+# because VM has slightly worse performance than bare metal.
+# TODO(crbug.com/427497507): remove once we have launced more VMs.
+targets.bundle(
+    name = "ios_sim_noncq_eg2_cq_tests",
+    targets = [
+        "ios_eg2_cq_tests",
+    ],
+    per_test_modifications = {
+        "ios_chrome_integration_eg2tests_module": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 9,
+                ),
+            ),
+        ],
+    },
+)
+
 # Please also change ios_code_coverage_tests for any change in this suite.
 targets.bundle(
     name = "ios_simulator_full_configs_tests",
@@ -5667,10 +5686,11 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "ios_eg2_cq_tests",
+            targets = "ios_sim_noncq_eg2_cq_tests",
             mixins = [
                 "xcodebuild_sim_runner",
                 "record_failed_tests",
+                "mac_15_vm_optional",
             ],
             variants = [
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
