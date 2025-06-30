@@ -2539,12 +2539,6 @@
       name: "HTMLEmbedElementNotForceLayout",
       status: "stable",
     },
-    // The width attribute on the hr element, previously converted 0 values to 1px.
-    // This will ship in M133, so should be safe to remove in M135.
-    {
-      name: "HTMLHRWidthAllowZero",
-      status: "stable"
-    },
     // Return a natural width/height of zero from
     // HTMLImageElement.naturalWidth/Height for SVG images that don't have a
     // natural width/height set.
