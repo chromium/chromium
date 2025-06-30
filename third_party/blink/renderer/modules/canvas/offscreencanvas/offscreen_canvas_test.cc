@@ -196,16 +196,17 @@ TEST_F(OffscreenCanvasTest, AnimationUsesSyntheticTimerWhenHidden) {
   GetCanvasElement()->RemoveListener(listener);
 }
 
-// Verifies that an offscreen_canvas()s PushFrame()/Commit() has the appropriate
+// Verifies that an offscreen_canvas()s PushFrame() has the appropriate
 // opacity/blending information sent to the CompositorFrameSink.
 TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
   ScriptState::Scope scope(GetScriptState());
   ::testing::InSequence s;
 
-  // To intercept SubmitCompositorFrame/SubmitCompositorFrameSync messages sent
-  // by OffscreenCanvas's CanvasResourceDispatcher, we have to override the Mojo
-  // EmbeddedFrameSinkProvider interface impl and its CompositorFrameSinkClient.
+  // To intercept SubmitCompositorFrame messages sent by OffscreenCanvas's
+  // CanvasResourceDispatcher, we have to override the Mojo
+  // EmbeddedFrameSinkProvider interface impl and its
+  // CompositorFrameSinkClient.
   MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
   mojo::Receiver<mojom::blink::EmbeddedFrameSinkProvider>
       embedded_frame_sink_provider_receiver(&mock_embedded_frame_sink_provider);
@@ -213,10 +214,10 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
       mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
           &embedded_frame_sink_provider_receiver);
 
-  // Call here DidDraw() to simulate having drawn something before PushFrame()/
-  // Commit(); DidDraw() will in turn cause a CanvasResourceDispatcher to be
-  // created and a CreateCompositorFrameSink() to be issued; this sink will get
-  // a SetNeedsBeginFrame() message sent upon construction.
+  // Call here DidDraw() to simulate having drawn something before PushFrame();
+  // DidDraw() will in turn cause a CanvasResourceDispatcher to be created and
+  // a CreateCompositorFrameSink() to be issued; this sink will get a
+  // SetNeedsBeginFrame() message sent upon construction.
   mock_embedded_frame_sink_provider
       .set_num_expected_set_needs_begin_frame_on_sink_construction(1);
   EXPECT_CALL(mock_embedded_frame_sink_provider,
@@ -250,30 +251,6 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
           })));
   offscreen_canvas().PushFrame(std::move(canvas_resource),
                                SkIRect::MakeWH(10, 10));
-  platform->RunUntilIdle();
-
-  auto canvas_resource2 = CanvasResourceSharedImage::CreateSoftware(
-      offscreen_canvas().Size(), viz::SinglePlaneFormat::kBGRA_8888,
-      kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-      /*provider=*/nullptr, shared_image_interface_provider());
-  EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
-              SubmitCompositorFrameSync_(_))
-      .WillOnce(::testing::WithArg<0>(
-          ::testing::Invoke([context_alpha](const viz::CompositorFrame* frame) {
-            ASSERT_EQ(frame->render_pass_list.size(), 1u);
-
-            const auto& quad_list = frame->render_pass_list[0]->quad_list;
-            ASSERT_EQ(quad_list.size(), 1u);
-            EXPECT_EQ(quad_list.front()->needs_blending, context_alpha);
-
-            const auto& shared_quad_state_list =
-                frame->render_pass_list[0]->shared_quad_state_list;
-            ASSERT_EQ(shared_quad_state_list.size(), 1u);
-            EXPECT_NE(shared_quad_state_list.front()->are_contents_opaque,
-                      context_alpha);
-          })));
-  offscreen_canvas().Commit(std::move(canvas_resource2),
-                            SkIRect::MakeWH(10, 10));
   platform->RunUntilIdle();
 }
 

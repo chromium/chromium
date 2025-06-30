@@ -3296,10 +3296,6 @@
       status: "stable",
     },
     {
-      name: "OffscreenCanvasCommit",
-      status: "experimental",
-    },
-    {
       name: "OffscreenCanvasGetContextAttributes",
       status: "stable",
     },

@@ -104,9 +104,6 @@ class CORE_EXPORT CanvasRenderingContextHost
 
   virtual bool ShouldAccelerate2dContext() const = 0;
 
-  virtual bool Commit(scoped_refptr<CanvasResource>&& canvas_resource,
-                      const SkIRect& damage_rect);
-
   virtual UkmParameters GetUkmParameters() = 0;
 
   bool IsValidImageSize() const;

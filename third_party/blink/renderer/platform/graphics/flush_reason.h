@@ -32,8 +32,7 @@ enum class FlushReason {
   // Should not happen while printing.
   kHibernating = 4,
 
-  // `OffscreenCanvas::commit` was called.
-  // Should not happen while printing.
+  // Obsolete.
   kOffscreenCanvasCommit_OBSOLETE = 5,
 
   // `OffscreenCanvas` dispatched a frame to the compositor as part of the

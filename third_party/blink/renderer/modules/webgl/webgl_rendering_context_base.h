@@ -639,8 +639,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   void drawingBufferStorage(GLenum sizedformat, GLsizei width, GLsizei height);
 
-  void commit();
-
   ScriptPromise<IDLUndefined> makeXRCompatible(ScriptState*, ExceptionState&);
   bool IsXRCompatible() const;
 
@@ -2005,7 +2003,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   // PushFrameWithCopy will make a potential copy if the resource is accelerated
   // or a drawImage if the resource is non accelerated.
-  bool PushFrameWithCopy(bool for_commit_api = false);
+  bool PushFrameWithCopy();
   // PushFrameNoCopy will try and export the content of the DrawingBuffer as a
   // ExtenralCanvasResource.
   bool PushFrameNoCopy();

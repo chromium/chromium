@@ -123,8 +123,6 @@ class CORE_EXPORT OffscreenCanvas final
                  const SkIRect& damage_rect) override;
   void DidDraw(const SkIRect&) override;
   using CanvasRenderingContextHost::DidDraw;
-  bool Commit(scoped_refptr<CanvasResource>&& bitmap_image,
-              const SkIRect& damage_rect) override;
   bool ShouldAccelerate2dContext() const override;
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;
   void DiscardResourceDispatcher() override { frame_dispatcher_ = nullptr; }

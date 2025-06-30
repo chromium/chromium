@@ -838,13 +838,6 @@ void WebGLRenderingContextBase::drawingBufferStorage(GLenum sizedformat,
                                        gfx::Size(width, height));
 }
 
-void WebGLRenderingContextBase::commit() {
-  if (!GetDrawingBuffer() || (Host() && Host()->IsOffscreenCanvas()))
-    return;
-
-  PushFrameWithCopy(/*for_commit_api=*/true);
-}
-
 scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
     FlushReason reason) {
   if (!GetDrawingBuffer())
@@ -1688,8 +1681,7 @@ void WebGLRenderingContextBase::Dispose() {
   CanvasRenderingContext::Dispose();
 }
 
-bool WebGLRenderingContextBase::PushFrameWithCopy(
-    bool for_commit_api /*=false*/) {
+bool WebGLRenderingContextBase::PushFrameWithCopy() {
   bool submitted_frame = false;
 
   // Note: we push a frame only if (a) there is fresh content to produce and (b)
@@ -1716,9 +1708,7 @@ bool WebGLRenderingContextBase::PushFrameWithCopy(
     const int width = GetDrawingBuffer()->Size().width();
     const int height = GetDrawingBuffer()->Size().height();
     auto size = SkIRect::MakeWH(width, height);
-    submitted_frame = for_commit_api
-                          ? Host()->Commit(std::move(resource), size)
-                          : Host()->PushFrame(std::move(resource), size);
+    submitted_frame = Host()->PushFrame(std::move(resource), size);
   }
   MarkLayerComposited();
   return submitted_frame;

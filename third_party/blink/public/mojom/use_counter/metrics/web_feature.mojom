@@ -1124,7 +1124,7 @@ enum WebFeature {
   kOffscreenCanvasTransferToImageBitmap2D = 1658,
   kOffscreenCanvasTransferToImageBitmapWebGL = 1659,
   kOBSOLETE_OffscreenCanvasCommit2D = 1660,
-  kOffscreenCanvasCommitWebGL = 1661,
+  kOBSOLETE_OffscreenCanvasCommitWebGL = 1661,
   kRTCConfigurationIceTransportPolicy = 1662,
   kRTCConfigurationIceTransports = 1664,
   kOBSOLETE_DocumentFullscreenElementInV0Shadow = 1665,

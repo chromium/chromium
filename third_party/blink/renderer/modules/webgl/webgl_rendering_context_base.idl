@@ -717,8 +717,6 @@ interface mixin WebGLRenderingContextBase {
 
     [RuntimeEnabled=WebGLDrawingBufferStorage] void drawingBufferStorage(GLenum sizedformat, GLsizei width, GLsizei height);
 
-    [RuntimeEnabled=OffscreenCanvasCommit] void commit();
-
     // WebXR Device API support
     [RuntimeEnabled=WebXR, SecureContext, CallWith=ScriptState, RaisesException, HighEntropy, MeasureAs=WebGLRenderingContextMakeXRCompatible] Promise<undefined> makeXRCompatible();
 };
