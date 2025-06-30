@@ -1588,7 +1588,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(36, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(37, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -2327,6 +2327,26 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesLocalNetworkAccess() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS,
+                BINARY_RADIO_BUTTON_AND_INFO_TEXT,
+                BINARY_RADIO_BUTTON_AND_INFO_TEXT);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testOnlyExpectedPreferencesWindowManagementWithToggle() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.WINDOW_MANAGEMENT, BINARY_TOGGLE, BINARY_TOGGLE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testOnlyExpectedPreferencesWindowManagement() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.WINDOW_MANAGEMENT,
                 BINARY_RADIO_BUTTON_AND_INFO_TEXT,
                 BINARY_RADIO_BUTTON_AND_INFO_TEXT);
     }
@@ -3241,6 +3261,34 @@ public class SiteSettingsTest {
                         "LocalNetworkAccess",
                         SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS,
                         ContentSettingsType.LOCAL_NETWORK_ACCESS,
+                        false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testAllowWindowManager() {
+        new TwoStatePermissionTestCaseWithRadioButton(
+                        "WindowManagement",
+                        SiteSettingsCategory.Type.WINDOW_MANAGEMENT,
+                        ContentSettingsType.WINDOW_MANAGEMENT,
+                        true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testBlockWindowManager() {
+        new TwoStatePermissionTestCaseWithRadioButton(
+                        "WindowManagement",
+                        SiteSettingsCategory.Type.WINDOW_MANAGEMENT,
+                        ContentSettingsType.WINDOW_MANAGEMENT,
                         false)
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();

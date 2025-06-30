@@ -895,6 +895,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
       case ContentSettingsType::STORAGE_ACCESS:
       case ContentSettingsType::USB_GUARD:
       case ContentSettingsType::VR:
+      case ContentSettingsType::WINDOW_MANAGEMENT:
         value = CONTENT_SETTING_ASK;
         break;
       case ContentSettingsType::ADS:

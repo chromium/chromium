@@ -64,6 +64,7 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -169,6 +170,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return DeviceFeatureMap.isEnabled(DeviceFeatureList.BLUETOOTH_RFCOMM_ANDROID);
             case SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS:
                 return ChromeFeatureList.isEnabled(ChromeFeatureList.LOCAL_NETWORK_ACCESS);
+            case SiteSettingsCategory.Type.WINDOW_MANAGEMENT:
+                return UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled();
             default:
                 return true;
         }

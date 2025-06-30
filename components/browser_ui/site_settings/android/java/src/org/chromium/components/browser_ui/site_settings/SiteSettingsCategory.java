@@ -79,6 +79,7 @@ public class SiteSettingsCategory {
         Type.JAVASCRIPT_OPTIMIZER,
         Type.SERIAL_PORT,
         Type.LOCAL_NETWORK_ACCESS,
+        Type.WINDOW_MANAGEMENT,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -121,9 +122,10 @@ public class SiteSettingsCategory {
         int JAVASCRIPT_OPTIMIZER = 33;
         int SERIAL_PORT = 34;
         int LOCAL_NETWORK_ACCESS = 35;
+        int WINDOW_MANAGEMENT = 36;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 36;
+        int NUM_ENTRIES = 37;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -268,6 +270,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.USB_GUARD;
             case Type.VIRTUAL_REALITY:
                 return ContentSettingsType.VR;
+            case Type.WINDOW_MANAGEMENT:
+                return ContentSettingsType.WINDOW_MANAGEMENT;
             case Type.ALL_SITES:
             case Type.USE_STORAGE:
             case Type.ZOOM:
@@ -369,6 +373,8 @@ public class SiteSettingsCategory {
                 return "third_party_cookies";
             case Type.TRACKING_PROTECTION:
                 return "tracking_protection";
+            case Type.WINDOW_MANAGEMENT:
+                return "window_management";
             case Type.ZOOM:
                 return "zoom";
             default:

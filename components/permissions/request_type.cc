@@ -342,10 +342,8 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     case RequestType::kWebPrinting:
       return ContentSettingsType::WEB_PRINTING;
 #endif
-#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kWindowManagement:
       return ContentSettingsType::WINDOW_MANAGEMENT;
-#endif
     case RequestType::kTopLevelStorageAccess:
       return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
 #if !BUILDFLAG(IS_ANDROID)

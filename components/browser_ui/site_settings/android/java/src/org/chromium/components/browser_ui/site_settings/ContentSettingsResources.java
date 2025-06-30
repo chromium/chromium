@@ -635,6 +635,19 @@ public class ContentSettingsResources {
                         R.drawable.filled_cardboard_off_24px,
                         R.string.website_settings_vr_ask,
                         R.string.website_settings_vr_block);
+
+            case ContentSettingsType.WINDOW_MANAGEMENT:
+                return new ResourceItem(
+                        R.drawable.gm_filled_select_window_24,
+                        R.string.window_management_permission_title,
+                        ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_window_management_ask,
+                        R.string.website_settings_category_window_management_blocked,
+                        R.string.website_settings_category_window_management_a11y,
+                        R.drawable.gm_filled_select_window_off_24,
+                        R.string.website_settings_window_management_ask,
+                        R.string.website_settings_window_management_block);
         }
         assert false; // NOTREACHED
         return assumeNonNull(null);

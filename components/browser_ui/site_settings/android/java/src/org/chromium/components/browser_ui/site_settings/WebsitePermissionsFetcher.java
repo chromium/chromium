@@ -107,6 +107,7 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.SENSORS:
             case ContentSettingsType.VR:
             case ContentSettingsType.LOCAL_NETWORK_ACCESS:
+            case ContentSettingsType.WINDOW_MANAGEMENT:
                 return WebsitePermissionsType.PERMISSION_INFO;
             case ContentSettingsType.STORAGE_ACCESS:
                 return WebsitePermissionsType.EMBEDDED_PERMISSION;

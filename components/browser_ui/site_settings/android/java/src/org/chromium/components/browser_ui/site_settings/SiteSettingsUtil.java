@@ -32,6 +32,7 @@ public class SiteSettingsUtil {
         ContentSettingsType.NOTIFICATIONS,
         ContentSettingsType.JAVASCRIPT,
         ContentSettingsType.POPUPS,
+        ContentSettingsType.WINDOW_MANAGEMENT,
         ContentSettingsType.ADS,
         ContentSettingsType.BACKGROUND_SYNC,
         ContentSettingsType.AUTOMATIC_DOWNLOADS,

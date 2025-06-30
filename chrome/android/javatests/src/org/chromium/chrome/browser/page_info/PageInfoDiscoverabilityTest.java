@@ -182,7 +182,7 @@ public class PageInfoDiscoverabilityTest {
             parameters.add(
                     new ParameterSet()
                             .name("RequestType.kWindowManagement")
-                            .value(ContentSettingsType.WINDOW_MANAGEMENT, false));
+                            .value(ContentSettingsType.WINDOW_MANAGEMENT, true));
 
             return parameters;
         }

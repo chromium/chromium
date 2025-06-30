@@ -130,6 +130,9 @@
   <message name="IDS_LOCAL_NETWORK_ACCESS_PERMISSION_TITLE" desc="Title of the permission for Local Network Access [CHAR_LIMIT=32]">
     Local network access
   </message>
+  <message name="IDS_WINDOW_MANAGEMENT_PERMISSION_TITLE" desc="Title of the permission for Window Management [CHAR_LIMIT=32]">
+    Window management
+  </message>
 
   <!-- Site settings global toggles -->
 
@@ -1217,6 +1220,26 @@
     Don’t allow sites to connect to any device on your local network
   </message>
 
+  <!-- Window Management -->
+  <message name="IDS_WEBSITE_SETTINGS_WINDOW_MANAGEMENT_PAGE_DESCRIPTION" desc="Description of the window management content setting.">
+    Sites can use this feature to manage windows on all your displays
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_WINDOW_MANAGEMENT_ASK" desc="Summary text explaining that sites need to ask for permission before they can manage windows on all user's displays.">
+    Sites can ask to manage windows on all your displays
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_WINDOW_MANAGEMENT_BLOCKED" desc="Summary text explaining that sites are blocked from making manage windows requests.">
+    Don’t allow sites to manage windows on all your displays
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_WINDOW_MANAGEMENT_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to manage windows on all user's displays. It is important to keep this string as two full sentences terminated by a period.">
+    When on, sites can ask to manage windows on all your displays. When off, sites can’t manage windows on all your displays.
+  </message>
+
+  <message name="IDS_WEBSITE_SETTINGS_WINDOW_MANAGEMENT_ASK" desc="Primary text corresponding to the ask button in the window management permission radio button group.">
+    Sites can ask to manage windows on all your displays
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_WINDOW_MANAGEMENT_BLOCK" desc="Primary text corresponding to the block button in the window management permission radio button group.">
+    Don’t allow sites to manage windows on all your displays
+  </message>
 
   <!-- Advanced protection -->
   <message name="IDS_SETTINGS_PRIVACY_AND_SECURITY_ADVANCED_PROTECTION_SECTION_TITLE" desc="Title for section on privacy settings page. Section displays information about how Android-OS advanced-protection 'on' setting affects Chrome settings. Section is shown for for a few days after the user has turned on advanced-protection in Android-OS-settings.">

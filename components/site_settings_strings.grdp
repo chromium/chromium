@@ -220,6 +220,13 @@
     local network access
   </message>
 
+  <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT" desc="The label used for the window management site settings controls.">
+    Window management
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE" desc="The label used for the window management site settings controls when used mid-sentence.">
+    window management
+  </message>
+
   <!-- Site Settings desktop-only -->
   <if expr="not is_android">
   <message name="IDS_SITE_SETTINGS_TYPE_FONT_ACCESS" desc="The label used for the local font access site settings controls.">
@@ -301,12 +308,6 @@
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_WEB_PRINTING_MID_SENTENCE" desc="The label used for the web printing site settings controls when used mid-sentence.">
     advanced printer features
-  </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT" desc="The label used for the window management site settings controls.">
-    Window management
-  </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE" desc="The label used for the window management site settings controls when used mid-sentence.">
-    window management
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_PERFORMANCE" desc="The label used for the performance site settings controls.">
     Performance
