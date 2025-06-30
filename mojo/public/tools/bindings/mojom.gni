@@ -72,16 +72,8 @@ if (is_chromeos) {
 }
 
 # NOTE: We would like to avoid scrambling message IDs where it doesn't add
-# value, so we limit the behavior to desktop builds for now. There is some
-# redundancy in the conditions here, but it is tolerated for clarity:
-# We're explicit about Mac, Windows, and Linux desktop support, but it's
-# also necessary to ensure that bindings in alternate toolchains (e.g.
-# NaCl IRT) are always consistent with the default toolchain; for that
-# reason we always enable scrambling within NaCl toolchains when possible,
-# as well as within the default toolchain when NaCl is enabled.
-#
-# Finally, because we *cannot* enable scrambling on Chrome OS, as it would
-# break ARC.
+# value, so we limit the behavior to desktop builds for now.
+# We *cannot* enable scrambling on Chrome OS (it would break ARC).
 enable_scrambled_message_ids = enable_mojom_message_id_scrambling &&
                                (is_mac || is_win || (is_linux && !is_castos))
 if (enable_scrambled_message_ids) {
