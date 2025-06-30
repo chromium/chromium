@@ -82,7 +82,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool allow_file_access_from_file_urls = false;
   bool webgl1_enabled = true;
   bool webgl2_enabled = true;
-  bool pepper_3d_enabled = false;
   bool privileged_webgl_extensions_enabled = false;
   bool webgl_errors_to_console_enabled = true;
   bool hide_scrollbars = false;

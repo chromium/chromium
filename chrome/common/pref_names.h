@@ -1525,7 +1525,7 @@ inline constexpr char kPartitionPerHostZoomLevels[] =
 inline constexpr char kPinnedTabs[] = "pinned_tabs";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Preference to disable 3D APIs (WebGL, Pepper 3D).
+// Preference to disable 3D APIs (WebGL).
 inline constexpr char kDisable3DAPIs[] = "disable_3d_apis";
 
 // Preference to enable SwiftShader for WebGL fallback.
