@@ -17,6 +17,7 @@ import {Personality} from '../common/tts_types.js';
 
 import {EventStreamLogger} from './logging/event_stream_logger.js';
 import {LogUrlWatcher} from './logging/log_url_watcher.js';
+import {MathHandler} from './math_handler.js';
 import {Output} from './output/output.js';
 import {TtsBackground} from './tts_background.js';
 
@@ -148,7 +149,14 @@ export class ChromeVoxPrefs {
    * and announcing.
    */
   setAndAnnounceStickyPref(value: boolean): void {
-    chrome.accessibilityPrivate.setKeyboardListener(true, value);
+    if (!MathHandler.instance?.isCapturing()) {
+      // Do not overwrite the keyboard listener if the MathHandler is using it
+      // right now. This ensures that turning off sticky mode while on a math
+      // node will not change consumption of events by the MathHandler. Note if
+      // we were turning on sticky mode then this has no effect, because
+      // MathHandler has already begun capturing.
+      chrome.accessibilityPrivate.setKeyboardListener(true, value);
+    }
     new Output()
         .withInitialSpeechProperties(Personality.ANNOTATION)
         .withString(

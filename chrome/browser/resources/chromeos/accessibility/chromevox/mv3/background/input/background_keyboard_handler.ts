@@ -77,7 +77,11 @@ export class BackgroundKeyboardHandler {
     BackgroundKeyboardHandler.passThroughModeEnabled_ = true;
   }
 
-  /** Returns true if the key event should stop propagating. */
+  /**
+   * Handles key down events.
+   * The return value has no effect since we ignore it in
+   *     AccessibilityEventRewriter::RewriteEventForChromeVox.
+   */
   private onKeyDown_(evt: InternalKeyEvent): boolean {
     EventSource.set(EventSourceType.STANDARD_KEYBOARD);
     evt.stickyMode = ChromeVoxPrefs.isStickyModeOn();

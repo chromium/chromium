@@ -188,8 +188,12 @@ export class ChromeVoxRange {
 
     // Specialization for math output.
     if (MathHandler.init(range)) {
-      // TODO(b/314203187): Not null asserted, check that this is correct.
-      skipOutput ||= await MathHandler.instance!.speak();
+      const mathWasSpoken = await MathHandler.instance!.speak();
+      if (mathWasSpoken) {
+        // Set the visual focus bounds onto the Math node.
+        FocusBounds.set([MathHandler.instance!.node().location]);
+      }
+      skipOutput ||= mathWasSpoken;
       focus = false;
     }
 
@@ -305,6 +309,9 @@ export class ChromeVoxRange {
 
     this.previous_ = this.current_;
     this.current_ = newRange;
+
+    // Check math state in case we've moved away from a math node.
+    MathHandler.checkInstance(newRange);
 
     this.notifyObservers_(newRange, fromEditing);
 
