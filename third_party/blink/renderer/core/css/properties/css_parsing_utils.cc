@@ -7412,8 +7412,6 @@ const CSSValuePair* ConsumeShapeCommandControlPoint(
 cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
     CSSParserTokenStream& args,
     const CSSParserContext& context) {
-  CHECK(RuntimeEnabledFeatures::CSSShapeFunctionEnabled());
-
   // shape() = shape( <'fill-rule'>? ...
   WindRule wind_rule = RULE_NONZERO;
   if (args.Peek().Id() == CSSValueID::kEvenodd) {
@@ -7643,21 +7641,16 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
               const CSSValue* radius_y = ConsumeLengthOrPercent(
                   args, context, CSSPrimitiveValue::ValueRange::kAll);
 
-              has_direction_agnostic_radius =
-                  RuntimeEnabledFeatures::
-                      CSSShapeFunctionDirectionAgnosticArcEnabled() &&
-                  !radius_y;
+              has_direction_agnostic_radius = !radius_y;
               if (!radius_y) {
                 radius_y = radius_x;
               }
 
               radius = MakeGarbageCollected<CSSValuePair>(
                   radius_x, radius_y,
-                  RuntimeEnabledFeatures::
-                              CSSShapeFunctionDirectionAgnosticArcEnabled() &&
-                          !has_direction_agnostic_radius
-                      ? CSSValuePair::kKeepIdenticalValues
-                      : CSSValuePair::kDropIdenticalValues);
+                  has_direction_agnostic_radius
+                      ? CSSValuePair::kDropIdenticalValues
+                      : CSSValuePair::kKeepIdenticalValues);
               break;
             }
             // https://drafts.csswg.org/css-shapes-2/#typedef-shape-arc-sweep
@@ -7875,11 +7868,8 @@ CSSValue* ConsumeOffsetPath(CSSParserTokenStream& stream,
 
   CSSValue* offset_path = ConsumeRay(stream, context);
   if (!offset_path) {
-    offset_path = ConsumeBasicShape(
-        stream, context, AllowPathValue::kForbid,
-        RuntimeEnabledFeatures::CSSShapeFunctionOffsetPathEnabled()
-            ? AllowShapeValue::kAllow
-            : AllowShapeValue::kForbid);
+    offset_path = ConsumeBasicShape(stream, context, AllowPathValue::kForbid,
+                                    AllowShapeValue::kAllow);
   }
   if (!offset_path) {
     offset_path = ConsumeUrl(stream, context);
@@ -8068,8 +8058,7 @@ CSSValue* ConsumeBasicShape(CSSParserTokenStream& stream,
                allow_path == AllowPathValue::kAllow) {
       shape = ConsumeBasicShapePath(stream);
     } else if (id == CSSValueID::kShape &&
-               allow_shape == AllowShapeValue::kAllow &&
-               RuntimeEnabledFeatures::CSSShapeFunctionEnabled()) {
+               allow_shape == AllowShapeValue::kAllow) {
       shape = ConsumeBasicShapeShape(stream, context);
     } else if (id == CSSValueID::kRect &&
                allow_rect == AllowBasicShapeRectValue::kAllow) {

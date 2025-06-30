@@ -187,9 +187,7 @@ bool CanExtractShapeOrPath(const CSSValue* computed_value) {
   // TODO(pdr): Support <geometry-box> (alone, or with a shape).
   if (const auto* list = DynamicTo<CSSValueList>(computed_value)) {
     return list->First().IsBasicShapeValue() || list->First().IsPathValue() ||
-           (list->First().IsShapeValue() &&
-            RuntimeEnabledFeatures::
-                CSSShapeFunctionCompositeAnimationEnabled());
+           (list->First().IsShapeValue());
   }
   return false;
 }

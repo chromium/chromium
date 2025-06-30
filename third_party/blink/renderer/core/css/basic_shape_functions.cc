@@ -356,7 +356,6 @@ struct ShapeSegmentToShapeCommandVisitor {
   const CSSShapeCommand* Arc(CSSShapeCommand::Type type,
                              const StyleShape::ArcSegment<T>& segment) {
     const bool treat_as_direction_agnostic_radius =
-        RuntimeEnabledFeatures::CSSShapeFunctionDirectionAgnosticArcEnabled() &&
         segment.radius.Width().IsZero() && segment.radius.Height().IsZero();
     return MakeGarbageCollected<const cssvalue::CSSShapeArcCommand>(
         type, LengthPointToCSSValue(segment.target_point, zoom),
