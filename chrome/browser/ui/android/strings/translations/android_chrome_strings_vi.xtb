@@ -134,7 +134,7 @@
 <translation id="1540012742443808215">Thanh địa chỉ hiện đang ở trên cùng</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 dấu trang chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# dấu trang chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="1544084554881119930">Địa chỉ và phương thức thanh toán sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
-Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
+Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Để quản lý Tài khoản Google của bạn, hãy nhấn vào nút "Quản lý tài khoản"</translation>
 <translation id="1549000191223877751">Di chuyển đến cửa sổ khác</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
@@ -145,7 +145,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{Có 1 mật khẩu bị lộ trên thiết bị này}other{Có # mật khẩu bị lộ trên thiết bị này}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> mục được đề xuất trong danh sách bên dưới.</translation>
 <translation id="1598163867407640634">Sử dụng <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="160275202205869636">Khi bật, tính năng tương ứng sẽ sử dụng và lưu dữ liệu trong Tài khoản Google của bạn. Khi tắt, dữ liệu sẽ chỉ được lưu trên thiết bị này.</translation>
+<translation id="160275202205869636">Khi bật, bạn có thể sử dụng và lưu dữ liệu trên Chrome vào Tài khoản Google của mình. Khi tắt, dữ liệu trên Chrome sẽ chỉ được lưu trên thiết bị này.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 dấu trang và các mục khác chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# dấu trang và các mục khác chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="1639239467298939599">Đang tải</translation>
@@ -185,7 +185,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1810845389119482123">Chưa hoàn tất quá trình thiết lập đồng bộ hóa ban đầu</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> không thể tiếp tục dùng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1825772852827001597">Các địa chỉ và phương thức thanh toán trên Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
-Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
+Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Tìm trong trang</translation>
 <translation id="1832459821645506983">Có, tôi đồng ý</translation>
 <translation id="1845958458910716240">Để bảo vệ dữ liệu của bạn, hãy cho phép Chrome loại bỏ quyền của các trang web mà gần đây bạn không truy cập</translation>
@@ -572,7 +572,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3635073343384702370">Chrome có thể kiểm tra mật khẩu của bạn khi bạn lưu các mật khẩu đó</translation>
 <translation id="363596933471559332">Tự động đăng nhập vào các trang web bằng thông tin đăng nhập được lưu trữ. Khi tính năng này tắt, bạn sẽ luôn được yêu cầu xác minh trước khi đăng nhập vào trang web.</translation>
 <translation id="3636940436873918441">Ngôn ngữ ưu tiên</translation>
-<translation id="3637744895182738742">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
+<translation id="3637744895182738742">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Chuyển đến thẻ Trang chủ trong ứng dụng Google</translation>
 <translation id="368329460027487650">Đã đăng xuất. Mở các tuỳ chọn đăng nhập.</translation>
@@ -1369,7 +1369,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7149893636342594995">24 giờ qua</translation>
 <translation id="71503698506017927">Quy trình mã hoá bằng cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán trên Google Pay.
 
-Để thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
+Để thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">Đã đăng nhập bằng <ph name="USER_NAME" />. Mở phần cài đặt.</translation>
 <translation id="7173114856073700355">Mở phần Cài đặt</translation>
 <translation id="7173338713290252554">Giá trên Internet theo thời gian</translation>
@@ -1663,7 +1663,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8396098434728053815">Chia sẻ cả âm thanh trên thẻ</translation>
 <translation id="8398389123831319859">Nhấn đúp và giữ để chuyển sang chế độ Ẩn danh</translation>
 <translation id="8402673309244746971">Chuyển đến phần Đang theo dõi</translation>
-<translation id="8413126021676339697">Hiển thị toàn bộ lịch sử</translation>
+<translation id="8413126021676339697">Hiện toàn bộ nhật ký</translation>
 <translation id="8413795581997394485">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Khi bạn truy cập vào một trang web, Chrome sẽ gửi cho Google một phần URL đã làm rối mã nguồn thông qua một máy chủ đảm bảo quyền riêng tư giúp ẩn địa chỉ IP của bạn. Nếu một trang web có hành vi đáng ngờ, thì Chrome cũng sẽ gửi URL đầy đủ và các đoạn nội dung trên trang cho Google.</translation>
 <translation id="8414396119627470038">Đăng nhập vào <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419144699778179708">Xoá nhật ký, kể cả dữ liệu trong hộp tìm kiếm</translation>
@@ -1771,7 +1771,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8856607253650333758">Tải nội dung mô tả</translation>
 <translation id="8856931513242997049">Quy trình cấp quyền gửi thông báo đã đóng</translation>
 <translation id="8863714995118816041">Đã cấp lại quyền cho <ph name="SITE_NAME" /></translation>
-<translation id="8865415417596392024">Dữ liệu Chrome trong tài khoản của bạn</translation>
+<translation id="8865415417596392024">Dữ liệu trên Chrome trong tài khoản của bạn</translation>
 <translation id="8888527824584402177">Các thẻ mà bạn không dùng đến trong <ph name="DAYS_INACTIVE" /> ngày sẽ được chuyển đến đây<ph name="AUTODELETE_SECTION" />. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8890668505403261809">Tìm kiếm trong các thẻ ẩn danh</translation>
 <translation id="8898822736010347272">Gửi URL của một số trang bạn truy cập, thông tin về hệ thống (có giới hạn) và một số nội dung trang cho Google, nhằm phát hiện các mối đe dọa mới và bảo vệ mọi người khi dùng web.</translation>
@@ -1791,7 +1791,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="897061774231912216">Các mật khẩu sắp ngừng hoạt động do thiết bị chưa cài đặt Dịch vụ Google Play. Để sử dụng mật khẩu lưu trong Tài khoản Google của bạn, hãy đăng nhập bằng một thiết bị khác hoặc truy cập vào passwords.google.com.</translation>
 <translation id="8970887620466824814">Đã xảy ra lỗi.</translation>
 <translation id="8972098258593396643">Tải xuống thư mục mặc định?</translation>
-<translation id="8992769679401294069">Dữ liệu đã được mã hoá bằng cụm mật khẩu của bạn. Nhập cụm mật khẩu để lưu dữ liệu Chrome vào Tài khoản Google và sử dụng dữ liệu đó.</translation>
+<translation id="8992769679401294069">Dữ liệu đã được mã hoá bằng cụm mật khẩu của bạn. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chrome vào Tài khoản Google của bạn.</translation>
 <translation id="8993760627012879038">Mở thẻ mới trong chế độ Ẩn danh</translation>
 <translation id="8995521496079646922">Các ứng dụng bạn chọn sẽ được sử dụng theo mặc định. Nếu chưa có trên thiết bị này thì ứng dụng sẽ được tải xuống trong giây lát.</translation>
 <translation id="8996847606757455498">Chọn nhà cung cấp khác</translation>
