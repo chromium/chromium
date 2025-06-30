@@ -127,6 +127,12 @@ BASE_FEATURE(kAllowNonFamilyLinkUrlFilterMode,
 BASE_FEATURE(kPropagateDeviceContentFiltersToSupervisedUser,
              "PropagateDeviceContentFiltersToSupervisedUser",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSupervisedUserBrowserContentFiltersKillSwitch,
+              "SupervisedUserBrowserContentFiltersKillSwitch",
+              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch,
+              "SupervisedUserSearchContentFiltersKillSwitch",
+              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserInterstitialWithoutApprovals,
              "SupervisedUserInterstitialWithoutApprovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
