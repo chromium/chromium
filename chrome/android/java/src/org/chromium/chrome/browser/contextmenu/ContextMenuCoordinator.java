@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
@@ -16,12 +18,14 @@ import android.view.View;
 import android.view.ViewStub;
 import android.view.Window;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,12 +59,13 @@ import java.util.List;
  * The main coordinator for the context menu, responsible for creating the context menu in general
  * and the header component.
  */
+@NullMarked
 public class ContextMenuCoordinator implements ContextMenuUi {
     private static final int INVALID_ITEM_ID = -1;
 
     private WebContents mWebContents;
     private WebContentsObserver mWebContentsObserver;
-    private ContextMenuChipController mChipController;
+    private @Nullable ContextMenuChipController mChipController;
     private ContextMenuHeaderCoordinator mHeaderCoordinator;
 
     private ContextMenuListView mListView;
@@ -161,6 +166,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
      * @param chipDelegate An optional {@link ChipDelegate} to manage the display and interaction of
      *     a chip. If null, no chip will be shown.
      */
+    @Initializer
     void displayMenuWithChip(
             final WindowAndroid window,
             WebContents webContents,
@@ -172,6 +178,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             @Nullable ChipDelegate chipDelegate) {
         mOnMenuClosed = onMenuClosed;
         Activity activity = window.getActivity().get();
+        assert activity != null;
 
         final boolean isDragDropEnabled = ContextMenuUtils.isDragDropEnabled(activity);
         // There are two experimental modes for the interestfor feature:
@@ -198,7 +205,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         Rect contextMenuRect =
                 ContextMenuUtils.getContextMenuAnchorRect(
                         activity,
-                        window.getWindow(),
+                        assertNonNull(window.getWindow()),
                         webContents,
                         params,
                         topContentOffset(mTopContentOffsetPx, window),
@@ -219,7 +226,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             float page_scale_factor =
                     RenderCoordinates.fromWebContents(webContents).getPageScaleFactor();
             float device_scale_factor =
-                    webContents.getTopLevelNativeWindow().getDisplay().getDipScale();
+                    assumeNonNull(webContents.getTopLevelNativeWindow()).getDisplay().getDipScale();
             float scale_factor = device_scale_factor * page_scale_factor;
             float safeAreaWidth;
             float safeAreaHeight;
@@ -265,7 +272,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                     (chipRenderParams) -> {
                         if (chipDelegate.isValidChipRenderParams(chipRenderParams)
                                 && mDialog.isShowing()) {
-                            mChipController.showChip(chipRenderParams);
+                            assert chipRenderParams != null;
+                            assumeNonNull(mChipController).showChip(chipRenderParams);
                         }
                     });
             dialogBottomMarginPx = mChipController.getVerticalPxNeededForChip();
@@ -296,7 +304,9 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         // moves beyond certain threshold. ContentView will need to receive drag events dispatched
         // from ContextMenuDialog in order to calculate the movement.
         View dragDispatchingTargetView =
-                isDragDropEnabled ? webContents.getViewAndroidDelegate().getContainerView() : null;
+                isDragDropEnabled
+                        ? assumeNonNull(webContents.getViewAndroidDelegate()).getContainerView()
+                        : null;
 
         mDialog =
                 createContextMenuDialog(
@@ -560,7 +570,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     Callback<ChipRenderParams> getChipRenderParamsCallbackForTesting(ChipDelegate chipDelegate) {
         return (chipRenderParams) -> {
             if (chipDelegate.isValidChipRenderParams(chipRenderParams) && mDialog.isShowing()) {
-                mChipController.showChip(chipRenderParams);
+                assumeNonNull(mChipController).showChip(chipRenderParams);
             }
         };
     }
@@ -581,7 +591,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         chipRenderParamsForTesting.titleResourceId =
                 R.string.contextmenu_shop_image_with_google_lens;
         chipRenderParamsForTesting.onClickCallback = CallbackUtils.emptyRunnable();
-        mChipController.showChip(chipRenderParamsForTesting);
+        assumeNonNull(mChipController).showChip(chipRenderParamsForTesting);
     }
 
     void simulateTranslateImageClassificationForTesting() {
@@ -591,7 +601,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         chipRenderParamsForTesting.titleResourceId =
                 R.string.contextmenu_translate_image_with_google_lens;
         chipRenderParamsForTesting.onClickCallback = CallbackUtils.emptyRunnable();
-        mChipController.showChip(chipRenderParamsForTesting);
+        assumeNonNull(mChipController).showChip(chipRenderParamsForTesting);
     }
 
     ChipRenderParams simulateImageClassificationForTesting() {
@@ -603,14 +613,14 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
     // Public only to allow references from ContextMenuUtils.java
     public void clickChipForTesting() {
-        mChipController.clickChipForTesting(); // IN-TEST
+        assumeNonNull(mChipController).clickChipForTesting(); // IN-TEST
     }
 
     // Public only to allow references from ContextMenuUtils.java
-    public AnchoredPopupWindow getCurrentPopupWindowForTesting() {
+    public @Nullable AnchoredPopupWindow getCurrentPopupWindowForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
-        return mChipController.getCurrentPopupWindowForTesting(); // IN-TEST
+        return assumeNonNull(mChipController).getCurrentPopupWindowForTesting(); // IN-TEST
     }
 
     public void clickListItemForTesting(int id) {
@@ -628,7 +638,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     }
 
     @VisibleForTesting
-    public ListItem findItem(int id) {
+    public @Nullable ListItem findItem(int id) {
         for (int i = 0; i < getCount(); i++) {
             final ListItem item = getItem(i);
             // If the item is a title/divider, its model does not have MENU_ID as key.

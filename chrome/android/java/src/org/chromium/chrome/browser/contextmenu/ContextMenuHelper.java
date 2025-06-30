@@ -183,6 +183,11 @@ public class ContextMenuHelper {
             return;
         }
 
+        assert mCurrentNativeDelegate != null
+                && mWindow != null
+                && mCurrentContextMenuParams != null
+                && mCallback != null
+                && mOnMenuShown != null;
         final ContextMenuCoordinator menuCoordinator =
                 new ContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
         mCurrentContextMenu = menuCoordinator;

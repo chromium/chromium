@@ -17,6 +17,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.view.View;
+import android.view.Window;
 
 import androidx.annotation.Nullable;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -631,7 +632,9 @@ public class ContextMenuCoordinatorTest {
                         /* additionalNavigationParams= */ null);
 
         final WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+        final Window window = Mockito.mock(Window.class);
         doReturn(new WeakReference<>(mActivity)).when(windowAndroid).getActivity();
+        doReturn(window).when(windowAndroid).getWindow();
 
         List<ModelList> rawItems = new ArrayList<>();
 
