@@ -306,6 +306,38 @@ DisplayLockUtilities::ActivatableLockedInclusiveAncestors(
   return elements_to_activate;
 }
 
+VectorOf<Element> DisplayLockUtilities::InclusiveAncestorsOfRange(
+    const Range& range) {
+  VectorOf<Element> elements;
+  // Ranges use NodeTraversal::Next to go in between their start and end nodes,
+  // and will access the layout information of each of those nodes. In order to
+  // ensure that each of these nodes has unlocked layout information, we have to
+  // do a scoped unlock for each of those nodes by unlocking all of their flat
+  // tree ancestors.
+  for (Node* node = range.FirstNode(); node != range.PastLastNode();
+       node = NodeTraversal::Next(*node)) {
+    if (node->IsChildOfShadowHost()) {
+      // This node may be slotted into another place in the flat tree, so we
+      // have to do a flat tree parent traversal for it.
+      for (Node& ancestor : AncestorTraversal(node, true)) {
+        if (Element* element = DynamicTo<Element>(ancestor)) {
+          elements.push_back(element);
+        }
+      }
+    } else {
+      if (Element* element = DynamicTo<Element>(node)) {
+        elements.push_back(element);
+      }
+    }
+  }
+  for (Node& node : AncestorTraversal(range.FirstNode(), true)) {
+    if (Element* element = DynamicTo<Element>(node)) {
+      elements.push_back(element);
+    }
+  }
+  return elements;
+}
+
 DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
     const Range* range,
     DisplayLockContext::ForcedPhase phase,
@@ -332,42 +364,11 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
           .LockedDisplayLockCount() == 0)
     return;
 
-  // TODO(crbug.com/1256849): Move this loop to a shared iterator class so we
-  //   can combine it with the one in DisplayLockDocumentState.
-  // Ranges use NodeTraversal::Next to go in between their start and end nodes,
-  // and will access the layout information of each of those nodes. In order to
-  // ensure that each of these nodes has unlocked layout information, we have to
-  // do a scoped unlock for each of those nodes by unlocking all of their flat
-  // tree ancestors.
-  for (Node* node = range->FirstNode(); node != range->PastLastNode();
-       node = NodeTraversal::Next(*node)) {
-    if (node->IsChildOfShadowHost()) {
-      // This node may be slotted into another place in the flat tree, so we
-      // have to do a flat tree parent traversal for it.
-      for (Node& ancestor : AncestorTraversal(node, true)) {
-        if (Element* element = DynamicTo<Element>(ancestor)) {
-          if (DisplayLockContext* context = element->GetDisplayLockContext()) {
-            forced_context_set_.insert(context);
-          }
-        }
-      }
-    } else {
-      if (Element* element = DynamicTo<Element>(node)) {
-        if (DisplayLockContext* context = element->GetDisplayLockContext()) {
-          forced_context_set_.insert(context);
-        }
-      }
+  for (Element* element : InclusiveAncestorsOfRange(*range)) {
+    if (DisplayLockContext* context = element->GetDisplayLockContext()) {
+      forced_context_set_.insert(context);
+      context->NotifyForcedUpdateScopeStarted(phase_, emit_warnings_);
     }
-  }
-  for (Node& node : AncestorTraversal(range->FirstNode(), true)) {
-    if (Element* element = DynamicTo<Element>(node)) {
-      if (DisplayLockContext* context = element->GetDisplayLockContext()) {
-        forced_context_set_.insert(context);
-      }
-    }
-  }
-  for (DisplayLockContext* context : forced_context_set_) {
-    context->NotifyForcedUpdateScopeStarted(phase_, emit_warnings_);
   }
 }
 
