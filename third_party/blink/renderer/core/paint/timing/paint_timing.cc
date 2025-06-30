@@ -419,9 +419,7 @@ void PaintTiming::MarkPaintTimingInternal() {
 
         // 12.3.1 Coarsen paintTimingInfo’s implementation-defined presentation
         // time to the next multiple of 4 milliseconds, or coarser.
-        bool coarsen =
-            RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled() &&
-            !performance->CrossOriginIsolatedCapability();
+        bool coarsen = !performance->CrossOriginIsolatedCapability();
         if (coarsen) {
           paint_timing_info.presentation_time =
               (frame_timing_details.presentation_feedback.timestamp -

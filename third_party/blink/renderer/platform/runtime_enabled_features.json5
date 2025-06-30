@@ -1995,10 +1995,6 @@
       status: "experimental",
     },
     {
-      name: "ExposeCoarsenedRenderTime",
-      status: "stable",
-    },
-    {
       name: "ExposeCSSFontFeatureValuesRule",
       status: "stable",
     },

@@ -30,8 +30,9 @@ namespace blink {
 namespace internal {
 
 bool IsExplicitlyRegisteredForElementTiming(const Element* element) {
-  if (!element)
+  if (!element) {
     return false;
+  }
 
   // If the element has no 'elementtiming' attribute, do not
   // generate timing entries for the element. See
@@ -98,23 +99,26 @@ void ImageElementTiming::NotifyImageFinished(
 
   const auto& insertion_result = images_notified_.insert(
       MediaRecordId::GenerateHash(&layout_object, cached_image), ImageInfo());
-  if (insertion_result.is_new_entry)
+  if (insertion_result.is_new_entry) {
     insertion_result.stored_value->value.load_time_ = base::TimeTicks::Now();
+  }
 }
 
 void ImageElementTiming::NotifyBackgroundImageFinished(
     const StyleFetchedImage* style_image) {
   const auto& insertion_result =
       background_image_timestamps_.insert(style_image, base::TimeTicks());
-  if (insertion_result.is_new_entry)
+  if (insertion_result.is_new_entry) {
     insertion_result.stored_value->value = base::TimeTicks::Now();
+  }
 }
 
 base::TimeTicks ImageElementTiming::GetBackgroundImageLoadTime(
     const StyleImage* style_image) {
   const auto it = background_image_timestamps_.find(style_image);
-  if (it == background_image_timestamps_.end())
+  if (it == background_image_timestamps_.end()) {
     return base::TimeTicks();
+  }
   return it->value;
 }
 
@@ -153,21 +157,24 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   // style applied to body causes this node to be a Document Node. Therefore,
   // bail out if that is the case.
   auto* element = DynamicTo<Element>(node);
-  if (!frame || !element)
+  if (!frame || !element) {
     return;
+  }
 
   // We do not expose elements in shadow trees, for now. We might expose
   // something once the discussions at
   // https://github.com/WICG/element-timing/issues/3 and
   // https://github.com/w3c/webcomponents/issues/816 have been resolved.
-  if (node.IsInShadowTree())
+  if (node.IsInShadowTree()) {
     return;
+  }
 
   // Do not expose elements which should have effective zero opacity.
   // We can afford to call this expensive method because this is only called
   // once per image annotated with the elementtiming attribute.
-  if (!layout_object.HasNonZeroEffectiveOpacity())
+  if (!layout_object.HasNonZeroEffectiveOpacity()) {
     return;
+  }
 
   RespectImageOrientationEnum respect_orientation =
       layout_object.StyleRef().ImageOrientation();
@@ -183,23 +190,6 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   ExecutionContext* context = layout_object.GetDocument().GetExecutionContext();
   DCHECK(GetSupplementable()->document() == &layout_object.GetDocument());
   DCHECK(context->GetSecurityOrigin());
-  // It's ok to expose rendering timestamp for data URIs so exclude those from
-  // the Timing-Allow-Origin check.
-  if (!url.ProtocolIsData() &&
-      !cached_image.GetResponse().TimingAllowPassed() &&
-      !RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled() &&
-      internal::IsExplicitlyRegisteredForElementTiming(element)) {
-    if (WindowPerformance* performance =
-            DOMWindowPerformance::performance(*GetSupplementable())) {
-      // Create an entry with a |startTime| of 0.
-      performance->AddElementTiming(
-          ImagePaintString(), url.GetString(), intersection_rect, {}, load_time,
-          attr, cached_image.IntrinsicSize(respect_orientation), id, element);
-    }
-    // Skip implementation for ContainerTiming: ExposeCoarsenedRenderTime is
-    // already enabled by default.
-    return;
-  }
 
   // If the image URL is a data URL ("data:image/..."), then the |name| of the
   // PerformanceElementTiming entry should be the URL trimmed to 100 characters.
@@ -260,16 +250,18 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
   const LayoutObject* layout_object = node.GetLayoutObject();
-  if (!layout_object)
+  if (!layout_object) {
     return;
+  }
 
   if (!internal::NeededForTiming(*layout_object)) {
     return;
   }
 
   const ImageResourceContent* cached_image = background_image.CachedImage();
-  if (!cached_image || !cached_image->IsLoaded())
+  if (!cached_image || !cached_image->IsLoaded()) {
     return;
+  }
 
   auto it = background_image_timestamps_.find(&background_image);
   if (it == background_image_timestamps_.end()) {

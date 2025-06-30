@@ -95,8 +95,9 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   // that it does not get to be reported here, we consider it safe to ignore.
   // For similar reasons, |image_node| may be null and it is safe to ignore
   // the |largest_image| content in this case as well.
-  if (!media_timing || !image_node)
+  if (!media_timing || !image_node) {
     return;
+  }
 
   uint64_t size = largest_image->recorded_size;
   double bpp = largest_image->EntropyForLCP();
@@ -108,9 +109,6 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   largest_image_bpp_ = bpp;
   largest_reported_size_ = size;
   const KURL& url = media_timing->Url();
-  bool expose_paint_time_to_api =
-      url.ProtocolIsData() || media_timing->TimingAllowPassed() ||
-      RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled();
   const String& image_string = url.GetString();
   const String& image_url =
       url.ProtocolIsData()
@@ -124,17 +122,13 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
 
   if (!is_triggered_by_soft_navigation) {
     window_performance_->OnLargestContentfulPaintUpdated(
-        expose_paint_time_to_api
-            ? std::make_optional(largest_image->paint_timing_info)
-            : std::nullopt,
+        std::make_optional(largest_image->paint_timing_info),
         /*paint_size=*/largest_image->recorded_size,
         /*load_time=*/largest_image->load_time,
         /*id=*/image_id, /*url=*/image_url, /*element=*/image_element);
   } else {
     window_performance_->OnInteractionContentfulPaintUpdated(
-        expose_paint_time_to_api
-            ? std::make_optional(largest_image->paint_timing_info)
-            : std::nullopt,
+        std::make_optional(largest_image->paint_timing_info),
         /*paint_size=*/largest_image->recorded_size,
         /*load_time=*/largest_image->load_time,
         /*id=*/image_id, /*url=*/image_url, /*element=*/image_element);
@@ -162,8 +156,9 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
   // |node_| could be null and |largest_text| should be ignored in this
   // case. This can happen when the largest-text gets removed too fast and does
   // not get to be reported here.
-  if (!largest_text.node_)
+  if (!largest_text.node_) {
     return;
+  }
   Node* text_node = largest_text.node_;
   largest_reported_size_ = largest_text.recorded_size;
   // Do not expose element attribution from shadow trees. Also note that @page
