@@ -319,12 +319,13 @@ class Type():
     elif type_details.IsA('Undefined'):
       properties['type'] = UndefinedType
     elif type_details.IsA('Promise'):
-      properties['type'] = 'promise'
-      # Promise types also have an associated type they resolve with. We
-      # represent this similar to how we represent arguments for Operations,
-      # with 'parameters' list that has a single element for the type.
+      # Promise types have an associated type they resolve with. We represent
+      # this similar to how we represent arguments for Operations, with a
+      # 'parameters' list that has a single element for the type.
       properties['parameters'] = self._ExtractParametersFromPromiseType(
           type_details, self.descriptions)
+      # TODO(crbug.com/428187556): It would be nice to explicitly mark these as
+      # 'type' = 'promise' as well once we're done migrating schemas to WebIDL.
     elif type_details.IsA('Sequence'):
       properties['type'] = 'array'
       # Sequences are used to represent array types, which have an associated
@@ -440,7 +441,9 @@ class FunctionReturn(TypedProperty):
     # description to add to the return properties.
     if self.descriptions and 'Returns' in self.descriptions:
       self.properties['description'] = self.descriptions['Returns']
-    if 'type' in self.properties and self.properties['type'] == 'promise':
+    # If no type was specified but there is a parameters property, we can infer
+    # this is a promise definition for an asynchronous return.
+    if 'type' not in self.properties and 'parameters' in self.properties:
       # For legacy reasons, promise returns always get named "callback".
       self.properties['name'] = 'callback'
     else:
@@ -535,7 +538,9 @@ class Operation:
     if 'type' in return_type and return_type['type'] is UndefinedType:
       # This is an Undefined return, so we don't add anything.
       pass
-    elif 'type' in return_type and return_type['type'] == 'promise':
+    # If no type was specified but there is a parameters property, we can infer
+    # this is a promise definition for an asynchronous return.
+    elif 'type' not in return_type and 'parameters' in return_type:
       # TODO(tjudkins): The optionality of the callback is only relevant for
       # contexts that don't support promise based calls and for the few
       # functions which don't support promise based calls, as the callback is
@@ -547,6 +552,9 @@ class Operation:
         return_type['optional'] = True
       # For legacy reasons Promise based returns are represented on a
       # "returns_async" property.
+      # TODO(crbug.com/428187556): Once we've migrated schemas to WebIDL, we
+      # should be able to just use the 'returns' field with 'type' = 'promise'
+      # instead of the 'returns_async' property.
       properties['returns_async'] = return_type
     else:
       # Otherwise this is a typed return using either the 'type' key or '$ref'

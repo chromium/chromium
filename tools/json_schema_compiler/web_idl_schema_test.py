@@ -191,7 +191,6 @@ class WebIdlSchemaTest(unittest.TestCase):
             'parameters': [{
                 'type': 'string'
             }],
-            'type': 'promise'
         }, getFunctionAsyncReturn(schema, 'stringPromiseReturn'))
     self.assertEqual(
         {
@@ -201,7 +200,6 @@ class WebIdlSchemaTest(unittest.TestCase):
                 'optional': True,
                 'type': 'string'
             }],
-            'type': 'promise'
         }, getFunctionAsyncReturn(schema, 'nullablePromiseReturn'))
     self.assertEqual(
         {
@@ -210,14 +208,12 @@ class WebIdlSchemaTest(unittest.TestCase):
             'parameters': [{
                 '$ref': 'ExampleType'
             }],
-            'type': 'promise'
         }, getFunctionAsyncReturn(schema, 'customTypePromiseReturn'))
     self.assertEqual(
         {
             'name': 'callback',
             'optional': True,
             'parameters': [],
-            'type': 'promise'
         }, getFunctionAsyncReturn(schema, 'undefinedPromiseReturn'))
     self.assertEqual(
         {
@@ -229,7 +225,6 @@ class WebIdlSchemaTest(unittest.TestCase):
                     'type': 'integer'
                 }
             }],
-            'type': 'promise'
         }, getFunctionAsyncReturn(schema, 'longSequencePromiseReturn'))
     self.assertEqual(
         {
@@ -241,7 +236,6 @@ class WebIdlSchemaTest(unittest.TestCase):
                     '$ref': 'ExampleType'
                 }
             }],
-            'type': 'promise'
         }, getFunctionAsyncReturn(schema, 'customTypeSequencePromiseReturn'))
 
   # Tests function parameters are processed as expected.
@@ -373,8 +367,6 @@ class WebIdlSchemaTest(unittest.TestCase):
             True,
             'description':
             'General description for the promise return.',
-            'type':
-            'promise',
             'parameters': [{
                 '$ref':
                 'ExampleType',
@@ -394,7 +386,6 @@ class WebIdlSchemaTest(unittest.TestCase):
         {
             'name': 'callback',
             'optional': True,
-            'type': 'promise',
             'parameters': [{
                 'type': 'boolean',
                 'name': 'justAName'
@@ -693,7 +684,6 @@ class WebIdlSchemaTest(unittest.TestCase):
             'parameters': [{
                 'type': 'string'
             }],
-            'type': 'promise'
         }, getFunctionAsyncReturn(idl[0], 'requiredCallbackFunction'))
     self.assertEqual(
         {
@@ -702,7 +692,6 @@ class WebIdlSchemaTest(unittest.TestCase):
             'parameters': [{
                 'type': 'string'
             }],
-            'type': 'promise'
         }, getFunctionAsyncReturn(idl[0], 'notRequiredCallbackFunction'))
 
   # Tests that extended attributes being listed on the the line previous to a
