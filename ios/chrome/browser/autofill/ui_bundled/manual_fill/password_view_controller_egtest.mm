@@ -37,6 +37,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
+using chrome_test_util::ActionSheetItemWithAccessibilityLabelId;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
 using chrome_test_util::NavigationBarCancelButton;
@@ -71,19 +72,6 @@ id<GREYMatcher> UsernameButtonMatcher() {
 id<GREYMatcher> NotSecureWebsiteAlert() {
   return StaticTextWithAccessibilityLabelId(
       IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE);
-}
-
-// Matcher for the confirmation dialog Continue button.
-id<GREYMatcher> ConfirmUsingOtherPasswordButton() {
-  return grey_allOf(ButtonWithAccessibilityLabelId(
-                        IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE),
-                    grey_interactable(), nullptr);
-}
-
-// Matcher for the confirmation dialog Cancel button.
-id<GREYMatcher> CancelUsingOtherPasswordButton() {
-  return grey_allOf(ButtonWithAccessibilityLabelId(IDS_CANCEL),
-                    grey_interactable(), nullptr);
 }
 
 // Matcher for the overflow menu button shown in the password cells.
@@ -319,7 +307,9 @@ void CheckKeyboardIsUpAndNotCovered() {
       assertWithMatcher:grey_notNil()];
 
   // Acknowledge concerns using other passwords on a website.
-  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
+  [[EarlGrey selectElementWithMatcher:
+                 ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE)]
       performAction:grey_tap()];
 }
 
@@ -573,7 +563,8 @@ void CheckKeyboardIsUpAndNotCovered() {
       performAction:grey_tap()];
 
   // Cancel using other passwords on a website.
-  [[EarlGrey selectElementWithMatcher:CancelUsingOtherPasswordButton()]
+  [[EarlGrey selectElementWithMatcher:ActionSheetItemWithAccessibilityLabelId(
+                                          IDS_CANCEL)]
       performAction:grey_tap()];
 
   // Verify that the other password list is not opened.
@@ -722,7 +713,9 @@ void CheckKeyboardIsUpAndNotCovered() {
       performAction:grey_tap()];
 
   // Acknowledge concerns using other passwords on a website.
-  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
+  [[EarlGrey selectElementWithMatcher:
+                 ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE)]
       performAction:grey_tap()];
 
   // Verify that the all saved password list is visible.
@@ -928,8 +921,8 @@ void CheckKeyboardIsUpAndNotCovered() {
       assertWithMatcher:grey_not(grey_nil())];
 
   // Dismiss the alert.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ActionSheetItemWithAccessibilityLabelId(
+                                          IDS_OK)] performAction:grey_tap()];
 
   [ChromeEarlGreyUI cleanupAfterShowingAlert];
 }
