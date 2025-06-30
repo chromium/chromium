@@ -2480,11 +2480,11 @@ TEST_F(NavigationManagerTest, RestoreSessionWithEmptyHistory) {
 
 // Tests that all NavigationManager APIs return reasonable values in the Empty
 // Window Open Navigation edge case. See comments in header file for details.
-// TODO(crbug.com/425579167) Re-enable the test
-// The URL method is not always called on CQ.
-TEST_F(NavigationManagerTest, DISABLED_EmptyWindowOpenNavigation) {
+TEST_F(NavigationManagerTest, EmptyWindowOpenNavigation) {
   // Set up the precondition for an empty window open item.
-  OCMExpect([mock_web_view_ URL])
+  // Use OCMStub for `URL` instead of OCMExpect because it will only be called
+  // when DCHECKS are enabled.
+  OCMStub([mock_web_view_ URL])
       .andReturn(net::NSURLWithGURL(GURL(url::kAboutBlankURL)));
   mock_wk_list_.currentItem = nil;
 
