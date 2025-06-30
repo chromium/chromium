@@ -1605,7 +1605,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 // Updates toolbars when the number of web state might be changed.
 - (void)updateToolbarAfterNumberOfItemsChanged {
   if (_modeHolder.mode == TabGridMode::kSelection &&
-      self.webStateList->empty()) {
+      self.webStateList->regular_tabs_count() == 0) {
     // Exit selection mode if there are no more tabs.
     _modeHolder.mode = TabGridMode::kNormal;
   } else {
