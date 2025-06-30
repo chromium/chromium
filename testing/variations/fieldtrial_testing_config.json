@@ -12215,6 +12215,21 @@
             ]
         }
     ],
+    "IOSDefaultBrowserPromoPropensityStudy": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultBrowserPromoPropensityModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDefaultBrowserRemindMeLater": [
         {
             "platforms": [
