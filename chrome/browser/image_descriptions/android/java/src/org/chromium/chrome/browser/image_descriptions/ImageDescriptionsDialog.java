@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.image_descriptions;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,7 +89,7 @@ public class ImageDescriptionsDialog
         mModalDialogManager = modalDialogManager;
         mControllerDelegate = delegate;
         mWebContents = webContents;
-        mProfile = assumeNonNull(Profile.fromWebContents(webContents)).getOriginalProfile();
+        mProfile = Profile.fromWebContents(webContents).getOriginalProfile();
         mContext = context;
 
         // Set initial state.

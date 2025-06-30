@@ -6,9 +6,8 @@ package org.chromium.chrome.browser.contextmenu;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
@@ -18,13 +17,14 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 
 /** Factory for creating {@link ContextMenuPopulator}s. */
+@NullMarked
 public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
     private final TabContextMenuItemDelegate mItemDelegate;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final @ContextMenuMode int mContextMenuMode;
 
     public ChromeContextMenuPopulatorFactory(
-            @NonNull TabContextMenuItemDelegate itemDelegate,
+            TabContextMenuItemDelegate itemDelegate,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @ContextMenuMode int contextMenuMode) {
         mItemDelegate = itemDelegate;

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.image_descriptions;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 
 import org.jni_zero.NativeMethods;
@@ -122,7 +120,7 @@ public class ImageDescriptionsController {
      */
     public void onImageDescriptionsMenuItemSelected(
             Context context, ModalDialogManager modalDialogManager, WebContents webContents) {
-        Profile profile = assumeNonNull(Profile.fromWebContents(webContents)).getOriginalProfile();
+        Profile profile = Profile.fromWebContents(webContents).getOriginalProfile();
         boolean enabledBeforeMenuItemSelected = imageDescriptionsEnabled(profile);
 
         if (enabledBeforeMenuItemSelected) {

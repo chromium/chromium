@@ -271,7 +271,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      *
      * @param url The URL to open.
      */
-    public void onOpenInOtherWindow(GURL url, Referrer referrer) {
+    public void onOpenInOtherWindow(GURL url, @Nullable Referrer referrer) {
         ChromeAsyncTabLauncher chromeAsyncTabLauncher =
                 new ChromeAsyncTabLauncher(mTab.isIncognito());
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
@@ -296,7 +296,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      */
     public void onOpenInNewTab(
             GURL url,
-            Referrer referrer,
+            @Nullable Referrer referrer,
             boolean navigateToTab,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         RecordUserAction.record("MobileNewTabOpened");
@@ -318,7 +318,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      *
      * @param url The URL to open.
      */
-    public void onOpenInNewTabInGroup(GURL url, Referrer referrer) {
+    public void onOpenInNewTabInGroup(GURL url, @Nullable Referrer referrer) {
         RecordUserAction.record("MobileNewTabOpened");
         RecordUserAction.record("LinkOpenedInNewTab");
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
@@ -354,7 +354,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      *
      * @param url The image URL to open.
      */
-    public void onOpenImageUrl(GURL url, Referrer referrer) {
+    public void onOpenImageUrl(GURL url, @Nullable Referrer referrer) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setTransitionType(PageTransition.LINK);
         loadUrlParams.setReferrer(referrer);
@@ -366,7 +366,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      *
      * @param url The image URL to open.
      */
-    public void onOpenImageInNewTab(GURL url, Referrer referrer) {
+    public void onOpenImageInNewTab(GURL url, @Nullable Referrer referrer) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
         mTabModelSelector.openNewTab(

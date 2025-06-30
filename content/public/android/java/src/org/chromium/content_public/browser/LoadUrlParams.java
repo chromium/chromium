@@ -302,7 +302,7 @@ public class LoadUrlParams {
     }
 
     /** Sets the referrer of this load. */
-    public void setReferrer(Referrer referrer) {
+    public void setReferrer(@Nullable Referrer referrer) {
         mReferrer = referrer;
     }
 

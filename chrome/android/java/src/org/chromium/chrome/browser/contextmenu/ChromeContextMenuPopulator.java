@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
@@ -24,7 +26,6 @@ import android.view.View;
 import android.webkit.URLUtil;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -33,6 +34,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
@@ -96,6 +99,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A {@link ContextMenuPopulator} used for showing the default Chrome context menu. */
+@NullMarked
 public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final Context mContext;
     private final TabContextMenuItemDelegate mItemDelegate;
@@ -129,7 +133,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             };
 
     // True when the tracker indicates IPH in the form of "new" label needs to be shown.
-    private Boolean mShowEphemeralTabNewLabel;
+    private @Nullable Boolean mShowEphemeralTabNewLabel;
 
     /** Defines the context menu modes */
     @IntDef({
@@ -143,13 +147,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         int NORMAL = 0; /* Default mode*/
         int CUSTOM_TAB = 1; /* Custom tab mode */
         int WEB_APP = 2; /* Full screen mode */
+
         /**
          * Network bound tab mode, designed for multi-network Custom Tab (CCT), see {@link
          * org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider#
-         * hasTargetNetwork()}, corresponding to
-         * {@link org.chromium.chrome.browser.customtabs.CustomTabsUiType#NETWORK_BOUND_TAB}.
-         * This mode inherits the context menu of CUSTOM_TAB mode with the exception of "Open in
-         * new Chrome tab" and "Open in Incognito tab" items, which are omitted.
+         * hasTargetNetwork()}, corresponding to {@link
+         * org.chromium.chrome.browser.customtabs.CustomTabsUiType#NETWORK_BOUND_TAB}. This mode
+         * inherits the context menu of CUSTOM_TAB mode with the exception of "Open in new Chrome
+         * tab" and "Open in Incognito tab" items, which are omitted.
          */
         int NETWORK_BOUND_TAB = 3;
     }
@@ -404,8 +409,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         linkGroup.add(createListItem(Item.OPEN_IN_NEW_WINDOW));
                     }
                 }
-                if (mParams.getOpenedFromInterestFor()
-                        && mParams.getInterestForNodeID() != 0) {
+                if (mParams.getOpenedFromInterestFor() && mParams.getInterestForNodeID() != 0) {
                     // This is a context menu for a link with `interestfor`. If the node ID is
                     // valid, then we should add a context menu item to show interest in the link.
                     // There is a static_assert in ContextMenuController::ShowContextMenu() that
@@ -900,7 +904,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     private WindowAndroid getWindow() {
-        return mItemDelegate.getWebContents().getTopLevelNativeWindow();
+        return assertNonNull(mItemDelegate.getWebContents().getTopLevelNativeWindow());
     }
 
     private void copyLinkUrlIfAllowedByPolicy(Runnable copyIfAllowedRunnable) {
@@ -947,7 +951,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 ContextMenuImageFormat.ORIGINAL,
                 (Uri uri) ->
                         DataProtectionBridge.verifyCopyImageIsAllowedByPolicy(
-                                uri.getPath(),
+                                assertNonNull(uri.getPath()),
                                 mItemDelegate.getWebContents().getMainFrame(),
                                 (isAllowed) -> {
                                     if (isAllowed) mItemDelegate.onSaveImageToClipboard(uri);
@@ -976,6 +980,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     ContentResolver contentResolver =
                             ContextUtils.getApplicationContext().getContentResolver();
                     String mimeType = contentResolver.getType(imageUri);
+                    assumeNonNull(mimeType);
                     ShareParams imageShareParams =
                             new ShareParams.Builder(
                                             getWindow(),
@@ -1233,6 +1238,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 // Unreachable value.
                 assert false : "Invalid chip type provided to callback.";
         }
+        // Required by NullAway.
+        assert actionName != null;
         maybeRecordBooleanUkm("ContextMenuAndroid.Shown", actionName);
     }
 

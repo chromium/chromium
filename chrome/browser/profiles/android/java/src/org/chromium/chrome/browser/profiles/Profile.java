@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.profile_metrics.BrowserProfileType;
@@ -35,6 +36,7 @@ public class Profile implements BrowserContextHandle {
      * @param webContents {@link WebContents} object.
      * @return {@link Profile} object associated with the given WebContents.
      */
+    @Contract("!null -> !null")
     public static @Nullable Profile fromWebContents(@Nullable WebContents webContents) {
         return ProfileJni.get().fromWebContents(webContents);
     }
