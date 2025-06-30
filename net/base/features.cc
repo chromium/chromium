@@ -146,11 +146,11 @@ BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
 
 BASE_FEATURE(kPrefixCookieHttp,
              "PrefixCookieHttp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefixCookieHostHttp,
              "PrefixCookieHostHttp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchEnginePreconnectInterval,
              "SearchEnginePreconnectInterval",
