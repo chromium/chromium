@@ -34,6 +34,14 @@ constexpr base::cstring_view kOpTypeDiv = "Div";
 constexpr base::cstring_view kOpTypeMax = "Max";
 constexpr base::cstring_view kOpTypeMin = "Min";
 constexpr base::cstring_view kOpTypePow = "Pow";
+constexpr base::cstring_view kOpTypeEqual = "Equal";
+constexpr base::cstring_view kOpTypeGreater = "Greater";
+constexpr base::cstring_view kOpTypeGreaterOrEqual = "GreaterOrEqual";
+constexpr base::cstring_view kOpTypeLesser = "Less";
+constexpr base::cstring_view kOpTypeLesserOrEqual = "LessOrEqual";
+constexpr base::cstring_view kOpTypeLogicalAnd = "And";
+constexpr base::cstring_view kOpTypeLogicalOr = "Or";
+constexpr base::cstring_view kOpTypeLogicalXor = "Xor";
 
 // Element-wise unary ops
 constexpr base::cstring_view kOpTypeAbs = "Abs";
@@ -42,6 +50,7 @@ constexpr base::cstring_view kOpTypeCos = "Cos";
 constexpr base::cstring_view kOpTypeExp = "Exp";
 constexpr base::cstring_view kOpTypeFloor = "Floor";
 constexpr base::cstring_view kOpTypeLog = "Log";
+constexpr base::cstring_view kOpTypeLogicalNot = "Not";
 constexpr base::cstring_view kOpTypeNeg = "Neg";
 constexpr base::cstring_view kOpTypeSign = "Sign";
 constexpr base::cstring_view kOpTypeSin = "Sin";
@@ -82,6 +91,7 @@ constexpr base::cstring_view kOpTypeMaxPool2d = "MaxPool";
 constexpr base::cstring_view kOpTypeLpPool2d = "LpPool";
 
 constexpr std::string_view kInserted = "Inserted";
+constexpr std::string_view kToEmulate = "ToEmulate";
 constexpr std::string_view kUnderscore = "_";
 
 std::string GetOperandName(std::string_view label, OperandId id) {
@@ -254,33 +264,34 @@ std::string GraphBuilderOrt::CreateInitializerForShape(
   return CreateInitializer<int64_t>(new_shape_dims, new_shape_value);
 }
 
-void GraphBuilderOrt::AddCastNode(base::cstring_view name,
+void GraphBuilderOrt::AddCastNode(base::cstring_view node_name,
                                   base::cstring_view input,
                                   base::cstring_view output,
-                                  OperandDataType to_data_type) {
+                                  ONNXTensorElementDataType to_data_type) {
   std::array<const char*, 1> inputs = {input.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
-
   constexpr base::cstring_view kAttrTo = "to";
-  std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
-      kAttrTo, static_cast<int64_t>(WebnnToOnnxDataType(to_data_type)))};
+  int64_t attr_to_data = static_cast<int64_t>(to_data_type);
+  std::array<ScopedOrtOpAttr, 1> attributes = {
+      model_editor_.CreateAttribute(kAttrTo, attr_to_data)};
 
-  model_editor_.AddNode(kOpTypeCast, name, inputs, outputs, attributes);
+  model_editor_.AddNode(kOpTypeCast, node_name, inputs, outputs, attributes);
+}
+
+std::string GraphBuilderOrt::CreateCastNode(
+    base::cstring_view input,
+    ONNXTensorElementDataType to_data_type) {
+  const std::string output = GenerateOperandName();
+  InsertCastNode(input, output, to_data_type);
+  return output;
 }
 
 void GraphBuilderOrt::InsertCastNode(base::cstring_view input,
                                      base::cstring_view output,
-                                     OperandDataType to_data_type) {
+                                     ONNXTensorElementDataType to_data_type) {
   const std::string node_name =
       GenerateNodeName(base::JoinString({kInserted, kOpTypeCast}, kUnderscore));
   AddCastNode(node_name, input, output, to_data_type);
-}
-
-std::string GraphBuilderOrt::CreateCastNode(base::cstring_view input,
-                                            OperandDataType to_data_type) {
-  const std::string output = GenerateOperandName();
-  InsertCastNode(input, output, to_data_type);
-  return output;
 }
 
 void GraphBuilderOrt::AddExpandNode(base::cstring_view node_name,
@@ -450,7 +461,7 @@ void GraphBuilderOrt::AddArgMinMaxOperation(
     // operand dimension must be in the range of int32.
     // https://www.w3.org/TR/webnn/#valid-dimension
     CHECK_EQ(output_data_type, OperandDataType::kInt32);
-    InsertCastNode(int64_output, output, output_data_type);
+    InsertCastNode(int64_output, output, WebnnToOnnxDataType(output_data_type));
   }
 }
 
@@ -458,9 +469,9 @@ void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
   const std::string node_name = GenerateNodeName(cast.label);
   const std::string input = GetOperandNameById(cast.input_operand_id);
   const std::string output = GetOperandNameById(cast.output_operand_id);
-
-  AddCastNode(node_name, input, output,
-              GetOperand(cast.output_operand_id).descriptor.data_type());
+  const OperandDataType output_data_type =
+      GetOperand(cast.output_operand_id).descriptor.data_type();
+  AddCastNode(node_name, input, output, WebnnToOnnxDataType(output_data_type));
 }
 
 void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
@@ -562,6 +573,103 @@ void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   }
 }
 
+// TODO(crbug.com/426228071): Eliminate redundant cast ops for bool and uint8
+// data types conversion.
+void GraphBuilderOrt::AddLogicalBinaryOperation(
+    const mojom::ElementWiseBinary& logical_binary,
+    base::cstring_view op_type) {
+  const std::string node_name = GenerateNodeName(logical_binary.label);
+  std::string lhs = GetOperandNameById(logical_binary.lhs_operand_id);
+  std::string rhs = GetOperandNameById(logical_binary.rhs_operand_id);
+
+  // Some ONNX logical binary operations only support bool input.
+  if (logical_binary.kind == mojom::ElementWiseBinary::Kind::kLogicalAnd ||
+      logical_binary.kind == mojom::ElementWiseBinary::Kind::kLogicalOr ||
+      logical_binary.kind == mojom::ElementWiseBinary::Kind::kLogicalXor) {
+    CHECK_EQ(GetOperand(logical_binary.lhs_operand_id).descriptor.data_type(),
+             OperandDataType::kUint8);
+    lhs = CreateCastNode(lhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+
+    CHECK_EQ(GetOperand(logical_binary.rhs_operand_id).descriptor.data_type(),
+             OperandDataType::kUint8);
+    rhs = CreateCastNode(rhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+  }
+  std::array<const char*, 2> inputs = {lhs.c_str(), rhs.c_str()};
+
+  const std::string bool_output = GenerateOperandName();
+  std::array<const char*, 1> outputs = {bool_output.c_str()};
+  model_editor_.AddNode(op_type, node_name, inputs, outputs);
+
+  // ONNX logical operators only support bool output. WebNN logical operators
+  // support uint8 output. It is necessary to insert a cast operator after a
+  // logical operator.
+  const OperandDataType output_data_type =
+      GetOperand(logical_binary.output_operand_id).descriptor.data_type();
+  const std::string output =
+      GetOperandNameById(logical_binary.output_operand_id);
+  CHECK_EQ(output_data_type, OperandDataType::kUint8);
+  InsertCastNode(bool_output, output, WebnnToOnnxDataType(output_data_type));
+}
+
+void GraphBuilderOrt::AddLogicalNotOperation(
+    const mojom::ElementWiseUnary& logical_not) {
+  const std::string node_name = GenerateNodeName(logical_not.label);
+  // ONNX logical not operation only supports bool input.
+  CHECK_EQ(GetOperand(logical_not.input_operand_id).descriptor.data_type(),
+           OperandDataType::kUint8);
+  std::string input =
+      CreateCastNode(GetOperandNameById(logical_not.input_operand_id),
+                     ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+  std::vector<const char*> inputs = {input.c_str()};
+
+  const std::string bool_output = GenerateOperandName();
+  std::array<const char*, 1> outputs = {bool_output.c_str()};
+  model_editor_.AddNode(kOpTypeLogicalNot, node_name, inputs, outputs);
+
+  // ONNX `Not` operator only supports bool output, while WebNN `logicalNot`
+  // operator supports uint8 output. Insert a `Cast` operator for type
+  // conversion.
+  const OperandDataType output_data_type =
+      GetOperand(logical_not.output_operand_id).descriptor.data_type();
+  const std::string output = GetOperandNameById(logical_not.output_operand_id);
+  CHECK_EQ(output_data_type, OperandDataType::kUint8);
+  InsertCastNode(bool_output, output, WebnnToOnnxDataType(output_data_type));
+}
+
+void GraphBuilderOrt::AddLogicalNotEqualOperation(
+    const mojom::ElementWiseBinary& not_equal) {
+  // Step 1: calculate `equal(a, b)`.
+  const std::string equal_node_name = GenerateNodeName(base::JoinString(
+      {kInserted, kOpTypeEqual, kToEmulate, not_equal.label}, kUnderscore));
+  std::string lhs = GetOperandNameById(not_equal.lhs_operand_id);
+  std::string rhs = GetOperandNameById(not_equal.rhs_operand_id);
+  const std::string equal_output = GenerateOperandName();
+
+  std::array<const char*, 1> equal_outputs = {equal_output.c_str()};
+  std::array<const char*, 2> equal_inputs = {lhs.c_str(), rhs.c_str()};
+  model_editor_.AddNode(kOpTypeEqual, equal_node_name, equal_inputs,
+                        equal_outputs);
+
+  // Step 2: calculate `logicalNot(equal_output)`
+  const std::string not_output = GenerateOperandName();
+  std::array<const char*, 1> not_outputs = {not_output.c_str()};
+  const std::string not_node_name = GenerateNodeName(base::JoinString(
+      {kInserted, kOpTypeLogicalNot, kToEmulate, not_equal.label},
+      kUnderscore));
+  model_editor_.AddNode(kOpTypeLogicalNot, not_node_name, equal_outputs,
+                        not_outputs);
+
+  // ONNX logical operators only support bool output. To support output with the
+  // WebNN data type, it is necessary to insert a cast operator after a logical
+  // operator.
+  OperandId output_operand_id = not_equal.output_operand_id;
+  const OperandDataType output_data_type =
+      GetOperand(output_operand_id).descriptor.data_type();
+  std::string output = GetOperandNameById(output_operand_id);
+  CHECK_EQ(output_data_type, OperandDataType::kUint8);
+  InsertCastNode(not_output, output, WebnnToOnnxDataType(output_data_type));
+}
+
 void GraphBuilderOrt::AddElementWiseBinaryOperation(
     const mojom::ElementWiseBinary& element_wise_binary) {
   const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
@@ -605,17 +713,60 @@ void GraphBuilderOrt::AddElementWiseBinaryOperation(
           {lhs_descriptor, rhs_descriptor}));
       return AddBinaryOperation(element_wise_binary, kOpTypePow);
     }
-    case mojom::ElementWiseBinary::Kind::kEqual:
-    case mojom::ElementWiseBinary::Kind::kNotEqual:
-    case mojom::ElementWiseBinary::Kind::kGreater:
-    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
-    case mojom::ElementWiseBinary::Kind::kLesser:
-    case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
-    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
-    case mojom::ElementWiseBinary::Kind::kLogicalOr:
-    case mojom::ElementWiseBinary::Kind::kLogicalXor:
-      NOTREACHED() << "[WebNN] Element-wise logical operations are not "
-                      "supported.";
+    case mojom::ElementWiseBinary::Kind::kEqual: {
+      CHECK(data_type_limits.equal_input.SupportsAll(
+          {lhs_descriptor, rhs_descriptor}));
+      AddLogicalBinaryOperation(element_wise_binary, kOpTypeEqual);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kNotEqual: {
+      CHECK(data_type_limits.not_equal_input.SupportsAll(
+          {lhs_descriptor, rhs_descriptor}));
+      AddLogicalNotEqualOperation(element_wise_binary);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kGreater: {
+      CHECK(data_type_limits.greater_input.SupportsAll(
+          {lhs_descriptor, rhs_descriptor}));
+      AddLogicalBinaryOperation(element_wise_binary, kOpTypeGreater);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
+      CHECK(data_type_limits.greater_or_equal_input.SupportsAll(
+          {lhs_descriptor, rhs_descriptor}));
+      AddLogicalBinaryOperation(element_wise_binary, kOpTypeGreaterOrEqual);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLesser: {
+      CHECK(data_type_limits.lesser_input.SupportsAll(
+          {lhs_descriptor, rhs_descriptor}));
+      AddLogicalBinaryOperation(element_wise_binary, kOpTypeLesser);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
+      CHECK(data_type_limits.lesser_or_equal_input.SupportsAll(
+          {lhs_descriptor, rhs_descriptor}));
+      AddLogicalBinaryOperation(element_wise_binary, kOpTypeLesserOrEqual);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd: {
+      CHECK(data_type_limits.logical_and_input.SupportsAll(
+          {lhs_descriptor, rhs_descriptor}));
+      AddLogicalBinaryOperation(element_wise_binary, kOpTypeLogicalAnd);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLogicalOr: {
+      CHECK(data_type_limits.logical_or_input.SupportsAll(
+          {lhs_descriptor, rhs_descriptor}));
+      AddLogicalBinaryOperation(element_wise_binary, kOpTypeLogicalOr);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLogicalXor: {
+      CHECK(data_type_limits.logical_xor_input.SupportsAll(
+          {lhs_descriptor, rhs_descriptor}));
+      AddLogicalBinaryOperation(element_wise_binary, kOpTypeLogicalXor);
+      break;
+    }
   }
 }
 
@@ -648,6 +799,11 @@ void GraphBuilderOrt::AddElementWiseUnaryOperation(
     case mojom::ElementWiseUnary::Kind::kLog: {
       CHECK(data_type_limits.log_input.Supports(input_descriptor));
       return AddUnaryOperation(element_wise_unary, kOpTypeLog);
+    }
+    case mojom::ElementWiseUnary::Kind::kLogicalNot: {
+      CHECK(data_type_limits.logical_not_input.Supports(input_descriptor));
+      AddLogicalNotOperation(element_wise_unary);
+      break;
     }
     case mojom::ElementWiseUnary::Kind::kNeg: {
       CHECK(data_type_limits.neg_input.Supports(input_descriptor));
@@ -685,9 +841,6 @@ void GraphBuilderOrt::AddElementWiseUnaryOperation(
       CHECK(data_type_limits.cast_input.Supports(input_descriptor));
       return AddCastOperation(element_wise_unary);
     }
-    case mojom::ElementWiseUnary::Kind::kLogicalNot:
-      NOTREACHED()
-          << "[WebNN] Element-wise logical operations are not supported.";
   }
 }
 
@@ -853,7 +1006,8 @@ void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
   std::string int64_indices =
       indices_descriptor.data_type() == OperandDataType::kInt64
           ? indices
-          : CreateCastNode(indices, OperandDataType::kInt64);
+          : CreateCastNode(indices,
+                           WebnnToOnnxDataType(OperandDataType::kInt64));
 
   // Clamp the indices operand to prevent out-of-bounds reading which will cause
   // ORT CPU EP to throw a runtime error.
@@ -1099,7 +1253,8 @@ void GraphBuilderOrt::AddScatterNDOperation(
   std::string int64_indices =
       indices_descriptor.data_type() == OperandDataType::kInt64
           ? indices
-          : CreateCastNode(indices, OperandDataType::kInt64);
+          : CreateCastNode(indices,
+                           WebnnToOnnxDataType(OperandDataType::kInt64));
 
   // Clamp the indices operand to prevent out-of-bounds writing which will cause
   // ORT CPU EP to throw a runtime error.

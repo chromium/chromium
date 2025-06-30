@@ -94,17 +94,26 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*min_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*pow_input=*/{kFloat16To32Int32To64, kMaxRank},
-       /*equal_input=*/{},
-       /*greater_input=*/{},
-       /*greater_or_equal_input=*/{},
-       /*lesser_input=*/{},
-       /*lesser_or_equal_input=*/{},
-       /*not_equal_input=*/{},
-       /*logical_and_input=*/{},
-       /*logical_or_input=*/{},
-       /*logical_xor_input=*/{},
-       /*logical_not_input=*/{},
-       /*logical_output=*/{},
+       /*equal_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*greater_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*greater_or_equal_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*lesser_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*lesser_or_equal_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*not_equal_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*logical_and_input=*/
+       {DataTypeConstraint::kUint8, kMaxRank},
+       /*logical_or_input=*/
+       {DataTypeConstraint::kUint8, kMaxRank},
+       /*logical_xor_input=*/
+       {DataTypeConstraint::kUint8, kMaxRank},
+       /*logical_not_input=*/{DataTypeConstraint::kUint8, kMaxRank},
+       /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*ceil_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*cos_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},

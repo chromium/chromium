@@ -112,15 +112,15 @@ class GraphBuilderOrt {
   // specifies the output's shape.
   std::string CreateInitializerForShape(base::span<const uint32_t> shape);
 
-  void AddCastNode(base::cstring_view name,
+  void AddCastNode(base::cstring_view node_name,
                    base::cstring_view input,
                    base::cstring_view output,
-                   OperandDataType to_data_type);
+                   ONNXTensorElementDataType to_data_type);
+  std::string CreateCastNode(base::cstring_view input,
+                             ONNXTensorElementDataType to_data_type);
   void InsertCastNode(base::cstring_view input,
                       base::cstring_view output,
-                      OperandDataType to_data_type);
-  std::string CreateCastNode(base::cstring_view input,
-                             OperandDataType to_data_type);
+                      ONNXTensorElementDataType to_data_type);
 
   void AddExpandNode(base::cstring_view node_name,
                      base::cstring_view input,
@@ -154,6 +154,10 @@ class GraphBuilderOrt {
   void AddClampOperation(const mojom::Clamp& clamp);
   void AddConcatOperation(const mojom::Concat& concat);
   void AddConv2dOperation(const mojom::Conv2d& conv2d);
+  void AddLogicalBinaryOperation(const mojom::ElementWiseBinary& logical_binary,
+                                 base::cstring_view op_type);
+  void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
+  void AddLogicalNotEqualOperation(const mojom::ElementWiseBinary& not_equal);
   void AddElementWiseBinaryOperation(
       const mojom::ElementWiseBinary& element_wise_binary);
   void AddElementWiseUnaryOperation(
