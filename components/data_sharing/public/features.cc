@@ -41,8 +41,8 @@ BASE_FEATURE(kDataSharingNonProductionEnvironment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedDataTypesKillSwitch,
-             "kSharedDataTypesKillSwitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             "SharedDataTypesKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDataSharingEnableUpdateChromeUI,
              "DataSharingEnableUpdateChromeUI",
@@ -56,7 +56,7 @@ bool IsDataSharingFunctionalityEnabled() {
 }
 
 bool ShouldInterceptUrlForVersioning() {
-  return base::FeatureList::IsEnabled(
+  return !base::FeatureList::IsEnabled(
              data_sharing::features::kSharedDataTypesKillSwitch) ||
          base::FeatureList::IsEnabled(
              data_sharing::features::kDataSharingEnableUpdateChromeUI);

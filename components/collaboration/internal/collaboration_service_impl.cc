@@ -444,6 +444,17 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
           data_sharing::features::kDataSharingJoinOnly)) {
     return CollaborationStatus::kDisabled;
   }
+
+  // Check if version out-of-date turn off shared tab groups data types and show
+  // update chrome ui.
+  if (base::FeatureList::IsEnabled(
+          data_sharing::features::kSharedDataTypesKillSwitch)) {
+    return base::FeatureList::IsEnabled(
+               data_sharing::features::kDataSharingEnableUpdateChromeUI)
+               ? CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi
+               : CollaborationStatus::kVersionOutOfDate;
+  }
+
   // Check if device policy allow signin.
 #if BUILDFLAG(IS_IOS)
   BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
@@ -461,20 +472,6 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   // Check if device policy allow sync.
   if (current_status_.sync_status == SyncStatus::kSyncDisabledByEnterprise) {
     return CollaborationStatus::kDisabledForPolicy;
-  }
-
-  // Versioning turn off shared tab groups data types when version out of date.
-  if (!base::FeatureList::IsEnabled(
-          data_sharing::features::kSharedDataTypesKillSwitch) &&
-      base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingEnableUpdateChromeUI)) {
-    return CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi;
-  }
-
-  // Versioning turn off shared tab groups data types when version out of date.
-  if (!base::FeatureList::IsEnabled(
-          data_sharing::features::kSharedDataTypesKillSwitch)) {
-    return CollaborationStatus::kVersionOutOfDate;
   }
 
   // Disable for automotive users.

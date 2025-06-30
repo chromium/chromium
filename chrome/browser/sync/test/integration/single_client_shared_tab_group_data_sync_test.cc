@@ -851,14 +851,15 @@ class SingleClientSharedTabGroupVersioningSyncTest
       feature_overrides_.InitWithFeatures(
           {data_sharing::features::kDataSharingFeature,
            tab_groups::kTabGroupSyncServiceDesktopMigration,
-           data_sharing::features::kDataSharingEnableUpdateChromeUI},
-          {data_sharing::features::kSharedDataTypesKillSwitch});
+           data_sharing::features::kDataSharingEnableUpdateChromeUI,
+           data_sharing::features::kSharedDataTypesKillSwitch},
+          {});
     } else {
       feature_overrides_.InitWithFeatures(
           {data_sharing::features::kDataSharingFeature,
-           tab_groups::kTabGroupSyncServiceDesktopMigration,
-           data_sharing::features::kSharedDataTypesKillSwitch},
-          {data_sharing::features::kDataSharingEnableUpdateChromeUI});
+           tab_groups::kTabGroupSyncServiceDesktopMigration},
+          {data_sharing::features::kSharedDataTypesKillSwitch,
+           data_sharing::features::kDataSharingEnableUpdateChromeUI});
     }
   }
 

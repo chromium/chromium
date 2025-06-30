@@ -698,9 +698,9 @@ TEST_F(CollaborationServiceImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {data_sharing::features::kDataSharingFeature,
-       data_sharing::features::kDataSharingEnableUpdateChromeUI},
-      {data_sharing::features::kDataSharingJoinOnly,
-       data_sharing::features::kSharedDataTypesKillSwitch});
+       data_sharing::features::kDataSharingEnableUpdateChromeUI,
+       data_sharing::features::kSharedDataTypesKillSwitch},
+      {data_sharing::features::kDataSharingJoinOnly});
   InitService();
 
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
@@ -710,9 +710,11 @@ TEST_F(CollaborationServiceImplTest,
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_VersionOutOfDate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {data_sharing::features::kDataSharingFeature},
-      {data_sharing::features::kDataSharingJoinOnly,
-       data_sharing::features::kSharedDataTypesKillSwitch,
+      {
+          data_sharing::features::kDataSharingJoinOnly,
+          data_sharing::features::kSharedDataTypesKillSwitch,
+      },
+      {data_sharing::features::kDataSharingFeature,
        data_sharing::features::kDataSharingEnableUpdateChromeUI});
   InitService();
 
