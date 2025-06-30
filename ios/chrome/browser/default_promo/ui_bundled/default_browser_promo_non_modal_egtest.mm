@@ -79,7 +79,14 @@ id<GREYMatcher> NonModalPasteTitleMatcher() {
 
 // Test that a non modal default modal promo appears when it is triggered by
 // using a pasted URL.
-- (void)testNonModalAppearsFromPaste {
+// TODO(crbug.com/413072087): Test flaky on device. The error is caused by a
+// timeout while waiting for the promo to appear.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testNonModalAppearsFromPaste DISABLED_testNonModalAppearsFromPaste
+#else
+#define MAYBE_testNonModalAppearsFromPaste testNonModalAppearsFromPaste
+#endif
+- (void)MAYBE_testNonModalAppearsFromPaste {
   [self setupIPHConfig:"IPH_iOSPromoNonModalUrlPasteDefaultBrowser"];
 
   // Copy URL to the clipboard
