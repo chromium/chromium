@@ -11,6 +11,7 @@ source_set("composebox") {
     "//base:base",
     "//components/endpoint_fetcher",
     "//components/lens",
+    "//components/search",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/version_info:channel",
@@ -22,6 +23,17 @@ source_set("composebox") {
     "//third_party/icu:icuuc_public",
     "//third_party/lens_server_proto:lens_overlay_proto",
   ]
+
+  if (!is_ios) {
+    sources += [
+      "composebox_image_helper.cc",
+      "composebox_image_helper.h",
+    ]
+    deps += [
+      "//skia",
+      "//ui/gfx",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -46,13 +58,25 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "composebox_query_controller_unittest.cc" ]
   deps = [
+    ":composebox",
     ":test_support",
     "//base/test:test_support",
     "//components/endpoint_fetcher",
+    "//components/lens",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//testing/gtest",
     "//third_party/lens_server_proto:lens_overlay_proto",
   ]
+
+  if (!is_ios) {
+    sources += [ "composebox_image_helper_unittest.cc" ]
+    deps += [
+      "//components/search",
+      "//skia",
+      "//ui/gfx",
+    ]
+  }
 }

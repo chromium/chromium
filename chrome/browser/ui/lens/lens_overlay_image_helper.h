@@ -7,7 +7,7 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
-#include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
+#include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "third_party/skia/include/core/SkColor.h"

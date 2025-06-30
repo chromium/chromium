@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_REF_COUNTED_LENS_OVERLAY_CLIENT_LOGS_H_
 #define CHROME_BROWSER_UI_LENS_REF_COUNTED_LENS_OVERLAY_CLIENT_LOGS_H_
 
+#include "base/memory/ref_counted.h"
 #include "third_party/lens_server_proto/lens_overlay_client_logs.pb.h"
 
 namespace lens {

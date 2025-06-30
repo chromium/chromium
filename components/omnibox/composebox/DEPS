@@ -12,4 +12,6 @@ include_rules = [
   "+services/network/test",
   "+third_party/icu",
   "+third_party/lens_server_proto",
+  "+third_party/skia",
+  "+ui/gfx",
 ]

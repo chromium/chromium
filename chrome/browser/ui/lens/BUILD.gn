@@ -42,7 +42,6 @@ source_set("lens") {
     "lens_session_metrics_logger.h",
     "lens_url_matcher.h",
     "page_content_type_conversions.h",
-    "ref_counted_lens_overlay_client_logs.h",
   ]
 
   public_deps = [
