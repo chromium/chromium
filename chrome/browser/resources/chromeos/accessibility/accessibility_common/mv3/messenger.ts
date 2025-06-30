@@ -159,4 +159,27 @@ export namespace Messenger {
   // Message handler. If a handler returns a Promise, a reply will be sent
   // to the sender when the promise resolves.
   export type Handler = (message: any|undefined) => Promise<any>|void;
+
+  // Function to convert ArrayBuffer to Base64 string
+  export function arrayBufferToBase64(buffer: ArrayBuffer): string {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);  // btoa is a global function for Base64 encoding
+  }
+
+  // Function to convert Base64 string back to ArrayBuffer
+  export function base64ToArrayBuffer(base64: string): ArrayBuffer {
+    const binaryString =
+        atob(base64);  // atob is a global function for Base64 decoding
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
 }

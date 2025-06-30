@@ -14,7 +14,16 @@ export enum OffscreenCommandType {
   DICTATION_PUMPKIN_INSTALL = 'DictationPumpkinInstall',
   DICTATION_PUMPKIN_RECEIVE = 'DictationPumpkinReceive',
   DICTATION_PUMPKIN_SEND = 'DictationPumpkinSend',
+  FACEGAZE_WEBCAM_DETECT_LANDMARK = 'FacegazeWebCamDetectLandmark',
+  FACEGAZE_WEBCAM_INITIALIZE = 'FacegazeWebCamInitialize',
+  FACEGAZE_WEBCAM_STOP = 'FacegazeWebCamStop',
 
   // From offscreen document to service worker:
+  FACEGAZE_SW_INSTALL_ASSETS = 'FacegazeSwInstallAssets',
+  FACEGAZE_SW_ON_TRACK_MUTED = 'FacegazeSwOnTrackMuted',
+  FACEGAZE_SW_ON_TRACK_UNMUTED = 'FacegazeSwOnTrackUnmuted',
+  FACEGAZE_SW_SET_PREF = 'FacegazeSwSetPref',
+  FACEGAZE_SW_UPDATE_BUBLE_REMAINING_RETRIES =
+      'FacegazeSwUpdateBubbleRemainingRetries',
   MESSENGER_SW_READY = 'MessengerSwReady',
 }

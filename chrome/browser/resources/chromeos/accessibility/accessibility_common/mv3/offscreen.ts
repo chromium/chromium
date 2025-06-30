@@ -4,6 +4,7 @@
 
 import {OffscreenAudio} from './dictation/offscreen_audio.js';
 import {OffscreenPumpkinWorker} from './dictation/offscreen_pumpkin_worker.js';
+import {OffscreenWebCam} from './facegaze/offscreen_web_cam.js';
 import {Messenger} from './messenger.js';
 
 /**
@@ -17,6 +18,7 @@ class Offscreen {
   constructor() {
     this.offscreens_.add(new OffscreenAudio());
     this.offscreens_.add(new OffscreenPumpkinWorker());
+    this.offscreens_.add(new OffscreenWebCam());
   }
 
   static init(): void {
