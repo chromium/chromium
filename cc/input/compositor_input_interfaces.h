@@ -151,6 +151,7 @@ class CompositorDelegateForInput {
   virtual std::unique_ptr<EventsMetricsManager::ScopedMonitor>
   GetScopedEventMetricsMonitor(
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) = 0;
+  virtual void DidScrollForMetrics() = 0;
   virtual double PredictViewportBoundsDelta(
       double current_bounds_delta,
       gfx::Vector2dF scroll_distance) const = 0;

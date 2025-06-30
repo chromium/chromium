@@ -375,12 +375,23 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
 
   ScrollLatchedScroller(scroll_state, delayed_by);
 
-  bool did_scroll_x = scroll_state.caused_scroll_x();
-  bool did_scroll_y = scroll_state.caused_scroll_y();
-
   delta_consumed_for_scroll_gesture_ |=
       scroll_state.delta_consumed_for_scroll_sequence();
-  bool did_scroll_content = did_scroll_x || did_scroll_y;
+
+  // Mark the input as having caused a scroll for the purposes of metrics even
+  // if the scroll only affected browser controls.
+  bool did_scroll_anything =
+      std::abs(scroll_state.delta_x() - resolvedScrollDelta.x()) >
+          kScrollEpsilon ||
+      std::abs(scroll_state.delta_y() - resolvedScrollDelta.y()) >
+          kScrollEpsilon;
+  if (did_scroll_anything) {
+    compositor_delegate_->DidScrollForMetrics();
+  }
+
+  bool did_scroll_content_x = scroll_state.caused_scroll_x();
+  bool did_scroll_content_y = scroll_state.caused_scroll_y();
+  bool did_scroll_content = did_scroll_content_x || did_scroll_content_y;
   if (did_scroll_content) {
     bool is_animated_scroll = ShouldAnimateScroll(scroll_state);
     compositor_delegate_->DidScrollContent(
@@ -390,10 +401,12 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
   SetNeedsCommit();
 
   // Scrolling along an axis resets accumulated root overscroll for that axis.
-  if (did_scroll_x)
+  if (did_scroll_content_x) {
     accumulated_root_overscroll_.set_x(0);
-  if (did_scroll_y)
+  }
+  if (did_scroll_content_y) {
     accumulated_root_overscroll_.set_y(0);
+  }
 
   gfx::Vector2dF unused_root_delta;
   if (GetViewport().ShouldScroll(scroll_node)) {
