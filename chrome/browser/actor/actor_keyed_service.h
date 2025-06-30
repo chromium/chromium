@@ -34,7 +34,9 @@ class BrowserContext;
 }  // namespace content
 
 namespace actor {
+namespace ui {
 class ActorUiStateManagerInterface;
+}
 
 // This class owns all ActorTasks for a given profile. ActorTasks are kept in
 // memory until the process is destroyed.
@@ -42,7 +44,7 @@ class ActorKeyedService : public KeyedService {
  public:
   explicit ActorKeyedService(
       Profile* profile,
-      std::unique_ptr<ActorUiStateManagerInterface> ui_state_manager);
+      std::unique_ptr<ui::ActorUiStateManagerInterface> ui_state_manager);
   ActorKeyedService(const ActorKeyedService&) = delete;
   ActorKeyedService& operator=(const ActorKeyedService&) = delete;
   ~ActorKeyedService() override;
@@ -99,7 +101,7 @@ class ActorKeyedService : public KeyedService {
   AggregatedJournal& GetJournal() LIFETIME_BOUND { return journal_; }
 
   // The associated ActorUiStateManager for the associated profile.
-  ActorUiStateManagerInterface* GetActorUiStateManager();
+  ui::ActorUiStateManagerInterface* GetActorUiStateManager();
 
   // Called whenever an actor task state changes.
   void OnActorTaskStateChanged(TaskId task_id, ActorTask::State task_state);
@@ -138,7 +140,7 @@ class ActorKeyedService : public KeyedService {
   // In the future we may want to divide this between active and inactive tasks.
   std::map<TaskId, std::unique_ptr<ActorTask>> tasks_;
 
-  std::unique_ptr<ActorUiStateManagerInterface> actor_ui_state_manager_;
+  std::unique_ptr<ui::ActorUiStateManagerInterface> actor_ui_state_manager_;
 
   // Holds subscriptions for ActorTask callbacks.
   std::vector<base::CallbackListSubscription> actor_task_subscriptions_;

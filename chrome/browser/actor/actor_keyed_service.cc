@@ -51,6 +51,8 @@ void RunLater(base::OnceClosure task) {
 
 namespace actor {
 
+using ui::ActorUiStateManagerInterface;
+
 ActorKeyedService::ActorKeyedService(
     Profile* profile,
     std::unique_ptr<ActorUiStateManagerInterface> ui_state_manager)

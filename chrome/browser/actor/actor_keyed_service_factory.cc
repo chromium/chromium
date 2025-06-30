@@ -40,7 +40,7 @@ ActorKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ActorKeyedService>(
-      profile, std::make_unique<ActorUiStateManager>());
+      profile, std::make_unique<ui::ActorUiStateManager>());
 }
 
 }  // namespace actor

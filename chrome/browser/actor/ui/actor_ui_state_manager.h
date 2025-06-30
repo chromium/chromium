@@ -9,9 +9,8 @@
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 
-namespace actor {
+namespace actor::ui {
 
-// TODO(crbug.com/424495020): Implement this class.
 class ActorUiStateManager : public ActorUiStateManagerInterface {
  public:
   ActorUiStateManager();
@@ -20,8 +19,9 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // ActorUiStateManagerInterface:
   void OnActorTaskStateChange(TaskId task_id,
                               ActorTask::State task_state) override;
+  void OnUiEvent(UiEvent event, UiCompleteCallback callback) override;
 };
 
-}  // namespace actor
+}  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_ACTOR_UI_STATE_MANAGER_H_

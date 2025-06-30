@@ -8,6 +8,7 @@ source_set("ui") {
     "actor_ui_tab_controller_interface.h",
   ]
   deps = [
+    ":ui_event_types",
     "//base",
     "//chrome/browser/actor:actor",
     "//content/public/browser",
@@ -27,6 +28,7 @@ source_set("event_dispatcher") {
     "event_dispatcher.h",
   ]
   public_deps = [
+    ":ui",
     "//base",
     "//chrome/browser/actor:types",
   ]

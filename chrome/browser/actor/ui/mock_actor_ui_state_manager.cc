@@ -4,9 +4,9 @@
 
 #include "chrome/browser/actor/ui/mock_actor_ui_state_manager.h"
 
-namespace actor {
+namespace actor::ui {
 
 MockActorUiStateManager::MockActorUiStateManager() = default;
 MockActorUiStateManager::~MockActorUiStateManager() = default;
 
-}  // namespace actor
+}  // namespace actor::ui

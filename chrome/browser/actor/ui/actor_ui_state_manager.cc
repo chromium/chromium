@@ -4,7 +4,9 @@
 
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 
-namespace actor {
+#include "chrome/common/actor/action_result.h"
+
+namespace actor::ui {
 
 ActorUiStateManager::ActorUiStateManager() = default;
 ActorUiStateManager::~ActorUiStateManager() = default;
@@ -14,4 +16,10 @@ void ActorUiStateManager::OnActorTaskStateChange(TaskId task_id,
   // TODO(crbug.com/424495020): Implement this function.
 }
 
-}  // namespace actor
+void ActorUiStateManager::OnUiEvent(UiEvent event,
+                                    UiCompleteCallback callback) {
+  // TODO(crbug.com/424495020): Implement this function.
+  std::move(callback).Run(MakeOkResult());
+}
+
+}  // namespace actor::ui

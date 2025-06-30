@@ -7,8 +7,11 @@
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/task_id.h"
+#include "chrome/browser/actor/ui/ui_event.h"
+#include "chrome/common/actor.mojom-forward.h"
 
-namespace actor {
+namespace actor::ui {
+using UiCompleteCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
 
 class ActorUiStateManagerInterface {
  public:
@@ -17,8 +20,10 @@ class ActorUiStateManagerInterface {
   // Called whenever an actor task state changes.
   virtual void OnActorTaskStateChange(TaskId task_id,
                                       ActorTask::State task_state) = 0;
+
+  virtual void OnUiEvent(UiEvent event, UiCompleteCallback callback) = 0;
 };
 
-}  // namespace actor
+}  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_ACTOR_UI_STATE_MANAGER_INTERFACE_H_

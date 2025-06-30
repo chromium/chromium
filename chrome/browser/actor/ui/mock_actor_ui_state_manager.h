@@ -10,7 +10,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace actor {
+namespace actor::ui {
 
 class MockActorUiStateManager : public ActorUiStateManagerInterface {
  public:
@@ -21,8 +21,12 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               OnActorTaskStateChange,
               (TaskId task_id, ActorTask::State task_state),
               (override));
+  MOCK_METHOD(void,
+              OnUiEvent,
+              (UiEvent event, UiCompleteCallback callback),
+              (override));
 };
 
-}  // namespace actor
+}  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_MOCK_ACTOR_UI_STATE_MANAGER_H_
