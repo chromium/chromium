@@ -66,3 +66,9 @@ void DataSharingServiceObserverBridge::OnGroupMemberRemoved(
                                           atTime:event_time];
   }
 }
+
+void DataSharingServiceObserverBridge::OnDataSharingServiceDestroyed() {
+  if ([delegate_ respondsToSelector:@selector(dataSharingServiceDestroyed)]) {
+    [delegate_ dataSharingServiceDestroyed];
+  }
+}

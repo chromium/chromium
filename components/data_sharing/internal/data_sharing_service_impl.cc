@@ -128,6 +128,9 @@ DataSharingServiceImpl::~DataSharingServiceImpl() {
   if (group_data_model_) {
     group_data_model_->RemoveObserver(this);
   }
+  for (auto& observer : observers_) {
+    observer.OnDataSharingServiceDestroyed();
+  }
 }
 
 bool DataSharingServiceImpl::IsEmptyService() {

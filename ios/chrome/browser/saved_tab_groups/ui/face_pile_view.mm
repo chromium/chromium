@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/share_kit/model/share_kit_avatar_primitive.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -36,6 +37,12 @@ const CGFloat kPersonWaitingProportion = 0.55;
 // Vertical margin for the "person waiting" icon.
 const CGFloat kPersonWaitingVerticalMargin = 1.5;
 
+// Share button constants.
+const CGFloat kShareElementSpacing = 7;
+const CGFloat kShareHorizontalInset = 8;
+const CGFloat kShareVerticalInset = 5;
+const CGFloat kShareSymbolPointSize = 12.5;
+
 }  // namespace
 
 @implementation FacePileView {
@@ -43,8 +50,6 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
   NSArray<id<ShareKitAvatarPrimitive>>* _avatars;
   // A UIStackView to arrange and display the individual avatar views.
   UIStackView* _facesStackView;
-  // Label to display text when the face pile is empty.
-  UILabel* _emptyFacePileLabel;
   // Sets the background color for the face pile, visible in gaps and as an
   // outer stroke.
   UIColor* _facePileBackgroundColor;
@@ -58,6 +63,8 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
   UILabel* _plusXLabel;
   // The number of members in the shared group.
   CGFloat _membersCount;
+  // View to display when the face pile is empty.
+  UIButton* _shareViewContainer;
 }
 
 - (instancetype)init {
@@ -103,13 +110,11 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
 
 #pragma mark - FacePileConsumer
 
-- (void)setShowsTextWhenEmpty:(BOOL)showsTextWhenEmpty {
-  if (showsTextWhenEmpty) {
-    [self addEmptyFacePileLabel];
-    _emptyFacePileLabel.hidden = ![self isEmpty];
-  } else {
-    [_emptyFacePileLabel removeFromSuperview];
-    _emptyFacePileLabel = nil;
+- (void)setSharedButtonWhenEmpty:(BOOL)showsShareButtonWhenEmpty {
+  [_shareViewContainer removeFromSuperview];
+  _shareViewContainer = nil;
+  if (showsShareButtonWhenEmpty && [self isEmpty]) {
+    [self addShareButtonView];
   }
 }
 
@@ -243,11 +248,48 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
 }
 
 // Adds and configures the `_emptyFacePileLabel`.
-- (void)addEmptyFacePileLabel {
-  _emptyFacePileLabel = [[UILabel alloc] init];
-  _emptyFacePileLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addSubview:_emptyFacePileLabel];
-  AddSameConstraints(self, _emptyFacePileLabel);
+- (void)addShareButtonView {
+  UIBackgroundConfiguration* backgroundConfiguration =
+      [UIBackgroundConfiguration clearConfiguration];
+  backgroundConfiguration.visualEffect = [UIBlurEffect
+      effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialDark];
+  backgroundConfiguration.backgroundColor = TabGroupViewButtonBackgroundColor();
+
+  UIImage* shareSymbol = DefaultSymbolWithConfiguration(
+      kPersonFillBadgePlusSymbol,
+      [UIImageSymbolConfiguration
+          configurationWithPointSize:kShareSymbolPointSize
+                              weight:UIImageSymbolWeightBold
+                               scale:UIImageSymbolScaleMedium]);
+
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  configuration.baseForegroundColor = UIColor.whiteColor;
+  configuration.background = backgroundConfiguration;
+  configuration.image = shareSymbol;
+  configuration.imagePadding = kShareElementSpacing;
+  configuration.contentInsets =
+      NSDirectionalEdgeInsetsMake(kShareVerticalInset, kShareHorizontalInset,
+                                  kShareVerticalInset, kShareHorizontalInset);
+
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+      initWithString:l10n_util::GetNSString(
+                         IDS_IOS_SHARED_GROUP_SHARE_GROUP_BUTTON_TEXT)];
+  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+  configuration.attributedTitle = string;
+
+  // To ensure design consistency with other buttons, create a disabled button
+  // here. Its action is handled elsewhere.
+  _shareViewContainer = [UIButton buttonWithConfiguration:configuration
+                                            primaryAction:nil];
+  _shareViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  _shareViewContainer.userInteractionEnabled = NO;
+
+  [self addSubview:_shareViewContainer];
+  AddSameConstraints(self, _shareViewContainer);
 }
 
 // Returns whether this facepile is empty.
@@ -294,8 +336,8 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
     [_facesStackView addArrangedSubview:avatarContainerView];
   }
 
-  // Update the `_emptyFacePileLabel` visibility.
-  _emptyFacePileLabel.hidden = ![self isEmpty];
+  // Update the `_shareViewContainer` visibility.
+  _shareViewContainer.hidden = ![self isEmpty];
 
   if (_membersCount == 1) {
     // Create a container view to act as the border.

@@ -15,6 +15,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/share_kit/model",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_groups_constant",
     "//ios/chrome/common/ui/colors",

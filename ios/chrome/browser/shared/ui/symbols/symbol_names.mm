@@ -213,6 +213,7 @@ NSString* const kBackSymbol = @"arrow.backward";
 NSString* const kForwardSymbol = @"arrow.forward";
 NSString* const kPersonFillSymbol = @"person.fill";
 NSString* const kPersonClockFillSymbol = @"person.badge.clock.fill";
+NSString* const kPersonFillBadgePlusSymbol = @"person.fill.badge.plus";
 NSString* const kMailFillSymbol = @"envelope.fill";
 NSString* const kPhoneFillSymbol = @"phone.fill";
 NSString* const kDownloadPromptFillSymbol = @"arrow.down.to.line.circle.fill";

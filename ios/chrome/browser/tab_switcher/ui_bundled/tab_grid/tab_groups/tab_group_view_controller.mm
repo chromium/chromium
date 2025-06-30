@@ -13,6 +13,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
@@ -174,6 +175,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   UIView* _containerBackground;
   // The gesture recognizer to swipe to dismiss the tab group view.
   UIPanGestureRecognizer* _swipeDownGestureRecognizer;
+  // Face pile provider.
+  id<FacePileProviding> _facePileProvider;
 }
 
 #pragma mark - Public
@@ -544,13 +547,14 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   }
 }
 
-- (void)setFacePileView:(UIView*)facePileView {
-  if (_facePileView == facePileView) {
+- (void)setFacePileProvider:(id<FacePileProviding>)facePileProvider {
+  if (_facePileProvider == facePileProvider) {
     return;
   }
+  _facePileProvider = facePileProvider;
 
   if (IsContainedTabGroupEnabled()) {
-    if (_facePileView.superview == _facePileContainer) {
+    if ([_facePileView isDescendantOfView:self.view]) {
       [_facePileView removeFromSuperview];
     }
     [_facePileContainer removeFromSuperview];
@@ -558,7 +562,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     [_facePileView removeFromSuperview];
   }
 
-  _facePileView = facePileView;
+  _facePileView = _facePileProvider.facePileView;
 
   if (!_facePileView) {
     return;

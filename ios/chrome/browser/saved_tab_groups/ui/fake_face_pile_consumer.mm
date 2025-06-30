@@ -6,8 +6,8 @@
 
 @implementation FakeFacePileConsumer
 
-- (void)setShowsTextWhenEmpty:(BOOL)showsTextWhenEmpty {
-  _lastShowsTextWhenEmpty = showsTextWhenEmpty;
+- (void)setSharedButtonWhenEmpty:(BOOL)showsShareButtonWhenEmpty {
+  _lastShowsTextWhenEmpty = showsShareButtonWhenEmpty;
   _setShowsTextWhenEmptyCallCount++;
 }
 

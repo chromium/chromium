@@ -203,6 +203,7 @@ extern NSString* const kBackSymbol;
 extern NSString* const kForwardSymbol;
 extern NSString* const kPersonFillSymbol;
 extern NSString* const kPersonClockFillSymbol;
+extern NSString* const kPersonFillBadgePlusSymbol;
 extern NSString* const kMailFillSymbol;
 extern NSString* const kPhoneFillSymbol;
 extern NSString* const kDownloadPromptFillSymbol;

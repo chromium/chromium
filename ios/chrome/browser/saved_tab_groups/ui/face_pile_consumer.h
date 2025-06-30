@@ -13,7 +13,7 @@
 @protocol FacePileConsumer <NSObject>
 
 // Sets whether the FacePileView should display text when there are no faces.
-- (void)setShowsTextWhenEmpty:(BOOL)showsTextWhenEmpty;
+- (void)setSharedButtonWhenEmpty:(BOOL)showsShareButtonWhenEmpty;
 
 // Sets the background color for the face pile, visible in gaps and as an outer
 // stroke.
