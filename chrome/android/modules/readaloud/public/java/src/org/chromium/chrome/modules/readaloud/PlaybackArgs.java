@@ -15,6 +15,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.common.collect.ImmutableList;
+
+
 /** Encapsulates information about the playback being requested. */
 @NullMarked
 public class PlaybackArgs {
@@ -31,7 +34,7 @@ public class PlaybackArgs {
     private final long mDateModifiedMsSinceEpoch;
 
     /* The playback mode. Still unused. */
-    private final PlaybackMode mPlaybackMode;
+    private final List<PlaybackMode> mPlaybackModes;
 
     /** Playback mode. */
     public enum PlaybackMode {
@@ -310,7 +313,7 @@ public class PlaybackArgs {
             @Nullable String language,
             List<PlaybackVoice> voices,
             long dateModifiedMsSinceEpoch) {
-        this(mSource, isUrl, language, voices, dateModifiedMsSinceEpoch, PlaybackMode.UNSPECIFIED);
+        this(mSource, isUrl, language, voices, dateModifiedMsSinceEpoch, ImmutableList.of(PlaybackMode.UNSPECIFIED));
     }
 
     public PlaybackArgs(
@@ -319,14 +322,14 @@ public class PlaybackArgs {
             @Nullable String language,
             List<PlaybackVoice> voices,
             long dateModifiedMsSinceEpoch,
-            PlaybackMode playbackMode) {
+            List<PlaybackMode> playbackModes) {
         this.mUrl = mSource;
         this.mSource = mSource;
         this.mIsSourceUrl = isUrl;
         this.mLanguage = language;
         this.mVoices = voices;
         this.mDateModifiedMsSinceEpoch = dateModifiedMsSinceEpoch;
-        this.mPlaybackMode = playbackMode;
+        this.mPlaybackModes = playbackModes;
     }
 
     /** Returns the URL of the playback page. */
@@ -360,9 +363,14 @@ public class PlaybackArgs {
         return mDateModifiedMsSinceEpoch;
     }
 
-    /** Returns the playback mode. */
+    /** Returns the playback mode. This method is to be deprecated and replaced by the list version. */
     public PlaybackMode getPlaybackMode() {
-        return mPlaybackMode;
+        return mPlaybackModes.size() > 0 ? mPlaybackModes.get(0) : PlaybackMode.UNSPECIFIED;
+    }
+
+    /** Returns the requested playback modes. */
+    public List<PlaybackMode> getPlaybackModes() {
+        return mPlaybackModes;
     }
 
     // Override toString() to help with debug logging.
@@ -387,8 +395,8 @@ public class PlaybackArgs {
                 + "\tdateModifiedMs="
                 + mDateModifiedMsSinceEpoch
                 + "\n"
-                + "\tplaybackMode="
-                + mPlaybackMode
+                + "\tplaybackModes="
+                + mPlaybackModes
                 + "\n"
                 + "}";
     }

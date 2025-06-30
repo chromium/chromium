@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
 
@@ -217,7 +218,8 @@ public class ReadAloudController
         ResettersForTesting.register(() -> sClock = oldValue);
   }
 
-  private static class ReadabilityInfo {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  static class ReadabilityInfo {
       private final Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult> mReadabilityInfoPerMode;
       private final long mResponseTimestamp;
 
@@ -951,7 +953,8 @@ public class ReadAloudController
             int sanitizedUrlHash = urlToHash(stripUserData(nonNullTab.getUrl()).getSpec());
             ReadabilityInfo info = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
             if (info != null && info.isReadable()) {
-                return getPlaybackModeForNewPlayback(info, tabLanguageStatus.mLanguage);
+              List<PlaybackMode> playbackModes = getPlaybackModesForNewPlayback(info, tabLanguageStatus.mLanguage);
+              return playbackModes.size() > 0 ? playbackModes.get(0) : PlaybackMode.UNSPECIFIED;
             }
         }
         return PlaybackMode.UNSPECIFIED;
@@ -1111,12 +1114,12 @@ public class ReadAloudController
         ReadabilityInfo readabilityInfo = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
         final String playbackLanguage = getLanguageForNewPlayback(tab);
 
-        PlaybackMode playbackMode =
-                getPlaybackModeForNewPlayback(readabilityInfo, playbackLanguage);
+        List<PlaybackMode> playbackModes =
+                getPlaybackModesForNewPlayback(readabilityInfo, playbackLanguage);
 
         // Notify player UI that playback is happening soon and show UI in case there's an error
         // coming.
-        assumeNonNull(mPlayerCoordinator).playTabRequested(playbackMode);
+        assumeNonNull(mPlayerCoordinator).playTabRequested(playbackModes.get(0));
 
         boolean isTranslated = isTranslated(tab);
         var voices = mPlaybackHooks.getVoicesFor(playbackLanguage);
@@ -1132,13 +1135,13 @@ public class ReadAloudController
                 new PlaybackArgs(
                         sanitizedUrl,
                         /* isUrl= */ true,
-                        isTranslated && playbackMode != PlaybackMode.OVERVIEW
+                        isTranslated
                                 ? playbackLanguage
                                 : null,
                         mPlaybackHooks.getPlaybackVoiceList(
                                 ReadAloudPrefs.getVoices(getPrefService())),
                         /* dateModifiedMsSinceEpoch= */ dateModified,
-                        /* playbackMode= */ playbackMode);
+                        /* playbackModes= */ playbackModes);
         Log.d(TAG, "Creating playback with args: %s", args);
 
         Promise<Playback> promise = createPlayback(args);
@@ -1149,7 +1152,7 @@ public class ReadAloudController
                     Playback.Metadata metadata = assumeNonNull(playback.getMetadata());
                     mFeedbackType.set(FeedbackType.NONE);
                     maybeSetUpHighlighter(metadata);
-                    updatePlaybackModeSelectionEnabled(readabilityInfo, playbackLanguage);
+                    updatePlaybackModeSelectionEnabled(readabilityInfo, playbackLanguage, playback, playbackModes);
                     updateVoiceMenu(
                             isTranslated
                                     ? playbackLanguage
@@ -1361,35 +1364,45 @@ public class ReadAloudController
         return language.equals("en");
     }
 
-    private PlaybackMode getPlaybackModeForNewPlayback(@Nullable ReadabilityInfo readabilityInfo, String webPageLanguage) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    List<PlaybackMode> getPlaybackModesForNewPlayback(@Nullable ReadabilityInfo readabilityInfo, String webPageLanguage) {
       if (!isAudioOverviewsAllowed()) {
           // AO feature is disabled, return CLASSIC.
-          return PlaybackMode.CLASSIC;
+          return ImmutableList.of(PlaybackMode.CLASSIC);
       }
       if (!isLanguageSupportedForOverview(webPageLanguage)) {
         // Language unsupported for AO.
-        return PlaybackMode.CLASSIC;
+        return ImmutableList.of(PlaybackMode.CLASSIC);
       }
       if (readabilityInfo == null) {
         // Unexpected, but just to make sure (also simplifies the next conditions).
-        return PlaybackMode.CLASSIC;
+        return ImmutableList.of(PlaybackMode.CLASSIC);
       }
+      ImmutableList.Builder<PlaybackMode> modes = ImmutableList.builder();
       PlaybackMode preferredPlaybackMode = ReadAloudPrefs.getPlaybackMode(getPrefService());
       if (preferredPlaybackMode == PlaybackMode.OVERVIEW || preferredPlaybackMode == PlaybackMode.UNSPECIFIED) {
         // Preferred mode is either AO or unset (in which case we default to AO).
         if (readabilityInfo.isReadable(PlaybackMode.OVERVIEW)) {
             // Preferred mode is OVERVIEW and AO is supported.
-            return PlaybackMode.OVERVIEW;
+            modes.add(PlaybackMode.OVERVIEW);
+            if (readabilityInfo.isReadable(PlaybackMode.CLASSIC)) {
+              modes.add(PlaybackMode.CLASSIC);
+            }
+            return modes.build();
         }
         // Preferred mode is OVERVIEW but is unsupported. Fallback to CLASSIC.
-        return PlaybackMode.CLASSIC;
+        return ImmutableList.of(PlaybackMode.CLASSIC);
       }
       // Preferred mode is CLASSIC.
       if (readabilityInfo.isReadable(PlaybackMode.CLASSIC)) {
           // Preferred mode is CLASSIC and supported.
-          return PlaybackMode.CLASSIC;
+          modes.add(PlaybackMode.CLASSIC);
+          if (readabilityInfo.isReadable(PlaybackMode.OVERVIEW)) {
+            modes.add(PlaybackMode.OVERVIEW);
+          }
+          return modes.build();
         }
-      return PlaybackMode.OVERVIEW;
+      return ImmutableList.of(PlaybackMode.OVERVIEW);
     }
 
     private String getLanguageForNewPlayback(Tab tab) {
@@ -1428,7 +1441,7 @@ public class ReadAloudController
     }
 
     private void updatePlaybackModeSelectionEnabled(
-            @Nullable ReadabilityInfo readabilityInfo, String language) {
+            @Nullable ReadabilityInfo readabilityInfo, String language, Playback playback, List<PlaybackMode> supportedPlaybackModes) {
         if (!isAudioOverviewsAllowed()) {
             mPlaybackModeSelectionEnabled.set(
                     PlaybackModeSelectionEnablementStatus.FEATURE_DISABLED);
@@ -1440,6 +1453,28 @@ public class ReadAloudController
                     PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_UNKNOWN_REASON);
             return;
         }
+
+        // This means that the actual playback mode used was the last one in the supported modes list.
+        // It happens in one of the following cases:
+        // 1. Only one mode was supported during readability.
+        // 2. More than one mode was supported during readability, but a fallback occurred during playback (e.g. because of a readability FP).
+        // In the latter case, if the selected mode is the last one in the list, we don't offer the button.
+        PlaybackMode actualPlaybackMode = assumeNonNull(playback.getMetadata()).playbackMode();
+        int indexOfActualPlaybackMode = supportedPlaybackModes.indexOf(actualPlaybackMode);
+        if (supportedPlaybackModes.size() > 0
+            && indexOfActualPlaybackMode >= 0
+            && indexOfActualPlaybackMode >= supportedPlaybackModes.size() - 1) {
+            if (actualPlaybackMode == PlaybackMode.OVERVIEW) {
+              mPlaybackModeSelectionEnabled.set(
+                    PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_CLASSIC_UNAVAILABLE);
+            } else {
+              mPlaybackModeSelectionEnabled.set(
+                    PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_AO_UNAVAILABLE);
+            }
+
+            return;
+        }
+
         boolean classicSupported = readabilityInfo.isReadable(PlaybackMode.CLASSIC);
         boolean overviewSupported = readabilityInfo.isReadable(PlaybackMode.OVERVIEW);
         boolean isLanguageSupported = isLanguageSupportedForOverview(language);
