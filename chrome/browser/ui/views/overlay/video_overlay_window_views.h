@@ -38,7 +38,6 @@ class FrameSinkId;
 class BackToTabLabelButton;
 class CloseImageButton;
 class HangUpButton;
-class OverlayControlsFadeAnimation;
 class OverlayWindowBackToTabButton;
 class OverlayWindowLiveCaptionDialog;
 class OverlayWindowMinimizeButton;
@@ -163,9 +162,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Updates the controls view::Views to reflect |is_visible|. If the window is
   // currently in motion, the update is queued until the end of motion. If
   // multiple updates are requested, only the last update will be applied.
-  // When `should_animate` is true, there will be fade animation to the new
-  // state.
-  void UpdateControlsVisibility(bool is_visible, bool should_animate = true);
+  void UpdateControlsVisibility(bool is_visible);
 
   // Gets the bounds of the controls.
   gfx::Rect GetBackToTabControlsBounds();
@@ -479,9 +476,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Used to tuck/untuck this widget into the side of the screen.
   std::unique_ptr<PictureInPictureTucker> tucker_;
   bool is_tucking_forced_ = false;
-
-  // Used for when the controls change visibility.
-  std::unique_ptr<OverlayControlsFadeAnimation> fade_animation_;
 
   // Callback to get / create an overlay view.  This is a callback to let tests
   // provide alternate implementations.
