@@ -4,7 +4,6 @@ UNKNOWN_TYPE | JP1$txtTo | To * |  | txtSearch_1
 UNKNOWN_TYPE | JP1$txtDepartureDate | Out date | 18/04/2013 | txtSearch_1
 UNKNOWN_TYPE | JP1$ddlDepartureHour | Hour | 15 | txtSearch_1
 UNKNOWN_TYPE | JP1$ddlDepartureMin | Min | 00 | txtSearch_1
-UNKNOWN_TYPE | JP1$chkReturn | Return ticket? | on | txtSearch_1
 UNKNOWN_TYPE | JP1$txtReturnDate | Return date | 18/04/2013 | -default
 UNKNOWN_TYPE | JP1$ddlReturnHour | Hour | 16 | -default
 UNKNOWN_TYPE | JP1$ddlReturnMin | Min | 00 | -default
@@ -47,8 +46,5 @@ UNKNOWN_TYPE | Register1$txtAddress4 | Address Line 4: |  | txtSearch_1
 UNKNOWN_TYPE | Register1$txtAddress5 | Address Line 5: |  | txtSearch_1
 ADDRESS_HOME_ZIP | Register1$txtPostCode | Post Code: * |  | txtSearch_1
 ADDRESS_HOME_COUNTRY | Register1$ddlCountry | Country: * | Z0 | txtSearch_1
-UNKNOWN_TYPE | Register1$termsandconditions$chkTerms | I agree to the terms and          conditions * | on | txtSearch_1
-UNKNOWN_TYPE | Register1$chkPrivacy1984 | Please tick here if you DO NOT wish to receive information and exclusive offers from South West Trains | on | txtSearch_1
-UNKNOWN_TYPE | Register1$chkPrivacy2003 | Please tick here if you DO wish to receive information and exclusive offers from our carefully selected partners | on | txtSearch_1
 UNKNOWN_TYPE | Register1$txtPassword | Password: * |  | txtSearch_1
 UNKNOWN_TYPE | Register1$txtConfirmPassword | Confirm Password: * |  | txtSearch_1

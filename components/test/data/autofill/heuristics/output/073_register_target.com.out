@@ -25,6 +25,3 @@ EMAIL_ADDRESS | email | Your email address:* |  | userName_1
 EMAIL_ADDRESS | emailCheck | Re-enter email address:* |  | userName_1
 UNKNOWN_TYPE | password | Create a password:* |  | userName_1
 UNKNOWN_TYPE | passwordCheck | Re-enter password:* |  | userName_1
-UNKNOWN_TYPE | subscribeEmail | Yes, please send me e-mails about special offers, exclusives and promotions from Target. | 1 | userName_1
-UNKNOWN_TYPE | ageCheck | Yes | yes | userName_1
-UNKNOWN_TYPE | ageCheck | No | no | userName_1

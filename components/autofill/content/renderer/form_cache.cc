@@ -33,8 +33,8 @@ namespace {
 // (1) At least one form field is not-checkable. (See crbug.com/1489075.)
 // (2) At least one field has a non-empty autocomplete attribute.
 // (3) There is at least one iframe.
-// TODO(crbug.com/40283901): Should an element that IsCheckableElement() also be
-// IsAutofillableInputElement()?
+// TODO(crbug.com/40283901): Remove check for radio buttons and checkboxes when
+// we they're not extracted anymore.
 bool IsFormInteresting(const FormData& form) {
   auto is_checkable = [](FormControlType type) {
     return type == FormControlType::kInputCheckbox ||

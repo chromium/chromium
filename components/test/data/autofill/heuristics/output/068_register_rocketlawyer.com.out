@@ -5,4 +5,3 @@ EMAIL_ADDRESS | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlac
 EMAIL_ADDRESS | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$txtConfirmUserName | Confirm Email Address * |  | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1
 UNKNOWN_TYPE | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$txtPassword | Password * |  | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1
 UNKNOWN_TYPE | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$txtConfirmPassword | Confirm Password * |  | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1
-UNKNOWN_TYPE | ctl00$ctl00$ctl00$SiteMasterBody$ContentPlaceHolder1$ContentPlaceHolder1$chkNewsletter | Yes, send me Rocket Lawyer partner offers, which are sent no more than twice per month and are from Rocket Lawyer's trusted business partners. | on | ctl00$ctl00$ctl00$SiteMasterBody$NewNavigationTabs$txtQuery_1

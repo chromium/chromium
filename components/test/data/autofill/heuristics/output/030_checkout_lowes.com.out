@@ -9,7 +9,6 @@ ADDRESS_HOME_CITY | city | City: |  | address1_2
 ADDRESS_HOME_STATE | state | State: |  | address1_2
 ADDRESS_HOME_ZIP | zipCode | ZIP Code: |  | address1_2
 ADDRESS_HOME_CITY | taxGeoCode | Municipality: As an additional way to make sure you receive your order, we ask that you select the name of your municipality (city, town, borough, village, etc.) followed by the county, township, or parish in which you reside. |  | address1_2
-UNKNOWN_TYPE | billingAddress | This is also my billing address. | on | address1_2
 EMAIL_ADDRESS | email1 | E-mail Address: |  | address1_2
 PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | billphone1 | Contact Phone: |  | address1_2
 PHONE_HOME_NUMBER_PREFIX | billphone2 | Contact Phone: |  | address1_2

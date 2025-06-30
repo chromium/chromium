@@ -2,8 +2,6 @@ ADDRESS_HOME_COUNTRY | _1_personTitle | First Name Middle Name(optional) Last Na
 NAME_FIRST | _1_firstName | First Name |  | _1_personTitle_1
 NAME_MIDDLE | _1_middleName | Middle Name(optional) |  | _1_personTitle_1
 NAME_LAST | _1_lastName | Last Name |  | _1_personTitle_1
-UNKNOWN_TYPE | _1_gender | Male | M | _1_personTitle_1
-UNKNOWN_TYPE | _1_gender | Female | F | _1_personTitle_1
 ADDRESS_HOME_COUNTRY | _1_country | Country USA & Territories | USA | _1_country_2
 ADDRESS_HOME_ZIP | _1_JPNPostal | Postal Code |  | _1_country_2
 UNKNOWN_TYPE | _1_JPNPrefecture | Prefecture |  | -default
@@ -20,14 +18,7 @@ ADDRESS_HOME_STATE | _1_CAProvince | Province |  | _1_zipCode_3
 ADDRESS_HOME_CITY | _1_INTLCity | City |  | -default
 ADDRESS_HOME_STATE | _1_INTLCounty | County |  | -default
 ADDRESS_HOME_ZIP | _1_INTLPostal | Postal Code |  | -default
-UNKNOWN_TYPE | _1_addressSelect | Home | homeAddress | _1_zipCode_3
-UNKNOWN_TYPE | _1_addressSelect | Business | bizAddress | _1_zipCode_3
 COMPANY_NAME | _1_otherAddress | Company Name (optional) |  | _1_zipCode_3
 PHONE_HOME_CITY_AND_NUMBER | _1_phone1 | Daytime Phone Number |  | _1_zipCode_3
 PHONE_HOME_CITY_AND_NUMBER | _1_intlPhone1Prefix | Daytime Phone Number |  | _1_zipCode_3
 PHONE_HOME_CITY_AND_NUMBER | _1_intlPhone1 | Daytime Phone Number |  | _1_zipCode_3
-UNKNOWN_TYPE | _1_phone1_Loc | Home | H | _1_zipCode_3
-UNKNOWN_TYPE | _1_phone1_Loc | Work | B | _1_zipCode_3
-UNKNOWN_TYPE | _1_phone1_Loc | Mobile | M | _1_zipCode_3
-UNKNOWN_TYPE | _1_ckoutShippingCheck | Include my phone number on shipping forms | ckoutShippingCheck | _1_zipCode_3
-UNKNOWN_TYPE | _1_shipLiability | I accept liability for shipping these items uninsured | on | _1_zipCode_3

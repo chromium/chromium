@@ -36,7 +36,6 @@ UNKNOWN_TYPE | birthdate2 | Date of birth, Month | 0 | firstname_2
 UNKNOWN_TYPE | birthdate1 | Date of birth, Day | 0 | firstname_2
 UNKNOWN_TYPE | birthdate3 | Year of birth, four digit format. | 0 | firstname_2
 UNKNOWN_TYPE | tokentext | For added security - opens in a new window or tab, please enter the verification code hidden in the image. |  | firstname_2
-UNKNOWN_TYPE | acceptq1 | I agree that:I accept the User Agreement - opens in a new window or tab and Privacy Policy.I may receive communications from eBay and can change my notification preferences in My eBay.I'm at least 18 years old. | 1 | firstname_2
 UNKNOWN_TYPE | uword1 | Give us some word and we'll suggest some user IDs for you. Word 1 |  | firstname_2
 UNKNOWN_TYPE | uword2 | Word 2 |  | firstname_2
 UNKNOWN_TYPE | uword3 | Word 3 |  | firstname_2
@@ -70,12 +69,10 @@ UNKNOWN_TYPE | birthdate2 | Date of birth, Month | 0 | firstname_3
 UNKNOWN_TYPE | birthdate1 | Date of birth, Day | 0 | firstname_3
 UNKNOWN_TYPE | birthdate3 | Year of birth, four digit format. | 0 | firstname_3
 UNKNOWN_TYPE | tokentext | For added security - opens in a new window or tab, please enter the verification code hidden in the image. |  | firstname_3
-UNKNOWN_TYPE | acceptq1 | I agree that:I accept the User Agreement - opens in a new window or tab and Privacy Policy.I may receive communications from eBay and can change my notification preferences in My eBay.I'm at least 18 years old. | 1 | firstname_3
 UNKNOWN_TYPE | uword1 | Give us some word and we'll suggest some user IDs for you. Word 1 |  | firstname_3
 UNKNOWN_TYPE | uword2 | Word 2 |  | firstname_3
 UNKNOWN_TYPE | uword3 | Word 3 |  | firstname_3
 UNKNOWN_TYPE | tokentext | For added security - opens in a new window or tab, please enter the verification code hidden in the image. |  | firstname_3
-UNKNOWN_TYPE | acceptq1 | I agree that:I accept the User Agreement - opens in a new window or tab and Privacy Policy.I may receive communications from eBay and can change my notification preferences in My eBay.I'm at least 18 years old. | 1 | firstname_3
 
 UNKNOWN_TYPE | uword1 | Give us some word and we'll suggest some user IDs for you. Word 1 |  | uword1_1
 UNKNOWN_TYPE | uword2 | Word 2 |  | uword1_1
