@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>corner-shape hyperellipse with small border-radius</title>
+<link rel="help" href="https://drafts.csswg.org/css-borders-4/#corner-shape-interpolation">
+<style>
+body {
+    margin: 0;
+}
+
+.test {
+  width: 100px;
+  height: 100px;
+  background: green;
+  border: 10px solid blue;
+  border-radius: 1%;
+  corner-shape: squircle;
+  box-sizing: border-box;
+}
+</style>
+<div class="test"></div>
