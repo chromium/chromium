@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
 #include "chrome/browser/ui/views/overlay/minimize_button.h"
+#include "chrome/browser/ui/views/overlay/overlay_controls_fade_animation.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_live_caption_dialog.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
 #include "chrome/browser/ui/views/overlay/resize_handle_button.h"
@@ -480,7 +481,8 @@ VideoOverlayWindowViews::VideoOverlayWindowViews(
           base::BindRepeating(
               &VideoOverlayWindowViews::UpdateControlsVisibility,
               base::Unretained(this),
-              false /* is_visible */)),
+              false /* is_visible */,
+              true /* should_animate */)),
       enable_controls_after_move_timer_(
           FROM_HERE,
           VideoOverlayWindowViews::kControlHideDelayAfterMove,
@@ -765,10 +767,17 @@ void VideoOverlayWindowViews::StopForcingControlsVisibleForTesting() {
 }
 
 bool VideoOverlayWindowViews::AreControlsVisible() const {
-  return GetControlsContainerView()->GetVisible();
+  // If we're animating to a visibility state, then we'll act as if we're in
+  // that state.
+  if (fade_animation_) {
+    return (fade_animation_->type() ==
+            OverlayControlsFadeAnimation::Type::kToShown);
+  }
+  return GetControlsContainerView()->layer()->opacity() > 0;
 }
 
-void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
+void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible,
+                                                       bool should_animate) {
   if (is_moving_) {
     queued_controls_visibility_status_ = is_visible;
     return;
@@ -782,8 +791,28 @@ void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
   }
 
   // If the overlay view is shown, then the other controls are always hidden.
-  GetControlsContainerView()->SetVisible(
-      !IsOverlayViewShown() && force_controls_visible_.value_or(is_visible));
+  const bool wanted_visibility =
+      !IsOverlayViewShown() && force_controls_visible_.value_or(is_visible);
+
+  // If this shouldn't be animated, then cancel any existing animations and set
+  // the opacity instantly.
+  if (!should_animate) {
+    fade_animation_.reset();
+    GetControlsContainerView()->layer()->SetOpacity(wanted_visibility ? 1.0
+                                                                      : 0.0);
+    return;
+  }
+
+  if (wanted_visibility == AreControlsVisible()) {
+    return;
+  }
+
+  // Fade to the new visibility state.
+  fade_animation_ = std::make_unique<OverlayControlsFadeAnimation>(
+      *GetControlsContainerView(),
+      wanted_visibility ? OverlayControlsFadeAnimation::Type::kToShown
+                        : OverlayControlsFadeAnimation::Type::kToHidden);
+  fade_animation_->Start();
 }
 
 void VideoOverlayWindowViews::UpdateControlsBounds() {
@@ -1509,7 +1538,7 @@ void VideoOverlayWindowViews::OnRootViewReady() {
   view_holder_.clear();
 
   // Don't show the controls until the mouse hovers over the window.
-  UpdateControlsVisibility(false);
+  UpdateControlsVisibility(false, /*should_animate=*/false);
 }
 
 void VideoOverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
