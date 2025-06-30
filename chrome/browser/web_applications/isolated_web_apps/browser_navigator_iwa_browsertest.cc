@@ -113,7 +113,7 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
                 web_app::ManifestBuilder()
                     .SetName("app-1.0.0")
                     .SetVersion("1.0.0")
-                    .AddProtocolHandler("web+meow", "/index.html?params=%s"))
+                    .AddProtocolHandler("meow", "/index.html?params=%s"))
                 .BuildBundle();
 
     url_info1_ = std::make_unique<web_app::IsolatedWebAppUrlInfo>(
@@ -260,13 +260,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocol) {
   {
     // Eliminate all prompts/guards along the way.
     ExternalProtocolHandler::PermitLaunchUrl();
-    ExternalProtocolHandler::SetBlockState("web+meow", url_info2_->origin(),
+    ExternalProtocolHandler::SetBlockState("meow", url_info2_->origin(),
                                            ExternalProtocolHandler::DONT_BLOCK,
                                            profile());
     base::test::TestFuture<void> future;
     web_app::WebAppProvider::GetForWebApps(profile())
         ->scheduler()
-        .UpdateProtocolHandlerUserApproval(url_info1_->app_id(), "web+meow",
+        .UpdateProtocolHandlerUserApproval(url_info1_->app_id(), "meow",
                                            web_app::ApiApprovalState::kAllowed,
                                            future.GetCallback());
     ASSERT_TRUE(future.Wait());
@@ -277,12 +277,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocol) {
 
   GURL remapped_url =
       custom_handlers::ProtocolHandler::CreateProtocolHandler(
-          "web+meow",
+          "meow",
           url_info1_->origin().GetURL().Resolve("/index.html?params=%s"))
-          .TranslateUrl(GURL("web+meow://hru"));
+          .TranslateUrl(GURL("meow://hru"));
 
   ui_test_utils::UrlLoadObserver observer(remapped_url);
-  ASSERT_THAT(content::EvalJs(rfh, "window.open('web+meow://hru')"),
+  ASSERT_THAT(content::EvalJs(rfh, "window.open('meow://hru')"),
               content::EvalJsResult::IsOk());
   observer.Wait();
 
