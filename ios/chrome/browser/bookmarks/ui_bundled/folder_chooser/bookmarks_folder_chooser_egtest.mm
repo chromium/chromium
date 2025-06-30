@@ -599,7 +599,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 
   // 2. Move a single folder at edit page.
 
-  // Change to edit mode
+  // Change to edit mode.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kBookmarksHomeTrailingButtonIdentifier)]
@@ -666,9 +666,9 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
                                    [BookmarkEarlGreyUI contextBarMoreString])]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER)]
       performAction:grey_tap()];
 
   // Verify that the editor is present.
