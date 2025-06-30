@@ -108,11 +108,8 @@
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(TOSCommands)];
-  id<TOSCommands> TOSHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), TOSCommands);
   self.viewController = [[FullscreenSigninScreenViewController alloc]
       initWithContextStyle:_contextStyle];
-  self.viewController.TOSHandler = TOSHandler;
   self.viewController.delegate = self;
 
   ProfileIOS* profile = self.profile->GetOriginalProfile();

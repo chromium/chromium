@@ -11,7 +11,6 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 enum class SigninContextStyle;
-@protocol TOSCommands;
 
 // Delegate for the fullscreen sign-in view controller.
 @protocol FullscreenSigninScreenViewControllerDelegate <
@@ -27,7 +26,6 @@ enum class SigninContextStyle;
     : PromoStyleViewController <FullscreenSigninScreenConsumer>
 
 // Handler to open the terms of service dialog.
-@property(nonatomic, weak) id<TOSCommands> TOSHandler;
 @property(nonatomic, weak) id<FullscreenSigninScreenViewControllerDelegate>
     delegate;
 
