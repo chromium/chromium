@@ -23,6 +23,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
+#include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -50,6 +51,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
@@ -74,6 +78,7 @@ using ash::LoginManagerMixin;
 using ash::kiosk::test::LaunchAppManually;
 using ash::kiosk::test::TheKioskApp;
 using ash::kiosk::test::WaitKioskLaunched;
+using ash::kiosk::test::WaitNetworkScreen;
 using base::test::ValueIs;
 using testing::Eq;
 using testing::HasSubstr;
@@ -309,6 +314,8 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
                session_mixin_);
   }
 
+  // `ConfigureSession` should be called before this function with the same
+  // `bundle_id`. `ConfigureSession` is usually called during the set up.
   void LaunchSession(const SignedWebBundleId& bundle_id) {
     std::visit(
         absl::Overload([](MgsMixin& mgs_mixin) { mgs_mixin.LaunchMgs(); },
@@ -446,7 +453,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
   const base::FilePath& cache_root_dir() const { return cache_root_dir_; }
 
- private:
+ protected:
   void WaitForSessionLaunch() {
     std::visit(
         absl::Overload(
@@ -843,5 +850,100 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(SessionType::kManagedGuestSession,
                     SessionType::kKiosk,
                     SessionType::kUserSession));
+
+// Covers Kiosk specific tests which cannot be tested in other sessions.
+class IwaKioskCacheTest : public IwaCacheBaseTest {
+ public:
+  IwaKioskCacheTest() : IwaCacheBaseTest(SessionType::kKiosk) {}
+
+  void SetUpInProcessBrowserTestFixture() override {
+    IwaCacheBaseTest::SetUpInProcessBrowserTestFixture();
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
+  void AddBundleToUpdateServer() {
+    iwa_mixin_.AddBundle(
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion(kBaseVersion))
+            .BuildBundle(kPublicKeyPair));
+  }
+
+  void DisableKioskOfflineLaunch() {
+    policy::PolicyMap values;
+    values.Set(policy::key::kKioskWebAppOfflineEnabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+    provider_.UpdateChromePolicy(values);
+  }
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  ash::NetworkStateMixin network_state_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(IwaKioskCacheTest, PRE_OfflineLaunchFromCache) {
+  network_state_.SimulateOnline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+  ASSERT_TRUE(WaitKioskLaunched());
+  AssertAppInstalledAtVersion(kWebBundleId, kBaseVersion);
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaKioskCacheTest, OfflineLaunchFromCache) {
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  network_state_.SimulateOffline();
+  RemoveBundleFromUpdateServer();
+
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+  ASSERT_TRUE(WaitKioskLaunched());
+  AssertAppInstalledAtVersion(kWebBundleId, kBaseVersion);
+}
+
+IN_PROC_BROWSER_TEST_F(IwaKioskCacheTest,
+                       PRE_DoNotLaunchFromCacheWhenDisabledByPolicy) {
+  network_state_.SimulateOnline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+  ASSERT_TRUE(WaitKioskLaunched());
+  AssertAppInstalledAtVersion(kWebBundleId, kBaseVersion);
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+}
+
+// By default `KioskWebAppOfflineEnabled` policy is enabled, this test checks
+// when the policy is disabled and the device is offline, the app will not be
+// installed from cache, but the device will show the network dialog.
+IN_PROC_BROWSER_TEST_F(IwaKioskCacheTest,
+                       DoNotLaunchFromCacheWhenDisabledByPolicy) {
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  network_state_.SimulateOffline();
+  RemoveBundleFromUpdateServer();
+  DisableKioskOfflineLaunch();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+  WaitNetworkScreen();
+
+  network_state_.SimulateOnline();
+  AddBundleToUpdateServer();
+  ASSERT_TRUE(WaitKioskLaunched());
+}
+
+// Cache is not available, the network dialog should be shown.
+IN_PROC_BROWSER_TEST_F(IwaKioskCacheTest,
+                       ShowNetworkDialogWhenLaunchFromCacheFailed) {
+  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  network_state_.SimulateOffline();
+  RemoveBundleFromUpdateServer();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+  WaitNetworkScreen();
+
+  network_state_.SimulateOnline();
+  AddBundleToUpdateServer();
+  ASSERT_TRUE(WaitKioskLaunched());
+}
 
 }  // namespace web_app
