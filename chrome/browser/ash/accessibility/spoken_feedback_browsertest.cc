@@ -733,6 +733,28 @@ class SpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
           switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
     }
   }
+
+  void NavigateToMathPage() {
+    sm()->Call([this]() {
+      NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
+          <button autofocus>start</button>
+          <math>
+            <mfrac>
+              <mrow>
+                <mi>d</mi>
+                <mi>y</mi>
+              </mrow>
+              <mrow>
+                <mi>d</mi>
+                <mi>x</mi>
+              </mrow>
+            </mfrac>
+            <mo>=</mo>
+          </math>
+          <p>end</p>)"));
+    });
+    sm()->ExpectSpeech("start");
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1535,6 +1557,175 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyModeRawKeys) {
     SendKeyPress(ui::VKEY_LWIN);
     SendKeyPress(ui::VKEY_LWIN);
   });
+  sm()->ExpectSpeech("Sticky mode disabled");
+
+  sm()->Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
+                       ChromeVoxStickyModeNavigatesAcrossMath) {
+  chromevox_test_utils()->EnableChromeVox();
+  NavigateToMathPage();
+
+  // Press the sticky-key sequence: Search Search.
+  sm()->Call([this]() { SendStickyKeyCommand(); });
+  sm()->ExpectSpeech("Sticky mode enabled");
+
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("StartFraction d y Over d x EndFraction equal");
+  sm()->ExpectSpeech("Press up, down, left, or right to explore math");
+
+  // Pressing right again does not enter the math exploration, since Sticky Mode
+  // is on.
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("end");
+
+  sm()->Call([this]() { SendStickyKeyCommand(); });
+  sm()->ExpectSpeech("Sticky mode disabled");
+
+  sm()->Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigatesAcrossMath) {
+  chromevox_test_utils()->EnableChromeVox();
+  NavigateToMathPage();
+
+  sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("StartFraction d y Over d x EndFraction equal");
+  sm()->ExpectSpeech("Press up, down, left, or right to explore math");
+
+  // We can leave the math node by navigating as usual.
+  sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("end");
+
+  sm()->Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigatesWithinMath) {
+  chromevox_test_utils()->EnableChromeVox();
+  NavigateToMathPage();
+
+  sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("StartFraction d y Over d x EndFraction equal");
+  sm()->ExpectSpeech("Press up, down, left, or right to explore math");
+
+  // Pressing down by itself leaves us within the Math exploration mode.
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("StartFraction d y Over d x EndFraction");
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("d y");
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("D");
+
+  // We can leave the math node by navigating as usual.
+  sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("end");
+
+  sm()->Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TabNavigatesWhileInMath) {
+  chromevox_test_utils()->EnableChromeVox();
+
+  sm()->Call([this]() {
+    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
+        <button autofocus>start</button>
+        <math>
+          <mfrac>
+            <mrow>
+              <mi>d</mi>
+              <mi>y</mi>
+            </mrow>
+            <mrow>
+              <mi>d</mi>
+              <mi>x</mi>
+            </mrow>
+          </mfrac>
+          <mo>=</mo>
+        </math>
+        <p>not me</p>
+        <button>sandwich</button>
+        <p>end</p>)"));
+  });
+  sm()->ExpectSpeech("start");
+
+  sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("StartFraction d y Over d x EndFraction equal");
+  sm()->ExpectSpeech("Press up, down, left, or right to explore math");
+
+  // Pressing down by itself leaves us within the Math exploration mode.
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("StartFraction d y Over d x EndFraction");
+
+  // Press tab. Focus should leave the math element and go to the next element
+  // with keyboard focus.
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_TAB); });
+  sm()->ExpectSpeech("sandwich");
+
+  // Using the arrow keys does nothing as we are no longer focused on math.
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm()->ExpectNextSpeechIsNot("d y");
+  sm()->ExpectSpeech("end");
+
+  sm()->Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
+                       DisablesStickyModeAndNavigatesWithinMath) {
+  chromevox_test_utils()->EnableChromeVox();
+  NavigateToMathPage();
+
+  sm()->Call([this]() { SendStickyKeyCommand(); });
+  sm()->ExpectSpeech("Sticky mode enabled");
+
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("StartFraction d y Over d x EndFraction equal");
+  sm()->ExpectSpeech("Press up, down, left, or right to explore math");
+
+  sm()->Call([this]() { SendStickyKeyCommand(); });
+  sm()->ExpectSpeech("Sticky mode disabled");
+
+  // Pressing down by itself leaves us within the Math exploration mode.
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("StartFraction d y Over d x EndFraction");
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("d y");
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("D");
+
+  // We can leave the math node by navigating as usual.
+  sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("end");
+
+  sm()->Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
+                       EnablesStickyModeAndNavigatesOutOfMath) {
+  chromevox_test_utils()->EnableChromeVox();
+  NavigateToMathPage();
+
+  sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("StartFraction d y Over d x EndFraction equal");
+  sm()->ExpectSpeech("Press up, down, left, or right to explore math");
+
+  // Pressing down by itself leaves us within the Math exploration mode.
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("StartFraction d y Over d x EndFraction");
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("d y");
+
+  // Turn on sticky mode.
+  sm()->Call([this]() { SendStickyKeyCommand(); });
+  sm()->ExpectSpeech("Sticky mode enabled");
+
+  // We can leave the math node by navigating with the down arrow, rather than
+  // diving down to the "D" term.
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("end");
+
+  sm()->Call([this]() { SendStickyKeyCommand(); });
   sm()->ExpectSpeech("Sticky mode disabled");
 
   sm()->Replay();

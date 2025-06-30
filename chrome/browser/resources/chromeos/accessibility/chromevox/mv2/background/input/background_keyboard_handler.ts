@@ -75,7 +75,7 @@ export class BackgroundKeyboardHandler {
   /**
    * Handles key down events.
    * The return value has no effect since we ignore it in
-   *     SpokenFeedbackEventRewriterDelegate::HandleKeyboardEvent.
+   *     AccessibilityEventRewriter::RewriteEventForChromeVox.
    */
   onKeyDown(evt: InternalKeyEvent): boolean {
     EventSource.set(EventSourceType.STANDARD_KEYBOARD);

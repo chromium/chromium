@@ -306,6 +306,9 @@ export class ChromeVoxRange {
     this.previous_ = this.current_;
     this.current_ = newRange;
 
+    // Check math state in case we've moved away from a math node.
+    MathHandler.checkInstance(newRange);
+
     this.notifyObservers_(newRange, fromEditing);
 
     if (!this.current_) {
