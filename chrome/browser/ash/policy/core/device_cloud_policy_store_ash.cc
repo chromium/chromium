@@ -179,11 +179,9 @@ DeviceCloudPolicyStoreAsh::CreateValidator(
   if (CanUseDeviceIdValidation()) {
     validator->ValidateDeviceId(install_attributes_->GetDeviceId(),
                                 CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
+  } else {
+    validator->ValidateDomain(install_attributes_->GetDomain());
   }
-
-  // TODO(b:256551074): The domain validation is planned to be removed when we
-  // confirm that the device_id validation works.
-  validator->ValidateDomain(install_attributes_->GetDomain());
   validator->ValidatePolicyType(dm_protocol::kChromeDevicePolicyType);
   validator->ValidatePayload();
   validator->ValidateValues(std::make_unique<ONCDevicePolicyValueValidator>());
