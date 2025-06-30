@@ -1212,6 +1212,8 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   // see above.
   static std::tuple<size_t, size_t, size_t, size_t> ResetCountsForTesting();
 
+  bool IsUIAControl() const;
+
  protected:
   AXPlatformNodeWin();
   ~AXPlatformNodeWin() override;
@@ -1241,8 +1243,6 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   bool CanHaveUIALabeledBy();
 
   bool IsNameExposed() const;
-
-  bool IsUIAControl() const;
 
   std::optional<LONG> ComputeUIALandmarkType() const;
 

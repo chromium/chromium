@@ -3253,7 +3253,7 @@ TEST_F(BrowserAccessibilityWinTest, UIACreateExtraAnnouncementNodesFails) {
           MakeAXTreeUpdateForTesting(root_data, button), node_id_delegate_,
           test_browser_accessibility_delegate_.get()));
   manager->FireAriaNotificationEvent(
-      manager->GetBrowserAccessibilityRoot(), "This is an announcement",
+      manager->GetFromID(2), "This is an announcement",
       ax::mojom::AriaNotificationPriority::kNormal,
       ax::mojom::AriaNotificationInterrupt::kNone, "" /*type */);
 

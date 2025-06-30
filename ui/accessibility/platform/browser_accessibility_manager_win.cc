@@ -155,7 +155,17 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
   }
 
   auto* provider = ToBrowserAccessibilityWin(node)->GetCOM();
-  if (!provider->HasEventListenerForEvent(UIA_NotificationEventId)) {
+  while (provider && !provider->IsUIAControl()) {
+    // If the node is not a UIA control, we need to find the first ancestor
+    // that is a UIA control.
+    BrowserAccessibility* parent = node->PlatformGetParent();
+    CHECK(parent) << "FireAriaNotificationEvent called on a node without a UIA "
+                     "control ancestor.";
+    provider = ToBrowserAccessibilityWin(parent)->GetCOM();
+    node = parent;
+  }
+  if (!provider ||
+      !provider->HasEventListenerForEvent(UIA_NotificationEventId)) {
     return;
   }
 
