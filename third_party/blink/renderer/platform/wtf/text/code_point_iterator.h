@@ -89,7 +89,9 @@ class CodePointIterator {
   // Create a `begin()` iterator.
   template <class T>
   explicit CodePointIterator(const T& string)
-      : CodePointIterator(string.Is8Bit(), string.Bytes(), string.length()) {}
+      : CodePointIterator(string.Is8Bit(),
+                          string.RawByteSpan().data(),
+                          string.length()) {}
 
   // Create an `end()` iterator.
   template <class T>

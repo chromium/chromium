@@ -23,16 +23,12 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/i18n/string_search.h"
 #include "base/numerics/safe_conversions.h"
@@ -376,22 +372,9 @@ bool StringImpl::ContainsOnlyWhitespaceOrEmpty() {
   // FIXME: The definition of whitespace here includes a number of characters
   // that are not whitespace from the point of view of LayoutText; I wonder if
   // that's a problem in practice.
-  if (Is8Bit()) {
-    for (wtf_size_t i = 0; i < length_; ++i) {
-      UChar c = Characters8()[i];
-      if (!IsASCIISpace(c))
-        return false;
-    }
-
-    return true;
-  }
-
-  for (wtf_size_t i = 0; i < length_; ++i) {
-    UChar c = Characters16()[i];
-    if (!IsASCIISpace(c))
-      return false;
-  }
-  return true;
+  return VisitCharacters(*this, [](const auto& str) {
+    return std::ranges::all_of(str, [](auto ch) { return IsASCIISpace(ch); });
+  });
 }
 
 scoped_refptr<StringImpl> StringImpl::Substring(wtf_size_t start,
@@ -1531,8 +1514,9 @@ bool Equal(const StringImpl* a, base::span<const UChar> b) {
   return EqualInternal(a, b);
 }
 
+// SAFETY: Safe only when latin1 is null-terminated cstring.
 template <typename StringType>
-bool EqualToCString(const StringType* a, const LChar* b) {
+UNSAFE_BUFFER_USAGE bool EqualToCString(const StringType* a, const LChar* b) {
   DCHECK(b);
   return VisitCharacters(*a, [b](auto chars) {
     for (wtf_size_t i = 0; auto ac : chars) {
@@ -1545,14 +1529,18 @@ bool EqualToCString(const StringType* a, const LChar* b) {
   });
 }
 
-bool EqualToCString(const StringImpl* a, const char* latin1) {
+// SAFETY: Safe only when latin1 is null-terminated cstring.
+UNSAFE_BUFFER_USAGE bool EqualToCString(const StringImpl* a,
+                                        const char* latin1) {
   if (!a) {
     return !latin1;
   }
   return EqualToCString(a, reinterpret_cast<const LChar*>(latin1));
 }
 
-bool EqualToCString(const StringView& a, const char* latin1) {
+// SAFETY: Safe only when latin1 is null-terminated cstring.
+UNSAFE_BUFFER_USAGE bool EqualToCString(const StringView& a,
+                                        const char* latin1) {
   return EqualToCString(&a, reinterpret_cast<const LChar*>(latin1));
 }
 

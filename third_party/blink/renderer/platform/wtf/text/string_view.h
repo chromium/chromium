@@ -118,12 +118,14 @@ class WTF_EXPORT StringView {
   // From a non-null StringImpl.
   StringView(const StringImpl& impl)
       : impl_(const_cast<StringImpl*>(&impl)),
-        bytes_(impl.Bytes()),
+        bytes_(impl.RawByteSpan().data()),
         length_(impl.length()) {}
 
   // From a non-null StringImpl, avoids the null check.
   StringView(StringImpl& impl)
-      : impl_(&impl), bytes_(impl.Bytes()), length_(impl.length()) {}
+      : impl_(&impl),
+        bytes_(impl.RawByteSpan().data()),
+        length_(impl.length()) {}
   StringView(StringImpl&, unsigned offset);
   StringView(StringImpl&, unsigned offset, unsigned length);
 
@@ -257,8 +259,9 @@ class WTF_EXPORT StringView {
     // If this StringView is backed by a StringImpl, and was constructed
     // with a zero offset and the same length we can just access the impl
     // directly since this == StringView(m_impl).
-    if (impl_->Bytes() == Bytes() && length_ == impl_->length())
+    if (impl_->RawByteSpan().data() == Bytes() && length_ == impl_->length()) {
       return GetPtr(impl_);
+    }
     return nullptr;
   }
 
@@ -334,7 +337,7 @@ inline StringView::StringView(const StringImpl* impl) {
   }
   impl_ = const_cast<StringImpl*>(impl);
   length_ = impl->length();
-  bytes_ = impl->Bytes();
+  bytes_ = impl->RawByteSpan().data();
 }
 
 inline StringView::StringView(const StringImpl* impl, unsigned offset) {

@@ -63,9 +63,7 @@ class StringBuffer {
   void Shrink(unsigned new_length);
 
   // Prefer Span() to length()/Characters().
-  base::span<CharType> Span() {
-    return base::span<CharType>(Characters(), length());
-  }
+  base::span<CharType> Span() { return data_->Span<CharType>(); }
 
   unsigned length() const { return data_ ? data_->length() : 0; }
   CharType* Characters() {

@@ -274,9 +274,10 @@ struct LowercaseLookupTranslator {
     const StringImpl* query = buf.impl();
     if (bucket->length() != query->length())
       return false;
-    if (bucket->Bytes() == query->Bytes() &&
-        bucket->Is8Bit() == query->Is8Bit())
+    if (bucket->RawByteSpan().data() == query->RawByteSpan().data() &&
+        bucket->Is8Bit() == query->Is8Bit()) {
       return query->IsLowerASCII();
+    }
     return WTF::VisitCharacters(*bucket, [&](auto bch) {
       return WTF::VisitCharacters(*query, [&](auto qch) {
         wtf_size_t len = query->length();

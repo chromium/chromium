@@ -176,12 +176,6 @@ class WTF_EXPORT String {
     return impl_->Characters16();
   }
 
-  ALWAYS_INLINE const void* Bytes() const {
-    if (!impl_)
-      return nullptr;
-    return impl_->Bytes();
-  }
-
   bool Is8Bit() const { return impl_->Is8Bit(); }
 
   [[nodiscard]] std::string Ascii() const;

@@ -21,11 +21,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_
 
@@ -37,6 +32,7 @@
 #include <functional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
@@ -207,19 +203,23 @@ class WTF_EXPORT StringImpl {
     DCHECK(!Is8Bit());
     return CharacterBuffer<uint16_t>();
   }
-  ALWAYS_INLINE const void* Bytes() const {
-    return reinterpret_cast<const void*>(this + 1);
-  }
   ALWAYS_INLINE base::span<const uint8_t> RawByteSpan() const {
-    return {reinterpret_cast<const uint8_t*>(this + 1),
-            CharactersSizeInBytes()};
+    // SAFETY: The AllocationSize<CharType>() helper function computes a size
+    // that includes `length_` UChar/LChar characters in addition to the size
+    // required for the StringImpl.
+    return UNSAFE_BUFFERS(
+        {reinterpret_cast<const uint8_t*>(this + 1), CharactersSizeInBytes()});
   }
   // Create a new std::u16string based on this.
   // The character content is always copied.
   std::u16string ToU16String() const;
 
+  // Use Span instead.
   template <typename CharType>
-  ALWAYS_INLINE const CharType* GetCharacters() const;
+  UNSAFE_BUFFER_USAGE ALWAYS_INLINE const CharType* GetCharacters() const;
+
+  template <typename CharType>
+  ALWAYS_INLINE base::span<CharType> Span() const;
 
   size_t CharactersSizeInBytes() const {
     return length() * (Is8Bit() ? sizeof(LChar) : sizeof(UChar));
@@ -252,10 +252,11 @@ class WTF_EXPORT StringImpl {
   void SetHash(wtf_size_t hash) const {
     // Multiple clients assume that StringHasher is the canonical string
     // hash function.
-    DCHECK_EQ(hash,
-              (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(
-                              (const char*)Characters8(), length_)
-                        : ComputeHashForWideString(Characters16(), length_)));
+    DCHECK_EQ(
+        hash,
+        (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(
+                        reinterpret_cast<const char*>(Span8().data()), length_)
+                  : ComputeHashForWideString(Span16().data(), length_)));
     DCHECK(hash);  // Verify that 0 is a valid sentinel hash value.
     SetHashRaw(hash);
   }
@@ -372,9 +373,13 @@ class WTF_EXPORT StringImpl {
 
   UChar operator[](wtf_size_t i) const {
     SECURITY_DCHECK(i < length_);
-    if (Is8Bit())
-      return Characters8()[i];
-    return Characters16()[i];
+    // SAFETY: It's safe when i < length.
+    UNSAFE_BUFFERS({
+      if (Is8Bit()) {
+        return Characters8()[i];
+      }
+      return Characters16()[i];
+    });
   }
   UChar32 CharacterStartingAt(wtf_size_t);
 
@@ -628,8 +633,9 @@ class WTF_EXPORT StringImpl {
 #if DCHECK_IS_ON()
   void AssertHashIsCorrect() {
     DCHECK(HasHash());
-    DCHECK_EQ(ExistingHash(), StringHasher::ComputeHashAndMaskTop8Bits(
-                                  (const char*)Characters8(), length()));
+    DCHECK_EQ(ExistingHash(),
+              StringHasher::ComputeHashAndMaskTop8Bits(
+                  reinterpret_cast<const char*>(Span8().data()), length()));
   }
 #endif
 
@@ -650,6 +656,16 @@ ALWAYS_INLINE const LChar* StringImpl::GetCharacters<LChar>() const {
 template <>
 ALWAYS_INLINE const UChar* StringImpl::GetCharacters<UChar>() const {
   return Characters16();
+}
+
+template <>
+ALWAYS_INLINE base::span<LChar> StringImpl::Span<LChar>() const {
+  return const_cast<StringImpl*>(this)->CharacterBuffer<LChar>();
+}
+
+template <>
+ALWAYS_INLINE base::span<UChar> StringImpl::Span<UChar>() const {
+  return const_cast<StringImpl*>(this)->CharacterBuffer<UChar>();
 }
 
 // The following template specialization can be moved to the class declaration
@@ -835,10 +851,14 @@ inline wtf_size_t StringImpl::Find(UChar character, wtf_size_t start) const {
   return WTF::Find(Span16(), character, start);
 }
 
-inline wtf_size_t LengthOfNullTerminatedString(const UChar* string) {
+// Null-terminated strings is generally discouraged as it has high chance to
+// cause Buffer overflow.
+UNSAFE_BUFFER_USAGE inline wtf_size_t LengthOfNullTerminatedString(
+    const UChar* string) {
   size_t length = 0;
-  while (string[length] != UChar(0))
+  while (string[length] != 0) {
     ++length;
+  }
   return base::checked_cast<wtf_size_t>(length);
 }
 
