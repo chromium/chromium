@@ -40,67 +40,6 @@ void LoginAsh::BindReceiver(mojo::PendingReceiver<mojom::Login> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
-void LoginAsh::LaunchManagedGuestSession(
-    const std::optional<std::string>& password,
-    OptionalErrorCallback callback) {
-  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
-
-  std::optional<std::string> error = CanLaunchSession();
-  if (error) {
-    std::move(callback).Run(error);
-    return;
-  }
-
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  for (const user_manager::User* user : user_manager->GetPersistedUsers()) {
-    if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
-      continue;
-    }
-    ash::UserContext context(user_manager::UserType::kPublicAccount,
-                             user->GetAccountId());
-    if (password) {
-      context.SetKey(ash::Key(*password));
-      context.SetSamlPassword(ash::SamlPassword{*password});
-      context.SetCanLockManagedGuestSession(true);
-    }
-
-    auto* existing_user_controller =
-        ash::ExistingUserController::current_controller();
-    existing_user_controller->Login(context, ash::SigninSpecifics());
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  std::move(callback).Run(
-      extensions::login_api_errors::kNoManagedGuestSessionAccounts);
-}
-
-void LoginAsh::LaunchSamlUserSession(const std::string& email,
-                                     const GaiaId& gaia_id,
-                                     const std::string& password,
-                                     const std::string& oauth_code,
-                                     OptionalErrorCallback callback) {
-  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
-  std::optional<std::string> error = CanLaunchSession();
-  if (error) {
-    std::move(callback).Run(error);
-    return;
-  }
-
-  ash::UserContext context(user_manager::UserType::kRegular,
-                           AccountId::FromUserEmailGaiaId(email, gaia_id));
-  ash::Key key(password);
-  key.SetLabel(ash::kCryptohomeGaiaKeyLabel);
-  context.SetKey(key);
-  context.SetSamlPassword(ash::SamlPassword{password});
-  context.SetPasswordKey(ash::Key(password));
-  context.SetAuthFlow(ash::UserContext::AUTH_FLOW_GAIA_WITH_SAML);
-  context.SetIsUsingSamlPrincipalsApi(false);
-  context.SetAuthCode(oauth_code);
-
-  ash::LoginDisplayHost::default_host()->CompleteLogin(context);
-  std::move(callback).Run(std::nullopt);
-}
-
 void LoginAsh::AddExternalLogoutRequestObserver(
     mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer) {
   mojo::Remote<mojom::ExternalLogoutRequestObserver> remote(
@@ -163,37 +102,6 @@ void LoginAsh::REMOVED_10(mojom::SamlUserSessionPropertiesPtr properties,
 void LoginAsh::REMOVED_12(const std::string& password,
                           REMOVED_12Callback callback) {
   NOTIMPLEMENTED();
-}
-
-void LoginAsh::OnScreenLockerAuthenticate(OptionalErrorCallback callback,
-                                          bool success) {
-  if (!success) {
-    std::move(callback).Run(
-        extensions::login_api_errors::kAuthenticationFailed);
-    return;
-  }
-
-  std::move(callback).Run(std::nullopt);
-}
-
-void LoginAsh::OnOptionalErrorCallbackComplete(
-    OptionalErrorCallback callback,
-    const std::optional<std::string>& error) {
-  std::move(callback).Run(error);
-}
-
-std::optional<std::string> LoginAsh::CanLaunchSession() {
-  if (session_manager::SessionManager::Get()->session_state() !=
-      session_manager::SessionState::LOGIN_PRIMARY) {
-    return extensions::login_api_errors::kAlreadyActiveSession;
-  }
-
-  auto* existing_user_controller =
-      ash::ExistingUserController::current_controller();
-  if (existing_user_controller->IsSigninInProgress())
-    return extensions::login_api_errors::kAnotherLoginAttemptInProgress;
-
-  return std::nullopt;
 }
 
 }  // namespace crosapi

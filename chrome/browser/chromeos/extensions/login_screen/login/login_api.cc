@@ -15,13 +15,17 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/extensions/api/login.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
@@ -115,6 +119,34 @@ AdaptOptionalErrorCallback(
       .Then(std::move(callback));
 }
 
+base::expected<void, std::string> CanLaunchSession() {
+  if (session_manager::SessionManager::Get()->session_state() !=
+      session_manager::SessionState::LOGIN_PRIMARY) {
+    return base::unexpected(
+        extensions::login_api_errors::kAlreadyActiveSession);
+  }
+
+  auto* existing_user_controller =
+      ash::ExistingUserController::current_controller();
+  if (existing_user_controller->IsSigninInProgress()) {
+    return base::unexpected(
+        extensions::login_api_errors::kAnotherLoginAttemptInProgress);
+  }
+
+  return base::ok();
+}
+
+user_manager::User* FindPublicAccountUser() {
+  for (user_manager::User* user :
+       user_manager::UserManager::Get()->GetPersistedUsers()) {
+    CHECK(user);
+    if (user->GetType() == user_manager::UserType::kPublicAccount) {
+      return user;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 namespace internal {
@@ -157,15 +189,30 @@ LoginLaunchManagedGuestSessionFunction::Run() {
       api::login::LaunchManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  auto callback =
-      base::BindOnce(&LoginLaunchManagedGuestSessionFunction::OnResult, this);
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 
-  std::optional<std::string> password;
-  if (parameters->password) {
-    password = std::move(*parameters->password);
+  if (auto can_launch = CanLaunchSession(); !can_launch.has_value()) {
+    return RespondNow(Error(std::move(can_launch.error())));
   }
-  GetLoginApi()->LaunchManagedGuestSession(password, std::move(callback));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+
+  const user_manager::User* user = FindPublicAccountUser();
+  if (!user) {
+    return RespondNow(
+        Error(extensions::login_api_errors::kNoManagedGuestSessionAccounts));
+  }
+
+  ash::UserContext context(user_manager::UserType::kPublicAccount,
+                           user->GetAccountId());
+  if (parameters->password) {
+    context.SetKey(ash::Key(*parameters->password));
+    context.SetSamlPassword(ash::SamlPassword{*parameters->password});
+    context.SetCanLockManagedGuestSession(true);
+  }
+
+  auto* existing_user_controller =
+      ash::ExistingUserController::current_controller();
+  existing_user_controller->Login(context, ash::SigninSpecifics());
+  return RespondNow(NoArguments());
 }
 
 LoginExitCurrentSessionFunction::LoginExitCurrentSessionFunction() = default;
@@ -265,14 +312,26 @@ ExtensionFunction::ResponseAction LoginLaunchSamlUserSessionFunction::Run() {
   auto parameters = api::login::LaunchSamlUserSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  auto callback =
-      base::BindOnce(&LoginLaunchSamlUserSessionFunction::OnResult, this);
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
+  if (auto can_launch = CanLaunchSession(); !can_launch.has_value()) {
+    return RespondNow(Error(std::move(can_launch.error())));
+  }
 
-  GetLoginApi()->LaunchSamlUserSession(
-      parameters->properties.email, GaiaId(parameters->properties.gaia_id),
-      parameters->properties.password, parameters->properties.oauth_code,
-      std::move(callback));
-  return RespondLater();
+  ash::UserContext context(
+      user_manager::UserType::kRegular,
+      AccountId::FromUserEmailGaiaId(parameters->properties.email,
+                                     GaiaId(parameters->properties.gaia_id)));
+  ash::Key key(parameters->properties.password);
+  key.SetLabel(ash::kCryptohomeGaiaKeyLabel);
+  context.SetKey(key);
+  context.SetSamlPassword(ash::SamlPassword{parameters->properties.password});
+  context.SetPasswordKey(ash::Key(parameters->properties.password));
+  context.SetAuthFlow(ash::UserContext::AUTH_FLOW_GAIA_WITH_SAML);
+  context.SetIsUsingSamlPrincipalsApi(false);
+  context.SetAuthCode(parameters->properties.oauth_code);
+
+  ash::LoginDisplayHost::default_host()->CompleteLogin(context);
+  return RespondNow(NoArguments());
 }
 
 LoginLaunchSharedManagedGuestSessionFunction::

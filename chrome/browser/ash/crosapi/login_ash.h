@@ -19,8 +19,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-class GaiaId;
-
 namespace crosapi {
 
 // The ash-chrome implementation of the Login crosapi interface.
@@ -64,23 +62,6 @@ class LoginAsh : public mojom::Login {
   void REMOVED_12(const std::string& password,
                   REMOVED_12Callback callback) override;
 
-  // Launches a managed guest session if one is set up via the admin console.
-  // If there are several managed guest sessions set up, it will launch the
-  // first available one.
-  // If a password is provided, the Managed Guest Session will be lockable and
-  // can be unlocked by providing the same password to
-  // `UnlockManagedGuestSession()`.
-  void LaunchManagedGuestSession(const std::optional<std::string>& password,
-                                 OptionalErrorCallback callback);
-
-  // Launches a SAML user session with the provided email, gaiaId, password
-  // and oauth_code cookie.
-  void LaunchSamlUserSession(const std::string& email,
-                             const GaiaId& gaia_id,
-                             const std::string& password,
-                             const std::string& oauth_code,
-                             OptionalErrorCallback callback);
-
   // Adds an observer for the external logout done events.
   void AddExternalLogoutDoneObserver(ExternalLogoutDoneObserver* observer);
   // Required for the below `base::ObserverList`:
@@ -92,11 +73,6 @@ class LoginAsh : public mojom::Login {
   void NotifyOnRequestExternalLogout();
 
  private:
-  void OnScreenLockerAuthenticate(OptionalErrorCallback callback, bool success);
-  void OnOptionalErrorCallbackComplete(OptionalErrorCallback callback,
-                                       const std::optional<std::string>& error);
-  std::optional<std::string> CanLaunchSession();
-
   mojo::ReceiverSet<mojom::Login> receivers_;
 
   // Support any number of observers.

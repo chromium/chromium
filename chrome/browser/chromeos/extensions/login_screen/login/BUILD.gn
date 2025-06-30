@@ -33,6 +33,7 @@ static_library("login") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/session",
     "//chrome/common:constants",
     "//chrome/common/extensions/api",
