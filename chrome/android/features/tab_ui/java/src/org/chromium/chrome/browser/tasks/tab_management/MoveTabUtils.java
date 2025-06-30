@@ -10,6 +10,7 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -55,10 +56,9 @@ public final class MoveTabUtils {
         @Nullable Tab destinationTab = tabModel.getTabAt(requestedIndex);
         @Nullable Token destinationTabGroupId =
                 (destinationTab != null) ? destinationTab.getTabGroupId() : null;
-        int validIndex;
 
-        if ((tabGroupId == null && destinationTabGroupId == null)
-                || Objects.equals(tabGroupId, destinationTabGroupId)) {
+        final int validIndex;
+        if (Objects.equals(tabGroupId, destinationTabGroupId)) {
             // Case 1: Simple move.
             // This handles moves between two ungrouped tabs, or moves within the same tab group.
             validIndex = requestedIndex;
@@ -68,7 +68,6 @@ public final class MoveTabUtils {
             validIndex =
                     getClosestValidIndexInGroup(
                             tabModel, filter, tabGroupId, curIndex < requestedIndex);
-
         } else {
             // Case 3: An ungrouped tab is attempting to enter a group.
             // This handles moves from SingleTab -> Group.
@@ -91,6 +90,68 @@ public final class MoveTabUtils {
         tabModel.moveTab(tab.getId(), validIndex);
     }
 
+    /**
+     * Moves the specified group to the requested index. If the index is not a valid move operation,
+     * it will calculate a valid index.
+     *
+     * <p>If the requested index is inside the tab group, it will result in a no-op since the tab
+     * group is already in that index range.
+     *
+     * <p>If the requested index is a single tab, it will insert the tab group in that position.
+     *
+     * <p>If the requestedIndex is inside a tab group, it will be placed adjacent to the destination
+     * group. This may result in a no-op if the source tab group is already adjacent to the
+     * destination group.
+     *
+     * @param tabModel The current {@link TabModel}.
+     * @param filter The current {@link TabGroupModelFilter}.
+     * @param tabGroupId The tab group id.
+     * @param requestedIndex The requested index to move {@code tab} to.
+     */
+    public static void moveTabGroup(
+            TabModel tabModel, TabGroupModelFilter filter, Token tabGroupId, int requestedIndex) {
+        List<Tab> sourceTabsInGroup = filter.getTabsInGroup(tabGroupId);
+        if (sourceTabsInGroup.isEmpty() || requestedIndex == TabList.INVALID_TAB_INDEX) return;
+
+        @Nullable Tab destinationTab = tabModel.getTabAt(requestedIndex);
+        @Nullable Token destinationTabGroupId =
+                (destinationTab != null) ? destinationTab.getTabGroupId() : null;
+
+        // No-op if destination is invalid or moving to the same tab group id.
+        if (destinationTab == null || tabGroupId.equals(destinationTabGroupId)) return;
+
+        int sourceFirstIndex =
+                TabGroupUtils.getFirstTabModelIndexForList(tabModel, sourceTabsInGroup);
+
+        final int validIndex;
+        final int pivotIndex;
+        if (destinationTabGroupId == null) {
+            // Simple move because the destination is an ungrouped tab. The requested index is a
+            // valid index.
+            validIndex = requestedIndex;
+            // Pivot index doesn't matter when it is a valid index.
+            pivotIndex = sourceFirstIndex;
+        } else {
+            // Find the tab group boundary closest to the requested destination to detect cases
+            // where the source tab group might already be adjacent to the destination tab group.
+            int sourceLastIndex =
+                    TabGroupUtils.getLastTabModelIndexForList(tabModel, sourceTabsInGroup);
+            boolean isMovingToHigherIndex = requestedIndex > sourceFirstIndex;
+            pivotIndex = isMovingToHigherIndex ? sourceLastIndex : sourceFirstIndex;
+
+            validIndex =
+                    getClosestValidIndexAdjacentToGroup(
+                            tabModel, filter, destinationTabGroupId, pivotIndex, requestedIndex);
+        }
+
+        if (validIndex == TabList.INVALID_TAB_INDEX || validIndex == pivotIndex) {
+            return;
+        }
+
+        @TabId int firstTabId = sourceTabsInGroup.get(0).getId();
+        filter.moveRelatedTabs(firstTabId, validIndex);
+    }
+
     private static int getClosestValidIndexInGroup(
             TabModel tabModel,
             TabGroupModelFilter filter,
@@ -109,20 +170,20 @@ public final class MoveTabUtils {
             TabGroupModelFilter filter,
             Token tabGroupId,
             int curIndex,
-            int requestedIndex) {
+            int requestedIndexInsideGroup) {
         List<Tab> tabsInGroup = filter.getTabsInGroup(tabGroupId);
-
         assert !tabsInGroup.isEmpty();
-        int firstIndexOfGroup = TabGroupUtils.getFirstTabModelIndexForList(tabModel, tabsInGroup);
+
         if (tabsInGroup.size() == 1) {
             // There is only one tab in the group, so we can just return the requested index as
             // there is no risk of breaking the contiguous property of the group.
-            return requestedIndex;
+            return requestedIndexInsideGroup;
         }
 
+        int firstIndexOfGroup = TabGroupUtils.getFirstTabModelIndexForList(tabModel, tabsInGroup);
         int lastIndexOfGroup = TabGroupUtils.getLastTabModelIndexForList(tabModel, tabsInGroup);
-        int firstDelta = requestedIndex - firstIndexOfGroup;
-        int lastDelta = lastIndexOfGroup - requestedIndex;
+        int firstDelta = requestedIndexInsideGroup - firstIndexOfGroup;
+        int lastDelta = lastIndexOfGroup - requestedIndexInsideGroup;
 
         boolean keepInFront =
                 firstDelta < lastDelta || (firstDelta == lastDelta && curIndex < firstIndexOfGroup);

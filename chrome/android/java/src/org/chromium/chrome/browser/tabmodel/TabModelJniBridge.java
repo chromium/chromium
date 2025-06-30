@@ -433,6 +433,10 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract void moveTabToIndex(int index, int newIndex);
 
     @CalledByNative
+    protected abstract void moveGroupToIndex(
+            @JniType("base::Token") Token tabGroupId, int newIndex);
+
+    @CalledByNative
     protected abstract @JniType("std::vector<TabAndroid*>") List<Tab> getAllTabs();
 
     @CalledByNative

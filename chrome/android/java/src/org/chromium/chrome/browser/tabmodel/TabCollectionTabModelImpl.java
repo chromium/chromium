@@ -474,6 +474,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
+    protected void moveGroupToIndex(Token tabGroupId, int newIndex) {}
+
+    @Override
     protected List<Tab> getAllTabs() {
         assertOnUiThread();
         List<Tab> tabs = new ArrayList<>();

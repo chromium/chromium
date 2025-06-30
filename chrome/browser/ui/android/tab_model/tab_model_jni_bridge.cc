@@ -350,8 +350,9 @@ void TabModelJniBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
 
 void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
                                     int index) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  Java_TabModelJniBridge_moveGroupToIndex(env, jobj, group_id.token(), index);
 }
 
 // static

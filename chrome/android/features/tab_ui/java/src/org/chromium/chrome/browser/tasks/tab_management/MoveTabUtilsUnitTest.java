@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +21,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
@@ -33,7 +35,7 @@ public class MoveTabUtilsUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
 
-    private int mNextTabId = 123;
+    private @TabId int mNextTabId = 123;
     private int mTabCount;
 
     @Test
@@ -185,11 +187,116 @@ public class MoveTabUtilsUnitTest {
         verify(mTabModel).moveTab(tab2.getId(), 2); // Last index of tab group.
     }
 
+    @Test
+    public void testMoveTabGroup_NoOperation() {
+        Token groupId0 = new Token(1L, 2L);
+        Token groupId1 = new Token(2L, 3L);
+        Token groupId2 = new Token(3L, 4L);
+        addTabGroup(4, groupId0); // 0 1 2 3
+        addTabGroup(5, groupId1); // 4 5 6 7 8
+        addTabGroup(4, groupId2); // 9 10 11 12
+
+        // Destination Tab is in the same group
+        int requestedIndex = 0;
+        for (int i = 0; i < 4; i++) {
+            MoveTabUtils.moveTabGroup(mTabModel, mTabGroupModelFilter, groupId0, requestedIndex++);
+            verify(mTabGroupModelFilter, never()).moveRelatedTabs(anyInt(), anyInt());
+        }
+
+        // Adjacent tab groups
+        // Group0:
+        requestedIndex = 4;
+        MoveTabUtils.moveTabGroup(mTabModel, mTabGroupModelFilter, groupId0, requestedIndex);
+        verify(mTabGroupModelFilter, never()).moveRelatedTabs(anyInt(), anyInt());
+        requestedIndex = 5;
+        MoveTabUtils.moveTabGroup(mTabModel, mTabGroupModelFilter, groupId0, requestedIndex);
+        verify(mTabGroupModelFilter, never()).moveRelatedTabs(anyInt(), anyInt());
+        requestedIndex = 6;
+        MoveTabUtils.moveTabGroup(mTabModel, mTabGroupModelFilter, groupId0, requestedIndex);
+        verify(mTabGroupModelFilter, never()).moveRelatedTabs(anyInt(), anyInt());
+
+        // Group2:
+        MoveTabUtils.moveTabGroup(mTabModel, mTabGroupModelFilter, groupId2, requestedIndex);
+        verify(mTabGroupModelFilter, never()).moveRelatedTabs(anyInt(), anyInt());
+        requestedIndex = 7;
+        MoveTabUtils.moveTabGroup(mTabModel, mTabGroupModelFilter, groupId2, requestedIndex);
+        verify(mTabGroupModelFilter, never()).moveRelatedTabs(anyInt(), anyInt());
+        requestedIndex = 8;
+        MoveTabUtils.moveTabGroup(mTabModel, mTabGroupModelFilter, groupId2, requestedIndex);
+        verify(mTabGroupModelFilter, never()).moveRelatedTabs(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testMoveTabGroup_SimpleMove() {
+        Token sourceTabGroupId = new Token(1L, 2L);
+        addTab(); // 0
+        @TabId int firstTabIdInGroup = addTabGroup(3, sourceTabGroupId); // 1 2 3
+        addTab(); // 4
+
+        int requestedIndex = 0;
+        MoveTabUtils.moveTabGroup(
+                mTabModel, mTabGroupModelFilter, sourceTabGroupId, requestedIndex);
+        verify(mTabGroupModelFilter).moveRelatedTabs(firstTabIdInGroup, requestedIndex);
+
+        requestedIndex = 4;
+        MoveTabUtils.moveTabGroup(
+                mTabModel, mTabGroupModelFilter, sourceTabGroupId, requestedIndex);
+        verify(mTabGroupModelFilter).moveRelatedTabs(firstTabIdInGroup, requestedIndex);
+    }
+
+    @Test
+    public void testMoveTabGroup_IndexOverlapsWithTabGroup() {
+        Token sourceTabGroupId = new Token(1L, 2L);
+        addTabGroup(4, new Token(3L, 2L)); // 0 1 2 3
+        @TabId int firstTabIdInGroup = addTabGroup(2, sourceTabGroupId); // 4 5
+        addTabGroup(4, new Token(4L, 5L)); // 6 7 8 9
+
+        int requestedIndex = 0;
+        int validIndex = 0;
+        MoveTabUtils.moveTabGroup(
+                mTabModel, mTabGroupModelFilter, sourceTabGroupId, requestedIndex);
+        verify(mTabGroupModelFilter).moveRelatedTabs(firstTabIdInGroup, validIndex);
+
+        requestedIndex = 1;
+        MoveTabUtils.moveTabGroup(
+                mTabModel, mTabGroupModelFilter, sourceTabGroupId, requestedIndex);
+        verify(mTabGroupModelFilter, times(2)).moveRelatedTabs(firstTabIdInGroup, validIndex);
+
+        requestedIndex = 8;
+        validIndex = 9;
+        MoveTabUtils.moveTabGroup(
+                mTabModel, mTabGroupModelFilter, sourceTabGroupId, requestedIndex);
+        verify(mTabGroupModelFilter).moveRelatedTabs(firstTabIdInGroup, validIndex);
+
+        requestedIndex = 9;
+        MoveTabUtils.moveTabGroup(
+                mTabModel, mTabGroupModelFilter, sourceTabGroupId, requestedIndex);
+        verify(mTabGroupModelFilter, times(2)).moveRelatedTabs(firstTabIdInGroup, validIndex);
+    }
+
+    @Test
+    public void testMoveTabGroup_TabGroupOf1() {
+        Token sourceTabGroupId = new Token(1L, 2L);
+        addTabGroup(1, new Token(3L, 2L)); // 0
+        @TabId int firstTabIdInGroup = addTabGroup(3, sourceTabGroupId); // 1 2 3
+        addTabGroup(1, new Token(4L, 5L)); // 4
+
+        int requestedIndex = 0;
+        MoveTabUtils.moveTabGroup(
+                mTabModel, mTabGroupModelFilter, sourceTabGroupId, requestedIndex);
+        verify(mTabGroupModelFilter).moveRelatedTabs(firstTabIdInGroup, requestedIndex);
+
+        requestedIndex = 4;
+        MoveTabUtils.moveTabGroup(
+                mTabModel, mTabGroupModelFilter, sourceTabGroupId, requestedIndex);
+        verify(mTabGroupModelFilter).moveRelatedTabs(firstTabIdInGroup, requestedIndex);
+    }
+
     private void addTabs(int n) {
         for (int i = 0; i < n; i++) addTab();
     }
 
-    private void addTabGroup(int n, Token tabGroupId) {
+    private @TabId int addTabGroup(int n, Token tabGroupId) {
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             Tab tab = addTab();
@@ -197,6 +304,7 @@ public class MoveTabUtilsUnitTest {
             tabs.add(tab);
         }
         when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(tabs);
+        return tabs.get(0).getId();
     }
 
     private Tab addTab() {

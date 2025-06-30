@@ -499,6 +499,123 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    public void testMoveGroupToIndex() {
+        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        List<Tab> g0 = createTabGroup(3, filter); // 1 2 3
+        createTab(); // 4
+        List<Tab> g1 = createTabGroup(2, filter); // 5 6
+        // 0:Tab0 | G0(1:Tab1, 2:Tab2, 3:Tab3) | 4:Tab4 | G1(5:Tab5, 6:Tab6)
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(7, mTabModelJni.getCount());
+
+                    // Requested index is inside tab group (left to right, insert at the end)
+                    int requestedIndex = 3;
+                    int firstValidIndex = 4;
+                    assertMoveTabGroup(g1, requestedIndex, firstValidIndex);
+                    // 0:Tab0 | G0(1:Tab1, 2:Tab2, 3:Tab3) | G1(4:Tab5, 5:Tab6) | 6:Tab4
+
+                    // No-op (right to left)
+                    requestedIndex = 2;
+                    assertMoveTabGroup(g1, requestedIndex, firstValidIndex);
+
+                    // No-op (right to left)
+                    requestedIndex = 3;
+                    assertMoveTabGroup(g1, requestedIndex, firstValidIndex);
+
+                    // Simple move (left to right)
+                    requestedIndex = 1;
+                    firstValidIndex = 1;
+                    assertMoveTabGroup(g1, requestedIndex, firstValidIndex);
+                    // 0:Tab0 | G1(1:Tab5, 2:Tab6) | G0(3:Tab1, 4:Tab2, 5:Tab3) | 6:Tab4
+
+                    // Requested index is inside group (left to right, insert at the end)
+                    requestedIndex = 5;
+                    firstValidIndex = 4;
+                    assertMoveTabGroup(g1, requestedIndex, firstValidIndex);
+                    // 0:Tab0 | G0(1:Tab1, 2:Tab2, 3:Tab3) | G1(4:Tab5, 5:Tab6) | 6:Tab4
+
+                    // No-op (left to right)
+                    requestedIndex = 4;
+                    firstValidIndex = 1;
+                    assertMoveTabGroup(g0, requestedIndex, firstValidIndex);
+
+                    // Simple move (right to left)
+                    requestedIndex = 0;
+                    assertMoveTabGroup(g0, requestedIndex, requestedIndex);
+                    // G0(0:Tab1, 1:Tab2, 2:Tab3) | 3:Tab0 | G1(4:Tab5, 5:Tab6) | 6:Tab4
+
+                    // Requested index is inside group (right to left, insert in front)
+                    requestedIndex = 4;
+                    assertMoveTabGroup(g0, requestedIndex, firstValidIndex);
+                    // 0:Tab0 | G0(1:Tab1, 2:Tab2, 3:Tab3) | G1(4:Tab5, 5:Tab6) | 6:Tab4
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testMoveGroupToIndex_TabGroupOf1() {
+        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        List<Tab> g0 = createTabGroup(1, filter); // 1
+        createTab(); // 2
+        List<Tab> g1 = createTabGroup(3, filter); // 3 4 5
+        // 0:Tab0 | G0(1:Tab1) | 2:Tab2 | G1(3:Tab3, 4:Tab4, 5:Tab5)
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(6, mTabModelJni.getCount());
+
+                    int requestedIndex = 4;
+                    int expectedFirstIndex = 2;
+                    assertMoveTabGroup(g0, requestedIndex, expectedFirstIndex);
+                    // 0:Tab0 | 1:Tab2 | G0(2:Tab1) | G1(3:Tab3, 4:Tab4, 5:Tab5)
+
+                    // No-op
+                    requestedIndex = 3;
+                    assertMoveTabGroup(g0, requestedIndex, expectedFirstIndex);
+
+                    // No-op
+                    requestedIndex = 4;
+                    assertMoveTabGroup(g0, requestedIndex, expectedFirstIndex);
+
+                    requestedIndex = 5;
+                    assertMoveTabGroup(g0, requestedIndex, requestedIndex);
+                    // 0:Tab0 | 1:Tab2 | G1(2:Tab3, 3:Tab4, 4:Tab5) | G0(5:Tab1)
+
+                    // No-op
+                    requestedIndex = 3;
+                    expectedFirstIndex = 5;
+                    assertMoveTabGroup(g0, requestedIndex, expectedFirstIndex);
+
+                    // No-op
+                    requestedIndex = 4;
+                    assertMoveTabGroup(g0, requestedIndex, expectedFirstIndex);
+
+                    requestedIndex = 2;
+                    assertMoveTabGroup(g0, requestedIndex, requestedIndex);
+                    // 0:Tab0 | 1:Tab2 | G0(2:Tab1) | G1(3:Tab3, 4:Tab4, 5:Tab5)
+
+                    requestedIndex = 0;
+                    assertMoveTabGroup(g0, requestedIndex, requestedIndex);
+                    // G0(0:Tab1) | 1:Tab0 | 2:Tab2 | G1(3:Tab3, 4:Tab4, 5:Tab5)
+
+                    requestedIndex = 2;
+                    assertMoveTabGroup(g0, requestedIndex, requestedIndex);
+                    // 0:Tab0 | 1:Tab2 | G0(2:Tab1) | G1(3:Tab3, 4:Tab4, 5:Tab5)
+
+                    assertMoveTabGroup(g1, requestedIndex, requestedIndex);
+                    // 0:Tab0 | 1:Tab2 | G1(2:Tab3, 3:Tab4, 4:Tab5) | G0(5:Tab1)
+
+                    requestedIndex = 5;
+                    expectedFirstIndex = 3;
+                    assertMoveTabGroup(g1, requestedIndex, expectedFirstIndex);
+                    // 0:Tab0 | 1:Tab2 | G0(2:Tab1) | G1(3:Tab3, 4:Tab4, 5:Tab5)
+                });
+    }
+
+    @Test
+    @SmallTest
     public void testAddTabsToGroup() {
         createTabs(2);
         // 0:Tab0 | 1:Tab1 | 2:Tab2
@@ -784,11 +901,30 @@ public class TabModelImplTest {
         assertEquals(oldIndexTab, mTabModelJni.getTabAt(expectedIndex));
     }
 
-    private void createTabGroup(int numberOfTabs, TabGroupModelFilter filter) {
+    private void assertMoveTabGroup(List<Tab> tabs, int requestedIndex, int firstValidIndex) {
+        Token tabGroupId = tabs.get(0).getTabGroupId();
+        mTabModelJni.moveGroupToIndex(tabGroupId, requestedIndex);
+
+        int size = tabs.size();
+        for (int i = 0; i < size; i++) {
+            Tab movedTab = mTabModelJni.getTabAt(firstValidIndex + i);
+            assertEquals(
+                    "Tab at index " + (firstValidIndex + i) + " has wrong group ID.",
+                    tabGroupId,
+                    movedTab.getTabGroupId());
+            assertEquals(
+                    "Tab at index " + (firstValidIndex + i) + " is not the correct tab.",
+                    tabs.get(i),
+                    movedTab);
+        }
+    }
+
+    private List<Tab> createTabGroup(int numberOfTabs, TabGroupModelFilter filter) {
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < numberOfTabs; i++) tabs.add(createTab());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> filter.mergeListOfTabsToGroup(tabs, tabs.get(0), false));
+        return tabs;
     }
 
     private Tab createTab() {

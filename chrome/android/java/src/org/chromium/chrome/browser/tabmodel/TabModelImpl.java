@@ -940,11 +940,16 @@ public class TabModelImpl extends TabModelJniBridge {
     @Override
     public void moveTabToIndex(int index, int newIndex) {
         Tab tab = getTabAt(index);
-        if (tab != null) {
-            TabGroupModelFilter filter = TabModelUtils.getTabGroupModelFilterByTab(tab);
-            assumeNonNull(filter);
-            MoveTabUtils.moveSingleTab(this, filter, tab, index, newIndex);
-        }
+        if (tab == null) return;
+        TabGroupModelFilter filter = mModelDelegate.getFilter(isIncognitoBranded());
+        MoveTabUtils.moveSingleTab(this, filter, tab, index, newIndex);
+    }
+
+    @Override
+    public void moveGroupToIndex(Token tabGroupId, int newIndex) {
+        TabGroupModelFilter filter = mModelDelegate.getFilter(isIncognitoBranded());
+        if (!filter.tabGroupExists(tabGroupId)) return;
+        MoveTabUtils.moveTabGroup(this, filter, tabGroupId, newIndex);
     }
 
     @Override

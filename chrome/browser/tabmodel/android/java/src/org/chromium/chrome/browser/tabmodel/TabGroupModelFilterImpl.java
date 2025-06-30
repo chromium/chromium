@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
@@ -173,7 +174,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void moveRelatedTabs(int id, int newIndex) {
+    public void moveRelatedTabs(@TabId int id, int newIndex) {
         List<Tab> tabs = getRelatedTabList(id);
         TabModel tabModel = getTabModel();
         newIndex = MathUtils.clamp(newIndex, 0, tabModel.getCount());
@@ -187,12 +188,13 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             observer.willMoveTabGroup(curIndex, newIndex);
         }
 
+        int offset = 0;
         for (Tab tab : tabs) {
             if (tabModel.indexOf(tab) == -1) {
                 assert false : "Tried to move a tab from another model!";
                 continue;
             }
-            tabModel.moveTab(tab.getId(), newIndex >= curIndex ? newIndex : newIndex++);
+            tabModel.moveTab(tab.getId(), newIndex >= curIndex ? newIndex : newIndex + offset++);
         }
     }
 
