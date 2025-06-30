@@ -1,8 +1,13 @@
 import pytest
+import sys
 
 from . import get_angle
 
-pytestmark = pytest.mark.asyncio
+pytestmark = [
+    pytest.mark.asyncio,
+    pytest.mark.skipif(sys.platform.startswith("linux"),
+                       reason="Fails consistently on Linux, http://crbug.com/428692508")
+]
 
 
 @pytest.mark.parametrize("_type", ["portrait-primary", "portrait-secondary",

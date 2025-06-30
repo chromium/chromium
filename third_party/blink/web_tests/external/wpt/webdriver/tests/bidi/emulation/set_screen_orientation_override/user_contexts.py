@@ -1,6 +1,11 @@
 import pytest
+import sys
 
-pytestmark = pytest.mark.asyncio
+pytestmark = [
+    pytest.mark.asyncio,
+    pytest.mark.skipif(sys.platform.startswith("linux"),
+                       reason="Fails consistently on Linux, http://crbug.com/428692508")
+]
 
 
 async def test_user_contexts(bidi_session, create_user_context, new_tab,
