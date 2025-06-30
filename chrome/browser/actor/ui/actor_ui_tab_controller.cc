@@ -6,10 +6,17 @@
 
 #include "components/tabs/public/tab_interface.h"
 
-namespace actor {
+namespace actor::ui {
 using ::tabs::TabInterface;
 
 ActorUiTabController::ActorUiTabController(TabInterface& tab) : tab_(tab) {}
 ActorUiTabController::~ActorUiTabController() = default;
+void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state) {
+  // TODO(crbug.com/425952887): Implement this function.
+  if (current_ui_tab_state_ != ui_tab_state) {
+    // TODO(crbug.com/428216197): Only notify relevant UI components on change.
+    current_ui_tab_state_ = ui_tab_state;
+  }
+}
 
-}  // namespace actor
+}  // namespace actor::ui

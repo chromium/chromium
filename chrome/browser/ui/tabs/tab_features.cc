@@ -350,7 +350,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
 
   // TODO(crbug.com/425952887): Gate behind feature flag.
-  actor_ui_tab_controller_ = std::make_unique<actor::ActorUiTabController>(tab);
+  actor_ui_tab_controller_ =
+      std::make_unique<actor::ui::ActorUiTabController>(tab);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

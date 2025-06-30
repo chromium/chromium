@@ -5,6 +5,7 @@ source_set("ui") {
     "actor_ui_state_manager_interface.h",
     "actor_ui_tab_controller.cc",
     "actor_ui_tab_controller.h",
+    "actor_ui_tab_controller_interface.h",
   ]
   deps = [
     "//base",
@@ -42,6 +43,8 @@ source_set("test_support") {
   sources = [
     "mock_actor_ui_state_manager.cc",
     "mock_actor_ui_state_manager.h",
+    "mock_actor_ui_tab_controller.cc",
+    "mock_actor_ui_tab_controller.h",
     "mock_event_dispatcher.cc",
     "mock_event_dispatcher.h",
   ]

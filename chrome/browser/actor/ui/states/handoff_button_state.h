@@ -18,6 +18,8 @@ struct HandoffButtonState {
   // Whether or not the component is active.
   bool is_active;
   ControlOwnership controller;
+
+  bool operator==(const HandoffButtonState& other) const = default;
 };
 
 }  // namespace actor

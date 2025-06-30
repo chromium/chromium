@@ -6,31 +6,27 @@
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_H_
 
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/actor/ui/states/agent_overlay_state.h"
-#include "chrome/browser/actor/ui/states/handoff_button_state.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
-namespace actor {
+namespace actor::ui {
 
 // TODO(crbug.com/425952887): Implement this class.
-class ActorUiTabController {
+class ActorUiTabController : public ActorUiTabControllerInterface {
  public:
-  struct UiTabState {
-    AgentOverlayState agent_overlay;
-    HandoffButtonState handoff_button;
-  };
-
   explicit ActorUiTabController(tabs::TabInterface& tab);
-  ~ActorUiTabController();
+  ~ActorUiTabController() override;
+  void OnUiTabStateChange(const UiTabState& ui_tab_state) override;
 
  private:
   // Owns this class via TabModel.
   const raw_ref<tabs::TabInterface> tab_;
+  UiTabState current_ui_tab_state_;
 };
 
-}  // namespace actor
+}  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_H_

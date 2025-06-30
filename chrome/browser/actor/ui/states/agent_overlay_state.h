@@ -12,6 +12,8 @@ struct AgentOverlayState {
   // Whether or not the component is active.
   bool is_active;
   // TODO(crbug.com/424495020): Add support for coordinate/dom location state
+
+  bool operator==(const AgentOverlayState& other) const = default;
 };
 
 }  // namespace actor
