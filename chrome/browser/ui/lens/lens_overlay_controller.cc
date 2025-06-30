@@ -1066,10 +1066,9 @@ void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
       // If the live page is showing and the searchbox becomes focused, showing
       // intent to issue a new query, upload the new page content for
       // contextualization.
-      // TODO(crbug.com/418856988): Replace this with a call that starts
-      // contextualization without the unneeded callback.
       GetContextualizationController()->TryUpdatePageContextualization(
-          base::DoNothing());
+          base::BindOnce(&LensOverlayController::NotifyPageContentUpdated,
+                         weak_factory_.GetWeakPtr()));
     }
   }
 }

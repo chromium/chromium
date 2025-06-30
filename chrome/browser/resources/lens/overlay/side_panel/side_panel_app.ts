@@ -514,6 +514,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private pageContentTypeChanged(newPageContentType: PageContentType) {
     this.pageContentType = newPageContentType;
+    this.browserProxy.handler.getIsContextualSearchbox().then(
+        ({isContextualSearchbox}) => {
+          this.isContextualSearchbox = isContextualSearchbox;
+        });
   }
 
   // Show the toast that asks the user to share their feedback.
