@@ -3912,6 +3912,7 @@ if (!is_android) {
     if (enterprise_cloud_content_analysis) {
       sources += [
         "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
+        "../browser/enterprise/connectors/analysis/content_analysis_info_browsertest.cc",
         "../browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_browsertest.cc",
         "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
       ]
