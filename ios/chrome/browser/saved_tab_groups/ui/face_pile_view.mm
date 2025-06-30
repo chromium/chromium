@@ -52,6 +52,8 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
   CGFloat _avatarSize;
   // Container for the non-avatar element.
   UIView* _nonAvatarContainer;
+  // Container for the people waiting image.
+  UIImageView* _peopleWaitingImageView;
   // Label to display the "+X" person in the group.
   UILabel* _plusXLabel;
   // The number of members in the shared group.
@@ -147,15 +149,19 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
         [isDarkMode ? [UIColor colorNamed:kSolidWhiteColor]
                     : [UIColor colorNamed:kSolidBlackColor]
             colorWithAlphaComponent:kNonAvatarContainerBackgroundAlpha];
+    _nonAvatarContainer.tintColor = [UIColor colorNamed:kSolidWhiteColor];
     _plusXLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
     return;
   }
   if (isDarkMode) {
     _nonAvatarContainer.backgroundColor =
         [UIColor colorNamed:kTertiaryBackgroundColor];
+    _peopleWaitingImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     _plusXLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   } else {
     _nonAvatarContainer.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    _peopleWaitingImageView.tintColor =
+        [UIColor colorNamed:kTextSecondaryColor];
     _plusXLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
 }
@@ -317,17 +323,16 @@ const CGFloat kPersonWaitingVerticalMargin = 1.5;
 
     UIImage* peopleWaitingImage = DefaultSymbolWithPointSize(
         kPersonClockFillSymbol, _avatarSize * kPersonWaitingProportion);
-    UIImageView* peopleWaitingImageView =
+    _peopleWaitingImageView =
         [[UIImageView alloc] initWithImage:peopleWaitingImage];
-    peopleWaitingImageView.contentMode = UIViewContentModeCenter;
-    peopleWaitingImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    peopleWaitingImageView.tintColor = UIColor.whiteColor;
+    _peopleWaitingImageView.contentMode = UIViewContentModeCenter;
+    _peopleWaitingImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    [_nonAvatarContainer addSubview:peopleWaitingImageView];
+    [_nonAvatarContainer addSubview:_peopleWaitingImageView];
     [NSLayoutConstraint activateConstraints:@[
-      [peopleWaitingImageView.centerXAnchor
+      [_peopleWaitingImageView.centerXAnchor
           constraintEqualToAnchor:_nonAvatarContainer.centerXAnchor],
-      [peopleWaitingImageView.centerYAnchor
+      [_peopleWaitingImageView.centerYAnchor
           constraintEqualToAnchor:_nonAvatarContainer.centerYAnchor
                          constant:-kPersonWaitingVerticalMargin],
     ]];

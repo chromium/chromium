@@ -145,7 +145,7 @@ using ScopedDataSharingSyncObservation =
     ShareKitAvatarConfiguration* config =
         [[ShareKitAvatarConfiguration alloc] init];
     config.avatarUrl = net::NSURLWithGURL(member.avatar_url);
-    config.displayName = base::SysUTF8ToNSString(member.given_name);
+    config.displayName = base::SysUTF8ToNSString(member.display_name);
     config.avatarSize =
         CGSizeMake(_configuration.avatarSize, _configuration.avatarSize);
 
