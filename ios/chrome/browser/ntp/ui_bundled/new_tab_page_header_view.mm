@@ -518,7 +518,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   }
 
   if (self.miaButton) {
-    content_suggestions::ConfigureInlineMIAButton(self.miaButton, useColorIcon);
+    content_suggestions::ConfigureMIAButton(self.miaButton, useColorIcon);
   }
 }
 

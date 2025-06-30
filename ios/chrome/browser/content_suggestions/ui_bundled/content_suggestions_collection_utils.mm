@@ -338,7 +338,7 @@ void ConfigureLensButtonAppearance(UIButton* lens_button,
   }
 }
 
-void ConfigureInlineMIAButton(UIButton* mia_button, BOOL use_color_icon) {
+void ConfigureMIAButton(UIButton* mia_button, BOOL use_color_icon) {
   [mia_button setTranslatesAutoresizingMaskIntoConstraints:NO];
 
   UIButtonConfiguration* buttonConfig =
@@ -348,7 +348,7 @@ void ConfigureInlineMIAButton(UIButton* mia_button, BOOL use_color_icon) {
 
   UIImage* magnifier_icon = CustomSymbolWithPointSize(
       kMagnifyingglassSparkSymbol, kSymbolContentSuggestionsPointSize);
-  use_color_icon = magnifier_icon == nil;
+
   magnifier_icon = use_color_icon ? MakeSymbolMulticolor(magnifier_icon)
                                   : MakeSymbolMonochrome(magnifier_icon);
   [mia_button setImage:magnifier_icon forState:UIControlStateNormal];
