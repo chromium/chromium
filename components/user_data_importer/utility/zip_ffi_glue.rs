@@ -59,7 +59,7 @@ mod ffi {
         fn unwrap(self: &mut ResultOfZipFileArchive) -> Box<ZipFileArchive>;
 
         type ZipFileArchive;
-        fn get_file_size(self: &mut ZipFileArchive, file_type: FileType) -> u64;
+        fn get_file_size_bytes(self: &mut ZipFileArchive, file_type: FileType) -> u64;
         fn unzip(
             self: &mut ZipFileArchive,
             file_type: FileType,
@@ -475,7 +475,8 @@ struct ZipFileArchive {
 }
 
 impl ZipFileArchive {
-    fn get_file_size(&mut self, file_type: ffi::FileType) -> u64 {
+    fn get_file_size_bytes(&mut self, file_type: ffi::FileType) -> u64 {
+        let mut total_file_size_bytes: u64 = 0;
         for i in 0..self.archive.len() {
             let Ok(file) = self.archive.by_index(i) else {
                 continue;
@@ -487,25 +488,28 @@ impl ZipFileArchive {
             // Read the first file matching the requested type found within the zip file.
             if has_extension(&outpath.as_path(), file_type) {
                 if file_type == ffi::FileType::Bookmarks || file_type == ffi::FileType::Passwords {
+                    // There can only be one bookmark or password file, so return immediately.
                     return file.size();
                 } else {
                     // Verify the data type in the JSON file.
-                    let file_size = file.size();
+                    let file_size_bytes = file.size();
                     let stream_reader = ZipEntryBufReader::new(file);
                     if file_type == ffi::FileType::History {
                         if is_history_file(stream_reader) {
-                            return file_size;
+                            // There could be multiple history files, so keep going.
+                            total_file_size_bytes += file_size_bytes;
                         }
                     } else if file_type == ffi::FileType::PaymentCards {
                         if is_payment_cards_file(stream_reader) {
-                            return file_size;
+                            // There can only be one payment cards file, so return immediately.
+                            return file_size_bytes;
                         }
                     }
                 }
             }
         }
 
-        0
+        total_file_size_bytes
     }
 
     fn unzip(
@@ -563,7 +567,7 @@ impl ZipFileArchive {
 
             if has_extension(&outpath.as_path(), ffi::FileType::History) {
                 let stream_reader = ZipEntryBufReader::new(file);
-                if parse_history_file(stream_reader, |history_item| {
+                parse_history_file(stream_reader, |history_item| {
                     history.as_mut().unwrap().push(history_item.into());
                     if history.len() >= history_size_threshold {
                         history_callback.as_mut().unwrap().ImportHistoryEntries(
@@ -571,9 +575,7 @@ impl ZipFileArchive {
                             /* completed= */ false,
                         );
                     }
-                }) {
-                    break;
-                }
+                });
             }
         }
 

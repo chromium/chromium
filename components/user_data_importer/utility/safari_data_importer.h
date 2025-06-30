@@ -103,7 +103,7 @@ class SafariDataImporter {
   std::string Unzip(FileType filetype);
 
   // Returns the uncompressed size of a file within the zip file archive.
-  size_t UncompressedFileSize(FileType filetype);
+  size_t UncompressedFileSizeInBytes(FileType filetype);
 
   // This function imports the various data types present in the file provided
   // by "zip_filename" and should be called from a worker thread.

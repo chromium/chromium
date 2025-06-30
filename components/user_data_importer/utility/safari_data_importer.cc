@@ -227,8 +227,9 @@ std::string SafariDataImporter::Unzip(FileType filetype) {
   return output_bytes;
 }
 
-size_t SafariDataImporter::UncompressedFileSize(FileType filetype) {
-  return zip_file_archive_ ? (*zip_file_archive_)->get_file_size(filetype) : 0u;
+size_t SafariDataImporter::UncompressedFileSizeInBytes(FileType filetype) {
+  return zip_file_archive_ ? (*zip_file_archive_)->get_file_size_bytes(filetype)
+                           : 0u;
 }
 
 void SafariDataImporter::ImportInWorkerThread(
@@ -428,9 +429,9 @@ void SafariDataImporter::StartImportHistory(ImportCallback history_callback) {
   // This is an approximation of the number of bytes per URL entry in the
   // history file.
   static const size_t kBytesPerURL = 250;
-  size_t file_size = UncompressedFileSize(FileType::History);
+  size_t file_size_bytes = UncompressedFileSizeInBytes(FileType::History);
   size_t approximate_number_of_urls =
-      (file_size > 0) ? (file_size / kBytesPerURL) + 1 : 0;
+      (file_size_bytes > 0) ? (file_size_bytes / kBytesPerURL) + 1 : 0;
   PostCallback(std::move(history_callback),
                /*number_of_imports=*/approximate_number_of_urls);
 }

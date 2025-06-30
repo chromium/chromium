@@ -43,6 +43,7 @@ rust_static_library("zip_ffi_glue") {
 copy("test_archive_files") {
   sources = [
     "Bookmarks.html",
+    "History - Profile 2.json",
     "History.json",
     "Passwords.csv",
     "PaymentCards.json",
@@ -56,6 +57,7 @@ zip("test_archive") {
   inputs = [
     "$target_out_dir/Bookmarks.html",
     "$target_out_dir/History.json",
+    "$target_out_dir/History - Profile 2.json",
     "$target_out_dir/Passwords.csv",
     "$target_out_dir/PaymentCards.json",
   ]

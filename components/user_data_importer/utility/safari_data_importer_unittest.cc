@@ -477,7 +477,7 @@ TEST_F(SafariDataImporterTest, CancelImport) {
   // implemented.
   ExpectBookmarksIfImplemented(1);
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
-  ASSERT_EQ(GetNumberOfURLsImported(), 5);  // Note: Approximation.
+  ASSERT_EQ(GetNumberOfURLsImported(), 7);  // Note: Approximation.
 
   CancelImport();
 }
@@ -492,7 +492,7 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   // implemented.
   ExpectBookmarksIfImplemented(1);
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
-  ASSERT_EQ(GetNumberOfURLsImported(), 5);  // Note: Approximation.
+  ASSERT_EQ(GetNumberOfURLsImported(), 7);  // Note: Approximation.
 
   // Use a small history size threshold so that ParseHistoryCallback gets called
   // multiple times internally.
@@ -506,7 +506,7 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   // implemented.
   ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
-  ASSERT_EQ(GetNumberOfURLsImported(), 5);
+  ASSERT_EQ(GetNumberOfURLsImported(), 6);
 }
 
 }  // namespace user_data_importer

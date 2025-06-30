@@ -1,0 +1,17 @@
+{
+  "metadata" : {
+    "browser_name" : "Safari",
+    "browser_version" : "18.4",
+    "data_type" : "history",
+    "export_time_usec" : 1747418368764561,
+    "schema_version" : 1
+  },
+  "history" : [
+    {
+      "url" : "http://www.example3.com/",
+      "time_usec" : 1747418368764158,
+      "visit_count" : 1,
+      "title" : "example3"
+    }
+  ]
+}
