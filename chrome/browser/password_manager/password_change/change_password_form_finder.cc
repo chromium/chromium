@@ -8,15 +8,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
+#include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
+
+using Logger = password_manager::BrowserSavePasswordProgressLogger;
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   auto options = optimization_guide::ActionableAIPageContentOptions();
@@ -25,6 +29,25 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   // on_critical_path is set to true.
   options->on_critical_path = true;
   return options;
+}
+
+std::unique_ptr<Logger> GetLoggerIfAvailable(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  password_manager::PasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(web_contents);
+  if (!client) {
+    return nullptr;
+  }
+
+  autofill::LogManager* log_manager = client->GetCurrentLogManager();
+  if (log_manager && log_manager->IsLoggingActive()) {
+    return std::make_unique<Logger>(log_manager);
+  }
+
+  return nullptr;
 }
 
 }  // namespace
@@ -70,6 +93,12 @@ void ChangePasswordFormFinder::OnInitialFormWaitingResult(
     password_manager::PasswordFormManager* form_manager) {
   CHECK(web_contents_);
   CHECK(callback_);
+
+  if (auto logger = GetLoggerIfAvailable(web_contents_)) {
+    logger->LogBoolean(
+        Logger::STRING_PASSWORD_CHANGE_INITIAL_FORM_WAITING_RESULT,
+        form_manager);
+  }
 
   form_waiter_.reset();
   if (form_manager) {
@@ -138,6 +167,10 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
     return;
   }
 
+  if (auto logger = GetLoggerIfAvailable(web_contents_)) {
+    logger->LogNumber(Logger::STRING_PASSWORD_CHANGE_MODEL_PAGE_PREDICTION_TYPE,
+                      response.value().open_form_data().page_type());
+  }
   int dom_node_id = response.value().open_form_data().dom_node_id_to_click();
   if (!dom_node_id) {
     // Button to click is missing when the login page is displayed. Instead of
@@ -178,6 +211,11 @@ void ChangePasswordFormFinder::OnButtonClicked(bool result) {
 
 void ChangePasswordFormFinder::OnSubsequentFormWaitingResult(
     password_manager::PasswordFormManager* form_manager) {
+  if (auto logger = GetLoggerIfAvailable(web_contents_)) {
+    logger->LogBoolean(
+        Logger::STRING_PASSWORD_CHANGE_SUBSEQUENT_FORM_WAITING_RESULT,
+        form_manager);
+  }
   // TODO(crbug.com/407503334): Record metrics here.
   CHECK(callback_);
   std::move(callback_).Run(form_manager);
