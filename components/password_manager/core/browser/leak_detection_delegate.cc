@@ -199,7 +199,7 @@ void LeakDetectionDelegate::NotifyUserCredentialsWereLeaked(
   HasChangePasswordUrl has_change_url(
       client_->GetPasswordChangeService() &&
       client_->GetPasswordChangeService()->IsPasswordChangeSupported(
-          details.origin));
+          details.origin, client_->GetPageLanguage()));
   if (has_change_url) {
     details.leak_type |= CredentialLeakFlags::kHasChangePasswordUrl;
   }

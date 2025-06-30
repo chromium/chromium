@@ -90,6 +90,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetPasswordChangeService,
               (),
               (const override));
+  MOCK_METHOD(autofill::LanguageCode, GetPageLanguage, (), (const override));
   MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
   MOCK_METHOD(affiliations::AffiliationService*,
               GetAffiliationService,
@@ -109,7 +110,10 @@ class MockLeakDetectionCheck : public LeakDetectionCheck {
 class MockPasswordChangeService : public PasswordChangeServiceInterface {
  public:
   MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (override));
-  MOCK_METHOD(bool, IsPasswordChangeSupported, (const GURL& url), (override));
+  MOCK_METHOD(bool,
+              IsPasswordChangeSupported,
+              (const GURL&, const autofill::LanguageCode&),
+              (override));
 };
 
 }  // namespace
@@ -896,7 +900,10 @@ TEST_F(LeakDetectionDelegateTest, LeakNotifiedAfterChangePwdUrlIsFetched) {
   MockPasswordChangeService mock_password_change_service;
   EXPECT_CALL(client(), GetPasswordChangeService())
       .WillRepeatedly(Return(&mock_password_change_service));
-  EXPECT_CALL(mock_password_change_service, IsPasswordChangeSupported(form.url))
+  EXPECT_CALL(client(), GetPageLanguage())
+      .WillRepeatedly(Return(autofill::LanguageCode("en")));
+  EXPECT_CALL(mock_password_change_service,
+              IsPasswordChangeSupported(form.url, autofill::LanguageCode("en")))
       .WillOnce(Return(true));
   EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                             password_manager::CreateLeakType(
@@ -918,7 +925,10 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithChangePwdFlag) {
       .WillRepeatedly(Return(profile_store()));
   EXPECT_CALL(client(), GetPasswordChangeService())
       .WillRepeatedly(Return(&mock_password_change_service));
-  EXPECT_CALL(mock_password_change_service, IsPasswordChangeSupported(form.url))
+  EXPECT_CALL(client(), GetPageLanguage())
+      .WillRepeatedly(Return(autofill::LanguageCode("ru")));
+  EXPECT_CALL(mock_password_change_service,
+              IsPasswordChangeSupported(form.url, autofill::LanguageCode("ru")))
       .WillOnce(Return(true));
 
   ExpectPasswords({});

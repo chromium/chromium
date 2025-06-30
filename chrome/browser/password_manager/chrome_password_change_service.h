@@ -67,7 +67,9 @@ class ChromePasswordChangeService
 
   // PasswordChangeServiceInterface implementation.
   bool IsPasswordChangeAvailable() override;
-  bool IsPasswordChangeSupported(const GURL& url) override;
+  bool IsPasswordChangeSupported(
+      const GURL& url,
+      const autofill::LanguageCode& page_language) override;
 
  private:
   // PasswordChangeDelegate::Observer impl.

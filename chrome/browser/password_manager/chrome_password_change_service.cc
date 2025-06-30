@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
@@ -15,6 +16,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -49,6 +51,13 @@ bool IsUrlMatchingOverride(const GURL& url) {
 
   return affiliations::IsExtendedPublicSuffixDomainMatch(
       url, change_password_url, {});
+}
+
+std::string GetVariationConfigCountryCode() {
+  variations::VariationsService* variation_service =
+      g_browser_process->variations_service();
+  return variation_service ? variation_service->GetLatestCountry()
+                           : std::string();
 }
 
 }  // namespace
@@ -89,13 +98,24 @@ bool ChromePasswordChangeService::IsPasswordChangeAvailable() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-bool ChromePasswordChangeService::IsPasswordChangeSupported(const GURL& url) {
+bool ChromePasswordChangeService::IsPasswordChangeSupported(
+    const GURL& url,
+    const autofill::LanguageCode& page_language) {
   if (!IsPasswordChangeAvailable()) {
     return false;
   }
 
   if (IsUrlMatchingOverride(url)) {
     return true;
+  }
+
+  if (page_language != autofill::LanguageCode("en") &&
+      page_language != autofill::LanguageCode("en-US")) {
+    return false;
+  }
+
+  if (GetVariationConfigCountryCode() != "us") {
+    return false;
   }
 
   const bool has_change_url =
