@@ -30,6 +30,7 @@
 #include "base/logging.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_generic.h"
+#include "base/strings/cstring_view.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/version.h"
@@ -473,7 +474,7 @@ bool StoreRunTimeEnrollmentToken(const std::string& enrollment_token);
 [[nodiscard]] bool IsServiceEnabled(const std::wstring& service_name);
 
 // Logs the COM client PID when called from a COM server.
-void LogComCaller(const std::string& caller_func);
+void LogComCaller(base::cstring_view caller_func);
 
 }  // namespace updater
 

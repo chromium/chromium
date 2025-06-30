@@ -42,6 +42,7 @@
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_native_library.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1555,7 +1556,7 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
          (service_config->dwStartType != SERVICE_DISABLED);
 }
 
-void LogComCaller(const std::string& caller_func) {
+void LogComCaller(base::cstring_view caller_func) {
   Microsoft::WRL::ComPtr<ICallingProcessInfo> calling_proc_info;
   HRESULT hr = ::CoGetCallContext(IID_PPV_ARGS(&calling_proc_info));
   if (FAILED(hr)) {
