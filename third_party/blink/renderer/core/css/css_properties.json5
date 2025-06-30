@@ -2251,6 +2251,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["border-width", "border-visual"],
+      affected_by_zoom: true,
     },
     {
       name: "border-collapse",
@@ -2404,6 +2405,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["border-width", "border-visual"],
+      affected_by_zoom: true,
     },
     {
       name: "border-right-color",
@@ -2476,6 +2478,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["border-width", "border-visual"],
+      affected_by_zoom: true,
     },
     {
       name: "border-top-color",
@@ -2593,6 +2596,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["border-width", "border-visual"],
+      affected_by_zoom: true,
     },
     {
       name: "border-shape",
