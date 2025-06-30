@@ -875,6 +875,8 @@ component("net") {
     "quic/quic_crypto_client_config_handle.h",
     "quic/quic_crypto_client_stream_factory.cc",
     "quic/quic_crypto_client_stream_factory.h",
+    "quic/quic_endpoint.cc",
+    "quic/quic_endpoint.h",
     "quic/quic_event_logger.cc",
     "quic/quic_event_logger.h",
     "quic/quic_http3_logger.cc",

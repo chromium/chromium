@@ -520,23 +520,6 @@ void QuicSessionRequest::SetSession(
   session_ = std::move(session);
 }
 
-QuicEndpoint::QuicEndpoint(quic::ParsedQuicVersion quic_version,
-                           IPEndPoint ip_endpoint,
-                           ConnectionEndpointMetadata metadata)
-    : quic_version(quic_version),
-      ip_endpoint(ip_endpoint),
-      metadata(metadata) {}
-
-QuicEndpoint::~QuicEndpoint() = default;
-
-base::Value::Dict QuicEndpoint::ToValue() const {
-  base::Value::Dict dict;
-  dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
-  dict.Set("ip_endpoint", ip_endpoint.ToString());
-  dict.Set("metadata", metadata.ToValue());
-  return dict;
-}
-
 QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
     std::unique_ptr<quic::ProofVerifier> proof_verifier,
     std::unique_ptr<quic::QuicClientSessionCache> session_cache,
