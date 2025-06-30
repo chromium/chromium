@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.data_sharing.ui.versioning;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -101,6 +100,5 @@ public class VersioningModalDialogUnitTest {
         // Verify that dismissing the dialog calls the exit runnable.
         mController.onDismiss(mModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         verify(mMockExitRunnable).run();
-        assertNull(VersioningModalDialog.sExitRunnable);
     }
 }
