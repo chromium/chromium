@@ -143,6 +143,7 @@ source_set("frame_validator") {
   deps = [
     ":helpers",
     ":test_helpers",
+    "//crypto",
     "//gpu:test_support",
     "//media/gpu",
     "//testing/gmock",

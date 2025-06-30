@@ -39,6 +39,10 @@ namespace extensions::image_writer {
 crypto::obsolete::Md5 MakeMd5HasherForImageWriter();
 }
 
+namespace media::test {
+crypto::obsolete::Md5 MakeMd5HasherForVideoFrameValidation();
+}
+
 namespace net {
 crypto::obsolete::Md5 MakeMd5HasherForHttpVaryData();
 }
@@ -105,10 +109,13 @@ class CRYPTO_EXPORT Md5 {
   // TODO(https://crbug.com/426243026): get rid of this.
   friend class bookmarks::BookmarkCodec;
 
+  // TODO(https://crbug.com/428022614): get rid of this.
+  friend Md5 media::test::MakeMd5HasherForVideoFrameValidation();
+
   // TODO(https://crbug.com/419853200): get rid of this.
   friend Md5 net::MakeMd5HasherForHttpVaryData();
 
-  // TODO(https://crbug.com/425990763): get rid of this
+  // TODO(https://crbug.com/425990763): get rid of this.
   friend std::string trusted_vault::MD5StringForTrustedVault(
       const std::string& local_trusted_value);
 
