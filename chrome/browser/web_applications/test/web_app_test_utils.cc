@@ -1159,6 +1159,47 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetRelatedApplications(CreateRandomRelatedApplications(random));
   app->SetDiyAppIconsMaskedOnMac(random.next_bool());
 
+  if (random.next_bool()) {
+    proto::PendingUpdateInfo pending_update_info;
+    if (random.next_bool()) {
+      pending_update_info.set_name(name);
+    }
+    if (random.next_bool()) {
+      pending_update_info.set_short_name("random_short_name_" + seed_str);
+    }
+
+    if (random.next_bool() || (!pending_update_info.has_name() &&
+                               !pending_update_info.has_short_name())) {
+      const std::vector<int> possible_icon_sizes = {16,  32,  48,  64, 96,
+                                                    128, 192, 256, 512};
+      // Icons to update should not be zero.
+      const int pending_update_icons = random.next_uint(10) + 1;
+      for (int i = 0; i < pending_update_icons; i++) {
+        apps::IconInfo icon;
+        icon.url = params.base_url.Resolve(
+            "/icon" + base::NumberToString(random.next_uint()));
+        size_t random_size_index =
+            random.next_uint() % possible_icon_sizes.size();
+        icon.square_size_px = possible_icon_sizes[random_size_index];
+
+        int purpose = random.next_uint(3);
+        if (purpose == 0) {
+          icon.purpose = apps::IconInfo::Purpose::kAny;
+        }
+        if (purpose == 1) {
+          icon.purpose = apps::IconInfo::Purpose::kMaskable;
+        }
+        if (purpose == 2) {
+          icon.purpose = apps::IconInfo::Purpose::kMonochrome;
+        }
+        sync_pb::WebAppIconInfo* sync_icon =
+            pending_update_info.add_manifest_icons();
+        *sync_icon = AppIconInfoToSyncProto(icon);
+      }
+    }
+    app->SetPendingUpdateInfo(pending_update_info);
+  }
+
   return app;
 }
 

@@ -1359,6 +1359,22 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   }
   web_app->SetRelatedApplications(std::move(related_applications));
 
+  if (proto.has_pending_update_info()) {
+    if (!proto.pending_update_info().has_name() &&
+        !proto.pending_update_info().has_short_name() &&
+        proto.pending_update_info().manifest_icons().empty()) {
+      return nullptr;
+    }
+    if (!proto.pending_update_info().manifest_icons().empty()) {
+      for (const auto& icon : proto.pending_update_info().manifest_icons()) {
+        if (!icon.has_url() || !icon.has_size_in_px() || !icon.has_purpose()) {
+          return nullptr;
+        }
+      }
+    }
+    web_app->SetPendingUpdateInfo(proto.pending_update_info());
+  }
+
   return web_app;
 }
 
@@ -1875,6 +1891,18 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
       related_application_proto->set_id(
           base::UTF16ToUTF8(related_application.id.value()));
     }
+  }
+
+  if (web_app.pending_update_info().has_value()) {
+    CHECK(web_app.pending_update_info()->has_name() ||
+          web_app.pending_update_info()->has_short_name() ||
+          !web_app.pending_update_info()->manifest_icons().empty());
+    if (!web_app.pending_update_info()->manifest_icons().empty()) {
+      for (const auto& icon : web_app.pending_update_info()->manifest_icons()) {
+        CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
+      }
+    }
+    *local_data->mutable_pending_update_info() = *web_app.pending_update_info();
   }
 
   return local_data;

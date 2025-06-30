@@ -390,6 +390,10 @@ class WebApp {
     return related_applications_;
   }
 
+  const std::optional<proto::PendingUpdateInfo>& pending_update_info() const {
+    return pending_update_info_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -491,6 +495,8 @@ class WebApp {
   void SetDiyAppIconsMaskedOnMac(bool diy_app_icons_masked_on_mac);
   void SetRelatedApplications(
       std::vector<blink::Manifest::RelatedApplication> related_applications);
+  void SetPendingUpdateInfo(
+      std::optional<proto::PendingUpdateInfo> pending_update_info);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -638,11 +644,13 @@ class WebApp {
 
   std::vector<blink::Manifest::RelatedApplication> related_applications_;
 
+  std::optional<proto::PendingUpdateInfo> pending_update_info_;
+
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()
-  //  - WebAppDatabase::CreateWebApp()
-  //  - WebAppDatabase::CreateWebAppProto()
+  //  - WebAppDatabaseSerialization::ParseWebAppProto()
+  //  - WebAppDatabaseSerialization::WebAppToProto()
   //  - CreateRandomWebApp()
   //  - web_app.proto
   // If parsed from manifest, also add to:

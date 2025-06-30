@@ -6,6 +6,7 @@
 
 #include <array>
 #include <bitset>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <tuple>
@@ -326,7 +327,46 @@ base::Value RelatedApplicationsToDebugValue(
   }
   return base::Value(std::move(related_applications_json));
 }
+
+base::Value PendingUpdateInfoToDebugValue(
+    const std::optional<proto::PendingUpdateInfo> pending_update_info) {
+  if (!pending_update_info) {
+    return base::Value();
+  }
+
+  base::Value::Dict debug_dict;
+  if (pending_update_info->has_name()) {
+    debug_dict.Set("name", pending_update_info->name());
+  }
+  if (pending_update_info->has_short_name()) {
+    debug_dict.Set("short_name", pending_update_info->short_name());
+  }
+  if (!pending_update_info->manifest_icons().empty()) {
+    base::Value::List manifest_icons;
+    for (const auto& icon_info : pending_update_info->manifest_icons()) {
+      base::Value::Dict icon_dict;
+      icon_dict.Set("url", icon_info.url());
+      icon_dict.Set("icon_square_size_px", icon_info.size_in_px());
+      icon_dict.Set("icon_purpose", icon_info.purpose());
+
+      manifest_icons.Append(std::move(icon_dict));
+    }
+    debug_dict.Set("manifest_icons", std::move(manifest_icons));
+  }
+
+  return base::Value(std::move(debug_dict));
+}
 }  // namespace
+
+namespace proto {
+
+bool operator==(const PendingUpdateInfo& pending_update_info1,
+                const PendingUpdateInfo& pending_update_info2) {
+  return pending_update_info1.SerializeAsString() ==
+         pending_update_info2.SerializeAsString();
+}
+
+}  // namespace proto
 
 WebApp::CachedDerivedData::CachedDerivedData() = default;
 WebApp::CachedDerivedData::~CachedDerivedData() = default;
@@ -914,6 +954,19 @@ void WebApp::SetGeneratedIconFix(
   generated_icon_fix_ = generated_icon_fix;
 }
 
+void WebApp::SetPendingUpdateInfo(
+    std::optional<proto::PendingUpdateInfo> pending_update_info) {
+  CHECK(pending_update_info->has_name() ||
+        pending_update_info->has_short_name() ||
+        !pending_update_info->manifest_icons().empty());
+  if (!pending_update_info->manifest_icons().empty()) {
+    for (const auto& icon : pending_update_info->manifest_icons()) {
+      CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
+    }
+  }
+  pending_update_info_ = std::move(pending_update_info);
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -1057,7 +1110,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.is_diy_app_,
         app.was_shortcut_app_,
         app.related_applications_,
-        app.diy_app_icons_masked_on_mac_
+        app.diy_app_icons_masked_on_mac_,
+        app.pending_update_info_
         // clang-format on
     );
   };
@@ -1274,6 +1328,9 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("related_applications",
            RelatedApplicationsToDebugValue(related_applications_));
+
+  root.Set("pending_update_info",
+           PendingUpdateInfoToDebugValue(pending_update_info_));
 
   return base::Value(std::move(root));
 }

@@ -237,6 +237,27 @@
    "manifest_url": "https://example.com/manifest1234.json",
    "note_taking_new_note_url": "https://example.com/scope1234/new_note3011162902",
    "parent_app_id": "463354209",
+   "pending_update_info": {
+      "manifest_icons": [ {
+         "icon_purpose": 2,
+         "icon_square_size_px": 48,
+         "url": "https://example.com/icon2572177745"
+      }, {
+         "icon_purpose": 2,
+         "icon_square_size_px": 192,
+         "url": "https://example.com/icon3502924369"
+      }, {
+         "icon_purpose": 3,
+         "icon_square_size_px": 192,
+         "url": "https://example.com/icon476349338"
+      }, {
+         "icon_purpose": 3,
+         "icon_square_size_px": 256,
+         "url": "https://example.com/icon3978233549"
+      } ],
+      "name": "Name1234",
+      "short_name": "random_short_name_1234"
+   },
    "permissions_policy": [ {
       "allowed_origins": [ "https://app-15481569330.com" ],
       "feature": "accelerometer",
