@@ -18,7 +18,8 @@ namespace autofill {
 // extracted from the `valuables_manager`.
 std::vector<Suggestion> GetLoyaltyCardSuggestions(
     const ValuablesDataManager& valuables_manager,
-    const GURL& url);
+    const GURL& url,
+    bool trigger_field_is_autofilled);
 
 // Extends `email_suggestions` with loyalty cards suggestions.
 void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(

@@ -26,6 +26,28 @@ Suggestion::LetterMonochromeIcon CreateFallbackSuggestionIcon(
       base::UTF8ToUTF16(merchant_name.substr(0, 1)));
 }
 
+Suggestion CreateUndoOrClearFormSuggestion() {
+#if BUILDFLAG(IS_IOS)
+  std::u16string value =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
+  // TODO(crbug.com/40266549): iOS still uses Clear Form logic, replace with
+  // Undo.
+  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
+  suggestion.icon = Suggestion::Icon::kClear;
+#else
+  std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    value = base::i18n::ToUpper(value);
+  }
+  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
+  suggestion.icon = Suggestion::Icon::kUndo;
+#endif
+  // TODO(crbug.com/40266549): update "Clear Form" a11y announcement to "Undo"
+  suggestion.acceptance_a11y_announcement =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
+  return suggestion;
+}
+
 // Set the URL for the loyalty card icon image or fallback icon to be shown in
 // the `suggestion`.
 void SetLoyaltyCardIconURL(Suggestion& suggestion,
@@ -88,11 +110,26 @@ std::vector<Suggestion> CreateSuggestionsFromLoyaltyCards(
   return suggestions;
 }
 
+// Returns non loyalty cards suggestions which are displayed below loyalty cards
+// suggestions in the Autofill popup. `trigger_field_is_autofilled` is used to
+// conditionally add suggestion for clearing autofilled field.
+std::vector<Suggestion> GetLoyaltyCardsFooterSuggestions(
+    bool trigger_field_is_autofilled) {
+  std::vector<Suggestion> footer_suggestions;
+  footer_suggestions.emplace_back(SuggestionType::kSeparator);
+  if (trigger_field_is_autofilled) {
+    footer_suggestions.push_back(CreateUndoOrClearFormSuggestion());
+  }
+  footer_suggestions.push_back(CreateManageLoyaltyCardsSuggestion());
+  return footer_suggestions;
+}
+
 }  // namespace
 
 std::vector<Suggestion> GetLoyaltyCardSuggestions(
     const ValuablesDataManager& valuables_manager,
-    const GURL& url) {
+    const GURL& url,
+    bool trigger_field_is_autofilled) {
   std::vector<LoyaltyCard> all_loyalty_cards =
       valuables_manager.GetLoyaltyCardsToSuggest();
   if (all_loyalty_cards.empty()) {
@@ -110,8 +147,9 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
   if (affiliated_cards.empty() || non_affiliated_cards.empty()) {
     std::vector<Suggestion> suggestions =
         CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
-    suggestions.emplace_back(SuggestionType::kSeparator);
-    suggestions.push_back(CreateManageLoyaltyCardsSuggestion());
+    std::ranges::move(
+        GetLoyaltyCardsFooterSuggestions(trigger_field_is_autofilled),
+        std::back_inserter(suggestions));
     return suggestions;
   }
 
@@ -131,8 +169,9 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
 #endif
   submenu_suggestion.children = CreateSuggestionsFromLoyaltyCards(
       valuables_manager.GetLoyaltyCardsToSuggest(), valuables_manager);
-  suggestions.emplace_back(SuggestionType::kSeparator);
-  suggestions.push_back(CreateManageLoyaltyCardsSuggestion());
+  std::ranges::move(
+      GetLoyaltyCardsFooterSuggestions(trigger_field_is_autofilled),
+      std::back_inserter(suggestions));
   return suggestions;
 }
 

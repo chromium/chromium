@@ -3199,12 +3199,13 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
           if (suggestions.empty()) {
             suggestions = GetLoyaltyCardSuggestions(
                 *valuables_manager,
-                client().GetLastCommittedPrimaryMainFrameURL());
+                client().GetLastCommittedPrimaryMainFrameURL(),
+                field.is_autofilled());
           } else {
             ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
                 *valuables_manager,
                 client().GetLastCommittedPrimaryMainFrameURL(),
-                autofill_field->is_autofilled(), suggestions);
+                field.is_autofilled(), suggestions);
           }
         }
       }
@@ -3222,7 +3223,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
                   client().GetValuablesDataManager()) {
             suggestions = GetLoyaltyCardSuggestions(
                 *valuables_manager,
-                client().GetLastCommittedPrimaryMainFrameURL());
+                client().GetLastCommittedPrimaryMainFrameURL(),
+                field.is_autofilled());
           }
         }
       }
