@@ -53,11 +53,6 @@ extern const base::FeatureParam<std::string>
     kSearchEngineChoiceTriggerRepromptParams;
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables the blocking dialog that directs users to complete their choice of
-// default apps (for Browser & Search) in Android.
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kClayBlocking);
-
 // Enables showing a snackbar when users change their default search engine in
 // Android.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

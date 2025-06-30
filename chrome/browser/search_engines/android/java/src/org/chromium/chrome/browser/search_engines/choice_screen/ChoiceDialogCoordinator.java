@@ -47,6 +47,11 @@ import java.util.function.Function;
 public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     private static final String TAG = "ChoiceDialogCoordntr";
 
+    // Number of blocked Chrome sessions after which we suppress the blocking dialog. This is
+    // intended as an escape hatch to mitigate potential bugs.
+    @VisibleForTesting
+    public static final int ESCAPE_HATCH_BLOCK_LIMIT = 10;
+
     // TODO(b/365100489): Refactor this coordinator to implement the dialog's custom view fully
     // using the standard chromium MVC patterns. This class is a temporary shortcut.
     interface ViewHolder {
@@ -247,16 +252,14 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         int blockCount =
                 ChromeSharedPreferences.getInstance()
                         .readInt(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS);
-        int blockLimit =
-                SearchEnginesFeatureUtils.getInstance().clayBlockingEscapeHatchBlockLimit();
-        if (blockCount >= blockLimit) {
+        if (blockCount >= ESCAPE_HATCH_BLOCK_LIMIT) {
             if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
                 Log.i(
                         TAG,
                         "The dialog is suppressed: Escape Hatch triggered, blocked %d times"
                                 + " (limit=%d).",
                         blockCount,
-                        blockLimit);
+                        ESCAPE_HATCH_BLOCK_LIMIT);
             }
             return DialogSuppressionStatus.SUPPRESSED_ESCAPE_HATCH;
         }

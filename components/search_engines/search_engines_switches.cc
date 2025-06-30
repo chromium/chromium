@@ -56,9 +56,6 @@ const base::FeatureParam<std::string> kSearchEngineChoiceTriggerRepromptParams{
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_FEATURE(kClayBlocking, "ClayBlocking", base::FEATURE_ENABLED_BY_DEFAULT);
-
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_FEATURE(kClaySnackbar, "ClaySnackbar", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
