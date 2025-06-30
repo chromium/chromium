@@ -590,8 +590,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlinkIndex(
 
   OnExtendedPropertiesUsed();
 
-  std::map<int32_t, int32_t>::iterator it =
-      hypertext_.hyperlink_offset_to_index.find(char_index);
+  auto it = hypertext_.hyperlink_offset_to_index.find(char_index);
   if (it == hypertext_.hyperlink_offset_to_index.end()) {
     *hyperlink_index = -1;
     return S_FALSE;

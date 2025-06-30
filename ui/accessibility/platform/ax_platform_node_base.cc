@@ -1577,9 +1577,16 @@ AXLegacyHypertext& AXLegacyHypertext::operator=(AXLegacyHypertext&& other) {
   return *this;
 }
 
+void AXLegacyHypertext::Clear() {
+  needs_update = true;
+  hyperlink_offset_to_index.clear();
+  hyperlinks.clear();
+  hypertext.clear();
+}
+
 // TODO(nektar): To be able to use AXNode in Views, move this logic to AXNode.
 void AXPlatformNodeBase::UpdateComputedHypertext() const {
-  hypertext_ = AXLegacyHypertext();
+  hypertext_.Clear();
 
   if (GetData().IsIgnored() || IsLeaf()) {
     hypertext_.hypertext = GetTextContentUTF16();
@@ -1592,6 +1599,7 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
   // embedded object character for all the other children. Build up a map from
   // the character index of each embedded object character to the id of the
   // child object it points to.
+  AXLegacyHypertext::OffsetToIndex::container_type indices;
   std::u16string hypertext;
   for (AXPlatformNodeChildIterator child_iter = AXPlatformNodeChildrenBegin(),
                                    child_end = AXPlatformNodeChildrenEnd();
@@ -1605,12 +1613,13 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
       int32_t char_offset = static_cast<int32_t>(hypertext_.hypertext.size());
       int32_t child_unique_id = child_iter->GetUniqueId();
       int32_t index = static_cast<int32_t>(hypertext_.hyperlinks.size());
-      hypertext_.hyperlink_offset_to_index[char_offset] = index;
+      indices.emplace_back(char_offset, index);
       hypertext_.hyperlinks.push_back(child_unique_id);
       hypertext_.hypertext += kEmbeddedCharacter;
     }
   }
 
+  hypertext_.hyperlink_offset_to_index.replace(std::move(indices));
   hypertext_.needs_update = false;
 }
 
@@ -2090,8 +2099,7 @@ bool AXPlatformNodeBase::IsSameHypertextCharacter(
 
   // If it's an embedded character, they're only identical if the child id
   // the hyperlink points to is the same.
-  const std::map<int32_t, int32_t>& old_offset_to_index =
-      old_hypertext.hyperlink_offset_to_index;
+  const auto& old_offset_to_index = old_hypertext.hyperlink_offset_to_index;
   const std::vector<int32_t>& old_hyperlinks = old_hypertext.hyperlinks;
   int32_t old_hyperlinkscount = static_cast<int32_t>(old_hyperlinks.size());
   auto iter = old_offset_to_index.find(static_cast<int32_t>(old_char_index));
@@ -2100,8 +2108,7 @@ bool AXPlatformNodeBase::IsSameHypertextCharacter(
                          ? old_hyperlinks[old_index]
                          : -1;
 
-  const std::map<int32_t, int32_t>& new_offset_to_index =
-      hypertext_.hyperlink_offset_to_index;
+  const auto& new_offset_to_index = hypertext_.hyperlink_offset_to_index;
   const std::vector<int32_t>& new_hyperlinks = hypertext_.hyperlinks;
   int32_t new_hyperlinkscount = static_cast<int32_t>(new_hyperlinks.size());
   iter = new_offset_to_index.find(static_cast<int32_t>(new_char_index));

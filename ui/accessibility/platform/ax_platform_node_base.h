@@ -5,12 +5,12 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_BASE_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_BASE_H_
 
-#include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
@@ -37,7 +37,7 @@ struct AXNodeData;
 // TODO(nektar): Move this struct over to AXNode so that it can be accessed by
 // AXPosition.
 struct COMPONENT_EXPORT(AX_PLATFORM) AXLegacyHypertext {
-  using OffsetToIndex = std::map<int32_t, int32_t>;
+  using OffsetToIndex = base::flat_map<int32_t, int32_t>;
 
   AXLegacyHypertext();
   ~AXLegacyHypertext();
@@ -45,6 +45,8 @@ struct COMPONENT_EXPORT(AX_PLATFORM) AXLegacyHypertext {
   AXLegacyHypertext& operator=(const AXLegacyHypertext& other);
   AXLegacyHypertext(AXLegacyHypertext&& other) noexcept;
   AXLegacyHypertext& operator=(AXLegacyHypertext&& other);
+
+  void Clear();
 
   // A flag that should be set if the hypertext information in this struct is
   // out-of-date and needs to be updated. This flag should always be set upon
