@@ -102,6 +102,7 @@ source_set("feedback_impl") {
       "//chrome/browser/extensions",
       "//chrome/browser/first_party_sets",
       "//chrome/browser/google",
+      "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",

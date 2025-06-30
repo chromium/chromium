@@ -7,9 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+
+
+namespace performance_manager::user_tuning {
+class BatterySaverModeManager;
+class UserPerformanceTuningManager;
+} // namespace performance_manager::user_tuning
+
 
 namespace system_logs {
 

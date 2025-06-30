@@ -788,6 +788,11 @@ static_library("test_support") {
       "//components/web_modal",
       "//ui/compositor:test_support",
       "//ui/snapshot",
+
+      # TODO(crbug.com/428666921): When chrome/browser/ui/performance_controls/test_support/
+      # gets componentized this dependency can be moved there, and GN targets like unit_tests,
+      # interactive_ui_tests and browser_tests will need to depend on it directly, instead.
+      "//chrome/browser/performance_manager/public/user_tuning",
     ]
 
     # Non-android deps for "test_support" target.

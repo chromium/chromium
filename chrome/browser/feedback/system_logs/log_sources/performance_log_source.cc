@@ -12,6 +12,7 @@
 #include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/feedback/feedback_report.h"
 #include "components/performance_manager/public/features.h"
