@@ -23,7 +23,7 @@ class Offscreen {
     if (Offscreen.instance) {
       throw 'Error: trying to create two instances of singleton Offscreen.';
     }
-    Messenger.init();
+    Messenger.init(Messenger.Context.OFFSCREEN);
     Offscreen.instance = new Offscreen();
   }
 }

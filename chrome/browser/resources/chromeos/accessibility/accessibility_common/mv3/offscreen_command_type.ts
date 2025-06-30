@@ -7,10 +7,14 @@
  * Accessibility Common service workers.
  */
 export enum OffscreenCommandType {
+  // From service worker to offscreen document:
   DICTATION_PLAY_CANCEL = 'DictationPlayCancel',
   DICTATION_PLAY_START = 'DictationPlayStart',
   DICTATION_PLAY_END = 'DictationPlayEnd',
   DICTATION_PUMPKIN_INSTALL = 'DictationPumpkinInstall',
   DICTATION_PUMPKIN_RECEIVE = 'DictationPumpkinReceive',
   DICTATION_PUMPKIN_SEND = 'DictationPumpkinSend',
+
+  // From offscreen document to service worker:
+  MESSENGER_SW_READY = 'MessengerSwReady',
 }

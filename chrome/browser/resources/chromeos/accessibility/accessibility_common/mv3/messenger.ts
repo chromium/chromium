@@ -8,12 +8,27 @@ import {OffscreenCommandType} from './offscreen_command_type.js';
  * Helper to wrap messaging api between offscreen doc and service worker.
  */
 export class Messenger {
+  static readonly OFFSCREEN_DOCUMENT_PATH =
+      'accessibility_common/mv3/offscreen.html';
+
   static instance?: Messenger;
+
+  private readonly context_: Messenger.Context;
+
+  // A promise that tracks when offscreen doc is ready.
+  private offscreenDocumentPromise_: Promise<void>|null = null;
+
+  // Resolves the above promise when received 'READY' from offscreen doc.
+  private setOffscreenDocumentReady_?: () => void;
+
+  // Whether a `chrome.offscreen.createDocument` is in progress.
+  private offscreenDocumentCreating_: boolean = false;
 
   // Tracks registered message handlers.
   private registry_: Map<OffscreenCommandType, Messenger.Handler>;
 
-  constructor() {
+  constructor(context: Messenger.Context) {
+    this.context_ = context;
     this.registry_ = new Map<OffscreenCommandType, Messenger.Handler>();
 
     chrome.runtime.onMessage.addListener(
@@ -22,11 +37,85 @@ export class Messenger {
             this.handleMessage_(message, sendResponse));
   }
 
-  static init(): void {
+  static async init(context: Messenger.Context): Promise<void> {
     if (Messenger.instance) {
       throw 'Error: trying to create two instances of singleton Messenger.';
     }
-    Messenger.instance = new Messenger();
+    Messenger.instance = new Messenger(context);
+
+    if (context === Messenger.Context.OFFSCREEN) {
+      Messenger.send(OffscreenCommandType.MESSENGER_SW_READY);
+      return;
+    }
+
+    if (context === Messenger.Context.SERVICE_WORKER) {
+      Messenger.registerHandler(OffscreenCommandType.MESSENGER_SW_READY, () => {
+        Messenger.instance!.onOffscreenDocumentReady_();
+      });
+      return Messenger.instance.ensureOffscreenDocument_();
+    }
+  }
+
+  /*
+   * Ensures offscreen document is created. Returns a Promise that resolves when
+   * offscreen document is created. This method should handle cases of service
+   * worker restart and offscreen doc re-creation.
+   */
+  private async ensureOffscreenDocument_(): Promise<void> {
+    const offscreenUrl =
+        chrome.runtime.getURL(Messenger.OFFSCREEN_DOCUMENT_PATH);
+    const existingContexts = await chrome.runtime.getContexts({
+      contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+      documentUrls: [offscreenUrl]
+    });
+    if (existingContexts.length > 0) {
+      // Offscreen document is created in previous service worker runs.
+      this.offscreenDocumentPromise_ = Promise.resolve();
+    } else if (!this.offscreenDocumentCreating_) {
+      // Otherwise, create one if there is no pending creation.
+      this.offscreenDocumentCreating_ = true;
+      this.offscreenDocumentPromise_ = new Promise(resolve => {
+        this.setOffscreenDocumentReady_ = resolve;
+      });
+
+      chrome.offscreen
+          .createDocument({
+            url: offscreenUrl,
+            reasons: [chrome.offscreen.Reason.WORKERS],
+            justification: 'Audio web API and web assembly execution',
+          })
+          .catch(error => {
+            console.error('Failed to create offscreen document: ', error);
+            this.offscreenDocumentCreating_ = false;
+          });
+    }
+    return this.offscreenDocumentPromise_!;
+  }
+
+  /**
+   * Handles `MESSENGER_SW_READY` message from offscreen document.
+   */
+  private onOffscreenDocumentReady_(): void {
+    this.offscreenDocumentCreating_ = false;
+    this.setOffscreenDocumentReady_!();
+  }
+
+  private doSend_(command: OffscreenCommandType, data: object): Promise<any> {
+    return chrome.runtime.sendMessage(
+        /*extensionId=*/ undefined,
+        /*message=*/ Object.assign({command}, data));
+  }
+
+  // Sends a command message to the other side. Returns a promise that resolves
+  // if the other side sends back a reply.
+  public static send(command: OffscreenCommandType, data = {}): Promise<any> {
+    if (Messenger.instance!.context_ == Messenger.Context.OFFSCREEN) {
+      return Messenger.instance!.doSend_(command, data);
+    }
+
+    return Messenger.instance!.ensureOffscreenDocument_().then(() => {
+      return Messenger.instance!.doSend_(command, data);
+    });
   }
 
   // Registers a command handler.
@@ -61,6 +150,12 @@ export class Messenger {
 }
 
 export namespace Messenger {
+  // The context of where `Messenger` runs.
+  export enum Context {
+    SERVICE_WORKER = 'serviceWorker',
+    OFFSCREEN = 'offscreen',
+  }
+
   // Message handler. If a handler returns a Promise, a reply will be sent
   // to the sender when the promise resolves.
   export type Handler = (message: any|undefined) => Promise<any>|void;
