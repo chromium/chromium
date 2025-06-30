@@ -178,10 +178,6 @@ if (enable_openxr) {
       # include path:
       include_dirs += [ "src/src/external/android-jni-wrappers" ]
 
-      # OpenXR loader on Android has a bug where there is unconditional try-catch block
-      # (in android_utilities.cpp) even when built without exceptions support.
-      configs += [ "//build/config/compiler:exceptions" ]
-
       libs = [
         "android",
         "log",
