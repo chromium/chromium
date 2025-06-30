@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_MOCK_PAGE_ACTION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_MOCK_PAGE_ACTION_CONTROLLER_H_
 
+#include "base/callback_list.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/action_id.h"
@@ -64,6 +65,10 @@ class MockPageActionController : public PageActionController {
               (actions::ActionItem*),
               (override));
   MOCK_METHOD(void, SetShouldHidePageActions, (bool), (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterOnWillDestroyCallback,
+              (base::OnceCallback<void(PageActionController&)>),
+              (override));
   MOCK_METHOD(base::RepeatingCallback<void(PageActionTrigger)>,
               GetClickCallback,
               (base::PassKey<PageActionView>, actions::ActionId),

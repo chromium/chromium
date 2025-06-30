@@ -701,5 +701,36 @@ TEST_F(PageActionControllerMockModelTest, ActivityCounterAssignmentOperator) {
   Mock::VerifyAndClearExpectations(&models().Get(kFirstActionItemId));
 }
 
+TEST_F(PageActionControllerMockModelTest,
+       ActivityResetsOnControllerDestruction) {
+  controller().Initialize(tab_interface(), {kFirstActionItemId},
+                          properties_provider_);
+
+  // Add first activity scope. Model becomes active.
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetActionActive(_, true))
+      .Times(1);
+  auto activity1 = std::make_unique<ScopedPageActionActivity>(
+      controller().AddActivity(kFirstActionItemId));
+  Mock::VerifyAndClearExpectations(&models().Get(kFirstActionItemId));
+
+  // Add second activity scope. Model remains active.
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetActionActive(_, true))
+      .Times(1);
+  auto activity2 = std::make_unique<ScopedPageActionActivity>(
+      controller().AddActivity(kFirstActionItemId));
+  Mock::VerifyAndClearExpectations(&models().Get(kFirstActionItemId));
+
+  // Destroy first activity scope. Model remains active.
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetActionActive(_, _)).Times(0);
+  activity1.reset();
+  Mock::VerifyAndClearExpectations(&models().Get(kFirstActionItemId));
+
+  // Destroy second activity scope. Model becomes inactive.
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetActionActive(_, false))
+      .Times(1);
+  activity2.reset();
+  Mock::VerifyAndClearExpectations(&models().Get(kFirstActionItemId));
+}
+
 }  // namespace
 }  // namespace page_actions

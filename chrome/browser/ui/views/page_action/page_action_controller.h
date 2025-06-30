@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -64,7 +65,7 @@ struct SuggestionChipConfig {
 // action is decremented.
 class ScopedPageActionActivity {
  public:
-  ScopedPageActionActivity(PageActionController* controller,
+  ScopedPageActionActivity(PageActionController& controller,
                            actions::ActionId action_id);
   ScopedPageActionActivity(ScopedPageActionActivity&& other) noexcept;
   ScopedPageActionActivity& operator=(
@@ -76,8 +77,12 @@ class ScopedPageActionActivity {
   ScopedPageActionActivity& operator=(const ScopedPageActionActivity&) = delete;
 
  private:
+  void RegisterWillDestroyControllerCallback();
+
   raw_ptr<PageActionController> controller_;
   actions::ActionId action_id_;
+
+  base::CallbackListSubscription on_will_destroy_controller_subscription_;
 };
 
 std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config);
@@ -155,6 +160,10 @@ class PageActionController {
   // back to each page action's normal visibility logic.
   virtual void SetShouldHidePageActions(bool should_hide_page_actions) = 0;
 
+  // Registers a callback executed right before the controller is destroyed.
+  virtual base::CallbackListSubscription RegisterOnWillDestroyCallback(
+      base::OnceCallback<void(PageActionController&)> callback) = 0;
+
   // Provides a metric recording callback to the caller. The callback won't run
   // if the page action controller is destroyed.
   virtual base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
@@ -230,7 +239,8 @@ class PageActionControllerImpl : public PageActionController,
   base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
       base::PassKey<PageActionView>,
       actions::ActionId action_id) override;
-
+  base::CallbackListSubscription RegisterOnWillDestroyCallback(
+      base::OnceCallback<void(PageActionController&)> callback) override;
   void RegisterIsChipShowingChangedCallback(
       base::PassKey<PageActionView>,
       actions::ActionId action_id,
@@ -319,6 +329,9 @@ class PageActionControllerImpl : public PageActionController,
 
   base::CallbackListSubscription tab_activated_callback_subscription_;
   base::CallbackListSubscription tab_deactivated_callback_subscription_;
+
+  base::OnceCallbackList<void(PageActionController&)>
+      on_will_destroy_callback_list_;
 
   base::WeakPtrFactory<PageActionControllerImpl> weak_factory_{this};
 };

@@ -23,13 +23,16 @@ namespace page_actions {
 using PassKey = base::PassKey<PageActionController>;
 
 ScopedPageActionActivity::ScopedPageActionActivity(
-    PageActionController* controller,
+    PageActionController& controller,
     actions::ActionId action_id)
-    : controller_(controller), action_id_(action_id) {}
+    : controller_(&controller), action_id_(action_id) {
+  RegisterWillDestroyControllerCallback();
+}
 
 ScopedPageActionActivity::ScopedPageActionActivity(
     ScopedPageActionActivity&& other) noexcept
     : controller_(other.controller_), action_id_(other.action_id_) {
+  RegisterWillDestroyControllerCallback();
   other.controller_ = nullptr;
 }
 
@@ -41,6 +44,7 @@ ScopedPageActionActivity& ScopedPageActionActivity::operator=(
 
   action_id_ = other.action_id_;
   controller_ = other.controller_;
+  RegisterWillDestroyControllerCallback();
   other.controller_ = nullptr;
   return *this;
 }
@@ -48,6 +52,18 @@ ScopedPageActionActivity& ScopedPageActionActivity::operator=(
 ScopedPageActionActivity::~ScopedPageActionActivity() {
   if (controller_) {
     controller_->DecrementActivityCounter(action_id_);
+  }
+}
+
+void ScopedPageActionActivity::RegisterWillDestroyControllerCallback() {
+  if (controller_) {
+    on_will_destroy_controller_subscription_ =
+        controller_->RegisterOnWillDestroyCallback(base::BindOnce(
+            [](ScopedPageActionActivity* activity,
+               PageActionController& controller) {
+              activity->controller_ = nullptr;
+            },
+            base::Unretained(this)));
   }
 }
 
@@ -63,7 +79,9 @@ PageActionControllerImpl::PageActionControllerImpl(
   }
 }
 
-PageActionControllerImpl::~PageActionControllerImpl() = default;
+PageActionControllerImpl::~PageActionControllerImpl() {
+  on_will_destroy_callback_list_.Notify(*this);
+}
 
 void PageActionControllerImpl::Initialize(
     tabs::TabInterface& tab_interface,
@@ -148,7 +166,7 @@ ScopedPageActionActivity PageActionControllerImpl::AddActivity(
   auto& counter = activity_counters_[action_id];
   ++counter;
   FindPageActionModel(action_id).SetActionActive(PassKey(), true);
-  return ScopedPageActionActivity(this, action_id);
+  return ScopedPageActionActivity(*this, action_id);
 }
 
 void PageActionControllerImpl::DecrementActivityCounter(
@@ -347,6 +365,12 @@ int PageActionControllerImpl::GetVisibleEphemeralPageActionsCount() const {
     }
   }
   return visible_ephemeral_page_actions_count;
+}
+
+base::CallbackListSubscription
+PageActionControllerImpl::RegisterOnWillDestroyCallback(
+    base::OnceCallback<void(PageActionController&)> callback) {
+  return on_will_destroy_callback_list_.Add(std::move(callback));
 }
 
 void PageActionControllerImpl::RegisterIsChipShowingChangedCallback(

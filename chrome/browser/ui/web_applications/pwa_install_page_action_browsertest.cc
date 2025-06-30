@@ -440,7 +440,7 @@ INSTANTIATE_TEST_SUITE_P(PwaInstallViewBrowserTestSuite,
 // Tests that the plus icon is not shown when an existing app is installed and
 // set to open in a window.
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
-                       DISABLED_PwaSetToOpenInWindowIsNotInstallable) {
+                       PwaSetToOpenInWindowIsNotInstallable) {
   bool installable = OpenTab(GetInstallableAppURL()).installable;
   ASSERT_TRUE(installable);
   StartPwaInstallFromPageActionViewAndGetInstalledApp();
@@ -455,9 +455,8 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
 // Tests that the plus icon is not shown when an outer app is installed and we
 // navigate to a nested app.
-IN_PROC_BROWSER_TEST_P(
-    PwaInstallViewBrowserTest,
-    DISABLED_NestedPwaIsNotInstallableWhenOuterPwaIsInstalled) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+                       NestedPwaIsNotInstallableWhenOuterPwaIsInstalled) {
   // When nothing is installed, the nested PWA should be installable.
   StartNavigateToUrl(GetNestedInstallableAppURL());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
@@ -479,7 +478,7 @@ IN_PROC_BROWSER_TEST_P(
 // Tests that the install icon is shown when an existing app is installed and
 // set to open in a tab.
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
-                       DISABLED_PwaSetToOpenInTabIsInstallable) {
+                       PwaSetToOpenInTabIsInstallable) {
   bool installable = OpenTab(GetInstallableAppURL()).installable;
   ASSERT_TRUE(installable);
   webapps::AppId app_id = StartPwaInstallFromPageActionViewAndGetInstalledApp();
@@ -625,7 +624,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
 // Tests that the plus icon updates its visibility after installation.
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
-                       DISABLED_IconVisibilityAfterInstallation) {
+                       IconVisibilityAfterInstallation) {
   StartNavigateToUrl(GetInstallableAppURL());
   content::WebContents* first_tab = GetCurrentTab();
   EXPECT_FALSE(GetPageActionView()->GetVisible());
@@ -706,7 +705,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
 // Tests that the icon updates its state after uninstallation.
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
-                       DISABLED_IconStateAfterUnInstallation) {
+                       IconStateAfterUnInstallation) {
   GURL app_url = GetInstallableAppURL();
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
