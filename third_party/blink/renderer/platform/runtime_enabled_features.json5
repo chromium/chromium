@@ -3776,7 +3776,7 @@
       // the buffer before resolving the read request.
       // https://chromestatus.com/feature/6396991665602560
       name: "ReadableStreamBYOBReaderReadMinOption",
-      status: "experimental",
+      status: "stable",
     },
     // If enabled, both Accept-Language HTTP header and JavaScript getter will
     // be reduced.
