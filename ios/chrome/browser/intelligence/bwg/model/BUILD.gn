@@ -18,18 +18,32 @@ source_set("model") {
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/intelligence/bwg/metrics",
-    "//ios/chrome/browser/intelligence/bwg/model:config",
-    "//ios/chrome/browser/intelligence/proto_wrappers",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/signin/model:authentication_service",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/public",
   ]
   public_deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("browser_agent") {
+  sources = [
+    "bwg_browser_agent.h",
+    "bwg_browser_agent.mm",
+  ]
+  deps = [
+    ":config",
+    ":model",
+    ":tab_helper",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+  ]
 }
 
 source_set("tab_helper") {
@@ -38,9 +52,7 @@ source_set("tab_helper") {
     "bwg_tab_helper.mm",
   ]
   deps = [
-    ":bwg_service_factory",
     ":model",
-    "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
@@ -57,12 +69,9 @@ source_set("bwg_service_factory") {
     ":model",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/intelligence/features",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/public/provider/chrome/browser/bwg:bwg_api",
   ]
 }
 
@@ -95,7 +104,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",

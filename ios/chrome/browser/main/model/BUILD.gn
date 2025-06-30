@@ -30,6 +30,8 @@ source_set("model") {
     "//ios/chrome/browser/follow/model:browser_agent",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model/overlays/browser_agent:browser_agent_util",
+    "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intents/model:user_activity_browser_agent",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/metrics/model",

@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -42,10 +41,9 @@ class BwgServiceTest : public PlatformTest {
     pref_service_->registry()->RegisterIntegerPref(
         prefs::kGeminiEnabledByPolicy, 0);
 
-    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     identity_manager_ = identity_test_env_.identity_manager();
-    bwg_service_ = std::make_unique<BwgService>(
-        auth_service_, identity_manager_, pref_service_.get());
+    bwg_service_ =
+        std::make_unique<BwgService>(identity_manager_, pref_service_.get());
   }
 
   // Signs in a user and sets their model execution capability.
@@ -70,7 +68,6 @@ class BwgServiceTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<BwgService> bwg_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  raw_ptr<AuthenticationService> auth_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   base::HistogramTester histogram_tester_;

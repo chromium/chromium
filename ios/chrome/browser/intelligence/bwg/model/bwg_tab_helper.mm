@@ -5,12 +5,8 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/values.h"
-#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
@@ -22,25 +18,6 @@ BwgTabHelper::BwgTabHelper(web::WebState* web_state) : web_state_(web_state) {
 
 BwgTabHelper::~BwgTabHelper() {}
 
-void BwgTabHelper::PresentBwgOverlay(
-    UIViewController* base_view_controller,
-    base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
-                   PageContextWrapperError> expected_page_context) {
-  NSString* client_id = base::SysUTF8ToNSString(GetClientId());
-  std::optional<std::string> maybe_server_id = GetServerId();
-  NSString* server_id =
-      maybe_server_id ? base::SysUTF8ToNSString(*maybe_server_id) : nil;
-
-  // `serverID` is nil if this is a new session, or if the session is expired.
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  BwgService* bwg_service = BwgServiceFactory::GetForProfile(profile);
-  bwg_service->PresentOverlayOnViewController(base_view_controller,
-                                              std::move(expected_page_context),
-                                              client_id, server_id);
-  SetBwgSessionActive(true);
-}
-
 void BwgTabHelper::SetBwgSessionActive(bool active) {
   is_bwg_session_active_ = active;
 }
@@ -48,8 +25,6 @@ void BwgTabHelper::SetBwgSessionActive(bool active) {
 void BwgTabHelper::SetBwgCommandsHandler(id<BWGCommands> handler) {
   bwg_commands_handler_ = handler;
 }
-
-#pragma mark - Private
 
 std::string BwgTabHelper::GetClientId() {
   return base::NumberToString(web_state_->GetUniqueIdentifier().identifier());

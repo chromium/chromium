@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/infobar_overlay_browser_agent_util.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
@@ -156,6 +158,10 @@ void AttachBrowserAgents(Browser* browser) {
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderBrowserAgent::CreateForBrowser(browser);
 #endif
+
+  if (!browser_is_off_record && IsPageActionMenuEnabled()) {
+    BwgBrowserAgent::CreateForBrowser(browser);
+  }
 
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.
