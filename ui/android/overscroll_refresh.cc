@@ -75,13 +75,13 @@ void OverscrollRefresh::OnScrollEnd(const gfx::Vector2dF& scroll_velocity) {
 
 void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
                                        gfx::Vector2dF accumulated_overscroll) {
+  // `accumulated_overscroll` is in the opposite direction of the scroll_deltas
+  // sent to the renderer.
+  MaybeDisableScrollConsumption(-accumulated_overscroll);
   if (scroll_consumption_state_ !=
       ScrollConsumptionState::kAwaitingScrollUpdateAck) {
     return;
   }
-  // `accumulated_overscroll` is in the opposite direction of the scroll_deltas
-  // sent to the renderer.
-  MaybeDisableScrollConsumption(-accumulated_overscroll);
   float ydelta = -accumulated_overscroll.y();
   float xdelta = -accumulated_overscroll.x();
   bool in_y_direction = std::abs(ydelta) > std::abs(xdelta);

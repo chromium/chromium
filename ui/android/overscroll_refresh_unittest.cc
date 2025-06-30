@@ -183,6 +183,30 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfOverflowYHidden) {
   EXPECT_FALSE(GetAndResetPullReleased());
 }
 
+TEST_F(OverscrollRefreshTest,
+       NotTriggeredIfOverflowYHiddenNoUpdateBeforeOverscroll) {
+  OverscrollRefresh effect(this, kDefaultEdgeWidth);
+
+  // overflow-y:hidden at the start of scroll will prevent activation.
+  gfx::PointF zero_offset;
+  bool overflow_y_hidden = true;
+  gfx::SizeF viewport(100, 100);
+  gfx::SizeF content_size(100, 10000);
+  effect.OnFrameUpdated(viewport, zero_offset, content_size, overflow_y_hidden);
+  effect.OnScrollBegin(kStartPos);
+
+  gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+  EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
+  effect.OnScrollEnd(gfx::Vector2dF());
+  EXPECT_FALSE(GetAndResetPullStarted());
+  EXPECT_FALSE(GetAndResetPullReleased());
+}
+
 TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollDownward) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
   effect.OnScrollBegin(kStartPos);
