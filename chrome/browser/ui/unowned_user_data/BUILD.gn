@@ -11,9 +11,13 @@ source_set("unowned_user_data") {
     "scoped_unowned_user_data.h",
     "unowned_user_data_host.h",
     "unowned_user_data_interface.h",
+    "user_data_factory.h",
   ]
 
-  sources = [ "unowned_user_data_host.cc" ]
+  sources = [
+    "unowned_user_data_host.cc",
+    "user_data_factory.cc",
+  ]
 
   public_deps = [
     "//base",

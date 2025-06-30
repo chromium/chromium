@@ -6499,6 +6499,7 @@ test("unit_tests") {
     "../browser/ui/passwords/settings/password_manager_porter_unittest.cc",
     "../browser/ui/sync/tab_contents_synced_tab_delegate_unittest.cc",
     "../browser/ui/unowned_user_data/unowned_user_data_unittest.cc",
+    "../browser/ui/unowned_user_data/user_data_factory_unittest.cc",
     "../browser/ui/webui/chrome_urls/chrome_urls_handler_unittest.cc",
     "../browser/ui/webui/fileicon_source_unittest.cc",
     "../browser/ui/webui/log_web_ui_url_unittest.cc",
