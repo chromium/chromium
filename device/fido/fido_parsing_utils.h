@@ -38,14 +38,6 @@ struct RangeLess {
   using is_transparent = void;
 };
 
-// U2FResponse offsets. The format of a U2F response is defined in
-// https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-raw-message-formats-v1.2-ps-20170411.html#registration-response-message-success
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const uint32_t kU2fResponseKeyHandleLengthPos;
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const uint32_t kU2fResponseKeyHandleStartPos;
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kEs256[];
-
 // Returns a materialized copy of |span|, that is, a vector with the same
 // elements.
 COMPONENT_EXPORT(DEVICE_FIDO)

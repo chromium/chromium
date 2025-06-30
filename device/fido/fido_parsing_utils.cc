@@ -26,8 +26,6 @@ constexpr bool AreSpansDisjoint(base::span<const uint8_t> lhs,
 
 }  // namespace
 
-const char kEs256[] = "ES256";
-
 std::vector<uint8_t> Materialize(base::span<const uint8_t> span) {
   return std::vector<uint8_t>(span.begin(), span.end());
 }
