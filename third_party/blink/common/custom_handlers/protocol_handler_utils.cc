@@ -19,18 +19,15 @@ namespace blink {
 
 const char kToken[] = "%s";
 
-URLSyntaxErrorCode IsValidCustomHandlerURLSyntax(
-    const GURL& full_url,
-    ProtocolHandlerSecurityLevel security_level) {
+URLSyntaxErrorCode IsValidCustomHandlerURLSyntax(const GURL& full_url) {
   std::string_view user_url =
       full_url.is_valid() ? full_url.spec() : std::string_view("");
-  return IsValidCustomHandlerURLSyntax(full_url, user_url, security_level);
+  return IsValidCustomHandlerURLSyntax(full_url, user_url);
 }
 
 URLSyntaxErrorCode IsValidCustomHandlerURLSyntax(
     const GURL& full_url,
-    std::string_view user_url,
-    ProtocolHandlerSecurityLevel security_level) {
+    const std::string_view& user_url) {
   // It is a SyntaxError if the custom handler URL, as created by removing
   // the "%s" token and prepending the base url, does not resolve.
   if (full_url.is_empty() || !full_url.is_valid()) {
@@ -39,23 +36,9 @@ URLSyntaxErrorCode IsValidCustomHandlerURLSyntax(
 
   // The specification requires that it is a SyntaxError if the "%s" token is
   // not present.
-  size_t index = user_url.find(kToken);
-  if (index == std::string_view::npos) {
+  int index = user_url.find(kToken);
+  if (-1 == index)
     return URLSyntaxErrorCode::kMissingToken;
-  }
-
-  if (security_level == ProtocolHandlerSecurityLevel::kIsolatedAppFeatures) {
-    // For Isolated Web Apps, the protocol URL must conform to the following
-    // restrictions:
-    // * There must be exactly one placeholder;
-    // * This placeholder must be a part of query params.
-    if (user_url.rfind(kToken) != index) {
-      return URLSyntaxErrorCode::kInvalidUrl;
-    }
-    if (GURL(user_url).query().find(kToken) == std::string::npos) {
-      return URLSyntaxErrorCode::kInvalidUrl;
-    }
-  }
 
   return URLSyntaxErrorCode::kNoError;
 }
@@ -64,10 +47,9 @@ bool IsValidCustomHandlerScheme(std::string_view scheme,
                                 ProtocolHandlerSecurityLevel security_level,
                                 bool* has_custom_scheme_prefix) {
   bool allow_scheme_prefix =
-      (security_level == ProtocolHandlerSecurityLevel::kExtensionFeatures);
-  if (has_custom_scheme_prefix) {
+      (security_level >= ProtocolHandlerSecurityLevel::kExtensionFeatures);
+  if (has_custom_scheme_prefix)
     *has_custom_scheme_prefix = false;
-  }
 
   static constexpr const char kWebPrefix[] = "web+";
   static constexpr const char kExtPrefix[] = "ext+";
@@ -78,21 +60,18 @@ bool IsValidCustomHandlerScheme(std::string_view scheme,
       (allow_scheme_prefix &&
        base::StartsWith(scheme, kExtPrefix,
                         base::CompareCase::INSENSITIVE_ASCII))) {
-    if (has_custom_scheme_prefix) {
+    if (has_custom_scheme_prefix)
       *has_custom_scheme_prefix = true;
-    }
     // HTML5 requires that schemes with the |web+| prefix contain one or more
     // ASCII alphas after that prefix.
     auto scheme_name = scheme.substr(kPrefixLength);
-    return scheme_name.length() >= 1 &&
-           std::ranges::all_of(scheme_name, &base::IsAsciiAlpha<char>);
-  }
-
-  if (security_level == ProtocolHandlerSecurityLevel::kIsolatedAppFeatures) {
-    // Isolated Apps are allowed to claim any scheme that consists of ascii
-    // characters of length at least 2.
-    return scheme.length() >= 2 &&
-           std::ranges::all_of(scheme, &base::IsAsciiAlpha<char>);
+    if (scheme_name.empty())
+      return false;
+    for (auto& character : scheme_name) {
+      if (!base::IsAsciiAlpha(character))
+        return false;
+    }
+    return true;
   }
 
   static constexpr const char* const kProtocolSafelist[] = {
@@ -126,9 +105,7 @@ bool IsAllowedCustomHandlerURL(const GURL& url,
       url.SchemeIsHTTPOrHTTPS() ||
       security_level == ProtocolHandlerSecurityLevel::kSameOrigin ||
       (security_level == ProtocolHandlerSecurityLevel::kExtensionFeatures &&
-       CommonSchemeRegistry::IsExtensionScheme(url.scheme())) ||
-      (security_level == ProtocolHandlerSecurityLevel::kIsolatedAppFeatures &&
-       CommonSchemeRegistry::IsIsolatedAppScheme(url.scheme()));
+       CommonSchemeRegistry::IsExtensionScheme(url.scheme()));
   return has_valid_scheme && network::IsUrlPotentiallyTrustworthy(url);
 }
 

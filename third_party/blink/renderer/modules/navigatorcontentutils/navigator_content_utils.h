@@ -56,7 +56,6 @@ bool VerifyCustomHandlerScheme(const String& scheme,
 bool VerifyCustomHandlerURLSyntax(const KURL& full_url,
                                   const KURL& base_url,
                                   const String& user_url,
-                                  ProtocolHandlerSecurityLevel security_level,
                                   String& error_message);
 
 // It is owned by Navigator, and an instance is created lazily by calling

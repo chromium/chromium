@@ -36,8 +36,8 @@ TEST(ProtocolHandlerUtilTest, ValidCustomHandlerSyntax) {
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.title);
     GURL full_url(test_case.user_url);
-    URLSyntaxErrorCode code = IsValidCustomHandlerURLSyntax(
-        full_url, test_case.user_url, ProtocolHandlerSecurityLevel::kStrict);
+    URLSyntaxErrorCode code =
+        IsValidCustomHandlerURLSyntax(full_url, test_case.user_url);
     EXPECT_EQ(code, URLSyntaxErrorCode::kNoError);
   };
 }
@@ -100,8 +100,8 @@ TEST(ProtocolHandlerUtilTest, InvalidCustomHandlerSyntax) {
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.title);
     GURL full_url(test_case.user_url);
-    URLSyntaxErrorCode code = IsValidCustomHandlerURLSyntax(
-        full_url, test_case.user_url, ProtocolHandlerSecurityLevel::kStrict);
+    URLSyntaxErrorCode code =
+        IsValidCustomHandlerURLSyntax(full_url, test_case.user_url);
     EXPECT_EQ(code, test_case.expected_error);
   };
 }
@@ -154,8 +154,7 @@ TEST(ProtocolHandlerUtilTest, MAYBE_InvalidURL) {
     SCOPED_TRACE(test_case.title);
     GURL full_url(test_case.user_url);
     EXPECT_FALSE(full_url.is_valid());
-    URLSyntaxErrorCode code = IsValidCustomHandlerURLSyntax(
-        full_url, ProtocolHandlerSecurityLevel::kStrict);
+    URLSyntaxErrorCode code = IsValidCustomHandlerURLSyntax(full_url);
     EXPECT_EQ(code, test_case.expected_error);
   };
 }
@@ -316,103 +315,6 @@ TEST(ProtocolHandlerUtilTest, CustomHandlerURLIsAllowed) {
     GURL url(test_case.url);
     bool is_allowed = IsAllowedCustomHandlerURL(url, test_case.security_level);
     EXPECT_EQ(is_allowed, test_case.is_allowed);
-  };
-}
-
-TEST(ProtocolHandlerUtilTest, IsolatedAppFeaturesValidCustomScheme) {
-  struct {
-    std::string_view title;
-    std::string_view scheme;
-    bool allowed;
-  } test_cases[]{
-      {
-          "Valid lowercase ASCII alphas",
-          "myproto",
-          true,
-      },
-      {
-          "Valid mixed-case ASCII alphas",
-          "PrOtOcOl",
-          true,
-      },
-      {
-          "Valid ASCII alphas with web+ prefix",
-          "web+meow",
-          true,
-      },
-      {
-          "Invalid scheme: numbers",
-          "myproto3",
-          false,
-      },
-      {
-          "Invalid scheme: dots/dashes",
-          "mypro.to3-sth",
-          false,
-      },
-      {
-          "Invalid scheme: empty",
-          "",
-          false,
-      },
-      {
-          "Invalid scheme: one char",
-          "C",
-          false,
-      },
-      {
-          "Invalid scheme: empty after web+",
-          "web+",
-          false,
-      },
-  };
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(test_case.title);
-    bool allowed = IsValidCustomHandlerScheme(
-        test_case.scheme, ProtocolHandlerSecurityLevel::kIsolatedAppFeatures);
-    EXPECT_EQ(allowed, test_case.allowed);
-  };
-}
-
-TEST(ProtocolHandlerUtilTest, IsolatedAppFeaturesValidCustomURLSyntax) {
-  struct {
-    std::string_view title;
-    std::string_view url;
-    bool allowed;
-  } test_cases[]{
-      {
-          "Valid IWA URL with placeholder in query",
-          "isolated-app://"
-          "amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai?params=%"
-          "s",
-          true,
-      },
-      {
-          "IWA URL without %s",
-          "isolated-app://"
-          "amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai",
-          false,
-      },
-      {
-          "IWA URL with non-query placeholder",
-          "isolated-app://%s",
-          false,
-      },
-      {
-          "IWA URL with multiple placeholders",
-          "isolated-app://"
-          "amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai?params=%"
-          "s&other_params=%s",
-          false,
-      },
-  };
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(test_case.title);
-    bool allowed = IsValidCustomHandlerURLSyntax(
-                       GURL(test_case.url),
-                       ProtocolHandlerSecurityLevel::kIsolatedAppFeatures) ==
-                   URLSyntaxErrorCode::kNoError;
-    EXPECT_EQ(allowed, test_case.allowed);
   };
 }
 

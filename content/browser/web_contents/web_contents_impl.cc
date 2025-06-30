@@ -396,8 +396,7 @@ bool AreValidRegisterProtocolHandlerArguments(
     return false;
   }
 
-  blink::URLSyntaxErrorCode code =
-      blink::IsValidCustomHandlerURLSyntax(url, security_level);
+  blink::URLSyntaxErrorCode code = blink::IsValidCustomHandlerURLSyntax(url);
   if (code != blink::URLSyntaxErrorCode::kNoError) {
     return false;
   }
