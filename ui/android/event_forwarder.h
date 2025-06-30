@@ -12,6 +12,7 @@
 
 namespace ui {
 
+class KeyEventAndroid;
 class MotionEventAndroid;
 class ViewAndroid;
 
@@ -123,10 +124,7 @@ class UI_ANDROID_EXPORT EventForwarder {
       jlong event_time_ns,
       jlong down_time_ms);
 
-  jboolean OnKeyUp(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
-                   const base::android::JavaParamRef<jobject>& key_event,
-                   jint key_code);
+  jboolean OnKeyUp(JNIEnv* env, const ui::KeyEventAndroid& key_event);
 
   jboolean DispatchKeyEvent(
       JNIEnv* env,

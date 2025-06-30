@@ -17,6 +17,7 @@ namespace ui {
 class EVENTS_EXPORT KeyEventAndroid {
  public:
   KeyEventAndroid(JNIEnv* env, jobject event);
+  // DEPRECATED. Use the constructor that only takes the event.
   KeyEventAndroid(JNIEnv* env, jobject event, int key_code);
   // Synthesize android key event from given android action, key code, etc.
   KeyEventAndroid(int action, int key_code, int meta_state);

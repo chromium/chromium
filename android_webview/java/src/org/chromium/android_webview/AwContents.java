@@ -4417,7 +4417,7 @@ public class AwContents implements SmartClipProvider {
         public boolean onKeyUp(int keyCode, KeyEvent event) {
             return isDestroyed(NO_WARN)
                     ? false
-                    : mWebContents.getEventForwarder().onKeyUp(keyCode, event);
+                    : mWebContents.getEventForwarder().onKeyUp(event);
         }
 
         @Override

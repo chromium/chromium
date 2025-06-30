@@ -269,10 +269,8 @@ jboolean EventForwarder::OnGenericMotionEvent(
 }
 
 jboolean EventForwarder::OnKeyUp(JNIEnv* env,
-                                 const JavaParamRef<jobject>& obj,
-                                 const JavaParamRef<jobject>& key_event,
-                                 jint key_code) {
-  return view_->OnKeyUp(KeyEventAndroid(env, key_event, key_code));
+                                 const ui::KeyEventAndroid& key_event) {
+  return view_->OnKeyUp(key_event);
 }
 
 jboolean EventForwarder::DispatchKeyEvent(

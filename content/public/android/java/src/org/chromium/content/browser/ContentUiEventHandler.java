@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
@@ -146,8 +147,8 @@ public class ContentUiEventHandler implements UserData {
     }
 
     @CalledByNative
-    private boolean onKeyUp(int keyCode, KeyEvent event) {
-        return mEventDelegate.super_onKeyUp(keyCode, event);
+    private boolean onKeyUp(@JniType("ui::KeyEventAndroid") KeyEvent event) {
+        return mEventDelegate.super_onKeyUp(event.getKeyCode(), event);
     }
 
     @CalledByNative

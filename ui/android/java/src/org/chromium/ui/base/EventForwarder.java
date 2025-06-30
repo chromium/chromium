@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContentUriUtils;
@@ -782,12 +783,11 @@ public class EventForwarder {
     }
 
     /**
-     * @see View#onKeyUp()
+     * @see View#onKeyUp(), except it doesn't take keyCode as a parameter.
      */
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(KeyEvent event) {
         if (mNativeEventForwarder == 0) return false;
-        return EventForwarderJni.get()
-                .onKeyUp(mNativeEventForwarder, EventForwarder.this, event, keyCode);
+        return EventForwarderJni.get().onKeyUp(mNativeEventForwarder, event);
     }
 
     /**
@@ -950,8 +950,7 @@ public class EventForwarder {
                 long timeNs,
                 long downTimeMs);
 
-        boolean onKeyUp(
-                long nativeEventForwarder, EventForwarder caller, KeyEvent event, int keyCode);
+        boolean onKeyUp(long nativeEventForwarder, @JniType("ui::KeyEventAndroid") KeyEvent event);
 
         boolean dispatchKeyEvent(long nativeEventForwarder, EventForwarder caller, KeyEvent event);
 

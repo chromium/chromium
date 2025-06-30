@@ -52,8 +52,7 @@ bool ContentUiEventHandler::OnKeyUp(const ui::KeyEventAndroid& event) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
   if (!j_obj.is_null()) {
-    return Java_ContentUiEventHandler_onKeyUp(env, j_obj, event.key_code(),
-                                              event.GetJavaObject());
+    return Java_ContentUiEventHandler_onKeyUp(env, j_obj, event);
   }
   return false;
 }

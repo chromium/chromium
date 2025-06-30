@@ -386,7 +386,7 @@ public class ContentView extends FrameLayout
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         EventForwarder forwarder = getEventForwarder();
-        return forwarder != null ? forwarder.onKeyUp(keyCode, event) : false;
+        return forwarder != null ? forwarder.onKeyUp(event) : false;
     }
 
     @Override
