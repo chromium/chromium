@@ -2937,7 +2937,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.FastCheckout.RunOutcome"
-    enum="FastCheckoutRunOutcome" expires_after="2025-06-30">
+    enum="FastCheckoutRunOutcome" expires_after="2025-12-14">
   <owner>bwolfgang@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
