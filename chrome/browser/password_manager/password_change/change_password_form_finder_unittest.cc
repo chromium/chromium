@@ -42,6 +42,8 @@ using testing::Invoke;
 using testing::Return;
 using testing::WithArg;
 
+const char kUrlString[] = "https://www.foo.com/";
+
 class FakeChromePasswordManagerClient : public ChromePasswordManagerClient {
  public:
   static void CreateForWebContents(content::WebContents* contents) {
@@ -171,9 +173,9 @@ TEST_F(ChangePasswordFormFinderTest, PasswordChangeFormFound) {
   base::MockCallback<
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
       capture_annotated_page_content;
-  ChangePasswordFormFinder form_waiter(pass_key(), web_contents(),
-                                       completion_callback.Get(),
-                                       capture_annotated_page_content.Get());
+  ChangePasswordFormFinder form_waiter(
+      pass_key(), web_contents(), GURL(kUrlString), completion_callback.Get(),
+      capture_annotated_page_content.Get());
 
   ASSERT_TRUE(form_waiter.form_waiter());
   EXPECT_CALL(capture_annotated_page_content, Run).Times(0);
@@ -190,7 +192,7 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
       capture_annotated_page_content;
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), completion_callback.Get(),
+      pass_key(), web_contents(), GURL(kUrlString), completion_callback.Get(),
       capture_annotated_page_content.Get());
 
   ASSERT_TRUE(form_finder->form_waiter());
@@ -216,7 +218,7 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelOpenFormRequestHasArgs) {
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
       capture_annotated_page_content;
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), completion_callback.Get(),
+      pass_key(), web_contents(), GURL(kUrlString), completion_callback.Get(),
       capture_annotated_page_content.Get());
 
   GURL test_url("https://example.com/change-password");
@@ -263,7 +265,7 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedButFailed) {
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
       capture_annotated_page_content;
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), completion_callback.Get(),
+      pass_key(), web_contents(), GURL(kUrlString), completion_callback.Get(),
       capture_annotated_page_content.Get());
 
   ASSERT_TRUE(form_finder->form_waiter());
@@ -295,7 +297,7 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
       capture_annotated_page_content;
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), completion_callback.Get(),
+      pass_key(), web_contents(), GURL(kUrlString), completion_callback.Get(),
       capture_annotated_page_content.Get());
 
   ASSERT_TRUE(form_finder->form_waiter());
@@ -327,4 +329,48 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder->form_waiter())
       ->OnPasswordFormParsed(form_manager.get());
+}
+
+TEST_F(ChangePasswordFormFinderTest, ExecuteModelPredictsLoginPage) {
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  auto form_finder = std::make_unique<ChangePasswordFormFinder>(
+      pass_key(), web_contents(), GURL(kUrlString), completion_callback.Get(),
+      capture_annotated_page_content.Get());
+
+  ASSERT_TRUE(form_finder->form_waiter());
+  static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
+      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+  ASSERT_FALSE(form_finder->click_helper());
+
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(WithArg<3>(Invoke(
+          [](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            optimization_guide::proto::PasswordChangeResponse response;
+            response.mutable_open_form_data()->set_dom_node_id_to_click(0);
+            response.mutable_open_form_data()->set_page_type(
+                ::optimization_guide::proto::OpenFormResponseData_PageType::
+                    OpenFormResponseData_PageType_LOG_IN_PAGE);
+
+            auto result =
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    optimization_guide::AnyWrapProto(response),
+                    /*execution_info=*/nullptr);
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback), std::move(result),
+                               /*log_entry=*/nullptr));
+          })));
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          optimization_guide::AIPageContentResult()));
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+
+  EXPECT_EQ(GURL(kUrlString), web_contents()->GetURL());
+  EXPECT_TRUE(form_finder->form_waiter());
 }

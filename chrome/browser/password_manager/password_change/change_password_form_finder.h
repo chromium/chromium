@@ -27,13 +27,18 @@ class ButtonClickHelper;
 // otherwise.
 class ChangePasswordFormFinder {
  public:
+  // Maximum waiting time for a change password form to appear.
+  static constexpr base::TimeDelta kFormWaitingTimeout = base::Seconds(30);
+
   ChangePasswordFormFinder(
       content::WebContents* web_contents,
+      const GURL& change_password_url,
       ChangePasswordFormWaiter::PasswordFormFoundCallback callback);
 
   ChangePasswordFormFinder(
       base::PassKey<class ChangePasswordFormFinderTest>,
       content::WebContents* web_contents,
+      const GURL& change_password_url,
       ChangePasswordFormWaiter::PasswordFormFoundCallback callback,
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
           capture_annotated_page_content);
@@ -68,7 +73,15 @@ class ChangePasswordFormFinder {
   void OnSubsequentFormWaitingResult(
       password_manager::PasswordFormManager* form_manager);
 
+  // Invokes `callback_` if `form_manager` is present, navigates to the
+  // `change_password_url_` and awaits for change password form again otherwise.
+  void ProcessPasswordFormManagerOrRefresh(
+      password_manager::PasswordFormManager* form_manager);
+  void OnFormNotFound();
+
   const raw_ptr<content::WebContents> web_contents_;
+  const GURL change_password_url_;
+
   ChangePasswordFormWaiter::PasswordFormFoundCallback callback_;
   base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
       capture_annotated_page_content_;

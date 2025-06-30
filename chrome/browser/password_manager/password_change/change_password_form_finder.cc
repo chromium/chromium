@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
@@ -30,8 +31,11 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
 
 ChangePasswordFormFinder::ChangePasswordFormFinder(
     content::WebContents* web_contents,
+    const GURL& change_password_url,
     ChangePasswordFormWaiter::PasswordFormFoundCallback callback)
-    : web_contents_(web_contents), callback_(std::move(callback)) {
+    : web_contents_(web_contents),
+      change_password_url_(change_password_url),
+      callback_(std::move(callback)) {
   capture_annotated_page_content_ =
       base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
                      GetAIPageContentOptions());
@@ -39,15 +43,24 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
       web_contents,
       base::BindOnce(&ChangePasswordFormFinder::OnInitialFormWaitingResult,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ChangePasswordFormFinder::OnFormNotFound,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kFormWaitingTimeout);
 }
 
 ChangePasswordFormFinder::ChangePasswordFormFinder(
     base::PassKey<class ChangePasswordFormFinderTest>,
     content::WebContents* web_contents,
+    const GURL& change_password_url,
     ChangePasswordFormWaiter::PasswordFormFoundCallback callback,
     base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
         capture_annotated_page_content)
-    : ChangePasswordFormFinder(web_contents, std::move(callback)) {
+    : ChangePasswordFormFinder(web_contents,
+                               change_password_url,
+                               std::move(callback)) {
   capture_annotated_page_content_ = std::move(capture_annotated_page_content);
 }
 
@@ -56,6 +69,7 @@ ChangePasswordFormFinder::~ChangePasswordFormFinder() = default;
 void ChangePasswordFormFinder::OnInitialFormWaitingResult(
     password_manager::PasswordFormManager* form_manager) {
   CHECK(web_contents_);
+  CHECK(callback_);
 
   form_waiter_.reset();
   if (form_manager) {
@@ -72,6 +86,7 @@ void ChangePasswordFormFinder::OnInitialFormWaitingResult(
 void ChangePasswordFormFinder::OnPageContentReceived(
     std::optional<optimization_guide::AIPageContentResult> content) {
   CHECK(web_contents_);
+  CHECK(callback_);
 
   if (!content) {
     std::move(callback_).Run(nullptr);
@@ -106,6 +121,8 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
         logging_data) {
   CHECK(web_contents_);
+  CHECK(callback_);
+
   if (!execution_result.response.has_value()) {
     // TODO(crbug.com/407503334): Record metrics here.
     std::move(callback_).Run(nullptr);
@@ -123,8 +140,15 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
 
   int dom_node_id = response.value().open_form_data().dom_node_id_to_click();
   if (!dom_node_id) {
+    // Button to click is missing when the login page is displayed. Instead of
+    // failing immediately continue refreshing the page until timeout.
+    if (response.value().open_form_data().page_type() ==
+        optimization_guide::proto::OpenFormResponseData_PageType_LOG_IN_PAGE) {
+      ProcessPasswordFormManagerOrRefresh(/*form_manager=*/nullptr);
+    } else {
+      std::move(callback_).Run(nullptr);
+    }
     // TODO(crbug.com/407503334): Record metrics here.
-    std::move(callback_).Run(nullptr);
     return;
   }
 
@@ -136,6 +160,7 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
 
 void ChangePasswordFormFinder::OnButtonClicked(bool result) {
   CHECK(web_contents_);
+  CHECK(callback_);
 
   click_helper_.reset();
 
@@ -154,5 +179,28 @@ void ChangePasswordFormFinder::OnButtonClicked(bool result) {
 void ChangePasswordFormFinder::OnSubsequentFormWaitingResult(
     password_manager::PasswordFormManager* form_manager) {
   // TODO(crbug.com/407503334): Record metrics here.
+  CHECK(callback_);
   std::move(callback_).Run(form_manager);
+}
+
+void ChangePasswordFormFinder::ProcessPasswordFormManagerOrRefresh(
+    password_manager::PasswordFormManager* form_manager) {
+  if (form_manager) {
+    CHECK(callback_);
+    std::move(callback_).Run(form_manager);
+    return;
+  }
+  web_contents_->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(change_password_url_));
+
+  form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
+      web_contents_,
+      base::BindOnce(
+          &ChangePasswordFormFinder::ProcessPasswordFormManagerOrRefresh,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChangePasswordFormFinder::OnFormNotFound() {
+  CHECK(callback_);
+  std::move(callback_).Run(nullptr);
 }
