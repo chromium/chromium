@@ -40,7 +40,9 @@ bool LensOverlayEventHandler::HandleKeyboardEvent(
   }
 
   if (IsEscapeEvent(event)) {
-    if (lens::features::IsLensOverlayBackToPageEnabled()) {
+    if (lens::features::IsLensOverlayBackToPageEnabled() &&
+        lens_search_controller_->lens_overlay_controller()
+            ->IsOverlayShowing()) {
       lens_search_controller_->HideOverlay(
           lens::LensOverlayDismissalSource::kEscapeKeyPress);
       return true;

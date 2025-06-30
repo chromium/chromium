@@ -183,8 +183,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
     kOverlayAndResults,
 
     // Showing results with the overlay hidden and live page showing.
-    // TODO(b/357121367): Live page with results is no longer related to the
-    // overlay and therefore should not exist as a state of the overlay
+    // TODO(crbug.com/428208291): Live page with results is no longer related to
+    // the overlay and therefore should not exist as a state of the overlay
     // controller. Remove once we have a parent class that can handle this flow.
     kLivePageAndResults,
 
@@ -552,6 +552,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Hides the overlay view and restores input to the tab contents web view.
   void HideOverlay();
+
+  // Hides the overlay, but also sets the state to kLivePageAndResults if the
+  // side panel is bound.
+  void HideOverlayAndMaybeSetLivePageState();
 
  private:
   // Data class for constructing overlay and storing overlay state for
