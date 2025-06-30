@@ -12,6 +12,7 @@
 
 // Different types of items identified by a TabGroupsPanelItem.
 enum class TabGroupsPanelItemType : NSUInteger {
+  kOutOfDateMessage,
   kNotification,
   kSavedTabGroup,
 };
@@ -31,6 +32,7 @@ enum class TabGroupsPanelItemType : NSUInteger {
 // The sharing state of the item, when type is `kSavedTabGroup`.
 @property(nonatomic, readonly) tab_groups::SharingState sharingState;
 
+- (instancetype)initWithOutOfDateMessage NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNotificationText:(NSString*)text
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithSavedTabGroupID:(base::Uuid)savedTabGroupID

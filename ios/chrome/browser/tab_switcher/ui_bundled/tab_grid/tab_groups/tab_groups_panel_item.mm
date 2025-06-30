@@ -10,6 +10,16 @@
   NSUInteger _hash;
 }
 
+- (instancetype)initWithOutOfDateMessage {
+  self = [super init];
+  if (self) {
+    _type = TabGroupsPanelItemType::kOutOfDateMessage;
+    // There is only one possible item in this case.
+    _hash = 0;
+  }
+  return self;
+}
+
 - (instancetype)initWithNotificationText:(NSString*)text {
   self = [super init];
   if (self) {
@@ -61,6 +71,8 @@
     return NO;
   }
   switch (_type) {
+    case TabGroupsPanelItemType::kOutOfDateMessage:
+      return YES;
     case TabGroupsPanelItemType::kNotification:
       return [self.notificationText isEqualToString:item.notificationText];
     case TabGroupsPanelItemType::kSavedTabGroup:

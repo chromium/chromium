@@ -14,8 +14,10 @@
 @protocol TabGroupsPanelConsumer
 
 // Replace the Tab Groups panel's items with the given items.
-- (void)populateNotificationItem:(TabGroupsPanelItem*)notificationItem
-                   tabGroupItems:(NSArray<TabGroupsPanelItem*>*)tabGroupItems;
+- (void)populateOutOfDateMessageItem:(TabGroupsPanelItem*)outOfDateMessageItem
+                    notificationItem:(TabGroupsPanelItem*)notificationItem
+                       tabGroupItems:
+                           (NSArray<TabGroupsPanelItem*>*)tabGroupItems;
 
 // Reconfigures the given Tab Groups panel's item.
 - (void)reconfigureItem:(TabGroupsPanelItem*)item;

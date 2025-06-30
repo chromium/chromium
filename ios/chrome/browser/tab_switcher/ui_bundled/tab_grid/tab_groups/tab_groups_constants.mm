@@ -37,10 +37,17 @@ NSString* const kTabGroupRecentActivityIdentifier =
 
 NSString* const kTabGroupsPanelIdentifier = @"kTabGroupsPanelIdentifier";
 
+NSString* const kTabGroupsPanelOutOfDateMessageCellIdentifier =
+    @"kTabGroupsPanelOutOfDateMessageCellIdentifier";
 NSString* const kTabGroupsPanelNotificationCellIdentifierPrefix =
     @"kTabGroupsPanelNotificationCellIdentifier";
 NSString* const kTabGroupsPanelCellIdentifierPrefix =
     @"kTabGroupsPanelCellIdentifier";
+
+NSString* const kTabGroupsPanelUpdateOutOfDateMessageIdentifier =
+    @"kTabGroupsPanelUpdateOutOfDateMessageIdentifier";
+NSString* const kTabGroupsPanelCloseOutOfDateMessageIdentifier =
+    @"kTabGroupsPanelCloseOutOfDateMessageIdentifier";
 
 NSString* const kTabGroupsPanelCloseNotificationIdentifier =
     @"kTabGroupsPanelCloseNotificationIdentifier";

@@ -28,17 +28,22 @@ UIColor* TabGroupViewButtonBackgroundColor();
 // Accessibility identifiers for the Recent Activity view.
 extern NSString* const kTabGroupRecentActivityIdentifier;
 
-// Accessibility identifiers for the Tab Groups panel in Tab Grid.
+// Accessibility identifiers for the tab groups panel in Tab Grid.
 extern NSString* const kTabGroupsPanelIdentifier;
 
-// Accessibility identifier prefix of cells in the Tab Groups panel.
+// Accessibility identifiers of cells in the tab groups panel.
+extern NSString* const kTabGroupsPanelOutOfDateMessageCellIdentifier;
 extern NSString* const kTabGroupsPanelNotificationCellIdentifierPrefix;
 extern NSString* const kTabGroupsPanelCellIdentifierPrefix;
 
-// Accessibility identifier for the Tab Groups panel notification cell.
+// Accessibility identifiers for the tab groups panel out-of-date message cell.
+extern NSString* const kTabGroupsPanelUpdateOutOfDateMessageIdentifier;
+extern NSString* const kTabGroupsPanelCloseOutOfDateMessageIdentifier;
+
+// Accessibility identifier for the tab groups panel notification cell.
 extern NSString* const kTabGroupsPanelCloseNotificationIdentifier;
 
-// Accessibility identifier of the Shared Tab Groups user education screen.
+// Accessibility identifier of the shared tab groups user education screen.
 extern NSString* const kSharedTabGroupUserEducationAccessibilityIdentifier;
 // Name of the pref storing whether the user education has been shown or not.
 extern NSString* const kSharedTabGroupUserEducationShownOnceKey;

@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_item_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_notification_cell.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_out_of_date_message_cell.h"
 
 using tab_groups::SharingState;
 
@@ -46,6 +47,7 @@ const CGFloat kHorizontalInsetPercentageWhenLargeAndOneItem = 0.3125;
 // Percentage of the width dedicated to an horizontal inset when there are two
 // elements.
 const CGFloat kHorizontalInsetPercentageWhenLargeAndTwoItems = 0.125;
+NSString* const kOutOfDateMessageSection = @"OutOfDateMessage";
 NSString* const kNotificationsSection = @"Notifications";
 NSString* const kTabGroupsSection = @"TabGroups";
 
@@ -71,6 +73,7 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
 
 @interface TabGroupsPanelViewController () <
     TabGroupsPanelNotificationCellDelegate,
+    TabGroupsPanelOutOfDateMessageCellDelegate,
     UICollectionViewDelegate>
 @end
 
@@ -78,6 +81,8 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionView* _collectionView;
   UICollectionViewDiffableDataSource<NSString*, TabGroupsPanelItem*>*
       _dataSource;
+  // The cell registration for the out-of-date message cell.
+  UICollectionViewCellRegistration* _outOfDateMessageRegistration;
   // The cell registration for notifications cells.
   UICollectionViewCellRegistration* _notificationRegistration;
   // The cell registration for tab groups cells.
@@ -172,6 +177,22 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
   [_collectionView reloadData];
 }
 
+#pragma mark TabGroupsPanelOutOfDateCellDelegate
+
+- (void)updateButtonTappedForOutOfDateMessageCell:
+    (TabGroupsPanelOutOfDateMessageCell*)outOfDateMessageCell {
+  TabGroupsPanelItem* item = outOfDateMessageCell.outOfDateMessageItem;
+  CHECK_EQ(item.type, TabGroupsPanelItemType::kOutOfDateMessage);
+  [self.mutator updateAppWithOutOfDateMessageItem:item];
+}
+
+- (void)closeButtonTappedForOutOfDateMessageCell:
+    (TabGroupsPanelOutOfDateMessageCell*)outOfDateMessageCell {
+  TabGroupsPanelItem* item = outOfDateMessageCell.outOfDateMessageItem;
+  CHECK_EQ(item.type, TabGroupsPanelItemType::kOutOfDateMessage);
+  [self.mutator deleteOutOfDateMessageItem:item];
+}
+
 #pragma mark TabGroupsPanelNotificationCellDelegate
 
 - (void)closeButtonTappedForNotificationItem:(TabGroupsPanelItem*)item {
@@ -180,10 +201,16 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
 
 #pragma mark TabGroupsPanelConsumer
 
-- (void)populateNotificationItem:(TabGroupsPanelItem*)notificationItem
-                   tabGroupItems:(NSArray<TabGroupsPanelItem*>*)tabGroupItems {
+- (void)populateOutOfDateMessageItem:(TabGroupsPanelItem*)outOfDateMessageItem
+                    notificationItem:(TabGroupsPanelItem*)notificationItem
+                       tabGroupItems:
+                           (NSArray<TabGroupsPanelItem*>*)tabGroupItems {
   // Sanity check.
   CHECK_NE(tabGroupItems, nil);
+  if (outOfDateMessageItem) {
+    CHECK_EQ(outOfDateMessageItem.type,
+             TabGroupsPanelItemType::kOutOfDateMessage);
+  }
   if (notificationItem) {
     CHECK_EQ(notificationItem.type, TabGroupsPanelItemType::kNotification);
   }
@@ -196,6 +223,11 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
   // Update the data source.
   CHECK(_dataSource);
   TabGroupsPanelSnapshot* snapshot = [[TabGroupsPanelSnapshot alloc] init];
+  if (outOfDateMessageItem) {
+    [snapshot appendSectionsWithIdentifiers:@[ kOutOfDateMessageSection ]];
+    [snapshot appendItemsWithIdentifiers:@[ outOfDateMessageItem ]];
+    [snapshot reconfigureItemsWithIdentifiers:@[ outOfDateMessageItem ]];
+  }
   if (notificationItem) {
     [snapshot appendSectionsWithIdentifiers:@[ kNotificationsSection ]];
     [snapshot appendItemsWithIdentifiers:@[ notificationItem ]];
@@ -239,6 +271,9 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
     performPrimaryActionForItemAtIndexPath:(NSIndexPath*)indexPath {
   TabGroupsPanelItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
   switch (item.type) {
+    case TabGroupsPanelItemType::kOutOfDateMessage:
+      // No-op.
+      break;
     case TabGroupsPanelItemType::kNotification:
       if (UIAccessibilityIsVoiceOverRunning() ||
           UIAccessibilityIsSwitchControlRunning()) {
@@ -257,6 +292,7 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
                                          point:(CGPoint)point {
   TabGroupsPanelItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
   switch (item.type) {
+    case TabGroupsPanelItemType::kOutOfDateMessage:
     case TabGroupsPanelItemType::kNotification:
       return nil;
     case TabGroupsPanelItemType::kSavedTabGroup: {
@@ -288,6 +324,9 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
                          atIndexPath:(NSIndexPath*)indexPath {
   UICollectionViewCellRegistration* registration;
   switch (item.type) {
+    case TabGroupsPanelItemType::kOutOfDateMessage:
+      registration = _outOfDateMessageRegistration;
+      break;
     case TabGroupsPanelItemType::kNotification:
       registration = _notificationRegistration;
       break;
@@ -305,6 +344,17 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
 // properties.
 - (void)createRegistrations {
   __weak __typeof(self) weakSelf = self;
+
+  // Register TabGroupsPanelOutOfDateMessageCell.
+  _outOfDateMessageRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:TabGroupsPanelOutOfDateMessageCell.class
+           configurationHandler:^(TabGroupsPanelOutOfDateMessageCell* cell,
+                                  NSIndexPath* indexPath,
+                                  TabGroupsPanelItem* item) {
+             [weakSelf configureOutOfDateMessageCell:cell
+                                            withItem:item
+                                             atIndex:indexPath.item];
+           }];
 
   // Register TabGroupsPanelNotificationCell.
   _notificationRegistration = [UICollectionViewCellRegistration
@@ -327,6 +377,11 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
                                     withItem:item
                                      atIndex:indexPath.item];
            }];
+}
+
+- (BOOL)hasOutOfDateMessage {
+  return [_dataSource.snapshot
+             indexOfSectionIdentifier:kOutOfDateMessageSection] != NSNotFound;
 }
 
 - (BOOL)hasNotifications {
@@ -368,6 +423,10 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
      layoutEnvironment:(id<NSCollectionLayoutEnvironment>)layoutEnvironment {
   NSString* sectionIdentifier =
       [_dataSource sectionIdentifierForIndex:sectionIndex];
+  if ([sectionIdentifier isEqualToString:kOutOfDateMessageSection]) {
+    return [self
+        makeOutOfDateMessageSectionWithLayoutEnvironment:layoutEnvironment];
+  }
   if ([sectionIdentifier isEqualToString:kNotificationsSection]) {
     return
         [self makeNotificationsSectionWithLayoutEnvironment:layoutEnvironment];
@@ -376,6 +435,63 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
     return [self makeTabGroupsSectionWithLayoutEnvironment:layoutEnvironment];
   }
   NOTREACHED();
+}
+
+// Returns the layout section for the out-of-date message.
+- (NSCollectionLayoutSection*)makeOutOfDateMessageSectionWithLayoutEnvironment:
+    (id<NSCollectionLayoutEnvironment>)layoutEnvironment {
+  const BOOL onlyOneTabGroup = [self hasOnlyOneTabGroup];
+  const CGFloat width = layoutEnvironment.container.effectiveContentSize.width;
+  const BOOL hasLargeWidth = width > kColumnCountWidthThreshold;
+
+  NSCollectionLayoutDimension* itemWidth =
+      [NSCollectionLayoutDimension fractionalWidthDimension:1];
+  NSCollectionLayoutDimension* itemHeight = [NSCollectionLayoutDimension
+      estimatedDimension:kEstimatedNotificationHeight];
+  NSCollectionLayoutSize* itemSize =
+      [NSCollectionLayoutSize sizeWithWidthDimension:itemWidth
+                                     heightDimension:itemHeight];
+  NSCollectionLayoutItem* item =
+      [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
+
+  NSCollectionLayoutDimension* groupWidth =
+      [NSCollectionLayoutDimension fractionalWidthDimension:1];
+  NSCollectionLayoutSize* groupSize =
+      [NSCollectionLayoutSize sizeWithWidthDimension:groupWidth
+                                     heightDimension:itemHeight];
+  NSCollectionLayoutGroup* group =
+      [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:groupSize
+                                                    subitems:@[ item ]];
+  group.interItemSpacing =
+      [NSCollectionLayoutSpacing fixedSpacing:kInterItemSpacing];
+
+  CGFloat groupHorizontalInset = kHorizontalInset;
+  const BOOL hasLargeInset =
+      layoutEnvironment.traitCollection.horizontalSizeClass ==
+      UIUserInterfaceSizeClassRegular;
+  if (hasLargeInset) {
+    groupHorizontalInset =
+        width * kHorizontalInsetPercentageWhenLargeAndTwoItems;
+    if (hasLargeWidth && onlyOneTabGroup) {
+      groupHorizontalInset =
+          width * kHorizontalInsetPercentageWhenLargeAndOneItem;
+    }
+  }
+  group.contentInsets = NSDirectionalEdgeInsetsMake(0, groupHorizontalInset, 0,
+                                                    groupHorizontalInset);
+
+  NSCollectionLayoutSection* section =
+      [NSCollectionLayoutSection sectionWithGroup:group];
+  section.interGroupSpacing = kInterGroupSpacing;
+  const CGFloat topInset = hasLargeInset ? kLargeVerticalInset : kVerticalInset;
+  const CGFloat bottomInset = [self hasNotifications] || [self hasTabGroups]
+                                  ? kVerticalInset
+                                  : kLargeVerticalInset;
+  // Use the `_contentInsets` horizontal insets. See `setContentInsets:` for
+  // more details.
+  section.contentInsets = NSDirectionalEdgeInsetsMake(
+      topInset, self.contentInsets.left, bottomInset, self.contentInsets.right);
+  return section;
 }
 
 // Returns the layout section for the notifications.
@@ -482,8 +598,9 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
   NSCollectionLayoutSection* section =
       [NSCollectionLayoutSection sectionWithGroup:group];
   section.interGroupSpacing = kInterGroupSpacing;
-  const CGFloat topInset =
-      [self hasNotifications] ? kVerticalInset : kLargeVerticalInset;
+  const CGFloat topInset = [self hasNotifications] || [self hasOutOfDateMessage]
+                               ? kVerticalInset
+                               : kLargeVerticalInset;
   const CGFloat bottomInset =
       hasLargeInset ? kLargeVerticalInset : kVerticalInset;
   // Use the `_contentInsets` horizontal insets. See `setContentInsets:` for
@@ -534,6 +651,17 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
   } else {
     removeEmptyState();
   }
+}
+
+// Configures the out-of-date message cell.
+- (void)configureOutOfDateMessageCell:(TabGroupsPanelOutOfDateMessageCell*)cell
+                             withItem:(TabGroupsPanelItem*)item
+                              atIndex:(NSUInteger)index {
+  CHECK(cell);
+  CHECK(item);
+  CHECK_EQ(item.type, TabGroupsPanelItemType::kOutOfDateMessage);
+  cell.outOfDateMessageItem = item;
+  cell.delegate = self;
 }
 
 // Configures the notification cell.

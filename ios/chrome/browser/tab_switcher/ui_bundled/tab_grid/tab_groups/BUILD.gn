@@ -153,6 +153,8 @@ source_set("tab_groups_ui") {
     "tab_groups_panel_mutator.h",
     "tab_groups_panel_notification_cell.h",
     "tab_groups_panel_notification_cell.mm",
+    "tab_groups_panel_out_of_date_message_cell.h",
+    "tab_groups_panel_out_of_date_message_cell.mm",
     "tab_groups_panel_view_controller.h",
     "tab_groups_panel_view_controller.mm",
   ]
