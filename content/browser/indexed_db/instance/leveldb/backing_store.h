@@ -405,7 +405,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     const CursorOptions cursor_options_;
     std::unique_ptr<TransactionalLevelDBIterator> iterator_;
     blink::IndexedDBKey current_key_;
-    RecordIdentifier record_identifier_;
 
    private:
     enum class ContinueResult { DONE, OUT_OF_BOUNDS };
