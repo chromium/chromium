@@ -33,17 +33,17 @@ source_set("public") {
 
 source_set("tabs") {
   sources = [
-    "pinned_tab_collection.cc",
-    "split_tab_collection.cc",
-    "split_tab_data.cc",
-    "split_tab_visual_data.cc",
-    "supports_handles.cc",
-    "tab_collection.cc",
-    "tab_collection_storage.cc",
-    "tab_group.cc",
-    "tab_group_tab_collection.cc",
-    "tab_strip_collection.cc",
-    "unpinned_tab_collection.cc",
+    "impl/pinned_tab_collection.cc",
+    "impl/split_tab_collection.cc",
+    "impl/split_tab_data.cc",
+    "impl/split_tab_visual_data.cc",
+    "impl/supports_handles.cc",
+    "impl/tab_collection.cc",
+    "impl/tab_collection_storage.cc",
+    "impl/tab_group.cc",
+    "impl/tab_group_tab_collection.cc",
+    "impl/tab_strip_collection.cc",
+    "impl/unpinned_tab_collection.cc",
   ]
   deps = [ ":public" ]
 }
@@ -53,7 +53,7 @@ source_set("test_support") {
 
   if (toolkit_views) {
     sources = [
-      "mock_tab_interface.cc",
+      "impl/mock_tab_interface.cc",
       "public/mock_tab_interface.h",
     ]
 
