@@ -182,6 +182,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/core/browser/account_management_type_metrics_recorder.h:AccountManagementTypesSummary) -->
 
+<!-- LINT.IfChange(AccountMoveDecision) -->
+
+<enum name="AccountMoveDecision">
+  <int value="0" label="Can move with refresh token"/>
+  <int value="1" label="Cannot move, account already exists"/>
+  <int value="2" label="Cannot move, insert without refresh token"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h:AccountMoveDecision) -->
+
 <!-- LINT.IfChange(AccountProfileStartupState) -->
 
 <enum name="AccountProfileStartupState">

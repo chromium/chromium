@@ -52,6 +52,17 @@ enum class RevokeAllTokensOnLoad {
   kExplicitRevoke = 2
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AccountMoveDecision)
+enum class AccountMoveDecision {
+  kCanMoveWithRefreshToken = 0,
+  kCannotMoveAlreadyExists = 1,
+  kCannotMoveInsertWithoutRefreshToken = 2,
+  kMaxValue = kCannotMoveInsertWithoutRefreshToken
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountMoveDecision)
+
 class MutableProfileOAuth2TokenServiceDelegate
     : public ProfileOAuth2TokenServiceDelegate,
       public WebDataServiceConsumer,

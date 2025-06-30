@@ -83,6 +83,7 @@ struct ExtractCredentialsTestCase {
   AccountCredentials account_before_move;
   std::vector<AccountCredentials> existing_accounts;
   AccountCredentials account_after_move;
+  AccountMoveDecision expected_move_decision;
 };
 
 const ExtractCredentialsTestCase kExtractCredentialsTestCases[] = {
@@ -90,30 +91,37 @@ const ExtractCredentialsTestCase kExtractCredentialsTestCases[] = {
      .account_before_move = {GaiaId("A"), "new_tokenA", {1}},
      .existing_accounts = {{GaiaId("A"), "old_tokenA", {2}},
                            {GaiaId("B"), "old_tokenB", {2}}},
-     .account_after_move = {GaiaId("A"), "old_tokenA", {2}}},
+     .account_after_move = {GaiaId("A"), "old_tokenA", {2}},
+     .expected_move_decision = AccountMoveDecision::kCannotMoveAlreadyExists},
     {.test_suffix = "NotMovedKeyConflictExistingUnbound",
      .account_before_move = {GaiaId("A"), "new_tokenA", {1}},
      .existing_accounts = {{GaiaId("A"), "old_tokenA"},
                            {GaiaId("B"), "old_tokenB", {2}}},
-     .account_after_move = {GaiaId("A"), "old_tokenA"}},
+     .account_after_move = {GaiaId("A"), "old_tokenA"},
+     .expected_move_decision = AccountMoveDecision::kCannotMoveAlreadyExists},
     {.test_suffix = "MovedBoundOverridesExisting",
      .account_before_move = {GaiaId("A"), "new_tokenA", {1}},
      .existing_accounts = {{GaiaId("A"), "old_tokenA", {2}},
                            {GaiaId("B"), "old_tokenB"}},
-     .account_after_move = {GaiaId("A"), "new_tokenA", {1}}},
+     .account_after_move = {GaiaId("A"), "new_tokenA", {1}},
+     .expected_move_decision = AccountMoveDecision::kCanMoveWithRefreshToken},
     {.test_suffix = "MovedUnboundOverridesExisting",
      .account_before_move = {GaiaId("A"), "new_tokenA"},
      .existing_accounts = {{GaiaId("A"), "old_tokenA", {2}},
                            {GaiaId("B"), "old_tokenB", {2}}},
-     .account_after_move = {GaiaId("A"), "new_tokenA"}},
+     .account_after_move = {GaiaId("A"), "new_tokenA"},
+     .expected_move_decision = AccountMoveDecision::kCanMoveWithRefreshToken},
     {.test_suffix = "MovedBoundNoExisting",
      .account_before_move = {GaiaId("A"), "new_tokenA", {1}},
      .existing_accounts = {{GaiaId("B"), "old_tokenB"}},
-     .account_after_move = {GaiaId("A"), "new_tokenA", {1}}},
+     .account_after_move = {GaiaId("A"), "new_tokenA", {1}},
+     .expected_move_decision = AccountMoveDecision::kCanMoveWithRefreshToken},
     {.test_suffix = "MovedWithoutTokenKeyConflictNoExisting",
      .account_before_move = {GaiaId("A"), "new_tokenA", {1}},
      .existing_accounts = {{GaiaId("B"), "old_tokenB", {2}}},
-     .account_after_move = {GaiaId("A"), GaiaConstants::kInvalidRefreshToken}},
+     .account_after_move = {GaiaId("A"), GaiaConstants::kInvalidRefreshToken},
+     .expected_move_decision =
+         AccountMoveDecision::kCannotMoveInsertWithoutRefreshToken},
 };
 
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -2039,6 +2047,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest,
 
   // Extract the credentials.
   ResetObserverCounts();
+  base::HistogramTester histogram_tester;
   const CoreAccountId account_to_move =
       CoreAccountId::FromGaiaId(GetParam().account_before_move.gaia_id);
   oauth2_service_delegate_->ExtractCredentials(&target_token_service,
@@ -2054,6 +2063,8 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest,
             GetParam().account_after_move.refresh_token);
   EXPECT_EQ(target_delegate->GetWrappedBindingKey(account_to_move),
             GetParam().account_after_move.binding_key);
+  histogram_tester.ExpectUniqueSample("Signin.MoveAccount.CanMoveToService",
+                                      GetParam().expected_move_decision, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

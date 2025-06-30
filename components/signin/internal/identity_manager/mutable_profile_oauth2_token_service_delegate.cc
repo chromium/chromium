@@ -871,6 +871,8 @@ void MutableProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
     const CoreAccountId& account_id) {
   bool should_update_credentials = true;
   std::string refresh_token = GetRefreshToken(account_id);
+  AccountMoveDecision move_decision =
+      AccountMoveDecision::kCanMoveWithRefreshToken;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::vector<uint8_t> wrapped_binding_key = GetWrappedBindingKey(account_id);
   if (!CanMoveAccountToService(*to_service, account_id, wrapped_binding_key)) {
@@ -878,13 +880,17 @@ void MutableProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
       // `to_service` already has this account. Do not override the existing,
       // potentially valid token.
       should_update_credentials = false;
+      move_decision = AccountMoveDecision::kCannotMoveAlreadyExists;
     } else {
       // Insert an account without a token.
       refresh_token = GaiaConstants::kInvalidRefreshToken;
       wrapped_binding_key = std::vector<uint8_t>();
+      move_decision = AccountMoveDecision::kCannotMoveInsertWithoutRefreshToken;
     }
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  base::UmaHistogramEnumeration("Signin.MoveAccount.CanMoveToService",
+                                move_decision);
 
   if (should_update_credentials) {
     to_service->UpdateCredentials(

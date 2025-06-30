@@ -2169,6 +2169,21 @@ the browser and content area. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.MoveAccount.CanMoveToService"
+    enum="AccountMoveDecision" expires_after="2025-12-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the outcome of an attempt to move an account between profiles,
+    specifically regarding whether the account's refresh token and binding key
+    can be transferred.
+
+    Recorded on every attempt to move an account between profiles, mainly via
+    the sign-in intercept feature.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Multilogin.NumberOfAccounts" units="accounts"
     expires_after="never">
 <!-- expires-never: used to monitor the health of the signin feature and for troubleshooting.  -->
