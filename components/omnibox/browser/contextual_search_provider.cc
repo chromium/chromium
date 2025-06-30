@@ -170,8 +170,10 @@ struct EligibleMatchesAndActions {
     // - Hidden in incognito.
     page_verbatim = !toolbelt_config.enabled &&
                     !contextual_search_config.show_open_lens_action &&
-                    contextual_search_config.starter_pack_page &&
-                    starter_pack_engine && !client->IsOffTheRecord();
+                    starter_pack_engine &&
+                    starter_pack_engine->starter_pack_id() ==
+                        template_url_starter_pack_data::StarterPackId::kPage &&
+                    !client->IsOffTheRecord();
 
     // - Same base requirements as `page_verbatim`
     // - Hidden on zero input.

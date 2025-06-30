@@ -2737,19 +2737,43 @@ void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
     result->EraseMatchesWhere([](const AutocompleteMatch& match) {
       // When the input is '@' exactly, keep only the trivial search, starter
       // pack, and featured enterprise suggestions.
-      return match.contents != u"@" && !match.associated_keyword;
+      return match.contents != u"@" && !match.associated_keyword &&
+             !match.IsToolbelt();
     });
-    // Simple sort is needed to restore verbatim '@' search as top/default
-    // match because a different default, e.g. "@hill", might have previously
-    // occupied the top spot while '@' was demoted below others.
-    std::sort(result->begin(), result->end(), AutocompleteMatch::MoreRelevant);
-    // Put first defaultable match in top position since relevance
-    // ranking alone doesn't guarantee it.
-    auto default_match = std::find_if(
-        result->begin(), result->end(),
-        [](const auto& m) { return m.allowed_to_be_default_match; });
-    if (default_match != result->begin() && default_match != result->end()) {
-      std::rotate(result->begin(), default_match, default_match + 1);
+    if (omnibox_feature_configs::Toolbelt::Get().enabled) {
+      // Sort is needed to restore verbatim '@' search as top/default match
+      // because a different default, e.g. "@hill", might have previously
+      // occupied the top spot while '@' was demoted below others. The
+      // comparison here achieves this without direct vector manipulation,
+      // and also considers `GetSortingOrder` to put toolbelt match last.
+      std::sort(
+          result->begin(), result->end(),
+          [](const AutocompleteMatch& match1, const AutocompleteMatch& match2) {
+            return std::forward_as_tuple(
+                       match1.type !=
+                           AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+                       match1.GetSortingOrder(), -match1.relevance,
+                       match1.contents) <
+                   std::forward_as_tuple(
+                       match2.type !=
+                           AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+                       match2.GetSortingOrder(), -match2.relevance,
+                       match2.contents);
+          });
+    } else {
+      // Simple sort is needed to restore verbatim '@' search as top/default
+      // match because a different default, e.g. "@hill", might have previously
+      // occupied the top spot while '@' was demoted below others.
+      std::sort(result->begin(), result->end(),
+                AutocompleteMatch::MoreRelevant);
+      // Put first defaultable match in top position since relevance
+      // ranking alone doesn't guarantee it.
+      auto default_match = std::find_if(
+          result->begin(), result->end(),
+          [](const auto& m) { return m.allowed_to_be_default_match; });
+      if (default_match != result->begin() && default_match != result->end()) {
+        std::rotate(result->begin(), default_match, default_match + 1);
+      }
     }
   }
 
