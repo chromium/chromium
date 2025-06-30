@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.download;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.profile_metrics.BrowserProfileType;
@@ -16,6 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Records download related metrics on Android. */
+@NullMarked
 public class DownloadMetrics {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.

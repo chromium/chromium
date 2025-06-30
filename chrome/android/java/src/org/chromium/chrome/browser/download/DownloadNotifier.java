@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.download;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.PendingState;
 
 /** Class for reporting the status of a download. */
+@NullMarked
 public interface DownloadNotifier {
     /**
      * Add a download successful notification.
