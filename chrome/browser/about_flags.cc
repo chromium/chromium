@@ -4291,6 +4291,7 @@ const FeatureEntry::FeatureVariation kServiceWorkerAutoPreloadVariations[] = {
      std::size(kServiceWorkerAutoPreload_SWNotRunningOnly), nullptr},
 };
 
+// LINT.IfChange(FingerprintingProtectionFilterFeatureParams)
 const FeatureEntry::FeatureParam
     kEnableFingerprintingProtectionFilter_WithLogging[] = {
         {"activation_level", "enabled"},
@@ -4320,6 +4321,7 @@ const FeatureEntry::FeatureVariation
          std::size(
              kEnableFingerprintingProtectionFilterInIncognito_WithLogging),
          nullptr}};
+// LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:FingerprintingProtectionFilterFeatureParams)
 
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kMerchantTrustEnabledWithSampleData[] = {
@@ -10932,6 +10934,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(net::features::kReduceIPAddressChangeNotification)},
 #endif  // BUILDFLAG(IS_MAC)
 
+    // LINT.IfChange(FingerprintingProtectionFilterFeatureEntries)
     {"enable-fingerprinting-protection-blocklist",
      flag_descriptions::kEnableFingerprintingProtectionBlocklistName,
      flag_descriptions::kEnableFingerprintingProtectionBlocklistDescription,
@@ -10952,6 +10955,7 @@ const FeatureEntry kFeatureEntries[] = {
              kEnableFingerprintingProtectionFilterInIncognito,
          kEnableFingerprintingProtectionFilterInIncognitoVariations,
          "EnableFingerprintingProtectionFilterInIncognito")},
+    // LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:FingerprintingProtectionFeatureEntries)
 
     {"enable-standard-device-bound-session-credentials",
      flag_descriptions::kEnableStandardBoundSessionCredentialsName,

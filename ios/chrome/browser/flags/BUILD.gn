@@ -29,6 +29,7 @@ source_set("flags") {
     "//components/enterprise/connectors/core",
     "//components/feature_engagement/public",
     "//components/feed:feature_list",
+    "//components/fingerprinting_protection_filter/common:features",
     "//components/history/core/browser",
     "//components/ntp_tiles",
     "//components/omnibox/browser",

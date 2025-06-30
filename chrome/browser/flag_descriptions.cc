@@ -1723,6 +1723,7 @@ const char kEnableControlledFrameDescription[] =
     "https://github.com/WICG/controlled-frame/blob/main/EXPLAINER.md "
     "for more information.";
 
+// LINT.IfChange(FingerprintingProtectionFlagDescriptions)
 const char kEnableFingerprintingProtectionBlocklistName[] =
     "Enable Fingerprinting Protection Blocklist In Regular Browsing";
 const char kEnableFingerprintingProtectionBlocklistDescription[] =
@@ -1736,6 +1737,7 @@ const char kEnableFingerprintingProtectionBlocklistInIncognitoDescription[] =
     "Enable Fingerprinting Protection which may block fingerprinting "
     "resources from loading in a 3p context. This flag applies only in "
     "Incognito mode.";
+// LINT.ThenChange(//ios/chrome/browser/flags/ios_chrome_flag_descriptions.cc:FingerprintingProtectionFlagDescriptions)
 
 const char kEnableCanvasNoiseName[] =
     "Enable noise for canvas readbacks in Incognito";

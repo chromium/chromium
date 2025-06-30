@@ -490,6 +490,22 @@ const char kEnableFeedCardMenuSignInPromoDescription[] =
     "Display a sign-in promotion UI when signed out users click on "
     "personalization options within the feed card menu.";
 
+// LINT.IfChange(FingerprintingProtectionFlagDescriptions)
+const char kEnableFingerprintingProtectionBlocklistName[] =
+    "Enable Fingerprinting Protection Blocklist In Regular Browsing";
+const char kEnableFingerprintingProtectionBlocklistDescription[] =
+    "Enable Fingerprinting Protection which may block fingerprinting "
+    "resources from loading in a 3p context. This flag applies only outside of "
+    "Incognito mode.";
+
+const char kEnableFingerprintingProtectionBlocklistInIncognitoName[] =
+    "Enable Fingerprinting Protection Blocklist In Incognito";
+const char kEnableFingerprintingProtectionBlocklistInIncognitoDescription[] =
+    "Enable Fingerprinting Protection which may block fingerprinting "
+    "resources from loading in a 3p context. This flag applies only in "
+    "Incognito mode.";
+// LINT.ThenChange(//chrome/browser/flag_descriptions.cc:FingerprintingProtectionFlagDescriptions)
+
 const char kEnableTraitCollectionRegistrationName[] =
     "Enable Customizable Trait Registration";
 const char kEnableTraitCollectionRegistrationDescription[] =
