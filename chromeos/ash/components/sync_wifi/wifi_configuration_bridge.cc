@@ -558,10 +558,6 @@ void WifiConfigurationBridge::OnNetworkConfiguredDelayComplete(
 void WifiConfigurationBridge::OnBeforeConfigurationRemoved(
     const std::string& service_path,
     const std::string& guid) {
-  if (!base::FeatureList::IsEnabled(features::kWifiSyncAllowDeletes)) {
-    return;
-  }
-
   std::optional<NetworkIdentifier> id =
       local_network_collector_->GetNetworkIdentifierFromGuid(guid);
   if (!id) {
@@ -576,10 +572,6 @@ void WifiConfigurationBridge::OnBeforeConfigurationRemoved(
 void WifiConfigurationBridge::OnConfigurationRemoved(
     const std::string& service_path,
     const std::string& network_guid) {
-  if (!base::FeatureList::IsEnabled(features::kWifiSyncAllowDeletes)) {
-    return;
-  }
-
   if (!pending_deletes_.contains(network_guid)) {
     NET_LOG(EVENT) << "Configuration " << network_guid
                    << " removed with no matching saved metadata.";
@@ -597,9 +589,6 @@ void WifiConfigurationBridge::OnConfigurationRemoved(
 
 void WifiConfigurationBridge::RemoveNetworkFromSync(
     const std::string& storage_key) {
-  if (!base::FeatureList::IsEnabled(features::kWifiSyncAllowDeletes)) {
-    return;
-  }
   if (!entries_.contains(storage_key)) {
     return;  // Network is not synced.
   }
