@@ -90,7 +90,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         boolean useSpeculation = TextUtils.equals(speculatedUrl, url);
         boolean hasCommitted = !tab.getWebContents().getLastCommittedUrl().isEmpty();
         mCustomTabObserver.trackNextPageLoadForHiddenTab(
-                useSpeculation, hasCommitted, intentDataProvider.getIntent());
+                tab.getWebContents(), useSpeculation, hasCommitted, intentDataProvider.getIntent());
 
         if (useSpeculation) return;
 

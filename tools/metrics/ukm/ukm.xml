@@ -24645,6 +24645,220 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="TrustedWebActivity.Startup">
+  <owner>ishitatsuyuki@google.com</owner>
+  <owner>uekawa@chromium.org</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
+  <summary>
+    Page load metrics for the first page load in a Trusted Web Activity (TWA).
+
+    The startup is considered Cold if the browser process was not running and
+    had to be started, and Warm if the process was already running in the
+    background. Timings are relative to the Activity initialization timestamp
+    passed from android-browser-helper.
+  </summary>
+  <metric name="AndroidBrowserHelper.Version">
+    <summary>
+      The version code of android-browser-helper used by the TWA wrapper
+      associated with the origin.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToFirstCommitNavigation2.Cold">
+    <summary>
+      The timestamp of the first navigation commit, relative to the Activity
+      initialization timestamp passed from android-browser-helper. Split by
+      startups where the browser process was not in the background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToFirstCommitNavigation2.Warm">
+    <summary>
+      The timestamp of the first navigation commit, relative to the Activity
+      initialization timestamp passed from android-browser-helper. Split by
+      startups where the browser process was already running in the background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToFirstContentfulPaint.Cold">
+    <summary>
+      The timestamp of the first contentful paint, relative to the Activity
+      initialization timestamp passed from android-browser-helper. Split by
+      startups where the browser process was not in the background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToFirstContentfulPaint.Warm">
+    <summary>
+      The timestamp of the first contentful paint, relative to the Activity
+      initialization timestamp passed from android-browser-helper. Split by
+      startups where the browser process was already running in the background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToLargestContentfulPaint.Cold">
+    <summary>
+      The timestamp of the largest contentful paint, relative to the Activity
+      initialization timestamp passed from android-browser-helper. Split by
+      startups where the browser process was not in the background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToLargestContentfulPaint.Warm">
+    <summary>
+      The timestamp of the largest contentful paint, relative to the Activity
+      initialization timestamp passed from android-browser-helper. Split by
+      startups where the browser process was already running in the background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToMarkFullyLoaded.Cold">
+    <summary>
+      Timestamp of performance.mark('mark_fully_loaded'), relative to the
+      Activity initialization timestamp passed from android-browser-helper.
+      Recorded only if the web page supports the respective performance marker.
+      Split by startups where the browser process was not in the background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToMarkFullyLoaded.Warm">
+    <summary>
+      Timestamp of performance.mark('mark_fully_loaded'), relative to the
+      Activity initialization timestamp passed from android-browser-helper.
+      Recorded only if the web page supports the respective performance marker.
+      Split by startups where the browser process was already running in the
+      background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToMarkFullyVisible.Cold">
+    <summary>
+      Timestamp of performance.mark('mark_fully_visible'), relative to the
+      Activity initialization timestamp passed from android-browser-helper.
+      Recorded only if the web page supports the respective performance marker.
+      Split by startups where the browser process was not in the background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToMarkFullyVisible.Warm">
+    <summary>
+      Timestamp of performance.mark('mark_fully_visible'), relative to the
+      Activity initialization timestamp passed from android-browser-helper.
+      Recorded only if the web page supports the respective performance marker.
+      Split by startups where the browser process was already running in the
+      background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToMarkInteractive.Cold">
+    <summary>
+      Timestamp of performance.mark('mark_interactive'), relative to the
+      Activity initialization timestamp passed from android-browser-helper.
+      Recorded only if the web page supports the respective performance marker.
+      Split by startups where the browser process was not in the background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TimeToMarkInteractive.Warm">
+    <summary>
+      Timestamp of performance.mark('mark_interactive'), relative to the
+      Activity initialization timestamp passed from android-browser-helper.
+      Recorded only if the web page supports the respective performance marker.
+      Split by startups where the browser process was already running in the
+      background.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.form_factor"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Unload" singular="True">
   <owner>shaseley@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
