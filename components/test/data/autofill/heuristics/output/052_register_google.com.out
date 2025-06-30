@@ -4,8 +4,6 @@ UNKNOWN_TYPE | UsernameSelector |  | header | -default
 EMAIL_ADDRESS | Email |  |  | FirstName_1
 UNKNOWN_TYPE | Passwd |  |  | FirstName_1
 UNKNOWN_TYPE | PasswdAgain | Re-enter password: |  | FirstName_1
-UNKNOWN_TYPE | PersistentCookie | Re-enter password: | yes | FirstName_1
-UNKNOWN_TYPE | smhck | Re-enter password: | 1 | FirstName_1
 UNKNOWN_TYPE | selection | Security question: | choosequestion | FirstName_1
 UNKNOWN_TYPE | ownquestion | Security question: |  | -default
 UNKNOWN_TYPE | IdentityAnswer | Answer: |  | FirstName_1

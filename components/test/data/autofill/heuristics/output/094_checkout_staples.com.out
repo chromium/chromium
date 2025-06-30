@@ -1,5 +1,4 @@
 EMAIL_ADDRESS | emailAddress | * Indicates a required field |  | emailAddress_1
-UNKNOWN_TYPE | emailPreference | Yes, I would like to receive emails about special money-saving offers from Staples. | emailYes | emailAddress_1
 
 NAME_FIRST | sFirstName | First Name * |  | sFirstName_1
 NAME_LAST | sLastName | Last Name * |  | sFirstName_1

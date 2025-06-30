@@ -14,4 +14,3 @@ HTML_TYPE_ADDRESS_LEVEL1 | state_id | Province * |  | -billing
 HTML_TYPE_POSTAL_CODE | postal_code | Postal Code * |  | -billing
 HTML_TYPE_TEL | evening_phone | Phone * |  | -billing
 HTML_TYPE_TEL | mobile_phone | Alternate Phone |  | -billing
-UNKNOWN_TYPE | store_payment | Store my card for faster checkout next time. | on | unit_2

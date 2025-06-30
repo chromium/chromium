@@ -459,7 +459,11 @@ std::optional<FormControlType> StringToFormControlTypeDiscouraged(
        i <= base::to_underlying(FormControlType::kMaxValue); ++i) {
     FormControlType type = static_cast<FormControlType>(i);
     if (mojom::IsKnownEnumValue(type) &&
-        type_string == FormControlTypeToString(type)) {
+        type_string == FormControlTypeToString(type) &&
+        ((type != FormControlType::kInputCheckbox &&
+          type != FormControlType::kInputRadio) ||
+         !base::FeatureList::IsEnabled(
+             features::kAutofillIgnoreCheckableElements))) {
       return type;
     }
   }

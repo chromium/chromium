@@ -17,6 +17,3 @@ ADDRESS_HOME_CITY | HT_Ship_City | City |  | HT_Ship_Name_2
 ADDRESS_HOME_STATE | HT_Ship_State | State/Province |  | HT_Ship_Name_2
 ADDRESS_HOME_ZIP | HT_Ship_Zip | Zip/Postal Code |  | HT_Ship_Name_2
 ADDRESS_HOME_COUNTRY | HT_Ship_Country | Country |  | HT_Ship_Name_2
-UNKNOWN_TYPE | HT_OK_to_email | Yes | -1 | HT_Ship_Name_2
-UNKNOWN_TYPE | HT_OK_to_email | No | 0 | HT_Ship_Name_2
-UNKNOWN_TYPE | HT_PrefersHTML | I prefer to receive HTML formatted email when available. | on | HT_Ship_Name_2
