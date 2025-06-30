@@ -2316,7 +2316,9 @@ bool StyleCascade::ResolveAutoBaseInto(CSSParserTokenStream& stream,
 CSSVariableData* StyleCascade::GetInitialVariableData(
     const CustomProperty& property) {
   const StyleInitialData* initial_data = state_.StyleBuilder().InitialData();
-  DCHECK(initial_data);
+  if (!initial_data) {
+    return nullptr;
+  }
   return initial_data->GetVariableData(property.GetPropertyNameAtomicString());
 }
 
