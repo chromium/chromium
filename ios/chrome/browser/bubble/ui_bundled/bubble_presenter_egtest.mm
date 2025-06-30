@@ -107,6 +107,10 @@ void ReloadFromOmnibox() {
 // Tests that the pull-to-refresh IPH is attempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
 - (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
+  if (@available(iOS 19.0, *)) {
+    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -163,6 +167,10 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
 - (void)testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
+  if (@available(iOS 19.0, *)) {
+    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -194,6 +202,10 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
 - (void)testPullToRefreshIPHShouldNotShowOnPageLoadFail {
+  if (@available(iOS 19.0, *)) {
+    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -256,6 +268,10 @@ void ReloadFromOmnibox() {
 // Tests that the pull-to-refresh IPH would be dismissed with the reason
 // `kSwipedAsInstructedByGestureIPH` when the user pulls down on the IPH.
 - (void)testPullToRefreshPerformAction {
+  if (@available(iOS 19.0, *)) {
+    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
   if ([ChromeEarlGrey isIPadIdiom]) {
