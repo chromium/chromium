@@ -2706,6 +2706,7 @@ target(_test_target_type, "net_unittests") {
     "base/backoff_entry_unittest.cc",
     "base/base64_unittest.cc",
     "base/chunked_upload_data_stream_unittest.cc",
+    "base/connection_endpoint_metadata_unittest.cc",
     "base/data_url_unittest.cc",
     "base/does_url_match_filter_unittest.cc",
     "base/elements_upload_data_stream_unittest.cc",

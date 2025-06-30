@@ -39,6 +39,8 @@ struct NET_EXPORT_PRIVATE ConnectionEndpointMetadata {
   ConnectionEndpointMetadata& operator=(ConnectionEndpointMetadata&&) = default;
 
   bool operator==(const ConnectionEndpointMetadata& other) const = default;
+  // Needed to be an element of std::set.
+  bool operator<(const ConnectionEndpointMetadata& other) const;
 
   base::Value ToValue() const;
   static std::optional<ConnectionEndpointMetadata> FromValue(

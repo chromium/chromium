@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -38,6 +39,14 @@ ConnectionEndpointMetadata::ConnectionEndpointMetadata(
     const ConnectionEndpointMetadata&) = default;
 ConnectionEndpointMetadata::ConnectionEndpointMetadata(
     ConnectionEndpointMetadata&&) = default;
+
+bool ConnectionEndpointMetadata::operator<(
+    const ConnectionEndpointMetadata& other) const {
+  return std::tie(supported_protocol_alpns, ech_config_list, target_name,
+                  trust_anchor_ids) <
+         std::tie(other.supported_protocol_alpns, other.ech_config_list,
+                  other.target_name, other.trust_anchor_ids);
+}
 
 base::Value ConnectionEndpointMetadata::ToValue() const {
   base::Value::Dict dict;
