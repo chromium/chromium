@@ -216,7 +216,6 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         update(BrowserControlsState.BOTH, getConstraints() != BrowserControlsState.HIDDEN);
     }
 
-    /** Unregister all OffsetTags (for now, only the top controls have an OffsetTag.) */
     private void unregisterOffsetTags() {
         updateOffsetTags(new BrowserControlsOffsetTagsInfo(null, null, null), getConstraints());
     }
