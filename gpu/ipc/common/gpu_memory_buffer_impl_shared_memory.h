@@ -60,14 +60,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
   int stride(size_t plane) const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override;
-
-  // Returns the shared memory GUID associated with buffer.
-  base::UnguessableToken GetSharedMemoryGUID() const;
 
  private:
   friend class GpuMemoryBufferSupport;

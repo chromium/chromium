@@ -79,11 +79,6 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
     handle.stride = base::checked_cast<uint32_t>(stride_);
     return handle;
   }
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {}
 
  private:
   gfx::GpuMemoryBufferId id_;
@@ -120,11 +115,6 @@ class GpuMemoryBufferFromClient : public gfx::GpuMemoryBuffer {
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
     return client_buffer_->CloneHandle();
   }
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {}
 
  private:
   gfx::GpuMemoryBufferId id_;

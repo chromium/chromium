@@ -11,13 +11,6 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-class MemoryAllocatorDumpGuid;
-}  // namespace trace_event
-}  // namespace base
-
 namespace gfx {
 
 // This interface typically correspond to a type of shared memory that is also
@@ -84,17 +77,6 @@ class COMPONENT_EXPORT(GFX) GpuMemoryBuffer {
   // MappableSI. See GpuMemoryBufferImplDXGI override for more details.
   virtual void SetUsePreMappedMemory(bool use_premapped_memory) {}
 #endif
-
-  // Dumps information about the memory backing the GpuMemoryBuffer to |pmd|.
-  // The memory usage is attributed to |buffer_dump_guid|.
-  // |tracing_process_id| uniquely identifies the process owning the memory.
-  // |importance| is relevant only for the cases of co-ownership, the memory
-  // gets attributed to the owner with the highest importance.
-  virtual void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const = 0;
 };
 
 }  // namespace gfx

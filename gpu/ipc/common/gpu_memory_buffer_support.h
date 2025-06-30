@@ -133,30 +133,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
 #endif
 };
 
-// Helper class to manage allocated GMB info and to provide interface to dump
-// the memory consumed by that GMB.
-class GPU_IPC_COMMON_EXPORT AllocatedBufferInfo {
- public:
-  AllocatedBufferInfo(const gfx::GpuMemoryBufferHandle& handle,
-                      const gfx::Size& size,
-                      gfx::BufferFormat format);
-  ~AllocatedBufferInfo();
-
-  gfx::GpuMemoryBufferType type() const { return type_; }
-
-  // Add a memory dump for this buffer to |pmd|. Returns false if adding the
-  // dump failed.
-  bool OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    int client_id,
-                    uint64_t client_tracing_process_id) const;
-
- private:
-  gfx::GpuMemoryBufferId buffer_id_;
-  gfx::GpuMemoryBufferType type_;
-  size_t size_in_bytes_;
-  base::UnguessableToken shared_memory_guid_;
-};
-
 }  // namespace gpu
 
 #endif  // GPU_IPC_COMMON_GPU_MEMORY_BUFFER_SUPPORT_H_

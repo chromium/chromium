@@ -153,10 +153,4 @@ gfx::GpuMemoryBufferHandle FakeGpuMemoryBuffer::CloneHandle() const {
   return handle_.Clone();
 }
 
-void FakeGpuMemoryBuffer::OnMemoryDump(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-    uint64_t tracing_process_id,
-    int importance) const {}
-
 }  // namespace gpu

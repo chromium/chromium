@@ -19,8 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/memory.h"
-#include "base/trace_event/memory_allocator_dump_guid.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -276,20 +274,6 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplSharedMemory::CloneHandle()
   handle.offset = offset_;
   handle.stride = stride_;
   return handle;
-}
-
-void GpuMemoryBufferImplSharedMemory::OnMemoryDump(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-    uint64_t tracing_process_id,
-    int importance) const {
-  pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid, GetSharedMemoryGUID(),
-                                       importance);
-}
-
-base::UnguessableToken GpuMemoryBufferImplSharedMemory::GetSharedMemoryGUID()
-    const {
-  return shared_memory_region_.GetGUID();
 }
 
 }  // namespace gpu
