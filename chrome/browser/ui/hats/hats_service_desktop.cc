@@ -159,15 +159,17 @@ HatsServiceDesktop::DelayedSurveyTask::GetWeakPtr() {
 }
 
 void HatsServiceDesktop::DelayedSurveyTask::Launch() {
-  CHECK(web_contents());
+  // web_contents() might be null here despite removing the task in
+  // WebContentsDestroyed.
   if (web_contents() &&
       web_contents()->GetVisibility() == content::Visibility::VISIBLE) {
     hats_service_->LaunchSurveyForWebContents(
         trigger_, web_contents(), product_specific_bits_data_,
         product_specific_string_data_, std::move(success_callback_),
         std::move(failure_callback_), supplied_trigger_id_, SurveyOptions());
-    hats_service_->RemoveTask(*this);
   }
+
+  hats_service_->RemoveTask(*this);
 }
 
 void HatsServiceDesktop::DelayedSurveyTask::DidFinishNavigation(
