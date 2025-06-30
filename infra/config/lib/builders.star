@@ -810,7 +810,7 @@ def builder(
         if remote_jobs:
             siso["remote_jobs"] = remote_jobs
         siso_configs = defaults.get_value("siso_configs", siso_configs)
-        if use_siso_remote_linking:
+        if use_siso_remote_linking and "remote-link" not in siso_configs:
             siso_configs = siso_configs + ["remote-link"]
         siso["configs"] = siso_configs
         if siso_fail_if_reapi_used:
