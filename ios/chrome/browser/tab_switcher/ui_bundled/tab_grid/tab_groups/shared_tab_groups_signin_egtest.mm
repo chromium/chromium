@@ -11,6 +11,8 @@
 #import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/data_sharing/test_support/test_utils.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync/base/command_line_switches.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -365,4 +367,37 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   [ChromeEarlGrey waitForMainTabCount:2];
 }
 
+// Tests joining a group when sign in is disabled.
+- (void)testJoinGroupSignedInDisabled {
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowed];
+
+  [TabGroupAppInterface mockSharedEntitiesPreview];
+  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
+      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
+  [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
+
+  // Check that a sign in disabled alert is presented.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_COLLABORATION_SIGNED_OUT_HEADER))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_COLLABORATION_SIGNED_OUT_BODY))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests sharing a group when sign in is disabled.
+- (void)testShareGroupSignedInDisabled {
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowed];
+
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Check that the share action is not available.
+  LongPressTabGroupCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      assertWithMatcher:grey_notVisible()];
+}
 @end
