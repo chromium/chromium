@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -13,6 +14,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
  * Manages setting the initial screen orientation for the custom tab. Delays all screen orientation
  * requests till the activity translucency is removed.
  */
+@NullMarked
 public class CustomTabOrientationController {
     private final ActivityWindowAndroid mActivityWindowAndroid;
     private final int mLockScreenOrientation;

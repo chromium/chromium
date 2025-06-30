@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import android.graphics.PointF;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 
+@NullMarked
 public interface ReorderStrategy {
     /**
      * Begin reordering the interacting view.
@@ -27,7 +27,7 @@ public interface ReorderStrategy {
             StripLayoutView[] stripViews,
             StripLayoutTab[] stripTabs,
             StripLayoutGroupTitle[] stripGroupTitles,
-            @NonNull StripLayoutView interactingView,
+            StripLayoutView interactingView,
             PointF startPoint);
 
     /**

@@ -184,7 +184,7 @@ public class ChromeShareExtras {
         }
 
         /** Sets {@link RenderFrameHost} that opened the context menu for sharing. */
-        public Builder setRenderFrameHost(RenderFrameHost renderFrameHost) {
+        public Builder setRenderFrameHost(@Nullable RenderFrameHost renderFrameHost) {
             mRenderFrameHost = renderFrameHost;
             return this;
         }

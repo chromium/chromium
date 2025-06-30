@@ -49,7 +49,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -68,6 +70,10 @@ public class ChromeActionModeHandlerUnitTest {
     @Mock private ShareDelegate mShareDelegate;
     @Mock private ReadAloudController mReadAloudController;
     @Mock private BrowserControlsStateProvider mControlsState;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WebContents mWebContents;
+    @Mock private WeakReference<Activity> mWeakActivityRef;
+    @Mock private Activity mActivity;
 
     private class TestChromeActionModeCallback
             extends ChromeActionModeHandler.ChromeActionModeCallback {
@@ -92,9 +98,14 @@ public class ChromeActionModeHandlerUnitTest {
 
     @Before
     public void setUp() {
-
         mActionModeCallback =
                 Mockito.spy(new TestChromeActionModeCallback(mTab, mActionModeCallbackHelper));
+        Mockito.when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        Mockito.when(mTab.getWebContents()).thenReturn(mWebContents);
+        Mockito.when(mWebContents.isDestroyed()).thenReturn(false);
+        Mockito.when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        Mockito.when(mWindowAndroid.getActivity()).thenReturn(mWeakActivityRef);
+        Mockito.when(mWeakActivityRef.get()).thenReturn(mActivity);
     }
 
     @After
