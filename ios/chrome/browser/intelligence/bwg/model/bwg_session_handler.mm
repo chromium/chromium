@@ -4,9 +4,21 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
 
-@implementation BWGSessionHandler
+@implementation BWGSessionHandler {
+  // The pref service to store the session data.
+  raw_ptr<PrefService> _prefService;
+}
+
+- (instancetype)initWithPrefService:(PrefService*)prefService {
+  self = [super init];
+  if (self) {
+    _prefService = prefService;
+  }
+  return self;
+}
 
 #pragma mark - BWGSessionDelegate
 

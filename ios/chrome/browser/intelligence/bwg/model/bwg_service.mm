@@ -49,7 +49,8 @@ BwgService::BwgService(AuthenticationService* auth_service,
     bwg_link_opening_handler_ = [[BWGLinkOpeningHandler alloc] init];
     bwg_gateway_.linkOpeningHandler = bwg_link_opening_handler_;
 
-    bwg_session_handler_ = [[BWGSessionHandler alloc] init];
+    bwg_session_handler_ =
+        [[BWGSessionHandler alloc] initWithPrefService:pref_service_];
     bwg_gateway_.sessionHandler = bwg_session_handler_;
   }
 }
@@ -59,8 +60,12 @@ BwgService::~BwgService() = default;
 void BwgService::PresentOverlayOnViewController(
     UIViewController* base_view_controller,
     base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
-                   PageContextWrapperError> expected_page_context) {
+                   PageContextWrapperError> expected_page_context,
+    NSString* client_id,
+    NSString* server_id) {
   BWGConfiguration* config = [[BWGConfiguration alloc] init];
+  config.clientID = client_id;
+  config.serverID = server_id;
   config.baseViewController = base_view_controller;
   config.authService = auth_service_;
   config.singleSignOnService =

@@ -49,6 +49,12 @@ class PageContext;
 // The BWG gateway for bridging internal protocols.
 @property(nonatomic, weak) id<BWGGatewayProtocol> gateway;
 
+// The client ID, uniquely representing the WebState.
+@property(nonatomic, copy) NSString* clientID;
+
+// The server ID, uniquely representing the session at the server level.
+@property(nonatomic, copy) NSString* serverID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_CONFIGURATION_H_

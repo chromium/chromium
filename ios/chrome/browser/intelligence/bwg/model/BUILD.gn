@@ -12,8 +12,6 @@ source_set("model") {
     "bwg_session_delegate.h",
     "bwg_session_handler.h",
     "bwg_session_handler.mm",
-    "bwg_tab_helper.h",
-    "bwg_tab_helper.mm",
   ]
   deps = [
     "//components/keyed_service/core",
@@ -32,6 +30,22 @@ source_set("model") {
   ]
   public_deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("tab_helper") {
+  sources = [
+    "bwg_tab_helper.h",
+    "bwg_tab_helper.mm",
+  ]
+  deps = [
+    ":bwg_service_factory",
+    ":model",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public",
+  ]
 }
 
 source_set("bwg_service_factory") {

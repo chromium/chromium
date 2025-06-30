@@ -5,11 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_TAB_HELPER_H_
 
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 #import "base/scoped_observation.h"
+#import "base/types/expected.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+enum class PageContextWrapperError;
+
 @protocol BWGCommands;
+
+namespace optimization_guide::proto {
+class PageContext;
+}  // namespace optimization_guide::proto
 
 // Tab helper controlling the BWG feature and its current state for a given tab.
 class BwgTabHelper : public web::WebStateObserver,
@@ -20,6 +30,13 @@ class BwgTabHelper : public web::WebStateObserver,
 
   ~BwgTabHelper() override;
 
+  // Presents the BWG overlay on the given view controller with the correct
+  // client and server IDs for the associated WebState.
+  void PresentBwgOverlay(
+      UIViewController* base_view_controller,
+      base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
+                     PageContextWrapperError> expected_page_context);
+
   // Sets the state of `is_bwg_session_active_`.
   void SetBwgSessionActive(bool active);
 
@@ -29,11 +46,20 @@ class BwgTabHelper : public web::WebStateObserver,
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
   explicit BwgTabHelper(web::WebState* web_state);
 
   friend class web::WebStateUserData<BwgTabHelper>;
+
+  // Gets the client and server IDs for the BWG session for the associated
+  // WebState. server ID is optional because it may not be found or valid.
+  std::string GetClientId();
+  std::optional<std::string> GetServerId();
+
+  // WebState this tab helper is attached to.
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Whether the BWG session is currently active.
   bool is_bwg_session_active_ = false;

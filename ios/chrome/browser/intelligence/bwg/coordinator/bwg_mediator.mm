@@ -11,8 +11,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -134,10 +133,10 @@
 // Opens the BWG overlay with a given PageContextWrapperCallbackResponse.
 - (void)openBWGOverlayForPage:
     (PageContextWrapperCallbackResponse)pageContextWrapperResponse {
-  BwgService* bwgService =
-      BwgServiceFactory::GetForProfile(_browser->GetProfile());
-  bwgService->PresentOverlayOnViewController(
-      self.baseViewController, std::move(pageContextWrapperResponse));
+  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(
+      _browser->GetWebStateList()->GetActiveWebState());
+  BWGTabHelper->PresentBwgOverlay(self.baseViewController,
+                                  std::move(pageContextWrapperResponse));
 
   // TODO(crbug.com/419064727): Dismiss bwg promo/consent.
 }

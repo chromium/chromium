@@ -137,7 +137,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/ui_bundled:public",
     "//ios/chrome/browser/intelligence/bwg/coordinator",
-    "//ios/chrome/browser/intelligence/bwg/model",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
     "//ios/chrome/browser/intelligence/enhanced_calendar/coordinator",
     "//ios/chrome/browser/intelligence/enhanced_calendar/model:config",
     "//ios/chrome/browser/intelligence/features",

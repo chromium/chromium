@@ -37,11 +37,13 @@ class BwgService : public KeyedService {
   ~BwgService() override;
 
   // Presents the overlay on a given view controller for a given expected
-  // PageContext.
+  // PageContext, clientID and serverID..
   void PresentOverlayOnViewController(
       UIViewController* base_view_controller,
       base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
-                     PageContextWrapperError> expected_page_context);
+                     PageContextWrapperError> expected_page_context,
+      NSString* client_id,
+      NSString* server_id);
 
   // Returns whether the current profile is eligible for BWG.
   // TODO(crbug.com/419066154): Use this function to show the entry point.
