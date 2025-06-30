@@ -33,6 +33,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_processing.h"
 #include "media/base/audio_sample_types.h"
+#include "media/base/media_switches.h"
 #include "media/webrtc/constants.h"
 #include "media/webrtc/webrtc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -776,5 +777,71 @@ TEST(ApmTellsIfPlayoutReferenceIsNeededTest, MAYBE_NeedsPlayoutReference) {
 
   EXPECT_TRUE(audio_processor->needs_playout_reference());
 }
+
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+class AudioProcessorCallbackLoopbackAecDelayTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    params_ =
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               ChannelLayoutConfig::Stereo(), 48000, 480);
+    data_bus_ = media::AudioBus::Create(params_.channels(),
+                                        params_.frames_per_buffer());
+    data_bus_->Zero();
+
+    // Always enable the feature with test delay value (99 ms).
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kSystemLoopbackAsAecReference, {{"added_delay_ms", "99"}});
+  }
+
+  void SetUseLoopbackAecReference(bool value) {
+    settings_.use_loopback_aec_reference = value;
+  }
+
+  std::unique_ptr<AudioProcessor> CreateAudioProcessor() {
+    return AudioProcessor::Create(
+        mock_capture_callback_.Get(), LogCallbackForTesting(), settings_,
+        params_, AudioProcessor::GetDefaultOutputFormat(params_, settings_));
+  }
+
+  void ExpectCallbackWithOffset(base::TimeTicks capture_time,
+                                base::TimeDelta offset) {
+    EXPECT_CALL(mock_capture_callback_, Run(_, capture_time - offset, _))
+        .Times(1);
+  }
+
+  void RunTestWithSettings(bool use_loopback_aec_reference,
+                           base::TimeDelta expected_offset) {
+    SetUseLoopbackAecReference(use_loopback_aec_reference);
+
+    auto audio_processor = CreateAudioProcessor();
+    ASSERT_TRUE(audio_processor->has_webrtc_audio_processing());
+
+    base::TimeTicks capture_time = base::TimeTicks::Now();
+    ExpectCallbackWithOffset(capture_time, expected_offset);
+    audio_processor->ProcessCapturedAudio(*data_bus_, capture_time,
+                                          /*num_preferred_channels*/ -1,
+                                          /*volume*/ 1.0);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  MockProcessedCaptureCallback mock_capture_callback_;
+  media::AudioParameters params_;
+  std::unique_ptr<media::AudioBus> data_bus_;
+  AudioProcessingSettings settings_;
+};
+
+TEST_F(AudioProcessorCallbackLoopbackAecDelayTest,
+       NoLoopbackSettingLeadsToNoDelayApplied) {
+  RunTestWithSettings(/*use_loopback_aec_reference=*/false,
+                      /*expected_offset=*/base::Milliseconds(0));
+}
+
+TEST_F(AudioProcessorCallbackLoopbackAecDelayTest,
+       LoopbackSettingLeadsToDelayApplied) {
+  RunTestWithSettings(/*use_loopback_aec_reference=*/true,
+                      /*expected_offset=*/base::Milliseconds(99));
+}
+#endif
 
 }  // namespace media
