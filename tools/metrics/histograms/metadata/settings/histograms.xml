@@ -1058,7 +1058,8 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <owner>antoniosartori@chromium.org</owner>
   <summary>
     Records the number of revoked disruptive notification sites per a Safety Hub
-    run.
+    run. Note that this are actually proposed revocations, which will
+    potentially become effective only in successive runs.
   </summary>
 </histogram>
 
