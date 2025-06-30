@@ -435,6 +435,15 @@ const char kDataSharingNonProductionEnvironmentName[] =
 const char kDataSharingNonProductionEnvironmentDescription[] =
     "Sets data sharing server environment.";
 
+// Data Sharing versioning test scenarios.
+const char kDataSharingVersioningStatesName[] =
+    "Data Sharing Versioning Test Scenarios";
+const char kDataSharingVersioningStatesDescription[] =
+    "Testing multiple scenarios for versioning.";
+const char kDataSharingSharedDataTypesEnabled[] = "Version out-of-date, no UI";
+const char kDataSharingSharedDataTypesEnabledWithUi[] =
+    "Version out-of-date, show UI ";
+
 const char kDbdRevampDesktopName[] = "Revamped Delete Browsing Data dialog";
 const char kDbdRevampDesktopDescription[] =
     "Enables a revamped Delete Browsing Data dialog on Desktop. This includes "

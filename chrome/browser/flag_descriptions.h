@@ -274,6 +274,12 @@ extern const char kDataSharingJoinOnlyDescription[];
 extern const char kDataSharingNonProductionEnvironmentName[];
 extern const char kDataSharingNonProductionEnvironmentDescription[];
 
+// Data Sharing versioning test scenarios.
+extern const char kDataSharingVersioningStatesName[];
+extern const char kDataSharingVersioningStatesDescription[];
+extern const char kDataSharingSharedDataTypesEnabled[];
+extern const char kDataSharingSharedDataTypesEnabledWithUi[];
+
 extern const char kDbdRevampDesktopName[];
 extern const char kDbdRevampDesktopDescription[];
 

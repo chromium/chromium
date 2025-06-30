@@ -13542,6 +13542,7 @@ from previous Chrome versions.
   <int value="-163146178" label="NtpRealboxIsTall:disabled"/>
   <int value="-162928621" label="ForceStartupSigninPromo:disabled"/>
   <int value="-162871977" label="PrivateNetworkAccessNullIpAddress:disabled"/>
+  <int value="-162793906" label="shared-data-types-kill-switch"/>
   <int value="-162377456" label="SecurePaymentConfirmationExtensions:enabled"/>
   <int value="-162294119" label="FeedSportsCard:disabled"/>
   <int value="-161782023" label="AndroidMessagesProdEndpoint:enabled"/>

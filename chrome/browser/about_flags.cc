@@ -4813,6 +4813,17 @@ const FeatureEntry::FeatureVariation kTouchToSearchCalloutVariations[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
+    {"Default", "", ""},
+    {flag_descriptions::kDataSharingSharedDataTypesEnabled,
+     switches::kEnableFeatures, "SharedDataTypesKillSwitch"},
+    {flag_descriptions::kDataSharingSharedDataTypesEnabledWithUi,
+     switches::kEnableFeatures,
+     "SharedDataTypesKillSwitch,DataSharingEnableUpdateChromeUI"},
+    {"Disabled", switches::kDisableFeatures,
+     "SharedDataTypesKillSwitch, DataSharingEnableUpdateChromeUI"},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -11644,6 +11655,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDataSharingNonProductionEnvironmentDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          data_sharing::features::kDataSharingNonProductionEnvironment)},
+
+    {"shared-data-types-kill-switch",
+     flag_descriptions::kDataSharingVersioningStatesName,
+     flag_descriptions::kDataSharingVersioningStatesDescription, kOsAll,
+     MULTI_VALUE_TYPE(kDataSharingVersioningStateChoices)},
 
     {"history-sync-alternative-illustration",
      flag_descriptions::kHistorySyncAlternativeIllustrationName,

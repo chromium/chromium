@@ -8957,6 +8957,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "shared-data-types-kill-switch",
+    "owners": [ "ritikagup@google.com", "chrome-tab-group-eng@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "shared-highlighting-amp",
     "owners": ["cheickcisse@google.com", "sczs@chromium.org"],
     "expiry_milestone": 120
