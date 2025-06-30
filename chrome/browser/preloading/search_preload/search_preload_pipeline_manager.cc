@@ -4,11 +4,13 @@
 
 #include "chrome/browser/preloading/search_preload/search_preload_pipeline_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/preloading/search_preload/search_preload_pipeline.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service_factory.h"
+#include "chrome/browser/preloading/search_preload/search_preload_signal_result.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -118,20 +120,46 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
     return;
   }
 
+  auto record_histograms =
+      [](std::tuple<std::optional<SearchPreloadSignalResult>,
+                    std::optional<SearchPreloadSignalResult>> signal_results) {
+        auto [signal_result_prefetch, signal_result_prerender] = signal_results;
+        if (signal_result_prefetch.has_value()) {
+          base::UmaHistogramEnumeration(
+              "Omnibox.DsePreload.SignalResult.OnSuggest.Prefetch",
+              signal_result_prefetch.value());
+        }
+        if (signal_result_prerender.has_value()) {
+          base::UmaHistogramEnumeration(
+              "Omnibox.DsePreload.SignalResult.OnSuggest.Prerender",
+              signal_result_prerender.value());
+        }
+      };
+
   // Erase to count prefetches.
   EraseNotAlivePipelines();
 
+  // TODO(kenoss): Judge limit exceeded after judging triggering prefetch.
+  //
+  // `SearchPreloadSignalResult` measures the difference between "the client
+  // judged it should preload" and "preload is actually triggered". So, the
+  // limit check below should be moved to
+  // `OnAutocompleteResultChangedProcessOne()`.
   if (base::FeatureList::IsEnabled(
           features::kDsePreload2OnSuggestNonDefalutMatch)) {
     for (const auto& match : result) {
       // Limit the number of prefetches.
       if (pipelines_.size() >= features::kDsePreload2MaxPrefetch.Get()) {
+        record_histograms(
+            {SearchPreloadSignalResult::kNotTriggeredLimitExceeded,
+             std::nullopt});
         return;
       }
 
-      OnAutocompleteResultChangedProcessOne(profile, search_preload_service,
-                                            *template_url_service, match,
-                                            no_vary_search_hint);
+      auto signal_results = OnAutocompleteResultChangedProcessOne(
+          profile, search_preload_service, *template_url_service, match,
+          no_vary_search_hint);
+      record_histograms(std::move(signal_results));
     }
   } else {
     if (!result.default_match()) {
@@ -141,16 +169,21 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
 
     // Limit the number of prefetches.
     if (pipelines_.size() >= features::kDsePreload2MaxPrefetch.Get()) {
+      record_histograms({SearchPreloadSignalResult::kNotTriggeredLimitExceeded,
+                         std::nullopt});
       return;
     }
 
-    OnAutocompleteResultChangedProcessOne(profile, search_preload_service,
-                                          *template_url_service, match,
-                                          no_vary_search_hint);
+    auto signal_results = OnAutocompleteResultChangedProcessOne(
+        profile, search_preload_service, *template_url_service, match,
+        no_vary_search_hint);
+    record_histograms(std::move(signal_results));
   }
 }
 
-void SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
+std::tuple<std::optional<SearchPreloadSignalResult>,
+           std::optional<SearchPreloadSignalResult>>
+SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
     Profile& profile,
     base::WeakPtr<SearchPreloadService> search_preload_service,
     TemplateURLService& template_url_service,
@@ -174,13 +207,16 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
   } else if (should_prefetch) {
     confidence = 60;
   } else {
-    return;
+    return {std::nullopt, std::nullopt};
   }
 
   std::optional<GURL> maybe_canonical_url =
       GetCanonicalUrlForSearchPreload(profile, match.destination_url);
   if (!maybe_canonical_url.has_value()) {
-    return;
+    return {SearchPreloadSignalResult::kNotTriggeredMisc,
+            should_prerender ? std::make_optional(
+                                   SearchPreloadSignalResult::kNotTriggeredMisc)
+                             : std::nullopt};
   }
   const GURL& canonical_url = maybe_canonical_url.value();
 
@@ -195,18 +231,22 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
   const GURL prefetch_url =
       GetPrefetchUrlFromMatch(*match.search_terms_args, template_url_service,
                               /*is_navigation_likely=*/false);
-  pipelines_[canonical_url]->StartPrefetch(
-      GetWebContents(), search_preload_service, prefetch_url,
-      chrome_preloading_predictor::kDefaultSearchEngine, no_vary_search_hint,
-      /*is_navigation_likely=*/false);
+  const SearchPreloadSignalResult signal_result_prefetch =
+      pipelines_[canonical_url]->StartPrefetch(
+          GetWebContents(), search_preload_service, prefetch_url,
+          chrome_preloading_predictor::kDefaultSearchEngine,
+          no_vary_search_hint,
+          /*is_navigation_likely=*/false);
 
   // Trigger prerender without waiting prefetch.
   //
   // They are coordinated by `PrefetchMatchResolver`. For more details, see
   // https://docs.google.com/document/d/1IAIVrDBE-FnO14Qnghr8hsrxUeoFfeob5QIsV_UNRck/edit?tab=t.0#heading=h.vpxgrp4zne09
+  std::optional<SearchPreloadSignalResult> signal_result_prerender =
+      std::nullopt;
   if (should_prerender) {
-    // Unlike prefetch, we cancel the existing prerender and start new one if we
-    // have a signal for prerender. This behavior comes from DSE preload 1
+    // Unlike prefetch, we cancel the existing prerender and start new one if
+    // we have a signal for prerender. This behavior comes from DSE preload 1
     // (`SearchPrefetchService`).
     //
     // TODO(https://crrev.com/421387697): Consider to use different policy.
@@ -218,10 +258,12 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
 
     const GURL prerender_url = GetPrerenderUrlFromMatch(
         *match.search_terms_args, template_url_service);
-    pipelines_[canonical_url]->StartPrerender(
+    signal_result_prerender = pipelines_[canonical_url]->StartPrerender(
         GetWebContents(), prerender_url,
         chrome_preloading_predictor::kDefaultSearchEngine);
   }
+
+  return {signal_result_prefetch, signal_result_prerender};
 }
 
 bool SearchPreloadPipelineManager::OnNavigationLikely(
@@ -230,96 +272,110 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
     const AutocompleteMatch& match,
     omnibox::mojom::NavigationPredictor navigation_predictor,
     const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint) {
-  if (!features::IsDsePreload2OnPressEnabled()) {
-    return false;
+  const auto signal_result_prefetch =
+      [&]() -> std::optional<SearchPreloadSignalResult> {
+    if (!features::IsDsePreload2OnPressEnabled()) {
+      return std::nullopt;
+    }
+
+    if (!features::DsePreload2OnPressIsPredictorEnabled(navigation_predictor)) {
+      return std::nullopt;
+    }
+
+    if (profile.IsOffTheRecord() &&
+        !features::IsDsePreload2OnPressIncognitoEnabled()) {
+      return SearchPreloadSignalResult::kNotTriggeredIncognito;
+    }
+
+    if (!AutocompleteMatch::IsSearchType(match.type)) {
+      return SearchPreloadSignalResult::kNotTriggeredOnPressNotSearchType;
+    }
+
+    auto* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(&profile);
+    CHECK(template_url_service);
+    bool does_search_provider_opt_in =
+        template_url_service->GetDefaultSearchProvider() &&
+        template_url_service->GetDefaultSearchProvider()
+            ->data()
+            .prefetch_likely_navigations;
+    if (!does_search_provider_opt_in) {
+      return SearchPreloadSignalResult::
+          kNotTriggeredOnPressNoSearchProviderOptIn;
+    }
+
+    // Erase to count prefetches.
+    EraseNotAlivePipelines();
+    // Limit the number of prefetches.
+    if (pipelines_.size() >= features::kDsePreload2MaxPrefetch.Get()) {
+      return SearchPreloadSignalResult::kNotTriggeredLimitExceeded;
+    }
+
+    const std::optional<GURL> maybe_canonical_url =
+        GetCanonicalUrlForSearchPreload(profile, match.destination_url);
+    if (!maybe_canonical_url.has_value()) {
+      return SearchPreloadSignalResult::kNotTriggeredMisc;
+    }
+    const GURL& canonical_url = maybe_canonical_url.value();
+
+    const std::optional<std::u16string> maybe_search_terms =
+        ExtractSearchTermsFromUrl(*template_url_service, match);
+    if (!maybe_search_terms.has_value()) {
+      return SearchPreloadSignalResult::kNotTriggeredMisc;
+    }
+    const std::u16string& search_terms = maybe_search_terms.value();
+
+    GURL prefetch_url;
+    if (match.search_terms_args) {
+      auto& search_terms_args = *match.search_terms_args.get();
+      prefetch_url =
+          GetPrefetchUrlFromMatch(search_terms_args, *template_url_service,
+                                  /*is_navigation_likely=*/true);
+    } else {
+      // Search history suggestions (those that are not also server suggestions)
+      // don't have search term args. Generate search term args instead.
+
+      auto search_terms_args_for_history_suggestion =
+          std::make_unique<TemplateURLRef::SearchTermsArgs>(search_terms);
+      auto& search_terms_args = *search_terms_args_for_history_suggestion.get();
+      prefetch_url =
+          GetPrefetchUrlFromMatch(search_terms_args, *template_url_service,
+                                  /*is_navigation_likely=*/true);
+    }
+
+    auto predictor =
+        [](omnibox::mojom::NavigationPredictor navigation_predictor) {
+          switch (navigation_predictor) {
+            case omnibox::mojom::NavigationPredictor::kMouseDown:
+              return chrome_preloading_predictor::kOmniboxMousePredictor;
+            case omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton:
+              return chrome_preloading_predictor::kOmniboxSearchPredictor;
+            case omnibox::mojom::NavigationPredictor::kTouchDown:
+              return chrome_preloading_predictor::kOmniboxTouchDownPredictor;
+          }
+        }(navigation_predictor);
+
+    // TODO(crbug.com/403198750): Limit the number of active pipelines.
+    if (!pipelines_.contains(canonical_url)) {
+      pipelines_.insert_or_assign(
+          canonical_url,
+          std::make_unique<SearchPreloadPipeline>(canonical_url));
+    }
+    pipelines_[canonical_url]->UpdateConfidence(GetWebContents(), 100);
+    return pipelines_[canonical_url]->StartPrefetch(
+        GetWebContents(), search_preload_service, prefetch_url, predictor,
+        no_vary_search_hint,
+        /*is_navigation_likely=*/true);
+  }();
+
+  if (signal_result_prefetch.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
+        signal_result_prefetch.value());
   }
 
-  if (!features::DsePreload2OnPressIsPredictorEnabled(navigation_predictor)) {
-    return false;
-  }
-
-  if (profile.IsOffTheRecord() &&
-      !features::IsDsePreload2OnPressIncognitoEnabled()) {
-    return false;
-  }
-
-  if (!AutocompleteMatch::IsSearchType(match.type)) {
-    return false;
-  }
-
-  auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(&profile);
-  CHECK(template_url_service);
-  bool does_search_provider_opt_in =
-      template_url_service->GetDefaultSearchProvider() &&
-      template_url_service->GetDefaultSearchProvider()
-          ->data()
-          .prefetch_likely_navigations;
-  if (!does_search_provider_opt_in) {
-    return false;
-  }
-
-  // Erase to count prefetches.
-  EraseNotAlivePipelines();
-  // Limit the number of prefetches.
-  if (pipelines_.size() >= features::kDsePreload2MaxPrefetch.Get()) {
-    return false;
-  }
-
-  const std::optional<GURL> maybe_canonical_url =
-      GetCanonicalUrlForSearchPreload(profile, match.destination_url);
-  if (!maybe_canonical_url.has_value()) {
-    return false;
-  }
-  const GURL& canonical_url = maybe_canonical_url.value();
-
-  const std::optional<std::u16string> maybe_search_terms =
-      ExtractSearchTermsFromUrl(*template_url_service, match);
-  if (!maybe_search_terms.has_value()) {
-    return false;
-  }
-  const std::u16string& search_terms = maybe_search_terms.value();
-
-  GURL prefetch_url;
-  if (match.search_terms_args) {
-    auto& search_terms_args = *match.search_terms_args.get();
-    prefetch_url =
-        GetPrefetchUrlFromMatch(search_terms_args, *template_url_service,
-                                /*is_navigation_likely=*/true);
-  } else {
-    // Search history suggestions (those that are not also server suggestions)
-    // don't have search term args. Generate search term args instead.
-
-    auto search_terms_args_for_history_suggestion =
-        std::make_unique<TemplateURLRef::SearchTermsArgs>(search_terms);
-    auto& search_terms_args = *search_terms_args_for_history_suggestion.get();
-    prefetch_url =
-        GetPrefetchUrlFromMatch(search_terms_args, *template_url_service,
-                                /*is_navigation_likely=*/true);
-  }
-
-  auto predictor =
-      [](omnibox::mojom::NavigationPredictor navigation_predictor) {
-        switch (navigation_predictor) {
-          case omnibox::mojom::NavigationPredictor::kMouseDown:
-            return chrome_preloading_predictor::kOmniboxMousePredictor;
-          case omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton:
-            return chrome_preloading_predictor::kOmniboxSearchPredictor;
-          case omnibox::mojom::NavigationPredictor::kTouchDown:
-            return chrome_preloading_predictor::kOmniboxTouchDownPredictor;
-        }
-      }(navigation_predictor);
-
-  // TODO(crbug.com/403198750): Limit the number of active pipelines.
-  if (!pipelines_.contains(canonical_url)) {
-    pipelines_.insert_or_assign(
-        canonical_url, std::make_unique<SearchPreloadPipeline>(canonical_url));
-  }
-  pipelines_[canonical_url]->UpdateConfidence(GetWebContents(), 100);
-  return pipelines_[canonical_url]->StartPrefetch(
-      GetWebContents(), search_preload_service, prefetch_url, predictor,
-      no_vary_search_hint,
-      /*is_navigation_likely=*/true);
+  return signal_result_prefetch ==
+         SearchPreloadSignalResult::kPrefetchTriggered;
 }
 
 bool SearchPreloadPipelineManager::InvalidatePipelineForTesting(

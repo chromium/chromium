@@ -38,6 +38,11 @@ chromium-metrics-reviews@google.com.
                or decrease is necessarily good."/>
 </variants>
 
+<variants name="DsePreloadTriggerType">
+  <variant name=".OnPress" summary="on-press trigger"/>
+  <variant name=".OnSuggest" summary="on-suggest trigger"/>
+</variants>
+
 <variants name="KeywordType">
   <variant name="" summary="aggregated across all keyword types"/>
   <variant name=".DefaultSearchEngineSetByPolicy"
@@ -222,6 +227,11 @@ Keep consistent with active providers. Doesn't need to include every provider in
 <variants name="OmniboxZeroPrefixState">
   <variant name="TypedSuggest" summary="typed suggest"/>
   <variant name="ZeroSuggest" summary="zero-prefix suggest"/>
+</variants>
+
+<variants name="PreloadType">
+  <variant name=".Prefetch" summary="prefetch"/>
+  <variant name=".Prerender" summary="prerender"/>
 </variants>
 
 <!-- LINT.IfChange(RemoteRequestSuccess) -->
@@ -1061,6 +1071,24 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Records a No-Varry-Search data cache change when a non-redirect response
     header for DSE prefetch is received.
   </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.DsePreload.SignalResult{DsePreloadTriggerType}{PreloadType}"
+    enum="SearchPreloadSignalResult" expires_after="2025-12-01">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the difference between &quot;the client judged it should
+    preload&quot; and &quot;preload is actually triggered&quot;.
+
+    Records the result of signal when the client judged it should trigger
+    {PreloadType} in DSE {DsePreloadTriggerType}.
+  </summary>
+  <token key="DsePreloadTriggerType" variants="DsePreloadTriggerType"/>
+  <token key="PreloadType" variants="PreloadType"/>
 </histogram>
 
 <histogram name="Omnibox.EnteredKeywordMode2" enum="OmniboxEnteredKeywordMode2"

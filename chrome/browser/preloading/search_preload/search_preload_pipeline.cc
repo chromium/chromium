@@ -47,7 +47,7 @@ void SearchPreloadPipeline::UpdateConfidence(content::WebContents& web_contents,
       web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
-bool SearchPreloadPipeline::StartPrefetch(
+SearchPreloadSignalResult SearchPreloadPipeline::StartPrefetch(
     content::WebContents& web_contents,
     base::WeakPtr<SearchPreloadService> search_preload_service,
     const GURL& prefetch_url,
@@ -62,7 +62,7 @@ bool SearchPreloadPipeline::StartPrefetch(
   // load of the prefetch. (There should be no other timeouts nor expiration.)
   // In general, retriggering may be useful.
   if (prefetch_handle_) {
-    return false;
+    return SearchPreloadSignalResult::kNotTriggeredAlreadyTriggered;
   }
 
   auto* preloading_data =
@@ -101,21 +101,21 @@ bool SearchPreloadPipeline::StartPrefetch(
             search_preload_service));
   }
 
-  return true;
+  return SearchPreloadSignalResult::kPrefetchTriggered;
 }
 
-void SearchPreloadPipeline::StartPrerender(
+SearchPreloadSignalResult SearchPreloadPipeline::StartPrerender(
     content::WebContents& web_contents,
     const GURL& prerender_url,
     content::PreloadingPredictor predictor) {
   // Don't trigger prerender if already triggered.
   if (prerender_handle_) {
-    return;
+    return SearchPreloadSignalResult::kNotTriggeredAlreadyTriggered;
   }
 
   // Assume that prefetch is alive.
   if (!IsPrefetchAlive()) {
-    return;
+    return SearchPreloadSignalResult::kNotTriggeredPrefetchNotAlive;
   }
 
   auto* preloading_data =
@@ -154,6 +154,7 @@ void SearchPreloadPipeline::StartPrerender(
       content::PreloadingHoldbackStatus::kUnspecified, pipeline_info_, attempt,
       std::move(url_match_predicate),
       /*prerender_navigation_handle_callback=*/{});
+  return SearchPreloadSignalResult::kPrerenderTriggered;
 }
 
 void SearchPreloadPipeline::CancelPrerender() {
