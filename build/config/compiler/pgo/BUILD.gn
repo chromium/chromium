@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compiler/pgo/pgo.gni")
@@ -63,7 +64,9 @@ config("pgo_optimization_flags") {
       _pgo_target = "linux"
     } else if (is_android) {
       # Use |current_cpu| and not |target_cpu|; for Android we may built both.
-      if (current_cpu == "arm64") {
+      if (is_desktop_android && current_cpu == "x64") {
+        _pgo_target = "android-desktop-x64"
+      } else if (current_cpu == "arm64") {
         _pgo_target = "android-arm64"
       } else {
         _pgo_target = "android-arm32"
@@ -98,6 +101,8 @@ config("pgo_optimization_flags") {
       inputs = [ "//chrome/build/android-arm32.pgo.txt" ]
     } else if (_pgo_target == "android-arm64") {
       inputs = [ "//chrome/build/android-arm64.pgo.txt" ]
+    } else if (_pgo_target == "android-desktop-x64") {
+      inputs = [ "//chrome/build/android-desktop-x64.pgo.txt" ]
     }
 
     if (_pgo_target != "" && pgo_data_path == "") {
