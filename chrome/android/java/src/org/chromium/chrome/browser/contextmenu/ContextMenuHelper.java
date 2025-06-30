@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 
 import org.jni_zero.CalledByNative;
@@ -14,6 +16,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -29,22 +33,24 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import java.util.List;
 
 /** A helper class that handles generating and dismissing context menus for {@link WebContents}. */
+@NullMarked
 public class ContextMenuHelper {
-    private static Callback<ContextMenuCoordinator> sMenuShownCallbackForTesting;
+    private static @Nullable Callback<@Nullable ContextMenuCoordinator>
+            sMenuShownCallbackForTesting;
 
     private final WebContents mWebContents;
     private long mNativeContextMenuHelper;
 
-    private ContextMenuNativeDelegate mCurrentNativeDelegate;
-    private ContextMenuPopulator mCurrentPopulator;
-    private ContextMenuPopulatorFactory mPopulatorFactory;
-    private ContextMenuParams mCurrentContextMenuParams;
-    private ContextMenuUi mCurrentContextMenu;
-    private WindowAndroid mWindow;
-    private Callback<Integer> mCallback;
-    private Runnable mOnMenuShown;
-    private Runnable mOnMenuClosed;
-    private ChipDelegate mChipDelegate;
+    private @Nullable ContextMenuNativeDelegate mCurrentNativeDelegate;
+    private @Nullable ContextMenuPopulator mCurrentPopulator;
+    private @Nullable ContextMenuPopulatorFactory mPopulatorFactory;
+    private @Nullable ContextMenuParams mCurrentContextMenuParams;
+    private @Nullable ContextMenuUi mCurrentContextMenu;
+    private @Nullable WindowAndroid mWindow;
+    private @Nullable Callback<Integer> mCallback;
+    private @Nullable Runnable mOnMenuShown;
+    private @Nullable Runnable mOnMenuClosed;
+    private @Nullable ChipDelegate mChipDelegate;
 
     private ContextMenuHelper(long nativeContextMenuHelper, WebContents webContents) {
         mNativeContextMenuHelper = nativeContextMenuHelper;
@@ -166,7 +172,8 @@ public class ContextMenuHelper {
     }
 
     private void displayContextMenu(float topContentOffsetPx) {
-        List<ModelList> items = mCurrentPopulator.buildContextMenu();
+        List<ModelList> items = assumeNonNull(mCurrentPopulator).buildContextMenu();
+        assert mOnMenuClosed != null;
         if (items.isEmpty()) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, mOnMenuClosed);
             // Only call if no items are populated. Otherwise call in mOnMenuShown callback.
@@ -203,7 +210,8 @@ public class ContextMenuHelper {
         }
     }
 
-    public static void setMenuShownCallbackForTests(Callback<ContextMenuCoordinator> callback) {
+    public static void setMenuShownCallbackForTests(
+            Callback<@Nullable ContextMenuCoordinator> callback) {
         sMenuShownCallbackForTesting = callback;
         ResettersForTesting.register(() -> sMenuShownCallbackForTesting = null);
     }
