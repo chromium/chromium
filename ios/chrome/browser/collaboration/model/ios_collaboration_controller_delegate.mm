@@ -209,7 +209,9 @@ void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
             l10n_util::GetNSString(
                 IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_UPDATE_BUTTON)
                   action:update_action
-                   style:UIAlertActionStyleDefault];
+                   style:UIAlertActionStyleDefault
+               preferred:YES
+                 enabled:YES];
 
     auto dismiss_action = base::CallbackToBlock(
         base::BindOnce(&IOSCollaborationControllerDelegate::ErrorAccepted,
