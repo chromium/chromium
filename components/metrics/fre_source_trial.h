@@ -33,4 +33,4 @@ bool IsEnabled();
 
 }  // namespace metrics::fre_source_trial
 
-#endif  // COMPONENTS_METRICS_FILE_METRICS_PROVIDER_FRE_KEEP_SOURCE_TRIAL_H_
+#endif  // COMPONENTS_METRICS_FRE_SOURCE_TRIAL_H_
