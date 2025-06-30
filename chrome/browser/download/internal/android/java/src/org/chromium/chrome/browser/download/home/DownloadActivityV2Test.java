@@ -482,6 +482,7 @@ public class DownloadActivityV2Test {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/427410747")
     public void testDeleteDangerousUsingMenu() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -507,6 +508,7 @@ public class DownloadActivityV2Test {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/427410747")
     public void testDeleteDangerousUsingSelection() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
