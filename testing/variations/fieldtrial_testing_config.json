@@ -20162,7 +20162,8 @@
                     "enable_features": [
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
-                        "ReducePPMs"
+                        "ReducePPMs",
+                        "ScreenWinDisplayLookupByHMONITOR"
                     ]
                 }
             ]
