@@ -26,6 +26,7 @@ namespace blink {
 class FragmentItems;
 class InlinePaintContext;
 class PhysicalBoxFragment;
+struct FitTextScale;
 struct LogicalLineItem;
 struct TextFragmentPaintInfo;
 
@@ -578,6 +579,8 @@ class CORE_EXPORT FragmentItem final {
   AffineTransform BuildSvgTransformForTextPath(
       const AffineTransform& length_adjust) const;
   AffineTransform BuildSvgTransformForLengthAdjust() const;
+
+  void SetFitTextScale(FitTextScale scale);
 
   // TODO(kojii): We can make them sub-classes if we need to make the vector of
   // pointers. Sub-classing from DisplayItemClient prohibits copying and that we

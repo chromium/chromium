@@ -170,6 +170,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
           line_item.is_hidden_for_paint);
       has_over_annotation_ = line_item.has_over_annotation;
       has_under_annotation_ = line_item.has_under_annotation;
+      SetFitTextScale(line_item.fit_text_scale);
       return;
     }
 
@@ -180,6 +181,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
                      line_item.is_hidden_for_paint);
     has_over_annotation_ = line_item.has_over_annotation;
     has_under_annotation_ = line_item.has_under_annotation;
+    SetFitTextScale(line_item.fit_text_scale);
     return;
   }
 
@@ -198,6 +200,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
                      std::move(line_item.shape_result), line_item.text_content,
                      ToPhysicalSize(line_item.MarginSize(), writing_mode),
                      line_item.is_hidden_for_paint);
+    SetFitTextScale(line_item.fit_text_scale);
     return;
   }
 
@@ -766,6 +769,13 @@ const Font& FragmentItem::ScaledFont() const {
           DynamicTo<LayoutSVGInlineText>(GetLayoutObject()))
     return svg_inline_text->ScaledFont();
   return *Style().GetFont();
+}
+
+void FragmentItem::SetFitTextScale(FitTextScale scale) {
+  if (scale.scale != 1.0f) {
+    return;
+  }
+  // TODO(crbug.com/417306102): Implement this.
 }
 
 String FragmentItem::ToString() const {

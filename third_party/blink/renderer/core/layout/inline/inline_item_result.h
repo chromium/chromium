@@ -10,6 +10,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
+#include "third_party/blink/renderer/core/layout/inline/fit_text_scale.h"
 #include "third_party/blink/renderer/core/layout/inline/hyphen_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
@@ -148,8 +149,7 @@ struct CORE_EXPORT InlineItemResult {
   LineBoxStrut padding;
 
   // For text-grow and text-shrink.
-  float fit_text_scale = 1.0f;
-  bool is_scaled_inline_only = false;
+  FitTextScale fit_text_scale;
 
   // Inside of this may be breakable. False means there are no break
   // opportunities, or has CSS properties that prohibit breaking.

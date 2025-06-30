@@ -154,10 +154,11 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       if (item_result.is_hyphenated) [[unlikely]] {
         DCHECK(item_result.hyphen);
         LayoutUnit hyphen_inline_size = item_result.hyphen.InlineSize();
-        line_box->AddChild(item, item_result, item_result.TextOffset(),
-                           box->text_top,
-                           item_result.inline_size - hyphen_inline_size,
-                           box->text_height, item.BidiLevel());
+        line_box->AddChild(
+            item, item_result, item_result.TextOffset(), box->text_top,
+            LayoutUnit((item_result.inline_size - hyphen_inline_size) *
+                       item_result.fit_text_scale.scale),
+            box->text_height, item.BidiLevel());
         PlaceHyphen(item_result, hyphen_inline_size, line_box, box);
       } else if (node_.IsTextCombine()) [[unlikely]] {
         // We make combined text at block offset 0 with 1em height.
@@ -170,7 +171,9 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
                            item.BidiLevel());
       } else {
         line_box->AddChild(item, item_result, item_result.TextOffset(),
-                           box->text_top, item_result.inline_size,
+                           box->text_top,
+                           LayoutUnit(item_result.inline_size *
+                                      item_result.fit_text_scale.scale),
                            box->text_height, item.BidiLevel());
       }
 
@@ -351,10 +354,11 @@ void LogicalLineBuilder::PlaceHyphen(const InlineItemResult& item_result,
   DCHECK(item_result.hyphen);
   DCHECK_EQ(hyphen_inline_size, item_result.hyphen.InlineSize());
   const InlineItem& item = *item_result.item;
+  hyphen_inline_size *= item_result.fit_text_scale.scale;
   line_box->AddChild(
       item, ShapeResultView::Create(&item_result.hyphen.GetShapeResult()),
-      item_result.hyphen.Text(), box->text_top, hyphen_inline_size,
-      box->text_height, item.BidiLevel());
+      item_result.hyphen.Text(), item_result.fit_text_scale, box->text_top,
+      hyphen_inline_size, box->text_height, item.BidiLevel());
 }
 
 InlineBoxState* LogicalLineBuilder::PlaceAtomicInline(
