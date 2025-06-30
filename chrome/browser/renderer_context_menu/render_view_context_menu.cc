@@ -4254,19 +4254,15 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags) {
     return;
   }
 
-  // TODO(crbug.com/428031945): Clean up once LensOverlayKeyboardSelection
-  // lands.
-  bool use_keyboard_accessibility_fallback =
-      IsLensOptionEnteredThroughKeyboard(event_flags) &&
-      !lens::features::IsLensOverlayKeyboardSelectionEnabled();
+  bool entered_through_keyboard =
+      IsLensOptionEnteredThroughKeyboard(event_flags);
   bool lens_overlay_for_image_search_enabled =
       GetBrowser()
           ->GetFeatures()
           .lens_overlay_entry_point_controller()
           ->IsEnabled() &&
       lens::features::UseLensOverlayForImageSearch();
-  if (lens_overlay_for_image_search_enabled &&
-      !use_keyboard_accessibility_fallback) {
+  if (lens_overlay_for_image_search_enabled && !entered_through_keyboard) {
     lens::RecordAmbientSearchQuery(
         lens::AmbientSearchEntryPoint::
             CONTEXT_MENU_SEARCH_IMAGE_WITH_LENS_OVERLAY);
@@ -4288,10 +4284,9 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags) {
         weak_pointer_factory_.GetWeakPtr(), std::move(chrome_render_frame),
         tab_bounds, view_bounds, device_scale_factor));
   } else {
-    // If keyboard selection in Lens Overlay is disabled, when the Lens image
-    // search feature is entered via the context menu with a Keyboard action,
-    // use the Lens region search flow through core_tab_helper instead of the
-    // Lens Overlay flow.
+    // When the Lens image search feature is entered via the context menu
+    // with a Keyboard action, use the Lens region search flow through
+    // core_tab_helper instead of the Lens Overlay flow.
     lens::RecordAmbientSearchQuery(
         lens_overlay_for_image_search_enabled
             ? lens::AmbientSearchEntryPoint::
@@ -4334,18 +4329,17 @@ void RenderViewContextMenu::ExecRegionSearch(
           ->GetFeatures()
           .lens_overlay_entry_point_controller()
           ->IsEnabled();
-  // If Lens overlay is enabled but keyboard selection is disabled and the user
-  // triggered the context menu option via keyboard, use the Lens region search
-  // flow (with results forced into a new tab) instead of the Lens Overlay flow.
-  // TODO(crbug.com/428031945): Clean up once LensOverlayKeyboardSelection
-  // lands.
-  bool use_keyboard_accessibility_fallback =
-      IsLensOptionEnteredThroughKeyboard(event_flags) &&
-      !lens::features::IsLensOverlayKeyboardSelectionEnabled();
+  // If Lens overlay is enabled, but the user triggered the context menu
+  // option via keyboard, use the Lens region search flow (with results
+  // forced into a new tab) instead of the Lens Overlay flow.
+  // TODO(crbug/353984457): Clean this branching when the new server
+  // results flow is ready.
+  bool entered_through_keyboard =
+      IsLensOptionEnteredThroughKeyboard(event_flags);
   if (lens_overlay_for_region_search_enabled) {
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         GetBrowserContext(), lens::features::kLensOverlay);
-    if (!use_keyboard_accessibility_fallback) {
+    if (!entered_through_keyboard) {
       lens::RecordAmbientSearchQuery(
           lens::AmbientSearchEntryPoint::
               CONTEXT_MENU_SEARCH_REGION_WITH_LENS_OVERLAY);
@@ -4361,9 +4355,9 @@ void RenderViewContextMenu::ExecRegionSearch(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // If Lens fullscreen search is enabled, we want to send every region search
   // as a fullscreen capture.
-  // TODO(crbug.com/428031945): Clean up once LensOverlayKeyboardSelection
-  // lands.
-  const bool use_fullscreen_capture = use_keyboard_accessibility_fallback;
+  // TODO(crbug/353984457): Clean this branching when the new server
+  // results flow is ready.
+  const bool use_fullscreen_capture = entered_through_keyboard;
 
   if (!lens_region_search_controller_) {
     lens_region_search_controller_ =
