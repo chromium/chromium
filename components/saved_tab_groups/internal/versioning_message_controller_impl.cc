@@ -40,12 +40,21 @@ enum class VersionState {
   // data_sharing::features::kSharedDataTypesKillSwitch DISABLED,
   // data_sharing::features::kDataSharingEnableUpdateChromeUI ENABLED.
   kInvalidCombination,
+
+  // Data sharing main feature flags are disabled. No versioning message should
+  // be shown and we shouldn't even bother to set or reset pref state. This
+  // state can be cleaned up after data sharing feature launch.
+  // Feature flags:
+  // data_sharing::features::IsDataSharingFunctionalityEnabled() => false
+  // data_sharing::features::kSharedDataTypesKillSwitch ANY STATE,
+  // data_sharing::features::kDataSharingEnableUpdateChromeUI ANY STATE.
+  kDataSharingFunctionalityDisabled,
 };
 
 // Returns the current version state based on combination of feature flags.
 VersionState GetVersionState() {
   if (!data_sharing::features::IsDataSharingFunctionalityEnabled()) {
-    return VersionState::kNoMessage;
+    return VersionState::kDataSharingFunctionalityDisabled;
   }
   const bool is_shared_data_types_enabled = !base::FeatureList::IsEnabled(
       data_sharing::features::kSharedDataTypesKillSwitch);
@@ -140,7 +149,8 @@ void VersioningMessageControllerImpl::ComputePrefsOnStartup() {
       break;
     }
     case VersionState::kNoMessage:
-    case VersionState::kInvalidCombination: {
+    case VersionState::kInvalidCombination:
+    case VersionState::kDataSharingFunctionalityDisabled: {
       // In these states, no specific versioning messages are tied to the
       // feature flag combination. The prefs should carry over their previous
       // state or default values if not explicitly set elsewhere.

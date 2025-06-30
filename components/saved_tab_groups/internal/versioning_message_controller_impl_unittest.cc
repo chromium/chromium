@@ -99,11 +99,10 @@ class VersioningMessageControllerImplTest : public testing::Test {
     return sync_result;
   }
 
-  void SetupFeatureList(bool version_up_to_date,
-                        bool data_sharing_enabled = true) {
+  void SetupFeatureList(bool version_up_to_date) {
     SetupFeatureListWithUiFlag(/*shared_data_types_enabled=*/version_up_to_date,
                                /*version_ui_flag_enabled=*/!version_up_to_date,
-                               /*data_sharing_enabled=*/data_sharing_enabled);
+                               /*data_sharing_enabled=*/true);
   }
 
   void SetupFeatureListWithUiFlag(bool shared_data_types_enabled,
@@ -548,8 +547,9 @@ TEST_F(VersioningMessageControllerImplTest, MultipleRestarts_ButWithoutUiFlag) {
 
 TEST_F(VersioningMessageControllerImplTest,
        TestShouldShowMessageUi_DataSharingDisabled) {
-  SetupFeatureList(/*version_up_to_date=*/false,
-                   /*data_sharing_enabled=*/false);
+  SetupFeatureListWithUiFlag(/*shared_data_types_enabled=*/false,
+                             /*version_ui_flag_enabled=*/true,
+                             /*data_sharing_enabled*/ false);
   SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/true,
                                     /*had_open_shared_tab_groups=*/true);
   InitializeController();
