@@ -120,8 +120,7 @@ void WasmTtsEngineComponentInstallerPolicy::ComponentReady(
           << install_dir.value();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (features::IsWasmTtsComponentUpdaterEnabled() &&
-      !features::IsWasmTtsEngineAutoInstallDisabled()) {
+  if (!features::IsWasmTtsEngineAutoInstallDisabled()) {
     // Instead of installing the component extension as soon as it is ready,
     // store the install directory, so that the install can be triggered
     // via ReadAnythingService once the side panel has been opened. This

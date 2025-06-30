@@ -33,7 +33,6 @@ class ReadAnythingService : public KeyedService, public BrowserListObserver {
  private:
   void InstallGDocsHelperExtension();
   void RemoveGDocsHelperExtension();
-  void InstallTtsDownloadExtension();
   void RemoveTtsDownloadExtension();
   void OnLocalSidePanelSwitchDelayTimeout();
 #if !BUILDFLAG(IS_CHROMEOS)

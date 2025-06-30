@@ -471,12 +471,8 @@ template("chrome_extra_paks") {
       sources += [
         "$root_gen_dir/chrome/app_settings_resources.pak",
         "$root_gen_dir/chrome/on_device_translation_internals_resources.pak",
-        "$root_gen_dir/chrome/tts_engine_resources.pak",
       ]
-      deps += [
-        "//chrome/browser/resources/app_settings:resources",
-        "//chrome/browser/resources/tts_engine:resources",
-      ]
+      deps += [ "//chrome/browser/resources/app_settings:resources" ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos) {

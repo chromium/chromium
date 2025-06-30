@@ -258,9 +258,7 @@ void RegisterComponentsForUpdate() {
 #endif  // BUIDLFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (features::IsWasmTtsComponentUpdaterEnabled()) {
-    RegisterWasmTtsEngineComponent(cus);
-  }
+  RegisterWasmTtsEngineComponent(cus);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   RegisterProbabilisticRevealTokenComponent(cus);

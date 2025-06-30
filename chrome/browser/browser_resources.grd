@@ -201,9 +201,6 @@
       <include name="IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST" file="resources\network_speech_synthesis\manifest.json" type="BINDATA" />
       <include name="IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST_MV3" file="resources\network_speech_synthesis\mv3\manifest.json" type="BINDATA" />
       <include name="IDR_READING_MODE_GDOCS_HELPER_MANIFEST" file="resources\reading_mode_gdocs_helper\manifest.json" type="BINDATA" />
-      <if expr="not is_chromeos">
-        <include name="IDR_TTS_ENGINE_MANIFEST" file="resources\tts_engine\manifest.json" type="BINDATA" />
-      </if>
 
       <if expr="enable_pdf">
         <include name="IDR_PDF_MANIFEST" file="resources\pdf\manifest.json" type="BINDATA" />

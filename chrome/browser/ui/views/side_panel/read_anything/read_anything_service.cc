@@ -86,24 +86,19 @@ void ReadAnythingService::OnReadAnythingSidePanelEntryShown() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingService::SetupDesktopEngine() {
-  // If the WasmTtsComponentUpdater flag is disabled, install the Tts
-  // extension as a component extension.
-  if (features::IsReadAnythingReadAloudEnabled() &&
-      !features::IsWasmTtsComponentUpdaterEnabled() &&
-      !features::IsWasmTtsEngineAutoInstallDisabled()) {
-    InstallTtsDownloadExtension();
-    return;
-  }
-
   // If the extension was previously installed but now the Read Aloud flag
   // is disabled, or if the component updater flag is enabled, we should
   // uninstall the component extension.
+  // TODO(crbug.com/428043296): RemoveTtsDownloadExtension should be left in
+  // until the IsWasmTtsComponentUpdaterEnabled flag has been removed for
+  // enough time to be sure that no one has that extension installed. If they
+  // do, it could cause issues when the component updater extension is
+  // installed.
   RemoveTtsDownloadExtension();
 
   // Install the TTS extension via the component updater if the
   // component updater flag is enabled.
   if (features::IsReadAnythingReadAloudEnabled() &&
-      features::IsWasmTtsComponentUpdaterEnabled() &&
       !features::IsWasmTtsEngineAutoInstallDisabled()) {
     // Signal that the reading mode panel is opened and it's now safe to
     // install the WasmTtsEngineComponent.
@@ -184,21 +179,6 @@ void ReadAnythingService::OnBrowserSetLastActive(Browser* browser) {
     side_panel_ui->SetNoDelaysForTesting(true);  // IN-TEST
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   }
-}
-
-void ReadAnythingService::InstallTtsDownloadExtension() {
-#if !BUILDFLAG(IS_CHROMEOS)
-  auto* component_loader = extensions::ComponentLoader::Get(profile_);
-  if (!component_loader) {
-    // In tests, the loader might not be created.
-    CHECK_IS_TEST();
-    return;
-  }
-  if (!component_loader->Exists(extension_misc::kTTSEngineExtensionId)) {
-    component_loader->Add(IDR_TTS_ENGINE_MANIFEST,
-                          base::FilePath(FILE_PATH_LITERAL("tts_engine")));
-  }
-#endif  // BUILDFLAG(!IS_CHROMEOS)
 }
 
 void ReadAnythingService::RemoveTtsDownloadExtension() {

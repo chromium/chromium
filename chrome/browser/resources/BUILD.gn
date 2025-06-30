@@ -121,7 +121,6 @@ group("resources") {
       "browser_switch:resources",
       "on_device_translation_internals:resources",
       "signin/history_sync_optin:resources",
-      "tts_engine:resources",
     ]
   }
 

@@ -536,9 +536,7 @@ void ReadAnythingUntrustedPageHandler::OnExtensionReady(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
   const auto& extensionId =
-      features::IsWasmTtsComponentUpdaterEnabled()
-          ? extension_misc::kComponentUpdaterTTSEngineExtensionId
-          : extension_misc::kTTSEngineExtensionId;
+      extension_misc::kComponentUpdaterTTSEngineExtensionId;
   if (extension->id() != extensionId || extension_installed_) {
     return;
   }
