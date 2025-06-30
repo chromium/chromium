@@ -46,6 +46,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -307,7 +308,10 @@ public class InstanceSwitcherCoordinator {
                                 R.string.cancel)
                         .with(
                                 ModalDialogProperties.DIALOG_STYLES,
-                                ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE);
+                                ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE)
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
 
         if (UiUtils.isInstanceSwitcherV2Enabled()) {
             builder.with(
