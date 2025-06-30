@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -454,7 +455,9 @@ float TextDecorationInfo::ComputeUnderlineThickness(
     // decorating box.
     // Only for non-Roman for now for the performance implications.
     // https:// drafts.csswg.org/css-text-decor-3/#decorating-box
-    if (decorating_box_style) {
+    if (RuntimeEnabledFeatures::SvgTextCentralBaselineTextDecorationFixEnabled()
+            ? use_decorating_box_
+            : !!decorating_box_style) {
       thickness = ComputeDecorationThickness(
           applied_decoration_thickness,
           decorating_box_style->ComputedFontSize(),

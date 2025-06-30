@@ -4631,6 +4631,10 @@
       status: "experimental",
     },
     {
+      name: "SvgTextCentralBaselineTextDecorationFix",
+      status: "stable",
+    },
+    {
       name: "SvgTransformOnNestedSvgElement",
       status: "stable",
     },
