@@ -103,8 +103,9 @@ export function isWhitespace(s: string): boolean {
 }
 
 export function isRectVisible(rect: DOMRect): boolean {
-  return (rect.top <= 0 && rect.bottom >= window.innerHeight) ||
-      isPointVisible(rect.top) || isPointVisible(rect.bottom);
+  return (rect.height > 0) &&
+      ((rect.top <= 0 && rect.bottom >= window.innerHeight) ||
+       isPointVisible(rect.top) || isPointVisible(rect.bottom));
 }
 
 function isPointVisible(point: number) {

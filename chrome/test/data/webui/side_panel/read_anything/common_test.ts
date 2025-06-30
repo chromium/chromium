@@ -67,5 +67,10 @@ suite('Common', () => {
           windowHeight + 1, windowHeight + 1, halfHeight, halfHeight);
       assertFalse(isRectVisible(rect));
     });
+
+    test('empty bounds returns false', () => {
+      const rect = new DOMRect();
+      assertFalse(isRectVisible(rect));
+    });
   });
 });
