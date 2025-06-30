@@ -484,12 +484,12 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     self.fakeLocationBarHeightConstraint,
   ]];
 
-  UIButton* referenceButton = self.voiceSearchButton ?: self.miaButton;
+  UIView* referenceView = _buttonStack.arrangedSubviews.firstObject;
   self.hintLabelTrailingConstraint = [self.searchHintLabel.trailingAnchor
-      constraintLessThanOrEqualToAnchor:referenceButton.leadingAnchor];
+      constraintLessThanOrEqualToAnchor:referenceView.leadingAnchor];
   self.hintLabelTrailingConstraint.priority = UILayoutPriorityDefaultHigh;
   [NSLayoutConstraint activateConstraints:@[
-    [referenceButton.centerYAnchor
+    [referenceView.centerYAnchor
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
     self.hintLabelTrailingConstraint,
   ]];
