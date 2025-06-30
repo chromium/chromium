@@ -371,6 +371,10 @@ class CreditCardAccessManager
   void OnVcn3dsAuthenticationComplete(
       payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response);
 
+  // Invoked when the card is successfully fetched.
+  void OnCreditCardFetched(const CreditCard& card,
+                           bool card_was_fetched_from_cache);
+
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
 
