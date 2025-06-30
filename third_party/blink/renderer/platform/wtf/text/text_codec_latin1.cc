@@ -23,23 +23,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_latin1.h"
 
 #include <unicode/utf16.h>
+
 #include <memory>
 
+#include "base/types/to_address.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-static const UChar kTable[256] = {
+static constexpr std::array<UChar, 256> kTable = {
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,  // 00-07
     0x0008, 0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x000E, 0x000F,  // 08-0F
     0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,  // 10-17
@@ -120,41 +118,43 @@ String TextCodecLatin1::Decode(base::span<const uint8_t> bytes,
   String result = String::CreateUninitialized(
       base::checked_cast<wtf_size_t>(bytes.size()), characters);
 
-  const uint8_t* source = bytes.data();
-  const uint8_t* end = source + bytes.size();
-  const uint8_t* aligned_end = AlignToMachineWord(end);
-  LChar* destination = characters.data();
+  base::span<const uint8_t> source = bytes;
+  const uint8_t* aligned_end =
+      AlignToMachineWord(base::to_address(source.end()));
+  base::span<LChar> destination = characters;
 
-  while (source < end) {
-    if (IsASCII(*source)) {
+  while (!source.empty()) {
+    if (IsASCII(source[0])) {
       // Fast path for ASCII. Most Latin-1 text will be ASCII.
-      if (IsAlignedToMachineWord(source)) {
-        while (source < aligned_end) {
-          MachineWord chunk = *reinterpret_cast_ptr<const MachineWord*>(source);
+      if (IsAlignedToMachineWord(source.data())) {
+        while (source.data() < aligned_end) {
+          MachineWord chunk =
+              *reinterpret_cast_ptr<const MachineWord*>(source.data());
 
           if (!IsAllAscii<LChar>(chunk)) {
             goto useLookupTable;
           }
 
-          CopyAsciiMachineWord(destination, source);
-          source += sizeof(MachineWord);
-          destination += sizeof(MachineWord);
+          static constexpr size_t kMachineWordSize = sizeof(MachineWord);
+          CopyAsciiMachineWord(
+              destination.take_first<kMachineWordSize>().data(),
+              source.take_first<kMachineWordSize>().data());
         }
 
-        if (source == end)
+        if (source.empty()) {
           break;
+        }
       }
-      *destination = *source;
+      destination.take_first<1u>()[0] = source.take_first_elem();
     } else {
     useLookupTable:
-      if (kTable[*source] > 0xff)
+      if (kTable[source[0]] > 0xff) {
         goto upConvertTo16Bit;
+      }
 
-      *destination = static_cast<LChar>(kTable[*source]);
+      destination.take_first<1u>()[0] =
+          static_cast<LChar>(kTable[source.take_first_elem()]);
     }
-
-    ++source;
-    ++destination;
   }
 
   return result;
@@ -164,47 +164,47 @@ upConvertTo16Bit:
   String result16 = String::CreateUninitialized(
       base::checked_cast<wtf_size_t>(bytes.size()), characters16);
 
-  UChar* destination16 = characters16.data();
-
   // Zero extend and copy already processed 8 bit data
-  LChar* ptr8 = characters.data();
-  LChar* end_ptr8 = destination;
+  const size_t characters_converted =
+      static_cast<size_t>(destination.data() - characters.data());
+  auto source8_span = characters.first(characters_converted);
+  auto [converted_span, destination16] =
+      characters16.split_at(characters_converted);
 
-  while (ptr8 < end_ptr8)
-    *destination16++ = *ptr8++;
+  for (size_t i = 0; i < characters_converted; ++i) {
+    converted_span[i] = source8_span[i];
+  }
 
   // Handle the character that triggered the 16 bit path
-  *destination16 = kTable[*source];
-  ++source;
-  ++destination16;
+  destination16.take_first<1u>()[0] = kTable[source.take_first_elem()];
 
-  while (source < end) {
-    if (IsASCII(*source)) {
+  while (!source.empty()) {
+    if (IsASCII(source[0])) {
       // Fast path for ASCII. Most Latin-1 text will be ASCII.
-      if (IsAlignedToMachineWord(source)) {
-        while (source < aligned_end) {
-          MachineWord chunk = *reinterpret_cast_ptr<const MachineWord*>(source);
+      if (IsAlignedToMachineWord(source.data())) {
+        while (source.data() < aligned_end) {
+          MachineWord chunk =
+              *reinterpret_cast_ptr<const MachineWord*>(source.data());
 
           if (!IsAllAscii<LChar>(chunk)) {
             goto useLookupTable16;
           }
 
-          CopyAsciiMachineWord(destination16, source);
-          source += sizeof(MachineWord);
-          destination16 += sizeof(MachineWord);
+          static constexpr size_t kMachineWordSize = sizeof(MachineWord);
+          CopyAsciiMachineWord(
+              destination16.take_first<kMachineWordSize>().data(),
+              source.take_first<kMachineWordSize>().data());
         }
 
-        if (source == end)
+        if (source.empty()) {
           break;
+        }
       }
-      *destination16 = *source;
+      destination16.take_first<1u>()[0] = source.take_first_elem();
     } else {
     useLookupTable16:
-      *destination16 = kTable[*source];
+      destination16.take_first<1u>()[0] = kTable[source.take_first_elem()];
     }
-
-    ++source;
-    ++destination16;
   }
 
   return result16;
@@ -215,7 +215,6 @@ static std::string EncodeComplexWindowsLatin1(
     base::span<const CharType> char_data,
     UnencodableHandling handling) {
   DCHECK_NE(handling, UnencodableHandling::kNoUnencodables);
-  const auto* characters = char_data.data();
   const wtf_size_t length = base::checked_cast<wtf_size_t>(char_data.size());
   wtf_size_t target_length = length;
   std::string result;
@@ -225,7 +224,7 @@ static std::string EncodeComplexWindowsLatin1(
     UChar32 c;
     // If CharType is LChar the U16_NEXT call reads a byte and increments;
     // since the convention is that LChar is already latin1 this is safe.
-    U16_NEXT(characters, i, length, c);
+    U16_NEXT(char_data, i, length, c);
     // If input was a surrogate pair (non-BMP character) then we overestimated
     // the length.
     if (c > 0xffff)
