@@ -490,9 +490,9 @@ public class ToolbarPositionControllerTest {
 
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
         mKeyboardVisibilityDelegate.setVisibilityForTests(true);
-        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsSizer.getTopControlOffset());
+        assertEquals(0, mBrowserControlsSizer.getTopControlOffset());
         assertControlsAtTop();
-        verify(mControlContainerView, times(2)).setVisibility(View.INVISIBLE);
+        verify(mControlContainerView, times(1)).setVisibility(View.INVISIBLE);
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         assertEquals(TOOLBAR_HEIGHT, mBrowserControlsSizer.getBottomControlOffset());
@@ -698,7 +698,7 @@ public class ToolbarPositionControllerTest {
                         ControlsPosition.TOP));
 
         assertEquals(
-                StateTransition.ANIMATE_TO_BOTTOM,
+                StateTransition.SNAP_TO_BOTTOM,
                 ToolbarPositionController.calculateStateTransition(
                         true,
                         prefStateChanged,
