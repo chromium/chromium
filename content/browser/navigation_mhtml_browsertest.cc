@@ -831,6 +831,58 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, ErrorBaseURL) {
   EXPECT_NE(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
 }
 
+class NavigationMhtmlFragmentBrowserTest : public NavigationMhtmlBrowserTest {
+ public:
+  NavigationMhtmlFragmentBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kTreatMhtmlInitialDocumentLoadsAsCrossDocument);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that the first navigation to about:blank#fragment inside an MHTML
+// iframe is cross-document (RFH swap / opaque origin) and that a subsequent
+// fragment navigation is same-document (no RFH swap, origin unchanged).
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlFragmentBrowserTest,
+                       MhtmlAboutBlankFragment_FirstIsCrossDoc_RestAreSameDoc) {
+  MhtmlArchive mhtml;
+  mhtml.AddHtmlDocument(GURL("http://example.com"),
+                        "<iframe src=\"about:blank#foo\"></iframe>");
+  const GURL mhtml_url = mhtml.Write("index.mhtml");
+
+  NavigationHandleObserver first_nav(web_contents(), GURL("about:blank#foo"));
+  ASSERT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+  RenderFrameHostImpl* main_rfh = main_frame_host();
+  ASSERT_EQ(1u, main_rfh->child_count());
+  base::WeakPtr<RenderFrameHostImpl> child_rfh =
+      main_rfh->child_at(0)->current_frame_host()->GetWeakPtr();
+  ASSERT_TRUE(child_rfh);
+  const url::Origin first_origin = child_rfh->GetLastCommittedOrigin();
+
+  // The initial nav must be cross-document since it uses a new opaque origin.
+  EXPECT_TRUE(first_nav.has_committed());
+  EXPECT_FALSE(first_nav.is_same_document());
+  EXPECT_TRUE(first_origin.opaque());
+
+  // Same document fragment navigation.
+  NavigationHandleObserver second_nav(web_contents(), GURL("about:blank#bar"));
+  EXPECT_TRUE(ExecJs(child_rfh, "location.href = 'about:blank#bar';"));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  base::WeakPtr<RenderFrameHostImpl> after_rfh =
+      main_rfh->child_at(0)->current_frame_host()->GetWeakPtr();
+  ASSERT_TRUE(after_rfh);
+
+  // The second fragment navigation is same-document and doesn't change RFH.
+  EXPECT_EQ(child_rfh.get(), after_rfh.get());
+  EXPECT_TRUE(second_nav.has_committed());
+  EXPECT_TRUE(second_nav.is_same_document());
+  EXPECT_EQ(first_origin, after_rfh->GetLastCommittedOrigin());
+}
+
 class NavigationMhtmlFencedFrameBrowserTest
     : public NavigationMhtmlBrowserTest {
  public:

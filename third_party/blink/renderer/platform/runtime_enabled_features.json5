@@ -4899,6 +4899,18 @@
       status: "stable",
     },
     {
+      // When enabled, treats the initial navigation to about:blank#fragment in
+      // an MHTML document as a cross-document navigation.
+      //
+      // Although it appears to be a same-document fragment navigation, MHTML
+      // loading replaces the initial empty document with a new committed
+      // document that has an opaque origin.
+      //
+      // This feature acts as a kill switch for https://crbug.com/40580002.
+      name: "TreatMhtmlInitialDocumentLoadsAsCrossDocument",
+      status: "stable",
+    },
+    {
       // Ensures symbols are treated as word boundaries during traversal.
       // See https://crbug.com/40252642
       name: "TreatSymbolsAsWordBoundary",
