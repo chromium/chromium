@@ -33,6 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/md_text_button_with_spinner.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -43,9 +44,9 @@ constexpr int kProgressBarHeight = 3;
 // Unique identifier within the CookieControlsBubbleView hierarchy.
 constexpr int kFaviconID = 1;
 
-// Delay in milliseconds before triggering a page reload for the tracking
-// protections UI.
-constexpr int kReloadUIDisplayDelay = 900;
+// TODO(crbug.com/388294499): Make this a feature param so it can be changed via
+// Finch if needed.
+constexpr int kReloadUiDisplayDelay = 900;
 
 // Expected URL types for `UrlIdentity::CreateFromUrl()`.
 constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
@@ -84,57 +85,21 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
       ax::mojom::Role::kAlert);
 }
 
-void CookieControlsBubbleViewController::OnUserTriggeredReloadingAction() {
-  if (!controller_->StateChangedViaBypass()) {
-    controller_observation_.Reset();
-    bubble_view_->CloseWidget();
-    return;
-  }
-
-  if (!web_contents_) {
-    return;
-  }
-  if (controller_->ShowActFeatures()) {
-    bubble_view_->GetContentView()
-        ->SetTrackingProtectionsButtonReloadingState();
-    bubble_view_->GetContentView()->SetSpinnerVisible(true);
-
-    // Delay reload to avoid a crash caused by Throbber callbacks running
-    // after the UI has already been torn down.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &CookieControlsBubbleViewController::CloseBubbleAndReloadPage,
-            weak_factory_.GetWeakPtr()),
-        base::Milliseconds(kReloadUIDisplayDelay));
-
-  } else {
-    web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
-    SwitchToReloadingView();
-  }
-
-  SetReloadingTimeout();
-}
-
-void CookieControlsBubbleViewController::CloseBubbleAndReloadPage() {
-  // Stop animation and close the bubble before triggering reload.
-  if (bubble_view_ && bubble_view_->GetContentView()) {
-    bubble_view_->GetContentView()->SetSpinnerVisible(false);
+void CookieControlsBubbleViewController::OnUserClosedContentView() {
+  if (!controller_->StateChangedViaBypass() || controller_->ShowActFeatures()) {
     CloseBubble();
+    return;
+  } else if (!web_contents_) {
+    return;
   }
-
+  // Trigger reload flow if the user changed their 3PC blocking state.
+  // Note: This path is only used by the 3PC UI.
   web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
-}
-
-void CookieControlsBubbleViewController::SwitchToReloadingView() {
-    bubble_view_->SwitchToReloadingView();
-    bubble_view_->GetReloadingView()->GetViewAccessibility().AnnounceText(
-        l10n_util::GetStringFUTF16(IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL,
-                                   GetSubjectUrlName(web_contents_.get())));
-    bubble_view_->GetReloadingView()->RequestFocus();
-}
-
-void CookieControlsBubbleViewController::SetReloadingTimeout() {
+  bubble_view_->SwitchToReloadingView();
+  bubble_view_->GetReloadingView()->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringFUTF16(IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL,
+                                 GetSubjectUrlName(web_contents_.get())));
+  bubble_view_->GetReloadingView()->RequestFocus();
   // Set a timeout for how long the reloading UI is shown for.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -271,7 +236,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     base::Time expiration) {
   // Leave the UI unchanged during reloading; it will update after the page
   // loads.
-  if (is_reloading_state_) {
+  if (IsReloadingState()) {
     return;
   }
   blocking_status_ = blocking_status;
@@ -311,6 +276,12 @@ void CookieControlsBubbleViewController::OnReloadingUiTimeout() {
 }
 
 void CookieControlsBubbleViewController::CloseBubble() {
+  if (IsReloadingState()) {
+    SetIsReloadingState(false);
+    bubble_view_->GetContentView()
+        ->GetTrackingProtectionsButton()
+        ->SetSpinnerVisible(false);
+  }
   controller_observation_.Reset();
   bubble_view_->CloseWidget();
   // View destruction is call asynchronously from the bubble being closed, so we
@@ -321,10 +292,9 @@ void CookieControlsBubbleViewController::CloseBubble() {
 
 void CookieControlsBubbleViewController::SetCallbacks() {
   on_user_triggered_reloading_action_callback_ =
-      bubble_view_->RegisterOnUserTriggeredReloadingActionCallback(
-          base::BindRepeating(&CookieControlsBubbleViewController::
-                                  OnUserTriggeredReloadingAction,
-                              weak_factory_.GetWeakPtr()));
+      bubble_view_->RegisterOnUserClosedContentViewCallback(base::BindRepeating(
+          &CookieControlsBubbleViewController::OnUserClosedContentView,
+          weak_factory_.GetWeakPtr()));
 
   toggle_button_callback_ =
       bubble_view_->GetContentView()->RegisterToggleButtonPressedCallback(
@@ -358,16 +328,27 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
 }
 
 void CookieControlsBubbleViewController::OnTrackingProtectionsButtonPressed() {
-  if (is_reloading_state_) {
+  if (IsReloadingState() || !web_contents_) {
     return;
   }
   // TODO(crbug.com/388294499): Add metrics for ACT actions.
   controller_->SetStateChangedViaBypass(true);
-  is_reloading_state_ = true;
+  SetIsReloadingState(true);
   controller_->OnTrackingProtectionsChangedForSite();
-  OnUserTriggeredReloadingAction();
-  bubble_view_->GetContentView()->NotifyAccessibilityEventDeprecated(
-      ax::mojom::Event::kAlert, true);
+  // TODO(crbug.com/388294499): Verify a11y readout for the button.
+  bubble_view_->GetContentView()->SetTrackingProtectionsButtonReloadingState();
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CookieControlsBubbleViewController::CloseBubbleAndReloadPage,
+          weak_factory_.GetWeakPtr()),
+      base::Milliseconds(kReloadUiDisplayDelay));
+}
+
+void CookieControlsBubbleViewController::CloseBubbleAndReloadPage() {
+  CHECK(web_contents_);
+  CloseBubble();
+  web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {

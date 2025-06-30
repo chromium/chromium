@@ -47,7 +47,7 @@ class CookieControlsBubbleView {
   virtual void CloseWidget() = 0;
 
   virtual base::CallbackListSubscription
-  RegisterOnUserTriggeredReloadingActionCallback(
+  RegisterOnUserClosedContentViewCallback(
       base::RepeatingClosureList::CallbackType callback) = 0;
 };
 

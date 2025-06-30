@@ -137,22 +137,6 @@ void CookieControlsIconView::UpdateImpl() {
   }
 }
 
-void CookieControlsIconView::UpdateTooltipText() {
-  if (!custom_tooltip_text_.empty()) {
-    SetTooltipText(custom_tooltip_text_);
-  } else {
-    PageActionIconView::UpdateTooltipText();
-  }
-}
-
-std::u16string CookieControlsIconView::GetAlternativeAccessibleName() const {
-  if (!custom_tooltip_text_.empty()) {
-    return custom_tooltip_text_;
-  }
-
-  return PageActionIconView::GetAlternativeAccessibleName();
-}
-
 void CookieControlsIconView::MaybeShowIPH() {
   CHECK(browser_->window());
   user_education::FeaturePromoParams params(
@@ -199,9 +183,9 @@ int CookieControlsIconView::GetLabelForState(
     bool user_changed_state = false) const {
   switch (controls_state_) {
     case CookieControlsState::kActiveTp:
-      // If an animation is happening then the user must have changed their TP
+      // If the label is displayed then the user must have changed their TP
       // setting, so preserve the "resumed" label.
-      return user_changed_state || slide_animation_.is_animating()
+      return user_changed_state || ShouldShowLabel()
                  ? IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL
                  : IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL;
     case CookieControlsState::kPausedTp:
@@ -220,6 +204,17 @@ void CookieControlsIconView::SetLabelForState() {
   SetLabel(l10n_util::GetStringUTF16(GetLabelForState()));
 }
 
+void CookieControlsIconView::UpdateTooltipText() {
+  custom_tooltip_text_ = l10n_util::GetStringUTF16(GetLabelForState());
+  SetTooltipText(custom_tooltip_text_);
+}
+
+std::u16string CookieControlsIconView::GetAlternativeAccessibleName() const {
+  return custom_tooltip_text_.empty()
+             ? PageActionIconView::GetAlternativeAccessibleName()
+             : custom_tooltip_text_;
+}
+
 void CookieControlsIconView::OnCookieControlsIconStatusChanged(
     bool icon_visible,
     CookieControlsState controls_state,
@@ -227,14 +222,15 @@ void CookieControlsIconView::OnCookieControlsIconStatusChanged(
     bool should_highlight) {
   if (icon_visible != icon_visible_ || controls_state != controls_state_ ||
       blocking_status != blocking_status_ || should_highlight_) {
+    if (bubble_coordinator_->IsReloadingState()) {
+      return;
+    }
     icon_visible_ = icon_visible;
     state_changed_ = controls_state != controls_state_;
     controls_state_ = controls_state;
     blocking_status_ = blocking_status;
     should_highlight_ = should_highlight;
-    if (!bubble_coordinator_->IsReloadingState()) {
-      UpdateIcon();
-    }
+    UpdateIcon();
   }
 }
 
@@ -273,9 +269,7 @@ void CookieControlsIconView::UpdateIcon() {
   if (state_changed_ || label()->GetText().empty()) {
     SetLabelForState();
   }
-
-  custom_tooltip_text_ = l10n_util::GetStringUTF16(GetLabelForState());
-  SetTooltipText(custom_tooltip_text_);
+  UpdateTooltipText();
 
   if (controls_state_ == CookieControlsState::kBlocked3pc &&
       should_highlight_) {
@@ -296,12 +290,10 @@ void CookieControlsIconView::OnFinishedPageReloadWithChangedSettings() {
   // setting.
   if (ShouldBeVisible()) {
     GetViewAccessibility().SetDescription(u"");
-    if (base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx)) {
-      UpdateIcon();
-    }
     // Animate the icon to provide a visual confirmation to the user that their
     // protection status on the site has changed.
     AnimateIn(GetLabelForState(/*user_changed_state=*/true));
+    UpdateTooltipText();
   }
 }
 

@@ -58,7 +58,7 @@ class MockCookieControlsBubbleView : public CookieControlsBubbleView {
   MOCK_METHOD(void, CloseWidget, (), (override));
 
   MOCK_METHOD(base::CallbackListSubscription,
-              RegisterOnUserTriggeredReloadingActionCallback,
+              RegisterOnUserClosedContentViewCallback,
               (base::RepeatingClosureList::CallbackType),
               (override));
 };
