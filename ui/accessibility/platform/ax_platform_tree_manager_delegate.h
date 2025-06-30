@@ -52,6 +52,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   // Note that when accessibility is turned on, focus might behave differently,
   // including making some unfocusable UI elements to become focusable. See
   // `views::FocusBehavior`.
+  //
+  // TODO(accessibility): This method is about widget activation. Rename to
+  // `AccessibilityWidgetIsActive` or similar.
   virtual bool AccessibilityViewHasFocus() = 0;
 
   // Moves the focus inside the View` that contains the current accessibility
@@ -61,6 +64,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   // Note that when accessibility is turned on, focus might behave differently,
   // including making some unfocusable UI elements to become focusable. See
   // `views::FocusBehavior`.
+  //
+  // TODO(accessibility): This method is about widget activation. Rename to
+  // `AccessibilityWidgetActivate` or similar.
   virtual void AccessibilityViewSetFocus() = 0;
 
   // Returns the bounds (in screen coordinates) of the `View` that contains the

@@ -83,21 +83,26 @@ void WidgetAXManager::AccessibilityPerformAction(const ui::AXActionData& data) {
 }
 
 bool WidgetAXManager::AccessibilityViewHasFocus() {
-  // TODO(accessibility): Implement.
-  return false;
+  return widget_ && widget_->IsActive();
 }
 
 void WidgetAXManager::AccessibilityViewSetFocus() {
-  // TODO(accessibility): Implement.
+  if (!widget_ || widget_->IsActive()) {
+    return;
+  }
+  widget_->Activate();
 }
 
 gfx::Rect WidgetAXManager::AccessibilityGetViewBounds() {
-  // TODO(accessibility): Implement.
-  return gfx::Rect();
+  if (!widget_) {
+    return gfx::Rect();
+  }
+  return widget_->GetWindowBoundsInScreen();
 }
 
 float WidgetAXManager::AccessibilityGetDeviceScaleFactor() {
-  // TODO(accessibility): Implement.
+  // TODO(crbug.com/40672441): Confirm that the DSF is always 1.0f once we
+  // serialize the views and can test it manually.
   return 1.0f;
 }
 

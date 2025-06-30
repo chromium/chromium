@@ -273,4 +273,25 @@ TEST_F(WidgetAXManagerTest, UpdatesIgnoredWhenDisabled) {
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before);
 }
 
+TEST_F(WidgetAXManagerTest, AccessibilityViewHasFocusAndSetFocus) {
+  EXPECT_FALSE(widget()->IsActive());
+  EXPECT_FALSE(manager()->AccessibilityViewHasFocus());
+
+  manager()->AccessibilityViewSetFocus();
+  EXPECT_TRUE(widget()->IsActive());
+  EXPECT_TRUE(manager()->AccessibilityViewHasFocus());
+
+  // Calling SetFocus again doesn't change the active state.
+  manager()->AccessibilityViewSetFocus();
+  EXPECT_TRUE(widget()->IsActive());
+  EXPECT_TRUE(manager()->AccessibilityViewHasFocus());
+}
+
+TEST_F(WidgetAXManagerTest, AccessibilityGetViewBounds_ReturnsWidgetBounds) {
+  gfx::Rect test_bounds(10, 20, 300, 400);
+  widget()->SetBounds(test_bounds);
+
+  EXPECT_EQ(manager()->AccessibilityGetViewBounds(), test_bounds);
+}
+
 }  // namespace views::test
