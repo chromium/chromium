@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.BinderCallsListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -395,6 +396,15 @@ public class StartupLoadingMetricsTest {
     @Test
     @LargeTest
     public void testNtpBinderMetricRecordedCorrectly() throws Exception {
+        // Install BinderCallsListener.
+        boolean success =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            BinderCallsListener listener = BinderCallsListener.getInstance();
+                            return listener.installListener();
+                        });
+        Assert.assertTrue(success);
+
         HistogramWatcher ntpBinderWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes(NTP_COLD_START_BINDER_HISTOGRAM, 1)
@@ -402,6 +412,9 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL));
         waitForHistogram(ntpBinderWatcher);
+
+        // Clean up listener.
+        BinderCallsListener.setInstanceForTesting(null);
     }
 
     /**
