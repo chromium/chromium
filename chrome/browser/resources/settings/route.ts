@@ -164,9 +164,12 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 function createRoutes(): SettingsRoutes {
   const r: Partial<SettingsRoutes> = {};
 
-  // Root pages.
+  // Root page.
   r.BASIC = new Route('/');
-  r.ABOUT = new Route('/help', loadTimeData.getString('aboutPageTitle'));
+
+  r.ABOUT = r.BASIC.createSection(
+      '/help', 'about', loadTimeData.getString('aboutPageTitle'));
+  r.ABOUT.hasMigratedToPlugin = true;
 
   r.SEARCH = r.BASIC.createSection(
       '/search', 'search', loadTimeData.getString('searchPageTitle'));
@@ -295,11 +298,14 @@ function createRoutes(): SettingsRoutes {
     if (visibility.reset !== false) {
       r.RESET = r.ADVANCED.createSection(
           '/reset', 'reset', loadTimeData.getString('resetPageTitle'));
+      r.RESET.hasMigratedToPlugin = true;
       r.RESET_DIALOG = r.RESET.createChild('/resetProfileSettings');
+      r.RESET_DIALOG.hasMigratedToPlugin = true;
       r.RESET_DIALOG.isNavigableDialog = true;
       r.TRIGGERED_RESET_DIALOG =
           r.RESET.createChild('/triggeredResetProfileSettings');
       r.TRIGGERED_RESET_DIALOG.isNavigableDialog = true;
+      r.TRIGGERED_RESET_DIALOG.hasMigratedToPlugin = true;
     }
 
     if (visibility.performance !== false) {

@@ -125,6 +125,10 @@ export class CrViewManagerElement extends CrLitElement {
     const newView = this.querySelector<HTMLElement>('#' + newViewId);
     assert(!!newView);
 
+    if (newView === previousView) {
+      return Promise.resolve();
+    }
+
     const promises = [];
     if (previousView) {
       promises.push(this.exit_(previousView, exitAnimation || 'fade-out'));

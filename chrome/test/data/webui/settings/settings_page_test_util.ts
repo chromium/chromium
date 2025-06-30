@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsSectionElement} from 'chrome://settings/settings.js';
+import type {SettingsBasicPageElement, SettingsSectionElement} from 'chrome://settings/settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
@@ -14,20 +14,16 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
  * @param type The settings page type, e.g. 'about' or 'basic'.
  * @return The PolymerElement for the page.
  */
-export function getPage(type: 'basic'|'about'): Promise<HTMLElement> {
+export function getBasicPage(): Promise<SettingsBasicPageElement> {
   const settingsUi = document.querySelector('settings-ui');
   assertTrue(!!settingsUi);
   const settingsMain = settingsUi.shadowRoot!.querySelector('settings-main');
   assertTrue(!!settingsMain);
-  const page = settingsMain.shadowRoot!.querySelector<HTMLElement>(
-      `settings-${type}-page`);
+  const page = settingsMain.shadowRoot!.querySelector('settings-basic-page');
   assertTrue(!!page);
 
-  const idleRender =
-      page && page.shadowRoot!.querySelector('settings-idle-load');
-  if (!idleRender) {
-    return Promise.resolve(page);
-  }
+  const idleRender = page.shadowRoot!.querySelector('settings-idle-load');
+  assertTrue(!!idleRender);
 
   return idleRender.get().then(function() {
     flush();

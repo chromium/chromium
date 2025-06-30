@@ -32,6 +32,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
+import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
 import {getTemplate} from './about_page.html.js';
 import type {AboutPageBrowserProxy, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
@@ -50,7 +51,8 @@ export const ABOUT_PAGE_PRIVACY_POLICY_URL: string =
 const SettingsAboutPageElementBase =
     RelaunchMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
-export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
+export class SettingsAboutPageElement extends SettingsAboutPageElementBase
+    implements SettingsPlugin {
   static get is() {
     return 'settings-about-page';
   }
@@ -358,6 +360,16 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     return this.showUpdateStatus_;
   }
   // </if>
+
+  // SettingsPlugin implementation
+  searchContents(query: string) {
+    // settings-about-page is intentionally not included in search.
+    return Promise.resolve({
+      canceled: false,
+      didFindMatches: false,
+      wasClearSearch: query === '',
+    });
+  }
 }
 
 declare global {

@@ -1,10 +1,14 @@
-<cr-link-row id="resetProfile" label="$i18n{resetTrigger}"
-    on-click="onShowResetProfileDialog_"></cr-link-row>
-<!-- Keep a single instance of reset-profile-dialog on purpose, to
-  preserve state across show/hide operations. -->
-<cr-lazy-render id="resetProfileDialog">
-  <template>
-    <settings-reset-profile-dialog on-close="onResetProfileDialogClose_">
-    </settings-reset-profile-dialog>
-  </template>
-</cr-lazy-render>
+<style include="settings-shared"></style>
+<settings-section page-title="$i18n{resetPageTitle}"
+    class="cr-centered-card-container">
+  <cr-link-row id="resetProfile" label="$i18n{resetTrigger}"
+      on-click="onShowResetProfileDialog_"></cr-link-row>
+  <!-- Keep a single instance of reset-profile-dialog on purpose, to
+    preserve state across show/hide operations. -->
+  <cr-lazy-render id="resetProfileDialog">
+    <template>
+      <settings-reset-profile-dialog on-close="onResetProfileDialogClose_">
+      </settings-reset-profile-dialog>
+    </template>
+  </cr-lazy-render>
+</settings-section>

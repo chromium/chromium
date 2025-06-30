@@ -5,41 +5,12 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SearchManager, SettingsIdleLoadElement, SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, Router, routes, SearchRequest, setSearchManagerForTesting} from 'chrome://settings/settings.js';
+import type {SettingsIdleLoadElement, SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {TestSearchManager} from './test_search_manager.js';
 // clang-format on
-
-/**
- * Extending TestBrowserProxy even though SearchManager is not a browser proxy
- * itself. Essentially TestBrowserProxy can act as a "proxy" for any external
- * dependency, not just "browser proxies" (and maybe should be renamed to
- * TestProxy).
- */
-class TestSearchManager extends TestBrowserProxy implements SearchManager {
-  private matchesFound_: boolean = true;
-  private searchRequest_: SearchRequest|null = null;
-
-  constructor() {
-    super(['search']);
-  }
-
-  setMatchesFound(matchesFound: boolean) {
-    this.matchesFound_ = matchesFound;
-  }
-
-  search(text: string, page: Element) {
-    this.methodCalled('search', text);
-
-    if (this.searchRequest_ == null || !this.searchRequest_.isSame(text)) {
-      this.searchRequest_ = new SearchRequest(text, page);
-      this.searchRequest_.updateMatches(this.matchesFound_);
-      this.searchRequest_.resolver.resolve(this.searchRequest_);
-    }
-    return this.searchRequest_.resolver.promise;
-  }
-}
 
 suite('MainPageTests', function() {
   let searchManager: TestSearchManager;
@@ -115,25 +86,17 @@ suite('MainPageTests', function() {
 
   test('managed header hides when showing subpage', function() {
     flush();
-
     assertTrue(showingManagedHeader());
-
-    const basicPage =
-        settingsMain.shadowRoot!.querySelector('settings-basic-page')!;
-    basicPage.dispatchEvent(
-        new CustomEvent('subpage-expand', {bubbles: true, composed: true}));
+    Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
     flush();
-
     assertFalse(showingManagedHeader());
   });
 
   test('managed header hides when showing about page', function() {
     flush();
-
     assertTrue(showingManagedHeader());
     Router.getInstance().navigateTo(routes.ABOUT);
     flush();
-
     assertFalse(showingManagedHeader());
   });
 

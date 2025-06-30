@@ -58,6 +58,26 @@ suite('CrElementsViewManagerTest', function() {
     assertViewVisible('viewThree', true);
   });
 
+  test('visibility with show-all', async function() {
+    // Initial state.
+    await viewManager.switchView('viewOne');
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', false);
+    assertViewVisible('viewThree', false);
+
+    // Turn on, check that everything is visible.
+    viewManager.toggleAttribute('show-all', true);
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', true);
+    assertViewVisible('viewThree', true);
+
+    // Turn off. Check that initial state is restored.
+    viewManager.toggleAttribute('show-all', false);
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', false);
+    assertViewVisible('viewThree', false);
+  });
+
   test('event firing', async function() {
     const viewOne = viewManager.querySelector('#viewOne')!;
 

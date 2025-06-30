@@ -127,6 +127,10 @@ export class Route {
   depth: number = 0;
   title: string|undefined;
 
+  // Whether this route's contents have migrated to the new Settings plugin
+  // architecture. See crug.com/424223101 for details.
+  hasMigratedToPlugin: boolean = false;
+
   /**
    * Whether this route corresponds to a navigable dialog. Those routes must
    * belong to a "section".

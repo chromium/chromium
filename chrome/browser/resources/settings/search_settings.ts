@@ -487,6 +487,27 @@ export class SearchRequest {
   didFindMatches(): boolean {
     return this.foundMatches_;
   }
+
+  getSearchResult(): SearchResult {
+    assert(this.resolver.isFulfilled);
+    return {
+      canceled: this.canceled,
+      didFindMatches: this.didFindMatches(),
+      wasClearSearch: this.isSame(''),
+    };
+  }
+}
+
+// Helper to combine multiple SearchResult instances to a single one. The
+// combined result only makes sense when the results are coming from
+// SearchRequest instances that were issued for a single user query.
+export function combineSearchResults(results: SearchResult[]): SearchResult {
+  assert(results.length > 0);
+  return {
+    canceled: results.some(r => r.canceled),
+    didFindMatches: results.some(r => r.didFindMatches),
+    wasClearSearch: results[0].wasClearSearch,
+  };
 }
 
 const SANITIZE_REGEX: RegExp = /[-[\]{}()*+?.,\\^$|#\s]/g;

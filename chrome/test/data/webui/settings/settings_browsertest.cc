@@ -278,6 +278,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_MainPage) {
   RunTest("settings/settings_main_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsMain) {
+  RunTest("settings/settings_main_plugins_test.js", "mocha.run()");
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, MetricsReporting) {
   RunTest("settings/metrics_reporting_test.js", "mocha.run()");

@@ -228,13 +228,6 @@
               <settings-system-page prefs="{{prefs}}"></settings-system-page>
             </settings-section>
 </if>
-            <template is="dom-if" if="[[showPage_(pageVisibility_.reset)]]"
-                restamp>
-              <settings-section page-title="$i18n{resetPageTitle}"
-                  section="reset">
-                <settings-reset-page></settings-reset-page>
-              </settings-section>
-            </template>
           </div>
         </template>
       </settings-idle-load>

@@ -8,6 +8,9 @@
  * settings.
  */
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../settings_page/settings_section.js';
+import '../settings_shared.css.js';
 import './reset_profile_dialog.js';
 
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -17,6 +20,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {getSearchManager} from '../search_settings.js';
+import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
 import {getTemplate} from './reset_page.html.js';
 import type {SettingsResetProfileDialogElement} from './reset_profile_dialog.js';
@@ -30,7 +35,8 @@ export interface SettingsResetPageElement {
 
 const SettingsResetPageElementBase = RouteObserverMixin(PolymerElement);
 
-export class SettingsResetPageElement extends SettingsResetPageElementBase {
+export class SettingsResetPageElement extends SettingsResetPageElementBase
+    implements SettingsPlugin {
   static get is() {
     return 'settings-reset-page';
   }
@@ -64,6 +70,12 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase {
   private onResetProfileDialogClose_() {
     Router.getInstance().navigateTo(routes.RESET_DIALOG.parent!);
     focusWithoutInk(this.$.resetProfile);
+  }
+
+  // SettingsPlugin implementation
+  async searchContents(query: string) {
+    const searchRequest = await getSearchManager().search(query, this);
+    return searchRequest.getSearchResult();
   }
 }
 

@@ -10,7 +10,7 @@ import type {SettingsBasicPageElement, SettingsSectionElement} from 'chrome://se
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {getPage, getSection} from './settings_page_test_util.js';
+import {getBasicPage, getSection} from './settings_page_test_util.js';
 
 // clang-format on
 
@@ -22,7 +22,7 @@ suite('AdvancedPage', function() {
     const settingsUi = document.createElement('settings-ui');
     document.body.appendChild(settingsUi);
     await CrSettingsPrefs.initialized;
-    basicPage = await getPage('basic') as SettingsBasicPageElement;
+    basicPage = await getBasicPage();
     flush();
   });
 
@@ -73,7 +73,7 @@ suite('AdvancedPage', function() {
   });
 
   test('advanced pages', function() {
-    const sections = ['a11y', 'languages', 'downloads', 'reset'];
+    const sections = ['a11y', 'languages', 'downloads'];
     for (let i = 0; i < sections.length; i++) {
       const section = getSection(basicPage, sections[i]!);
       assertTrue(!!section);

@@ -199,6 +199,10 @@ export const MainPageMixin = dedupingMixin(
         }
 
         private enterSubpage_(route: Route) {
+          if (route.hasMigratedToPlugin) {
+            return;
+          }
+
           this.lastScrollTop_ = this.scroller!.scrollTop;
           this.scroller!.scrollTop = 0;
           this.classList.add('showing-subpage');
@@ -218,6 +222,10 @@ export const MainPageMixin = dedupingMixin(
         }
 
         private enterMainPage_(oldRoute: Route): Promise<void> {
+          if (oldRoute.hasMigratedToPlugin) {
+            return Promise.resolve();
+          }
+
           const oldSection = this.getSection(oldRoute.section)!;
           oldSection.classList.remove('expanded');
           this.classList.remove('showing-subpage');
@@ -237,6 +245,10 @@ export const MainPageMixin = dedupingMixin(
          * previously |active| section(s), if any.
          */
         private switchToSections_(newRoute: Route) {
+          if (newRoute.hasMigratedToPlugin) {
+            return;
+          }
+
           this.ensureSectionsForRoute_(newRoute).then(sections => {
             // Clear any previously |active| section.
             const oldSections =
