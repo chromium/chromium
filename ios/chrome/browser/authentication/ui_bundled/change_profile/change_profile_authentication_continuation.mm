@@ -104,6 +104,8 @@ void ChangeProfileAuthenticationContinuation(WidgetContext* context,
     }
   } else {
     if (!authentication_service->HasPrimaryIdentity(
+            signin::ConsentLevel::kSignin) ||
+        authentication_service->HasPrimaryIdentityManaged(
             signin::ConsentLevel::kSignin)) {
       SigninForContext(context, contexts, authentication_service, scene_state,
                        std::move(closure));
