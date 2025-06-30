@@ -349,6 +349,10 @@ class CORE_EXPORT HTMLSelectElement final
 
   void UpdateAllSelectedcontents(HTMLOptionElement* selected_option);
 
+  // Returns the localized "X selected" text used for MenuList multiple select
+  // elements.
+  String MultipleOptionsSelectedText(unsigned selected_count) const;
+
  private:
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;

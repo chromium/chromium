@@ -1052,11 +1052,7 @@ String MenuListSelectType::UpdateTextStyleInternal() {
       text = selected_option_element->TextIndentedToRespectGroupLabel();
       option_style = selected_option_element->GetComputedStyle();
     } else {
-      Locale& locale = select_->GetLocale();
-      String localized_number_string =
-          locale.ConvertToLocalizedNumber(String::Number(selected_count));
-      text = locale.QueryString(IDS_FORM_SELECT_MENU_LIST_TEXT,
-                                localized_number_string);
+      text = select_->MultipleOptionsSelectedText(selected_count);
       DCHECK(!option_style);
     }
   } else {

@@ -2086,4 +2086,13 @@ FocusableState HTMLSelectElement::SupportsFocus(
   return superclass_focusable;
 }
 
+String HTMLSelectElement::MultipleOptionsSelectedText(
+    unsigned selected_count) const {
+  Locale& locale = GetLocale();
+  String localized_number_string =
+      locale.ConvertToLocalizedNumber(String::Number(selected_count));
+  return locale.QueryString(IDS_FORM_SELECT_MENU_LIST_TEXT,
+                            localized_number_string);
+}
+
 }  // namespace blink
