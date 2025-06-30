@@ -15,8 +15,6 @@ blink_modules_sources("speech") {
     "speech_recognition.h",
     "speech_recognition_alternative.cc",
     "speech_recognition_alternative.h",
-    "speech_recognition_context.cc",
-    "speech_recognition_context.h",
     "speech_recognition_controller.cc",
     "speech_recognition_controller.h",
     "speech_recognition_error_event.cc",

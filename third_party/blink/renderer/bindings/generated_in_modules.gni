@@ -2864,8 +2864,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_alternative.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_alternative.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_context.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_context.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_error_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_error_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_event.cc",

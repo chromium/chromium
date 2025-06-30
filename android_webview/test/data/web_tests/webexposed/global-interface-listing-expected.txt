@@ -9310,11 +9310,6 @@ interface SpeechRecognition : EventTarget
     setter onstart
     setter phrases
     setter processLocally
-interface SpeechRecognitionContext
-    attribute @@toStringTag
-    getter phrases
-    method constructor
-    setter phrases
 interface SpeechRecognitionErrorEvent : Event
     attribute @@toStringTag
     getter error
