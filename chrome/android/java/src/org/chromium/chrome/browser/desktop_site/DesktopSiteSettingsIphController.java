@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.desktop_site;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -11,9 +13,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -44,13 +47,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Controller to manage desktop site settings in-product-help messages to users. */
+@NullMarked
 public class DesktopSiteSettingsIphController {
     private final UserEducationHelper mUserEducationHelper;
     private final WindowAndroid mWindowAndroid;
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
     private final ActivityTabProvider mActivityTabProvider;
-    private final MessageDispatcher mMessageDispatcher;
+    private final @Nullable MessageDispatcher mMessageDispatcher;
     private final WebsitePreferenceBridge mWebsitePreferenceBridge;
     private ActivityTabTabObserver mActivityTabTabObserver;
     private final Context mContext;
@@ -94,7 +98,7 @@ public class DesktopSiteSettingsIphController {
             AppMenuHandler appMenuHandler,
             UserEducationHelper userEducationHelper,
             WebsitePreferenceBridge websitePreferenceBridge,
-            MessageDispatcher messageDispatcher) {
+            @Nullable MessageDispatcher messageDispatcher) {
         mWindowAndroid = windowAndroid;
         mToolbarMenuButton = toolbarMenuButton;
         mContext = mToolbarMenuButton.getContext();
@@ -114,7 +118,7 @@ public class DesktopSiteSettingsIphController {
     }
 
     @VisibleForTesting
-    void showGenericIph(@NonNull Tab tab, Profile profile) {
+    void showGenericIph(Tab tab, Profile profile) {
         if (tab.isNativePage()) return;
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         String featureName = FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE;
@@ -131,7 +135,9 @@ public class DesktopSiteSettingsIphController {
         }
 
         boolean isTabUsingDesktopUserAgent =
-                tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
+                assumeNonNull(tab.getWebContents())
+                        .getNavigationController()
+                        .getUseDesktopUserAgent();
         int textId =
                 isTabUsingDesktopUserAgent
                         ? R.string.rds_site_settings_generic_iph_text_mobile
@@ -145,7 +151,7 @@ public class DesktopSiteSettingsIphController {
     }
 
     @VisibleForTesting
-    boolean perSiteIphPreChecksFailed(@NonNull Tab tab, Tracker tracker, String featureName) {
+    boolean perSiteIphPreChecksFailed(Tab tab, Tracker tracker, String featureName) {
         if (!DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) return true;
 
         // Return early when the IPH triggering criteria is not satisfied.
@@ -164,7 +170,7 @@ public class DesktopSiteSettingsIphController {
     }
 
     @VisibleForTesting
-    boolean showWindowSettingIph(@NonNull Tab tab, Profile profile) {
+    boolean showWindowSettingIph(Tab tab, Profile profile) {
         if (mMessageDispatcher == null) return false;
         if (tab.isNativePage()) return false;
 
@@ -179,7 +185,9 @@ public class DesktopSiteSettingsIphController {
 
         // Check whether the site is currently using the desktop UA.
         boolean desktopUserAgentInUse =
-                tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
+                assumeNonNull(tab.getWebContents())
+                        .getNavigationController()
+                        .getUseDesktopUserAgent();
         // Check whether desktop UA is globally enabled.
         boolean desktopSiteGloballyUsed =
                 WebsitePreferenceBridge.isCategoryEnabled(
@@ -245,7 +253,7 @@ public class DesktopSiteSettingsIphController {
         mActivityTabTabObserver =
                 new ActivityTabTabObserver(mActivityTabProvider) {
                     @Override
-                    protected void onObservingDifferentTab(Tab tab) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
                         if (tab == null) return;
                         showGenericIph(tab, profile);
                     }
