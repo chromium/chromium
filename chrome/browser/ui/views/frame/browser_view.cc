@@ -1007,8 +1007,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   tab_strip_region_view_ = top_container_->AddChildView(
       std::make_unique<TabStripRegionView>(std::move(tabstrip)));
 
-  ColorProviderBrowserHelper::CreateForBrowser(browser_.get());
-
   // Create WebViews early so |webui_tab_strip_| can observe their size.
   auto devtools_web_view =
       std::make_unique<views::WebView>(browser_->profile());

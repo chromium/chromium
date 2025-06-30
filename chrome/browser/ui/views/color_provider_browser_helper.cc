@@ -4,11 +4,10 @@
 
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/color/color_provider_source.h"
 
 void ColorProviderBrowserHelper::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
@@ -18,19 +17,22 @@ void ColorProviderBrowserHelper::OnTabStripModelChanged(
     return;
   }
   for (const auto& contents : change.GetInsert()->contents) {
-    DCHECK(tab_strip_model->ContainsIndex(contents.index));
-    contents.contents->SetColorProviderSource(
-        BrowserView::GetBrowserViewForBrowser(&GetBrowser())->GetWidget());
+    CHECK(tab_strip_model->ContainsIndex(contents.index));
+    contents.contents->SetColorProviderSource(color_provider_source_);
   }
 }
 
-ColorProviderBrowserHelper::ColorProviderBrowserHelper(Browser* browser)
-    : BrowserUserData<ColorProviderBrowserHelper>(*browser) {
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+ColorProviderBrowserHelper::ColorProviderBrowserHelper(
+    TabStripModel* tab_strip_model,
+    ui::ColorProviderSource* color_provider_source)
+    : tab_strip_model_(tab_strip_model),
+      color_provider_source_(color_provider_source) {
+  CHECK(tab_strip_model);
+  CHECK(color_provider_source);
   // No WebContents should have been added to the TabStripModel before
   // ColorProviderBrowserHelper is constructed.
-  DCHECK(tab_strip_model->empty());
+  CHECK(tab_strip_model->empty());
   tab_strip_model->AddObserver(this);
 }
 
-BROWSER_USER_DATA_KEY_IMPL(ColorProviderBrowserHelper);
+ColorProviderBrowserHelper::~ColorProviderBrowserHelper() = default;

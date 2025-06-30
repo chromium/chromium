@@ -26,6 +26,7 @@ class BrowserSyncedWindowDelegate;
 class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
+class ColorProviderBrowserHelper;
 class CookieControlsBubbleCoordinator;
 class DesktopBrowserWindowCapabilities;
 class DownloadToolbarUIController;
@@ -435,6 +436,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<IncognitoClearBrowsingDataDialogCoordinator>
       incognito_clear_browsing_data_dialog_coordinator_;
+
+  std::unique_ptr<ColorProviderBrowserHelper> color_provider_browser_helper_;
 
   // This is an experimental API that interacts with the TabStripModel.
   std::unique_ptr<TabStripServiceRegister> tab_strip_service_;

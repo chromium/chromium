@@ -5,21 +5,26 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COLOR_PROVIDER_BROWSER_HELPER_H_
 #define CHROME_BROWSER_UI_VIEWS_COLOR_PROVIDER_BROWSER_HELPER_H_
 
-#include "chrome/browser/ui/browser_user_data.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
-class Browser;
+namespace ui {
+class ColorProviderSource;
+}  // namespace ui
+
 class TabStripModel;
 
 // A TabStripModelObserver that ensures the WebContents in the TabStripModel
 // observe the correct ColorProviderSource.
-class ColorProviderBrowserHelper
-    : public BrowserUserData<ColorProviderBrowserHelper>,
-      public TabStripModelObserver {
+class ColorProviderBrowserHelper : public TabStripModelObserver {
  public:
+  ColorProviderBrowserHelper(TabStripModel* tab_strip_model,
+                             ui::ColorProviderSource* color_provider_source);
   ColorProviderBrowserHelper(const ColorProviderBrowserHelper&) = delete;
   ColorProviderBrowserHelper& operator=(const ColorProviderBrowserHelper&) =
       delete;
+
+  ~ColorProviderBrowserHelper() override;
 
   // TabStripModelObserver
   void OnTabStripModelChanged(
@@ -28,11 +33,8 @@ class ColorProviderBrowserHelper
       const TabStripSelectionChange& selection) override;
 
  private:
-  friend class BrowserUserData<ColorProviderBrowserHelper>;
-
-  explicit ColorProviderBrowserHelper(Browser* browser);
-
-  BROWSER_USER_DATA_KEY_DECL();
+  const raw_ptr<TabStripModel> tab_strip_model_;
+  const raw_ptr<ui::ColorProviderSource> color_provider_source_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COLOR_PROVIDER_BROWSER_HELPER_H_
