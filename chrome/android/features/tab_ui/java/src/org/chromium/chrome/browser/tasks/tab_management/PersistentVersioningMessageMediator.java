@@ -124,8 +124,9 @@ public class PersistentVersioningMessageMediator {
 
     /** Queues a message card item to be displayed in the model list if required. */
     public void queueMessageIfNeeded() {
-        if (!mVersioningMessageController.shouldShowMessageUi(
-                MessageType.VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE)) {
+        if (!mVersioningMessageController.isInitialized()
+                || !mVersioningMessageController.shouldShowMessageUi(
+                        MessageType.VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE)) {
             return;
         }
 
