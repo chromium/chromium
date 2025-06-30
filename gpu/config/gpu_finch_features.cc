@@ -719,6 +719,9 @@ bool IsDrDcEnabled() {
   if (!IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())) {
     return false;
   }
+  if (base::mac::MacOSVersion() <= 12) {
+    return false;
+  }
 #endif
 
   return base::FeatureList::IsEnabled(kEnableDrDc);
