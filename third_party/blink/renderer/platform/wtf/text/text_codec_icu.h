@@ -64,13 +64,10 @@ class TextCodecIcu final : public TextCodec {
   void CreateIcuConverter() const;
   void ReleaseIcuConverter() const;
 
-  int DecodeToBuffer(UChar* buffer,
-                     UChar* buffer_limit,
-                     const char*& source,
-                     const char* source_limit,
-                     int32_t* offsets,
-                     bool flush,
-                     UErrorCode&);
+  size_t DecodeToBuffer(base::span<UChar> target,
+                        base::span<const char>& source,
+                        bool flush,
+                        UErrorCode&);
 
   TextEncoding encoding_;
   mutable UConverter* converter_icu_ = nullptr;

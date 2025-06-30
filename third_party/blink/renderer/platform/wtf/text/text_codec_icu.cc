@@ -24,21 +24,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
-
-#include <memory>
 
 #include <unicode/ucnv.h>
 #include <unicode/ucnv_cb.h>
 
+#include <memory>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/types/to_address.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -64,17 +62,14 @@ std::unique_ptr<TextCodec> TextCodecIcu::Create(const TextEncoding& encoding) {
 }
 
 namespace {
-bool IncludeAlias(const char* alias) {
+bool IncludeAlias(std::string_view alias) {
 #if !defined(USING_SYSTEM_ICU)
   // Chromium's build of ICU includes *-html aliases to manage the encoding
   // labels defined in the Encoding Standard, but these must not be
   // web-exposed.
-  const char* kSuffix = "-html";
-  const size_t kSuffixLength = 5;
-  size_t alias_length = strlen(alias);
-  if ((alias_length >= kSuffixLength) &&
-      !strcmp(alias + alias_length - kSuffixLength, kSuffix))
+  if (alias.ends_with("-html")) {
     return false;
+  }
 #endif
   return true;
 }
@@ -348,18 +343,22 @@ void TextCodecIcu::CreateIcuConverter() const {
     ucnv_setFallback(converter_icu_, true);
 }
 
-int TextCodecIcu::DecodeToBuffer(UChar* target,
-                                 UChar* target_limit,
-                                 const char*& source,
-                                 const char* source_limit,
-                                 int32_t* offsets,
-                                 bool flush,
-                                 UErrorCode& err) {
-  UChar* target_start = target;
+size_t TextCodecIcu::DecodeToBuffer(base::span<UChar> target,
+                                    base::span<const char>& source,
+                                    bool flush,
+                                    UErrorCode& err) {
+  auto* source_ptr = source.data();
+  auto* target_ptr = target.data();
   err = U_ZERO_ERROR;
-  ucnv_toUnicode(converter_icu_, &target, target_limit, &source, source_limit,
-                 offsets, flush, &err);
-  return static_cast<int>(target - target_start);
+  // SAFETY: unsafe function call to c function ucnv_toUnicode,
+  // it's safe when `ucnv_toUnicode` stays in the span.
+  UNSAFE_BUFFERS({
+    ucnv_toUnicode(converter_icu_, &target_ptr, base::to_address(target.end()),
+                   &source_ptr, base::to_address(source.end()), nullptr, flush,
+                   &err);
+  });
+  source = source.subspan(static_cast<size_t>(source_ptr - source.data()));
+  return static_cast<size_t>(target_ptr - target.data());
 }
 
 class ErrorCallbackSetter final {
@@ -415,27 +414,22 @@ String TextCodecIcu::Decode(base::span<const uint8_t> data,
   StringBuilder result;
 
   UChar buffer[kConversionBufferSize];
-  UChar* buffer_limit = buffer + kConversionBufferSize;
-  const char* source = reinterpret_cast<const char*>(data.data());
-  const char* source_limit = source + data.size();
-  int32_t* offsets = nullptr;
+  auto buffer_span = base::span(buffer);
+  auto source_span = base::as_chars(data);
   UErrorCode err = U_ZERO_ERROR;
 
   do {
-    int uchars_decoded =
-        DecodeToBuffer(buffer, buffer_limit, source, source_limit, offsets,
-                       flush != FlushBehavior::kDoNotFlush, err);
-    result.Append(
-        base::span(buffer).first(static_cast<size_t>(uchars_decoded)));
+    size_t uchars_decoded = DecodeToBuffer(
+        buffer_span, source_span, flush != FlushBehavior::kDoNotFlush, err);
+    result.Append(buffer_span.first(uchars_decoded));
   } while (err == U_BUFFER_OVERFLOW_ERROR);
 
   if (U_FAILURE(err)) {
     // flush the converter so it can be reused, and not be bothered by this
     // error.
     do {
-      DecodeToBuffer(buffer, buffer_limit, source, source_limit, offsets, true,
-                     err);
-    } while (source < source_limit);
+      DecodeToBuffer(buffer_span, source_span, /*flush=*/true, err);
+    } while (!source_span.empty());
     saw_error = true;
   }
 
@@ -491,7 +485,8 @@ static void FormatEscapedEntityCallback(const void* context,
     String entity_u(TextCodec::GetUnencodableReplacement(code_point, handling));
     entity_u.Ensure16Bit();
     const UChar* entity_u_pointers[2] = {
-        entity_u.Characters16(), entity_u.Characters16() + entity_u.length(),
+        entity_u.Span16().data(),
+        base::to_address(entity_u.Span16().end()),
     };
     ucnv_cbFromUWriteUChars(from_u_args, entity_u_pointers,
                             entity_u_pointers[1], 0, err);
@@ -646,32 +641,25 @@ class TextCodecInput final {
  public:
   TextCodecInput(const TextEncoding& encoding,
                  base::span<const UChar> characters)
-      : begin_(characters.data()),
-        end_(characters.data() + characters.size()) {}
+      : buffer_span_(characters) {}
 
   TextCodecInput(const TextEncoding& encoding,
                  base::span<const LChar> characters) {
     buffer_.ReserveInitialCapacity(
         base::checked_cast<wtf_size_t>(characters.size()));
     buffer_.AppendSpan(characters);
-    begin_ = buffer_.data();
-    end_ = begin_ + buffer_.size();
+    buffer_span_ = base::span(buffer_);
   }
 
-  const UChar* begin() const { return begin_; }
-  const UChar* end() const { return end_; }
+  base::span<const UChar> Span() const { return buffer_span_; }
 
  private:
-  const UChar* begin_;
-  const UChar* end_;
+  base::span<const UChar> buffer_span_;
   Vector<UChar> buffer_;
 };
 
 std::string TextCodecIcu::EncodeInternal(const TextCodecInput& input,
                                          UnencodableHandling handling) {
-  const UChar* source = input.begin();
-  const UChar* end = input.end();
-
   UErrorCode err = U_ZERO_ERROR;
 
   switch (handling) {
@@ -721,22 +709,21 @@ std::string TextCodecIcu::EncodeInternal(const TextCodecInput& input,
   if (U_FAILURE(err))
     return std::string();
 
+  const UChar* source = input.Span().data();
+  const UChar* end = base::to_address(input.Span().end());
   Vector<char> result;
-  wtf_size_t size = 0;
   do {
-    char buffer[kConversionBufferSize];
-    char* target = buffer;
-    char* target_limit = target + kConversionBufferSize;
+    std::array<char, kConversionBufferSize> buffer;
+    char* target = buffer.data();
+    char* target_limit = base::to_address(buffer.end());
     err = U_ZERO_ERROR;
     ucnv_fromUnicode(converter_icu_, &target, target_limit, &source, end,
                      nullptr, true, &err);
-    wtf_size_t count = static_cast<wtf_size_t>(target - buffer);
-    result.Grow(size + count);
-    memcpy(result.data() + size, buffer, count);
-    size += count;
+    wtf_size_t count = static_cast<wtf_size_t>(target - buffer.data());
+    result.AppendSpan(base::span(buffer).first(count));
   } while (err == U_BUFFER_OVERFLOW_ERROR);
 
-  return std::string(result.data(), size);
+  return std::string(result.data(), result.size());
 }
 
 template <typename CharType>
