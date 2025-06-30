@@ -118,22 +118,27 @@ UIFont* GetNavigationBarTitleFont() {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  // Set the navigation title in the left bar button item to have left
-  // alignment.
-  UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  titleLabel.font = GetNavigationBarTitleFont();
-  titleLabel.text =
-      l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE);
-  titleLabel.textAlignment = NSTextAlignmentLeft;
-  titleLabel.adjustsFontSizeToFitWidth = YES;
-  titleLabel.minimumScaleFactor = 0.1;
-  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  if (@available(iOS 26, *)) {
+    self.navigationItem.title =
+        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE);
+  } else {
+    // Set the navigation title in the left bar button item to have left
+    // alignment.
+    UILabel* titleLabel = [[UILabel alloc] init];
+    titleLabel.adjustsFontForContentSizeCategory = YES;
+    titleLabel.font = GetNavigationBarTitleFont();
+    titleLabel.text =
+        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE);
+    titleLabel.textAlignment = NSTextAlignmentLeft;
+    titleLabel.adjustsFontSizeToFitWidth = YES;
+    titleLabel.minimumScaleFactor = 0.1;
+    titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
-  // Add the title label to the navigation bar.
-  UIBarButtonItem* leftItem =
-      [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
-  self.navigationItem.leftBarButtonItem = leftItem;
+    // Add the title label to the navigation bar.
+    UIBarButtonItem* leftItem =
+        [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
+    self.navigationItem.leftBarButtonItem = leftItem;
+  }
   self.navigationController.navigationBar.minimumContentSizeCategory =
       UIContentSizeCategoryLarge;
   self.navigationController.navigationBar.maximumContentSizeCategory =
