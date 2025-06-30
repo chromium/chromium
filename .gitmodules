@@ -592,9 +592,6 @@
 [submodule "third_party/vulkan_memory_allocator"]
 	path = third_party/vulkan_memory_allocator
 	url = https://chromium.googlesource.com/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
-[submodule "third_party/wasm_tts_engine/src"]
-	path = third_party/wasm_tts_engine/src
-	url = https://chromium.googlesource.com/chromium/wasm-tts-engine
 [submodule "third_party/wayland/src"]
 	path = third_party/wayland/src
 	url = https://chromium.googlesource.com/external/anongit.freedesktop.org/git/wayland/wayland
