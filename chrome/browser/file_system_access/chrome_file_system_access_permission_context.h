@@ -12,7 +12,6 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -138,38 +137,14 @@ class ChromeFileSystemAccessPermissionContext
     kDontBlockChildren
   };
 
-  // Describes a rule for blocking a directory, which can be
-  // - constructed dynamically based on the profile path
-  // - provided by the caller
-  // - or constructed statically during `UpdateBlockPaths()`.
+  // Describes a rule for blocking a directory, which can be constructed
+  // dynamically (based on state) or statically (from `kBlockedPaths`).
   struct BlockPathRule {
     base::FilePath path;
     BlockType type;
   };
 
-  // Describes a rule for blocking a directory, but the file path will be
-  // determined during the check time when profile path is provided.
-  struct ProfileBasedBlockPathRule {
-    // Path that will be appended to the profile path.
-    const base::FilePath::CharType* path;
-    BlockType type;
-  };
-
-  // Contains two lists of the block rules: one for `BlockPathRule`s which has
-  // the path set and normalized, and another for `ProfileBasedBlockPathRule`s
-  // which can only be determined when performing the checks.
-  class BlockPathRules {
-   public:
-    BlockPathRules();
-    ~BlockPathRules();
-    BlockPathRules(const BlockPathRules& other);
-    BlockPathRules& operator=(const BlockPathRules& other);
-
-    std::vector<BlockPathRule> block_path_rules_;
-    std::vector<ProfileBasedBlockPathRule> profile_based_block_path_rules_;
-  };
-
-  struct BlockPath {
+  struct BlockedPath {
     // base::BasePathKey value (or one of the platform specific extensions to
     // it) for a path that should be blocked. Specify kNoBasePathKey if |path|
     // should be used instead.
@@ -396,13 +371,6 @@ class ChromeFileSystemAccessPermissionContext
   // KeyedService:
   void Shutdown() override;
 
-  // This is needed when updating path with ScopedPathOverride.
-  void ResetBlockPathsForTesting();
-
-  bool GetIsBlockPathRulesInitCompleteForTesting() {
-    return is_block_path_rules_init_complete_;
-  }
-
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -429,13 +397,6 @@ class ChromeFileSystemAccessPermissionContext
       std::vector<base::FilePath> paths,
       std::vector<bool> allowed);
 #endif
-
-  void CheckShouldBlockAccessToPathAndReply(
-      base::FilePath path,
-      HandleType handle_type,
-      std::vector<BlockPathRule> extra_rules,
-      base::OnceCallback<void(bool)> callback,
-      BlockPathRules block_path_rules);
 
   // Checks whether the file or directory at `path` corresponds to a directory
   // Chrome considers sensitive (i.e. system files). Calls `callback` with
@@ -584,9 +545,6 @@ class ChromeFileSystemAccessPermissionContext
   bool RevokeActiveGrants(const url::Origin& origin,
                           base::FilePath file_path = base::FilePath());
 
-  void ResetBlockPaths();
-  void UpdateBlockPaths(std::unique_ptr<BlockPathRules> block_path_rules);
-
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 
   const raw_ptr<content::BrowserContext, DanglingUntriaged> profile_;
@@ -623,18 +581,7 @@ class ChromeFileSystemAccessPermissionContext
 
   std::optional<base::FilePath> profile_path_override_;
 
-  // The normalization flag should be consistent during the initialization and
-  // checking, so we store is as a member variable.
-  bool should_normalize_file_path_ = false;
-
-  // The initialization of `block_path_rules_` needs to be done in a blocking
-  // sequence so it's asynchronous. When we need to check if a path should be
-  // blocked, we need to wait until the initialization completes, hence the
-  // `WaitableEvent` and `OnceCallbackList`.
-  std::unique_ptr<BlockPathRules> block_path_rules_;
-  bool is_block_path_rules_init_complete_ = false;
-  std::vector<base::CallbackListSubscription> block_rules_check_subscription_;
-  base::OnceCallbackList<void(BlockPathRules)> block_rules_check_callbacks_;
+  std::vector<BlockedPath> blocked_paths_;
 
   base::WeakPtrFactory<ChromeFileSystemAccessPermissionContext> weak_factory_{
       this};
