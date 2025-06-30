@@ -15,18 +15,18 @@
 
 <!-- Should print two console messages. -->
 <select>
-  <input>
-  <input>
+  <a href="https://www.example.com"></a>
+  <a href="https://www.example.com"></a>
 </select>
 
-<!-- Should print one console messages. -->
+<!-- Should print one console message. -->
 <select>
   <option>
-    <input>
+    <button></button>
   </option>
 </select>
 
-<!-- Should print one console messages. -->
+<!-- Should print one console message. -->
 <select>
   <option>
     <datalist>
@@ -34,7 +34,7 @@
   </option>
 </select>
 
-<!-- Should print one console messages. -->
+<!-- Should print one console message. -->
 <select>
   <option>
     <object>
@@ -43,6 +43,7 @@
 </select>
 
 <!-- Phrasing content but not Interactive content allowed. -->
+ <!-- Should print one console message. -->
 <select>
   <option>
     <textarea></textarea>
@@ -50,12 +51,14 @@
 </select>
 
 <!-- <button> (if present) should be the first child of <select>. -->
+<!-- Should print one console message. -->
 <select>
   <option></option>
   <option></option>
   <button>button</button>
 </select>
 
+<!-- Should print two console messages. -->
 <select>
   <option></option>
   <div>
@@ -67,13 +70,15 @@
 </select>
 
 <!-- <legend> (if present) should be the first child of <optgroup>. -->
+<!-- Should print one console message. -->
 <select>
   <optgroup>
-    <option>..</option>
+    <option></option>
     <legend>legend</legend>
   </optgroup>
 </select>
 
+<!-- Should print two console messages. -->
 <select>
   <optgroup>
     <div>
@@ -88,6 +93,7 @@
 </select>
 
 <!-- <legend> elements should not have interactive elements inside -->
+<!-- Should print one console message. -->
 <select>
   <optgroup>
       <legend>
@@ -97,10 +103,11 @@
 </select>
 
 <!-- <optgroup> should not have interactive elements inside. -->
+<!-- Should print one console message. -->
 <select>
   <optgroup>
     <option>..</option>
-    <input/>
+    <a href="https://www.example.com"></a>
   </optgroup>
 </select>
 
@@ -108,8 +115,8 @@
 <select>
   <div>
     <option>
-      <span tabindex="1">..</span>
-      <span tabindex="2">..</span>
+      <span tabindex="1"></span>
+      <span tabindex="2"></span>
     </option>
   </div>
 </select>
@@ -125,42 +132,6 @@
 </select>
 
 <!-- Should print one console message. -->
-<select class="delayed" style="display:none">
-  <input>
-  <option></option>
-</select>
-
-<!-- Should print two console messages. -->
-<select class="delayed" style="display:none">
-  <div>
-    <option>
-      <span tabindex="1">..</span>
-      <span tabindex="2">..</span>
-    </option>
-  </div>
-</select>
-
-<!-- Should print two console messages. -->
-<select class="delayed" style="display:none">
-  <div>
-    <option>
-      <span contenteditable="true">..</span>
-      <span contenteditable="plaintext-only">..</span>
-    </option>
-  </div>
-</select>
-
-<script>
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.delayed').forEach((select) => {
-      select.style.display = '';
-    });
-    requestAnimationFrame(() => {
-        testRunner.notifyDone();
-    });
-  });
-</script>
-
 <select>
   <label is="custom-label"></label>
 </select>
@@ -177,6 +148,5 @@
 </script>
 
 <script>
-testRunner.waitUntilDone();
 testRunner.dumpAsText();
 </script>

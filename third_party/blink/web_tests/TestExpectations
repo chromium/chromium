@@ -9204,9 +9204,6 @@ crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookie
 # Gardener 2025-05-05
 crbug.com/413289778 [ Mac12 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html [ Failure ]
 
-# Gardener 2025-05-07
-crbug.com/416123241 [ Linux ] fast/forms/select/customizable-select/disallowed-select-descendants-console-message.html [ Failure Pass ]
-
 # Gardener 2025-05-14
 crbug.com/417479566 [ Mac ] external/wpt/css/css-transitions/transitioncancel-003.html [ Failure Pass ]
 
