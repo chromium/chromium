@@ -29,8 +29,6 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   void InquireOnDeviceModel(std::string rendered_texts,
                             InquireOnDeviceModelDoneCallback callback) override;
   void ResetOnDeviceSession(bool inquiry_complete) override;
-  void StartListeningToOnDeviceModelUpdate() override;
-  void StopListeningToOnDeviceModelUpdate() override;
 };
 
 }  // namespace safe_browsing

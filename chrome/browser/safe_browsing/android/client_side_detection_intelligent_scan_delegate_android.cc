@@ -31,14 +31,4 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::ResetOnDeviceSession(
   return;
 }
 
-void ClientSideDetectionIntelligentScanDelegateAndroid::
-    StartListeningToOnDeviceModelUpdate() {
-  return;
-}
-
-void ClientSideDetectionIntelligentScanDelegateAndroid::
-    StopListeningToOnDeviceModelUpdate() {
-  return;
-}
-
 }  // namespace safe_browsing

@@ -74,7 +74,16 @@ ClientSideDetectionIntelligentScanDelegateDesktop::
     ClientSideDetectionIntelligentScanDelegateDesktop(
         PrefService& pref,
         OptimizationGuideKeyedService* opt_guide)
-    : pref_(pref), opt_guide_(opt_guide) {}
+    : pref_(pref), opt_guide_(opt_guide) {
+  pref_change_registrar_.Init(&pref);
+  pref_change_registrar_.Add(
+      prefs::kSafeBrowsingEnhanced,
+      base::BindRepeating(
+          &ClientSideDetectionIntelligentScanDelegateDesktop::OnPrefsUpdated,
+          base::Unretained(this)));
+  //  Do an initial check of the prefs.
+  OnPrefsUpdated();
+}
 
 ClientSideDetectionIntelligentScanDelegateDesktop::
     ~ClientSideDetectionIntelligentScanDelegateDesktop() = default;
@@ -106,6 +115,22 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::
     LogOnDeviceModelEligibilityReason();
   }
   return on_device_model_available_;
+}
+
+void ClientSideDetectionIntelligentScanDelegateDesktop::OnPrefsUpdated() {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    return;
+  }
+  bool is_feature_enabled =
+      base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection) ||
+      base::FeatureList::IsEnabled(
+          kClientSideDetectionLlamaForcedTriggerInfoForScamDetection);
+  if (IsEnhancedProtectionEnabled(*pref_) && is_feature_enabled) {
+    StartListeningToOnDeviceModelUpdate();
+  } else {
+    StopListeningToOnDeviceModelUpdate();
+  }
 }
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::InquireOnDeviceModel(
@@ -253,6 +278,7 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::Shutdown() {
   StopListeningToOnDeviceModelUpdate();
+  pref_change_registrar_.RemoveAll();
 }
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::

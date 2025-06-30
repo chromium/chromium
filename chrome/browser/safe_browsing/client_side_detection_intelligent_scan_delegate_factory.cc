@@ -67,4 +67,15 @@ ClientSideDetectionIntelligentScanDelegateFactory::
 #endif
 }
 
+bool ClientSideDetectionIntelligentScanDelegateFactory::
+    ServiceIsCreatedWithBrowserContext() const {
+  // The service is created early to start listening to on-device model updates.
+  return true;
+}
+
+bool ClientSideDetectionIntelligentScanDelegateFactory::
+    ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
 }  // namespace safe_browsing

@@ -39,17 +39,21 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
     feature_list_.InitWithFeatures(
         {kClientSideDetectionBrandAndIntentForScamDetection,
          kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
-        {});
+        {kClientSideDetectionKillswitch});
     RegisterProfilePrefs(pref_service_.registry());
-    SetEnhancedProtectionPrefForTests(&pref_service_, true);
+  }
 
+ protected:
+  void CreateDelegate(bool is_enhanced_protection_enabled) {
+    SetEnhancedProtectionPrefForTests(&pref_service_,
+                                      is_enhanced_protection_enabled);
     delegate_ =
         std::make_unique<ClientSideDetectionIntelligentScanDelegateDesktop>(
             pref_service_, &mock_opt_guide_);
   }
 
- protected:
   void EnableOnDeviceModel() {
+    CreateDelegate(/*is_enhanced_protection_enabled=*/false);
     optimization_guide::OnDeviceModelAvailabilityObserver*
         availability_observer = nullptr;
     base::RunLoop run_loop_for_add_observer;
@@ -63,8 +67,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
               run_loop_for_add_observer.Quit();
             }));
 
-    delegate_->StartListeningToOnDeviceModelUpdate();
-
+    SetEnhancedProtectionPrefForTests(&pref_service_, true);
     run_loop_for_add_observer.Run();
     CHECK(availability_observer);
 
@@ -109,6 +112,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        ShouldRequestIntelligentScan_KeyboardLockRequested) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
   ClientPhishingRequest verdict;
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
@@ -117,6 +121,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        ShouldRequestIntelligentScan_IntelligentScanRequested) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
   ClientPhishingRequest verdict;
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::FORCE_REQUEST);
@@ -126,6 +131,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        ShouldNotRequestIntelligentScan_PointerLockRequested) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
   ClientPhishingRequest verdict;
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::POINTER_LOCK_REQUESTED);
@@ -134,7 +140,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        ShouldNotRequestIntelligentScan_EnhancedProtectionDisabled) {
-  SetEnhancedProtectionPrefForTests(&pref_service_, false);
+  CreateDelegate(/*is_enhanced_protection_enabled=*/false);
   ClientPhishingRequest verdict;
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
@@ -143,7 +149,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        ShouldNotRequestIntelligentScan_EmptyLlamaForcedTriggerInfo) {
-  SetEnhancedProtectionPrefForTests(&pref_service_, false);
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
   ClientPhishingRequest verdict;
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::FORCE_REQUEST);
@@ -152,6 +158,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        ShouldNotRequestIntelligentScan_IntelligentScanDisabled) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
   ClientPhishingRequest verdict;
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::FORCE_REQUEST);
@@ -161,6 +168,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        TestOnDeviceModelFetchSuccessCall) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/false);
   EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
       /*log_failed_eligibility_reason=*/true));
 
@@ -175,7 +183,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
             run_loop_for_add_observer.Quit();
           }));
 
-  delegate_->StartListeningToOnDeviceModelUpdate();
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -225,6 +233,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        TestOnDeviceModelFetchSuccessImmediateSessionCreation) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/false);
   EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
       /*log_failed_eligibility_reason=*/true));
 
@@ -240,7 +249,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .Times(0);
 
-  delegate_->StartListeningToOnDeviceModelUpdate();
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
@@ -250,6 +259,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        TestOnDeviceModelFetchFailureCall) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/false);
   EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
       /*log_failed_eligibility_reason=*/true));
 
@@ -267,7 +277,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", false, 0);
 
-  delegate_->StartListeningToOnDeviceModelUpdate();
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
   // Now that the delegate is observing, send `kTooManyRecentCrashes`
   // to the observer, which is not a waitable reason.
@@ -285,6 +295,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        TestModelEligibilityReasonCheckAtFailedInquiry) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/false);
+
   // The below function is called by the delegate when calling
   // IsOnDeviceModelAvailable but the on device model is not available yet.
   EXPECT_CALL(mock_opt_guide_, GetOnDeviceModelEligibility(_))
@@ -293,8 +305,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
             kModelToBeInstalled;
       });
 
-  // We will start listening to the on device model when we call
-  // StartListeningToOnDeviceModelUpdate, so we expect the call below.
+  // We will start listening to the on device model when enhanced protection is
+  // enabled, so we expect the call below.
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
   base::RunLoop run_loop_for_add_observer;
@@ -306,7 +318,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
             run_loop_for_add_observer.Quit();
           }));
 
-  delegate_->StartListeningToOnDeviceModelUpdate();
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -363,6 +375,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        ModelFetchStopListeningBeforeSuccess) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/false);
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
   base::RunLoop run_loop_for_add_observer;
@@ -374,12 +387,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
             run_loop_for_add_observer.Quit();
           }));
 
-  delegate_->StartListeningToOnDeviceModelUpdate();
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
 
-  delegate_->StopListeningToOnDeviceModelUpdate();
+  SetEnhancedProtectionPrefForTests(&pref_service_, false);
 
   availability_observer->OnDeviceModelAvailabilityChanged(
       optimization_guide::ModelBasedCapabilityKey::kScamDetection,
@@ -393,6 +406,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        ModelFetchStopListeningAfterSuccess) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/false);
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
   base::RunLoop run_loop_for_add_observer;
@@ -404,7 +418,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
             run_loop_for_add_observer.Quit();
           }));
 
-  delegate_->StartListeningToOnDeviceModelUpdate();
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -416,7 +430,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_TRUE(delegate_->IsOnDeviceModelAvailable(
       /*log_failed_eligibility_reason=*/true));
 
-  delegate_->StopListeningToOnDeviceModelUpdate();
+  SetEnhancedProtectionPrefForTests(&pref_service_, false);
 
   EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
       /*log_failed_eligibility_reason=*/true));
@@ -430,10 +444,41 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
             availability_observer = observer;
             run_loop_for_add_observer2.Quit();
           }));
-  delegate_->StartListeningToOnDeviceModelUpdate();
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
   run_loop_for_add_observer2.Run();
   CHECK(availability_observer);
+
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  EXPECT_TRUE(delegate_->IsOnDeviceModelAvailable(
+      /*log_failed_eligibility_reason=*/true));
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       ListenToModelUpdateOnCreation) {
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  // Since enhanced protection is enabled, the delegate should start listening
+  // to the model update as soon as it is created.
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
+      /*log_failed_eligibility_reason=*/true));
 
   availability_observer->OnDeviceModelAvailabilityChanged(
       optimization_guide::ModelBasedCapabilityKey::kScamDetection,
@@ -729,6 +774,7 @@ class
 TEST_F(
     ClientSideDetectionIntelligentScanDelegateDesktopTestBrandAndIntentDisabled,
     ShouldNotRequestIntelligentScan_KeyboardLockRequested) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
   ClientPhishingRequest verdict;
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
@@ -740,6 +786,7 @@ TEST_F(
 TEST_F(
     ClientSideDetectionIntelligentScanDelegateDesktopTestBrandAndIntentDisabled,
     ShouldRequestIntelligentScan_IntelligentScanRequested) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
   ClientPhishingRequest verdict;
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::FORCE_REQUEST);
@@ -766,6 +813,7 @@ class
 TEST_F(
     ClientSideDetectionIntelligentScanDelegateDesktopTestLlamaForcedTriggerInfoDisabled,
     ShouldRequestIntelligentScan_KeyboardLockRequested) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
   ClientPhishingRequest verdict;
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
@@ -777,6 +825,7 @@ TEST_F(
 TEST_F(
     ClientSideDetectionIntelligentScanDelegateDesktopTestLlamaForcedTriggerInfoDisabled,
     ShouldNotRequestIntelligentScan_IntelligentScanRequested) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
   ClientPhishingRequest verdict;
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::FORCE_REQUEST);
@@ -784,6 +833,54 @@ TEST_F(
   // Disabled because kClientSideDetectionLlamaForcedTriggerInfoForScamDetection
   // is disabled.
   EXPECT_FALSE(delegate_->ShouldRequestIntelligentScan(&verdict));
+}
+
+class
+    ClientSideDetectionIntelligentScanDelegateDesktopTestBothFeatureFlagsDisabled
+    : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
+ public:
+  ClientSideDetectionIntelligentScanDelegateDesktopTestBothFeatureFlagsDisabled() {
+    feature_list_.InitWithFeatures(
+        {}, {kClientSideDetectionBrandAndIntentForScamDetection,
+             kClientSideDetectionLlamaForcedTriggerInfoForScamDetection});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(
+    ClientSideDetectionIntelligentScanDelegateDesktopTestBothFeatureFlagsDisabled,
+    NotListenToModelUpdateOnCreation) {
+  // Both feature flags are disabled, so we shouldn't listen to model updates.
+  EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .Times(0);
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
+      /*log_failed_eligibility_reason=*/true));
+}
+
+class ClientSideDetectionIntelligentScanDelegateDesktopTestKillSwitchEnabled
+    : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
+ public:
+  ClientSideDetectionIntelligentScanDelegateDesktopTestKillSwitchEnabled() {
+    feature_list_.InitWithFeatures({kClientSideDetectionKillswitch}, {});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTestKillSwitchEnabled,
+       NotListenToModelUpdateOnCreation) {
+  // The killswitch flag is enabled, so we shouldn't listen to model updates.
+  EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .Times(0);
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
+      /*log_failed_eligibility_reason=*/true));
 }
 
 }  // namespace safe_browsing

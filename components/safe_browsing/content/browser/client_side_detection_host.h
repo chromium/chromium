@@ -132,15 +132,6 @@ class ClientSideDetectionHost
     // there is no session. |inquiry_complete| indicates whether the inquiry is
     // complete.
     virtual void ResetOnDeviceSession(bool inquiry_complete) = 0;
-    // Starts listening to the on-device model update through OptimizationGuide.
-    // A check will be made in the delegate to confirm that it's not listening
-    // for availability before subscribing. This will be called when the user
-    // preferences change and the user is subscribed to Enhanced Safe Browsing.
-    virtual void StartListeningToOnDeviceModelUpdate() = 0;
-    // Stops listening to the on-device model update through OptimizationGuide.
-    // A check is handled in the delegate if the user is already stopped
-    // listening for on-device model updates.
-    virtual void StopListeningToOnDeviceModelUpdate() = 0;
   };
 
   // The caller keeps ownership of the tab object and is responsible for
