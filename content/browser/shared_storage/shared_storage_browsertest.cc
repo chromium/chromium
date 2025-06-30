@@ -427,6 +427,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_Success) {
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -453,7 +454,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_Success) {
   histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
 
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         url::Origin::Create(url).Serialize(),
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
@@ -567,6 +568,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -602,7 +604,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
@@ -739,6 +741,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -783,7 +786,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
@@ -1275,6 +1278,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WorkletDestroyed) {
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
@@ -1297,7 +1301,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WorkletDestroyed) {
   histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
 
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         url::Origin::Create(url).Serialize(),
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
@@ -1314,6 +1318,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, TwoWorklets) {
 
   GURL url = https_server()->GetURL("a.test", kPageWithBlankIframePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -1364,13 +1369,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, TwoWorklets) {
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
                                    "/shared_storage/simple_module2.js"),
             /*worklet_ordinal=*/0, cached_worklet_devtools_tokens[0])},
-       {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+       {AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
@@ -1389,6 +1394,7 @@ IN_PROC_BROWSER_TEST_P(
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   test_runtime_manager()
       .ConfigureShouldDeferWorkletMessagesOnWorkletHostCreation(true);
@@ -1438,7 +1444,7 @@ IN_PROC_BROWSER_TEST_P(
   histogram_tester_.ExpectTotalCount(kTimingUsefulResourceHistogram, 1);
 
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         url::Origin::Create(url).Serialize(),
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
@@ -1456,6 +1462,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   test_runtime_manager()
       .ConfigureShouldDeferWorkletMessagesOnWorkletHostCreation(true);
@@ -1498,7 +1505,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   histogram_tester_.ExpectUniqueSample(kTimingUsefulResourceHistogram, 100, 1);
 
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         url::Origin::Create(url).Serialize(),
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
@@ -1517,6 +1524,7 @@ IN_PROC_BROWSER_TEST_P(
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   EXPECT_TRUE(ExecJs(shell(), R"(
@@ -1583,13 +1591,14 @@ IN_PROC_BROWSER_TEST_P(
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
                                    "/shared_storage/simple_module.js"),
             /*worklet_ordinal=*/0, GetFirstWorkletHostDevToolsToken())},
-       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+       {AccessScope::kWindow, AccessMethod::kRun, initial_main_frame_id,
+        origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
             "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
@@ -1612,6 +1621,7 @@ IN_PROC_BROWSER_TEST_P(
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   EXPECT_TRUE(ExecJs(shell(), R"(
@@ -1713,13 +1723,13 @@ IN_PROC_BROWSER_TEST_P(
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
                                    "/shared_storage/simple_module.js"),
             /*worklet_ordinal=*/0, GetFirstWorkletHostDevToolsToken())},
-       {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
+       {AccessScope::kWindow, AccessMethod::kSelectURL, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForSelectURLForTesting(
             "test-url-selection-operation", /*operation_id=*/0,
@@ -1752,6 +1762,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
 
   GURL url = https_server()->GetURL("a.test", kPageWithBlankIframePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -1831,13 +1842,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
                                    "/shared_storage/simple_module.js"),
             /*worklet_ordinal=*/0, cached_worklet_devtools_tokens[0])},
-       {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+       {AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             https_server()->GetURL("a.test",
@@ -4368,6 +4379,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WebLocksUsageHistograms) {
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -4401,49 +4413,50 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WebLocksUsageHistograms) {
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             out_script_url,
             /*worklet_ordinal=*/0, GetFirstWorkletHostDevToolsToken())},
-       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+       {AccessScope::kWindow, AccessMethod::kRun, initial_main_frame_id,
+        origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
             "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), GetFirstWorkletHostDevToolsToken())},
-       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
-        origin_str,
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForSet(
             "key0", "value0",
             /*ignore_if_present=*/false, GetFirstWorkletHostDevToolsToken())},
-       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
-        origin_str,
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForSet(
             "key0", "value0",
             /*ignore_if_present=*/false, GetFirstWorkletHostDevToolsToken())},
-       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
-        origin_str,
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForSet(
             "key0", "value0", /*ignore_if_present=*/false,
             GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/"lock2",
             /*batch_update_id=*/std::nullopt)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kBatchUpdate,
-        MainFrameId(), origin_str,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForBatchUpdate(
             GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/"lock1",
             /*batch_update_id=*/0,
             /*batch_size=*/2u)},
-       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
-        origin_str,
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForSet(
             "key0", "value0",
             /*ignore_if_present=*/false, GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/std::nullopt,
             /*batch_update_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kAppend,
-        MainFrameId(), origin_str,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForAppend(
             "key1", "value1", GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/std::nullopt,
@@ -4459,6 +4472,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, MulipleBatchUpdates) {
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -4492,78 +4506,79 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, MulipleBatchUpdates) {
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             out_script_url,
             /*worklet_ordinal=*/0, GetFirstWorkletHostDevToolsToken())},
-       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+       {AccessScope::kWindow, AccessMethod::kRun, initial_main_frame_id,
+        origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
             "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kBatchUpdate,
-        MainFrameId(), origin_str,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForBatchUpdate(
             GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/std::nullopt,
             /*batch_update_id=*/0,
             /*batch_size=*/2u)},
-       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
-        origin_str,
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForSet(
             "key0", "value0", /*ignore_if_present=*/false,
             GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/std::nullopt,
             /*batch_update_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kAppend,
-        MainFrameId(), origin_str,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForAppend(
             "key1", "value1", GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/std::nullopt,
             /*batch_update_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kBatchUpdate,
-        MainFrameId(), origin_str,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForBatchUpdate(
             GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/"lock1",
             /*batch_update_id=*/1,
             /*batch_size=*/1u)},
-       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
-        origin_str,
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForSet(
             "key2", "value2", /*ignore_if_present=*/false,
             GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/std::nullopt,
             /*batch_update_id=*/1)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kBatchUpdate,
-        MainFrameId(), origin_str,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForBatchUpdate(
             GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/"lock1",
             /*batch_update_id=*/2,
             /*batch_size=*/4u)},
-       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
-        origin_str,
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForSet(
             "key1", "value0",
             /*ignore_if_present=*/true, GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/std::nullopt,
             /*batch_update_id=*/2)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kAppend,
-        MainFrameId(), origin_str,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForAppend(
             "key1", "value1", GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/std::nullopt,
             /*batch_update_id=*/2)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kDelete,
-        MainFrameId(), origin_str,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForDelete(
             "key2", GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/std::nullopt,
             /*batch_update_id=*/2)},
-       {AccessScope::kSharedStorageWorklet, AccessMethod::kClear, MainFrameId(),
-        origin_str,
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kClear,
+        initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForClear(
             GetFirstWorkletHostDevToolsToken(),
             /*with_lock=*/std::nullopt,
@@ -4579,6 +4594,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, EmptyBatchUpdate) {
 
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -4597,12 +4613,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, EmptyBatchUpdate) {
   // The empty batchUpdate does not receive an event notification.
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kAddModule, initial_main_frame_id,
         origin_str,
         SharedStorageEventParams::CreateForAddModule(
             out_script_url,
             /*worklet_ordinal=*/0, GetFirstWorkletHostDevToolsToken())},
-       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+       {AccessScope::kWindow, AccessMethod::kRun, initial_main_frame_id,
+        origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
             "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
