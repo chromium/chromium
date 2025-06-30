@@ -43,7 +43,6 @@
 
   --height-expand-duration: 600ms;
 
-  background-color: var(--ntp-composebox-background-color);
   border-radius: 24px;
   font-size: var(--cr-composebox-font-size, 18px);
   width: var(--ntp-composebox-width, 337px);
@@ -262,16 +261,13 @@
 }
 
 .background {
+  animation: gradient-border-width var(--glif-rotation-duration)
+    var(--standard-curve);
   border: 0 solid transparent;
   border-radius: inherit;
   contain: paint;
   inset: 0;
   position: absolute;
-}
-
-.background {
-  animation: gradient-border-width var(--glif-rotation-duration)
-    var(--standard-curve);
 }
 
 @keyframes gradient-border-width {
