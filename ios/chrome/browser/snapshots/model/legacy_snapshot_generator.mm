@@ -215,17 +215,20 @@ struct SnapshotInfo {
   __block BOOL snapshotSuccess = YES;
   UIImage* image =
       [renderer imageWithActions:^(UIGraphicsImageRendererContext* UIContext) {
-        // Render the view's layer via `-renderInContext:`.
+        // Take animations into account by rendering the presentation layer.
+        // Fallback to the rendering the layer if not possible.
+        CALayer* layerToRender =
+            baseView.layer.presentationLayer ?: baseView.layer;
         // To mitigate against crashes like crbug.com/1429512, ensure that
         // the layer's position is valid. If not, mark the snapshotting as
         // failed.
-        CALayer* layer = baseView.layer;
-        CGPoint pos = layer.position;
+        CGPoint pos = layerToRender.position;
         if (isnan(pos.x) || isnan(pos.y)) {
           snapshotSuccess = NO;
-        } else {
-          [layer renderInContext:UIContext.CGContext];
+          return;
         }
+
+        [layerToRender renderInContext:UIContext.CGContext];
       }];
 
   if (!snapshotSuccess) {

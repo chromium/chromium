@@ -9,7 +9,7 @@ import UIKit
   // A wrapper class for the associated WebState.
   private let webStateInfo: WebStateSnapshotInfo
   // The SnapshotGenerator delegate to obtain the information about UIView.
-  weak var delegate: Optional<SnapshotGeneratorDelegate>
+  weak var delegate: SnapshotGeneratorDelegate?
 
   // Designated initializer.
   init(webStateInfo: WebStateSnapshotInfo) {
@@ -54,7 +54,7 @@ import UIKit
     let baseViewInsets = delegate!.snapshotEdgeInsets(webStateInfo: webStateInfo)
     let frameInBaseView = baseView.bounds.inset(by: baseViewInsets)
 
-    let baseImage = convertBaseView(baseView: baseView)
+    let baseImage = convertBaseView(baseView)
     return cropImage(baseImage: baseImage, frameInBaseView: frameInBaseView)
   }
 
@@ -126,7 +126,7 @@ import UIKit
   }
 
   // Converts an UIView to an UIImage. The size of generated UIImage is the same as `baseView`.
-  private func convertBaseView(baseView: UIView) -> UIImage? {
+  private func convertBaseView(_ baseView: UIView) -> UIImage? {
     // Disable the automatic view dimming UIKit performs if a view is presented modally over
     // `baseView`.
     baseView.tintAdjustmentMode = .normal
@@ -138,26 +138,27 @@ import UIKit
     let renderer = UIGraphicsImageRenderer(bounds: baseView.bounds, format: format)
 
     var snapshotSuccess = true
-    let image = renderer.image { (context) in
-      // Render the view's layer via `render(in:)`.
-      // To mitigate against crashes like crbug.com/1429512, ensure that the layer's position is
-      // valid. If not, mark the snapshotting as failed.
-      let layer = baseView.layer
-      let pos = layer.position
-      if pos.x.isNaN || pos.y.isNaN {
+    let image = renderer.image { context in
+      // Take animations into account by rendering the presentation layer.
+      // Fallback to the rendering the layer if not possible.
+      let layerToRender = baseView.layer.presentation() ?? baseView.layer
+
+      // To mitigate against crashes like crbug.com/1429512, ensure that the
+      // layer's position is valid. Otherwise mark the snapshotting as failed.
+      let position = layerToRender.position
+      let validPosition = !position.x.isNaN && !position.y.isNaN
+      guard validPosition else {
         snapshotSuccess = false
-      } else {
-        baseView.layer.render(in: context.cgContext)
+        return
       }
+
+      layerToRender.render(in: context.cgContext)
     }
 
     // Set the mode to UIViewTintAdjustmentModeAutomatic.
     baseView.tintAdjustmentMode = .automatic
 
-    if snapshotSuccess {
-      return image
-    }
-    return nil
+    return snapshotSuccess ? image : nil
   }
 
   // Crops an UIImage to `frameInBaseView`.
