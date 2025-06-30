@@ -16,8 +16,10 @@
 #include "base/types/expected_macros.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
@@ -112,6 +114,8 @@ SafariDataImporter::SafariDataImporter(
     password_manager::SavedPasswordsPresenter* presenter,
     autofill::PaymentsDataManager* payments_data_manager,
     history::HistoryService* history_service,
+    bookmarks::BookmarkModel* bookmark_model,
+    ReadingListModel* reading_list_model,
     std::unique_ptr<BookmarkParser> bookmark_parser,
     std::string app_locale)
     : password_importer_(std::make_unique<password_manager::PasswordImporter>(
@@ -119,6 +123,8 @@ SafariDataImporter::SafariDataImporter(
           /*user_confirmation_required=*/true)),
       payments_data_manager_(CHECK_DEREF(payments_data_manager)),
       history_service_(CHECK_DEREF(history_service)),
+      bookmark_model_(CHECK_DEREF(bookmark_model)),
+      reading_list_model_(CHECK_DEREF(reading_list_model)),
       bookmark_parser_(std::move(bookmark_parser)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       app_locale_(std::move(app_locale)) {}
@@ -413,6 +419,7 @@ void SafariDataImporter::OnBookmarksParsed(
 
   pending_bookmarks_ = std::move(value.bookmarks);
   pending_reading_list_ = std::move(value.reading_list);
+
   PostCallback(std::move(callback),
                pending_bookmarks_.size() + pending_reading_list_.size());
 }

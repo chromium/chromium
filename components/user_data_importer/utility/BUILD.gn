@@ -17,9 +17,11 @@ source_set("safari_data_importer") {
   deps = [
     ":zip_ffi_glue",
     "//base",
+    "//components/bookmarks/browser",
     "//components/history/core/browser",
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/ui",
+    "//components/reading_list/core",
     "//components/user_data_importer/common",
   ]
 }
@@ -78,6 +80,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
     "//components/history/core/browser",
     "//components/history/core/test",
     "//components/password_manager/core/browser/import:csv",
@@ -86,6 +90,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/ui",
     "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/password_manager/core/common:constants",
+    "//components/reading_list/core:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",

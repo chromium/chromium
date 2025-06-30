@@ -3,11 +3,14 @@ include_rules = [
   "+components/autofill/core/browser/data_manager/payments",
   "+components/autofill/core/browser/data_model/payments",
   "+components/autofill/core/browser/foundations",
+  "+components/bookmarks/browser",
+  "+components/bookmarks/test",
   "+components/history/core/browser",
   "+components/history/core/test",
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",
   "+components/password_manager/services/csv_password",
+  "+components/reading_list/core",
   "+mojo/public/cpp/bindings",
 ]
 

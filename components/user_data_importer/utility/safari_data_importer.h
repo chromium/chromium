@@ -19,9 +19,15 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
 namespace history {
 class HistoryService;
 }  // namespace history
+
+class ReadingListModel;
 
 namespace user_data_importer {
 
@@ -47,6 +53,8 @@ class SafariDataImporter {
   SafariDataImporter(password_manager::SavedPasswordsPresenter* presenter,
                      autofill::PaymentsDataManager* payments_data_manager,
                      history::HistoryService* history_service,
+                     bookmarks::BookmarkModel* bookmark_model,
+                     ReadingListModel* reading_list_model,
                      std::unique_ptr<BookmarkParser> bookmark_parser,
                      std::string app_locale);
   ~SafariDataImporter();
@@ -174,6 +182,12 @@ class SafariDataImporter {
 
   // Service used to import history URLs.
   const raw_ref<history::HistoryService> history_service_;
+
+  // Service used to import bookmarks.
+  const raw_ref<bookmarks::BookmarkModel> bookmark_model_;
+
+  // Service used to import reading lists.
+  const raw_ref<ReadingListModel> reading_list_model_;
 
   // The model-layer object used to parse bookmarks from an HTML file.
   std::unique_ptr<BookmarkParser> bookmark_parser_;

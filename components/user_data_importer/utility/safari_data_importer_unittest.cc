@@ -15,8 +15,11 @@
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/time/default_clock.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
@@ -27,6 +30,9 @@
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/services/csv_password/fake_password_parser_service.h"
+#include "components/reading_list/core/fake_reading_list_model_storage.h"
+#include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -49,9 +55,21 @@ class SafariDataImporterTest : public testing::Test {
     CHECK(history_dir_.CreateUniqueTempDir());
     history_service_ = history::CreateHistoryService(history_dir_.GetPath(),
                                                      /*create_db=*/false);
+
+    auto bookmark_client = std::make_unique<bookmarks::TestBookmarkClient>();
+    bookmark_model_ =
+        std::make_unique<bookmarks::BookmarkModel>(std::move(bookmark_client));
+
+    auto storage = std::make_unique<FakeReadingListModelStorage>();
+    reading_list_model_ = std::make_unique<ReadingListModelImpl>(
+        std::move(storage), syncer::StorageType::kUnspecified,
+        syncer::WipeModelUponSyncDisabledBehavior::kNever,
+        base::DefaultClock::GetInstance());
+
     importer_ = std::make_unique<SafariDataImporter>(
         &presenter_, &client_.GetPersonalDataManager().payments_data_manager(),
-        history_service_.get(), MakeBookmarkParser(), "en-US");
+        history_service_.get(), bookmark_model_.get(),
+        reading_list_model_.get(), MakeBookmarkParser(), "en-US");
 
     mojo::PendingRemote<password_manager::mojom::CSVPasswordParser>
         pending_remote{receiver_.BindNewPipeAndPassRemote()};
@@ -325,6 +343,8 @@ class SafariDataImporterTest : public testing::Test {
   autofill::TestAutofillClient client_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  std::unique_ptr<ReadingListModel> reading_list_model_;
   bool presenter_ready_ = false;
   password_manager::ImportResults import_results_;
   bool passwords_callback_called_ = false;
