@@ -14,10 +14,10 @@
 #include "chromeos/ash/experiences/arc/video_accelerator/video_frame_plane.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 
 namespace arc {
 
@@ -90,7 +90,7 @@ class GpuArcVideoEncodeAccelerator
   gfx::Size visible_size_;
   int32_t bitstream_buffer_serial_;
   std::unordered_map<uint32_t, UseBitstreamBufferCallback> use_bitstream_cbs_;
-  gpu::GpuMemoryBufferSupport support_;
+  std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 };
 
 }  // namespace arc

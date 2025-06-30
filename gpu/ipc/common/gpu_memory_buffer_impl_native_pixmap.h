@@ -13,6 +13,10 @@
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 
+namespace arc {
+class GpuArcVideoEncodeAccelerator;
+}
+
 namespace gfx {
 class ClientNativePixmap;
 class ClientNativePixmapFactory;
@@ -57,6 +61,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
  private:
   // TODO(crbug.com/404905709): Eliminate these class' creation of GMBs and
   // remove this friending.
+  friend class arc::GpuArcVideoEncodeAccelerator;
   friend class media::V4L2JpegEncodeAccelerator;
   friend class media::VaapiJpegEncodeAccelerator;
   friend class GpuMemoryBufferSupport;

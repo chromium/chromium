@@ -16,6 +16,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
@@ -29,6 +30,7 @@
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace arc {
 
@@ -49,7 +51,9 @@ GpuArcVideoEncodeAccelerator::GpuArcVideoEncodeAccelerator(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
     : gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),
-      bitstream_buffer_serial_(0) {}
+      bitstream_buffer_serial_(0),
+      client_native_pixmap_factory_(
+          ui::CreateClientNativePixmapFactoryOzone()) {}
 
 GpuArcVideoEncodeAccelerator::~GpuArcVideoEncodeAccelerator() {
   // Normally |client_count_| should always be > 0 if vea_ is set, but if it
@@ -201,8 +205,9 @@ void GpuArcVideoEncodeAccelerator::Encode(
     return;
   }
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      support_.CreateGpuMemoryBufferImplFromHandle(
-          std::move(gmb_handle).value(), coded_size_, *buffer_format,
+      gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
+          client_native_pixmap_factory_.get(), std::move(gmb_handle).value(),
+          coded_size_, *buffer_format,
           gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
           base::NullCallback());
 

@@ -44,10 +44,6 @@ struct hash<gpu::GpuMemoryBufferConfigurationKey> {
 };
 }  // namespace std
 
-namespace arc {
-class GpuArcVideoEncodeAccelerator;
-}
-
 namespace gpu {
 class ClientSharedImage;
 
@@ -104,10 +100,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
   }
 
  private:
-  // TODO(crbug.com/404905709): Eliminate this class' creation of GMBs and
-  // remove this friending.
-  friend class arc::GpuArcVideoEncodeAccelerator;
-
   // ClientSharedImage is the only entity that should be creating GMBs via
   // GpuMemoryBufferSupport.
   friend class ClientSharedImage;
