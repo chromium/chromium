@@ -123,6 +123,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   ~ServiceWorkerDevToolsAgentHost() override;
   void UpdateIsAttached(bool attached);
   void UpdateProcessHost();
+  void ForceUpdateOnReloadIfModified();
 
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session) override;

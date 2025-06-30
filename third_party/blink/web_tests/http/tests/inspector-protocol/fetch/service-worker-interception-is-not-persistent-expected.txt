@@ -1,0 +1,5 @@
+Tests that service worker script is reloaded from disk after DevTools detach.
+Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js, type: Other
+Page content (after DevTools modification): "devtools intercepted"
+Page content (after reload): "response from service worker"
+

@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
@@ -72,11 +73,14 @@ class NetworkHandler : public DevToolsDomainHandler,
 #endif  // BUILDFLAG(ENABLE_REPORTING)
                        public Network::Backend {
  public:
-  NetworkHandler(const std::string& host_id,
-                 const base::UnguessableToken& devtools_token,
-                 DevToolsIOContext* io_context,
-                 base::RepeatingClosure update_loader_factories_callback,
-                 DevToolsAgentHostClient* client);
+  NetworkHandler(
+      const std::string& host_id,
+      const base::UnguessableToken& devtools_token,
+      DevToolsIOContext* io_context,
+      base::RepeatingClosure update_loader_factories_callback,
+      DevToolsAgentHostClient* client,
+      base::OnceClosure cleanup_after_modifications_callback =
+          base::OnceClosure());
 
   NetworkHandler(const NetworkHandler&) = delete;
   NetworkHandler& operator=(const NetworkHandler&) = delete;
@@ -410,6 +414,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       loaders_;
   std::optional<std::set<net::SourceStreamType>> accepted_stream_types_;
   std::unordered_map<String, std::pair<String, bool>> received_body_data_;
+  bool did_modifications_ = false;
+  base::OnceClosure cleanup_after_modifications_callback_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 };
 

@@ -33,13 +33,20 @@ std::vector<FetchHandler*> FetchHandler::ForAgentHost(
 
 FetchHandler::FetchHandler(
     DevToolsIOContext* io_context,
-    UpdateLoaderFactoriesCallback update_loader_factories_callback)
+    UpdateLoaderFactoriesCallback update_loader_factories_callback,
+    base::OnceClosure cleanup_after_modifications_callback)
     : DevToolsDomainHandler(Fetch::Metainfo::domainName),
       io_context_(io_context),
       update_loader_factories_callback_(
-          std::move(update_loader_factories_callback)) {}
+          std::move(update_loader_factories_callback)),
+      cleanup_after_modifications_callback_(
+          std::move(cleanup_after_modifications_callback)) {}
 
-FetchHandler::~FetchHandler() = default;
+FetchHandler::~FetchHandler() {
+  if (did_modifications_ && cleanup_after_modifications_callback_) {
+    std::move(cleanup_after_modifications_callback_).Run();
+  }
+}
 
 void FetchHandler::Wire(UberDispatcher* dispatcher) {
   frontend_ = std::make_unique<Fetch::Frontend>(dispatcher->channel());
@@ -48,10 +55,12 @@ void FetchHandler::Wire(UberDispatcher* dispatcher) {
 
 DevToolsURLLoaderInterceptor::InterceptionStage RequestStageToInterceptorStage(
     const Fetch::RequestStage& stage) {
-  if (stage == Fetch::RequestStageEnum::Request)
+  if (stage == Fetch::RequestStageEnum::Request) {
     return DevToolsURLLoaderInterceptor::kRequest;
-  if (stage == Fetch::RequestStageEnum::Response)
+  }
+  if (stage == Fetch::RequestStageEnum::Response) {
     return DevToolsURLLoaderInterceptor::kResponse;
+  }
   NOTREACHED();
 }
 
@@ -124,8 +133,9 @@ void FetchHandler::Enable(
 Response FetchHandler::Disable() {
   const bool was_enabled = !!interceptor_;
   interceptor_.reset();
-  if (was_enabled)
+  if (was_enabled) {
     update_loader_factories_callback_.Run(base::DoNothing());
+  }
   return Response::Success();
 }
 
@@ -203,6 +213,7 @@ void FetchHandler::FailRequest(const String& requestId,
   }
   auto modifications =
       std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(reason);
+  did_modifications_ = true;
   interceptor_->ContinueInterceptedRequest(requestId, std::move(modifications),
                                            WrapCallback(std::move(callback)));
 }
@@ -247,8 +258,9 @@ void FetchHandler::FulfillRequest(
       return;
     }
     for (const auto& entry : *responseHeaders) {
-      if (!ValidateHeaders(entry.get(), callback.get()))
+      if (!ValidateHeaders(entry.get(), callback.get())) {
         return;
+      }
       headers.append(entry->GetName());
       headers.append(":");
       headers.append(entry->GetValue());
@@ -258,14 +270,16 @@ void FetchHandler::FulfillRequest(
     Binary response_headers = std::move(*binaryResponseHeaders);
     headers.append(reinterpret_cast<const char*>(response_headers.data()),
                    response_headers.size());
-    if (headers.back() != '\0')
+    if (headers.back() != '\0') {
       headers.append(1, '\0');
+    }
   }
   headers.append(1, '\0');
   auto modifications =
       std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(
           base::MakeRefCounted<net::HttpResponseHeaders>(headers),
           body ? body->bytes() : nullptr);
+  did_modifications_ = true;
   interceptor_->ContinueInterceptedRequest(requestId, std::move(modifications),
                                            WrapCallback(std::move(callback)));
 }
@@ -294,6 +308,8 @@ void FetchHandler::ContinueRequest(
       request_headers->emplace_back(entry->GetName(), entry->GetValue());
     }
   }
+  did_modifications_ = url.has_value() || method.has_value() ||
+                       postData.has_value() || request_headers;
   auto modifications =
       std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(
           std::move(url), std::move(method), std::move(postData),
@@ -334,6 +350,7 @@ void FetchHandler::ContinueWithAuth(
   auto modifications =
       std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(
           std::move(auth_response));
+  did_modifications_ = true;
   interceptor_->ContinueInterceptedRequest(requestId, std::move(modifications),
                                            WrapCallback(std::move(callback)));
 }
@@ -433,8 +450,9 @@ std::unique_ptr<Array<Fetch::HeaderEntry>> ToHeaderEntryArray(
 void FetchHandler::RequestIntercepted(
     std::unique_ptr<InterceptedRequestInfo> info) {
   std::optional<protocol::Network::ErrorReason> error_reason;
-  if (info->response_error_code < 0)
+  if (info->response_error_code < 0) {
     error_reason = NetworkHandler::NetErrorToString(info->response_error_code);
+  }
 
   std::optional<int> status_code;
   std::optional<std::string> status_text;
