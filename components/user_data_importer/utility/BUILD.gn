@@ -42,11 +42,11 @@ rust_static_library("zip_ffi_glue") {
 
 copy("test_archive_files") {
   sources = [
-    "Bookmarks.html",
-    "History - Profile 2.json",
-    "History.json",
-    "Passwords.csv",
-    "PaymentCards.json",
+    "//components/test/data/user_data_importer/Bookmarks.html",
+    "//components/test/data/user_data_importer/History - Profile 2.json",
+    "//components/test/data/user_data_importer/History.json",
+    "//components/test/data/user_data_importer/Passwords.csv",
+    "//components/test/data/user_data_importer/PaymentCards.json",
   ]
   outputs = [ "$target_out_dir/{{source_file_part}}" ]
 }
