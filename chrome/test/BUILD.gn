@@ -3054,6 +3054,7 @@ if (!is_android) {
       "../browser/attribution_reporting/chrome_attribution_browsertest.cc",
       "../browser/autocomplete/autocomplete_browsertest.cc",
       "../browser/autocomplete/chrome_autocomplete_provider_client_browsertest.cc",
+      "../browser/autocomplete/tab_matcher_desktop_browsertest.cc",
       "../browser/autofill/content_autofill_shared_storage_handler_browsertest.cc",
       "../browser/background/background_contents_test_waiter.cc",
       "../browser/background/background_contents_test_waiter.h",
@@ -7828,7 +7829,6 @@ test("unit_tests") {
     # !is_android
     sources += [
       "../browser/apps/intent_helper/intent_chip_display_prefs_unittest.cc",
-      "../browser/autocomplete/tab_matcher_desktop_unittest.cc",
       "../browser/autofill/ui/autofill_image_fetcher_impl_unittest.cc",
       "../browser/bookmarks/bookmark_merged_surface_ordering_storage_unittest.cc",
       "../browser/bookmarks/bookmark_merged_surface_service_unittest.cc",
