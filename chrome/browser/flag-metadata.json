@@ -3318,6 +3318,17 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-experimental-webassembly-shared-everything",
+    "owners": [
+      "mliedtke@chromium.org",
+      "manoskouk@chromium.org",
+      "wasm-team@google.com"
+    ],
+    // This flag is used by web developers to test WebAssembly's
+    // shared-everything-threads features.
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-expkit-text-classifier",
     // This flags is use for 'confidence_score_threshold' only.
     "owners": [ "chrome-intelligence-core@google.com" ],

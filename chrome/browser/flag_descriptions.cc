@@ -1987,6 +1987,12 @@ const char kExperimentalWebAssemblyJSPIDescription[] =
     "Integration (JSPI) "
     "API.";
 
+const char kExperimentalWebAssemblySharedEverythingName[] =
+    "Experimental WebAssembly Shared-Everything Threads";
+const char kExperimentalWebAssemblySharedEverythingDescription[] =
+    "Enable web pages to use the experimental WebAssembly Shared-Everything "
+    "Threads feature. Note that this only covers a subset of the proposal.";
+
 const char kEnableUnrestrictedUsbName[] =
     "Enable Isolated Web Apps to bypass USB restrictions";
 const char kEnableUnrestrictedUsbDescription[] =

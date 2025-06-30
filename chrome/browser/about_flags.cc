@@ -4848,6 +4848,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExperimentalWebAssemblyJSPIName,
      flag_descriptions::kExperimentalWebAssemblyJSPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableExperimentalWebAssemblyJSPI)},
+    {"enable-experimental-webassembly-shared-everything",
+     flag_descriptions::kExperimentalWebAssemblySharedEverythingName,
+     flag_descriptions::kExperimentalWebAssemblySharedEverythingDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         features::kEnableExperimentalWebAssemblySharedEverything)},
     {"enable-webassembly-baseline", flag_descriptions::kEnableWasmBaselineName,
      flag_descriptions::kEnableWasmBaselineDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebAssemblyBaseline)},

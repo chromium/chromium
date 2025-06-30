@@ -8896,6 +8896,8 @@ from previous Chrome versions.
   <int value="-1903166011" label="IsolatedWebAppDevMode:disabled"/>
   <int value="-1902142840" label="CalendarModelDebugMode:enabled"/>
   <int value="-1901503351" label="CrosBatteryChargeLimit:disabled"/>
+  <int value="-1899788521"
+      label="WebAssemblyExperimentalSharedEverything:disabled"/>
   <int value="-1899715534" label="GamepadPollingInterval:enabled"/>
   <int value="-1899652563" label="ReportFeedUserActions:enabled"/>
   <int value="-1899342084" label="ArcGhostWindow:enabled"/>
@@ -11384,6 +11386,8 @@ from previous Chrome versions.
   <int value="-985964106" label="PriceTrackingIconColors:disabled"/>
   <int value="-985845117" label="Cardboard:enabled"/>
   <int value="-985445963" label="TabSearchFuzzySearch:disabled"/>
+  <int value="-985031079"
+      label="WebAssemblyExperimentalSharedEverything:enabled"/>
   <int value="-984340827" label="OidcAuthProfileManagement:enabled"/>
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
   <int value="-983845861" label="ShowCastPermissionRejectedError:disabled"/>

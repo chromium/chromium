@@ -168,6 +168,10 @@ RenderProcessImpl::RenderProcessImpl()
                           "--experimental-wasm-jspi",
                           "--no-experimental-wasm-jspi");
 
+    SetV8FlagIfOverridden(
+        features::kEnableExperimentalWebAssemblySharedEverything,
+        "--experimental-wasm-shared", "--no-experimental-wasm-shared");
+
     SetV8FlagIfOverridden(features::kWebAssemblyLazyCompilation,
                           "--wasm-lazy-compilation",
                           "--no-wasm-lazy-compilation");

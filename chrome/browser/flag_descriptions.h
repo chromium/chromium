@@ -1140,6 +1140,9 @@ extern const char kExperimentalWebAssemblyFeaturesDescription[];
 extern const char kExperimentalWebAssemblyJSPIName[];
 extern const char kExperimentalWebAssemblyJSPIDescription[];
 
+extern const char kExperimentalWebAssemblySharedEverythingName[];
+extern const char kExperimentalWebAssemblySharedEverythingDescription[];
+
 extern const char kEnableUnrestrictedUsbName[];
 extern const char kEnableUnrestrictedUsbDescription[];
 
