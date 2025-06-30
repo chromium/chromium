@@ -1868,13 +1868,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                       std::move(devtools_ip_protection_dict));
   }
 
-  base::Value::Dict css_value_tracing_dict;
-  css_value_tracing_dict.Set(
-      "enabled",
-      base::FeatureList::IsEnabled(::features::kDevToolsCssValueTracing));
-  response_dict.Set("devToolsCssValueTracing",
-                    std::move(css_value_tracing_dict));
-
   base::Value::Dict ai_generated_timeline_labels_dict;
   ai_generated_timeline_labels_dict.Set(
       "enabled", base::FeatureList::IsEnabled(

@@ -2144,11 +2144,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "devtools-css-value-tracing",
-    "owners": [ "pfaffe@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "devtools-privacy-ui",
     "owners": [ "jalonthomas@chromium.org", "shuuran@chromium.org", "masnoble@chromium.org" ],
     "expiry_milestone": 150

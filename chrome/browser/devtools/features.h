@@ -86,8 +86,6 @@ BASE_DECLARE_FEATURE(kDevToolsAutomaticFileSystems);
 
 BASE_DECLARE_FEATURE(kDevToolsWellKnown);
 
-BASE_DECLARE_FEATURE(kDevToolsCssValueTracing);
-
 BASE_DECLARE_FEATURE(kDevToolsAiGeneratedTimelineLabels);
 
 BASE_DECLARE_FEATURE(kDevToolsNewPermissionDialog);

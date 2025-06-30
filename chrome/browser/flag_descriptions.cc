@@ -521,12 +521,6 @@ const char kDevToolsProjectSettingsDescription[] =
     "on local debugging targets.";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kDevToolsCSSValueTracingName[] = "DevTools CSS Value Tracing";
-const char kDevToolsCSSValueTracingDescription[] =
-    "Enables the CSS Value Tracing UI in the elements panel.";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
 const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "

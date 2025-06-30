@@ -149,11 +149,6 @@ BASE_FEATURE(kDevToolsWellKnown,
              "DevToolsWellKnown",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether DevTools will offer the new CSS value tracing UI.
-BASE_FEATURE(kDevToolsCssValueTracing,
-             "DevToolsCssValueTracing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether the DevTools AI generated annotation labels in timeline are enabled.
 BASE_FEATURE(kDevToolsAiGeneratedTimelineLabels,
              "DevToolsAiGeneratedTimelineLabels",
