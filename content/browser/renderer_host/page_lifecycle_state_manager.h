@@ -98,7 +98,11 @@ class CONTENT_EXPORT PageLifecycleStateManager {
       blink::mojom::PageRestoreParamsPtr page_restore_params,
       base::OnceClosure done_cb);
 
-  void OnPageLifecycleChangedAck(
+  // Called when a new acknowledged state is available. This new state can come
+  // from several paths.
+  void OnPageLifecycleStateChanged(
+      blink::mojom::PageLifecycleStatePtr acknowledged_state);
+  void OnSetPageLifecycleStateResponse(
       blink::mojom::PageLifecycleStatePtr acknowledged_state,
       base::OnceClosure done_cb);
   void OnBackForwardCacheTimeout();

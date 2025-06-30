@@ -193,8 +193,7 @@ void PageLifecycleStateManager::DidSetPagehideDispatchDuringNewPageCommit(
             blink::mojom::PageVisibilityState::kHidden);
   DCHECK_NE(acknowledged_state->pagehide_dispatch,
             blink::mojom::PagehideDispatch::kNotDispatched);
-  OnPageLifecycleChangedAck(std::move(acknowledged_state),
-                            base::NullCallback());
+  OnPageLifecycleStateChanged(std::move(acknowledged_state));
 }
 
 void PageLifecycleStateManager::SetIsLeavingBackForwardCache(
@@ -241,9 +240,10 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
 
   render_view_host_impl_->GetAssociatedPageBroadcast()->SetPageLifecycleState(
       std::move(state), std::move(page_restore_params),
-      base::BindOnce(&PageLifecycleStateManager::OnPageLifecycleChangedAck,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(new_state),
-                     std::move(done_cb)));
+      base::BindOnce(
+          &PageLifecycleStateManager::OnSetPageLifecycleStateResponse,
+          weak_ptr_factory_.GetWeakPtr(), std::move(new_state),
+          std::move(done_cb)));
 }
 
 blink::mojom::PageLifecycleStatePtr
@@ -264,9 +264,8 @@ PageLifecycleStateManager::CalculatePageLifecycleState() {
   return state;
 }
 
-void PageLifecycleStateManager::OnPageLifecycleChangedAck(
-    blink::mojom::PageLifecycleStatePtr acknowledged_state,
-    base::OnceClosure done_cb) {
+void PageLifecycleStateManager::OnPageLifecycleStateChanged(
+    blink::mojom::PageLifecycleStatePtr acknowledged_state) {
   blink::mojom::PageLifecycleStatePtr old_state =
       std::move(last_acknowledged_state_);
 
@@ -332,6 +331,12 @@ void PageLifecycleStateManager::OnPageLifecycleChangedAck(
     test_delegate_->OnLastAcknowledgedStateChanged(*old_state,
                                                    *last_acknowledged_state_);
   }
+}
+
+void PageLifecycleStateManager::OnSetPageLifecycleStateResponse(
+    blink::mojom::PageLifecycleStatePtr acknowledged_state,
+    base::OnceClosure done_cb) {
+  OnPageLifecycleStateChanged(std::move(acknowledged_state));
   if (done_cb)
     std::move(done_cb).Run();
 }
