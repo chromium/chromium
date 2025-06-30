@@ -298,11 +298,12 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
 #endif
 }
 
-void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
-    content::WebContents* web_contents,
-    bool is_fre,
-    std::optional<std::vector<std::string>> supported_tools,
-    GlicSuggestionsCallback callback) {
+void ContextualCueingService::
+    GetContextualGlicZeroStateSuggestionsForFocusedTab(
+        content::WebContents* web_contents,
+        bool is_fre,
+        std::optional<std::vector<std::string>> supported_tools,
+        GlicSuggestionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {

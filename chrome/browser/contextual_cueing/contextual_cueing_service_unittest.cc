@@ -495,7 +495,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   InitializeContextualCueingService();
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  service()->GetContextualGlicZeroStateSuggestions(
+  service()->GetContextualGlicZeroStateSuggestionsForFocusedTab(
       web_contents(), /*is_fre=*/false, /*supported_tools=*/std::nullopt,
       future.GetCallback());
 
@@ -510,7 +510,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   InitializeContextualCueingService();
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  service()->GetContextualGlicZeroStateSuggestions(
+  service()->GetContextualGlicZeroStateSuggestionsForFocusedTab(
       web_contents(), /*is_fre=*/false, /*supported_tools=*/{},
       future.GetCallback());
 
@@ -534,7 +534,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   InitializeContextualCueingService();
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  service()->GetContextualGlicZeroStateSuggestions(
+  service()->GetContextualGlicZeroStateSuggestionsForFocusedTab(
       web_contents(), /*is_fre=*/false, std::vector<std::string>({"tool"}),
       future.GetCallback());
 
@@ -567,7 +567,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
                           std::move(tools_pref));
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  service()->GetContextualGlicZeroStateSuggestions(
+  service()->GetContextualGlicZeroStateSuggestionsForFocusedTab(
       web_contents(), /*is_fre=*/false, /*supported_tools=*/std::nullopt,
       future.GetCallback());
 

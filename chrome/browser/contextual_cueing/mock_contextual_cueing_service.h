@@ -33,7 +33,7 @@ class MockContextualCueingService : public ContextualCueingService {
               PrepareToFetchContextualGlicZeroStateSuggestions,
               (content::WebContents*));
   MOCK_METHOD(void,
-              GetContextualGlicZeroStateSuggestions,
+              GetContextualGlicZeroStateSuggestionsForFocusedTab,
               (content::WebContents*,
                bool,
                std::optional<std::vector<std::string>>,

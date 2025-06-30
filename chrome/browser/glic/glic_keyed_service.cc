@@ -240,13 +240,14 @@ void GlicKeyedService::FetchZeroStateSuggestions(
     auto suggestions = mojom::ZeroStateSuggestions::New();
     suggestions->tab_id = GetTabId(active_web_contents);
     suggestions->tab_url = active_web_contents->GetLastCommittedURL();
-    contextual_cueing_service_->GetContextualGlicZeroStateSuggestions(
-        active_web_contents, is_first_run, supported_tools,
-        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-            base::BindOnce(&GlicKeyedService::OnZeroStateSuggestionsFetched,
-                           GetWeakPtr(), std::move(suggestions),
-                           std::move(callback)),
-            std::nullopt));
+    contextual_cueing_service_
+        ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+            active_web_contents, is_first_run, supported_tools,
+            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                base::BindOnce(&GlicKeyedService::OnZeroStateSuggestionsFetched,
+                               GetWeakPtr(), std::move(suggestions),
+                               std::move(callback)),
+                std::nullopt));
 
   } else {
     std::move(callback).Run(nullptr);
