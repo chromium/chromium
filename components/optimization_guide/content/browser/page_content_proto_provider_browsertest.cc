@@ -231,6 +231,9 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, BasicActionable) {
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+  EXPECT_EQ(page_content().mode(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS);
   const auto& root_node = ActionableContentRootNode();
   EXPECT_EQ(root_node.children_nodes().size(), 1);
   AssertIsTextNode(root_node.children_nodes()[0], "Non empty simple page\n\n");

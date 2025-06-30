@@ -778,12 +778,16 @@ bool ConvertAIPageContentToProto(
   }
 
   auto version = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0;
+  auto mode = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_MODE_DEFAULT;
   if (main_frame_options->mode ==
       blink::mojom::AIPageContentMode::kActionableElements) {
     version = optimization_guide::proto::
         ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0;
+    mode = optimization_guide::proto::
+        ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS;
   }
   page_content_result.proto.set_version(version);
+  page_content_result.proto.set_mode(mode);
 
   return true;
 }
