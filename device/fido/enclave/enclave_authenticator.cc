@@ -18,11 +18,14 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "crypto/random.h"
+#include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/metrics.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/public_key_credential_descriptor.h"
 
 namespace device::enclave {
@@ -75,6 +78,7 @@ AuthenticatorSupportedOptions EnclaveAuthenticatorOptions() {
   options.supports_resident_key = true;
   options.user_verification_availability = AuthenticatorSupportedOptions::
       UserVerificationAvailability::kSupportedAndConfigured;
+  options.large_blob_type = LargeBlobSupportType::kBespoke;
   options.supports_user_presence = false;
   return options;
 }

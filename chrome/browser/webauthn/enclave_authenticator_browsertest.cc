@@ -113,6 +113,27 @@ namespace {
 
 using trusted_vault::MockTrustedVaultThrottlingConnection;
 
+static constexpr char kMakeCredentialLargeBlob[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { name: "www.example.com" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    authenticatorSelection: {
+      userVerification: "discouraged",
+      requireResidentKey: true
+    },
+    // Ask for large-blob support at registration time.
+    extensions: { largeBlob: { support: "preferred" } },
+  }}).then(c => {
+    const lb = c.getClientExtensionResults().largeBlob;
+    // Pass back the value we care about.
+    window.domAutomationController.send(
+        "largeblob " + (lb ? lb.supported : lb));
+  }, e => window.domAutomationController.send("error " + e));
+})())";
+
 static constexpr char kMakeCredentialUvDiscouraged[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
     rp: { name: "www.example.com" },
@@ -4066,6 +4087,32 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorImmediateMediationBrowserTest,
       "WebAuthentication.GetAssertion.Immediate.EnclaveReady",
       /*sample=*/false,
       /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MakeCredential_LargeBlobSupported) {
+  // New empty vault.
+  SetTrustedVaultEmpty();
+
+  content::WebContents* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Start JS create() call.
+  content::DOMMessageQueue queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialLargeBlob);
+
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  dialog_model()->OnGPMCreatePasskey();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  // Collect the JS result and verify the extension bit.
+  std::string script_result;
+  ASSERT_TRUE(queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"largeblob true\"");
 }
 
 }  // namespace
