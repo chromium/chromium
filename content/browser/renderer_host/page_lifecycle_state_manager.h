@@ -98,10 +98,15 @@ class CONTENT_EXPORT PageLifecycleStateManager {
       blink::mojom::PageRestoreParamsPtr page_restore_params,
       base::OnceClosure done_cb);
 
+  // TODO(https://crbug.com/427316606): Remove this.
+  void DumpWithoutCrashForBug427316606();
+
   // Called when a new acknowledged state is available. This new state can come
   // from several paths.
   void OnPageLifecycleStateChanged(
-      blink::mojom::PageLifecycleStatePtr acknowledged_state);
+      blink::mojom::PageLifecycleStatePtr acknowledged_state,
+      // TODO(https://crbug.com/427316606): Remove this.
+      bool set_page_lifecycle_state_response);
   void OnSetPageLifecycleStateResponse(
       blink::mojom::PageLifecycleStatePtr acknowledged_state,
       base::OnceClosure done_cb);
