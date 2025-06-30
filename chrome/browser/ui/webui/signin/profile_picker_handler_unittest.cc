@@ -27,7 +27,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -304,14 +303,6 @@ TEST_F(ProfilePickerHandlerTest, OmittedProfileOnInit) {
 // Tests the behavior of the profile picker handler in presence of supervised
 // profiles.
 class SupervisedProfilePickerHandlerTest : public ProfilePickerHandlerTest {
- public:
-  SupervisedProfilePickerHandlerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_user::kShowKiteForSupervisedUsers);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SupervisedProfilePickerHandlerTest,

@@ -11235,33 +11235,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    {"supervised-profile-safe-search",
-     flag_descriptions::kSupervisedProfileSafeSearchName,
-     flag_descriptions::kSupervisedProfileSafeSearchDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kForceSafeSearchForUnauthenticatedSupervisedUsers)},
-
-    {"supervised-profile-custom-strings",
-     flag_descriptions::kSupervisedProfileCustomStringsName,
-     flag_descriptions::kSupervisedProfileCustomStringsDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kCustomProfileStringsForSupervisedUsers)},
-
-    {"supervised-profile-sign-in-iph",
-     flag_descriptions::kSupervisedProfileSignInIphName,
-     flag_descriptions::kSupervisedProfileSignInIphDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         feature_engagement::kIPHSupervisedUserProfileSigninFeature)},
-
-    {"supervised-profile-kite-badging",
-     flag_descriptions::kSupervisedProfileShowKiteBadgeName,
-     flag_descriptions::kSupervisedProfileShowKiteBadgeDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(supervised_user::kShowKiteForSupervisedUsers)},
-
     {"supervised-user-local-web-approvals",
      flag_descriptions::kSupervisedUserLocalWebApprovalsName,
      flag_descriptions::kSupervisedUserLocalWebApprovalsDescription,

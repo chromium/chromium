@@ -5092,30 +5092,8 @@ extern const char kSupervisedUserBlockInterstitialV3Name[];
 extern const char kSupervisedUserBlockInterstitialV3Description[];
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-extern const char kSupervisedProfileHideGuestName[];
-extern const char kSupervisedProfileHideGuestDescription[];
-
-extern const char kSupervisedProfileSafeSearchName[];
-extern const char kSupervisedProfileSafeSearchDescription[];
-
-extern const char kSupervisedProfileReauthForBlockedSiteName[];
-extern const char kSupervisedProfileReauthForBlockedSiteDescription[];
-
-extern const char kSupervisedProfileSubframeReauthName[];
-extern const char kSupervisedProfileSubframeReauthDescription[];
-
-extern const char kSupervisedProfileCustomStringsName[];
-extern const char kSupervisedProfileCustomStringsDescription[];
-
-extern const char kSupervisedProfileSignInIphName[];
-extern const char kSupervisedProfileSignInIphDescription[];
-
-extern const char kSupervisedProfileShowKiteBadgeName[];
-extern const char kSupervisedProfileShowKiteBadgeDescription[];
-
 extern const char kSupervisedUserLocalWebApprovalsName[];
 extern const char kSupervisedUserLocalWebApprovalsDescription[];
-
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

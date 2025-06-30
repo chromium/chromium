@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -26,7 +25,6 @@
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
@@ -195,12 +193,10 @@ TEST_F(ChildAccountServiceTest, GetGoogleAuthStateNotAuthenticatedNotSignedIn) {
             child_account_service_->GetGoogleAuthState());
 }
 
-// Tests that SafeSearch is correctly enforced for a supervised profile.
+// Tests that SafeSearch is correctly enforced for a supervised profile on Mac,
+// Linux, and Windows,.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 TEST_F(ChildAccountServiceTest, UpdateForceGoogleSafeSearch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kForceSafeSearchForUnauthenticatedSupervisedUsers);
-
   // SafeSearch should not be forced for signed-out users.
   ASSERT_FALSE(GetUserPerferences().GetBoolean(
       policy::policy_prefs::kForceGoogleSafeSearch));
@@ -226,5 +222,6 @@ TEST_F(ChildAccountServiceTest, UpdateForceGoogleSafeSearch) {
   ASSERT_FALSE(GetUserPerferences().GetBoolean(
       policy::policy_prefs::kForceGoogleSafeSearch));
 }
+#endif
 
 }  // namespace supervised_user

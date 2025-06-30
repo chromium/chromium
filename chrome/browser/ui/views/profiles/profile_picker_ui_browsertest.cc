@@ -27,7 +27,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -42,7 +41,6 @@ struct ProfilePickerTestParam {
   bool use_multiple_profiles = false;
   // Requires `use_multiple_profiles` to be enabled.
   bool has_supervised_user = false;
-  bool show_kite_for_supervised_users = false;
   bool disallow_profile_creation = false;
   bool use_glic_version = false;
   bool no_glic_eligible_profiles = false;
@@ -88,15 +86,13 @@ const ProfilePickerTestParam kTestParams[] = {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {.pixel_test_param = {.test_suffix = "MultipleProfiles_Kite"},
      .use_multiple_profiles = true,
-     .has_supervised_user = true,
-     .show_kite_for_supervised_users = true},
+     .has_supervised_user = true},
     {.pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles_Kite",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
                           .window_size = PixelTestParam::kSmallWindowSize},
      .use_multiple_profiles = true,
-     .has_supervised_user = true,
-     .show_kite_for_supervised_users = true},
+     .has_supervised_user = true},
     {.pixel_test_param = {.test_suffix = "ManagedProfileHasCustomWorkLabel"},
      .use_multiple_profiles = true,
      .is_enterprise_badging_enabled = true},
@@ -230,9 +226,7 @@ class ProfilePickerUIPixelTest
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     scoped_feature_list_.InitWithFeatureStates(
-        {{supervised_user::kShowKiteForSupervisedUsers,
-          GetParam().show_kite_for_supervised_users},
-         {features::kEnterpriseProfileBadgingForAvatar,
+        {{features::kEnterpriseProfileBadgingForAvatar,
           GetParam().is_enterprise_badging_enabled}});
 #endif
   }

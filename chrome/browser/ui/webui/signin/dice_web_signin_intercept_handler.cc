@@ -32,7 +32,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -75,9 +74,7 @@ base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
   std::string avatar_badge_alt_text = "";
   if (info.IsManaged() == signin::Tribool::kTrue) {
     avatar_badge = kEnterprizeBadgeSource;
-  } else if (IsSupervisedUser(info.capabilities) &&
-             base::FeatureList::IsEnabled(
-                 supervised_user::kShowKiteForSupervisedUsers)) {
+  } else if (IsSupervisedUser(info.capabilities)) {
     avatar_badge = kSupervisedBadgeSource;
     avatar_badge_alt_text =
         l10n_util::GetStringUTF8(IDS_MANAGED_BY_PARENT_A11Y);
@@ -265,9 +262,7 @@ DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
 
   std::string managed_user_badge;
   std::string managed_user_badge_alt_text;
-  if (IsSupervisedUser(intercepted_account().capabilities) &&
-      base::FeatureList::IsEnabled(
-          supervised_user::kShowKiteForSupervisedUsers)) {
+  if (IsSupervisedUser(intercepted_account().capabilities)) {
     managed_user_badge = kSupervisedBadgeSource;
     managed_user_badge_alt_text =
         l10n_util::GetStringUTF8(IDS_MANAGED_BY_PARENT_A11Y);
@@ -339,10 +334,8 @@ std::string DiceWebSigninInterceptHandler::GetChromeSigninTitle() {
   // Set the title depending on whether the user is supervised. Note that
   // calling code waits for Account Capabilities to be fetched (with a timeout),
   // so Account Capabilities will be available for the vast majority of users.
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kCustomProfileStringsForSupervisedUsers) &&
-      bubble_parameters_.intercepted_account.capabilities
-              .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
+  if (bubble_parameters_.intercepted_account.capabilities
+          .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
     return l10n_util::GetStringUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED);
   }
@@ -354,10 +347,8 @@ std::string DiceWebSigninInterceptHandler::GetChromeSigninSubtitle() {
   // Set the subtitle depending on whether the user is supervised. Note that
   // calling code waits for Account Capabilities to be fetched (with a timeout),
   // so Account Capabilities will be available for the vast majority of users.
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kCustomProfileStringsForSupervisedUsers) &&
-      intercepted_account().capabilities.is_subject_to_parental_controls() ==
-          signin::Tribool::kTrue) {
+  if (intercepted_account().capabilities.is_subject_to_parental_controls() ==
+      signin::Tribool::kTrue) {
     return l10n_util::GetStringUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED);
   }
@@ -379,10 +370,8 @@ std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
 std::string DiceWebSigninInterceptHandler::GetBodyText() {
   if (bubble_parameters_.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
-    if (base::FeatureList::IsEnabled(
-            supervised_user::kCustomProfileStringsForSupervisedUsers) &&
-        intercepted_account().capabilities.is_subject_to_parental_controls() ==
-            signin::Tribool::kTrue) {
+    if (intercepted_account().capabilities.is_subject_to_parental_controls() ==
+        signin::Tribool::kTrue) {
       return l10n_util::GetStringFUTF8(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC_V2_SUPERVISED,
           base::UTF8ToUTF16(intercepted_account().email));
@@ -410,10 +399,8 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
         IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_BY_TOKEN);
   }
 
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kCustomProfileStringsForSupervisedUsers) &&
-      intercepted_account().capabilities.is_subject_to_parental_controls() ==
-          signin::Tribool::kTrue) {
+  if (intercepted_account().capabilities.is_subject_to_parental_controls() ==
+      signin::Tribool::kTrue) {
     return l10n_util::GetStringFUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC_SUPERVISED,
         base::UTF8ToUTF16(intercepted_account().email));

@@ -8669,51 +8669,10 @@ const char kSupervisedUserBlockInterstitialV3Description[] =
     "Enables URL filter interstitial V3 for Family Link users.";
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-const char kSupervisedProfileHideGuestName[] = "Supervised Profile Hide Guest";
-const char kSupervisedProfileHideGuestDescription[] =
-    "Hides Guest Profile entry points for supervised users";
-
-const char kSupervisedProfileSafeSearchName[] = "Supervised Profile SafeSearch";
-const char kSupervisedProfileSafeSearchDescription[] =
-    "Enables SafeSearch in Google Search for supervised users in the pending "
-    "state.";
-
-const char kSupervisedProfileReauthForBlockedSiteName[] =
-    "Supervised Profile blocked site reauth";
-const char kSupervisedProfileReauthForBlockedSiteDescription[] =
-    "Ask supervised users to re-authenticate when attempting to navigate to a "
-    "site blocked by parental controls.";
-
-const char kSupervisedProfileSubframeReauthName[] =
-    "Supervised Profile reauth in subframes";
-const char kSupervisedProfileSubframeReauthDescription[] =
-    "If \"Supervised Profile YouTube reauth\" or \"Supervised Profile blocked "
-    "site reauth\" is enabled, require supervised users to re-authenticate "
-    "before accessing embedded YouTube videos or blocked sites in subframes, "
-    "respectively.";
-
-const char kSupervisedProfileCustomStringsName[] =
-    "Supervised Profile custom strings";
-const char kSupervisedProfileCustomStringsDescription[] =
-    "Displays modified strings on both the sign-in intercept UI and the "
-    "pre-UNO sync opt out screen";
-
-const char kSupervisedProfileSignInIphName[] = "Supervised Profile sign-in IPH";
-const char kSupervisedProfileSignInIphDescription[] =
-    "Displays an in-product help message when a Profile becomes owned by a "
-    "supervised user (either on creation of the new profile, or after sign "
-    "in).";
-
-const char kSupervisedProfileShowKiteBadgeName[] =
-    "Supervised Profile show kite badge";
-const char kSupervisedProfileShowKiteBadgeDescription[] =
-    "Shows a kite badge on the profile avatar for supervised users.";
-
 const char kSupervisedUserLocalWebApprovalsName[] =
     "Enable local web approvals feature";
 const char kSupervisedUserLocalWebApprovalsDescription[] =
     "Enables parents to approve blocked websites on a child's device.";
-
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

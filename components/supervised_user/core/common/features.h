@@ -38,24 +38,6 @@ BASE_DECLARE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload);
 BASE_DECLARE_FEATURE(kSupervisedUserBlockInterstitialV3);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Enable different web sign in interception behaviour for supervised users:
-//
-// 1. Supervised user signs in to existing signed out Profile: show modal
-//    explaining that supervision features will apply.
-// 2. Supervised user signs in as secondary account in existing signed in
-//    Profile
-BASE_DECLARE_FEATURE(kCustomProfileStringsForSupervisedUsers);
-
-// Displays a Family Link kite badge on the supervised user avatar in various
-// surfaces.
-BASE_DECLARE_FEATURE(kShowKiteForSupervisedUsers);
-#endif
-
-// Force enable SafeSearch for a supervised profile with an
-// unauthenticated (e.g. signed out of the content area) account.
-BASE_DECLARE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Uses supervised user strings on the signout dialog.
 BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 #endif
