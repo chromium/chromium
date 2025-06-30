@@ -74,7 +74,6 @@ struct DinoGameWidgetEntryView: View {
                 .foregroundColor(Color("widget_text_color"))
                 .fontWeight(.semibold)
                 .font(.subheadline)
-                .lineLimit(1)
               Spacer()
               if ChromeWidgetsMain.WidgetForMIMAvailable {
                 AvatarForDinoGame(entry: entry)
