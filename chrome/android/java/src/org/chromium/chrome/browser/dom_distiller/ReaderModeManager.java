@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.embedder_support.util.UrlConstants.CHROME_NATIVE_SCHEME;
 import static org.chromium.components.embedder_support.util.UrlConstants.CHROME_SCHEME;
 
@@ -15,8 +17,6 @@ import android.os.SystemClock;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -28,6 +28,8 @@ import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -81,6 +83,7 @@ import java.util.LinkedHashSet;
  * preferences toolbar icon and hiding the browser controls when a reader mode page has finished
  * loading.
  */
+@NullMarked
 public class ReaderModeManager extends EmptyTabObserver implements UserData {
     /** Possible states that the distiller can be in on a web page. */
     @IntDef({
@@ -119,13 +122,13 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             "DomDistiller.Android.OnDistillableResult.PageDistillationResult";
 
     /** The url of the last page visited if the last page was reader mode page. Otherwise null. */
-    private GURL mReaderModePageUrl;
+    private @Nullable GURL mReaderModePageUrl;
 
     /** Whether the current web page was distillable or not has been determined. */
     private boolean mIsCurrentPageDistillationStatusDetermined;
 
     /** The WebContentsObserver responsible for updates to the distillation status of the tab. */
-    private WebContentsObserver mWebContentsObserver;
+    private @Nullable WebContentsObserver mWebContentsObserver;
 
     /** The distillation status of the tab. */
     @DistillationStatus private int mDistillationStatus;
@@ -137,7 +140,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
      * The URL that distiller is using for this tab. This is used to check if a result comes back
      * from distiller and the user has already loaded a new URL.
      */
-    private GURL mDistillerUrl;
+    private @Nullable GURL mDistillerUrl;
 
     /** Used to flag that the prompt was shown and recorded by UMA. */
     private boolean mShowPromptRecorded;
@@ -149,7 +152,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     private long mViewStartTimeMs;
 
     /** The distillability observer attached to the tab. */
-    private DistillabilityObserver mDistillabilityObserver;
+    private @Nullable DistillabilityObserver mDistillabilityObserver;
 
     /** Whether this manager and tab have been destroyed. */
     private boolean mIsDestroyed;
@@ -158,10 +161,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     private final Tab mTab;
 
     /** The supplier of MessageDispatcher to display the message. */
-    private final Supplier<MessageDispatcher> mMessageDispatcherSupplier;
+    private final Supplier<@Nullable MessageDispatcher> mMessageDispatcherSupplier;
 
     // Hold on to the InterceptNavigationDelegate that the custom tab uses.
-    InterceptNavigationDelegate mCustomTabNavigationDelegate;
+    @Nullable InterceptNavigationDelegate mCustomTabNavigationDelegate;
 
     /** Whether the messages UI was requested for a navigation. */
     private boolean mMessageRequestedForNavigation;
@@ -175,7 +178,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     private boolean mMessageShown;
 
     /** Property Model of Reader mode message. */
-    private PropertyModel mMessageModel;
+    private @Nullable PropertyModel mMessageModel;
 
     /** Whether the reader mode button is currently being shown on the toolbar. */
     private boolean mIsReaderModeButtonShowingOnToolbar;
@@ -184,7 +187,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     // current navigation.
     private boolean mHasBeenNotifiedOfCpa;
 
-    ReaderModeManager(Tab tab, Supplier<MessageDispatcher> messageDispatcherSupplier) {
+    ReaderModeManager(Tab tab, Supplier<@Nullable MessageDispatcher> messageDispatcherSupplier) {
         super();
         mTab = tab;
         mTab.addObserver(this);
@@ -251,13 +254,14 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                         Intent returnIntent =
                                 new Intent(Intent.ACTION_VIEW, Uri.parse(escapedUrl.getSpec()));
+                        assertNonNull(activity);
                         returnIntent.setClassName(activity, ChromeLauncherActivity.class.getName());
 
                         // Set the parent ID of the tab to be created.
                         returnIntent.putExtra(
                                 EXTRA_READER_MODE_PARENT,
-                                IntentUtils.safeGetInt(
-                                        activity.getIntent().getExtras(),
+                                IntentUtils.safeGetIntExtra(
+                                        activity.getIntent(),
                                         EXTRA_READER_MODE_PARENT,
                                         Tab.INVALID_TAB_ID));
 
@@ -330,7 +334,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             long timeMs = onExitReaderMode();
             recordReaderModeViewDuration(timeMs);
         }
-        TabDistillabilityProvider.get(tab).removeObserver(mDistillabilityObserver);
+        if (mDistillabilityObserver != null) {
+            var provider = TabDistillabilityProvider.get(tab);
+            assumeNonNull(provider).removeObserver(mDistillabilityObserver);
+        }
 
         removeTabState();
     }
@@ -381,6 +388,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mIsViewingReaderModePage = true;
         mViewStartTimeMs = SystemClock.elapsedRealtime();
 
+        assertNonNull(mTab.getWebContents());
         new UkmRecorder(mTab.getWebContents(), "DomDistiller.Android.ReaderModeShown")
                 .addBooleanMetric("Shown")
                 .record();
@@ -424,7 +432,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                 // Reader Mode should not pollute the navigation stack. To avoid this, watch for
                 // navigations and prepare to remove any that are "chrome-distiller" urls.
-                NavigationController controller = getWebContents().getNavigationController();
+                var webContents = assumeNonNull(getWebContents());
+                NavigationController controller = webContents.getNavigationController();
                 int index = controller.getLastCommittedEntryIndex();
                 NavigationEntry entry = controller.getEntryAtIndex(index);
 
@@ -452,7 +461,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                 if (mShouldRemovePreviousNavigation) {
                     mShouldRemovePreviousNavigation = false;
-                    NavigationController controller = getWebContents().getNavigationController();
+                    var webContents = assumeNonNull(getWebContents());
+                    NavigationController controller = webContents.getNavigationController();
                     if (controller.getEntryAtIndex(mLastDistillerPageIndex) != null) {
                         controller.removeEntryAtIndex(mLastDistillerPageIndex);
                     }
@@ -540,7 +550,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             return;
         }
 
-        if (sMutedSites.contains(urlToHash(mDistillerUrl))) {
+        if (mDistillerUrl != null && sMutedSites.contains(urlToHash(mDistillerUrl))) {
             return;
         }
 
@@ -591,11 +601,12 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                                 MessageBannerProperties.ON_DISMISSED,
                                 (reason) -> onMessageDismissed(url, reason))
                         .build();
+        assertNonNull(mTab.getWebContents());
         messageDispatcher.enqueueMessage(
                 mMessageModel, mTab.getWebContents(), MessageScopeType.NAVIGATION, false);
     }
 
-    private void onMessageDismissed(GURL url, @DismissReason int dismissReason) {
+    private void onMessageDismissed(@Nullable GURL url, @DismissReason int dismissReason) {
         mMessageModel = null;
         if (dismissReason == DismissReason.GESTURE) {
             onClosed();
@@ -606,7 +617,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         }
     }
 
-    private void addUrlToMutedSites(GURL url) {
+    private void addUrlToMutedSites(@Nullable GURL url) {
+        if (url == null) return;
         sMutedSites.add(urlToHash(url));
         while (sMutedSites.size() > MAX_SIZE_OF_DECLINED_SITES) {
             int v = sMutedSites.iterator().next();
@@ -614,7 +626,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         }
     }
 
-    private void removeUrlFromMutedSites(GURL url) {
+    private void removeUrlFromMutedSites(@Nullable GURL url) {
+        if (url == null) return;
         sMutedSites.remove(urlToHash(url));
     }
 
@@ -663,9 +676,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         BrowserControlsVisibilityManager browserControlsVisibilityManager =
                 getBrowserControlsVisibilityManager();
         if (browserControlsVisibilityManager != null) {
-            getBrowserControlsVisibilityManager()
-                    .getBrowserVisibilityDelegate()
-                    .showControlsTransient();
+            browserControlsVisibilityManager.getBrowserVisibilityDelegate().showControlsTransient();
         }
 
         DomDistillerTabUtils.distillCurrentPageAndView(webContents);
@@ -701,6 +712,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
                         DOM_DISTILLER_SCHEME, url.getSpec(), webContents.getTitle());
 
+        assertNonNull(activity);
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
         builder.setColorScheme(
@@ -752,7 +764,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                         tryShowingPrompt();
                     }
                 };
-        TabDistillabilityProvider.get(tabToObserve).addObserver(mDistillabilityObserver);
+        var provider = TabDistillabilityProvider.get(tabToObserve);
+        assumeNonNull(provider).addObserver(mDistillabilityObserver);
     }
 
     /**
@@ -848,12 +861,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
      * @param intent The Intent creating a new tab.
      * @return True whether the intent was created by Reader Mode.
      */
-    public static boolean isReaderModeCreatedIntent(@NonNull Intent intent) {
+    public static boolean isReaderModeCreatedIntent(Intent intent) {
         int readerParentId =
-                IntentUtils.safeGetInt(
-                        intent.getExtras(),
-                        ReaderModeManager.EXTRA_READER_MODE_PARENT,
-                        Tab.INVALID_TAB_ID);
+                IntentUtils.safeGetIntExtra(
+                        intent, ReaderModeManager.EXTRA_READER_MODE_PARENT, Tab.INVALID_TAB_ID);
         return readerParentId != Tab.INVALID_TAB_ID;
     }
 

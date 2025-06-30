@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -19,6 +20,7 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Java implementation of dom_distiller::android::DistillerUIHandleAndroid. */
 @JNINamespace("dom_distiller::android")
+@NullMarked
 public final class DomDistillerUiUtils {
     /**
      * A static method for native code to call to open the distiller UI settings.

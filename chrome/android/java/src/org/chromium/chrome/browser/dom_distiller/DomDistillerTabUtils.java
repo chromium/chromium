@@ -10,6 +10,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -21,14 +23,15 @@ import org.chromium.url.GURL;
 
 /** A helper class for using the DOM Distiller. */
 @JNINamespace("android")
+@NullMarked
 public class DomDistillerTabUtils {
     /** Triggering heuristics encoded in native enum DistillerHeuristicsType. */
-    private static Integer sHeuristics;
+    private static @Nullable Integer sHeuristics;
 
     /** Used to specify whether mobile friendly is enabled for testing purposes. */
-    private static Boolean sExcludeMobileFriendlyForTesting;
+    private static @Nullable Boolean sExcludeMobileFriendlyForTesting;
 
-    @DistillerHeuristicsType private static Integer sHeuristicsForTesting;
+    @DistillerHeuristicsType private static @Nullable Integer sHeuristicsForTesting;
 
     private DomDistillerTabUtils() {}
 
@@ -160,7 +163,7 @@ public class DomDistillerTabUtils {
      *     suitable for reader mode.
      */
     public static void runReadabilityHeuristicsOnWebContents(
-            WebContents webContents, Callback<Boolean> callback) {
+            @Nullable WebContents webContents, Callback<Boolean> callback) {
         DomDistillerTabUtilsJni.get().runReadabilityHeuristicsOnWebContents(webContents, callback);
     }
 
@@ -181,6 +184,6 @@ public class DomDistillerTabUtils {
                 InterceptNavigationDelegate delegate, WebContents webContents);
 
         void runReadabilityHeuristicsOnWebContents(
-                WebContents webContents, Callback<Boolean> callback);
+                @Nullable WebContents webContents, Callback<Boolean> callback);
     }
 }

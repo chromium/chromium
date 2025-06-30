@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.dom_distiller.content.DistillablePageUtils;
@@ -22,6 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A mechanism for clients interested in the distillability of a page to receive updates. */
+@NullMarked
 public class TabDistillabilityProvider extends EmptyTabObserver
         implements PageDistillableDelegate, UserData {
     public static final Class<TabDistillabilityProvider> USER_DATA_KEY =
@@ -65,7 +67,7 @@ public class TabDistillabilityProvider extends EmptyTabObserver
     private boolean mDistillabilityDetermined;
 
     /** The last web contents that the distillability delegate was attached to. */
-    private WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
 
     /** Cached results from the last result from native. */
     private boolean mIsDistillable;
@@ -198,6 +200,7 @@ public class TabDistillabilityProvider extends EmptyTabObserver
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mObserverList.clear();
         mTab.removeObserver(this);

@@ -11,9 +11,10 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -30,6 +31,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Responsible for providing UI resources for showing a reader mode button on toolbar. */
+@NullMarked
 public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
     private final Context mContext;
     private final ActivityTabProvider mActivityTabProvider;
