@@ -1352,15 +1352,34 @@ protocol::Response InspectorDOMAgent::performSearch(
   // Selector evaluation
   for (Document* document : docs) {
     DummyExceptionStateForTesting exception_state;
+
+    // First, evaluate the query selector on the document
     StaticElementList* element_list = document->QuerySelectorAll(
         AtomicString(whitespace_trimmed_query), exception_state);
-    if (exception_state.HadException() || !element_list) {
-      continue;
+    if (element_list && !exception_state.HadException()) {
+      for (unsigned i = 0; i < element_list->length(); ++i) {
+        result_collector.insert(element_list->item(i));
+      }
     }
 
-    unsigned size = element_list->length();
-    for (unsigned i = 0; i < size; ++i) {
-      result_collector.insert(element_list->item(i));
+    // Second, evaluate the query selector on each shadow root
+    Node* document_element = document->documentElement();
+    Node* node = document_element;
+    if (!node) {
+      continue;
+    }
+    for (; node; node = NextNodeWithShadowDOMInMind(
+                     *node, document_element, include_user_agent_shadow_dom)) {
+      if (auto* shadow_root = DynamicTo<ShadowRoot>(node)) {
+        element_list = shadow_root->QuerySelectorAll(
+            AtomicString(whitespace_trimmed_query), exception_state);
+        if (exception_state.HadException() || !element_list) {
+          continue;
+        }
+        for (unsigned i = 0; i < element_list->length(); ++i) {
+          result_collector.insert(element_list->item(i));
+        }
+      }
     }
   }
 
