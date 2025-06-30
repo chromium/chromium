@@ -274,6 +274,10 @@ bool GlicKeyedService::IsWindowDetached() const {
   return window_controller_->IsDetached();
 }
 
+bool GlicKeyedService::IsWindowOrFreShowing() const {
+  return window_controller_->IsShowing() ||
+         window_controller_->fre_controller()->IsShowingDialog();
+}
 
 base::CallbackListSubscription
 GlicKeyedService::AddContextAccessIndicatorStatusChangedCallback(

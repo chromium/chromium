@@ -115,6 +115,8 @@ class GlicFreController {
 
   bool IsShowingDialog() const;
 
+  bool IsShowingDialogAndStateInitialized() const;
+
   gfx::Size GetFreInitialSize();
 
   void UpdateFreWidgetSize(const gfx::Size& new_size);
