@@ -9,4 +9,5 @@ found in the LICENSE file.
   <!-- NTP customization main bottom sheet sections -->
   <item type="id" name="ntp_cards" />
   <item type="id" name="feed_settings" />
+  <item type="id" name="theme" />
 </resources>

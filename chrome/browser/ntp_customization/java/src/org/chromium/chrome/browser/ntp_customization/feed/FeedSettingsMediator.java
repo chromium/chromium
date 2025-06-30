@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.feed;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.launchUriActivity;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
@@ -17,18 +18,11 @@ import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoo
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.HIDDEN;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.INTERESTS;
 
-import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
-import android.provider.Browser;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.View.OnClickListener;
-
-import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -56,7 +50,6 @@ import java.util.List;
 /** Mediator for the feed settings bottom sheet in the NTP customization. */
 @NullMarked
 public class FeedSettingsMediator {
-    private static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
     private static final String ACTIVITY_CLICK_URL =
             "https://myactivity.google.com/myactivity?product=50";
     private static final String FOLLOWING_CLICK_URL =
@@ -296,31 +289,6 @@ public class FeedSettingsMediator {
         launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
         BrowserUiUtils.recordModuleClickHistogram(BrowserUiUtils.ModuleTypeOnStartAndNtp.FEED);
         FeedUma.recordFeedBottomSheetItemsClicked(FeedUserActionType.TAPPED_LEARN_MORE);
-    }
-
-    // Launch a new activity in the same task with the given uri as a CCT.
-    private static void launchUriActivity(Context context, String uri) {
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setShowTitle(true);
-        builder.setShareState(CustomTabsIntent.SHARE_STATE_ON);
-        Intent intent = builder.build().intent;
-        intent.setPackage(context.getPackageName());
-        // Adding trusted extras lets us know that the intent came from Chrome.
-        intent.putExtra(TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken(context));
-        intent.setData(Uri.parse(uri));
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setClassName(context, "org.chromium.chrome.browser.customtabs.CustomTabActivity");
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
-        context.startActivity(intent);
-    }
-
-    // Copied from IntentHandler, which is in chrome_java, so we can't call it directly.
-    private static PendingIntent getAuthenticationToken(Context context) {
-        Intent fakeIntent = new Intent();
-        ComponentName fakeComponentName = new ComponentName(context.getPackageName(), "FakeClass");
-        fakeIntent.setComponent(fakeComponentName);
-        int mutabililtyFlag = PendingIntent.FLAG_IMMUTABLE;
-        return PendingIntent.getActivity(context, 0, fakeIntent, mutabililtyFlag);
     }
 
     /** Returns whether the feed articles are turned on and visible to the user. */

@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_KEYS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.VIEW_FLIPPER_KEYS;
@@ -25,6 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -49,15 +51,22 @@ public class NtpCustomizationCoordinator {
     private NtpCustomizationMediator mMediator;
     private @MonotonicNonNull NtpCardsCoordinator mNtpCardsCoordinator;
     private @Nullable FeedSettingsCoordinator mFeedSettingsCoordinator;
+    private @Nullable NtpThemeCoordinator mNtpThemeCoordinator;
     private ViewFlipper mViewFlipperView;
 
-    @IntDef({BottomSheetType.MAIN, BottomSheetType.NTP_CARDS, BottomSheetType.FEED})
+    @IntDef({
+        BottomSheetType.MAIN,
+        BottomSheetType.NTP_CARDS,
+        BottomSheetType.FEED,
+        BottomSheetType.THEME
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BottomSheetType {
         int MAIN = 0;
         int NTP_CARDS = 1;
         int FEED = 2;
-        int NUM_ENTRIES = 3;
+        int THEME = 3;
+        int NUM_ENTRIES = 4;
     }
 
     @IntDef({EntryPointType.MAIN_MENU, EntryPointType.TOOL_BAR, EntryPointType.NEW_TAB_PAGE})
@@ -137,6 +146,7 @@ public class NtpCustomizationCoordinator {
             // before calling renderListContent().
             mMediator.registerClickListener(NTP_CARDS, getOptionClickListener(NTP_CARDS));
             mMediator.registerClickListener(FEED, getOptionClickListener(FEED));
+            mMediator.registerClickListener(THEME, getOptionClickListener(THEME));
             mMediator.renderListContent();
         }
     }
@@ -162,6 +172,7 @@ public class NtpCustomizationCoordinator {
             case MAIN -> mMediator.showBottomSheet(MAIN);
             case NTP_CARDS -> showNtpCardsBottomSheet();
             case FEED -> showFeedBottomSheet();
+            case THEME -> showThemeBottomSheet();
             default -> {
                 assert false : "Bottom sheet type not supported!";
             }
@@ -184,6 +195,15 @@ public class NtpCustomizationCoordinator {
         mMediator.showBottomSheet(FEED);
     }
 
+    private void showThemeBottomSheet() {
+        if (mNtpThemeCoordinator == null) {
+            mNtpThemeCoordinator =
+                    new NtpThemeCoordinator(
+                            mContext, mDelegate, mProfileSupplier.get().getOriginalProfile());
+        }
+        mMediator.showBottomSheet(THEME);
+    }
+
     /**
      * Returns a click listener to handle user clicks on the options in the NTP customization main
      * bottom sheet.
@@ -196,6 +216,9 @@ public class NtpCustomizationCoordinator {
             }
             case FEED -> {
                 return v -> showFeedBottomSheet();
+            }
+            case THEME -> {
+                return v -> showThemeBottomSheet();
             }
             default -> {
                 assert false : "Bottom sheet type not supported!";
@@ -251,6 +274,9 @@ public class NtpCustomizationCoordinator {
         }
         if (mFeedSettingsCoordinator != null) {
             mFeedSettingsCoordinator.destroy();
+        }
+        if (mNtpThemeCoordinator != null) {
+            mNtpThemeCoordinator.destroy();
         }
     }
 

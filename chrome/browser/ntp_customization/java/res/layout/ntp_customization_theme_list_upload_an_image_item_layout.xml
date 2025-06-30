@@ -5,11 +5,9 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<org.chromium.chrome.browser.ntp_customization.theme.NtpThemeListItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingVertical="@dimen/ntp_customization_theme_list_item_padding_vertical"
@@ -43,4 +41,5 @@ found in the LICENSE file.
       app:tint="@color/default_icon_color_tint_list"
       android:src="@drawable/ic_check_googblue_24dp"
       android:visibility="gone"/>
-</LinearLayout>
+
+</org.chromium.chrome.browser.ntp_customization.theme.NtpThemeListItemView>

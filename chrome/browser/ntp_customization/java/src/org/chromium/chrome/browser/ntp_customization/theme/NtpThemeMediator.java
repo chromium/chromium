@@ -1,0 +1,124 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ntp_customization.theme;
+
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.launchUriActivity;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_COLORS;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_DEFAULT;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.UPLOAD_AN_IMAGE;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEARN_MORE_BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SECTION_ON_CLICK_LISTENER;
+
+import android.support.annotation.VisibleForTesting;
+import android.util.Pair;
+import android.view.View;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/** Mediator for the NTP appearance settings bottom sheet in the NTP customization. */
+@NullMarked
+public class NtpThemeMediator {
+
+    // TODO(crbug.com/423579377): Update the url for learn more button.
+    private static final String LEARN_MORE_CLICK_URL =
+            "https://support.google.com/chrome/?p=new_tab";
+    private final PropertyModel mBottomSheetPropertyModel;
+    private final PropertyModel mThemePropertyModel;
+    private final BottomSheetDelegate mBottomSheetDelegate;
+
+    public NtpThemeMediator(
+            PropertyModel bottomSheetPropertyModel,
+            PropertyModel themePropertyModel,
+            BottomSheetDelegate delegate,
+            Profile profile) {
+        mBottomSheetPropertyModel = bottomSheetPropertyModel;
+        mThemePropertyModel = themePropertyModel;
+        mBottomSheetDelegate = delegate;
+
+        // Hides the back button when the theme settings bottom sheet is displayed standalone.
+        mBottomSheetPropertyModel.set(
+                BACK_PRESS_HANDLER,
+                delegate.shouldShowAlone()
+                        ? null
+                        : v -> mBottomSheetDelegate.backPressOnCurrentBottomSheet());
+
+        setOnClickListenerForAllSection();
+        mThemePropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, this::handleLearnMoreClick);
+    }
+
+    void destroy() {
+        mBottomSheetPropertyModel.set(BACK_PRESS_HANDLER, null);
+        mThemePropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, null);
+    }
+
+    /** Sets the on click listener for each theme bottom sheet section. */
+    private void setOnClickListenerForAllSection() {
+        mThemePropertyModel.set(
+                SECTION_ON_CLICK_LISTENER,
+                new Pair<>(CHROME_DEFAULT, this::handleChromeDefaultSectionClick));
+        mThemePropertyModel.set(
+                SECTION_ON_CLICK_LISTENER,
+                new Pair<>(UPLOAD_AN_IMAGE, this::handleUploadAnImageSectionClick));
+        mThemePropertyModel.set(
+                SECTION_ON_CLICK_LISTENER,
+                new Pair<>(CHROME_COLORS, this::handleChromeColorsSectionClick));
+        mThemePropertyModel.set(
+                SECTION_ON_CLICK_LISTENER,
+                new Pair<>(THEME_COLLECTIONS, this::handleThemeCollectionsSectionClick));
+    }
+
+    /**
+     * Updates the visibility of the trailing icon for each theme section. The icon is made visible
+     * for the section that matches {@code sectionType}, and hidden for all other sections.
+     *
+     * @param sectionType The {@link NTPThemeBottomSheetSection} to show the trailing icon for.
+     */
+    private void updateTrailingIconVisibilityForSectionType(
+            @NTPThemeBottomSheetSection int sectionType) {
+        for (int i = 0; i < NTPThemeBottomSheetSection.NUM_ENTRIES; i++) {
+            if (i == THEME_COLLECTIONS) {
+                continue;
+            }
+
+            if (i == sectionType) {
+                mThemePropertyModel.set(IS_SECTION_TRAILING_ICON_VISIBLE, new Pair<>(i, true));
+            } else {
+                mThemePropertyModel.set(IS_SECTION_TRAILING_ICON_VISIBLE, new Pair<>(i, false));
+            }
+        }
+    }
+
+    @VisibleForTesting
+    void handleChromeDefaultSectionClick(View view) {
+        updateTrailingIconVisibilityForSectionType(CHROME_DEFAULT);
+    }
+
+    @VisibleForTesting
+    void handleUploadAnImageSectionClick(View view) {
+        updateTrailingIconVisibilityForSectionType(UPLOAD_AN_IMAGE);
+    }
+
+    @VisibleForTesting
+    void handleChromeColorsSectionClick(View view) {
+        updateTrailingIconVisibilityForSectionType(CHROME_COLORS);
+    }
+
+    @VisibleForTesting
+    void handleThemeCollectionsSectionClick(View view) {
+        updateTrailingIconVisibilityForSectionType(THEME_COLLECTIONS);
+    }
+
+    @VisibleForTesting
+    void handleLearnMoreClick(View view) {
+        launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
+    }
+}

@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
@@ -22,6 +23,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -54,7 +56,7 @@ public class NtpCustomizationMediator {
     private final NtpCustomizationBottomSheetContent mBottomSheetContent;
     private final BottomSheetObserver mBottomSheetObserver;
     private final PropertyModel mViewFlipperPropertyModel;
-    private List<Integer> mListContent;
+    private final List<Integer> mListContent;
     private final Supplier<Profile> mProfileSupplier;
     private final @Nullable PropertyModel mContainerPropertyModel;
     private @Nullable Profile mProfile;
@@ -160,6 +162,8 @@ public class NtpCustomizationMediator {
                         return R.id.ntp_cards;
                     case FEED:
                         return R.id.feed_settings;
+                    case THEME:
+                        return R.id.theme;
                     default:
                         return View.NO_ID;
                 }
@@ -172,6 +176,8 @@ public class NtpCustomizationMediator {
                         return context.getString(R.string.home_modules_configuration);
                     case FEED:
                         return context.getString(R.string.ntp_customization_feed_settings_title);
+                    case THEME:
+                        return context.getString(R.string.ntp_customization_theme_title);
                     default:
                         assert false : "Bottom sheet type not supported!";
                         return assumeNonNull(null);
@@ -234,6 +240,9 @@ public class NtpCustomizationMediator {
         content.add(NTP_CARDS);
         if (FeedFeatures.isFeedEnabled(mProfile)) {
             content.add(FEED);
+        }
+        if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+            content.add(THEME);
         }
         return content;
     }
@@ -301,9 +310,5 @@ public class NtpCustomizationMediator {
 
     Map<Integer, View.OnClickListener> getTypeToListenersForTesting() {
         return mTypeToListenersMap;
-    }
-
-    void setListContetForTesting(List<Integer> listContent) {
-        mListContent = listContent;
     }
 }
