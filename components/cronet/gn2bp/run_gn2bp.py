@@ -263,7 +263,10 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
       && vpython3 components/cronet/gn2bp/run_gn2bp.py --channel={import_channel}
 
       The state of Chromium, for the commit being imported, can be browsed at:
-      https://chromium.googlesource.com/chromium/src/+/{commit_hash}""")
+      https://chromium.googlesource.com/chromium/src/+/{commit_hash}
+
+      NO_IFTTT=Imported from Chromium.
+      """)
   additional_parameters = [
       '--ignore-noop',
       '--force-message',
