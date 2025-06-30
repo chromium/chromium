@@ -396,6 +396,11 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   image_ctx->max_decoded_image_size_bytes =
       params->max_decoded_image_size_bytes;
 
+  // The canvas holds a raw_ptr to the tracker, and when the tracker is moved to
+  // FinishRecordingOnUIThread, it's possible that it'll be released before
+  // returning, leading to a dangling pointer in the canvas.
+  canvas->SetPaintPreviewTracker(nullptr);
+
   FinishRecordingOnUIThread(recorder.finishRecordingAsPicture(), bounds,
                             std::move(tracker), params->persistence,
                             std::move(params->file), max_capture_size,

@@ -258,8 +258,7 @@ class CC_PAINT_EXPORT PaintCanvas {
 
  private:
   raw_ptr<printing::MetafileSkia> metafile_ = nullptr;
-  raw_ptr<paint_preview::PaintPreviewTracker, DanglingUntriaged> tracker_ =
-      nullptr;
+  raw_ptr<paint_preview::PaintPreviewTracker> tracker_ = nullptr;
 };
 
 class CC_PAINT_EXPORT PaintCanvasAutoRestore {
