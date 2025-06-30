@@ -13,6 +13,7 @@ source_set("impl") {
 
   deps = [
     ":utils",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/promos:utils",
     "//chrome/browser/sync",

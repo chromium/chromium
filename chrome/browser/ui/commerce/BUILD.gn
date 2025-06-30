@@ -55,6 +55,7 @@ source_set("impl") {
 
   deps = [
     ":commerce",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/toasts",

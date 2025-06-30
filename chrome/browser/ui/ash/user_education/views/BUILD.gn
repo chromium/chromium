@@ -15,6 +15,7 @@ source_set("browser_tests") {
     "//ash",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/user_education",
     "//chrome/test:test_support",
     "//components/user_education/common",
     "//components/user_education/views",

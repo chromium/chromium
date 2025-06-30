@@ -304,6 +304,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/user_education",
       "//components/headless/policy",
       "//components/live_caption",
       "//components/live_caption:live_translate",

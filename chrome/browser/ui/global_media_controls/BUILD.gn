@@ -70,6 +70,7 @@ source_set("impl") {
   deps = [
     ":global_media_controls",
     "//chrome/browser:browser_process",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/ui:browser_list",
     "//components/favicon/content",

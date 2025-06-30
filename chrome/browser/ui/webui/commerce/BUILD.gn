@@ -49,6 +49,7 @@ source_set("impl") {
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process",
     "//chrome/browser/commerce",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/feedback",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/resources/commerce/product_specifications:resources_grit",

@@ -81,6 +81,7 @@ static_library("app_list") {
     "//chrome/app/vector_icons",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/arc:arc_util",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",

@@ -9,6 +9,7 @@ source_set("user_education") {
   sources = [ "browser_user_education_interface.h" ]
   public_deps = [
     "//base",
+    "//chrome/browser/user_education",
     "//components/user_education/common",
   ]
 }

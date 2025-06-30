@@ -327,6 +327,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/permissions:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/user_education",
     "//chrome/common",
     "//chrome/test:test_support",
     "//components/optimization_guide/core",

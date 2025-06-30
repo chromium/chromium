@@ -2,60 +2,128 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
-import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
 
-android_library("java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/user_education/IphCommand.java",
-    "java/src/org/chromium/chrome/browser/user_education/IphCommandBuilder.java",
-    "java/src/org/chromium/chrome/browser/user_education/UserEducationHelper.java",
-  ]
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
 
-  deps = [
-    ":java_resources",
-    "//base:base_java",
-    "//chrome/browser/feature_engagement:java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/util:java",
-    "//components/browser_ui/util/android:java",
-    "//components/browser_ui/widget/android:java",
-    "//components/feature_engagement/public:public_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_core_core_java",
-    "//ui/android:ui_full_java",
-  ]
-  resources_package = "org.chromium.chrome.browser.user_education"
-}
+  android_library("java") {
+    sources = [
+      "java/src/org/chromium/chrome/browser/user_education/IphCommand.java",
+      "java/src/org/chromium/chrome/browser/user_education/IphCommandBuilder.java",
+      "java/src/org/chromium/chrome/browser/user_education/UserEducationHelper.java",
+    ]
 
-android_resources("java_resources") {
-  sources = [ "java/res/values/dimens.xml" ]
-}
+    deps = [
+      ":java_resources",
+      "//base:base_java",
+      "//chrome/browser/feature_engagement:java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/util:java",
+      "//components/browser_ui/util/android:java",
+      "//components/browser_ui/widget/android:java",
+      "//components/feature_engagement/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//ui/android:ui_full_java",
+    ]
+    resources_package = "org.chromium.chrome.browser.user_education"
+  }
 
-robolectric_library("junit") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/user_education/IphCommandBuilderUnitTest.java",
-    "java/src/org/chromium/chrome/browser/user_education/IphCommandUnitTest.java",
-    "java/src/org/chromium/chrome/browser/user_education/UserEducationHelperUnitTest.java",
-  ]
-  deps = [
-    ":java",
-    ":java_resources",
-    "//base:base_java",
-    "//base:base_junit_test_support",
-    "//chrome/browser/feature_engagement:java",
-    "//chrome/browser/profiles/android:java",
-    "//components/browser_ui/theme/android:java_resources",
-    "//components/browser_ui/widget/android:java",
-    "//components/feature_engagement/public:public_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_java",
-    "//third_party/androidx:androidx_test_core_java",
-    "//third_party/androidx:androidx_test_ext_junit_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_java_test_support",
-  ]
-  resources_package = "org.chromium.chrome.browser.user_education.test"
+  android_resources("java_resources") {
+    sources = [ "java/res/values/dimens.xml" ]
+  }
+
+  robolectric_library("junit") {
+    sources = [
+      "java/src/org/chromium/chrome/browser/user_education/IphCommandBuilderUnitTest.java",
+      "java/src/org/chromium/chrome/browser/user_education/IphCommandUnitTest.java",
+      "java/src/org/chromium/chrome/browser/user_education/UserEducationHelperUnitTest.java",
+    ]
+    deps = [
+      ":java",
+      ":java_resources",
+      "//base:base_java",
+      "//base:base_junit_test_support",
+      "//chrome/browser/feature_engagement:java",
+      "//chrome/browser/profiles/android:java",
+      "//components/browser_ui/theme/android:java_resources",
+      "//components/browser_ui/widget/android:java",
+      "//components/feature_engagement/public:public_java",
+      "//third_party/androidx:androidx_appcompat_appcompat_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_ext_junit_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+    ]
+    resources_package = "org.chromium.chrome.browser.user_education.test"
+  }
+} else {  # !is_android
+  source_set("user_education") {
+    sources = [
+      "browser_tutorial_service.cc",
+      "browser_tutorial_service.h",
+      "browser_user_education_storage_service.cc",
+      "browser_user_education_storage_service.h",
+      "ntp_promo_identifiers.h",
+      "recent_session_observer.cc",
+      "recent_session_observer.h",
+      "recent_session_tracker.cc",
+      "recent_session_tracker.h",
+      "tutorial_identifiers.h",
+      "user_education_configuration_provider.cc",
+      "user_education_configuration_provider.h",
+      "user_education_service.cc",
+      "user_education_service.h",
+      "user_education_service_factory.cc",
+      "user_education_service_factory.h",
+    ]
+
+    public_deps = [
+      "//chrome/browser/feature_engagement",
+      "//chrome/browser/profiles",
+      "//components/feature_engagement/public",
+      "//components/user_education/common",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/headless",
+      "//chrome/common:non_code_constants",
+      "//components/keyed_service/content",
+      "//components/prefs",
+      "//content/public/browser",
+      "//ui/base",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//chromeos/components/mgs" ]
+    }
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [
+      "browser_user_education_storage_service_unittest.cc",
+      "recent_session_tracker_unittest.cc",
+      "user_education_configuration_provider_unittest.cc",
+    ]
+
+    deps = [
+      ":user_education",
+      "//chrome/app:command_ids",
+      "//chrome/test:test_support",
+      "//components/prefs",
+      "//components/strings:components_strings_grit",
+      "//components/user_education/test",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 }

@@ -95,6 +95,7 @@ source_set("impl") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:primitives",
     "//chrome/browser/autofill",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/autofill",

@@ -20,6 +20,7 @@ static_library("google_one") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ui/vector_icons",

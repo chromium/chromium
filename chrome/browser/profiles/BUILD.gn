@@ -235,6 +235,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/commerce",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/favicon",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/file_system_access",
     "//chrome/browser/ip_protection",
     "//chrome/browser/media/router",
@@ -328,6 +329,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:login",
+      "//chrome/browser/user_education",
     ]
   }
 
