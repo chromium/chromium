@@ -18,14 +18,6 @@
 + (UIImage*)searchIcon;
 + (UIImage*)chevronIcon;
 
-// Returns a "template" UIBarButtonItem initialized with the given image.
-// The returned bar button item will have its image rendering mode set to
-// UIImageRenderingModeAlwaysTemplate and will thus take on the tint color of
-// its container.
-+ (UIBarButtonItem*)templateBarButtonItemWithImage:(UIImage*)image
-                                            target:(id)target
-                                            action:(SEL)action;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_SYMBOLS_CHROME_ICON_H_

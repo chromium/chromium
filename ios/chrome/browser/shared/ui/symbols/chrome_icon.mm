@@ -72,19 +72,4 @@ UIImage* ImageFlippedForRightToLeftLayoutDirection(UIImage* image) {
       IconNamed(@"ic_chevron_right"));
 }
 
-+ (UIBarButtonItem*)templateBarButtonItemWithImage:(UIImage*)image
-                                            target:(id)target
-                                            action:(SEL)action {
-  UIImage* templateImage =
-      [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  UIBarButtonItem* barButtonItem =
-      [[UIBarButtonItem alloc] initWithImage:templateImage
-                                       style:UIBarButtonItemStylePlain
-                                      target:target
-                                      action:action];
-  [barButtonItem setAccessibilityIdentifier:image.accessibilityIdentifier];
-  [barButtonItem setAccessibilityLabel:image.accessibilityLabel];
-  return barButtonItem;
-}
-
 @end
