@@ -31,10 +31,6 @@ gfx::BufferFormat GpuMemoryBufferImpl::GetFormat() const {
   return format_;
 }
 
-gfx::GpuMemoryBufferId GpuMemoryBufferImpl::GetId() const {
-  return id_;
-}
-
 void GpuMemoryBufferImpl::AssertMapped() {
 #if DCHECK_IS_ON()
   base::AutoLock auto_lock(map_lock_);

@@ -97,7 +97,6 @@ class GpuMemoryBufferImplTest : public gfx::GpuMemoryBuffer {
     DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
     return gfx::RowSizeForBufferFormat(size_.width(), format_, plane);
   }
-  gfx::GpuMemoryBufferId GetId() const override { NOTREACHED(); }
   gfx::GpuMemoryBufferType GetType() const override {
     return gfx::SHARED_MEMORY_BUFFER;
   }
@@ -143,7 +142,6 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
     DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
     return IOSurfaceGetWidthOfPlane(iosurface_.get(), plane);
   }
-  gfx::GpuMemoryBufferId GetId() const override { NOTREACHED(); }
   gfx::GpuMemoryBufferType GetType() const override {
     return gfx::IO_SURFACE_BUFFER;
   }

@@ -60,9 +60,6 @@ class COMPONENT_EXPORT(GFX) GpuMemoryBuffer {
   // plane K is stored at index K-1 of the |stride| array.
   virtual int stride(size_t plane) const = 0;
 
-  // Returns a unique identifier associated with buffer.
-  virtual GpuMemoryBufferId GetId() const = 0;
-
   // Returns the type of this buffer.
   virtual GpuMemoryBufferType GetType() const = 0;
 

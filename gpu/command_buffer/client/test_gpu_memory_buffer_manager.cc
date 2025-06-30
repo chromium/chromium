@@ -72,7 +72,6 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   gfx::GpuMemoryBufferType GetType() const override {
     return gfx::SHARED_MEMORY_BUFFER;
   }
-  gfx::GpuMemoryBufferId GetId() const override { return id_; }
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
     gfx::GpuMemoryBufferHandle handle(region_.Duplicate());
     handle.offset = base::checked_cast<uint32_t>(offset_);
@@ -108,7 +107,6 @@ class GpuMemoryBufferFromClient : public gfx::GpuMemoryBuffer {
   int stride(size_t plane) const override {
     return client_buffer_->stride(plane);
   }
-  gfx::GpuMemoryBufferId GetId() const override { return id_; }
   gfx::GpuMemoryBufferType GetType() const override {
     return client_buffer_->GetType();
   }

@@ -33,7 +33,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   // Overridden from gfx::GpuMemoryBuffer:
   gfx::Size GetSize() const override;
   gfx::BufferFormat GetFormat() const override;
-  gfx::GpuMemoryBufferId GetId() const override;
 
  protected:
   GpuMemoryBufferImpl(gfx::GpuMemoryBufferId id,

@@ -141,10 +141,6 @@ int FakeGpuMemoryBuffer::stride(size_t plane) const {
       .width();
 }
 
-gfx::GpuMemoryBufferId FakeGpuMemoryBuffer::GetId() const {
-  return handle_.id;
-}
-
 gfx::GpuMemoryBufferType FakeGpuMemoryBuffer::GetType() const {
   return gfx::SHARED_MEMORY_BUFFER;
 }

@@ -63,7 +63,6 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   gfx::Size GetSize() const override;
   gfx::BufferFormat GetFormat() const override;
   int stride(size_t plane) const override;
-  gfx::GpuMemoryBufferId GetId() const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
