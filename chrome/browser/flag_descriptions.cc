@@ -326,31 +326,6 @@ const char kClipboardMaximumAgeName[] = "Clipboard maximum age";
 const char kClipboardMaximumAgeDescription[] =
     "Limit the maximum age for recent clipboard content";
 
-const char kComputePressureRateObfuscationMitigationName[] =
-    "Enable mitigation algorithm for rate obfuscation in compute pressure";
-const char kComputePressureRateObfuscationMitigationDescription[] =
-    "Rate Obfuscation Mitigation is used to avoid fingerprinting attacks. Its "
-    "usage introduces some timing penalties to the compute pressure results."
-    "This mitigation might introduce slight precision errors."
-    "When disabled this helps to test how predictable and accurate compute "
-    "pressure is, but the Compute Pressure API can be susceptible to "
-    "fingerprinting attacks.";
-
-const char kComputePressureBreakCalibrationMitigationName[] =
-    "Enable mitigation algorithm to break calibration attempt in compute "
-    "pressure";
-const char kComputePressureBreakCalibrationMitigationDescription[] =
-    "In a calibration process an attacker tries to manipulate the CPU so that "
-    "Compute Pressure API would report a transition into a certain pressure "
-    "state with the highest probability in response to the pressure exerted "
-    "by the fabricated workload."
-    "Break Calibration Mitigation is used to avoid calibration attempts by "
-    "introducing some randomness in the result of the platform collector."
-    "This mitigation might introduce slight precision errors."
-    "When disabled this helps to test how predictable and accurate compute "
-    "pressure is, but the Compute Pressure API can be susceptible to "
-    "calibration attempts.";
-
 const char kContainerTypeNoLayoutContainmentName[] =
     "Enables the container-type property to have no layout containment";
 const char kContainerTypeNoLayoutContainmentDescription[] =

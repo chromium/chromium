@@ -2953,16 +2953,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "enable-compute-pressure-break-calibration-mitigation",
-    "owners": [ "arnaud.mandy@intel.com" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "enable-compute-pressure-rate-obfuscation-mitigation",
-    "owners": [ "arnaud.mandy@intel.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-container-type-no-layout-containment",
     "owners": [ "ikilpatrick@chromium.org" ],
     "expiry_milestone": 140

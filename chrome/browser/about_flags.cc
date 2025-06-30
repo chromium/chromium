@@ -10197,23 +10197,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          net::features::kCompressionDictionaryTransportRequireKnownRootCert)},
 
-    {"enable-compute-pressure-rate-obfuscation-mitigation",
-     flag_descriptions::kComputePressureRateObfuscationMitigationName,
-     flag_descriptions::kComputePressureRateObfuscationMitigationDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kComputePressureRateObfuscationMitigation)},
-
     {"enable-container-type-no-layout-containment",
      flag_descriptions::kContainerTypeNoLayoutContainmentName,
      flag_descriptions::kContainerTypeNoLayoutContainmentDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kContainerTypeNoLayoutContainment)},
-
-    {"enable-compute-pressure-break-calibration-mitigation",
-     flag_descriptions::kComputePressureBreakCalibrationMitigationName,
-     flag_descriptions::kComputePressureBreakCalibrationMitigationDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kComputePressureBreakCalibrationMitigation)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"deprecated-external-picker-function",

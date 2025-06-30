@@ -216,12 +216,6 @@ extern const char kClientSideDetectionShowScamVerdictWarningDescription[];
 extern const char kClipboardMaximumAgeName[];
 extern const char kClipboardMaximumAgeDescription[];
 
-extern const char kComputePressureRateObfuscationMitigationName[];
-extern const char kComputePressureRateObfuscationMitigationDescription[];
-
-extern const char kComputePressureBreakCalibrationMitigationName[];
-extern const char kComputePressureBreakCalibrationMitigationDescription[];
-
 extern const char kContainerTypeNoLayoutContainmentName[];
 extern const char kContainerTypeNoLayoutContainmentDescription[];
 
