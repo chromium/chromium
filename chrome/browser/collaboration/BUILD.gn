@@ -19,6 +19,7 @@ if (is_android) {
       ":java_resources",
       "//base:base_java",
       "//chrome/browser/data_sharing:data_sharing_public_java",
+      "//chrome/browser/data_sharing:versioning_java",
       "//chrome/browser/feature_engagement:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/settings:factory_java",

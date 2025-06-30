@@ -20,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingMetrics;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.data_sharing.ui.versioning.VersioningModalDialog;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -43,6 +44,7 @@ import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.SigninStatus;
+import org.chromium.components.collaboration.error_info.Type;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
@@ -160,52 +162,67 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     /**
      * Show an error dialog.
      *
+     * @param errorType The error type of the error to show.
      * @param titleText The title text of the error dialog.
      * @param messageParagraphText the body text of the error dialog.
      * @param resultCallback The callback to notify the outcome of the UI screen.
      */
     @CalledByNative
-    void showError(String titleText, String messageParagraphText, long resultCallback) {
+    void showError(
+            @Type int errorType,
+            String titleText,
+            String messageParagraphText,
+            long resultCallback) {
         mThreadChecker.assertOnValidThread();
+        closeLoadingIfNeeded();
+        closeScreenIfNeeded();
         @Nullable ModalDialogManager modalDialogManager =
                 mDataSharingTabManager.getWindowAndroid().getModalDialogManager();
         assert modalDialogManager != null;
 
-        ModalDialogProperties.Controller controller =
-                new ModalDialogProperties.Controller() {
-                    @Override
-                    public void onClick(PropertyModel model, @ButtonType int buttonType) {
-                        mThreadChecker.assertOnValidThread();
-                        modalDialogManager.dismissDialog(
-                                model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                    }
-
-                    @Override
-                    public void onDismiss(
-                            PropertyModel model, @DialogDismissalCause int dismissalCause) {
-                        mThreadChecker.assertOnValidThread();
-                        CollaborationControllerDelegateImplJni.get()
-                                .runResultCallback(Outcome.SUCCESS, resultCallback);
-                    }
+        PropertyModel model;
+        Runnable exitRunnable =
+                () -> {
+                    CollaborationControllerDelegateImplJni.get()
+                            .runResultCallback(Outcome.SUCCESS, resultCallback);
                 };
-        PropertyModel model =
-                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER, controller)
-                        .with(ModalDialogProperties.TITLE, titleText)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, messageParagraphText)
-                        .with(
-                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                mActivity.getString(
-                                        R.string.data_sharing_invitation_failure_button))
-                        .with(
-                                ModalDialogProperties.BUTTON_STYLES,
-                                ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
-                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .build();
+        if (errorType == Type.UPDATE_CHROME_UI_FOR_VERSION_OUT_OF_DATE) {
+            model =
+                    VersioningModalDialog.showWithCustomMessage(
+                            mActivity, modalDialogManager, messageParagraphText, exitRunnable);
+        } else {
+            ModalDialogProperties.Controller controller =
+                    new ModalDialogProperties.Controller() {
+                        @Override
+                        public void onClick(PropertyModel model, @ButtonType int buttonType) {
+                            mThreadChecker.assertOnValidThread();
+                            modalDialogManager.dismissDialog(
+                                    model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                        }
 
-        closeLoadingIfNeeded();
-        closeScreenIfNeeded();
-        modalDialogManager.showDialog(model, ModalDialogType.APP);
+                        @Override
+                        public void onDismiss(
+                                PropertyModel model, @DialogDismissalCause int dismissalCause) {
+                            mThreadChecker.assertOnValidThread();
+                            exitRunnable.run();
+                        }
+                    };
+            model =
+                    new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                            .with(ModalDialogProperties.CONTROLLER, controller)
+                            .with(ModalDialogProperties.TITLE, titleText)
+                            .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, messageParagraphText)
+                            .with(
+                                    ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                    mActivity.getString(
+                                            R.string.data_sharing_invitation_failure_button))
+                            .with(
+                                    ModalDialogProperties.BUTTON_STYLES,
+                                    ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
+                            .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                            .build();
+            modalDialogManager.showDialog(model, ModalDialogType.APP);
+        }
 
         mCloseScreenRunnable =
                 () -> {
