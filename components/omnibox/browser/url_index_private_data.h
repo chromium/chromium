@@ -66,12 +66,10 @@ class URLIndexPrivateData
   // will be found in nearly all history candidates. Results are sorted by
   // descending score. The full results set (i.e. beyond the
   // `kItemsToScoreLimit` limit) will be retained and used for subsequent calls
-  // to this function. In total, `max_matches` of items will be returned. If
-  // `host_filter` is not empty, only matches of that host are returned.
+  // to this function. In total, `max_matches` of items will be returned.
   ScoredHistoryMatches HistoryItemsForTerms(
       std::u16string term_string,
       size_t cursor_position,
-      const std::string& host_filter,
       size_t max_matches,
       bookmarks::BookmarkModel* bookmark_model,
       TemplateURLService* template_url_service,
@@ -210,23 +208,6 @@ class URLIndexPrivateData
     const raw_ref<const HistoryInfoMap> history_info_map_;
   };
 
-  // Information about a URL host aggregated from all URLs of that host. Used to
-  // determine `highly_visited_hosts_`.
-  class HostInfo {
-   public:
-    // Returns whether this host is considered highly-visited.
-    bool IsHighlyVisited() const;
-
-    // Called for each URL of the same host.
-    void AddUrl(const history::URLRow& row);
-
-   private:
-    int typed_urls_ = 0;    // The number of URLs that have `typed_count > X`;
-                            // where X is finch param controlled.
-    int typed_visits_ = 0;  // The sum of all URLs' `clamp(typed_count - X, 0,
-                            // Y)`; where X and Y are finch param controlled.
-  };
-
   // URL History indexing support functions.
 
   // Composes a vector of history item IDs by intersecting the set for each word
@@ -253,7 +234,6 @@ class URLIndexPrivateData
   void HistoryIdsToScoredMatches(
       HistoryIDVector history_ids,
       const std::u16string& lower_raw_string,
-      const std::string& host_filter,
       const TemplateURLService* template_url_service,
       bookmarks::BookmarkModel* bookmark_model,
       ScoredHistoryMatches* scored_items,
@@ -306,11 +286,9 @@ class URLIndexPrivateData
                                      const std::set<std::string>& allowlist);
 
   // Returns true if the URL associated with `history_id` is missing, malformed,
-  // or otherwise should not be displayed. If `host_filter` is not empty,
-  // results of a different host are filtered. Results from the default search
+  // or otherwise should not be displayed. Results from the default search
   // provider are filtered.
   bool ShouldExclude(const HistoryID history_id,
-                     const std::string& host_filter,
                      const TemplateURLService* template_url_service) const;
 
   // Cache of search terms.
@@ -355,17 +333,6 @@ class URLIndexPrivateData
   // A one-to-one mapping from HistoryID to the word starts detected in each
   // item's URL and page title.
   WordStartsMap word_starts_map_;
-
-  // Aggregates typed visit counts by URL hosts. Isn't a pure sum, but rather
-  // each visit's contribution is capped.
-  // TODO(manukh): Consider capping the size of `host_visits_`. It's typically
-  //  (based on my own history DB) about 250 items, but can grow as the user
-  //  navigate to new hosts.
-  std::map<std::string, HostInfo> host_visits_;
-
-  // The URL hosts that have been visited more than some threshold. Empty if the
-  // `kDomainSuggestions` feature is disabled.
-  std::vector<std::string> highly_visited_hosts_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_URL_INDEX_PRIVATE_DATA_H_

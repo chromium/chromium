@@ -8160,36 +8160,6 @@
             ]
         }
     ],
-    "DesktopOmnibox_HistoryQuickProviderSpecificity": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "DomainSuggestionsAlternativeScoring": "true",
-                        "DomainSuggestionsMaxMatchesPerDomain": "2",
-                        "DomainSuggestionsMinInputLength": "4",
-                        "DomainSuggestionsScoreFactor": "1",
-                        "DomainSuggestionsTypedUrlsOffset": "1",
-                        "DomainSuggestionsTypedUrlsThreshold": "7",
-                        "DomainSuggestionsTypedVisitCapPerVisit": "2",
-                        "DomainSuggestionsTypedVisitOffset": "1",
-                        "DomainSuggestionsTypedVisitThreshold": "4"
-                    },
-                    "enable_features": [
-                        "OmniboxDomainSuggestions"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopPWAInstallPromotionML": [
         {
             "platforms": [

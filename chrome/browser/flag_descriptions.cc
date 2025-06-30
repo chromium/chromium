@@ -2900,11 +2900,6 @@ const char kOmniboxDiagnosticsDescription[] =
     " Use sparingly, as this may produce significant amount of log output. "
     " Restart twice when changing this option.";
 
-const char kOmniboxDomainSuggestionsName[] = "Omnibox Domain Suggestions";
-const char kOmniboxDomainSuggestionsDescription[] =
-    "If enabled, history URL suggestions from hosts visited often bypass the "
-    "per provider limit.";
-
 const char kOmniboxForceAllowedToBeDefaultName[] =
     "Omnibox Force Allowed To Be Default";
 const char kOmniboxForceAllowedToBeDefaultDescription[] =

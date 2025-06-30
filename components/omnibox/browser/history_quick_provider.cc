@@ -105,7 +105,7 @@ void HistoryQuickProvider::DoAutocomplete() {
 
   // Get the matching URLs from the DB.
   ScoredHistoryMatches matches = in_memory_url_index_->HistoryItemsForTerms(
-      autocomplete_input_.text(), autocomplete_input_.cursor_position(), "",
+      autocomplete_input_.text(), autocomplete_input_.cursor_position(),
       max_matches, client()->GetOmniboxTriggeredFeatureService());
   if (matches.empty())
     return;
@@ -113,29 +113,23 @@ void HistoryQuickProvider::DoAutocomplete() {
   // `original_max_match_score` keeps track of the potential URL-what-you-typed
   // suggestion's score; all HQP suggestions should be scored strictly lower.
   const auto original_max_match_score = MaxMatchScore();
-  const auto add_matches = [&](const ScoredHistoryMatches& matches) {
-    // `max_match_score` keeps track of the scores within `matches` to guarantee
-    // scores are decreasing within each batch. Scores from subsequent batches
-    // may be higher.
-    int max_match_score =
-        original_max_match_score.value_or(matches[0].raw_score);
-    for (const auto& history_match : matches) {
-      // Set max_match_score to the score we'll assign this result.
-      max_match_score = std::min(max_match_score, history_match.raw_score);
-      auto match = QuickMatchToACMatch(history_match, max_match_score);
-      if (autocomplete_input_.current_page_classification() ==
-          PageClassification::
-              OmniboxEventProto_PageClassification_ANDROID_HUB) {
-        match.suggestion_group_id = omnibox::GROUP_MOBILE_HISTORY;
-      }
-
-      matches_.push_back(std::move(match));
-      // Mark this max_match_score as being used.
-      max_match_score--;
+  // `max_match_score` keeps track of the scores within `matches` to guarantee
+  // scores are decreasing within each batch. Scores from subsequent batches
+  // may be higher.
+  int max_match_score = original_max_match_score.value_or(matches[0].raw_score);
+  for (const auto& history_match : matches) {
+    // Set max_match_score to the score we'll assign this result.
+    max_match_score = std::min(max_match_score, history_match.raw_score);
+    auto match = QuickMatchToACMatch(history_match, max_match_score);
+    if (autocomplete_input_.current_page_classification() ==
+        PageClassification::OmniboxEventProto_PageClassification_ANDROID_HUB) {
+      match.suggestion_group_id = omnibox::GROUP_MOBILE_HISTORY;
     }
-  };
 
-  add_matches(matches);
+    matches_.push_back(std::move(match));
+    // Mark this max_match_score as being used.
+    max_match_score--;
+  }
 
   if (autocomplete_input_.current_page_classification() !=
       PageClassification::OmniboxEventProto_PageClassification_ANDROID_HUB) {
@@ -146,55 +140,6 @@ void HistoryQuickProvider::DoAutocomplete() {
     ResizeMatches(
         max_matches,
         OmniboxFieldTrial::IsMlUrlScoringUnlimitedNumCandidatesEnabled());
-  }
-
-  // Add suggestions from the user's highly visited domains bypassing
-  // `provider_max_matches_`.
-
-  // In keyword mode, already have enough matches.
-  if (autocomplete_input_.InKeywordMode()) {
-    return;
-  }
-
-  static const size_t domain_suggestions_min_char =
-      OmniboxFieldTrial::kDomainSuggestionsMinInputLength.Get();
-  static const int max_host_matches =
-      OmniboxFieldTrial::kDomainSuggestionsMaxMatchesPerDomain.Get();
-  if (autocomplete_input_.text().length() < domain_suggestions_min_char ||
-      max_host_matches == 0) {
-    return;
-  }
-
-  // Append suggestions for each of the user's highly visited domains. To
-  // determine these domains, the user's visits are aggregated by URL host and
-  // their aggregate info (e.g. sum typed count) are considered. Each highly
-  // visited domain gets its own `max_matches` allowance.
-  for (const auto& host : in_memory_url_index_->HighlyVisitedHosts()) {
-    // TODO(manukh): Calling `HistoryItemsForTerms()` is somewhat wasteful. URLs
-    //  have 1 host, so they'll be re-processed in at most 1 iteration. A
-    //  typical input that triggered this feature will match about 100 history
-    //  items, which are all scored. If the suggestions are from highly visited,
-    //  the number of history items scored will at most double, so about an
-    //  extra 100 items scored. Sorting, deduping, and converting to
-    //  `AutocompleteMatch`es are only done on 6 (or less) history items, so
-    //  those are not as big of a concern. If performance metrics regress, we
-    //  should extract matching and scoring history items from
-    //  `HistoryItemsForTerms()` so it can be done just once.
-    ScoredHistoryMatches host_matches =
-        in_memory_url_index_->HistoryItemsForTerms(
-            autocomplete_input_.text(), autocomplete_input_.cursor_position(),
-            host, max_host_matches,
-            client()->GetOmniboxTriggeredFeatureService());
-    // TODO(manukh): Consider using a new `AutocompleteMatchType` for domain
-    //  suggestions to distinguish them in metrics.
-    if (!host_matches.empty()) {
-      client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-          metrics::OmniboxEventProto_Feature_DOMAIN_SUGGESTIONS);
-      static const bool counterfactual =
-          OmniboxFieldTrial::kDomainSuggestionsCounterfactual.Get();
-      if (!counterfactual)
-        add_matches(host_matches);
-    }
   }
 }
 
@@ -403,9 +348,5 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
   match.RecordAdditionalInfo("typed count", info.typed_count());
   match.RecordAdditionalInfo("visit count", info.visit_count());
   match.RecordAdditionalInfo("last visit", info.last_visit());
-  match.RecordAdditionalInfo("raw score before domain boosting",
-                             history_match.raw_score_before_domain_boosting);
-  match.RecordAdditionalInfo("raw score after domain boosting",
-                             history_match.raw_score_after_domain_boosting);
   return match;
 }

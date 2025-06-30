@@ -6714,11 +6714,6 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxToolbeltVariations,
          "OmniboxToolbelt")},
 
-    {"omnibox-domain-suggestions",
-     flag_descriptions::kOmniboxDomainSuggestionsName,
-     flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kDomainSuggestions)},
-
     {"omnibox-drive-suggestions-no-sync-requirement",
      flag_descriptions::kOmniboxDriveSuggestionsNoSyncRequirementName,
      flag_descriptions::kOmniboxDriveSuggestionsNoSyncRequirementDescription,

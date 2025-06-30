@@ -129,16 +129,11 @@ void InMemoryURLIndex::ClearPrivateData() {
 ScoredHistoryMatches InMemoryURLIndex::HistoryItemsForTerms(
     const std::u16string& term_string,
     size_t cursor_position,
-    const std::string& host_filter,
     size_t max_matches,
     OmniboxTriggeredFeatureService* triggered_feature_service) {
   return private_data_->HistoryItemsForTerms(
-      term_string, cursor_position, host_filter, max_matches, bookmark_model_,
+      term_string, cursor_position, max_matches, bookmark_model_,
       template_url_service_, triggered_feature_service);
-}
-
-const std::vector<std::string>& InMemoryURLIndex::HighlyVisitedHosts() const {
-  return private_data_->HighlyVisitedHosts();
 }
 
 // Updating --------------------------------------------------------------------

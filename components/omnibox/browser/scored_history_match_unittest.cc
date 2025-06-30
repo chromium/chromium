@@ -56,7 +56,6 @@ class ScoredHistoryMatchPublic : public ScoredHistoryMatch {
                            const RowWordStarts& word_starts,
                            bool is_url_bookmarked,
                            size_t num_matching_pages,
-                           bool is_highly_visited_host,
                            base::Time now)
       : ScoredHistoryMatch(row,
                            visits,
@@ -66,11 +65,9 @@ class ScoredHistoryMatchPublic : public ScoredHistoryMatch {
                            word_starts,
                            is_url_bookmarked,
                            num_matching_pages,
-                           is_highly_visited_host,
                            now) {}
   using ScoredHistoryMatch::FilterTermMatchesByWordStarts;
   using ScoredHistoryMatch::GetDocumentSpecificityScore;
-  using ScoredHistoryMatch::GetDomainRelevancyScore;
   using ScoredHistoryMatch::GetFinalRelevancyScore;
   using ScoredHistoryMatch::GetFrequency;
   using ScoredHistoryMatch::GetHQPBuckets;
@@ -179,7 +176,7 @@ float ScoredHistoryMatchTest::GetTopicalityScoreOfTermAgainstURLAndTitle(
   row.set_title(title);
   ScoredHistoryMatchPublic scored_match(
       row, VisitInfoVector(), base::UTF8ToUTF16(terms_joint), term_vector,
-      term_word_starts, row_word_starts, false, 1, false, base::Time::Max());
+      term_word_starts, row_word_starts, false, 1, base::Time::Max());
   scored_match.topicality_threshold_ = -1;
   return scored_match.GetTopicalityScore(term_vector.size(), url,
                                          base::OffsetAdjuster::Adjustments(),
@@ -200,7 +197,7 @@ TEST_F(ScoredHistoryMatchTest, Scoring) {
   visits_a[0].second = ui::PAGE_TRANSITION_TYPED;
   ScoredHistoryMatchPublic scored_a(row_a, visits_a, u"abc", Make1Term("abc"),
                                     one_word_no_offset, word_starts_a, false, 1,
-                                    false, now);
+                                    now);
 
   // Test scores based on visit_count.
   history::URLRow row_b(MakeURLRow("http://abcdef", "abcd bcd", 10, 30, 1));
@@ -210,7 +207,7 @@ TEST_F(ScoredHistoryMatchTest, Scoring) {
   visits_b[0].second = ui::PAGE_TRANSITION_TYPED;
   ScoredHistoryMatchPublic scored_b(row_b, visits_b, u"abc", Make1Term("abc"),
                                     one_word_no_offset, word_starts_b, false, 1,
-                                    false, now);
+                                    now);
   EXPECT_GT(scored_b.raw_score, scored_a.raw_score);
 
   // Test scores based on last_visit.
@@ -221,7 +218,7 @@ TEST_F(ScoredHistoryMatchTest, Scoring) {
   visits_c[0].second = ui::PAGE_TRANSITION_TYPED;
   ScoredHistoryMatchPublic scored_c(row_c, visits_c, u"abc", Make1Term("abc"),
                                     one_word_no_offset, word_starts_c, false, 1,
-                                    false, now);
+                                    now);
   EXPECT_GT(scored_c.raw_score, scored_a.raw_score);
 
   // Test scores based on typed_count.
@@ -234,7 +231,7 @@ TEST_F(ScoredHistoryMatchTest, Scoring) {
   visits_d[2].second = ui::PAGE_TRANSITION_TYPED;
   ScoredHistoryMatchPublic scored_d(row_d, visits_d, u"abc", Make1Term("abc"),
                                     one_word_no_offset, word_starts_d, false, 1,
-                                    false, now);
+                                    now);
   EXPECT_GT(scored_d.raw_score, scored_a.raw_score);
 
   // Test scores based on a terms appearing multiple times.
@@ -246,14 +243,14 @@ TEST_F(ScoredHistoryMatchTest, Scoring) {
   const VisitInfoVector visits_e = visits_d;
   ScoredHistoryMatchPublic scored_e(row_e, visits_e, u"csi", Make1Term("csi"),
                                     one_word_no_offset, word_starts_e, false, 1,
-                                    false, now);
+                                    now);
   EXPECT_LT(scored_e.raw_score, 1400);
 
   // Test that a result with only a mid-term match (i.e., not at a word
   // boundary) scores 0.
   ScoredHistoryMatchPublic scored_f(row_a, visits_a, u"cd", Make1Term("cd"),
                                     one_word_no_offset, word_starts_a, false, 1,
-                                    false, now);
+                                    now);
   EXPECT_EQ(scored_f.raw_score, 0);
 }
 
@@ -271,12 +268,12 @@ TEST_F(ScoredHistoryMatchTest, ScoringBookmarks) {
   VisitInfoVector visits = CreateVisitInfoVector(8, 3, now);
   ScoredHistoryMatchPublic scored(row, visits, u"abc", Make1Term("abc"),
                                   one_word_no_offset, word_starts, false, 1,
-                                  false, now);
+                                  now);
   // Now check that if URL is bookmarked then its score increases.
   base::AutoReset<float> reset(&ScoredHistoryMatchPublic::bookmark_value_, 5);
   ScoredHistoryMatchPublic scored_with_bookmark(
       row, visits, u"abc", Make1Term("abc"), one_word_no_offset, word_starts,
-      true, 1, false, now);
+      true, 1, now);
   EXPECT_GT(scored_with_bookmark.raw_score, scored.raw_score);
 }
 
@@ -295,7 +292,7 @@ TEST_F(ScoredHistoryMatchTest, ScoringTLD) {
   VisitInfoVector visits = CreateVisitInfoVector(8, 3, now);
   ScoredHistoryMatchPublic scored(
       row, visits, u"fed com", Make2Terms("fed", "com"), two_words_no_offsets,
-      word_starts, false, 1, false, now);
+      word_starts, false, 1, now);
   EXPECT_GT(scored.raw_score, 0);
 
   // Now allow credit for the match in the TLD.
@@ -303,7 +300,7 @@ TEST_F(ScoredHistoryMatchTest, ScoringTLD) {
                               true);
   ScoredHistoryMatchPublic scored_with_tld(
       row, visits, u"fed com", Make2Terms("fed", "com"), two_words_no_offsets,
-      word_starts, false, 1, false, now);
+      word_starts, false, 1, now);
   EXPECT_GT(scored_with_tld.raw_score, 0);
 
   EXPECT_GT(scored_with_tld.raw_score, scored.raw_score);
@@ -324,7 +321,7 @@ TEST_F(ScoredHistoryMatchTest, ScoringScheme) {
   VisitInfoVector visits = CreateVisitInfoVector(8, 3, now);
   ScoredHistoryMatchPublic scored(
       row, visits, u"fed http", Make2Terms("fed", "http"), two_words_no_offsets,
-      word_starts, false, 1, false, now);
+      word_starts, false, 1, now);
   EXPECT_GT(scored.raw_score, 0);
 
   // Now allow credit for the match in the scheme.
@@ -332,7 +329,7 @@ TEST_F(ScoredHistoryMatchTest, ScoringScheme) {
                               true);
   ScoredHistoryMatchPublic scored_with_scheme(
       row, visits, u"fed http", Make2Terms("fed", "http"), two_words_no_offsets,
-      word_starts, false, 1, false, now);
+      word_starts, false, 1, now);
   EXPECT_GT(scored_with_scheme.raw_score, 0);
 
   EXPECT_GT(scored_with_scheme.raw_score, scored.raw_score);
@@ -352,22 +349,22 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
     PopulateWordStarts(row, &word_starts);
     ScoredHistoryMatchPublic scored_a(row, visits, u"g", Make1Term("g"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_a.match_in_scheme);
     EXPECT_FALSE(scored_a.match_in_subdomain);
     ScoredHistoryMatchPublic scored_b(row, visits, u"w", Make1Term("w"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_b.match_in_scheme);
     EXPECT_TRUE(scored_b.match_in_subdomain);
     ScoredHistoryMatchPublic scored_c(row, visits, u"h", Make1Term("h"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_TRUE(scored_c.match_in_scheme);
     EXPECT_FALSE(scored_c.match_in_subdomain);
     ScoredHistoryMatchPublic scored_d(row, visits, u"o", Make1Term("o"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_d.match_in_scheme);
     EXPECT_FALSE(scored_d.match_in_subdomain);
   }
@@ -377,17 +374,17 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
     PopulateWordStarts(row, &word_starts);
     ScoredHistoryMatchPublic scored_a(row, visits, u"t", Make1Term("t"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_a.match_in_scheme);
     EXPECT_TRUE(scored_a.match_in_subdomain);
     ScoredHistoryMatchPublic scored_b(row, visits, u"f", Make1Term("f"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_b.match_in_scheme);
     EXPECT_FALSE(scored_b.match_in_subdomain);
     ScoredHistoryMatchPublic scored_c(row, visits, u"o", Make1Term("o"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_c.match_in_scheme);
     EXPECT_FALSE(scored_c.match_in_subdomain);
   }
@@ -397,17 +394,17 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
     PopulateWordStarts(row, &word_starts);
     ScoredHistoryMatchPublic scored_a(row, visits, u"e", Make1Term("e"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_a.match_in_scheme);
     EXPECT_TRUE(scored_a.match_in_subdomain);
     ScoredHistoryMatchPublic scored_b(row, visits, u"m", Make1Term("m"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_b.match_in_scheme);
     EXPECT_TRUE(scored_b.match_in_subdomain);
     ScoredHistoryMatchPublic scored_c(row, visits, u"f", Make1Term("f"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_c.match_in_scheme);
     EXPECT_FALSE(scored_c.match_in_subdomain);
   }
@@ -418,48 +415,48 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
     PopulateWordStarts(row, &word_starts);
     ScoredHistoryMatchPublic scored_a(row, visits, u"t", Make1Term("t"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_a.match_in_scheme);
     EXPECT_FALSE(scored_a.match_in_subdomain);
     ScoredHistoryMatchPublic scored_b(row, visits, u"h", Make1Term("h"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_TRUE(scored_b.match_in_scheme);
     EXPECT_FALSE(scored_b.match_in_subdomain);
     ScoredHistoryMatchPublic scored_c(row, visits, u"w", Make1Term("w"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_c.match_in_scheme);
     EXPECT_TRUE(scored_c.match_in_subdomain);
     ScoredHistoryMatchPublic scored_d(row, visits, u"x", Make1Term("x"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_d.match_in_scheme);
     EXPECT_FALSE(scored_d.match_in_subdomain);
     ScoredHistoryMatchPublic scored_e(row, visits, u"y", Make1Term("y"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_e.match_in_scheme);
     EXPECT_FALSE(scored_e.match_in_subdomain);
     ScoredHistoryMatchPublic scored_f(row, visits, u"z", Make1Term("z"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_f.match_in_scheme);
     EXPECT_FALSE(scored_f.match_in_subdomain);
     ScoredHistoryMatchPublic scored_g(
         row, visits, u"https://www", Make1Term("https://www"),
-        one_word_no_offset, word_starts, false, 1, false, now);
+        one_word_no_offset, word_starts, false, 1, now);
     EXPECT_TRUE(scored_g.match_in_scheme);
     EXPECT_TRUE(scored_g.match_in_subdomain);
     ScoredHistoryMatchPublic scored_h(
         row, visits, u"testing.com/x", Make1Term("testing.com/x"),
-        one_word_no_offset, word_starts, false, 1, false, now);
+        one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_h.match_in_scheme);
     EXPECT_FALSE(scored_h.match_in_subdomain);
     ScoredHistoryMatchPublic scored_i(row, visits, u"https://www.testing.com/x",
                                       Make1Term("https://www.testing.com/x"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_TRUE(scored_i.match_in_scheme);
     EXPECT_TRUE(scored_i.match_in_subdomain);
   }
@@ -470,17 +467,17 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
     PopulateWordStarts(row, &word_starts);
     ScoredHistoryMatchPublic scored_a(row, visits, u"x", Make1Term("x"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_a.match_in_scheme);
     EXPECT_FALSE(scored_a.match_in_subdomain);
     ScoredHistoryMatchPublic scored_b(row, visits, u"xn", Make1Term("xn"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_b.match_in_scheme);
     EXPECT_FALSE(scored_b.match_in_subdomain);
     ScoredHistoryMatchPublic scored_c(row, visits, u"w", Make1Term("w"),
                                       one_word_no_offset, word_starts, false, 1,
-                                      false, now);
+                                      now);
     EXPECT_FALSE(scored_c.match_in_scheme);
     EXPECT_TRUE(scored_c.match_in_subdomain);
   }
@@ -651,8 +648,7 @@ TEST_F(ScoredHistoryMatchTest, GetFrequency) {
   base::Time now(base::Time::Max());
   VisitInfoVector visits;
   ScoredHistoryMatchPublic match(row, visits, u"foo", Make1Term("foo"),
-                                 WordStarts{0}, row_word_starts, false, 1,
-                                 false, now);
+                                 WordStarts{0}, row_word_starts, false, 1, now);
 
   // Record the score for one untyped visit.
   visits = {{now, ui::PAGE_TRANSITION_LINK}};
@@ -712,8 +708,7 @@ TEST_F(ScoredHistoryMatchTest, GetDocumentSpecificityScore) {
   base::Time now(base::Time::Max());
   VisitInfoVector visits;
   ScoredHistoryMatchPublic match(row, visits, u"foo", Make1Term("foo"),
-                                 WordStarts{0}, row_word_starts, false, 1,
-                                 false, now);
+                                 WordStarts{0}, row_word_starts, false, 1, now);
 
   EXPECT_EQ(3.0, match.GetDocumentSpecificityScore(1));
   EXPECT_EQ(1.0, match.GetDocumentSpecificityScore(5));
@@ -847,16 +842,14 @@ TEST_F(ScoredHistoryMatchTest, GetFinalRelevancyScore) {
   float topicality_score = 0;
   float frequency_score = 0;
   float specificity_score = 0;
-  float domain_score = 1;
   EXPECT_EQ(0, ScoredHistoryMatchPublic::GetFinalRelevancyScore(
-                   topicality_score, frequency_score, specificity_score,
-                   domain_score));
+                   topicality_score, frequency_score, specificity_score));
 
   // Check when topicality score is 0, frequency and specificity scores are
   // DCHECK'd to be 0 as well.
   specificity_score = 1;
   EXPECT_DCHECK_DEATH(ScoredHistoryMatchPublic::GetFinalRelevancyScore(
-      topicality_score, frequency_score, specificity_score, domain_score));
+      topicality_score, frequency_score, specificity_score));
 
   // intermediate_score = 0.0 * 10.0 * 1.0 * 1.0 = 0.0.
 
@@ -865,25 +858,22 @@ TEST_F(ScoredHistoryMatchTest, GetFinalRelevancyScore) {
   frequency_score = 10.0f;
   // intermediate_score = 0.4 * 10.0 * 1.0 * 1.0 = 4.0.
   EXPECT_EQ(500, ScoredHistoryMatchPublic::GetFinalRelevancyScore(
-                     topicality_score, frequency_score, specificity_score,
-                     domain_score));
+                     topicality_score, frequency_score, specificity_score));
 
   // Checking the score that falls into one of the buckets.
   topicality_score = 0.5f;
   frequency_score = 10.0f;
   // intermediate_score = 0.5 * 10.0 * 1.0 * 1.0 = 5.0.
-  EXPECT_EQ(
-      600,  // 500 + (((900 - 500)/(8 -4)) * 1) = 600.
-      ScoredHistoryMatchPublic::GetFinalRelevancyScore(
-          topicality_score, frequency_score, specificity_score, domain_score));
+  EXPECT_EQ(600,  // 500 + (((900 - 500)/(8 -4)) * 1) = 600.
+            ScoredHistoryMatchPublic::GetFinalRelevancyScore(
+                topicality_score, frequency_score, specificity_score));
 
   // Never give the score greater than maximum specified.
   topicality_score = 0.5f;
   frequency_score = 22.0f;
   // intermediate_score = 0.5 * 22.0 * 1.0 * 1.0 = 11.0
   EXPECT_EQ(1000, ScoredHistoryMatchPublic::GetFinalRelevancyScore(
-                      topicality_score, frequency_score, specificity_score,
-                      domain_score));
+                      topicality_score, frequency_score, specificity_score));
 }
 
 // Test the function GetHQPBucketsFromString().
@@ -899,18 +889,3 @@ TEST_F(ScoredHistoryMatchTest, GetHQPBucketsFromString) {
   EXPECT_TRUE(hqp_buckets.empty());
 }
 
-TEST_F(ScoredHistoryMatchTest, GetDomainRelevancyScore) {
-  auto domain_relevancy_score = [&](base::TimeDelta time_since_last_visit) {
-    auto now = base::Time::Now();
-    history::URLRow row(GURL("http://foo.com"));
-    ScoredHistoryMatchPublic match(row, {}, u"", Make1Term("x"), {}, {}, false,
-                                   1, false, {});
-    match.url_info.set_last_visit(now - time_since_last_visit);
-    return match.GetDomainRelevancyScore(now);
-  };
-
-  EXPECT_EQ(domain_relevancy_score(base::Days(0)), 1000);
-  EXPECT_EQ(domain_relevancy_score(base::Days(5)), 600);
-  EXPECT_EQ(domain_relevancy_score(base::Days(10)), 0);
-  EXPECT_EQ(domain_relevancy_score(base::Days(20)), 0);
-}

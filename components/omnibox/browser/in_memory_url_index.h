@@ -97,12 +97,8 @@ class InMemoryURLIndex : public KeyedService,
   ScoredHistoryMatches HistoryItemsForTerms(
       const std::u16string& term_string,
       size_t cursor_position,
-      const std::string& host_filter,
       size_t max_matches,
       OmniboxTriggeredFeatureService* triggered_feature_service);
-
-  // Returns URL hosts that have been visited more than a threshold.
-  const std::vector<std::string>& HighlyVisitedHosts() const;
 
   // Deletes the index entry, if any, for the given |url|.
   void DeleteURL(const GURL& url);

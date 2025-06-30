@@ -137,7 +137,6 @@ ScoredHistoryMatch::ScoredHistoryMatch()
                          RowWordStarts(),
                          false,
                          1,
-                         false,
                          base::Time::Max()) {}
 
 ScoredHistoryMatch::ScoredHistoryMatch(
@@ -149,7 +148,6 @@ ScoredHistoryMatch::ScoredHistoryMatch(
     const RowWordStarts& word_starts,
     bool is_url_bookmarked,
     size_t num_matching_pages,
-    bool is_highly_visited_host,
     base::Time now) {
   // Initialize HistoryMatch fields. TODO(tommycli): Merge these two classes.
   url_info = row;
@@ -294,42 +292,8 @@ ScoredHistoryMatch::ScoredHistoryMatch(
     frequency_score = GetFrequency(now, is_url_bookmarked, visits);
     specificity_score = GetDocumentSpecificityScore(num_matching_pages);
   }
-  raw_score_before_domain_boosting =
-      base::saturated_cast<int>(GetFinalRelevancyScore(
-          topicality_score, frequency_score, specificity_score, 1));
-
-  // Calculate the score considering `domain_score` as well (if enabled).
-  static float domain_suggestions_score_factor =
-      OmniboxFieldTrial::kDomainSuggestionsScoreFactor.Get();
-  DCHECK_GE(domain_suggestions_score_factor, 1);
-  const float domain_score =
-      is_highly_visited_host ? domain_suggestions_score_factor : 1;
-  raw_score_after_domain_boosting =
-      domain_score > 1 ? base::saturated_cast<int>(GetFinalRelevancyScore(
-                             topicality_score, frequency_score,
-                             specificity_score, domain_score))
-                       : raw_score_before_domain_boosting;
-  DCHECK(domain_score > 1 ? raw_score_before_domain_boosting <=
-                                raw_score_after_domain_boosting
-                          : raw_score_before_domain_boosting ==
-                                raw_score_after_domain_boosting);
-
-  // Calculate the score using an alternative domain scoring (if enabled).
-  static bool domain_suggestions_alternative_scoring =
-      OmniboxFieldTrial::kDomainSuggestionsAlternativeScoring.Get();
-  if (is_highly_visited_host && domain_suggestions_alternative_scoring) {
-    raw_score_after_domain_boosting =
-        std::max(GetDomainRelevancyScore(now), raw_score_after_domain_boosting);
-  }
-
-  // If the domain suggestions feature is CF enabled, use the un-boosted score;
-  // if non-CF enabled, use the boosted score; and if disabled, it doesn't
-  // matter as the scores are equal.
-  static const bool domain_suggestions_counterfactual =
-      OmniboxFieldTrial::kDomainSuggestionsCounterfactual.Get();
-  raw_score = domain_suggestions_counterfactual
-                  ? raw_score_before_domain_boosting
-                  : raw_score_after_domain_boosting;
+  raw_score = base::saturated_cast<int>(GetFinalRelevancyScore(
+      topicality_score, frequency_score, specificity_score));
 
   if (also_do_hup_like_scoring_ && likely_can_inline) {
     // HistoryURL-provider-like scoring gives any match that is
@@ -955,8 +919,7 @@ float ScoredHistoryMatch::GetDocumentSpecificityScore(
 // static
 float ScoredHistoryMatch::GetFinalRelevancyScore(float topicality_score,
                                                  float frequency_score,
-                                                 float specificity_score,
-                                                 float domain_score) {
+                                                 float specificity_score) {
   // |relevance_buckets| gives a mapping from intermediate score to the final
   // relevance score.
   static base::NoDestructor<ScoreMaxRelevances> default_relevance_buckets(
@@ -996,7 +959,7 @@ float ScoredHistoryMatch::GetFinalRelevancyScore(float topicality_score,
   // The score maxes out at 1399 (i.e., cannot beat a good inlineable result
   // from HistoryURL provider).
   const float intermediate_score =
-      topicality_score * frequency_score * specificity_score * domain_score;
+      topicality_score * frequency_score * specificity_score;
 
   // Find the threshold where intermediate score is greater than bucket.
   size_t i = 1;
@@ -1049,31 +1012,3 @@ ScoredHistoryMatch::GetHQPBucketsFromString(const std::string& buckets_str) {
   return hqp_buckets;
 }
 
-int ScoredHistoryMatch::GetDomainRelevancyScore(base::Time now) const {
-  // Domain scores consider only the last visit time as they're intended for
-  // pages the user hasn't yet visited many times. The goal is to score them
-  // highly enough to surface but not so high they constantly displace
-  // traditional suggestions. Otherwise, for inputs matching a highly visited
-  // domain, domain suggestions would overwhelm all other suggestions. Besides,
-  // if scored conservatively, they'll still be boosted by traditional scores
-  // after they're selected.
-
-  // For simplicity, score them linearly: 1000 - 80 / day.
-  // 80 because (1000-200) / (10-0) = 80.
-  constexpr int max_score = 1000;
-  constexpr int min_score = 200;
-  constexpr auto demote_start = base::Days(0);
-  constexpr auto demote_end = base::Days(10);
-
-  auto elapsed = now - url_info.last_visit();
-
-  // If visited more recently than `demote_start`, return `max_score`.
-  if (elapsed <= demote_start)
-    return max_score;
-  // If visited less recently than `demote_end`, return 0 (not `min_score`).
-  if (elapsed >= demote_end)
-    return 0;
-  // Otherwise, linearly interpolate `max_score` and `min_score`.
-  return max_score - (elapsed - demote_start) / (demote_end - demote_start) *
-                         (max_score - min_score);
-}

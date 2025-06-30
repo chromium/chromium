@@ -129,7 +129,6 @@ URLIndexPrivateData::URLIndexPrivateData() = default;
 ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     std::u16string original_search_string,
     size_t cursor_position,
-    const std::string& host_filter,
     size_t max_matches,
     bookmarks::BookmarkModel* bookmark_model,
     TemplateURLService* template_url_service,
@@ -197,7 +196,7 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     history_ids_were_trimmed |= TrimHistoryIdsPool(&history_ids);
 
     HistoryIdsToScoredMatches(std::move(history_ids), lower_raw_string,
-                              host_filter, template_url_service, bookmark_model,
+                              template_url_service, bookmark_model,
                               &scored_items, triggered_feature_service);
   }
   // Select and sort only the top |max_matches| results.
@@ -254,11 +253,6 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
   return scored_items;
 }
 
-const std::vector<std::string>& URLIndexPrivateData::HighlyVisitedHosts()
-    const {
-  return highly_visited_hosts_;
-}
-
 bool URLIndexPrivateData::UpdateURL(
     history::HistoryService* history_service,
     const history::URLRow& row,
@@ -279,8 +273,6 @@ bool URLIndexPrivateData::UpdateURL(
         RowQualifiesAsSignificant(new_row, base::Time()) &&
         IndexRow(nullptr, history_service, new_row, scheme_allowlist, tracker);
   } else if (RowQualifiesAsSignificant(row, base::Time())) {
-    // TODO(manukh): If we decide to launch `kDomainSuggestions`, `host_visits_`
-    //   should be incremented here.
     // This indexed row still qualifies and will be re-indexed.
     // The url won't have changed but the title, visit count, etc.
     // might have changed.
@@ -311,9 +303,6 @@ bool URLIndexPrivateData::UpdateURL(
   } else {
     // This indexed row no longer qualifies and will be de-indexed by clearing
     // all words associated with this row.
-    // TODO(manukh): If we decide to launch `kDomainSuggestions`, `host_visits_`
-    //  should be decremented here, and if it falls below the threshold, the URL
-    //  removed from `highly_visited_hosts_`.
     RemoveRowFromIndex(row);
     row_was_updated = true;
   }
@@ -403,8 +392,6 @@ scoped_refptr<URLIndexPrivateData> URLIndexPrivateData::RebuildFromHistory(
 
   UMA_HISTOGRAM_COUNTS_1M("History.InMemoryURLHistoryItems",
                           rebuilt_data->history_id_word_map_.size());
-  // TODO(manukh): Add histograms if we decide to experiment with
-  //  `kDomainSuggestions`.
 
   return rebuilt_data;
 }
@@ -451,8 +438,6 @@ size_t URLIndexPrivateData::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(history_id_word_map_);
   res += base::trace_event::EstimateMemoryUsage(history_info_map_);
   res += base::trace_event::EstimateMemoryUsage(word_starts_map_);
-  res += base::trace_event::EstimateMemoryUsage(host_visits_);
-  res += base::trace_event::EstimateMemoryUsage(highly_visited_hosts_);
 
   return res;
 }
@@ -643,7 +628,6 @@ WordIDSet URLIndexPrivateData::WordIDSetForTermChars(
 void URLIndexPrivateData::HistoryIdsToScoredMatches(
     HistoryIDVector history_ids,
     const std::u16string& lower_raw_string,
-    const std::string& host_filter,
     const TemplateURLService* template_url_service,
     bookmarks::BookmarkModel* bookmark_model,
     ScoredHistoryMatches* scored_items,
@@ -667,7 +651,7 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
 
   // Filter bad matches and other matches we don't want to display.
   std::erase_if(history_ids, [&](const HistoryID history_id) {
-    return ShouldExclude(history_id, host_filter, template_url_service);
+    return ShouldExclude(history_id, template_url_service);
   });
 
   // Score the matches.
@@ -700,21 +684,11 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
     auto starts_pos = word_starts_map_.find(history_id);
     CHECK(starts_pos != word_starts_map_.end());
 
-    bool is_highly_visited_host =
-        !host_filter.empty() ||
-        std::ranges::find(HighlyVisitedHosts(), hist_item.url().host()) !=
-            HighlyVisitedHosts().end();
     ScoredHistoryMatch new_scored_match(
         hist_item, hist_pos->second.visits, lower_raw_string, lower_raw_terms,
         lower_terms_to_word_starts_offsets, starts_pos->second,
         bookmark_model && bookmark_model->IsBookmarked(hist_item.url()),
-        num_unique_hosts, is_highly_visited_host, now);
-
-    if (new_scored_match.raw_score_before_domain_boosting <
-        new_scored_match.raw_score_after_domain_boosting) {
-      triggered_feature_service->FeatureTriggered(
-          metrics::OmniboxEventProto_Feature_DOMAIN_SUGGESTIONS);
-    }
+        num_unique_hosts, now);
 
     // Filter new matches that ended up scoring 0. (These are usually matches
     // which didn't match the user's raw terms.)
@@ -792,20 +766,6 @@ bool URLIndexPrivateData::IndexRow(
   } else if (history_service) {
     DCHECK(tracker);
     ScheduleUpdateRecentVisits(history_service, row_id, tracker);
-  }
-
-  // Increment `host_visits_` for and possibly add the host to
-  // `highly_visited_hosts`.
-  static const bool domain_suggestions_enabled =
-      base::FeatureList::IsEnabled(omnibox::kDomainSuggestions);
-  if (domain_suggestions_enabled) {
-    auto& host_info = host_visits_[gurl.host()];
-    const bool was_highly_visited = host_info.IsHighlyVisited();
-    host_info.AddUrl(row);
-    // If the host was already added to `highly_visited_hosts_`, no need to
-    // re-add it.
-    if (!was_highly_visited && host_info.IsHighlyVisited())
-      highly_visited_hosts_.push_back(gurl.host());
   }
 
   return true;
@@ -917,7 +877,6 @@ bool URLIndexPrivateData::URLSchemeIsAllowlisted(
 
 bool URLIndexPrivateData::ShouldExclude(
     const HistoryID history_id,
-    const std::string& host_filter,
     const TemplateURLService* template_url_service) const {
   auto hist_pos = history_info_map_.find(history_id);
   if (hist_pos == history_info_map_.end())
@@ -925,9 +884,6 @@ bool URLIndexPrivateData::ShouldExclude(
 
   GURL url = hist_pos->second.url_row.url();
   if (!url.is_valid())  // Possible in case of profile corruption.
-    return true;
-
-  if (!host_filter.empty() && url.host() != host_filter)
     return true;
 
   // Skip results corresponding to queries from the default search engine.
@@ -1011,29 +967,3 @@ bool URLIndexPrivateData::HistoryItemFactorGreater::operator()(
   return (r1.last_visit() > r2.last_visit());
 }
 
-// HostInfo --------------------------------------------------------------------
-
-bool URLIndexPrivateData::HostInfo::IsHighlyVisited() const {
-  static const int visited_urls_threshold =
-      OmniboxFieldTrial::kDomainSuggestionsTypedUrlsThreshold.Get();
-  static const int typed_visit_threshold =
-      OmniboxFieldTrial::kDomainSuggestionsTypedVisitThreshold.Get();
-
-  return typed_urls_ >= visited_urls_threshold &&
-         typed_visits_ >= typed_visit_threshold;
-}
-
-void URLIndexPrivateData::HostInfo::AddUrl(const history::URLRow& row) {
-  static const int visited_urls_offset =
-      OmniboxFieldTrial::kDomainSuggestionsTypedUrlsOffset.Get();
-  static const int typed_visit_offset =
-      OmniboxFieldTrial::kDomainSuggestionsTypedVisitOffset.Get();
-  static const int typed_visit_cap_per_visit =
-      OmniboxFieldTrial::kDomainSuggestionsTypedVisitCapPerVisit.Get();
-
-  if (row.typed_count() >= visited_urls_offset)
-    typed_urls_++;
-
-  typed_visits_ += std::clamp(row.typed_count() - typed_visit_offset, 0,
-                              typed_visit_cap_per_visit);
-}

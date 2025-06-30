@@ -806,56 +806,6 @@ const base::FeatureParam<size_t>
         "RichAutocompletionAutocompleteShortcutTextMinChar",
         3);
 
-const base::FeatureParam<bool> kDomainSuggestionsCounterfactual(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsCounterfactual",
-    false);
-
-const base::FeatureParam<int> kDomainSuggestionsTypedUrlsThreshold(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsTypedUrlsThreshold",
-    7);
-
-const base::FeatureParam<int> kDomainSuggestionsTypedUrlsOffset(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsTypedUrlsOffset",
-    1);
-
-const base::FeatureParam<int> kDomainSuggestionsTypedVisitThreshold(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsTypedVisitThreshold",
-    4);
-
-const base::FeatureParam<int> kDomainSuggestionsTypedVisitOffset(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsTypedVisitOffset",
-    1);
-
-const base::FeatureParam<int> kDomainSuggestionsTypedVisitCapPerVisit(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsTypedVisitCapPerVisit",
-    2);
-
-const base::FeatureParam<int> kDomainSuggestionsMinInputLength(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsMinInputLength",
-    4);
-
-const base::FeatureParam<int> kDomainSuggestionsMaxMatchesPerDomain(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsMaxMatchesPerDomain",
-    2);
-
-const base::FeatureParam<double> kDomainSuggestionsScoreFactor(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsScoreFactor",
-    1);
-
-const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsAlternativeScoring",
-    false);
-
 // ---------------------------------------------------------
 // ML Relevance Scoring ->
 

@@ -176,11 +176,6 @@ BASE_FEATURE(kDocumentProviderNoSyncRequirement,
              "OmniboxDocumentProviderNoSyncRequirement",
              ENABLED);
 
-// Feature to determine if the HQP should double as a domain provider by
-// suggesting up to the provider limit for each of the user's highly visited
-// domains.
-BASE_FEATURE(kDomainSuggestions, "OmniboxDomainSuggestions", DISABLED);
-
 // If enabled, the omnibox popup is not presented until the mouse button is
 // released.
 BASE_FEATURE(kShowPopupOnMouseReleased,
