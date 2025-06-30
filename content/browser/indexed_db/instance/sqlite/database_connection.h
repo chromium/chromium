@@ -104,9 +104,19 @@ class DatabaseConnection {
                            bool auto_increment);
   Status DeleteObjectStore(base::PassKey<BackingStoreTransactionImpl>,
                            int64_t object_store_id);
+  Status RenameObjectStore(base::PassKey<BackingStoreTransactionImpl>,
+                           int64_t object_store_id,
+                           const std::u16string& new_name);
   Status CreateIndex(base::PassKey<BackingStoreTransactionImpl>,
                      int64_t object_store_id,
                      blink::IndexedDBIndexMetadata index);
+  Status DeleteIndex(base::PassKey<BackingStoreTransactionImpl>,
+                     int64_t object_store_id,
+                     int64_t index_id);
+  Status RenameIndex(base::PassKey<BackingStoreTransactionImpl>,
+                     int64_t object_store_id,
+                     int64_t index_id,
+                     const std::u16string& new_name);
 
   StatusOr<int64_t> GetKeyGeneratorCurrentNumber(
       base::PassKey<BackingStoreTransactionImpl>,
@@ -132,6 +142,8 @@ class DatabaseConnection {
       const blink::IndexedDBKey& key,
       IndexedDBValue value);
   Status DeleteRange(int64_t object_store_id, const blink::IndexedDBKeyRange&);
+  Status ClearObjectStore(base::PassKey<BackingStoreTransactionImpl>,
+                          int64_t object_store_id);
   StatusOr<uint32_t> GetObjectStoreKeyCount(
       base::PassKey<BackingStoreTransactionImpl>,
       int64_t object_store_id,

@@ -6611,6 +6611,13 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_getA
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_getAllRecords.tentative.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_reverse_cursor.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/reading-autoincrement-indexes-cursors.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex-query-exception-order.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_get.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_getKey.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_createIndex.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_openCursor.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_openKeyCursor.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-abort-index-metadata-revert.any.html [ Pass ]
 
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/get-databases.any.html [ Pass ]
 
@@ -6628,6 +6635,21 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-s
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-rw-scopes.any.worker.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-within-database.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-scheduling-within-database.any.worker.html [ Pass ]
+
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/delete-range.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/delete-request-queue.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_delete_index.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_delete_objectstore.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbdatabase_deleteObjectStore.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_delete.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_deleteIndex.any.html [ Pass ]
+
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex-rename-abort.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex-rename-errors.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex-rename.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore-rename-abort.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore-rename-errors.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore-rename-store.any.html [ Pass ]
 
 # Sheriff 2022-08-06
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]

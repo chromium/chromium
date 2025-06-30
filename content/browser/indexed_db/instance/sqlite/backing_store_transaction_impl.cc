@@ -5,7 +5,6 @@
 #include "content/browser/indexed_db/instance/sqlite/backing_store_transaction_impl.h"
 
 #include "base/check.h"
-#include "base/notimplemented.h"
 #include "base/types/expected_macros.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
@@ -58,13 +57,11 @@ Status BackingStoreTransactionImpl::DeleteObjectStore(int64_t object_store_id) {
 Status BackingStoreTransactionImpl::RenameObjectStore(
     int64_t object_store_id,
     const std::u16string& new_name) {
-  NOTIMPLEMENTED();
-  return Status::InvalidArgument("Not implemented");
+  return db_->RenameObjectStore(PassKey(), object_store_id, new_name);
 }
 
 Status BackingStoreTransactionImpl::ClearObjectStore(int64_t object_store_id) {
-  NOTIMPLEMENTED();
-  return Status::InvalidArgument("Not implemented");
+  return db_->ClearObjectStore(PassKey(), object_store_id);
 }
 
 Status BackingStoreTransactionImpl::CreateIndex(
@@ -75,16 +72,14 @@ Status BackingStoreTransactionImpl::CreateIndex(
 
 Status BackingStoreTransactionImpl::DeleteIndex(int64_t object_store_id,
                                                 int64_t index_id) {
-  NOTIMPLEMENTED();
-  return Status::InvalidArgument("Not implemented");
+  return db_->DeleteIndex(PassKey(), object_store_id, index_id);
 }
 
 Status BackingStoreTransactionImpl::RenameIndex(
     int64_t object_store_id,
     int64_t index_id,
     const std::u16string& new_name) {
-  NOTIMPLEMENTED();
-  return Status::InvalidArgument("Not implemented");
+  return db_->RenameIndex(PassKey(), object_store_id, index_id, new_name);
 }
 
 StatusOr<IndexedDBValue> BackingStoreTransactionImpl::GetRecord(
