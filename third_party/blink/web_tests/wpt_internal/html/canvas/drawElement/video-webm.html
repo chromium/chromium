@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Canvas.drawElement: wbem video does not appear with drawElement</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:schenney@chromium.org">
+<link rel="match" href="basic-rect-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+#child {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+#canvas {
+  background: grey;
+}
+video {
+    width: 100px;
+    height: 100px;
+}
+</style>
+<canvas id=canvas width="200px" height="200px" style="background-color: grey" layoutsubtree>
+  <div id=child>
+     <video id=image>
+       <source src="resources/white.webm" type="video/webm" />
+     </video>
+  </div>
+</canvas>
+<script>
+function runTest() {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        canvas.getContext("2d").drawElement(child, 20, 30);
+        takeScreenshot();
+      })
+    })
+  })
+}
+
+onload = () => runTest();
+</script>
+</html>
