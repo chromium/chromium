@@ -534,7 +534,7 @@ struct AutocompleteMatch {
 
   // Checks if this match is an informational IPH suggestion based on the match
   // and provider type.
-  bool IsIPHSuggestion() const;
+  bool IsIphSuggestion() const;
 
   // Checks if this match has an attached action with the given `action_id`.
   bool HasAction(OmniboxActionId action_id) const;

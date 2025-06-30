@@ -1625,7 +1625,7 @@ int AutocompleteMatch::GetSortingOrder() const {
     return 8;
   }
 
-  if (IsIPHSuggestion()) {
+  if (IsIphSuggestion()) {
     return 9;
   }
 
@@ -1728,7 +1728,7 @@ bool AutocompleteMatch::IsTrendSuggestion() const {
   return subtypes.contains(/*omnibox::SUBTYPE_TRENDS=*/143);
 }
 
-bool AutocompleteMatch::IsIPHSuggestion() const {
+bool AutocompleteMatch::IsIphSuggestion() const {
   return iph_type != IphType::kNone;
 }
 

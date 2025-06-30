@@ -375,7 +375,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   UpdateDividerLineVisibility();
   UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
-  if (match_.IsIPHSuggestion()) {
+  if (match_.IsIphSuggestion()) {
     remove_suggestion_button_->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_OMNIBOX_CLOSE_IPH_SUGGESTION));
     remove_suggestion_button_->GetViewAccessibility().SetName(
@@ -481,7 +481,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
       GetNativeTheme() && GetNativeTheme()->UserHasContrastPreference();
   if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
     suggestion_view_->content()->ApplyTextColor(
-        match_.IsIPHSuggestion() ? kColorOmniboxResultsTextDimmed
+        match_.IsIphSuggestion() ? kColorOmniboxResultsTextDimmed
                                  : kColorOmniboxText);
   } else if (prefers_contrast || force_reapply_styles) {
     // Normally, OmniboxTextView caches its appearance, but in high contrast,
@@ -572,7 +572,7 @@ OmniboxPartState OmniboxResultView::GetThemeState() const {
     if (match_.IsToolbelt()) {
       return OmniboxPartState::TOOLBELT;
     }
-    return match_.IsIPHSuggestion() ? OmniboxPartState::IPH
+    return match_.IsIphSuggestion() ? OmniboxPartState::IPH
                                     : OmniboxPartState::NORMAL;
   }
 

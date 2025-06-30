@@ -530,6 +530,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   void MaybeCleanSuggestionsForKeywordMode(const AutocompleteInput& input,
                                            AutocompleteResult* result);
 
+  // Removes promotional IPH suggestions if `result` contains toolbelt. Does not
+  // remove disclaimer IPHs.
+  void MaybeCleanIphSuggestions(AutocompleteResult* result);
+
   // Get the experiment stats v2 entry for the omnibox position. Used on iOS.
   const omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2
   GetOmniboxPositionExperimentStatsV2() const;

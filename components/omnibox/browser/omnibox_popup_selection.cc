@@ -54,7 +54,7 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
       return match.SupportsDeletion();
     case FOCUSED_IPH_LINK:
-      return match.IsIPHSuggestion() && !match.iph_link_url.is_empty();
+      return match.IsIphSuggestion() && !match.iph_link_url.is_empty();
     default:
       break;
   }

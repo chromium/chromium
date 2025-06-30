@@ -239,7 +239,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
     layout_style_ = LayoutStyle::SEARCH_SUGGESTION;
   } else if (match.IsToolbelt()) {
     layout_style_ = LayoutStyle::TOOLBELT;
-  } else if (match.IsIPHSuggestion()) {
+  } else if (match.IsIphSuggestion()) {
     layout_style_ = LayoutStyle::IPH_SUGGESTION;
   } else if (match.type ==
              AutocompleteMatchType::Type::HISTORY_EMBEDDINGS_ANSWER) {

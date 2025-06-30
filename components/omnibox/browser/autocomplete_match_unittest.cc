@@ -1126,7 +1126,7 @@ TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
     } else if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL ||
                match.type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER ||
                (match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
-                !match.IsIPHSuggestion())) {
+                !match.IsIphSuggestion())) {
       // SEARCH_SUGGEST_TAIL and non-IPH NULL_RESULT_MESSAGE suggestions use an
       // empty vector icon.
       EXPECT_TRUE(match.GetVectorIcon(/*is_bookmark=*/false).is_empty());
