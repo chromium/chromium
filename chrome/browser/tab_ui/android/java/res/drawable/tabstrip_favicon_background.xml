@@ -14,7 +14,7 @@ xmlns:android="http://schemas.android.com/apk/res/android" >
         android:bottom="6dp">
         <shape
             android:shape="oval">
-            <solid android:color="@color/favicon_background_color" />
+            <solid android:color="@macro/favicon_background_color" />
         </shape>
     </item>
 </layer-list>
