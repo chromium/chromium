@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -241,7 +242,7 @@ String HTMLFormControlElementWithState::IDLExposedAutofillValue() const {
       }
       // 16.7 Let IDL value be the concatenation of the indexth token in tokens,
       // a U+0020 SPACE character, and the previous value of IDL value.
-      idl_value = tokens[index] + " " + idl_value;
+      idl_value = StrCat({tokens[index], " ", idl_value});
     }
   }
 
@@ -259,7 +260,7 @@ String HTMLFormControlElementWithState::IDLExposedAutofillValue() const {
         // 19.4. Let IDL value be the concatenation of contact, a U+0020 SPACE
         // character, and the previous value of IDL value (which at this point
         // will always be field).
-        idl_value = contact + " " + idl_value;
+        idl_value = StrCat({contact, " ", idl_value});
         // 19.5. If the indexth entry in tokens is the first entry, then skip to
         // the step labeled done.
         if (index == 0) {
@@ -278,7 +279,7 @@ String HTMLFormControlElementWithState::IDLExposedAutofillValue() const {
       // character, and the previous value of IDL value (which at this point
       // will either be field or the concatenation of contact, a space, and
       // field).
-      idl_value = mode + " " + idl_value;
+      idl_value = StrCat({mode, " ", idl_value});
       // 20.5 If the indexth entry in tokens is the first entry, then skip to
       // the step labeled done.
       if (index == 0) {
@@ -300,7 +301,7 @@ String HTMLFormControlElementWithState::IDLExposedAutofillValue() const {
       return g_empty_string;
     // 25. Let IDL value be the concatenation of section, a U+0020 SPACE
     // character, and the previous value of IDL value.
-    idl_value = section + " " + idl_value;
+    idl_value = StrCat({section, " ", idl_value});
   }
   // 30. Let the element's IDL-exposed autofill value be IDL value.
   return idl_value;

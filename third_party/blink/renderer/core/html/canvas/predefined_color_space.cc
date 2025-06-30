@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_smpte_st_2086_metadata.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_predefined_color_space.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/skia/include/core/SkData.h"
 
 namespace blink {
@@ -41,9 +42,9 @@ bool ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
       break;
   }
   if (needs_hdr && !RuntimeEnabledFeatures::CanvasHDREnabled()) {
-    exception_state.ThrowTypeError(
-        "The provided value '" + v8_color_space.AsString() +
-        "' is not a valid enum value of the type PredefinedColorSpace.");
+    exception_state.ThrowTypeError(StrCat(
+        {"The provided value '", v8_color_space.AsString(),
+         "' is not a valid enum value of the type PredefinedColorSpace."}));
     return false;
   }
   return true;

@@ -184,7 +184,8 @@ HTMLTableRowElement* HTMLTableElement::insertRow(
   if (index < -1) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The index provided (" + String::Number(index) + ") is less than -1.");
+        StrCat({"The index provided (", String::Number(index),
+                ") is less than -1."}));
     return nullptr;
   }
 
@@ -199,9 +200,9 @@ HTMLTableRowElement* HTMLTableElement::insertRow(
         if (i != index) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kIndexSizeError,
-              "The index provided (" + String::Number(index) +
-                  ") is greater than the number of rows in the table (" +
-                  String::Number(i) + ").");
+              StrCat({"The index provided (", String::Number(index),
+                      ") is greater than the number of rows in the table (",
+                      String::Number(i), ")."}));
           return nullptr;
         }
         break;

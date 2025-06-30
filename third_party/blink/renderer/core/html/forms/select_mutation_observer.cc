@@ -208,29 +208,30 @@ String SelectMutationObserver::GetMessageForReason(
 String SelectMutationObserver::FormatElementMessage(const String& element,
                                                     const String& article,
                                                     const String& example) {
-  return "An element which is not allowed in the content model of the " +
-         element + " element was found within " + article + element +
-         " element. These elements will not consistently be accessible to "
-         "people navigating by keyboard or using assistive technology. If "
-         "using disallowed elements for layout structure and styling, "
-         "consider using the allowed <div> element instead. Any text "
-         "existing within the " +
-         element +
-         " element should either be removed or relocated to a valid element "
-         "that allows text descendants, e.g., " +
-         example + ".";
+  return StrCat(
+      {"An element which is not allowed in the content model of the ", element,
+       " element was found within ", article, element,
+       " element. These elements will not consistently be accessible to people "
+       "navigating by keyboard or using assistive technology. If using "
+       "disallowed elements for layout structure and styling, consider using "
+       "the allowed <div> element instead. Any text existing within the ",
+       element,
+       " element should either be removed or relocated to a valid element that "
+       "allows text descendants, e.g., ",
+       example, "."});
 }
 
 String SelectMutationObserver::FormatInteractiveElementMessage(
     const String& element,
     const String& article,
     const String& context) {
-  return "An interactive element which is not allowed in the content model "
-         "of the " +
-         element + " element was found within " + article + element +
-         " element. " + context +
-         "These elements will not consistently be accessible to people "
-         "navigating by keyboard or using assistive technology.";
+  return StrCat(
+      {"An interactive element which is not allowed in the content model of "
+       "the ",
+       element, " element was found within ", article, element, " element. ",
+       context,
+       "These elements will not consistently be accessible to people "
+       "navigating by keyboard or using assistive technology."});
 }
 
 bool SelectMutationObserver::IsAllowedInteractiveElement(Node& node) {

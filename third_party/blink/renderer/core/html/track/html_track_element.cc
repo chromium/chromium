@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/track/loadable_text_track.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 #define TRACK_LOG_LEVEL 3
 
@@ -48,7 +49,7 @@ static String UrlForLoggingTrack(const KURL& url) {
   if (url_string.length() < kMaximumURLLengthForLogging) {
     return url_string;
   }
-  return url_string.Substring(0, kMaximumURLLengthForLogging) + "...";
+  return StrCat({url_string.Substring(0, kMaximumURLLengthForLogging), "..."});
 }
 
 HTMLTrackElement::HTMLTrackElement(Document& document)

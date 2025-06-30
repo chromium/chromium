@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/platform/heap/process_heap.h"
 #include "third_party/blink/renderer/platform/wtf/bit_field.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace {
 
@@ -196,25 +197,23 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
     // Note: We cannot use the UMA_HISTOGRAM_* macros here due to dynamic
     // naming. See comments at top of base/metrics/histogram_macros.h for more
     // info.
-    WTF::String histogram_name_prefix =
-        WTF::String("Blink") + desc.GetHostTypeName();
-    WTF::String histogram_name_radical =
-        WTF::String(desc.GetRenderingAPIName());
+    String histogram_name_prefix = StrCat({"Blink", desc.GetHostTypeName()});
+    String histogram_name_radical = String(desc.GetRenderingAPIName());
 
     // Render task duration metric for all render tasks.
     {
-      WTF::String histogram_name = histogram_name_prefix +
-                                   kMeasurementName_RenderTaskDuration +
-                                   histogram_name_radical + kFilterName_All;
+      String histogram_name =
+          StrCat({histogram_name_prefix, kMeasurementName_RenderTaskDuration,
+                  histogram_name_radical, kFilterName_All});
       base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                           elapsed_time);
     }
 
     // Render task duration metric for rAF callbacks only.
     if (call_type_ == CallType::kAnimation) {
-      WTF::String histogram_name =
-          histogram_name_prefix + kMeasurementName_RenderTaskDuration +
-          histogram_name_radical + kFilterName_Animation;
+      String histogram_name =
+          StrCat({histogram_name_prefix, kMeasurementName_RenderTaskDuration,
+                  histogram_name_radical, kFilterName_Animation});
       base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                           elapsed_time);
     }
@@ -223,37 +222,37 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
     if (desc.GetRenderingAPI() ==
         CanvasRenderingContext::CanvasRenderingAPI::k2D) {
       if (draw_types_ & static_cast<uint32_t>(DrawType::kPath)) {
-        WTF::String histogram_name = histogram_name_prefix +
-                                     kMeasurementName_RenderTaskDuration +
-                                     histogram_name_radical + kFilterName_Path;
+        String histogram_name =
+            StrCat({histogram_name_prefix, kMeasurementName_RenderTaskDuration,
+                    histogram_name_radical, kFilterName_Path});
         base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                             elapsed_time);
       }
       if (draw_types_ & static_cast<uint32_t>(DrawType::kImage)) {
-        WTF::String histogram_name = histogram_name_prefix +
-                                     kMeasurementName_RenderTaskDuration +
-                                     histogram_name_radical + kFilterName_Image;
+        String histogram_name =
+            StrCat({histogram_name_prefix, kMeasurementName_RenderTaskDuration,
+                    histogram_name_radical, kFilterName_Image});
         base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                             elapsed_time);
       }
       if (draw_types_ & static_cast<uint32_t>(DrawType::kImageData)) {
-        WTF::String histogram_name =
-            histogram_name_prefix + kMeasurementName_RenderTaskDuration +
-            histogram_name_radical + kFilterName_ImageData;
+        String histogram_name =
+            StrCat({histogram_name_prefix, kMeasurementName_RenderTaskDuration,
+                    histogram_name_radical, kFilterName_ImageData});
         base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                             elapsed_time);
       }
       if (draw_types_ & static_cast<uint32_t>(DrawType::kText)) {
-        WTF::String histogram_name = histogram_name_prefix +
-                                     kMeasurementName_RenderTaskDuration +
-                                     histogram_name_radical + kFilterName_Text;
+        String histogram_name =
+            StrCat({histogram_name_prefix, kMeasurementName_RenderTaskDuration,
+                    histogram_name_radical, kFilterName_Text});
         base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                             elapsed_time);
       }
       if (draw_types_ & static_cast<uint32_t>(DrawType::kRectangle)) {
-        WTF::String histogram_name =
-            histogram_name_prefix + kMeasurementName_RenderTaskDuration +
-            histogram_name_radical + kFilterName_Rectangle;
+        String histogram_name =
+            StrCat({histogram_name_prefix, kMeasurementName_RenderTaskDuration,
+                    histogram_name_radical, kFilterName_Rectangle});
         base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                             elapsed_time);
       }
@@ -263,16 +262,16 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
                    CanvasRenderingContext::CanvasRenderingAPI::kWebgl2) {
       // Filtered histograms that apply to WebGL canvases
       if (draw_types_ & static_cast<uint32_t>(DrawType::kDrawArrays)) {
-        WTF::String histogram_name =
-            histogram_name_prefix + kMeasurementName_RenderTaskDuration +
-            histogram_name_radical + kFilterName_DrawArrays;
+        String histogram_name =
+            StrCat({histogram_name_prefix, kMeasurementName_RenderTaskDuration,
+                    histogram_name_radical, kFilterName_DrawArrays});
         base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                             elapsed_time);
       }
       if (draw_types_ & static_cast<uint32_t>(DrawType::kDrawElements)) {
-        WTF::String histogram_name =
-            histogram_name_prefix + kMeasurementName_RenderTaskDuration +
-            histogram_name_radical + kFilterName_DrawElements;
+        String histogram_name =
+            StrCat({histogram_name_prefix, kMeasurementName_RenderTaskDuration,
+                    histogram_name_radical, kFilterName_DrawElements});
         base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                             elapsed_time);
       }
@@ -281,18 +280,18 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
 
     // PartitionAlloc heap size metric
     {
-      WTF::String histogram_name = histogram_name_prefix +
-                                   kMeasurementName_PartitionAlloc +
-                                   histogram_name_radical;
+      String histogram_name =
+          StrCat({histogram_name_prefix, kMeasurementName_PartitionAlloc,
+                  histogram_name_radical});
       base::UmaHistogramMemoryKB(histogram_name.Latin1(),
                                  static_cast<int>(partition_alloc_kb));
     }
 
     // Blink garbage collected heap size metric
     {
-      WTF::String histogram_name = histogram_name_prefix +
-                                   kMeasurementName_BlinkGC +
-                                   histogram_name_radical;
+      String histogram_name =
+          StrCat({histogram_name_prefix, kMeasurementName_BlinkGC,
+                  histogram_name_radical});
       base::UmaHistogramMemoryKB(histogram_name.Latin1(),
                                  static_cast<int>(blink_gc_alloc_kb));
     }

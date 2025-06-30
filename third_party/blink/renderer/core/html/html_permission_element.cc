@@ -765,9 +765,9 @@ void HTMLPermissionElement::AttributeChanged(
     CHECK(permission_descriptors_.empty());
     permission_descriptors_ = ParsePermissionDescriptorsFromString(GetType());
     if (permission_descriptors_.empty()) {
-      AddConsoleError("The permission type '" + GetType().GetString() +
-                      "' is not supported by the "
-                      "permission element.");
+      AddConsoleError(
+          StrCat({"The permission type '", GetType().GetString(),
+                  "' is not supported by the permission element."}));
       EnableFallbackMode();
       return;
     }

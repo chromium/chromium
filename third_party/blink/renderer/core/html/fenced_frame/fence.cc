@@ -266,8 +266,8 @@ void Fence::setReportEventDataForAutomaticBeacons(
   std::optional<mojom::blink::AutomaticBeaconType> beacon_type =
       GetAutomaticBeaconType(event->eventType());
   if (!beacon_type.has_value()) {
-    AddConsoleMessage(event->eventType() +
-                      " is not a valid automatic beacon event type.");
+    AddConsoleMessage(StrCat(
+        {event->eventType(), " is not a valid automatic beacon event type."}));
     return;
   }
   if (event->hasEventData() &&
@@ -279,8 +279,8 @@ void Fence::setReportEventDataForAutomaticBeacons(
   }
   if (event->eventType() ==
       blink::kDeprecatedFencedFrameTopNavigationBeaconType) {
-    AddConsoleMessage(event->eventType() + " is deprecated in favor of " +
-                          kFencedFrameTopNavigationCommitBeaconType + ".",
+    AddConsoleMessage(StrCat({event->eventType(), " is deprecated in favor of ",
+                              kFencedFrameTopNavigationCommitBeaconType, "."}),
                       mojom::blink::ConsoleMessageLevel::kWarning);
   }
   LocalFrame* frame = DomWindow()->GetFrame();

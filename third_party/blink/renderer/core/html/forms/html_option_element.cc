@@ -459,7 +459,7 @@ void HTMLOptionElement::setLabel(const AtomicString& label) {
 String HTMLOptionElement::TextIndentedToRespectGroupLabel() const {
   ContainerNode* parent = parentNode();
   if (parent && IsA<HTMLOptGroupElement>(*parent))
-    return "    " + DisplayLabel();
+    return StrCat({"    ", DisplayLabel()});
   return DisplayLabel();
 }
 

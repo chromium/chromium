@@ -1148,10 +1148,11 @@ void HTMLElement::setContentEditable(const String& enabled,
   } else if (lower_value == keywords::kInherit) {
     removeAttribute(html_names::kContenteditableAttr);
   } else {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "The value provided ('" + enabled +
-                                          "') is not one of 'true', 'false', "
-                                          "'plaintext-only', or 'inherit'.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        StrCat({"The value provided ('", enabled,
+                "') is not one of 'true', 'false', 'plaintext-only', or "
+                "'inherit'."}));
   }
 }
 
@@ -1309,11 +1310,11 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
                                    DOMExceptionCode code, const char* msg) {
     if (exception_state) {
       String error_message =
-          String(msg) +
-          (include_event_handler_text
-               ? " This might have been the result of the \"beforetoggle\" "
-                 "event handler changing the state of this popover."
-               : "");
+          StrCat({msg, (include_event_handler_text
+                            ? StringView(" This might have been the result of "
+                                         "the \"beforetoggle\" event handler "
+                                         "changing the state of this popover.")
+                            : StringView())});
       exception_state->ThrowDOMException(code, error_message);
     }
   };

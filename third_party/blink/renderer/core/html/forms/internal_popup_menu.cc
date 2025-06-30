@@ -552,7 +552,7 @@ void InternalPopupMenu::AppendOwnerElementPseudoStyles(
     const String& target,
     SegmentedBuffer& data,
     const ComputedStyle& style) {
-  PagePopupClient::AddString(target + "{ \n", data);
+  PagePopupClient::AddString(StrCat({target, "{ \n"}), data);
 
   const CSSPropertyID serialize_targets[] = {
       CSSPropertyID::kDisplay,        CSSPropertyID::kBackgroundColor,

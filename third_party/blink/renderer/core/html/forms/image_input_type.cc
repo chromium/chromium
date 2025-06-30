@@ -66,10 +66,8 @@ void ImageInputType::AppendToFormData(FormData& form_data) const {
     return;
   }
 
-  DEFINE_STATIC_LOCAL(String, dot_x_string, (".x"));
-  DEFINE_STATIC_LOCAL(String, dot_y_string, (".y"));
-  form_data.AppendFromElement(name + dot_x_string, click_location_.x());
-  form_data.AppendFromElement(name + dot_y_string, click_location_.y());
+  form_data.AppendFromElement(StrCat({name, ".x"}), click_location_.x());
+  form_data.AppendFromElement(StrCat({name, ".y"}), click_location_.y());
 }
 
 String ImageInputType::ResultForDialogSubmit() const {
