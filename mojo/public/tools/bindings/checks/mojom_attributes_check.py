@@ -163,7 +163,6 @@ _NATIVE_ALLOWLIST = {
     'mojo.test.TestNativeStructMojom',
     'mojo.test.TestNativeStructWithAttachmentsMojom',
     'mojo.test.UnmappedNativeStruct',
-    'nacl.mojom.NaClErrorCode',
     'network.mojom.AuthCredentials',
     'network.mojom.CertVerifyResult',
     'network.mojom.ConnectionInfo',
