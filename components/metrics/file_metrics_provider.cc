@@ -683,7 +683,7 @@ FileMetricsProvider::AccessResult FileMetricsProvider::HandleFilterSource(
       // Touch the file with the current timestamp making it (presumably) the
       // newest file in the directory.
       base::Time now = base::Time::Now();
-      base::TouchFile(path, /*accessed=*/now, /*modified=*/now);
+      base::TouchFile(path, /*last_accessed=*/now, /*last_modified=*/now);
       if (action == FILTER_ACTIVE_THIS_PID)
         return ACCESS_RESULT_THIS_PID;
       return ACCESS_RESULT_FILTER_TRY_LATER;
