@@ -109,6 +109,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -158,6 +159,7 @@ public class NewTabPage
     private TabObserver mTabObserver;
     private LifecycleObserver mLifecycleObserver;
     protected boolean mSearchProviderHasLogo;
+    protected boolean mIsDefaultSearchEngineGoogle;
 
     protected OmniboxStub mOmniboxStub;
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
@@ -595,7 +597,7 @@ public class NewTabPage
                 };
         mActivityLifecycleDispatcher.register(mLifecycleObserver);
 
-        updateSearchProviderHasLogo();
+        updateSearchProvider();
         initializeMainView(
                 activity,
                 windowAndroid,
@@ -639,7 +641,7 @@ public class NewTabPage
                 activity,
                 mTileGroupDelegate,
                 mSearchProviderHasLogo,
-                mTemplateUrlService.isDefaultSearchEngineGoogle(),
+                mIsDefaultSearchEngineGoogle,
                 mFeedSurfaceProvider.getScrollDelegate(),
                 mFeedSurfaceProvider.getTouchEnabledDelegate(),
                 mFeedSurfaceProvider.getUiConfig(),
@@ -767,7 +769,10 @@ public class NewTabPage
      *     NTP.
      */
     public static boolean isInSingleUrlBarMode(boolean isTablet, boolean searchProviderHasLogo) {
-        return !isTablet && searchProviderHasLogo;
+        return !isTablet
+                && (searchProviderHasLogo
+                        || (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()
+                                && OmniboxFeatures.sOmniboxMobileParityUpdateV2.isEnabled()));
     }
 
     /**
@@ -836,33 +841,24 @@ public class NewTabPage
         return isInSingleUrlBarMode(mIsTablet, mSearchProviderHasLogo);
     }
 
-    private void updateSearchProviderHasLogo() {
+    private void updateSearchProvider() {
         mSearchProviderHasLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
+        mIsDefaultSearchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
     }
 
     private void onSearchEngineUpdated() {
-        updateSearchProviderHasLogo();
+        updateSearchProvider();
 
-        setSearchProviderInfoOnView(
-                mSearchProviderHasLogo, mTemplateUrlService.isDefaultSearchEngineGoogle());
+        mNewTabPageLayout.setSearchProviderInfo(
+                mSearchProviderHasLogo, mIsDefaultSearchEngineGoogle);
         // TODO(crbug.com/40226731): Remove this call when the Feed position experiment is
         // cleaned up.
         updateMargins();
     }
 
     /**
-     * Set the search provider info on the main child view, so that it can change layouts if needed.
-     *
-     * @param hasLogo Whether the search provider has a logo.
-     * @param isGoogle Whether the search provider is Google.
-     */
-    private void setSearchProviderInfoOnView(boolean hasLogo, boolean isGoogle) {
-        mNewTabPageLayout.setSearchProviderInfo(hasLogo, isGoogle);
-    }
-
-    /**
-     * Specifies the percentage the URL is focused during an animation.  1.0 specifies that the URL
-     * bar has focus and has completed the focus animation.  0 is when the URL bar is does not have
+     * Specifies the percentage the URL is focused during an animation. 1.0 specifies that the URL
+     * bar has focus and has completed the focus animation. 0 is when the URL bar is does not have
      * any focus.
      *
      * @param percent The percentage of the URL bar focus animation.

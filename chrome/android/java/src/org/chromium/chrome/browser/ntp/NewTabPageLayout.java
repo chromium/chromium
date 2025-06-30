@@ -113,6 +113,7 @@ public class NewTabPageLayout extends LinearLayout
     private boolean mSearchProviderHasLogo = true;
     private boolean mSearchProviderIsGoogle;
     private boolean mShowingNonStandardGoogleLogo;
+    private boolean mIsOmniboxMobileParityUpdateV2Enabled;
 
     private boolean mInitialized;
 
@@ -158,22 +159,28 @@ public class NewTabPageLayout extends LinearLayout
     private Boolean mPreviousVoiceSearchButtonVisible;
     private Boolean mPreviousLensButtonVisible;
     private @Nullable ImageView mDseIconView;
-    private ViewGroup mFakeSearchBox;
+    private final int mNtpSearchBoxTransitionStartOffset;
+    private final int mNtpSearchBoxTopMarginWithoutLogo;
+    private int mCurrentNtpFakeSearchBoxTransitionStartOffset;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
+        Resources resources = getResources();
         mTileViewWidth =
-                getResources().getDimensionPixelOffset(org.chromium.chrome.R.dimen.tile_view_width);
+                resources.getDimensionPixelOffset(org.chromium.chrome.R.dimen.tile_view_width);
         mTileViewIntervalPaddingTablet =
-                getResources()
-                        .getDimensionPixelOffset(
-                                org.chromium.chrome.R.dimen.tile_view_padding_interval_tablet);
+                resources.getDimensionPixelOffset(
+                        org.chromium.chrome.R.dimen.tile_view_padding_interval_tablet);
         mTileViewEdgePaddingTablet =
-                getResources()
-                        .getDimensionPixelOffset(
-                                org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet);
+                resources.getDimensionPixelOffset(
+                        org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet);
+
+        mNtpSearchBoxTopMarginWithoutLogo =
+                resources.getDimensionPixelSize(R.dimen.mvt_container_top_margin);
+        mNtpSearchBoxTransitionStartOffset =
+                resources.getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset);
     }
 
     @Override
@@ -243,6 +250,9 @@ public class NewTabPageLayout extends LinearLayout
         if (mIsComposeplateEnabled) {
             mComposeplateUrlSupplier = composeplateUrlSupplier;
         }
+        mIsOmniboxMobileParityUpdateV2Enabled =
+                OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()
+                        && OmniboxFeatures.sOmniboxMobileParityUpdateV2.isEnabled();
 
         if (mIsTablet) {
             mDisplayStyleObserver = this::onDisplayStyleChanged;
@@ -345,8 +355,7 @@ public class NewTabPageLayout extends LinearLayout
     private void initializeDseIconView(boolean shouldShowDesIconView) {
         if (!OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) return;
 
-        mFakeSearchBox = findViewById(R.id.search_box);
-        mDseIconView = mFakeSearchBox.findViewById(R.id.search_box_engine_icon);
+        mDseIconView = mFakeSearchBoxLayout.findViewById(R.id.search_box_engine_icon);
         ImageViewCompat.setImageTintList(mDseIconView, null);
 
         setDseIconViewVisibility(shouldShowDesIconView);
@@ -361,21 +370,21 @@ public class NewTabPageLayout extends LinearLayout
         mDseIconView.setVisibility(visibility);
 
         if (isVisible) {
-            mFakeSearchBox.setPaddingRelative(
+            mFakeSearchBoxLayout.setPaddingRelative(
                     getResources()
                             .getDimensionPixelSize(
                                     R.dimen.fake_search_box_start_padding_with_dse_logo),
-                    mFakeSearchBox.getPaddingTop(),
-                    mFakeSearchBox.getPaddingEnd(),
-                    mFakeSearchBox.getPaddingBottom());
+                    mFakeSearchBoxLayout.getPaddingTop(),
+                    mFakeSearchBoxLayout.getPaddingEnd(),
+                    mFakeSearchBoxLayout.getPaddingBottom());
             mFakeSearchBoxEditText.setTextAppearance(
                     R.style.TextAppearance_FakeSearchBoxTextMedium);
         } else {
-            mFakeSearchBox.setPaddingRelative(
+            mFakeSearchBoxLayout.setPaddingRelative(
                     getResources().getDimensionPixelSize(R.dimen.fake_search_box_start_padding),
-                    mFakeSearchBox.getPaddingTop(),
-                    mFakeSearchBox.getPaddingEnd(),
-                    mFakeSearchBox.getPaddingBottom());
+                    mFakeSearchBoxLayout.getPaddingTop(),
+                    mFakeSearchBoxLayout.getPaddingEnd(),
+                    mFakeSearchBoxLayout.getPaddingBottom());
             mFakeSearchBoxEditText.setTextAppearance(R.style.TextAppearance_FakeSearchBoxText);
         }
     }
@@ -570,8 +579,7 @@ public class NewTabPageLayout extends LinearLayout
         final int scrollY = mScrollDelegate.getVerticalScrollOffset();
         // Use int pixel size instead of float dimension to avoid precision error on the percentage.
         final float transitionLength =
-                getResources().getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset)
-                        + mTransitionEndOffset;
+                mCurrentNtpFakeSearchBoxTransitionStartOffset + mTransitionEndOffset;
         // Tab strip height is zero on phones, and may vary on tablets.
         int tabStripHeight = mTabStripHeightSupplier.get();
 
@@ -708,7 +716,7 @@ public class NewTabPageLayout extends LinearLayout
 
         // Hide or show the views above the most visited tiles as needed, including search box, and
         // spacers. The visibility of Logo is handled by LogoCoordinator.
-        mSearchBoxCoordinator.setVisibility(mSearchProviderHasLogo);
+        mSearchBoxCoordinator.setVisibility(isInSingleUrlMode());
         if (mDseIconView != null) {
             setDseIconViewVisibility(mSearchProviderIsGoogle);
         }
@@ -786,7 +794,7 @@ public class NewTabPageLayout extends LinearLayout
         if (mDisableUrlFocusChangeAnimations || mIsViewMoving || mIsTablet) return;
 
         // Translate so that the search box is at the top, but only upwards.
-        float percent = mSearchProviderHasLogo ? mUrlFocusChangePercent : 0;
+        float percent = isInSingleUrlMode() ? mUrlFocusChangePercent : 0;
         int basePosition = mScrollDelegate.getVerticalScrollOffset() + getPaddingTop();
         int target =
                 Math.max(
@@ -889,6 +897,23 @@ public class NewTabPageLayout extends LinearLayout
     }
 
     private void setSearchProviderTopMargin() {
+        boolean showFakeSearchBoxWithoutLogo =
+                !mSearchProviderHasLogo && mIsOmniboxMobileParityUpdateV2Enabled;
+        if (mIsTablet && showFakeSearchBoxWithoutLogo) {
+            // On tablets, it is possible to show fake search box if DSE doesn't have logo if DSE
+            // mobile parity v2 is enabled. The mNTPFakeSearchBoxTransitionStartOffset is used to
+            // calculate scrolling percentage in getToolbarTransitionPercentage(). Reset to 0 when
+            // no doodle is shown for 3p DSE to prevent the alpha of fake search box being set to 0
+            // (transparent) by ToolbarTablet#updateNtp().
+            mCurrentNtpFakeSearchBoxTransitionStartOffset = 0;
+        } else {
+            mCurrentNtpFakeSearchBoxTransitionStartOffset = mNtpSearchBoxTransitionStartOffset;
+        }
+
+        MarginLayoutParams params = (MarginLayoutParams) mFakeSearchBoxLayout.getLayoutParams();
+        params.topMargin = showFakeSearchBoxWithoutLogo ? mNtpSearchBoxTopMarginWithoutLogo : 0;
+        mFakeSearchBoxLayout.setLayoutParams(params);
+
         mLogoCoordinator.setTopMargin(getLogoMargin(/* isTopMargin= */ true));
     }
 
@@ -1202,5 +1227,9 @@ public class NewTabPageLayout extends LinearLayout
     @Override
     public void onSearchBoxHintTextChanged(String newHint) {
         mFakeSearchBoxEditText.setHint(newHint);
+    }
+
+    private boolean isInSingleUrlMode() {
+        return mSearchProviderHasLogo || mIsOmniboxMobileParityUpdateV2Enabled;
     }
 }

@@ -31,6 +31,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -550,8 +551,9 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2)
     @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/339034032")
-    public void testToolbarBackgroundChangedWhenSearchEngineHasNoLogo() {
+    public void testToolbarBackgroundChangedWhenSearchEngineHasNoLogo_ParityUpdateV2Disabled() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 
         ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
@@ -569,6 +571,34 @@ public class ToolbarPhoneTest {
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         assertEquals(true, mToolbar.isLocationBarShownInGeneralNtp());
         assertEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
+
+        // Focus the Omnibox.
+        mOmnibox.requestFocus();
+        assertNotEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
+    }
+
+    @Test
+    @MediumTest
+    @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/339034032")
+    public void testToolbarBackgroundChangedWhenSearchEngineHasNoLogo() {
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
+
+        ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
+        @ColorInt
+        int homeSurfaceToolbarBackgroundColor =
+                ContextCompat.getColor(
+                        mToolbar.getContext(), R.color.home_surface_background_color);
+
+        assertEquals(false, mToolbar.isLocationBarShownInGeneralNtp());
+        assertNotEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
+
+        // Load the new tab page.
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        ViewGroup fakeSearchBox = mActivityTestRule.getActivity().findViewById(R.id.search_box);
+        assertEquals(true, mToolbar.isLocationBarShownInGeneralNtp());
+        assertEquals(View.VISIBLE, fakeSearchBox.getVisibility());
 
         // Focus the Omnibox.
         mOmnibox.requestFocus();

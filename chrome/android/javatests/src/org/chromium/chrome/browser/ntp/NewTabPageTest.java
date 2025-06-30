@@ -97,6 +97,7 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -509,7 +510,8 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    public void testPlaceholder() {
+    @DisableFeatures({OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2})
+    public void testPlaceholder_OmniboxMobileParityUpdateV2Disabled() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         final NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
@@ -537,6 +539,82 @@ public class NewTabPageTest {
 
                     Assert.assertEquals(View.GONE, logoView.getVisibility());
                     Assert.assertEquals(View.GONE, searchBoxView.getVisibility());
+
+                    mMostVisitedSites.setTileSuggestions(new String[] {});
+                    ntpLayout.onSwitchToForeground(); // Force tile refresh.
+                    // Mock to notify the template URL service observer.
+                    ntpLayout
+                            .getMostVisitedTilesCoordinatorForTesting()
+                            .onTemplateURLServiceChangedForTesting();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "The tile grid was not updated.", mMvTilesLayout.getTileCount(), is(0));
+                });
+        Assert.assertNotNull(mNtp.getView().findViewById(R.id.tile_grid_placeholder));
+        Assert.assertEquals(
+                View.VISIBLE,
+                mNtp.getView().findViewById(R.id.tile_grid_placeholder).getVisibility());
+
+        // Once the search provider has a logo again, the logo and search box are shown again and
+        // the placeholder is hidden.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+                    when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+                    ntpLayout.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle= */ true);
+                    // Mock to notify the template URL service observer.
+                    ntpLayout
+                            .getLogoCoordinatorForTesting()
+                            .onTemplateURLServiceChangedForTesting();
+
+                    Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());
+
+                    // Mock to notify the template URL service observer.
+                    ntpLayout
+                            .getMostVisitedTilesCoordinatorForTesting()
+                            .onTemplateURLServiceChangedForTesting();
+                    Assert.assertEquals(
+                            View.GONE,
+                            mNtp.getView()
+                                    .findViewById(R.id.tile_grid_placeholder)
+                                    .getVisibility());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    public void testPlaceholder() {
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+
+        final NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        final View logoView = ntpLayout.findViewById(R.id.search_provider_logo);
+        final View searchBoxView = ntpLayout.findViewById(R.id.search_box);
+
+        // Initially, the logo is visible, the search box is visible, there is one tile suggestion,
+        // and the placeholder has not been inflated yet.
+        Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
+        Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());
+        Assert.assertEquals(8, mMvTilesLayout.getTileCount());
+        Assert.assertNull(mNtp.getView().findViewById(R.id.tile_grid_placeholder));
+
+        // When the search provider has no logo and there are no tile suggestions, the placeholder
+        // is shown.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
+                    when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+                    ntpLayout.setSearchProviderInfo(/* hasLogo= */ false, /* isGoogle= */ true);
+                    // Mock to notify the template URL service observer.
+                    ntpLayout
+                            .getLogoCoordinatorForTesting()
+                            .onTemplateURLServiceChangedForTesting();
+
+                    Assert.assertEquals(View.GONE, logoView.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());
 
                     mMostVisitedSites.setTileSuggestions(new String[] {});
                     ntpLayout.onSwitchToForeground(); // Force tile refresh.
