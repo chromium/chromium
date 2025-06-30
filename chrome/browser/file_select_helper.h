@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
-#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/directory_lister.h"
@@ -125,16 +124,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void GetFileTypesInThreadPool(blink::mojom::FileChooserParamsPtr params);
   void GetSanitizedFilenameOnUIThread(
       blink::mojom::FileChooserParamsPtr params);
-#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
-  // Safe Browsing checks are only applied when `params->mode` is
-  // `kSave`, which is only for PPAPI requests.
-  void CheckDownloadRequestWithSafeBrowsing(
-      const base::FilePath& default_path,
-      blink::mojom::FileChooserParamsPtr params);
-  void ProceedWithSafeBrowsingVerdict(const base::FilePath& default_path,
-                                      blink::mojom::FileChooserParamsPtr params,
-                                      bool allowed_by_safe_browsing);
-#endif
   void RunFileChooserOnUIThread(const base::FilePath& default_path,
                                 blink::mojom::FileChooserParamsPtr params);
 

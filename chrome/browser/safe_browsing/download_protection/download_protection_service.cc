@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "chrome/browser/safe_browsing/download_protection/download_url_sb_client.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
@@ -40,7 +38,6 @@
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -767,13 +764,6 @@ BinaryUploadService* DownloadProtectionService::GetBinaryUploadService(
   return BinaryUploadService::GetForProfile(profile, settings);
 }
 #endif
-
-SafeBrowsingNavigationObserverManager*
-DownloadProtectionService::GetNavigationObserverManager(
-    content::WebContents* web_contents) {
-  return SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
-      web_contents->GetBrowserContext());
-}
 
 void DownloadProtectionService::MaybeCheckMetadataAfterDeepScanning(
     download::DownloadItem* item,

@@ -30,7 +30,6 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_observer.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
@@ -359,10 +358,6 @@ class DownloadProtectionService {
       Profile* profile,
       const enterprise_connectors::AnalysisSettings& settings);
 #endif
-
-  // Get the SafeBrowsingNavigationObserverManager for the given |web_contents|.
-  SafeBrowsingNavigationObserverManager* GetNavigationObserverManager(
-      content::WebContents* web_contents);
 
   // Callback when deep scanning has finished, but we may want to do the
   // metadata check anyway.
