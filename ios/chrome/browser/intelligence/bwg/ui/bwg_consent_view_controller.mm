@@ -36,8 +36,6 @@ const CGFloat kInnerStackViewSpacing = 6.0;
 const CGFloat kInnerStackViewPadding = 12.0;
 
 // TODO(crbug.com/414778685): Add strings.
-// String constants for UI elements.
-
 // Action identifier on a tap on links in the footnote.
 NSString* const kFirstFootnoteLinkAction = @"firstFootnoteLinkAction";
 NSString* const kSecondFootnoteLinkAction = @"secondFootnoteLinkAction";
@@ -49,6 +47,7 @@ NSString* const kFootnoteLinkActionManagedAccount =
 const char kFirstFootnoteLinkURL[] = "https://google.com";
 const char kSecondFootnoteLinkURL[] = "https://youtube.com";
 const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
+
 }  // namespace
 
 @interface BWGConsentViewController () <UITextViewDelegate>
@@ -74,7 +73,7 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 // TODO(crbug.com/414777915): Implement a basic UI.
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.navigationItem.hidesBackButton = YES;
   [self configureMainStackView];
 }
@@ -103,6 +102,7 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
     NSParagraphStyleAttributeName : centeredTextStyle,
+    NSForegroundColorAttributeName : [UIColor labelColor],
   };
 
   NSMutableAttributedString* attributedText =
@@ -221,7 +221,8 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
   horizontalStackView.distribution = UIStackViewDistributionFillProportionally;
   horizontalStackView.alignment = UIStackViewAlignmentTop;
   horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  horizontalStackView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  horizontalStackView.backgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
 
   iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
@@ -291,14 +292,16 @@ const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 // Creates the foot note view.
 - (UITextView*)createFootnoteView {
   UITextView* footNoteTextView = [[UITextView alloc] init];
+  footNoteTextView.backgroundColor = [UIColor clearColor];
   footNoteTextView.scrollEnabled = NO;
   footNoteTextView.editable = NO;
 
-  footNoteTextView.delegate = self;
   footNoteTextView.textContainerInset = UIEdgeInsetsZero;
   footNoteTextView.linkTextAttributes =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
   footNoteTextView.attributedText = [self createFootnoteAttributedText];
+
+  // TODO(crbug.com/423816346): Manage links for attributes strings.
   return footNoteTextView;
 }
 

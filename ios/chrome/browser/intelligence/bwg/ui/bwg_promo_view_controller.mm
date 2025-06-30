@@ -20,7 +20,7 @@
 namespace {
 
 // Main Stack view insets and spacing.
-const CGFloat kMainStackHorizontalInset = 20.0;
+const CGFloat kMainStackHorizontalInset = 24.0;
 const CGFloat kMainStackSpacing = 8.0;
 
 // Icons size.
@@ -48,7 +48,7 @@ const CGFloat kOuterBoxSize = 64.0;
 const CGFloat kSeparatorHeight = 1.0;
 
 // Spacing between the scrollView and the buttons.
-const CGFloat kSpacingScrollViewAndButtons = 16.0;
+const CGFloat kSpacingScrollViewAndButtons = 24.0;
 
 // Spacing between primary and secondary buttons.
 const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
@@ -71,7 +71,7 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.navigationItem.hidesBackButton = YES;
   [self setupStackViews];
 }
@@ -109,7 +109,8 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
   UIView* wrapperContainer = [[UIView alloc] init];
   wrapperContainer.translatesAutoresizingMaskIntoConstraints = NO;
   UIView* separator = [[UIView alloc] init];
-  separator.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  // TODO(crbug.com/428624319): Change separator color.
+  separator.backgroundColor = [UIColor colorNamed:kGrey800Color];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
   [wrapperContainer addSubview:separator];
   [NSLayoutConstraint activateConstraints:@[
@@ -277,7 +278,7 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
   return gradientColorArray;
 }
 
-// Creates the iconBox container view with the  inner box and icon.
+// Creates the iconBox container view with the inner box and icon.
 - (UIView*)createIconContainerView:(UIImageView*)iconImageView {
   UIView* iconBox = [[UIView alloc] init];
   iconBox.backgroundColor = [UIColor colorNamed:kFaviconBackgroundColor];
@@ -289,7 +290,7 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
   innerBox.layer.cornerRadius = kInnerBoxCornerRadius;
   innerBox.clipsToBounds = YES;
   innerBox.translatesAutoresizingMaskIntoConstraints = NO;
-  innerBox.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  innerBox.backgroundColor = [UIColor colorNamed:kSolidWhiteColor];
   [iconBox addSubview:innerBox];
 
   AddSameConstraintsWithInsets(

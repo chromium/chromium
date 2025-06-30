@@ -33,20 +33,27 @@ const CGFloat kPrimarySecondaryButtonCornerRadius = 15.0;
 
 + (UIButton*)createPrimaryButtonWithTitle:(NSString*)title {
   UIButton* primaryButton = [self configureCommonButton];
+
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration filledButtonConfiguration];
-  buttonConfiguration.baseForegroundColor = [UIColor whiteColor];
-  buttonConfiguration.title = title;
 
-  UIBackgroundConfiguration* backgroundConfig =
-      [UIBackgroundConfiguration clearConfiguration];
-  backgroundConfig.backgroundColor = [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.background = backgroundConfig;
+  UIFont* font =
+      PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
+  NSDictionary<NSAttributedStringKey, id>* attributes =
+      @{NSFontAttributeName : font};
+  NSAttributedString* attributedTitle =
+      [[NSAttributedString alloc] initWithString:title attributes:attributes];
+
+  buttonConfiguration.attributedTitle = attributedTitle;
+
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kInvertedTextPrimaryColor];
+  buttonConfiguration.background.backgroundColor =
+      [UIColor colorNamed:kBlueColor];
+  buttonConfiguration.background.cornerRadius =
+      kPrimarySecondaryButtonCornerRadius;
 
   primaryButton.configuration = buttonConfiguration;
-  primaryButton.layer.cornerRadius = kPrimarySecondaryButtonCornerRadius;
-  primaryButton.titleLabel.font =
-      PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightBold);
 
   return primaryButton;
 }
@@ -57,15 +64,12 @@ const CGFloat kPrimarySecondaryButtonCornerRadius = 15.0;
       [UIButtonConfiguration filledButtonConfiguration];
   buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
   buttonConfiguration.title = title;
-
   UIBackgroundConfiguration* backgroundConfig =
       [UIBackgroundConfiguration clearConfiguration];
-  backgroundConfig.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  backgroundConfig.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
   buttonConfiguration.background = backgroundConfig;
   secondaryButton.configuration = buttonConfiguration;
-
-  secondaryButton.titleLabel.font =
-      PreferredFontForTextStyle(UIFontTextStyleCallout, UIFontWeightRegular);
 
   return secondaryButton;
 }
