@@ -126,6 +126,7 @@ template("write_build_config") {
   _params_file =
       string_replace(invoker.build_config, ".build_config.json", ".params.json")
   _inputs = [ _params_file ]
+  _outputs = [ invoker.build_config ]
   _deps = []
 
   if (current_toolchain == default_toolchain) {
@@ -311,6 +312,11 @@ template("write_build_config") {
       # Only sources need rebasing since outputs are zip paths.
       _assets = invoker.assets
       _rebased_asset_sources = rebase_path(_assets.sources, root_build_dir)
+    }
+
+    if (defined(invoker.enable_lint) && invoker.enable_lint) {
+      _lint_json = string_replace(invoker.build_config, ".json", ".lint.json")
+      _outputs += [ _lint_json ]
     }
 
     _params = {
@@ -519,6 +525,9 @@ template("write_build_config") {
             rebase_path("$target_out_dir/$_trace_events_target_name",
                         root_build_dir)
       }
+      if (defined(_lint_json)) {
+        lint_json = rebase_path(_lint_json, root_build_dir)
+      }
     }
   }
   write_file(_params_file, _params, "json")
@@ -528,7 +537,7 @@ template("write_build_config") {
     script = "//build/android/gyp/write_build_config.py"
     depfile = "$target_gen_dir/$target_name.d"
     inputs = _inputs
-    outputs = [ invoker.build_config ]
+    outputs = _outputs
 
     args = [
       "--output",
@@ -1035,10 +1044,7 @@ if (enable_java_templates) {
         ]
       }
 
-      if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
-        # Nocompile tests need lint to fail through ninja.
-        args += [ "--skip-build-server" ]
-      } else if (android_static_analysis == "build_server") {
+      if (android_static_analysis == "build_server") {
         args += [ "--use-build-server" ]
       }
 
@@ -1087,24 +1093,23 @@ if (enable_java_templates) {
           deps += [ "//build/android:prepare_android_lint_cache" ]
           inputs += [ _create_cache_stamp_path ]
         }
-        inputs += [ invoker.build_config ]
-        _rebased_build_config =
-            rebase_path(invoker.build_config, root_build_dir)
+        _lint_json = string_replace(invoker.build_config, ".json", ".lint.json")
+        inputs += [ _lint_json ]
+        _rebased_lint_json = rebase_path(_lint_json, root_build_dir)
 
         args += [
-          "--manifest-path=@FileArg($_rebased_build_config:android_manifest)",
-          "--extra-manifest-paths=@FileArg($_rebased_build_config:lint_extra_android_manifests)",
+          "--manifest-paths=@FileArg($_rebased_lint_json:android_manifests)",
 
           # Lint requires all source and all resource files to be passed in the
           # same invocation for checks like UnusedResources.
-          "--sources=@FileArg($_rebased_build_config:lint_sources)",
-          "--aars=@FileArg($_rebased_build_config:lint_aars)",
-          "--srcjars=@FileArg($_rebased_build_config:lint_srcjars)",
-          "--resource-sources=@FileArg($_rebased_build_config:lint_resource_sources)",
-          "--resource-zips=@FileArg($_rebased_build_config:lint_resource_zips)",
+          "--sources=@FileArg($_rebased_lint_json:sources)",
+          "--aars=@FileArg($_rebased_lint_json:aars)",
+          "--srcjars=@FileArg($_rebased_lint_json:srcjars)",
+          "--resource-sources=@FileArg($_rebased_lint_json:resource_sources)",
+          "--resource-zips=@FileArg($_rebased_lint_json:resource_zips)",
 
-          # The full classpath is required for annotation checks like @IntDef.
-          "--classpath=@FileArg($_rebased_build_config:javac_full_interface_classpath)",
+          # The required for annotation checks like @IntDef.
+          "--classpath=@FileArg($_rebased_lint_json:classpath)",
         ]
       }
 
@@ -3086,10 +3091,7 @@ if (enable_java_templates) {
         if (defined(testonly) && testonly) {
           args += [ "--testonly" ]
         }
-        if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
-          # Nocompile tests need lint to fail through ninja.
-          args += [ "--skip-build-server" ]
-        } else if (android_static_analysis == "build_server") {
+        if (android_static_analysis == "build_server") {
           args += [ "--use-build-server" ]
         }
       }
@@ -3668,6 +3670,7 @@ if (enable_java_templates) {
                                "annotation_processor_deps",
                                "base_allowlist_rtxt_path",
                                "direct_deps_only",
+                               "enable_lint",
                                "gradle_treat_as_prebuilt",
                                "input_jars_paths",
                                "preferred_dep",
@@ -3977,7 +3980,6 @@ if (enable_java_templates) {
         _compile_java_errorprone_target = "${_main_target_name}__errorprone"
         compile_java_helper(_compile_java_errorprone_target) {
           forward_variables_from(invoker, _compile_java_forward_variables)
-          forward_variables_from(invoker, [ "skip_build_server" ])
           enable_errorprone = true
           if (defined(invoker.errorprone_args)) {
             if (!defined(javac_args)) {

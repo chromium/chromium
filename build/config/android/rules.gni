@@ -1354,7 +1354,6 @@ if (!is_robolectric && enable_java_templates) {
   #
   #   chromium_code: If true, extra analysis warning/errors will be enabled.
   #   enable_errorprone: If true, enables the errorprone compiler.
-  #   skip_build_server: If true, avoids sending tasks to the build server.
   #
   #   jar_excluded_patterns: List of patterns of .class files to exclude.
   #   jar_included_patterns: List of patterns of .class files to include.
@@ -2767,6 +2766,9 @@ if (!is_robolectric && enable_java_templates) {
           invoker.add_view_trace_events && enable_trace_event_bytecode_rewriting
     }
 
+    _enable_lint = defined(invoker.enable_lint) && invoker.enable_lint &&
+                   !disable_android_lint
+
     # We cannot skip this target when omit_dex = true because it writes the
     # build_config.json.
     java_library_impl(_java_target_name) {
@@ -2789,6 +2791,7 @@ if (!is_robolectric && enable_java_templates) {
                                "native_lib_placeholders",
                                "parent_module_target",
                                "processor_args_javac",
+                               "skip_build_server",
                                "secondary_abi_loadable_modules",
                                "secondary_native_lib_placeholders",
                                "sources",
@@ -2797,6 +2800,7 @@ if (!is_robolectric && enable_java_templates) {
                              ])
       version_code = _version_code
       version_name = _version_name
+      enable_lint = _enable_lint
       if (_is_bundle_module) {
         type = "android_app_bundle_module"
         res_size_info_path = _res_size_info_path
@@ -3211,8 +3215,6 @@ if (!is_robolectric && enable_java_templates) {
       _final_deps += [ ":$_apk_operations_target_name" ]
     }
 
-    _enable_lint = defined(invoker.enable_lint) && invoker.enable_lint &&
-                   !disable_android_lint
     if (_enable_lint) {
       android_lint("${target_name}__lint") {
         forward_variables_from(invoker,
@@ -4781,6 +4783,9 @@ if (!is_robolectric && enable_java_templates) {
       not_needed(invoker, [ "add_view_trace_events" ])
     }
 
+    _enable_lint = defined(invoker.enable_lint) && invoker.enable_lint &&
+                   !disable_android_lint
+
     _build_config_target_name = "$_target_name$build_config_target_suffix"
     _build_config_target = ":$_build_config_target_name"
     write_build_config(_build_config_target_name) {
@@ -4788,6 +4793,7 @@ if (!is_robolectric && enable_java_templates) {
       possible_config_deps = _module_targets + [ _android_sdk_dep ]
       build_config = _build_config
       proguard_enabled = _proguard_enabled
+      enable_lint = _enable_lint
 
       if (_proguard_enabled) {
         add_view_trace_events = _add_view_trace_events
@@ -5194,8 +5200,6 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
-    _enable_lint = defined(invoker.enable_lint) && invoker.enable_lint &&
-                   !disable_android_lint
     if (_enable_lint) {
       android_lint("${target_name}__lint") {
         forward_variables_from(invoker,

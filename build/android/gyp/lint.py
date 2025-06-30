@@ -27,10 +27,10 @@ _DISABLED_ALWAYS = [
     "AppLinkUrlError",  # As a browser, we have intent filters without a host.
     "Assert",  # R8 --force-enable-assertions is used to enable java asserts.
     "InflateParams",  # Null is ok when inflating views for dialogs.
-    # Android apps are associated with domains of the same owner. Chrome uses the
-    # Credential Manager API to support filling *any* site with a third party
-    # password manager. Therefore, the list of sign-in domains would be infinite
-    # and this warning must be suppressed.
+    # Android apps are associated with domains of the same owner. Chrome uses
+    # the Credential Manager API to support filling *any* site with a third
+    # party password manager. Therefore, the list of sign-in domains would be
+    # infinite and this warning must be suppressed.
     "CredentialManagerMisuse",
     "CredManMissingDal",  # Has false-positives, TODO(crbug.com/420855219).
     "InlinedApi",  # Constants are copied so they are always available.
@@ -150,15 +150,22 @@ def _GenerateConfigXmlTree(orig_config_path, backported_methods):
   return root_node
 
 
-def _GenerateAndroidManifest(original_manifest_path, extra_manifest_paths,
-                             min_sdk_version, android_sdk_version):
+def _GenerateAndroidManifest(manifest_paths, min_sdk_version,
+                             android_sdk_version):
+
+  if not manifest_paths:
+    root_manifest = os.path.join(build_utils.DIR_SOURCE_ROOT, 'build',
+                                 'android', 'AndroidManifest.xml')
+  else:
+    root_manifest = manifest_paths[0]
+    manifest_paths = manifest_paths[1:]
   # Set minSdkVersion in the manifest to the correct value.
-  doc, manifest, app_node = manifest_utils.ParseManifest(original_manifest_path)
+  doc, manifest, app_node = manifest_utils.ParseManifest(root_manifest)
 
   # TODO(crbug.com/40148088): Should this be done using manifest merging?
   # Add anything in the application node of the extra manifests to the main
   # manifest to prevent unused resource errors.
-  for path in extra_manifest_paths:
+  for path in manifest_paths:
     _, _, extra_app_node = manifest_utils.ParseManifest(path)
     for node in extra_app_node:
       app_node.append(node)
@@ -189,8 +196,7 @@ def _RunLint(custom_lint_jar_path,
              lint_jar_path,
              backported_methods_path,
              config_path,
-             manifest_path,
-             extra_manifest_paths,
+             manifest_paths,
              sources,
              classpath,
              cache_dir,
@@ -261,10 +267,6 @@ def _RunLint(custom_lint_jar_path,
         ','.join(_DISABLED_ALWAYS),
     ]
 
-  if not manifest_path:
-    manifest_path = os.path.join(build_utils.DIR_SOURCE_ROOT, 'build',
-                                 'android', 'AndroidManifest.xml')
-
   logging.info('Generating config.xml')
   backported_methods = _RetrieveBackportedMethods(backported_methods_path)
   config_xml_node = _GenerateConfigXmlTree(config_path, backported_methods)
@@ -273,8 +275,7 @@ def _RunLint(custom_lint_jar_path,
   cmd.extend(['--config', generated_config_path])
 
   logging.info('Generating Android manifest file')
-  android_manifest_tree = _GenerateAndroidManifest(manifest_path,
-                                                   extra_manifest_paths,
+  android_manifest_tree = _GenerateAndroidManifest(manifest_paths,
                                                    min_sdk_version,
                                                    android_sdk_version)
   # Just use a hardcoded name, since we may have different target names (and
@@ -393,9 +394,6 @@ def _ParseArgs(argv):
   parser = argparse.ArgumentParser()
   action_helpers.add_depfile_arg(parser)
   parser.add_argument('--target-name', help='Fully qualified GN target name.')
-  parser.add_argument('--skip-build-server',
-                      action='store_true',
-                      help='Avoid using the build server.')
   parser.add_argument('--use-build-server',
                       action='store_true',
                       help='Always use the build server.')
@@ -435,12 +433,9 @@ def _ParseArgs(argv):
                       'files.')
   parser.add_argument('--aars', help='GN list of included aars.')
   parser.add_argument('--srcjars', help='GN list of included srcjars.')
-  parser.add_argument('--manifest-path',
-                      help='Path to original AndroidManifest.xml')
-  parser.add_argument('--extra-manifest-paths',
+  parser.add_argument('--manifest-paths',
                       action='append',
-                      help='GYP-list of manifest paths to merge into the '
-                      'original AndroidManifest.xml')
+                      help='GYP-list of manifest paths, with base being first')
   parser.add_argument('--resource-sources',
                       default=[],
                       action='append',
@@ -462,8 +457,7 @@ def _ParseArgs(argv):
   args.aars = action_helpers.parse_gn_list(args.aars)
   args.srcjars = action_helpers.parse_gn_list(args.srcjars)
   args.resource_sources = action_helpers.parse_gn_list(args.resource_sources)
-  args.extra_manifest_paths = action_helpers.parse_gn_list(
-      args.extra_manifest_paths)
+  args.manifest_paths = action_helpers.parse_gn_list(args.manifest_paths)
   args.resource_zips = action_helpers.parse_gn_list(args.resource_zips)
   args.classpath = action_helpers.parse_gn_list(args.classpath)
 
@@ -488,9 +482,8 @@ def main():
     resource_sources.extend(build_utils.ReadSourcesList(resource_sources_file))
 
   possible_depfile_deps = (args.srcjars + args.resource_zips + sources +
-                           resource_sources + [
+                           resource_sources + args.manifest_paths + [
                                args.baseline,
-                               args.manifest_path,
                            ])
   depfile_deps = [p for p in possible_depfile_deps if p]
 
@@ -502,7 +495,7 @@ def main():
   # Avoid parallelizing cache creation since lint runs without the cache defeat
   # the purpose of creating the cache in the first place. Forward the command
   # after the depfile has been written as siso requires it.
-  if (not args.create_cache and not args.skip_build_server
+  if (not args.create_cache
       and server_utils.MaybeRunCommand(name=args.target_name,
                                        argv=sys.argv,
                                        stamp_file=args.stamp,
@@ -513,8 +506,7 @@ def main():
            args.lint_jar_path,
            args.backported_methods,
            args.config_path,
-           args.manifest_path,
-           args.extra_manifest_paths,
+           args.manifest_paths,
            sources,
            args.classpath,
            args.cache_dir,

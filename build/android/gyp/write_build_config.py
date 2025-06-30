@@ -263,6 +263,10 @@ class _TransitiveValuesBuilder:
         'mergeable_android_manifests', flatten=True)
     indirect_manifests.sort(key=lambda p: (os.path.basename(p), p))
     ret.android_manifests.update(indirect_manifests)
+    # Prevent the main manifest from showing up in mergeable_android_manifests.
+    if path := params.get('android_manifest'):
+      if path in ret.android_manifests:
+        ret.android_manifests.remove(path)
 
     assets, uncompressed_assets, locale_paks = _MergeAssets(
         all_deps_without_under_test.of_type('android_assets'))
@@ -523,6 +527,66 @@ def _ToTraceEventRewrittenPath(jar_dir, path):
   return os.path.join(jar_dir, path)
 
 
+def _WriteLintJson(params, lint_json, main_config):
+  # Collect all sources and resources at the apk/bundle_module level.
+  aars = set()
+  srcjars = set()
+  sources = set()
+  resource_sources = set()
+  resource_zips = set()
+
+  if path := params.get('target_sources_file'):
+    sources.add(path)
+  if paths := params.get('bundled_srcjars'):
+    srcjars.update(paths)
+  for c in params.deps().recursive():
+    if c.get('chromium_code', True) and c.requires_android():
+      if path := c.get('target_sources_file'):
+        sources.add(path)
+      if paths := c.get('bundled_srcjars'):
+        srcjars.update(paths)
+    if path := c.get('aar_path'):
+      aars.add(path)
+
+  if path := params.get('res_sources_path'):
+    resource_sources.add(path)
+  if path := params.get('resources_zip'):
+    resource_zips.add(path)
+  for c in params.resource_deps():
+    if c.get('chromium_code', True):
+      # Prefer res_sources_path to resources_zips so that lint errors have
+      # real paths and to avoid needing to extract during lint.
+      if path := c.get('res_sources_path'):
+        resource_sources.add(path)
+      else:
+        resource_zips.add(c['resources_zip'])
+
+  if params.is_bundle():
+    classpath = OrderedSet()
+    manifests = OrderedSet(p['android_manifest'] for p in params.module_deps())
+    for m in params.module_deps():
+      module_config = m.build_config_json()
+      classpath.update(module_config['javac_full_interface_classpath'])
+      manifests.update(module_config['extra_android_manifests'])
+    classpath = list(classpath)
+    manifests = list(manifests)
+  else:
+    classpath = main_config['javac_full_interface_classpath']
+    manifests = [params['android_manifest']]
+    manifests += main_config['extra_android_manifests']
+
+  config = {}
+  config['aars'] = sorted(aars)
+  config['android_manifests'] = manifests
+  config['classpath'] = classpath
+  config['sources'] = sorted(sources)
+  config['srcjars'] = sorted(srcjars)
+  config['resource_sources'] = sorted(resource_sources)
+  config['resource_zips'] = sorted(resource_zips)
+
+  build_utils.WriteJson(config, lint_json, only_if_changed=True)
+
+
 def main():
   parser = argparse.ArgumentParser(
       description='Writes a .build_config.json file.')
@@ -679,53 +743,6 @@ def main():
   if has_classpath:
     config['extra_package_names'] = sorted(tv.extra_package_names)
 
-  # We allow lint to be run on android_apk targets, so we collect lint
-  # artifacts for them.
-  # We allow lint to be run on android_app_bundle targets, so we need to
-  # collect lint artifacts for the android_app_bundle_module targets that the
-  # bundle includes. Different android_app_bundle targets may include different
-  # android_app_bundle_module targets, so the bundle needs to be able to
-  # de-duplicate these lint artifacts.
-  if is_apk_or_module:
-    # Collect all sources and resources at the apk/bundle_module level.
-    lint_aars = set()
-    lint_srcjars = set()
-    lint_sources = set()
-    lint_resource_sources = set()
-    lint_resource_zips = set()
-
-    if path := params.get('target_sources_file'):
-      lint_sources.add(path)
-    if paths := params.get('bundled_srcjars'):
-      lint_srcjars.update(paths)
-    for c in params.deps().recursive().of_type('java_library'):
-      if c.get('chromium_code', True) and c['requires_android']:
-        if path := c.get('target_sources_file'):
-          lint_sources.add(path)
-        lint_srcjars.update(c['bundled_srcjars'])
-      if path := c.get('aar_path'):
-        lint_aars.add(path)
-
-    if path := params.get('res_sources_path'):
-      lint_resource_sources.add(path)
-    if path := params.get('resources_zip'):
-      lint_resource_zips.add(path)
-    for c in params.resource_deps():
-      if c.get('chromium_code', True):
-        # Prefer res_sources_path to resources_zips so that lint errors have
-        # real paths and to avoid needing to extract during lint.
-        if path := c.get('res_sources_path'):
-          lint_resource_sources.add(path)
-        else:
-          lint_resource_zips.add(c['resources_zip'])
-
-    config['lint_aars'] = sorted(lint_aars)
-    config['lint_srcjars'] = sorted(lint_srcjars)
-    config['lint_sources'] = sorted(lint_sources)
-    config['lint_resource_sources'] = sorted(lint_resource_sources)
-    config['lint_resource_zips'] = sorted(lint_resource_zips)
-    config['lint_extra_android_manifests'] = []
-
   if is_bundle:
     module_deps = params.module_deps()
     module_params_by_name = {m['module_name']: m for m in module_deps}
@@ -747,15 +764,7 @@ def main():
         'assets',
         'uncompressed_assets',
     ]
-    union_fields = {
-        'javac_full_interface_classpath': 'javac_full_interface_classpath',
-        'lint_extra_android_manifests': 'extra_android_manifests',
-        'lint_aars': 'lint_aars',
-        'lint_srcjars': 'lint_srcjars',
-        'lint_sources': 'lint_sources',
-        'lint_resource_sources': 'lint_resource_sources',
-        'lint_resource_zips': 'lint_resource_zips',
-    }
+    union_fields = {}
     if params.get('trace_events_jar_dir'):
       union_fields['device_classpath'] = 'device_classpath'
       union_fields['trace_event_rewritten_device_classpath'] = (
@@ -776,10 +785,6 @@ def main():
         config['version_name'] = module_params['version_name']
         config['base_module_config'] = module_params.path
         config['android_manifest'] = module_params['android_manifest']
-      else:
-        # All manifests nodes are merged into the main manfiest by lint.py.
-        unioned_values['lint_extra_android_manifests'].add(
-            module_params['android_manifest'])
 
       for dst_key, src_key in union_fields.items():
         unioned_values[dst_key].update(c[src_key])
@@ -877,6 +882,9 @@ def main():
     config['javac_full_classpath_targets'] = [
         jar_to_target[x] for x in config['javac_full_classpath']
     ]
+
+  if path := params.get('lint_json'):
+    _WriteLintJson(params, path, config)
 
   build_utils.WriteJson(config, build_config_path, only_if_changed=True)
 

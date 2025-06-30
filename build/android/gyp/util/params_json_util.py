@@ -443,13 +443,23 @@ class ParamsJson(dict):
       return get_params(path)
     return None
 
+  @functools.cache  # pylint: disable=method-cache-max-size-none
   def module_deps(self):
     """For a bundle, returns the ParamsJson for all module dependencies."""
-    return self.deps().of_type('android_app_bundle_module')
+    deps = sorted(self.deps().of_type('android_app_bundle_module'),
+                  key=lambda x: x['module_name'])
+    if not self.is_bundle():
+      return deps
+    base_module = self.base_module()
+    ret = {base_module: 1}
+    ret.update(
+        dict.fromkeys(x for x in deps if x.parent_module() is base_module))
+    ret.update(dict.fromkeys(deps))
+    return list(ret)
 
   def parent_module(self):
     """For a bundle module, returns its direct parent module."""
-    assert self.is_bundle_module()
+    assert self.is_bundle_module(), 'got: ' + self.type
     module_deps = self.module_deps()
 
     if self['module_name'] == 'base':
@@ -465,6 +475,10 @@ class ParamsJson(dict):
 
   def base_module(self):
     """For a bundle module, returns the root 'base' module."""
+    if self.is_bundle():
+      return next(x for x in self.deps() if x.get('module_name') == 'base')
+
+    assert self.is_bundle_module(), 'got: ' + self.type
     # Find the base split.
     ret = self
     while not ret.is_base_module():
