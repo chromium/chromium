@@ -1542,7 +1542,7 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-const FeatureEntry::FeatureParam kOmniboxToolbeltAggressive[] = {
+const FeatureEntry::FeatureParam kOmniboxToolbeltZeroAndTypedInputse[] = {
     {"KeepToolbeltAfterInput", "true"},
     {"AlwaysIncludeLensAction", "false"},
     {"ShowLensActionOnNonNtp", "true"},
@@ -1556,10 +1556,25 @@ const FeatureEntry::FeatureParam kOmniboxToolbeltAggressive[] = {
     {"ShowTabsActionOnNonNtp", "true"},
     {"ShowTabsActionOnNtp", "true"},
 };
+const FeatureEntry::FeatureParam kOmniboxToolbeltZeroInputs[] = {
+    {"KeepToolbeltAfterInput", "false"},
+    {"AlwaysIncludeLensAction", "false"},
+    {"ShowLensActionOnNonNtp", "true"},
+    {"ShowLensActionOnNtp", "true"},
+    {"ShowAiModeActionOnNonNtp", "true"},
+    {"ShowAiModeActionOnNtp", "true"},
+    {"ShowHistoryActionOnNonNtp", "true"},
+    {"ShowHistoryActionOnNtp", "true"},
+    {"ShowBookmarksActionOnNonNtp", "true"},
+    {"ShowBookmarksActionOnNtp", "true"},
+    {"ShowTabsActionOnNonNtp", "true"},
+    {"ShowTabsActionOnNtp", "true"},
+};
 const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
-    {"Aggressive - zero & typed inputs; all actions.",
-     kOmniboxToolbeltAggressive, std::size(kOmniboxToolbeltAggressive),
-     nullptr}};
+    {"Zero & typed inputs; all actions.", kOmniboxToolbeltZeroAndTypedInputse,
+     std::size(kOmniboxToolbeltZeroAndTypedInputse), nullptr},
+    {"Zero inputs; all actions.", kOmniboxToolbeltZeroInputs,
+     std::size(kOmniboxToolbeltZeroInputs), nullptr}};
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
