@@ -1364,6 +1364,28 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram name="Settings.TrackedPreferenceChangedEncrypted"
+    enum="TrackedPreference" expires_after="2025-12-26">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference whose value has been changed since the last
+    time Chrome set it. This histogram is emitted after a validation check using
+    the encrypted hash stored in the JSON pref files.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceChangedViaHmacFallback"
+    enum="TrackedPreference" expires_after="2025-12-26">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference whose value has been changed since the last
+    time Chrome set it. Only emitted if the encrypted hash verification is not
+    available causing the verification to fallback to HMAC-based verification.
+  </summary>
+</histogram>
+
 <histogram
     name="Settings.TrackedPreferenceChanged{TrackedPreferencesExternalValidators}"
     enum="TrackedPreference" expires_after="2026-02-01">
@@ -1382,6 +1404,28 @@ useful for Chirp alerts (go/crca-alerts). -->
       variants="TrackedPreferencesExternalValidators">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceClearedEncrypted"
+    enum="TrackedPreference" expires_after="2025-12-26">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference whose value has been cleared since the last
+    time Chrome set it. This histogram is emitted after a validation check using
+    the encrypted hash stored in the JSON pref files.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceClearedViaHmacFallback"
+    enum="TrackedPreference" expires_after="2025-12-26">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference whose value has been cleared since the last
+    time Chrome set it. Only emitted if the encrypted hash verification is not
+    available causing the verification to fallback to HMAC-based verification.
+  </summary>
 </histogram>
 
 <histogram
@@ -1450,6 +1494,28 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
 </histogram>
 
+<histogram name="Settings.TrackedPreferenceResetEncrypted"
+    enum="TrackedPreference" expires_after="2025-12-16">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference which was reset by Chrome via the encrypted
+    hash verification.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceResetViaHmacFallback"
+    enum="TrackedPreference" expires_after="2025-12-16">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference which was reset by Chrome via the old HMAC
+    fallback verification. Only emitted if the encrypted hash verification is
+    not available causing the verification to fallback to HMAC-based
+    verification.
+  </summary>
+</histogram>
+
 <histogram
     name="Settings.TrackedPreferenceTrustedInitialized{TrackedPreferencesExternalValidators}"
     enum="TrackedPreference" expires_after="2026-02-01">
@@ -1468,6 +1534,28 @@ useful for Chirp alerts (go/crca-alerts). -->
       variants="TrackedPreferencesExternalValidators">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceUnchangedEncrypted"
+    enum="TrackedPreference" expires_after="2025-12-26">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference whose value has not changed since the last
+    time Chrome set it. This histogram is emitted after preference validation
+    using the encrypted hash stored in the JSON pref files.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceUnchangedViaHmacFallback"
+    enum="TrackedPreference" expires_after="2025-12-26">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference whose value has not changed since the last
+    time Chrome set it. Only emitted if the encrypted hash verification is not
+    available causing the verification to fallback to HMAC-based verification.
+  </summary>
 </histogram>
 
 <histogram
@@ -1496,6 +1584,28 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     The id of a tracked preference which Chrome would have reset had the config
     allowed it.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceWantedResetEncrypted"
+    enum="TrackedPreference" expires_after="2025-12-26">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference which Chrome would have reset via the
+    encrypted hash reset flow had the config allowed it.
+  </summary>
+</histogram>
+
+<histogram name="Settings.TrackedPreferenceWantedResetViaHmacFallback"
+    enum="TrackedPreference" expires_after="2025-12-26">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The id of a tracked preference which Chrome would have reset via the old
+    HMAC fallback reset flow had the config allowed it. Only emitted if the
+    encrypted hash verification is not available causing the verification to
+    fallback to HMAC-based verification.
   </summary>
 </histogram>
 
