@@ -107,6 +107,7 @@ class NetworkUiController
   void OnNetworkStateChanged(bool online);
   void MaybeShowNetworkConfigureUI();
   void ShowNetworkConfigureUI();
+  void CloseNetworkConfigureUI();
 
   void OnNetworkWaitTimeout();
   bool CanConfigureNetwork();

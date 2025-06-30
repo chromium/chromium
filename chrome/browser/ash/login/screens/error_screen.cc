@@ -397,7 +397,7 @@ void ErrorScreen::OnContinueAppLaunchButtonClicked() {
   DCHECK_EQ(parent_screen_, AppLaunchSplashScreenView::kScreenId.AsId());
   WizardController::default_controller()
       ->GetScreen<AppLaunchSplashScreen>()
-      ->CloseNetworkConfigureUI();
+      ->ContinueAppLaunch();
 }
 
 void ErrorScreen::LaunchHelpApp(int help_topic_id) {

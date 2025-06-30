@@ -25,7 +25,7 @@ class FakeAppLaunchSplashScreen : public AppLaunchSplashScreen {
   // AppLaunchSplashScreen overrides:
   void ShowNetworkConfigureUI(NetworkStateInformer::State state,
                               const std::string& network_name) override;
-  void CloseNetworkConfigureUI() override;
+  void ContinueAppLaunch() override;
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   void HideThrobber() override;
 

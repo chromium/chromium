@@ -42,6 +42,17 @@ network::mojom::ConnectionType GetCurrentConnectionType() {
   return connection_type;
 }
 
+// Returns the `kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline`
+// setting if set, or `std::nullopt` otherwise.
+std::optional<bool> GetPromptForNetworkWhenOfflineSetting() {
+  if (bool value; ash::CrosSettings::Get()->GetBoolean(
+          ash::kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline,
+          &value)) {
+    return value;
+  }
+  return {};
+}
+
 }  // namespace
 
 namespace ash {
@@ -153,7 +164,7 @@ void NetworkUiController::OnNetworkOnline() {
 
   if (network_showing_after_timeout) {
     SYSLOG(INFO) << "Network is online, closing network configure screen.";
-    splash_screen_->CloseNetworkConfigureUI();
+    CloseNetworkConfigureUI();
   } else {
     observer_->OnNetworkReady();
   }
@@ -161,6 +172,10 @@ void NetworkUiController::OnNetworkOnline() {
 
 void NetworkUiController::OnNetworkOffline() {
   observer_->OnNetworkLost();
+}
+
+void NetworkUiController::CloseNetworkConfigureUI() {
+  splash_screen_->ContinueAppLaunch();
 }
 
 bool NetworkUiController::IsNetworkReady() const {
@@ -217,13 +232,8 @@ bool NetworkUiController::CanConfigureNetwork() {
     return false;
   }
 
-  if (bool value; ash::CrosSettings::Get()->GetBoolean(
-          ash::kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline,
-          &value)) {
-    return value;
-  }
-  // Default to true when the policy is missing.
-  return true;
+  // Default to true when the setting is missing.
+  return GetPromptForNetworkWhenOfflineSetting().value_or(true);
 }
 
 // static

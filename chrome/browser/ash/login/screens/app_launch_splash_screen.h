@@ -67,7 +67,7 @@ class AppLaunchSplashScreen : public BaseScreen {
   virtual void HideThrobber();
 
   // Continues app launch after error screen is shown.
-  virtual void CloseNetworkConfigureUI();
+  virtual void ContinueAppLaunch();
 
   // Sets the network configuration controller.
   void SetDelegate(Delegate* delegate);

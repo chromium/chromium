@@ -26,7 +26,7 @@ void FakeAppLaunchSplashScreen::ShowNetworkConfigureUI(
     NetworkStateInformer::State state,
     const std::string& network_name) {}
 
-void FakeAppLaunchSplashScreen::CloseNetworkConfigureUI() {
+void FakeAppLaunchSplashScreen::ContinueAppLaunch() {
   if (delegate_) {
     delegate_->OnNetworkConfigFinished();
   }

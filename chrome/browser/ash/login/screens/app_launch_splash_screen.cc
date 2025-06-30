@@ -170,7 +170,7 @@ void AppLaunchSplashScreen::ShowErrorMessage(KioskAppLaunchError::Error error) {
       KioskAppLaunchError::GetErrorMessage(error));
 }
 
-void AppLaunchSplashScreen::CloseNetworkConfigureUI() {
+void AppLaunchSplashScreen::ContinueAppLaunch() {
   if (!delegate_) {
     return;
   }

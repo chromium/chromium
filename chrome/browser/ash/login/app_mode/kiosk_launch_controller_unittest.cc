@@ -666,7 +666,7 @@ TEST_F(KioskLaunchControllerTest, ConfigureNetworkDuringInstallation) {
       HasViewState(
           AppLaunchSplashScreenView::AppLaunchState::kInstallingApplication));
 
-  screen().CloseNetworkConfigureUI();
+  screen().ContinueAppLaunch();
   EXPECT_THAT(
       screen(),
       HasViewState(
