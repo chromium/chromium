@@ -61,7 +61,7 @@
     readonly attribute NodeList labels;
 
     // https://html.spec.whatwg.org/multipage/input.html#dom-select-showpicker
-    [RaisesException, RuntimeEnabled=HTMLSelectElementShowPicker, MeasureAs=ShowPickerSelect] void showPicker();
+    [RaisesException, MeasureAs=ShowPickerSelect] void showPicker();
 
     [RuntimeEnabled=SelectedcontentelementAttribute] attribute HTMLSelectedContentElement? selectedContentElement;
 };

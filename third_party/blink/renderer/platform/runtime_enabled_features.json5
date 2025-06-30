@@ -2600,11 +2600,6 @@
       name: "HTMLPrintingArtifactAnnotations",
       status: "stable",
     },
-
-    {
-      name: "HTMLSelectElementShowPicker",
-      status: "stable",
-    },
     {
       name: "ICUCapitalization",
       status: "experimental",
