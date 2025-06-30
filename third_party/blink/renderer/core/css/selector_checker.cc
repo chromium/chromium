@@ -2451,41 +2451,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.CachedDirectionality() == direction;
     }
     case CSSSelector::kPseudoDialogInTopLayer:
-      if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
-        if (dialog->IsModal() &&
-            dialog->FastHasAttribute(html_names::kOpenAttr)) {
-          DCHECK(dialog->GetDocument().TopLayerElements().Contains(dialog));
-          return true;
-        }
-        // When the dialog is transitioning to closed, we have to check the
-        // elements which are in the top layer but are pending removal to see if
-        // this element used to be open as a dialog.
-        std::optional<Document::TopLayerReason> top_layer_reason =
-            dialog->GetDocument().IsScheduledForTopLayerRemoval(dialog);
-        return top_layer_reason &&
-               *top_layer_reason == Document::TopLayerReason::kDialog;
-      }
-      return false;
+      return element.IsDialogInTopLayer();
     case CSSSelector::kPseudoPopoverInTopLayer:
-      if (auto* html_element = DynamicTo<HTMLElement>(element);
-          html_element && html_element->IsPopover()) {
-        // When the popover is open and is not transitioning to closed,
-        // popoverOpen will return true.
-        if (html_element->popoverOpen()) {
-          DCHECK(html_element->GetDocument().TopLayerElements().Contains(
-              html_element));
-          return true;
-        }
-        // When the popover is transitioning to closed, popoverOpen won't return
-        // true and we have to check the elements which are in the top layer but
-        // are pending removal to see if this element used to be popoverOpen.
-        std::optional<Document::TopLayerReason> top_layer_reason =
-            html_element->GetDocument().IsScheduledForTopLayerRemoval(
-                html_element);
-        return top_layer_reason &&
-               *top_layer_reason == Document::TopLayerReason::kPopover;
-      }
-      return false;
+      return element.IsPopoverInTopLayer();
     case CSSSelector::kPseudoPopoverOpen:
       if (auto* html_element = DynamicTo<HTMLElement>(element);
           html_element && html_element->IsPopover()) {

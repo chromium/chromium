@@ -1525,6 +1525,45 @@ InterestInvokerTargetData* Element::GetInterestInvokerTargetData() const {
   return nullptr;
 }
 
+bool Element::IsPopoverInTopLayer() {
+  auto& document = GetDocument();
+  DCHECK_EQ(IsInTopLayer(), document.TopLayerElements().Contains(this));
+  if (!IsInTopLayer()) {
+    return false;
+  }
+  auto* popover = DynamicTo<HTMLElement>(this);
+  if (!popover || !popover->IsPopover()) {
+    return false;
+  }
+  if (popover->popoverOpen()) {
+    return true;
+  }
+  // This could be a popover that is transitioning out of the top layer.
+  auto top_layer_reason = document.IsScheduledForTopLayerRemoval(this);
+  return top_layer_reason.has_value() &&
+         top_layer_reason.value() == Document::TopLayerReason::kPopover;
+}
+
+bool Element::IsDialogInTopLayer() {
+  auto& document = GetDocument();
+  DCHECK_EQ(IsInTopLayer(), document.TopLayerElements().Contains(this));
+  if (!IsInTopLayer()) {
+    return false;
+  }
+  auto* dialog = DynamicTo<HTMLDialogElement>(this);
+  if (!dialog) {
+    return false;
+  }
+  if (dialog->IsModal()) {
+    DCHECK(document.TopLayerElements().Contains(dialog));
+    return true;
+  }
+  // This could be a modal dialog that is transitioning out of the top layer.
+  auto top_layer_reason = document.IsScheduledForTopLayerRemoval(this);
+  return top_layer_reason &&
+         top_layer_reason.value() == Document::TopLayerReason::kDialog;
+}
+
 // If this element is a triggering element for an *open* popover, in one of
 // several ways, this returns the target popover. These forms of triggering
 // are supported:

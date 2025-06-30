@@ -1152,6 +1152,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     return false;
   }
 
+  // These are slightly different than e.g. checking popover->popoverOpen(),
+  // because they also catch the case where the element *was* open as a popover
+  // or dialog, but is in the process of transitioning out of the top layer.
+  bool IsPopoverInTopLayer();
+  bool IsDialogInTopLayer();
+
   // If this element is a triggering element for an *open* popover, in one of
   // several ways, this returns the targeted popover. These forms of triggering
   // are supported:

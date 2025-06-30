@@ -1560,7 +1560,6 @@ textarea[dir=auto i], pre[dir=auto i] {
 }
 
 dialog {
-    display: none;
     /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     position: absolute;
     inset-inline-start: 0;
@@ -1574,10 +1573,10 @@ dialog {
     color: CanvasText;
 }
 
-dialog[open] {
-    display: block;
-}
-
+/* Note that these can't use `dialog:modal` because a dialog stops matching
+   :modal as soon as dialog.close() is called, but it needs to retain its
+   styling until it's removed from the top layer, which can happen later due
+   to animations of the `overlay` property. */
 dialog:-internal-dialog-in-top-layer {
     /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     position: fixed;
@@ -1591,40 +1590,62 @@ dialog:-internal-dialog-in-top-layer {
     visibility: visible;
 }
 
-dialog:modal {
-    overlay: auto !important;
-}
-
-/* TODO(foolip): In the Fullscreen spec, there's a ::backdrop block with the
-   properties shared with :fullscreen::backdrop (see fullscreen.css). */
-dialog:-internal-dialog-in-top-layer::backdrop {
+[popover] {
     position: fixed;
     inset: 0;
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+    border: solid;
+    padding: 0.25em;
+    overflow: auto;
+    color: CanvasText;
+    background-color: Canvas;
+}
+
+/* dialog and popover handling of `display`. We need to be careful to get the
+   `<dialog popover>` case working correctly, when open as a dialog.
+   The `:where()` is added to lower the specificity so it doesn't take
+   precedence over the [popover]:popover-open` rule just below. */
+/* TODO(crbug.com/428039233): it would be cleaner if this was dialog:open,
+   rather than dialog[open]. But that crashes. */
+dialog:not([open]), [popover]:where(:not(:popover-open)) {
+    display: none;
+}
+/* TODO(crbug.com/428039233): it would be cleaner if this was dialog:open,
+   rather than dialog[open]. But that crashes. */
+dialog[open], [popover]:popover-open {
+    display: block;
+}
+
+dialog:-internal-dialog-in-top-layer::backdrop,
+[popover]:-internal-popover-in-top-layer::backdrop {
+    /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
+    position: fixed;
+    inset: 0;
+}
+
+/* Note that these can't use `:modal` or `:popover-open`, because those pseudo
+   classes stop matching as soon as the element is requested to be removed from
+   the top layer (e.g. via popover.hidePopover() or dialog.close()). But the
+   ::backdrop needs to be retained until the element is actually removed from
+   the top layer, which can happen later due to animations of the
+   `overlay` property. */
+dialog:-internal-dialog-in-top-layer::backdrop {
     /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
-    background: rgba(0,0,0,0.1);
+    background-color: rgba(0,0,0,0.1);
 }
 
-slot {
-    display: contents;
+[popover]:-internal-popover-in-top-layer::backdrop {
+    pointer-events: none !important;
+    background-color: transparent;
 }
 
-[popover] {
-  position: fixed;
-  inset: 0;
-  width: fit-content;
-  height: fit-content;
-  margin: auto;
-  border: solid;
-  padding: 0.25em;
-  overflow: auto;
-  color: CanvasText;
-  background-color: Canvas;
-}
-
-/* This ensures that popovers get display:none when they are not open, and we
-   need to be careful not to affect `<dialog popover>` when open as a dialog. */
-[popover]:not(:popover-open):not(dialog[open]) {
-  display:none;
+/* The `overlay:auto` UA rule goes away as soon as the modal is requested to
+   close, or popover.hidePopover() is called. However, it can stay in the top
+   layer after this point, if developer CSS animates the `overlay` property. */
+dialog:modal, [popover]:popover-open {
+    overlay: auto !important;
 }
 
 @supports blink-feature(MenuElements) {
@@ -1635,33 +1656,16 @@ slot {
     }
 }
 
-/* The UA stylesheet has a rule like dialog{display:none}, so <dialog popover>
-   needs this to be visible when it is open as a popover. */
-dialog:popover-open {
-  display:block;
-}
-
 @supports blink-feature(HTMLAnchorAttribute) {
-  /* Popovers using anchor positioning get their inset properties reset, to make
-  * it easier to position them. */
-  [popover][anchor] {
-    inset:auto;
-  }
+    /* Popovers using anchor positioning get their inset properties reset, to make
+    * it easier to position them. */
+    [popover][anchor] {
+        inset:auto;
+    }
 }
 
-/* This rule matches popovers (dialog or not) that are currently open as a
-   popover. */
-[popover]:popover-open:not(dialog), dialog:popover-open:not([open]) {
-  overlay: auto !important;
-}
-
-[popover]:-internal-popover-in-top-layer::backdrop {
-  /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
-  position: fixed;
-  inset: 0;
-  /* Specific to [popover]: */
-  pointer-events: none !important;
-  background-color: transparent;
+slot {
+    display: contents;
 }
 
 /* Pagination */
@@ -1809,13 +1813,17 @@ dialog:where(:modal) {
      * have the same height as options with text. */
     min-block-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px, 1lh)));
 
-    display: -internal-auto-base(inline-block, inline-flex);
     gap: -internal-auto-base(initial, 0.5em);
     border-radius: -internal-auto-base(0, 0.5em);
     align-items: -internal-auto-base(center, unset);
     /* https://github.com/whatwg/html/issues/10876 */
     user-select: -internal-auto-base(auto, none);
   }
+
+  select:not(:-internal-list-box):not([multiple]):not([popover]) {
+    display: -internal-auto-base(inline-block, inline-flex);
+  }
+
 
   select:not(:-internal-list-box):not([multiple]) > button:first-child {
     all: unset;
@@ -1861,12 +1869,9 @@ dialog:where(:modal) {
     position-area: block-end span-inline-end;
     position-try-order: most-block-size;
     position-try-fallbacks:
-      /* First try above and span-right. */
-      block-start span-inline-end,
-      /* Then below but span-left. */
-      block-end span-inline-start,
-      /* Then above and span-left. */
-      block-start span-inline-start;
+        block-start span-inline-end,   /* First try above and span-right. */
+        block-end span-inline-start,   /* Then below but span-left. */
+        block-start span-inline-start; /* Then above and span-left. */
   }
 
   select:not(:-internal-list-box):not([multiple]) option {
@@ -2136,12 +2141,15 @@ dialog:where(:modal) {
     padding-inline: -internal-auto-base(0, 0.5em);
     min-inline-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px)));
     min-block-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px, 1lh)));
-    display: -internal-auto-base(inline-block, inline-flex);
     gap: -internal-auto-base(initial, 0.5em);
     border-radius: -internal-auto-base(0, 0.5em);
     align-items: -internal-auto-base(center, unset);
     user-select: -internal-auto-base(auto, none);
   }
+  select:not(:-internal-list-box):not([popover]) {
+    display: -internal-auto-base(inline-block, inline-flex);
+  }
+
   select:not(:-internal-list-box) > button:first-child {
     all: unset;
     display: contents;
