@@ -35,12 +35,6 @@ CC_BASE_EXPORT extern const base::FeatureParam<int>
 // Use DMSAA instead of MSAA for rastering tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
 
-// When LayerTreeHostImpl::ReclaimResources() is called in background, trigger a
-// additional delayed flush to reclaim resources.
-//
-// Enabled 03/2024, kept to run a holdback experiment.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesDelayedFlushInBackground);
-
 // When no frames are produced in a certain time interval, reclaim prepaint
 // tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimPrepaintTilesWhenIdle);

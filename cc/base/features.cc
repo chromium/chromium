@@ -59,10 +59,6 @@ BASE_FEATURE(kUseDMSAAForTiles,
 #endif
 );
 
-BASE_FEATURE(kReclaimResourcesDelayedFlushInBackground,
-             "ReclaimResourcesDelayedFlushInBackground",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kReclaimPrepaintTilesWhenIdle,
              "ReclaimPrepaintTilesWhenIdle",
              base::FEATURE_DISABLED_BY_DEFAULT);
