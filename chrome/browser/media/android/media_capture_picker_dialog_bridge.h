@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "content/public/browser/desktop_media_id.h"
 
 namespace content {
@@ -18,11 +19,6 @@ class WebContents;
 
 class MediaCapturePickerDialogBridge {
  public:
-  // Callback for when media to capture is picked. The `DesktopMediaID` will
-  // be null if nothing was picked.
-  using MediaCapturePickerDialogCallback =
-      base::OnceCallback<void(const content::DesktopMediaID&)>;
-
   MediaCapturePickerDialogBridge();
   MediaCapturePickerDialogBridge(const MediaCapturePickerDialogBridge&) =
       delete;
@@ -38,7 +34,7 @@ class MediaCapturePickerDialogBridge {
   void Show(content::WebContents* web_contents,
             const std::u16string& app_name,
             bool request_audio,
-            MediaCapturePickerDialogCallback callback);
+            DesktopMediaPicker::DoneCallback callback);
 
   // Called from Java via JNI when the dialog resolves.
   void OnPickTab(JNIEnv* env,
@@ -55,7 +51,7 @@ class MediaCapturePickerDialogBridge {
   void OnCancel(JNIEnv* env);
 
  private:
-  MediaCapturePickerDialogCallback callback_;
+  DesktopMediaPicker::DoneCallback callback_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
