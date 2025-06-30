@@ -25573,6 +25573,26 @@
             ]
         }
     ],
+    "V8HighEndAndroid": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "V8HighEndAndroidMemoryThreshold": "8"
+                    },
+                    "enable_features": [
+                        "V8HighEndAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8IncrementalMarkingStartUserVisible": [
         {
             "platforms": [

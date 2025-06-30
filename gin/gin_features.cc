@@ -120,6 +120,13 @@ BASE_FEATURE(kV8ConcurrentMaglevHighPriorityThreads,
              ("V8ConcurrentMaglevHighPriorityThreads"),
              kFeatureDefaultStateControlledByV8);
 
+BASE_FEATURE(kV8HighEndAndroid,
+             "V8HighEndAndroid",
+             kFeatureDefaultStateControlledByV8);
+
+const base::FeatureParam<int> kV8HighEndAndroidMemoryThreshold{
+    &kV8HighEndAndroid, "V8HighEndAndroidMemoryThreshold", 8};
+
 BASE_FEATURE(kV8MemoryReducer,
              "V8MemoryReducer",
              base::FEATURE_DISABLED_BY_DEFAULT);
