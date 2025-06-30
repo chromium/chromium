@@ -73,7 +73,15 @@ bool ShareActionCache::HasVisibleActions(const apps::IntentPtr& intent,
 }
 
 void ShareActionCache::AddShareActionForTest(ShareActionType type) {
-  AddShareAction(std::make_unique<ExampleAction>(type));
+  switch (type) {
+    // If you need a real action implementation for the action type, add it
+    // here.
+    case ShareActionType::kDriveShare:
+      AddShareAction(std::make_unique<ash::sharesheet::DriveShareAction>());
+      break;
+    default:
+      AddShareAction(std::make_unique<ExampleAction>(type));
+  }
 }
 
 void ShareActionCache::AddShareAction(std::unique_ptr<ShareAction> action) {

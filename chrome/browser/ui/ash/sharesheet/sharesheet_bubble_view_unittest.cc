@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -53,6 +55,28 @@ void Click(const views::View* view) {
   event_generator.ClickLeftButton();
 }
 
+class TestNewWindowDelegate : public ash::TestNewWindowDelegate {
+ public:
+  TestNewWindowDelegate() = default;
+  TestNewWindowDelegate(const TestNewWindowDelegate&) = delete;
+  TestNewWindowDelegate& operator=(const TestNewWindowDelegate&) = delete;
+  ~TestNewWindowDelegate() override = default;
+
+  void OpenUrl(const GURL& url,
+               OpenUrlFrom from,
+               Disposition disposition) override {
+    url_ = url;
+    // Window will be deleted by shell upon shutdown.
+    auto* widget = ash::TestWidgetBuilder().BuildOwnedByNativeWidget();
+    ASSERT_TRUE(widget->IsActive());
+  }
+
+  std::optional<GURL> retrieve_url() { return std::move(url_); }
+
+ private:
+  std::optional<GURL> url_;
+};
+
 }  // namespace
 
 namespace ash {
@@ -79,6 +103,7 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase,
 
   // ChromeAshTestBase:
   void SetUp() override {
+    new_window_delegate_ = std::make_unique<::TestNewWindowDelegate>();
     ChromeAshTestBase::SetUp();
 
     profile_ = std::make_unique<TestingProfile>();
@@ -107,6 +132,8 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase,
     }
     ASSERT_FALSE(sharesheet_bubble_view_);
     ChromeAshTestBase::TearDown();
+
+    new_window_delegate_.reset();
   }
 
   ::sharesheet::SharesheetService* GetSharesheetService() {
@@ -114,9 +141,10 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase,
         profile_.get());
   }
 
-  void ShowAndVerifyBubble(apps::IntentPtr intent,
-                           ::sharesheet::LaunchSource source,
-                           int num_actions_to_add = 0) {
+  void ShowAndVerifyBubble(
+      apps::IntentPtr intent,
+      ::sharesheet::LaunchSource source,
+      std::vector<::sharesheet::ShareActionType> actions = {}) {
     auto* sharesheet_service = GetSharesheetService();
     sharesheet_service->ShowBubbleForTesting(
         parent_window_, std::move(intent), source,
@@ -124,7 +152,7 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase,
         /*close_callback=*/
         base::BindOnce(&SharesheetBubbleViewTest::OnClose,
                        base::Unretained(this)),
-        num_actions_to_add);
+        actions);
     bubble_delegate_ = static_cast<SharesheetBubbleViewDelegate*>(
         sharesheet_service->GetUiDelegateForTesting(parent_window_));
     EXPECT_NE(bubble_delegate_, nullptr);
@@ -189,6 +217,7 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase,
   raw_ptr<SharesheetBubbleViewDelegate> bubble_delegate_;
   raw_ptr<SharesheetBubbleView> sharesheet_bubble_view_;
   raw_ptr<views::Widget> sharesheet_widget_;
+  std::unique_ptr<::TestNewWindowDelegate> new_window_delegate_;
 };
 
 TEST_F(SharesheetBubbleViewTest, BubbleDoesOpenAndClose) {
@@ -519,7 +548,7 @@ TEST_F(SharesheetBubbleViewTest, HoldEscapeKey) {
 TEST_F(SharesheetBubbleViewTest, ShareActionShowsUpAsExpected) {
   ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
                       ::sharesheet::LaunchSource::kUnknown,
-                      /*num_actions_to_add=*/1);
+                      {::sharesheet::kExample});
   views::View* share_action_view = sharesheet_bubble_view()->GetViewByID(
       SharesheetViewID::SHARE_ACTION_VIEW_ID);
   ASSERT_FALSE(share_action_view->GetVisible());
@@ -536,6 +565,35 @@ TEST_F(SharesheetBubbleViewTest, ShareActionShowsUpAsExpected) {
 
   CloseBubble();
   ASSERT_FALSE(IsSharesheetVisible());
+}
+
+TEST_F(SharesheetBubbleViewTest, DriveActionShouldNotCrash) {
+  auto drive_intent = ::sharesheet::CreateDriveIntent();
+  auto drive_share_url = drive_intent->drive_share_url.value();
+  ShowAndVerifyBubble(std::move(drive_intent),
+                      ::sharesheet::LaunchSource::kUnknown,
+                      {::sharesheet::ShareActionType::kDriveShare});
+
+  views::View* share_action_view = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::SHARE_ACTION_VIEW_ID);
+  ASSERT_FALSE(share_action_view->GetVisible());
+
+  // |targets_view| should contain the share with others, copy, and drive share
+  // target.
+  views::View* targets_view = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::TARGETS_DEFAULT_VIEW_ID);
+  ASSERT_EQ(targets_view->children().size(), 3u);
+
+  // The last one is drive share.
+  Click(targets_view->children()[2]);
+  EXPECT_FALSE(sharesheet_bubble_view());
+
+  // Make sure the drive action was invoked.
+  auto* delegate = static_cast<::TestNewWindowDelegate*>(
+      ash::NewWindowDelegate::GetPrimary());
+  auto url = delegate->retrieve_url();
+  ASSERT_TRUE(url.has_value());
+  EXPECT_EQ(drive_share_url, *url);
 }
 
 TEST_F(SharesheetBubbleViewTest, ReshowHiddenBubble) {
