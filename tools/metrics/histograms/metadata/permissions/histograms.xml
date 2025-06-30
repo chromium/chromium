@@ -1016,7 +1016,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.Accepted.PriorDismissCount2{PermissionTypes}"
-    units="units" expires_after="2025-01-25">
+    units="units" expires_after="2025-09-25">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1025,6 +1025,9 @@ chromium-metrics-reviews@google.com.
     the user explicitly set the permission state or cleared history / site data
     and prior to the accept. The suffix of the histogram indicates which
     particular permission. {PermissionTypes}
+
+    Warning: this histogram was expired from 2025-01-25 to 2025-06-27; data may
+    be missing.
   </summary>
   <token key="PermissionTypes" variants="PermissionTypes">
     <variant name=""/>
