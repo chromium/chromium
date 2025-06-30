@@ -166,6 +166,9 @@ void SelectMutationObserver::AddDescendantDisallowedErrorToNode(Node& node) {
         &document, node.GetDomNodeId(), issue_reason,
         /* has_disallowed_attributes = */ HasTabIndexAttribute(node) ||
             IsContenteditable(node));
+    // In the future we may want to drop the console message below in
+    // favor of the issue above.  If we do so, we should probably do it
+    // for both <select> (here) and <summary> at the same time.
     node.AddConsoleMessage(mojom::blink::ConsoleMessageSource::kRecommendation,
                            mojom::blink::ConsoleMessageLevel::kError,
                            GetMessageForReason(issue_reason));

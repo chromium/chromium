@@ -11,6 +11,9 @@
 
 namespace blink {
 
+// This is similar to SummaryDescendantsObserver which fills a similar purpose
+// for <summary>.  They could in theory share a small amount of common code,
+// but such a refactoring would probably harm code readability too much.
 class SelectMutationObserver : public MutationObserver::Delegate {
  public:
   explicit SelectMutationObserver(HTMLSelectElement& select);

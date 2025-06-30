@@ -26,13 +26,19 @@
 namespace blink {
 
 class HTMLDetailsElement;
+class SummaryDescendantsObserver;
 
 class HTMLSummaryElement final : public HTMLElement {
  public:
   explicit HTMLSummaryElement(Document&);
 
+  void Trace(Visitor*) const override;
+
   bool IsMainSummary() const;
   bool WillRespondToMouseClickEvents() override;
+
+  InsertionNotificationRequest InsertedInto(ContainerNode&) final;
+  void RemovedFrom(ContainerNode&) final;
 
  private:
   void DefaultEventHandler(Event&) override;
@@ -41,6 +47,8 @@ class HTMLSummaryElement final : public HTMLElement {
 
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   int DefaultTabIndex() const override;
+
+  Member<SummaryDescendantsObserver> descendants_observer_;
 };
 
 }  // namespace blink

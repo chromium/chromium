@@ -6227,6 +6227,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5594" label="SelectMultipleSizeOne"/>
   <int value="5595" label="WebGPUFeatureLevelCompatibility"/>
   <int value="5596" label="OverscrollBehaviorOnNonScrollableScrollContainer"/>
+  <int value="5597" label="InteractiveContentSummaryDescendant"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
