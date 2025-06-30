@@ -4,16 +4,18 @@
 
 package org.chromium.chrome.browser.paint_preview;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.SystemClock;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -29,6 +31,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Glue code for the Paint Preview show-on-startup feature. */
+@NullMarked
 public class StartupPaintPreviewHelper implements Destroyable {
     /**
      * Tracks whether a paint preview should be shown on tab restore. We use this to only attempt to
@@ -100,7 +103,7 @@ public class StartupPaintPreviewHelper implements Destroyable {
                         tabModelSelector.removeObserver(this);
                     }
 
-                    private boolean preventShowOnRestore(Tab tab) {
+                    private boolean preventShowOnRestore(@Nullable Tab tab) {
                         if (tab == null || tab.isShowingErrorPage() || tab.isNativePage()) {
                             return true;
                         }
@@ -119,8 +122,10 @@ public class StartupPaintPreviewHelper implements Destroyable {
 
     /** Attempts to display the Paint Preview representation for the given Tab. */
     public static void showPaintPreviewOnRestore(Tab tab) {
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        assumeNonNull(windowAndroid);
         ObservableSupplier<StartupPaintPreviewHelper> paintPreviewSupplier =
-                StartupPaintPreviewHelperSupplier.from(tab.getWindowAndroid());
+                StartupPaintPreviewHelperSupplier.from(windowAndroid);
         if (paintPreviewSupplier == null) return;
 
         StartupPaintPreviewHelper paintPreviewHelper = paintPreviewSupplier.get();
