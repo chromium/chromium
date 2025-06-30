@@ -3306,7 +3306,11 @@
   },
   {
     "name": "enable-experimental-webassembly-features",
-    "owners": [ "adamk@chromium.org", "hablich@chromium.org" ],
+    "owners": [
+      "ecmziegler@chromium.org",
+      "jkummerow@chromium.org",
+      "wasm-team@google.com"
+    ],
     // This flag is used by web developers to test upcoming WebAssembly
     // features.
     "expiry_milestone": -1
