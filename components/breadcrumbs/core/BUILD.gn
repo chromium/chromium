@@ -60,7 +60,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":core",
-    ":generate_not_user_triggered_actions",
+    ":generate_not_user_triggered_actions_test",
     ":status",
     "//base/test:test_support",
     "//components/prefs:test_support",
@@ -89,6 +89,20 @@ action("generate_not_user_triggered_actions") {
   script = "generate_not_user_triggered_actions.py"
   sources = [ "//tools/metrics/actions/actions.xml" ]
   outputs = [ "$target_gen_dir/application_breadcrumbs_not_user_action.inc" ]
+  args = [
+    "--actions",
+    rebase_path(sources[0], root_build_dir),
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+}
+
+action("generate_not_user_triggered_actions_test") {
+  testonly = true
+  script = "generate_not_user_triggered_actions.py"
+  sources = [ "generate_not_user_triggered_actions_test_data.xml" ]
+  outputs =
+      [ "$target_gen_dir/application_breadcrumbs_not_user_action_test.inc" ]
   args = [
     "--actions",
     rebase_path(sources[0], root_build_dir),
