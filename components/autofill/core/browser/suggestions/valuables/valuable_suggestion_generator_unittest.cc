@@ -49,6 +49,33 @@ class ValuableSuggestionGeneratorTest : public testing::Test {
     return valuables_data_manager_;
   }
 
+  void SetUp() override {
+    const std::vector<LoyaltyCard> loyalty_cards = {
+        LoyaltyCard(
+            /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
+            /*merchant_name=*/"CVS Pharmacy",
+            /*program_name=*/"CVS Extra",
+            /*program_logo=*/GURL("https://empty.url.com"),
+            /*loyalty_card_number=*/"987654321987654321",
+            {GURL("https://domain1.example"),
+             GURL("https://common-domain.example")}),
+        LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_3"),
+                    /*merchant_name=*/"Walgreens",
+                    /*program_name=*/"CustomerCard",
+                    /*program_logo=*/GURL("https://empty.url.com"),
+                    /*loyalty_card_number=*/"998766823",
+                    {GURL("https://domain2.example"),
+                     GURL("https://common-domain.example")}),
+        LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
+                    /*merchant_name=*/"Ticket Maester",
+                    /*program_name=*/"TourLoyal",
+                    /*program_logo=*/GURL("https://empty.url.com"),
+                    /*loyalty_card_number=*/"37262999281",
+                    {GURL("https://domain2.example"),
+                     GURL("https://common-domain.example")})};
+    test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
+  }
+
   gfx::Image CustomIconForTest() { return gfx::test::CreateImage(32, 32); }
 
  private:
@@ -57,31 +84,6 @@ class ValuableSuggestionGeneratorTest : public testing::Test {
 
 TEST_F(ValuableSuggestionGeneratorTest,
        GetLoyaltyCardSuggestions_NoMatchingDomain) {
-  const std::vector<LoyaltyCard> loyalty_cards = {
-      LoyaltyCard(
-          /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
-          /*merchant_name=*/"CVS Pharmacy",
-          /*program_name=*/"CVS Extra",
-          /*program_logo=*/GURL("https://empty.url.com"),
-          /*loyalty_card_number=*/"987654321987654321",
-          {GURL("https://domain1.example"),
-           GURL("https://common-domain.example")}),
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_3"),
-                  /*merchant_name=*/"Walgreens",
-                  /*program_name=*/"CustomerCard",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"998766823",
-                  {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")}),
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
-                  /*merchant_name=*/"Ticket Maester",
-                  /*program_name=*/"TourLoyal",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"37262999281",
-                  {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")})};
-  test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
-
   EXPECT_THAT(
       GetLoyaltyCardSuggestions(
           valuables_data_manager(),
@@ -112,31 +114,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
 
 TEST_F(ValuableSuggestionGeneratorTest,
        GetLoyaltyCardSuggestions_NoMatchingDomainAndFieldAutofilled) {
-  const std::vector<LoyaltyCard> loyalty_cards = {
-      LoyaltyCard(
-          /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
-          /*merchant_name=*/"CVS Pharmacy",
-          /*program_name=*/"CVS Extra",
-          /*program_logo=*/GURL("https://empty.url.com"),
-          /*loyalty_card_number=*/"987654321987654321",
-          {GURL("https://domain1.example"),
-           GURL("https://common-domain.example")}),
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_3"),
-                  /*merchant_name=*/"Walgreens",
-                  /*program_name=*/"CustomerCard",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"998766823",
-                  {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")}),
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
-                  /*merchant_name=*/"Ticket Maester",
-                  /*program_name=*/"TourLoyal",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"37262999281",
-                  {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")})};
-  test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
-
   EXPECT_THAT(
       GetLoyaltyCardSuggestions(
           valuables_data_manager(),
@@ -168,31 +145,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
 
 TEST_F(ValuableSuggestionGeneratorTest,
        GetLoyaltyCardSuggestions_WithMatchingDomain) {
-  const std::vector<LoyaltyCard> loyalty_cards = {
-      LoyaltyCard(
-          /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
-          /*merchant_name=*/"CVS Pharmacy",
-          /*program_name=*/"CVS Extra",
-          /*program_logo=*/GURL("https://empty.url.com"),
-          /*loyalty_card_number=*/"987654321987654321",
-          {GURL("https://domain1.example"),
-           GURL("https://common-domain.example")}),
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_3"),
-                  /*merchant_name=*/"Walgreens",
-                  /*program_name=*/"CustomerCard",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"998766823",
-                  {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")}),
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
-                  /*merchant_name=*/"Ticket Maester",
-                  /*program_name=*/"TourLoyal",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"37262999281",
-                  {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")})};
-  test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
-
   std::vector<Suggestion> suggestions_with_matching_domain =
       GetLoyaltyCardSuggestions(valuables_data_manager(),
                                 GURL("https://domain2.example/test"),
@@ -248,31 +200,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
 
 TEST_F(ValuableSuggestionGeneratorTest,
        GetLoyaltyCardSuggestions_WithMatchingDomainAndFieldAutofilled) {
-  const std::vector<LoyaltyCard> loyalty_cards = {
-      LoyaltyCard(
-          /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
-          /*merchant_name=*/"CVS Pharmacy",
-          /*program_name=*/"CVS Extra",
-          /*program_logo=*/GURL("https://empty.url.com"),
-          /*loyalty_card_number=*/"987654321987654321",
-          {GURL("https://domain1.example"),
-           GURL("https://common-domain.example")}),
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_3"),
-                  /*merchant_name=*/"Walgreens",
-                  /*program_name=*/"CustomerCard",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"998766823",
-                  {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")}),
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
-                  /*merchant_name=*/"Ticket Maester",
-                  /*program_name=*/"TourLoyal",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"37262999281",
-                  {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")})};
-  test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
-
   std::vector<Suggestion> suggestions_with_matching_domain =
       GetLoyaltyCardSuggestions(valuables_data_manager(),
                                 GURL("https://domain2.example/test"),
@@ -329,31 +256,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
 
 TEST_F(ValuableSuggestionGeneratorTest,
        GetLoyaltyCardSuggestions_AllMatchDomain) {
-  const std::vector<LoyaltyCard> loyalty_cards = {
-      LoyaltyCard(
-          /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
-          /*merchant_name=*/"CVS Pharmacy",
-          /*program_name=*/"CVS Extra",
-          /*program_logo=*/GURL("https://empty.url.com"),
-          /*loyalty_card_number=*/"987654321987654321",
-          {GURL("https://domain1.example"),
-           GURL("https://common-domain.example")}),
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_3"),
-                  /*merchant_name=*/"Walgreens",
-                  /*program_name=*/"CustomerCard",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"998766823",
-                  {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")}),
-      LoyaltyCard(/*loyalty_card_id=*/ValuableId("loyalty_card_id_2"),
-                  /*merchant_name=*/"Ticket Maester",
-                  /*program_name=*/"TourLoyal",
-                  /*program_logo=*/GURL("https://empty.url.com"),
-                  /*loyalty_card_number=*/"37262999281",
-                  {GURL("https://domain2.example"),
-                   GURL("https://common-domain.example")})};
-  test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
-
   EXPECT_THAT(
       GetLoyaltyCardSuggestions(valuables_data_manager(),
                                 GURL("https://common-domain.example/test"),
@@ -383,6 +285,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
 
 TEST_F(ValuableSuggestionGeneratorTest,
        GetLoyaltyCardSuggestions_SuggestionsCustomIcon) {
+  test_api(valuables_data_manager()).ClearLoyaltyCards();
   const GURL program_logo = GURL("https://empty.url.com");
   gfx::Image fake_image = CustomIconForTest();
   test_api(valuables_data_manager())
@@ -519,6 +422,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
 #endif
 #endif  // BUILDFLAG(IS_ANDROID)
 }
+
 TEST_F(ValuableSuggestionGeneratorTest,
        ExtendEmailSuggestionsWithLoyaltyCardSuggestions_NoLoyaltyCards) {
   test_api(valuables_data_manager()).SetLoyaltyCards({});
@@ -648,6 +552,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
 
 TEST_F(ValuableSuggestionGeneratorTest,
        GetLoyaltyCardSuggestions_SuggestionsIPH) {
+  test_api(valuables_data_manager()).ClearLoyaltyCards();
   test_api(valuables_data_manager())
       .AddLoyaltyCard(LoyaltyCard(
           /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
