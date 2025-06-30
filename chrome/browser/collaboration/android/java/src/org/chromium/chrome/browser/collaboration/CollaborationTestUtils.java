@@ -33,13 +33,18 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.test.R;
+import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.UUID;
 
 /** Common utility methods for collaboration tests. */
@@ -220,5 +225,30 @@ public class CollaborationTestUtils {
                     DataSharingTabManager dstm = rootUiCoordinator.getDataSharingTabManager();
                     dstm.setShareDelegateSupplierForTesting(mShareDelegateSupplier);
                 });
+    }
+
+    /** Returns whether the shared tab group still exists in the tab group sync service. */
+    public boolean collaborationExistsInSyncService(String collaborationId) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
+                    for (String syncId : tabGroupSyncService.getAllGroupIds()) {
+                        SavedTabGroup group = tabGroupSyncService.getGroup(syncId);
+                        if (group == null) continue;
+                        if (Objects.equals(group.collaborationId, collaborationId)) return true;
+                    }
+                    return false;
+                });
+    }
+
+    /** Converts an {@link AccountInfo} to a {@link GroupMember}. */
+    public static GroupMember accountInfoToGroupMember(AccountInfo info, @MemberRole int role) {
+        return new GroupMember(
+                info.getGaiaId(),
+                info.getFullName(),
+                info.getEmail(),
+                role,
+                /* avatarUrl= */ GURL.emptyGURL(),
+                info.getGivenName());
     }
 }

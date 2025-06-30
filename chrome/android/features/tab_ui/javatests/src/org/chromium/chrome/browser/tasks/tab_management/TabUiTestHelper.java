@@ -240,9 +240,10 @@ public class TabUiTestHelper {
 
     /**
      * Close the Nth tab in tab gri dialog.
+     *
      * @param index The index of the target tab to close.
      */
-    static void closeNthTabInDialog(int index) {
+    public static void closeNthTabInDialog(int index) {
         onView(
                         allOf(
                                 withId(R.id.tab_list_recycler_view),

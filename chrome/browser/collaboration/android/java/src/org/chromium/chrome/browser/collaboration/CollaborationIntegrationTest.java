@@ -14,17 +14,23 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.collaboration.CollaborationTestUtils.accountInfoToGroupMember;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeNthTabInDialog;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
+import static org.chromium.components.signin.test.util.TestAccounts.ACCOUNT1;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +54,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncTestRule;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.collaboration.CollaborationService;
@@ -56,11 +64,13 @@ import org.chromium.components.data_sharing.DataSharingSDKDelegateBridge;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateTestImpl;
 import org.chromium.components.data_sharing.DataSharingServiceImpl;
 import org.chromium.components.data_sharing.GroupToken;
+import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Instrumentation tests for {@link CollaborationService}. */
@@ -105,7 +115,7 @@ public class CollaborationIntegrationTest {
         mDataSharingSDKDelegate = new DataSharingSDKDelegateTestImpl();
         DataSharingUiDelegateAndroid.setForTesting(mDataSharingUIDelegate);
         DataSharingSDKDelegateBridge.setForTesting(mDataSharingSDKDelegate);
-        mActivityTestRule.getSigninTestRule().addAccount(TestAccounts.ACCOUNT1);
+        mActivityTestRule.getSigninTestRule().addAccount(ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
@@ -134,7 +144,7 @@ public class CollaborationIntegrationTest {
     @Test
     @MediumTest
     public void testDataSharingUrlInterceptionRefuseSignin() {
-        Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
+        assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
         mActivityTestRule.loadUrlInNewTab(mUrl);
 
         // Verify that the fullscreen sign-in promo is shown and cancel.
@@ -143,7 +153,7 @@ public class CollaborationIntegrationTest {
         onView(withText(R.string.collaboration_cancel)).perform(scrollTo(), click());
 
         // The new data sharing url was intercepted and the tab closed.
-        Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
+        assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
     }
 
     @Test
@@ -158,7 +168,7 @@ public class CollaborationIntegrationTest {
         onView(withText(R.string.collaboration_cancel)).perform(scrollTo(), click());
 
         // The new data sharing url was intercepted and the tab closed.
-        Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
+        assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
     }
 
     @Test
@@ -172,9 +182,7 @@ public class CollaborationIntegrationTest {
         final String continueAsText =
                 mActivityTestRule
                         .getActivity()
-                        .getString(
-                                R.string.sync_promo_continue_as,
-                                TestAccounts.ACCOUNT1.getGivenName());
+                        .getString(R.string.sync_promo_continue_as, ACCOUNT1.getGivenName());
         onView(withText(continueAsText)).perform(click());
 
         // Verify that the history opt-in dialog is shown and refuse.
@@ -183,8 +191,7 @@ public class CollaborationIntegrationTest {
         onViewWaiting(withId(R.id.button_secondary)).perform(click());
 
         // The user is signed out.
-        Assert.assertNull(
-                mActivityTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mActivityTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
     @Test
@@ -206,9 +213,7 @@ public class CollaborationIntegrationTest {
         final String continueAsText =
                 mActivityTestRule
                         .getActivity()
-                        .getString(
-                                R.string.sync_promo_continue_as,
-                                TestAccounts.ACCOUNT1.getGivenName());
+                        .getString(R.string.sync_promo_continue_as, ACCOUNT1.getGivenName());
         onView(withText(continueAsText)).perform(click());
 
         // Verify that the history opt-in dialog is shown and accept.
@@ -251,9 +256,7 @@ public class CollaborationIntegrationTest {
         final String continueAsText =
                 mActivityTestRule
                         .getActivity()
-                        .getString(
-                                R.string.sync_promo_continue_as,
-                                TestAccounts.ACCOUNT1.getGivenName());
+                        .getString(R.string.sync_promo_continue_as, ACCOUNT1.getGivenName());
         onView(withText(continueAsText)).perform(click());
 
         // Verify that the history opt-in dialog is shown and accept.
@@ -275,7 +278,7 @@ public class CollaborationIntegrationTest {
     @Test
     @MediumTest
     public void testHistoryAndSyncDisabled() {
-        mActivityTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mActivityTestRule.getSigninTestRule().addAccountThenSignin(ACCOUNT1);
 
         mActivityTestRule.loadUrlInNewTab(
                 mUrl, /* incognito= */ false, TabLaunchType.FROM_EXTERNAL_APP);
@@ -330,5 +333,206 @@ public class CollaborationIntegrationTest {
 
         // Check share button doesn't change.
         onViewWaiting(withText(R.string.tab_grid_share_button_text)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testDataSharingDeleteGroup() {
+        mCollaborationTestUtils.setUpSyncAndSignIn();
+        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+
+        mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
+
+        // Setting create flow callback to show share sheet with share link.
+        Callback<Boolean> callback =
+                (success) -> {
+                    mDataSharingSDKDelegate.addMembers(
+                            TEST_COLLABORATION_ID,
+                            accountInfoToGroupMember(ACCOUNT1, MemberRole.OWNER));
+                    mActivityTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
+                    mDataSharingUIDelegate.forceGroupCreation(
+                            TEST_COLLABORATION_ID, TEST_ACCESS_TOKEN);
+                };
+        mDataSharingUIDelegate.setShowCreateFlowCallback(callback);
+        mCollaborationTestUtils.setupShareDelegateSupplier(cta);
+
+        onView(withId(R.id.share_button)).perform(CollaborationTestUtils.relaxedClick());
+        mCollaborationTestUtils.prepareToShareGroup(
+                mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
+
+        // Check share button changes to manage.
+        onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
+                .check(matches(isDisplayed()));
+
+        // Click "Delete group" from the menu.
+        onViewWaiting(withId(R.id.toolbar_menu_button))
+                .perform(CollaborationTestUtils.relaxedClick());
+        onViewWaiting(withText(R.string.tab_grid_dialog_toolbar_delete_group)).perform(click());
+
+        // Click "Delete group" in confirmation dialog.
+        onViewWaiting(withText(R.string.delete_tab_group_action)).perform(click());
+
+        // Verify that the group is deleted and the card is gone from the tab switcher.
+        CriteriaHelper.pollUiThread(
+                () -> cta.getTabModelSelector().getTotalTabCount() == 0, "Tabs not closed.");
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        !mCollaborationTestUtils.collaborationExistsInSyncService(
+                                TEST_COLLABORATION_ID),
+                "Collaboration still exists.");
+        verifyTabSwitcherCardCount(cta, 0);
+    }
+
+    @Test
+    @MediumTest
+    public void testDataSharingLeaveGroup() {
+        mCollaborationTestUtils.setUpSyncAndSignIn();
+        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+
+        mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
+
+        // Setting create flow callback to show share sheet with share link.
+        Callback<Boolean> callback =
+                (success) -> {
+                    mDataSharingSDKDelegate.addMembers(
+                            TEST_COLLABORATION_ID,
+                            accountInfoToGroupMember(ACCOUNT1, MemberRole.MEMBER));
+                    mActivityTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
+                    mDataSharingUIDelegate.forceGroupCreation(
+                            TEST_COLLABORATION_ID, TEST_ACCESS_TOKEN);
+                };
+        mDataSharingUIDelegate.setShowCreateFlowCallback(callback);
+        mCollaborationTestUtils.setupShareDelegateSupplier(cta);
+
+        onView(withId(R.id.share_button)).perform(CollaborationTestUtils.relaxedClick());
+        mCollaborationTestUtils.prepareToShareGroup(
+                mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
+
+        // Check share button changes to manage.
+        onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
+                .check(matches(isDisplayed()));
+
+        // Click "Leave group" from the menu.
+        onViewWaiting(withId(R.id.toolbar_menu_button))
+                .perform(CollaborationTestUtils.relaxedClick());
+        onViewWaiting(withText(R.string.tab_grid_dialog_toolbar_leave_group)).perform(click());
+
+        // Click "Leave group" in confirmation dialog.
+        onViewWaiting(withText(R.string.keep_tab_group_dialog_leave_action)).perform(click());
+
+        // Verify that the group is deleted and the card is gone from the tab switcher.
+        CriteriaHelper.pollUiThread(
+                () -> cta.getTabModelSelector().getTotalTabCount() == 0, "Tabs not closed.");
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        !mCollaborationTestUtils.collaborationExistsInSyncService(
+                                TEST_COLLABORATION_ID),
+                "Collaboration still exists.");
+        verifyTabSwitcherCardCount(cta, 0);
+    }
+
+    @Test
+    @MediumTest
+    public void testDataSharingCloseGroup() {
+        mCollaborationTestUtils.setUpSyncAndSignIn();
+        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+
+        mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
+
+        // Setting create flow callback to show share sheet with share link.
+        Callback<Boolean> callback =
+                (success) -> {
+                    mDataSharingSDKDelegate.addMembers(
+                            TEST_COLLABORATION_ID,
+                            accountInfoToGroupMember(ACCOUNT1, MemberRole.MEMBER));
+                    mActivityTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
+                    mDataSharingUIDelegate.forceGroupCreation(
+                            TEST_COLLABORATION_ID, TEST_ACCESS_TOKEN);
+                };
+        mDataSharingUIDelegate.setShowCreateFlowCallback(callback);
+        mCollaborationTestUtils.setupShareDelegateSupplier(cta);
+
+        onView(withId(R.id.share_button)).perform(CollaborationTestUtils.relaxedClick());
+        mCollaborationTestUtils.prepareToShareGroup(
+                mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
+
+        // Check share button changes to manage.
+        onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
+                .check(matches(isDisplayed()));
+
+        // Click "Close group" from the menu.
+        onViewWaiting(withId(R.id.toolbar_menu_button))
+                .perform(CollaborationTestUtils.relaxedClick());
+        onViewWaiting(withText(R.string.tab_grid_dialog_toolbar_close_group)).perform(click());
+
+        // Dismiss the undo snackbar.
+        ThreadUtils.runOnUiThreadBlocking(() -> cta.getTabModelSelector().commitAllTabClosures());
+
+        // Verify that the group is deleted and the card is gone from the tab switcher.
+        CriteriaHelper.pollUiThread(
+                () -> cta.getTabModelSelector().getTotalTabCount() == 0, "Tabs not closed.");
+        verifyTabSwitcherCardCount(cta, 0);
+
+        // Verify that the collaboration exists.
+        assertTrue(mCollaborationTestUtils.collaborationExistsInSyncService(TEST_COLLABORATION_ID));
+    }
+
+    @Test
+    @MediumTest
+    public void testDataSharingKeepLastTabInGroup() {
+        mCollaborationTestUtils.setUpSyncAndSignIn();
+        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+
+        mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
+
+        // Setting create flow callback to show share sheet with share link.
+        Callback<Boolean> callback =
+                (success) -> {
+                    mDataSharingSDKDelegate.addMembers(
+                            TEST_COLLABORATION_ID,
+                            accountInfoToGroupMember(ACCOUNT1, MemberRole.OWNER));
+                    mActivityTestRule.getFakeServerHelper().addCollaboration(TEST_COLLABORATION_ID);
+                    mDataSharingUIDelegate.forceGroupCreation(
+                            TEST_COLLABORATION_ID, TEST_ACCESS_TOKEN);
+                };
+        mDataSharingUIDelegate.setShowCreateFlowCallback(callback);
+        mCollaborationTestUtils.setupShareDelegateSupplier(cta);
+
+        onView(withId(R.id.share_button)).perform(CollaborationTestUtils.relaxedClick());
+        mCollaborationTestUtils.prepareToShareGroup(
+                mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
+
+        // Check share button changes to manage.
+        onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
+                .check(matches(isDisplayed()));
+
+        // Close each tab.
+        List<Integer> tabIds =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            TabModel tabModel = cta.getTabModelSelector().getModel(false);
+                            List<Integer> ids = new ArrayList<>();
+                            for (Tab tab : tabModel) {
+                                ids.add(tab.getId());
+                            }
+                            return ids;
+                        });
+        for (int i = 0; i < tabIds.size(); i++) {
+            closeNthTabInDialog(0);
+        }
+
+        // Click keep group.
+        onViewWaiting(withText(R.string.keep_tab_group_dialog_keep_action)).perform(click());
+
+        // Verify that the group is kept, but a replacement tab is created.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel = cta.getTabModelSelector().getModel(false);
+                    assertEquals(1, tabModel.getCount());
+                    assertFalse(tabIds.contains(tabModel.getTabAt(0).getId()));
+                });
+
+        // Verify that the collaboration exists.
+        assertTrue(mCollaborationTestUtils.collaborationExistsInSyncService(TEST_COLLABORATION_ID));
     }
 }
