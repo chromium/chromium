@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/ownership/ownership_export.h"
+#include "crypto/keypair.h"
 
 namespace crypto {
 class RSAPrivateKey;
@@ -47,18 +48,22 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
   // Sets the public key to use from the given private key, but doesn't
   // configure the private key.
   void SetPublicKeyFromPrivateKey(const crypto::RSAPrivateKey& key);
+  void SetPublicKeyFromPrivateKey(crypto::keypair::PrivateKey key);
 
   // Imports the private key into NSS, so it can be found later.
   // Also extracts the public key and sets it for this mock object (equivalent
   // to calling `SetPublicKeyFromPrivateKey`).
   void ImportPrivateKeyAndSetPublicKey(
       std::unique_ptr<crypto::RSAPrivateKey> key);
+  void ImportPrivateKeyAndSetPublicKey(crypto::keypair::PrivateKey key);
 
   // Same as ImportPrivateKeyAndSetPublicKey, but remembers in which slot the
   // key is supposed to be. FindPrivateKeyInSlot will take this into account.
   void ImportPrivateKeyInSlotAndSetPublicKey(
       std::unique_ptr<crypto::RSAPrivateKey> key,
       PK11SlotInfo* slot);
+  void ImportPrivateKeyInSlotAndSetPublicKey(crypto::keypair::PrivateKey key,
+                                             PK11SlotInfo* slot);
 
   // Makes next `fail_times` number of calls to OwnerKeyUtil::GenerateKeyPair
   // fail.
@@ -70,6 +75,8 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
   void ImportPrivateKeyAndSetPublicKeyImpl(
       std::unique_ptr<crypto::RSAPrivateKey> key,
       PK11SlotInfo* slot);
+  void ImportPrivateKeyAndSetPublicKeyImpl(crypto::keypair::PrivateKey key,
+                                           PK11SlotInfo* slot);
 
   int generate_key_fail_times_ = 0;
   std::vector<uint8_t> public_key_;
