@@ -185,7 +185,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     @Test
     public void doesProcessSuggestion_acceptMatchingWhatYouTypedWhenRetainOmniboxOnFocusDisabled() {
         // URL_WHAT_YOU_TYPED
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         assertTrue(mProcessor.doesProcessSuggestion(mMatch, 0));
 
         // SEARCH_WHAT_YOU_TYPED
@@ -246,7 +246,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_rejectMatchWhenRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }

@@ -47,7 +47,7 @@ public class TabAttributesTest {
         Assert.assertNull(TabAttributes.from(mTab).get(ATTR1));
 
         // |get| with a default value returns the given default.
-        Assert.assertFalse(TabAttributes.from(mTab).get(ATTR1, Boolean.FALSE));
+        Assert.assertFalse(TabAttributes.from(mTab).get(ATTR1, false));
 
         // |get| returns the stored attribute.
         TabAttributes.from(mTab).set(ATTR1, true);

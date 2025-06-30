@@ -986,7 +986,7 @@ public class TabGroupUiMediatorUnitTest {
         mTabGridDialogBackPressSupplier.set(true);
 
         var groupUiBackPressSupplier = mTabGroupUiMediator.getHandleBackPressChangedSupplier();
-        Assert.assertEquals(Boolean.TRUE, groupUiBackPressSupplier.get());
+        Assert.assertEquals(true, groupUiBackPressSupplier.get());
 
         assertThat(mTabGroupUiMediator.onBackPressed(), equalTo(true));
         verify(mTabGridDialogController).handleBackPressed();
@@ -1000,7 +1000,7 @@ public class TabGroupUiMediatorUnitTest {
         mTabGridDialogBackPressSupplier.set(false);
         var groupUiBackPressSupplier = mTabGroupUiMediator.getHandleBackPressChangedSupplier();
 
-        assertNotEquals(Boolean.TRUE, groupUiBackPressSupplier.get());
+        assertNotEquals(true, groupUiBackPressSupplier.get());
         assertThat(mTabGroupUiMediator.onBackPressed(), equalTo(false));
         verify(mTabGridDialogController).handleBackPressed();
     }
@@ -1012,7 +1012,7 @@ public class TabGroupUiMediatorUnitTest {
         var groupUiBackPressSupplier = mTabGroupUiMediator.getHandleBackPressChangedSupplier();
 
         // Not initialized yet.
-        assertNotEquals(Boolean.TRUE, groupUiBackPressSupplier.get());
+        assertNotEquals(true, groupUiBackPressSupplier.get());
 
         // Late init.
         mDialogControllerSupplier.get();

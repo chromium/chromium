@@ -489,9 +489,8 @@ public class PkpTest {
         expectedErrors.add(NetError.ERR_CONNECTION_REFUSED);
         expectedErrors.add(NetError.ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN);
         assertWithMessage(
-                        String.format(
-                                "Incorrect error code. Expected one of %s but received %s",
-                                expectedErrors, errorCode))
+                        "Incorrect error code. Expected one of %s but received %s",
+                        expectedErrors, errorCode)
                 .that(expectedErrors)
                 .contains(errorCode);
     }

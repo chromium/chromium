@@ -74,7 +74,7 @@ public class BackPressManagerUnitTest {
         @Override
         public Boolean handleEscPress() {
             mCallbackHelper.notifyCalled();
-            return Boolean.TRUE;
+            return true;
         }
 
         @Override
@@ -88,7 +88,7 @@ public class BackPressManagerUnitTest {
         @Override
         public Boolean handleEscPress() {
             mCallbackHelper.notifyCalled();
-            return Boolean.FALSE;
+            return false;
         }
     }
 
@@ -533,7 +533,7 @@ public class BackPressManagerUnitTest {
 
         Assert.assertEquals(
                 "Handler should have invoked escape and consumed event.",
-                Boolean.TRUE,
+                true,
                 manager.processEscapeKeyEvent());
         Assert.assertEquals(
                 "Handler did not execute custom esc key code.",
@@ -575,7 +575,7 @@ public class BackPressManagerUnitTest {
 
         Assert.assertEquals(
                 "Handler should have fallen through failures to success and consumed event.",
-                Boolean.TRUE,
+                true,
                 manager.processEscapeKeyEvent());
         Assert.assertEquals(
                 "Handler did not execute custom esc key code even though it will fail.",

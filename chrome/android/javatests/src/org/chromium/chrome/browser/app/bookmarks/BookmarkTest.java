@@ -558,7 +558,7 @@ public class BookmarkTest {
         openFolder(folder);
 
         assertEquals(
-                Boolean.TRUE,
+                true,
                 mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
 
         runOnUiThreadBlocking(mDelegate::openSearchUi);
@@ -567,7 +567,7 @@ public class BookmarkTest {
         assertEquals("No items are shown when a search is started.", 0, getBookmarkCount());
 
         assertEquals(
-                Boolean.TRUE,
+                true,
                 mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
 
         exitSearch();
@@ -593,7 +593,7 @@ public class BookmarkTest {
                 "Expected item \"test\" to become not selected");
         assertEquals(BookmarkUiMode.SEARCHING, mDelegate.getCurrentUiMode());
         assertEquals(
-                Boolean.TRUE,
+                true,
                 mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
 
         // Exit search UI.
@@ -602,14 +602,14 @@ public class BookmarkTest {
 
         // Exit folder.
         assertEquals(
-                Boolean.TRUE,
+                true,
                 mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
         pressBackButton();
         assertEquals(BookmarkUiMode.FOLDER, mDelegate.getCurrentUiMode());
 
         // Exit bookmark activity.
         assertEquals(
-                Boolean.FALSE,
+                false,
                 mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
         runOnUiThreadBlocking(mBookmarkActivity.getOnBackPressedDispatcher()::onBackPressed);
         ApplicationTestUtils.waitForActivityState(mBookmarkActivity, Stage.DESTROYED);

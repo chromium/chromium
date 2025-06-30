@@ -365,7 +365,7 @@ public class BackPressManagerTest {
         BackPressManager manager = new BackPressManager();
         EscModifyingBackPressHandler h1 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> new EscModifyingBackPressHandler(Boolean.TRUE));
+                        () -> new EscModifyingBackPressHandler(true));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -391,7 +391,7 @@ public class BackPressManagerTest {
         BackPressManager manager = new BackPressManager();
         EscModifyingBackPressHandler h1 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> new EscModifyingBackPressHandler(Boolean.FALSE));
+                        () -> new EscModifyingBackPressHandler(false));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -418,12 +418,12 @@ public class BackPressManagerTest {
 
         EscModifyingBackPressHandler h1 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> new EscModifyingBackPressHandler(Boolean.FALSE));
+                        () -> new EscModifyingBackPressHandler(false));
         FailedBackPressHandler h2 = ThreadUtils.runOnUiThreadBlocking(FailedBackPressHandler::new);
         EmptyBackPressHandler h3 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
         EscModifyingBackPressHandler h4 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> new EscModifyingBackPressHandler(Boolean.TRUE));
+                        () -> new EscModifyingBackPressHandler(true));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -442,7 +442,7 @@ public class BackPressManagerTest {
                     Assert.assertEquals(
                             "Handler should have fallen through failures to success and consumed"
                                     + " event.",
-                            Boolean.TRUE,
+                            true,
                             manager.processEscapeKeyEvent());
                     Assert.assertEquals(
                             "Handler did not execute custom esc key code even though it will fail.",
@@ -471,7 +471,7 @@ public class BackPressManagerTest {
 
         EscModifyingBackPressHandler h1 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> new EscModifyingBackPressHandler(Boolean.FALSE));
+                        () -> new EscModifyingBackPressHandler(false));
         EscModifyingBackPressHandler h2 =
                 ThreadUtils.runOnUiThreadBlocking(() -> new EscModifyingBackPressHandler(null));
 

@@ -213,15 +213,15 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
     public Boolean handleEscPress() {
         if (Boolean.TRUE.equals(mFocusedPaneHandleBackPressSupplier.get())
                 && assumeNonNull(getFocusedPane()).handleBackPress() == BackPressResult.SUCCESS) {
-            return Boolean.TRUE;
+            return true;
         }
 
         Tab tab = mCurrentTabSupplier.get();
         if (tab != null) {
             mHubLayoutController.selectTabAndHideHubLayout(tab.getId());
-            return Boolean.TRUE;
+            return true;
         }
-        return Boolean.FALSE;
+        return false;
     }
 
     @Override

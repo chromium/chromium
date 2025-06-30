@@ -976,13 +976,13 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testOnUrlFocusChange_shouldNotRetainOmniboxOnFocus() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         testOnUrlFocusChange(/* expectRetainOmniboxOnFocus= */ false);
     }
 
     @Test
     public void testOnUrlFocusChange_shouldRetainOmniboxOnFocus() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
         testOnUrlFocusChange(/* expectRetainOmniboxOnFocus= */ true);
     }
 

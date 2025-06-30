@@ -274,7 +274,7 @@ public class HubCoordinatorUnitTest {
         assertEquals(mIncognitoTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
         assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
 
-        assertEquals(Boolean.FALSE, mHubCoordinator.handleEscPress());
+        assertEquals(false, mHubCoordinator.handleEscPress());
         assertEquals(mIncognitoTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
         assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
     }
@@ -295,13 +295,13 @@ public class HubCoordinatorUnitTest {
     @Test
     public void testBackNavigationWithNullTabOnEscapeKeyPress() {
         assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
-        assertEquals(Boolean.FALSE, mHubCoordinator.handleEscPress());
+        assertEquals(false, mHubCoordinator.handleEscPress());
 
         mTabSupplier.set(mTab);
         assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
         mTabSupplier.set(null);
 
-        assertEquals(Boolean.FALSE, mHubCoordinator.handleEscPress());
+        assertEquals(false, mHubCoordinator.handleEscPress());
         verify(mHubLayoutController, never()).selectTabAndHideHubLayout(anyInt());
     }
 
@@ -320,12 +320,12 @@ public class HubCoordinatorUnitTest {
     @Test
     public void testBackNavigationWithTabOnEscapeKeyPress() {
         assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
-        assertEquals(Boolean.FALSE, mHubCoordinator.handleEscPress());
+        assertEquals(false, mHubCoordinator.handleEscPress());
 
         mTabSupplier.set(mTab);
         assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
 
-        assertEquals(Boolean.TRUE, mHubCoordinator.handleEscPress());
+        assertEquals(true, mHubCoordinator.handleEscPress());
         verify(mHubLayoutController).selectTabAndHideHubLayout(eq(TAB_ID));
     }
 

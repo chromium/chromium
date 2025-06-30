@@ -68,6 +68,7 @@ public class PaymentRequestTestWebPageContents {
      *
      * @return The web page contents.
      */
+    @SuppressWarnings("InlineFormatString")
     public String build() {
         String supportedMethods =
                 mMethods.stream()

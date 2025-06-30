@@ -206,7 +206,7 @@ public class ShareServiceImpl implements ShareService {
         new AsyncTask<Boolean>() {
             @Override
             protected void onPostExecute(Boolean result) {
-                if (result.equals(Boolean.FALSE)) {
+                if (!result) {
                     callback.call(ShareError.INTERNAL_ERROR);
                 }
             }

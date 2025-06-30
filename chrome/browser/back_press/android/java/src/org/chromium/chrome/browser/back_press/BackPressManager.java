@@ -92,7 +92,7 @@ public class BackPressManager implements Destroyable {
                         failed = true;
                         continue;
                     case BackPressResult.SUCCESS:
-                        return Boolean.TRUE;
+                        return true;
                     case BackPressResult.UNKNOWN:
                     case BackPressResult.IGNORED:
                         return null;
@@ -100,7 +100,7 @@ public class BackPressManager implements Destroyable {
             } else {
                 Boolean escapePressResult = handler.handleEscPress();
                 if (escapePressResult != null && escapePressResult) {
-                    return Boolean.TRUE;
+                    return true;
                 }
             }
         }

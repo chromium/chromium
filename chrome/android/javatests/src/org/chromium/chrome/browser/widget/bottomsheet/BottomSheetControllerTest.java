@@ -285,7 +285,7 @@ public class BottomSheetControllerTest {
                 "The bottom sheet should be expanded.",
                 SheetState.HALF,
                 mSheetController.getSheetState());
-        assertEquals("Back press event should be consumed", Boolean.TRUE, getBackPressState());
+        assertEquals("Back press event should be consumed", true, getBackPressState());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestSupport.handleBackPress();
@@ -307,7 +307,7 @@ public class BottomSheetControllerTest {
                 "The bottom sheet should be expanded.",
                 SheetState.HALF,
                 mSheetController.getSheetState());
-        assertEquals("Back press event should be consumed", Boolean.TRUE, getBackPressState());
+        assertEquals("Back press event should be consumed", true, getBackPressState());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestSupport.handleBackPress();
@@ -360,7 +360,7 @@ public class BottomSheetControllerTest {
                 "Gesture should move sheet",
                 mTestSupport.shouldGestureMoveSheet(initialEvent, currentEvent));
 
-        assertEquals("Back press event should be consumed", Boolean.TRUE, getBackPressState());
+        assertEquals("Back press event should be consumed", true, getBackPressState());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestSupport.handleBackPress();
@@ -901,7 +901,7 @@ public class BottomSheetControllerTest {
                 "The bottom sheet should be expanded.",
                 SheetState.HALF,
                 mSheetController.getSheetState());
-        assertEquals("Back press event should be consumed", Boolean.TRUE, getBackPressState());
+        assertEquals("Back press event should be consumed", true, getBackPressState());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestSupport.handleBackPress();

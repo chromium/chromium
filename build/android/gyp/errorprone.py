@@ -126,6 +126,9 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Assigning to fields marked as @Mock or @Spy. Suggested fix is to delete
     # assignments, which would break tests in many cases.
     'UnnecessaryAssignment',
+    # Serveral instances of using a string right before the String.format(),
+    # which seems better than inlining.
+    'InlineFormatString',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns

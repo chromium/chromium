@@ -518,7 +518,7 @@ public class NavigateTest {
                     mActivityTestRule.getActivity().findViewById(R.id.back_button));
             Assert.assertEquals(
                     "Tab should be able to be navigated back",
-                    Boolean.TRUE,
+                    true,
                     toolbarManager.getHandleBackPressChangedSupplier().get());
             Assert.assertTrue(
                     "Tab has been navigated back",
@@ -527,7 +527,7 @@ public class NavigateTest {
         }
         Assert.assertEquals(
                 "Tab should be unable to be navigated back",
-                Boolean.FALSE,
+                false,
                 toolbarManager.getHandleBackPressChangedSupplier().get());
         Assert.assertNull(
                 "Back button is invisible in phone toolbar",
@@ -556,7 +556,7 @@ public class NavigateTest {
             onView(withId(R.id.back_button)).check(matches(isEnabled()));
             Assert.assertEquals(
                     "Tab should be able to be navigated back",
-                    Boolean.TRUE,
+                    true,
                     toolbarManager.getHandleBackPressChangedSupplier().get());
             TouchCommon.singleClickView(
                     mActivityTestRule.getActivity().findViewById(R.id.back_button));
@@ -615,7 +615,7 @@ public class NavigateTest {
             onView(withId(R.id.back_button)).check(matches(isEnabled()));
             Assert.assertEquals(
                     "Tab should be able to be navigated back",
-                    Boolean.TRUE,
+                    true,
                     toolbarManager.getHandleBackPressChangedSupplier().get());
             TouchCommon.singleClickView(
                     mActivityTestRule.getActivity().findViewById(R.id.back_button));
@@ -623,7 +623,7 @@ public class NavigateTest {
         }
         Assert.assertEquals(
                 "Tab should be unable to be navigated back",
-                Boolean.FALSE,
+                false,
                 toolbarManager.getHandleBackPressChangedSupplier().get());
         onView(withId(R.id.back_button)).check(matches(Matchers.not(isEnabled())));
     }

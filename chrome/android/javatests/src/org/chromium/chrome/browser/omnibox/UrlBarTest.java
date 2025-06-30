@@ -687,14 +687,14 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void typingStarted_emittedOncePerFocusWithRetainOmniboxOnFocusDisabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         testTypingStarted_emittedOncePerFocus();
     }
 
     @Test
     @SmallTest
     public void typingStarted_emittedOncePerFocusWithRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
         testTypingStarted_emittedOncePerFocus();
     }
 
@@ -728,14 +728,14 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void typingStarted_emittedOnceEveryFocusWithRetainOmniboxOnFocusDisabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         testTypingStarted_emittedOnceEveryFocus();
     }
 
     @Test
     @SmallTest
     public void typingStarted_emittedOnceEveryFocusWithRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
         testTypingStarted_emittedOnceEveryFocus();
     }
 
@@ -775,7 +775,7 @@ public class UrlBarTest {
     @SmallTest
     @RequiresRestart("crbug.com/358170962")
     public void typingStarted_notEmittedForNonTypingCharactersWithRetainOmniboxOnFocusDisabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         testTypingStarted_notEmittedForNonTypingCharacters(/* expectRetainOmniboxOnFocus= */ false);
     }
 
@@ -783,7 +783,7 @@ public class UrlBarTest {
     @SmallTest
     @RequiresRestart("crbug.com/358170962")
     public void typingStarted_notEmittedForNonTypingCharactersWithRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
         testTypingStarted_notEmittedForNonTypingCharacters(/* expectRetainOmniboxOnFocus= */ true);
     }
 
@@ -830,14 +830,14 @@ public class UrlBarTest {
     @SmallTest
     public void
             typingStarted_clipboardPasteTriggersTypingStartedWithRetainOmniboxOnFocusDisabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         testTypingStarted_clipboardPasteTriggersTypingStarted();
     }
 
     @Test
     @SmallTest
     public void typingStarted_clipboardPasteTriggersTypingStartedWithRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
         testTypingStarted_clipboardPasteTriggersTypingStarted();
     }
 
