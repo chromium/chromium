@@ -25,6 +25,8 @@ source_set("test_support") {
     "mock_tab_group_sync_delegate.h",
     "mock_tab_group_sync_service.cc",
     "mock_tab_group_sync_service.h",
+    "mock_versioning_message_controller.cc",
+    "mock_versioning_message_controller.h",
     "saved_tab_group_test_utils.cc",
     "saved_tab_group_test_utils.h",
   ]
