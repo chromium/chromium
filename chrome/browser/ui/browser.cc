@@ -721,7 +721,7 @@ Browser::Browser(const CreateParams& params)
   // BrowserWindowFeatures need to be initialized before browser window
   // creation, so that the features can be used in creating components
   // in browser window.
-  features_ = BrowserWindowFeatures::CreateBrowserWindowFeatures();
+  features_ = std::make_unique<BrowserWindowFeatures>();
   features_->Init(this);
 
   SessionServiceBase* session_service =

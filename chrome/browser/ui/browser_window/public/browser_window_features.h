@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/common/buildflags.h"
@@ -113,21 +112,19 @@ class SplitTabScrimController;
 }  // namespace split_tabs
 
 // This class owns the core controllers for features that are scoped to a given
-// browser window on desktop. It can be subclassed by tests to perform
-// dependency injection.
+// browser window on desktop.
+//
+// To inject alternative versions of features or mocks for testing, make your
+// feature compatible with `UnownedUserDataHost` and then use
+// `GetUserDataFactoryForTesting()` to inject your test-specific feature
+// object(s).
 class BrowserWindowFeatures {
  public:
-  static std::unique_ptr<BrowserWindowFeatures> CreateBrowserWindowFeatures();
-  virtual ~BrowserWindowFeatures();
+  BrowserWindowFeatures();
+  ~BrowserWindowFeatures();
 
   BrowserWindowFeatures(const BrowserWindowFeatures&) = delete;
   BrowserWindowFeatures& operator=(const BrowserWindowFeatures&) = delete;
-
-  // Call this method to stub out BrowserWindowFeatures for tests.
-  using BrowserWindowFeaturesFactory =
-      base::RepeatingCallback<std::unique_ptr<BrowserWindowFeatures>()>;
-  static void ReplaceBrowserWindowFeaturesForTesting(
-      BrowserWindowFeaturesFactory factory);
 
   // Called exactly once to initialize features. This is called prior to
   // instantiating BrowserView, to allow the view hierarchy to depend on state
@@ -322,13 +319,6 @@ class BrowserWindowFeatures {
 
   static UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
-
- protected:
-  BrowserWindowFeatures();
-
-  // Override these methods to stub out individual feature controllers for
-  // testing. e.g.
-  // virtual std::unique_ptr<FooFeature> CreateFooFeature();
 
  private:
   static UserDataFactoryWithOwner<BrowserWindowInterface>& GetUserDataFactory();

@@ -104,37 +104,8 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #endif
 
-namespace {
-
-// This is the generic entry point for test code to stub out browser window
-// functionality. It is called by production code, but only used by tests.
-BrowserWindowFeatures::BrowserWindowFeaturesFactory& GetFactory() {
-  static base::NoDestructor<BrowserWindowFeatures::BrowserWindowFeaturesFactory>
-      factory;
-  return *factory;
-}
-
-}  // namespace
-
-// static
-std::unique_ptr<BrowserWindowFeatures>
-BrowserWindowFeatures::CreateBrowserWindowFeatures() {
-  if (GetFactory()) {
-    CHECK_IS_TEST();
-    return GetFactory().Run();
-  }
-  // Constructor is protected.
-  return base::WrapUnique(new BrowserWindowFeatures());
-}
-
+BrowserWindowFeatures::BrowserWindowFeatures() = default;
 BrowserWindowFeatures::~BrowserWindowFeatures() = default;
-
-// static
-void BrowserWindowFeatures::ReplaceBrowserWindowFeaturesForTesting(
-    BrowserWindowFeaturesFactory factory) {
-  BrowserWindowFeatures::BrowserWindowFeaturesFactory& f = GetFactory();
-  f = std::move(factory);
-}
 
 void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // This is used only for the controllers which will be created on demand
@@ -507,8 +478,6 @@ FindBarController* BrowserWindowFeatures::GetFindBarController() {
 bool BrowserWindowFeatures::HasFindBarController() const {
   return find_bar_controller_.get() != nullptr;
 }
-
-BrowserWindowFeatures::BrowserWindowFeatures() = default;
 
 // static
 UserDataFactoryWithOwner<BrowserWindowInterface>&
