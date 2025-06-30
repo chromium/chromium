@@ -101,17 +101,24 @@ chrome.test.runTests([
   function getFontList() {
     var message = 'getFontList should return an array of objects with ' +
         'fontId and displayName properties.';
+    const getPlatformInfo = new Promise((resolve) => {
+      chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
+    });
     fs.getFontList(chrome.test.callbackPass(function(value) {
-      if (/Android/.test(navigator.userAgent)) {
-        // Android does not support a mechanism to get "all installed fonts"
-        // like Windows/Mac/Linux.
-        chrome.test.assertTrue(value.length === 0, 'Font list should be empty');
-      } else {
-        chrome.test.assertTrue(value.length > 0,
-          "Font list is not expected to be empty.");
-        chrome.test.assertEq('string', typeof (value[0].fontId), message);
-        chrome.test.assertEq('string', typeof (value[0].displayName), message);
-      }
+      getPlatformInfo.then(isAndroid => {
+        if (isAndroid) {
+          // Android does not support a mechanism to get "all installed fonts"
+          // like Windows/Mac/Linux.
+          chrome.test.assertTrue(
+              value.length === 0, 'Font list should be empty');
+        } else {
+          chrome.test.assertTrue(
+              value.length > 0, 'Font list is not expected to be empty.');
+          chrome.test.assertEq('string', typeof (value[0].fontId), message);
+          chrome.test.assertEq(
+              'string', typeof (value[0].displayName), message);
+        }
+      });
     }));
   },
 

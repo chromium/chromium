@@ -86,25 +86,29 @@ function deleteTokenWithInvalidScope() {
 }
 
 function deleteTokenBeforeGetToken() {
-  if (/Android/.test(navigator.userAgent)) {
-    // Skip this test on Android because the underlying call to
-    // com.google.android.gms.iid.InstanceID.deleteToken() always succeeds,
-    // even for non-existent tokens.
-    chrome.test.succeed("skipped");
-    return;
-  }
-  chrome.instanceID.deleteToken(
-    {"authorizedEntity": "1", "scope": "GCM"},
-    function() {
-      if (chrome.runtime.lastError) {
-        chrome.test.succeed();
-        return;
-      }
+  const getPlatformInfo = new Promise((resolve) => {
+    chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
+  });
+  getPlatformInfo.then(isAndroid => {
+    if (isAndroid) {
+      // Skip this test on Android because the underlying call to
+      // com.google.android.gms.iid.InstanceID.deleteToken() always succeeds,
+      // even for non-existent tokens.
+      chrome.test.succeed('skipped');
+      return;
+    } else {
+      chrome.instanceID.deleteToken(
+          {'authorizedEntity': '1', 'scope': 'GCM'}, function() {
+            if (chrome.runtime.lastError) {
+              chrome.test.succeed();
+              return;
+            }
 
-      chrome.test.fail(
-          "deleteToken should fail on deleting a non-existent token.");
+            chrome.test.fail(
+                'deleteToken should fail on deleting a non-existent token.');
+          });
     }
-  );
+  });
 }
 
 function deleteTokenAfterGetToken() {

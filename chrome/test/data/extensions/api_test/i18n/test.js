@@ -9,7 +9,6 @@ var testCallback = chrome.test.testCallback;
 var callbackPass = chrome.test.callbackPass;
 
 chrome.test.getConfig(function(config) {
-
   chrome.test.runTests([
     function getAcceptLanguages() {
       chrome.i18n.getAcceptLanguages(callbackPass(function(results) {
@@ -41,24 +40,27 @@ chrome.test.getConfig(function(config) {
       chrome.test.succeed();
     },
     function getMessageFromContentScript() {
-      // TODO(crbug.com/371432155): Port to desktop Android once the chrome.tabs
-      // API is supported.
-      if (/Android/.test(navigator.userAgent)) {
-        chrome.test.succeed();
-        return;
-      }
-      var TEST_FILE_URL = "http://localhost:PORT/extensions/test_file.html"
-        .replace(/PORT/, config.testServer.port);
-      chrome.runtime.onMessage.addListener(
-        function(request, sender, sendResponse) {
-          chrome.test.assertEq(request, "Number of errors: 19");
-        }
-      );
-      chrome.test.log("Creating tab...");
-      chrome.tabs.create({
-        url: TEST_FILE_URL
+      // TODO(crbug.com/371432155): Port to desktop Android once the
+      // chrome.tabs API is supported.
+      const getPlatformInfo = new Promise((resolve) => {
+        chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
       });
-      chrome.test.succeed();
+      getPlatformInfo.then(isAndroid => {
+        if (isAndroid) {
+          chrome.test.succeed();
+        } else {
+          var TEST_FILE_URL =
+              'http://localhost:PORT/extensions/test_file.html'.replace(
+                  /PORT/, config.testServer.port);
+          chrome.runtime.onMessage.addListener(function(
+              request, sender, sendResponse) {
+            chrome.test.assertEq(request, 'Number of errors: 19');
+          });
+          chrome.test.log('Creating tab...');
+          chrome.tabs.create({url: TEST_FILE_URL});
+          chrome.test.succeed();
+        }
+      });
     },
     function getUILanguage() {
       chrome.test.assertEq('en-US', chrome.i18n.getUILanguage());
