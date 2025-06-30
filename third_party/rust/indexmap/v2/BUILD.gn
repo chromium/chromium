@@ -22,6 +22,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/core.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/core/entry.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/core/extract.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/core/raw_entry_v1.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/iter.rs",
     "//third_party/rust/chromium_crates_io/vendor/indexmap-v2/src/map/mutable.rs",
@@ -46,7 +47,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "indexmap"
   cargo_pkg_description =
       "A hash table with consistent order and fast iteration."
-  cargo_pkg_version = "2.9.0"
+  cargo_pkg_version = "2.10.0"
 
   allow_unsafe = true
 

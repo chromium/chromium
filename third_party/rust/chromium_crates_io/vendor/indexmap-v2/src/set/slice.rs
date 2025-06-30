@@ -1,4 +1,4 @@
-use super::{Bucket, Entries, IndexSet, IntoIter, Iter};
+use super::{Bucket, IndexSet, IntoIter, Iter};
 use crate::util::{slice_eq, try_simplify_range};
 
 use alloc::boxed::Box;
@@ -85,6 +85,7 @@ impl<T> Slice<T> {
     /// Divides one slice into two at an index.
     ///
     /// ***Panics*** if `index > len`.
+    #[track_caller]
     pub fn split_at(&self, index: usize) -> (&Self, &Self) {
         let (first, second) = self.entries.split_at(index);
         (Self::from_slice(first), Self::from_slice(second))

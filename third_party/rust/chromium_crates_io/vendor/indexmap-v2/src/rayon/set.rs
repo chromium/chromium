@@ -7,15 +7,14 @@ use super::collect;
 use rayon::iter::plumbing::{Consumer, ProducerCallback, UnindexedConsumer};
 use rayon::prelude::*;
 
-use crate::vec::Vec;
 use alloc::boxed::Box;
+use alloc::vec::Vec;
 use core::cmp::Ordering;
 use core::fmt;
 use core::hash::{BuildHasher, Hash};
 use core::ops::RangeBounds;
 
 use crate::set::Slice;
-use crate::Entries;
 use crate::IndexSet;
 
 type Bucket<T> = crate::Bucket<T, ()>;

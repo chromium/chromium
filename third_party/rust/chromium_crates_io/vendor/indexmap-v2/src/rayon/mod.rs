@@ -3,8 +3,7 @@
 use rayon::prelude::*;
 
 use alloc::collections::LinkedList;
-
-use crate::vec::Vec;
+use alloc::vec::Vec;
 
 pub mod map;
 pub mod set;

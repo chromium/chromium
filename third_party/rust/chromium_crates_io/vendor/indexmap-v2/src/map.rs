@@ -16,7 +16,8 @@ mod tests;
 pub use self::core::raw_entry_v1::{self, RawEntryApiV1};
 pub use self::core::{Entry, IndexedEntry, OccupiedEntry, VacantEntry};
 pub use self::iter::{
-    Drain, IntoIter, IntoKeys, IntoValues, Iter, IterMut, IterMut2, Keys, Splice, Values, ValuesMut,
+    Drain, ExtractIf, IntoIter, IntoKeys, IntoValues, Iter, IterMut, IterMut2, Keys, Splice,
+    Values, ValuesMut,
 };
 pub use self::mutable::MutableEntryKey;
 pub use self::mutable::MutableKeys;
@@ -36,9 +37,9 @@ use alloc::vec::Vec;
 #[cfg(feature = "std")]
 use std::collections::hash_map::RandomState;
 
-use self::core::IndexMapCore;
+pub(crate) use self::core::{ExtractCore, IndexMapCore};
 use crate::util::{third, try_simplify_range};
-use crate::{Bucket, Entries, Equivalent, GetDisjointMutError, HashValue, TryReserveError};
+use crate::{Bucket, Equivalent, GetDisjointMutError, HashValue, TryReserveError};
 
 /// A hash table where the iteration order of the key-value pairs is independent
 /// of the hash values of the keys.
@@ -113,32 +114,6 @@ where
     }
 }
 
-impl<K, V, S> Entries for IndexMap<K, V, S> {
-    type Entry = Bucket<K, V>;
-
-    #[inline]
-    fn into_entries(self) -> Vec<Self::Entry> {
-        self.core.into_entries()
-    }
-
-    #[inline]
-    fn as_entries(&self) -> &[Self::Entry] {
-        self.core.as_entries()
-    }
-
-    #[inline]
-    fn as_entries_mut(&mut self) -> &mut [Self::Entry] {
-        self.core.as_entries_mut()
-    }
-
-    fn with_entries<F>(&mut self, f: F)
-    where
-        F: FnOnce(&mut [Self::Entry]),
-    {
-        self.core.with_entries(f);
-    }
-}
-
 impl<K, V, S> fmt::Debug for IndexMap<K, V, S>
 where
     K: fmt::Debug,
@@ -203,6 +178,28 @@ impl<K, V, S> IndexMap<K, V, S> {
             core: IndexMapCore::new(),
             hash_builder,
         }
+    }
+
+    #[inline]
+    pub(crate) fn into_entries(self) -> Vec<Bucket<K, V>> {
+        self.core.into_entries()
+    }
+
+    #[inline]
+    pub(crate) fn as_entries(&self) -> &[Bucket<K, V>] {
+        self.core.as_entries()
+    }
+
+    #[inline]
+    pub(crate) fn as_entries_mut(&mut self) -> &mut [Bucket<K, V>] {
+        self.core.as_entries_mut()
+    }
+
+    pub(crate) fn with_entries<F>(&mut self, f: F)
+    where
+        F: FnOnce(&mut [Bucket<K, V>]),
+    {
+        self.core.with_entries(f);
     }
 
     /// Return the number of elements the map can hold without reallocating.
@@ -305,6 +302,55 @@ impl<K, V, S> IndexMap<K, V, S> {
         R: RangeBounds<usize>,
     {
         Drain::new(self.core.drain(range))
+    }
+
+    /// Creates an iterator which uses a closure to determine if an element should be removed,
+    /// for all elements in the given range.
+    ///
+    /// If the closure returns true, the element is removed from the map and yielded.
+    /// If the closure returns false, or panics, the element remains in the map and will not be
+    /// yielded.
+    ///
+    /// Note that `extract_if` lets you mutate every value in the filter closure, regardless of
+    /// whether you choose to keep or remove it.
+    ///
+    /// The range may be any type that implements [`RangeBounds<usize>`],
+    /// including all of the `std::ops::Range*` types, or even a tuple pair of
+    /// `Bound` start and end values. To check the entire map, use `RangeFull`
+    /// like `map.extract_if(.., predicate)`.
+    ///
+    /// If the returned `ExtractIf` is not exhausted, e.g. because it is dropped without iterating
+    /// or the iteration short-circuits, then the remaining elements will be retained.
+    /// Use [`retain`] with a negated predicate if you do not need the returned iterator.
+    ///
+    /// [`retain`]: IndexMap::retain
+    ///
+    /// ***Panics*** if the starting point is greater than the end point or if
+    /// the end point is greater than the length of the map.
+    ///
+    /// # Examples
+    ///
+    /// Splitting a map into even and odd keys, reusing the original map:
+    ///
+    /// ```
+    /// use indexmap::IndexMap;
+    ///
+    /// let mut map: IndexMap<i32, i32> = (0..8).map(|x| (x, x)).collect();
+    /// let extracted: IndexMap<i32, i32> = map.extract_if(.., |k, _v| k % 2 == 0).collect();
+    ///
+    /// let evens = extracted.keys().copied().collect::<Vec<_>>();
+    /// let odds = map.keys().copied().collect::<Vec<_>>();
+    ///
+    /// assert_eq!(evens, vec![0, 2, 4, 6]);
+    /// assert_eq!(odds, vec![1, 3, 5, 7]);
+    /// ```
+    #[track_caller]
+    pub fn extract_if<F, R>(&mut self, range: R, pred: F) -> ExtractIf<'_, K, V, F>
+    where
+        F: FnMut(&K, &mut V) -> bool,
+        R: RangeBounds<usize>,
+    {
+        ExtractIf::new(&mut self.core, range, pred)
     }
 
     /// Splits the collection into two at the given index.
@@ -1474,14 +1520,14 @@ impl<K, V, S> Index<usize> for IndexMap<K, V, S> {
     ///
     /// ***Panics*** if `index` is out of bounds.
     fn index(&self, index: usize) -> &V {
-        self.get_index(index)
-            .unwrap_or_else(|| {
-                panic!(
-                    "index out of bounds: the len is {len} but the index is {index}",
-                    len = self.len()
-                );
-            })
-            .1
+        if let Some((_, value)) = self.get_index(index) {
+            value
+        } else {
+            panic!(
+                "index out of bounds: the len is {len} but the index is {index}",
+                len = self.len()
+            );
+        }
     }
 }
 
@@ -1521,11 +1567,11 @@ impl<K, V, S> IndexMut<usize> for IndexMap<K, V, S> {
     fn index_mut(&mut self, index: usize) -> &mut V {
         let len: usize = self.len();
 
-        self.get_index_mut(index)
-            .unwrap_or_else(|| {
-                panic!("index out of bounds: the len is {len} but the index is {index}");
-            })
-            .1
+        if let Some((_, value)) = self.get_index_mut(index) {
+            value
+        } else {
+            panic!("index out of bounds: the len is {len} but the index is {index}");
+        }
     }
 }
 

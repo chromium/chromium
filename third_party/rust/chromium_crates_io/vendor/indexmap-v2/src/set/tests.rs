@@ -584,6 +584,282 @@ fn iter_default() {
 }
 
 #[test]
+#[allow(deprecated)]
+fn take() {
+    let mut index_set: IndexSet<i32> = IndexSet::new();
+    index_set.insert(10);
+    assert_eq!(index_set.len(), 1);
+
+    let result = index_set.take(&10);
+    assert_eq!(result, Some(10));
+    assert_eq!(index_set.len(), 0);
+
+    let result = index_set.take(&20);
+    assert_eq!(result, None);
+}
+
+#[test]
+fn swap_take() {
+    let mut index_set: IndexSet<i32> = IndexSet::new();
+    index_set.insert(10);
+    index_set.insert(20);
+    index_set.insert(30);
+    index_set.insert(40);
+    assert_eq!(index_set.len(), 4);
+
+    let result = index_set.swap_take(&20);
+    assert_eq!(result, Some(20));
+    assert_eq!(index_set.len(), 3);
+    assert_eq!(index_set.as_slice(), &[10, 40, 30]);
+
+    let result = index_set.swap_take(&50);
+    assert_eq!(result, None);
+}
+
+#[test]
+fn sort_unstable() {
+    let mut index_set: IndexSet<i32> = IndexSet::new();
+    index_set.insert(30);
+    index_set.insert(20);
+    index_set.insert(10);
+
+    index_set.sort_unstable();
+    assert_eq!(index_set.as_slice(), &[10, 20, 30]);
+}
+
+#[test]
+fn try_reserve_exact() {
+    let mut index_set: IndexSet<i32> = IndexSet::new();
+    index_set.insert(10);
+    index_set.insert(20);
+    index_set.insert(30);
+    index_set.shrink_to_fit();
+    assert_eq!(index_set.capacity(), 3);
+
+    index_set.try_reserve_exact(2).unwrap();
+    assert_eq!(index_set.capacity(), 5);
+}
+
+#[test]
+fn shift_remove_full() {
+    let mut set: IndexSet<i32> = IndexSet::new();
+    set.insert(10);
+    set.insert(20);
+    set.insert(30);
+    set.insert(40);
+    set.insert(50);
+
+    let result = set.shift_remove_full(&20);
+    assert_eq!(result, Some((1, 20)));
+    assert_eq!(set.len(), 4);
+    assert_eq!(set.as_slice(), &[10, 30, 40, 50]);
+
+    let result = set.shift_remove_full(&50);
+    assert_eq!(result, Some((3, 50)));
+    assert_eq!(set.len(), 3);
+    assert_eq!(set.as_slice(), &[10, 30, 40]);
+
+    let result = set.shift_remove_full(&60);
+    assert_eq!(result, None);
+    assert_eq!(set.len(), 3);
+    assert_eq!(set.as_slice(), &[10, 30, 40]);
+}
+
+#[test]
+fn shift_remove_index() {
+    let mut set: IndexSet<i32> = IndexSet::new();
+    set.insert(10);
+    set.insert(20);
+    set.insert(30);
+    set.insert(40);
+    set.insert(50);
+
+    let result = set.shift_remove_index(1);
+    assert_eq!(result, Some(20));
+    assert_eq!(set.len(), 4);
+    assert_eq!(set.as_slice(), &[10, 30, 40, 50]);
+
+    let result = set.shift_remove_index(1);
+    assert_eq!(result, Some(30));
+    assert_eq!(set.len(), 3);
+    assert_eq!(set.as_slice(), &[10, 40, 50]);
+
+    let result = set.shift_remove_index(3);
+    assert_eq!(result, None);
+    assert_eq!(set.len(), 3);
+    assert_eq!(set.as_slice(), &[10, 40, 50]);
+}
+
+#[test]
+fn sort_unstable_by() {
+    let mut set: IndexSet<i32> = IndexSet::from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    set.sort_unstable_by(|a, b| b.cmp(a));
+    assert_eq!(set.as_slice(), &[10, 9, 8, 7, 6, 5, 4, 3, 2, 1]);
+}
+
+#[test]
+fn sort_by() {
+    let mut set: IndexSet<i32> = IndexSet::new();
+    set.insert(3);
+    set.insert(1);
+    set.insert(2);
+    set.sort_by(|a, b| a.cmp(b));
+    assert_eq!(set.as_slice(), &[1, 2, 3]);
+}
+
+#[test]
+fn drain() {
+    let mut set: IndexSet<i32> = IndexSet::new();
+    set.insert(1);
+    set.insert(2);
+    set.insert(3);
+
+    {
+        let drain = set.drain(0..2);
+        assert_eq!(drain.as_slice(), &[1, 2]);
+    }
+
+    assert_eq!(set.len(), 1);
+    assert_eq!(set.as_slice(), &[3]);
+}
+
+#[test]
+fn split_off() {
+    let mut set: IndexSet<i32> = IndexSet::from([1, 2, 3, 4, 5]);
+    let split_set: IndexSet<i32> = set.split_off(3);
+
+    assert_eq!(split_set.len(), 2);
+    assert_eq!(split_set.as_slice(), &[4, 5]);
+
+    assert_eq!(set.len(), 3);
+    assert_eq!(set.as_slice(), &[1, 2, 3]);
+}
+
+#[test]
+fn retain() {
+    let mut set: IndexSet<i32> = IndexSet::from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    set.retain(|&x| x > 4);
+    assert_eq!(set.len(), 6);
+    assert_eq!(set.as_slice(), &[5, 6, 7, 8, 9, 10]);
+
+    set.retain(|_| false);
+    assert_eq!(set.len(), 0);
+}
+
+#[test]
+fn first() {
+    let mut index_set: IndexSet<i32> = IndexSet::new();
+    index_set.insert(10);
+    index_set.insert(20);
+    index_set.insert(30);
+
+    let result = index_set.first();
+    assert_eq!(*result.unwrap(), 10);
+
+    index_set.clear();
+    let result = index_set.first();
+    assert!(result.is_none());
+}
+
+#[test]
+fn sort_by_cached_key() {
+    let mut index_set: IndexSet<i32> = IndexSet::new();
+    index_set.insert(3);
+    index_set.insert(1);
+    index_set.insert(2);
+    index_set.insert(0);
+    index_set.sort_by_cached_key(|&x| -x);
+    assert_eq!(index_set.as_slice(), &[3, 2, 1, 0]);
+}
+
+#[test]
+fn insert_sorted() {
+    let mut set: IndexSet<i32> = IndexSet::<i32>::new();
+    set.insert_sorted(1);
+    set.insert_sorted(3);
+    assert_eq!(set.insert_sorted(2), (1, true));
+}
+
+#[test]
+fn binary_search() {
+    let mut set: IndexSet<i32> = IndexSet::new();
+    set.insert(100);
+    set.insert(300);
+    set.insert(200);
+    set.insert(400);
+    let result = set.binary_search(&200);
+    assert_eq!(result, Ok(2));
+
+    let result = set.binary_search(&500);
+    assert_eq!(result, Err(4));
+}
+
+#[test]
+fn sorted_unstable_by() {
+    let mut set: IndexSet<i32> = IndexSet::from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    set.sort_unstable_by(|a, b| b.cmp(a));
+    assert_eq!(set.as_slice(), &[10, 9, 8, 7, 6, 5, 4, 3, 2, 1]);
+}
+
+#[test]
+fn last() {
+    let mut set: IndexSet<i32> = IndexSet::new();
+    set.insert(1);
+    set.insert(2);
+    set.insert(3);
+    set.insert(4);
+    set.insert(5);
+    set.insert(6);
+
+    assert_eq!(set.last(), Some(&6));
+
+    set.pop();
+    assert_eq!(set.last(), Some(&5));
+
+    set.clear();
+    assert_eq!(set.last(), None);
+}
+
+#[test]
+fn get_range() {
+    let set: IndexSet<i32> = IndexSet::from([1, 2, 3, 4, 5]);
+    let result = set.get_range(0..3);
+    let slice: &Slice<i32> = result.unwrap();
+    assert_eq!(slice, &[1, 2, 3]);
+
+    let result = set.get_range(0..0);
+    assert_eq!(result.unwrap().len(), 0);
+
+    let result = set.get_range(2..1);
+    assert!(result.is_none());
+}
+
+#[test]
+fn shift_take() {
+    let mut set: IndexSet<i32> = IndexSet::new();
+    set.insert(1);
+    set.insert(2);
+    set.insert(3);
+    set.insert(4);
+    set.insert(5);
+
+    let result = set.shift_take(&2);
+    assert_eq!(result, Some(2));
+    assert_eq!(set.len(), 4);
+    assert_eq!(set.as_slice(), &[1, 3, 4, 5]);
+
+    let result = set.shift_take(&5);
+    assert_eq!(result, Some(5));
+    assert_eq!(set.len(), 3);
+    assert_eq!(set.as_slice(), &[1, 3, 4]);
+
+    let result = set.shift_take(&5);
+    assert_eq!(result, None);
+    assert_eq!(set.len(), 3);
+    assert_eq!(set.as_slice(), &[1, 3, 4]);
+}
+
+#[test]
 fn test_binary_search_by() {
     // adapted from std's test for binary_search
     let b: IndexSet<i32> = [].into();

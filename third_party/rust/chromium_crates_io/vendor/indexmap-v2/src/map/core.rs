@@ -8,23 +8,23 @@
 //! However, we should probably not let this show in the public API or docs.
 
 mod entry;
+mod extract;
 
 pub mod raw_entry_v1;
 
-use hashbrown::hash_table;
-
-use crate::vec::{self, Vec};
-use crate::TryReserveError;
+use alloc::vec::{self, Vec};
 use core::mem;
 use core::ops::RangeBounds;
+use hashbrown::hash_table;
 
 use crate::util::simplify_range;
-use crate::{Bucket, Equivalent, HashValue};
+use crate::{Bucket, Equivalent, HashValue, TryReserveError};
 
 type Indices = hash_table::HashTable<usize>;
 type Entries<K, V> = Vec<Bucket<K, V>>;
 
 pub use entry::{Entry, IndexedEntry, OccupiedEntry, VacantEntry};
+pub(crate) use extract::ExtractCore;
 
 /// Core of the map that does not depend on S
 #[derive(Debug)]
@@ -109,33 +109,6 @@ where
     }
 }
 
-impl<K, V> crate::Entries for IndexMapCore<K, V> {
-    type Entry = Bucket<K, V>;
-
-    #[inline]
-    fn into_entries(self) -> Vec<Self::Entry> {
-        self.entries
-    }
-
-    #[inline]
-    fn as_entries(&self) -> &[Self::Entry] {
-        &self.entries
-    }
-
-    #[inline]
-    fn as_entries_mut(&mut self) -> &mut [Self::Entry] {
-        &mut self.entries
-    }
-
-    fn with_entries<F>(&mut self, f: F)
-    where
-        F: FnOnce(&mut [Self::Entry]),
-    {
-        f(&mut self.entries);
-        self.rebuild_hash_table();
-    }
-}
-
 impl<K, V> IndexMapCore<K, V> {
     /// The maximum capacity before the `entries` allocation would exceed `isize::MAX`.
     const MAX_ENTRIES_CAPACITY: usize = (isize::MAX as usize) / mem::size_of::<Bucket<K, V>>();
@@ -162,7 +135,31 @@ impl<K, V> IndexMapCore<K, V> {
     }
 
     #[inline]
+    pub(crate) fn into_entries(self) -> Entries<K, V> {
+        self.entries
+    }
+
+    #[inline]
+    pub(crate) fn as_entries(&self) -> &[Bucket<K, V>] {
+        &self.entries
+    }
+
+    #[inline]
+    pub(crate) fn as_entries_mut(&mut self) -> &mut [Bucket<K, V>] {
+        &mut self.entries
+    }
+
+    pub(crate) fn with_entries<F>(&mut self, f: F)
+    where
+        F: FnOnce(&mut [Bucket<K, V>]),
+    {
+        f(&mut self.entries);
+        self.rebuild_hash_table();
+    }
+
+    #[inline]
     pub(crate) fn len(&self) -> usize {
+        debug_assert_eq!(self.entries.len(), self.indices.len());
         self.indices.len()
     }
 

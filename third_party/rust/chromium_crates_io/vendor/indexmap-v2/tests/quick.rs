@@ -191,6 +191,47 @@ quickcheck_limit! {
         }
     }
 
+    fn extract_if_odd(insert: Vec<u8>) -> bool {
+        let mut map = IndexMap::new();
+        for &x in &insert {
+            map.insert(x, x.to_string());
+        }
+
+        let (odd, even): (Vec<_>, Vec<_>) = map.keys().copied().partition(|k| k % 2 == 1);
+
+        let extracted: Vec<_> = map
+            .extract_if(.., |k, _| k % 2 == 1)
+            .map(|(k, _)| k)
+            .collect();
+
+        even.iter().all(|k| map.contains_key(k))
+            && map.keys().eq(&even)
+            && extracted == odd
+    }
+
+    fn extract_if_odd_limit(insert: Vec<u8>, limit: usize) -> bool {
+        let mut map = IndexMap::new();
+        for &x in &insert {
+            map.insert(x, x.to_string());
+        }
+        let limit = limit % (map.len() + 1);
+
+        let mut i = 0;
+        let (odd, other): (Vec<_>, Vec<_>) = map.keys().copied().partition(|k| {
+            k % 2 == 1 && i < limit && { i += 1; true }
+        });
+
+        let extracted: Vec<_> = map
+            .extract_if(.., |k, _| k % 2 == 1)
+            .map(|(k, _)| k)
+            .take(limit)
+            .collect();
+
+        other.iter().all(|k| map.contains_key(k))
+            && map.keys().eq(&other)
+            && extracted == odd
+    }
+
     fn shift_remove(insert: Vec<u8>, remove: Vec<u8>) -> bool {
         let mut map = IndexMap::new();
         for &key in &insert {

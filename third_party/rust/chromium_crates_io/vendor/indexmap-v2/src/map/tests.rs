@@ -594,6 +594,226 @@ fn iter_default() {
 }
 
 #[test]
+fn get_index_mut2() {
+    let mut map: IndexMap<i32, i32> = IndexMap::new();
+    map.insert(1, 2);
+    map.insert(3, 4);
+    map.insert(5, 6);
+
+    {
+        let (key, value) = map.get_index_mut2(0).unwrap();
+        assert_eq!(*key, 1);
+        assert_eq!(*value, 2);
+
+        *value = 7;
+    }
+    assert_eq!(map[0], 7);
+
+    {
+        let (key, _) = map.get_index_mut2(0).unwrap();
+        *key = 8;
+    }
+    assert_eq!(map.get_index(0).unwrap().0, &8);
+}
+
+#[test]
+fn shift_shift_remove_index() {
+    let mut map: IndexMap<i32, i32> = IndexMap::new();
+    map.insert(1, 2);
+    map.insert(3, 4);
+    map.insert(5, 6);
+    map.insert(7, 8);
+    map.insert(9, 10);
+
+    let result = map.shift_remove_index(1);
+    assert_eq!(result, Some((3, 4)));
+    assert_eq!(map.len(), 4);
+    assert_eq!(map.as_slice(), &[(1, 2), (5, 6), (7, 8), (9, 10)]);
+
+    let result = map.shift_remove_index(1);
+    assert_eq!(result, Some((5, 6)));
+    assert_eq!(map.len(), 3);
+    assert_eq!(map.as_slice(), &[(1, 2), (7, 8), (9, 10)]);
+
+    let result = map.shift_remove_index(2);
+    assert_eq!(result, Some((9, 10)));
+    assert_eq!(map.len(), 2);
+    assert_eq!(map.as_slice(), &[(1, 2), (7, 8)]);
+
+    let result = map.shift_remove_index(2);
+    assert_eq!(result, None);
+    assert_eq!(map.len(), 2);
+    assert_eq!(map.as_slice(), &[(1, 2), (7, 8)]);
+}
+
+#[test]
+fn shift_remove_entry() {
+    let mut map: IndexMap<i32, i32> = IndexMap::new();
+    map.insert(1, 2);
+    map.insert(3, 4);
+    map.insert(5, 6);
+    map.insert(7, 8);
+    map.insert(9, 10);
+
+    let result = map.shift_remove_entry(&3);
+    assert_eq!(result, Some((3, 4)));
+    assert_eq!(map.len(), 4);
+    assert_eq!(map.as_slice(), &[(1, 2), (5, 6), (7, 8), (9, 10)]);
+
+    let result = map.shift_remove_entry(&9);
+    assert_eq!(result, Some((9, 10)));
+    assert_eq!(map.len(), 3);
+    assert_eq!(map.as_slice(), &[(1, 2), (5, 6), (7, 8)]);
+
+    let result = map.shift_remove_entry(&9);
+    assert_eq!(result, None);
+    assert_eq!(map.len(), 3);
+    assert_eq!(map.as_slice(), &[(1, 2), (5, 6), (7, 8)]);
+}
+
+#[test]
+fn shift_remove_full() {
+    let mut map: IndexMap<i32, i32> = IndexMap::new();
+    map.insert(1, 2);
+    map.insert(3, 4);
+    map.insert(5, 6);
+    map.insert(7, 8);
+    map.insert(9, 10);
+
+    let result = map.shift_remove_full(&3);
+    assert_eq!(result, Some((1, 3, 4)));
+    assert_eq!(map.len(), 4);
+    assert_eq!(map.as_slice(), &[(1, 2), (5, 6), (7, 8), (9, 10)]);
+
+    let result = map.shift_remove_full(&9);
+    assert_eq!(result, Some((3, 9, 10)));
+    assert_eq!(map.len(), 3);
+    assert_eq!(map.as_slice(), &[(1, 2), (5, 6), (7, 8)]);
+
+    let result = map.shift_remove_full(&9);
+    assert_eq!(result, None);
+    assert_eq!(map.len(), 3);
+    assert_eq!(map.as_slice(), &[(1, 2), (5, 6), (7, 8)]);
+}
+
+#[test]
+fn sorted_unstable_by() {
+    let mut map: IndexMap<i32, i32> = IndexMap::new();
+    map.extend(vec![(1, 10), (2, 20), (3, 30), (4, 40), (5, 50)]);
+    let sorted = map.sorted_unstable_by(|_a, b, _c, d| d.cmp(&b));
+
+    assert_eq!(
+        sorted.as_slice(),
+        &[(5, 50), (4, 40), (3, 30), (2, 20), (1, 10)]
+    );
+}
+
+#[test]
+fn into_boxed_slice() {
+    let mut map: IndexMap<i32, i32> = IndexMap::new();
+    for i in 0..5 {
+        map.insert(i, i * 10);
+    }
+    let boxed_slice: Box<Slice<i32, i32>> = map.into_boxed_slice();
+    assert_eq!(boxed_slice.len(), 5);
+    assert_eq!(
+        boxed_slice.as_ref(),
+        &[(0, 0), (1, 10), (2, 20), (3, 30), (4, 40)]
+    );
+}
+
+#[test]
+fn last_mut() {
+    let mut map: IndexMap<&str, i32> = IndexMap::new();
+
+    let last_entry = map.last_mut();
+    assert_eq!(last_entry, None);
+
+    map.insert("key1", 1);
+    map.insert("key2", 2);
+    map.insert("key3", 3);
+    let last_entry = map.last_mut();
+    assert_eq!(last_entry, Some((&"key3", &mut 3)));
+
+    *last_entry.unwrap().1 = 4;
+    assert_eq!(map.get("key3"), Some(&4));
+}
+
+#[test]
+#[should_panic = "index out of bounds"]
+fn insert_before_oob() {
+    let mut map: IndexMap<char, ()> = IndexMap::new();
+    let _ = map.insert_before(0, 'a', ());
+    let _ = map.insert_before(1, 'b', ());
+    map.insert_before(3, 'd', ());
+}
+
+#[test]
+fn clear() {
+    let mut map: IndexMap<i32, i32> = IndexMap::new();
+    map.extend(vec![(1, 10), (2, 20), (3, 30), (4, 40), (5, 50)]);
+    map.clear();
+    assert_eq!(map.len(), 0);
+}
+
+#[test]
+fn get_range() {
+    let mut index_map: IndexMap<i32, i32> = IndexMap::new();
+    index_map.insert(1, 10);
+    index_map.insert(2, 20);
+    index_map.insert(3, 30);
+    index_map.insert(4, 40);
+    index_map.insert(5, 50);
+
+    let result = index_map.get_range(2..2);
+    assert!(result.unwrap().is_empty());
+
+    let result = index_map.get_range(4..2);
+    assert!(result.is_none());
+
+    let result = index_map.get_range(2..4);
+    let slice: &Slice<i32, i32> = result.unwrap();
+    assert_eq!(slice.len(), 2);
+    assert_eq!(slice, &[(3, 30), (4, 40)]);
+}
+
+#[test]
+fn get_range_mut() {
+    let mut index_map: IndexMap<i32, i32> = IndexMap::new();
+    index_map.insert(1, 10);
+    index_map.insert(2, 20);
+    index_map.insert(3, 30);
+    index_map.insert(4, 40);
+    index_map.insert(5, 50);
+
+    let result = index_map.get_range_mut(2..2);
+    assert!(result.unwrap().is_empty());
+
+    let result = index_map.get_range_mut(4..2);
+    assert!(result.is_none());
+
+    let result = index_map.get_range_mut(2..4);
+    let slice: &mut Slice<i32, i32> = result.unwrap();
+    assert_eq!(slice.len(), 2);
+    assert_eq!(slice, &mut [(3, 30), (4, 40)]);
+
+    for i in 0..slice.len() {
+        slice[i] += 1;
+    }
+    assert_eq!(slice, &mut [(3, 31), (4, 41)]);
+}
+
+#[test]
+#[should_panic = "index out of bounds"]
+fn shift_insert_oob() {
+    let mut map: IndexMap<u32, u32> = IndexMap::new();
+    map.shift_insert(0, 1, 10);
+    map.shift_insert(1, 2, 20);
+    map.shift_insert(2, 3, 30);
+    map.shift_insert(5, 4, 40);
+}
+
+#[test]
 fn test_binary_search_by() {
     // adapted from std's test for binary_search
     let b: IndexMap<_, i32> = []
