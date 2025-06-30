@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/tabs/split_tab_scrim_controller.h"
 #include "chrome/browser/ui/tabs/split_tab_scrim_delegate.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
+#include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -219,6 +220,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
         std::make_unique<pdf::infobar::PdfInfoBarController>(browser);
   }
 #endif
+
+  tab_list_bridge_ = std::make_unique<TabListBridge>(
+      *tab_strip_model_, browser->GetUnownedUserDataHost());
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {

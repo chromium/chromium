@@ -18,18 +18,19 @@ source_set("internal") {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     deps = [
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/extensions",
       "//chrome/browser/lens/region_search:region_search",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/find_bar:find_bar",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/tabs/tab_strip_api",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toolbar/chrome_labs",

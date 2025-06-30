@@ -60,6 +60,21 @@ if (!is_android) {
     ]
   }
 
+  source_set("tab_list_bridge") {
+    sources = [
+      "tab_list_bridge.cc",
+      "tab_list_bridge.h",
+    ]
+
+    public_deps = [
+      ":tab_list_interface",
+      ":tab_strip",
+      "//base",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/unowned_user_data",
+    ]
+  }
+
   source_set("tab_menu_impl") {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
@@ -504,12 +519,14 @@ if (!is_android) {
       "recent_tabs_builder_test_helper.h",
       "recent_tabs_sub_menu_model_browsertest.cc",
       "tab_dialog_manager_browsertest.cc",
+      "tab_list_bridge_browsertest.cc",
       "tab_menu_model_browsertest.cc",
       "tab_strip_model_browsertest.cc",
     ]
 
     deps = [
       ":tab_enums",
+      ":tab_list_bridge",
       ":tab_menu",
       ":tab_strip",
       ":tab_strip_model_observer",

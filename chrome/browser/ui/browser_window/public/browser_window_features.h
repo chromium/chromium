@@ -42,6 +42,7 @@ class SidePanelUI;
 class SigninViewController;
 class TabMenuModelDelegate;
 class TabSearchToolbarButtonController;
+class TabListBridge;
 class TabStripModel;
 class TabStripServiceRegister;
 class ToastController;
@@ -441,6 +442,8 @@ class BrowserWindowFeatures {
   // The Find Bar. This may be NULL if there is no Find Bar, and if it is
   // non-NULL, it may or may not be visible.
   std::unique_ptr<FindBarController> find_bar_controller_;
+
+  std::unique_ptr<TabListBridge> tab_list_bridge_;
 
   // TODO(crbug.com/423956131): Remove this.
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
