@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.suggestions;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.offlinepages.DeletedPageInfo;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
  * Handles checking the offline state of suggestions and notifications about related changes.
  * @param <T> type of suggestion to handle. Mostly a convenience parameter to avoid casts.
  */
+@NullMarked
 public abstract class SuggestionsOfflineModelObserver<T extends OfflinableSuggestion>
         extends OfflinePageBridge.OfflinePageModelObserver implements DestructionObserver {
     private final OfflinePageBridge mOfflinePageBridge;

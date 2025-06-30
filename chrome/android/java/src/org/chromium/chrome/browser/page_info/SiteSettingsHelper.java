@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -25,6 +26,7 @@ import org.chromium.url.GURL;
  * This class contains helper methods for determining site settings availability and showing the
  * site settings page.
  */
+@NullMarked
 public class SiteSettingsHelper {
     /**
      * Whether site settings is available for a given {@link WebContents}.
@@ -33,7 +35,8 @@ public class SiteSettingsHelper {
      */
     public static boolean isSiteSettingsAvailable(WebContents webContents) {
         Tab tab = TabUtils.fromWebContents(webContents);
-        boolean isPdfPage = tab != null && tab.isNativePage() && tab.getNativePage().isPdf();
+        boolean isPdfPage =
+                tab != null && tab.getNativePage() != null && tab.getNativePage().isPdf();
         boolean isOfflinePage = OfflinePageUtils.getOfflinePage(webContents) != null;
         // TODO(crbug.com/40663204): dedupe the
         // DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()

@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.native_page;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.tile.TileUtils;
@@ -37,6 +38,7 @@ import java.lang.annotation.RetentionPolicy;
  * download, remove, and learn more. Clients control which items are shown using {@link
  * Delegate#isItemSupported(int)}.
  */
+@NullMarked
 public class ContextMenuManager {
     @IntDef({
         ContextMenuItemId.SEARCH,
@@ -75,7 +77,7 @@ public class ContextMenuManager {
     private final TouchEnabledDelegate mTouchEnabledDelegate;
     private final Runnable mCloseContextMenuCallback;
     private final String mUserActionPrefix;
-    private View mAnchorView;
+    private @Nullable View mAnchorView;
 
     // Not null after showListContextMenu.
     private @Nullable ListMenuHost mListContextMenu;
@@ -104,15 +106,13 @@ public class ContextMenuManager {
          * @return the URL of the current item for saving offline, or null if the item can't be
          *     saved offline.
          */
-        @Nullable
-        GURL getUrl();
+        @Nullable GURL getUrl();
 
         /**
          * @return Title to be displayed in the context menu when applicable, or null if no title
          *     should be displayed.
          */
-        @Nullable
-        String getContextMenuTitle();
+        @Nullable String getContextMenuTitle();
 
         /**
          * @returns Whether the given menu item is supported.
@@ -152,12 +152,12 @@ public class ContextMenuManager {
         public void editItem() {}
 
         @Override
-        public GURL getUrl() {
+        public @Nullable GURL getUrl() {
             return null;
         }
 
         @Override
-        public String getContextMenuTitle() {
+        public @Nullable String getContextMenuTitle() {
             return null;
         }
 
@@ -407,7 +407,7 @@ public class ContextMenuManager {
         }
     }
 
-    public ListMenuHost getListMenuForTesting() {
+    public @Nullable ListMenuHost getListMenuForTesting() {
         return mListContextMenu;
     }
 }

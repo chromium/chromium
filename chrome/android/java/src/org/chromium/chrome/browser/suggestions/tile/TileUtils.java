@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.suggestions.tile;
 import android.text.TextUtils;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -65,7 +66,7 @@ public class TileUtils {
     /**
      * @return Whether {@param url} is a valid URL for usage Custom Tiles.
      */
-    public static boolean isValidCustomTileUrl(GURL url) {
+    public static boolean isValidCustomTileUrl(@Nullable GURL url) {
         return !GURL.isEmptyOrInvalid(url)
                 && url.getSpec().length() <= SuggestionsConfig.MAX_CUSTOM_TILES_URL_LENGTH
                 && CUSTOM_TILE_SCHEMES.contains(url.getScheme());

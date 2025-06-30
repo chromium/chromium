@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.suggestions;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
@@ -17,8 +19,9 @@ import org.chromium.components.favicon.LargeIconBridge;
  * This class is intended to handle creating the instances of the various classes that interact with
  * native code, so that they can be easily swapped out during tests.
  */
+@NullMarked
 public class SuggestionsDependencyFactory {
-    private static SuggestionsDependencyFactory sInstance;
+    private static @Nullable SuggestionsDependencyFactory sInstance;
 
     public static SuggestionsDependencyFactory getInstance() {
         ThreadUtils.assertOnUiThread();
@@ -41,7 +44,7 @@ public class SuggestionsDependencyFactory {
         return new LargeIconBridge(profile);
     }
 
-    public OfflinePageBridge getOfflinePageBridge(Profile profile) {
+    public @Nullable OfflinePageBridge getOfflinePageBridge(Profile profile) {
         return OfflinePageBridge.getForProfile(profile);
     }
 }
