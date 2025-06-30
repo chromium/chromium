@@ -7,6 +7,7 @@ COMMON_PERF_DATA = [
   "//third_party/crossbench/cb.py",
   "//third_party/crossbench/crossbench/",
   "//third_party/crossbench/config/",
+  "//third_party/crossbench/android_protoc/",
 ]
 
 if (!is_android) {
