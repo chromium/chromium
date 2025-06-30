@@ -8,12 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.components.messages.MessageBannerProperties.ON_FULLY_VISIBLE;
 import static org.chromium.components.messages.MessageBannerProperties.ON_PRIMARY_ACTION;
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.content.Context;
 
@@ -27,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -66,16 +69,17 @@ public class VersioningMessageBannerUnitTest {
         VersioningMessageBanner.maybeShow(
                 mContext, mMessageDispatcher, mModalDialogManager, mProfile);
 
-        verify(mVersioningMessageController, never()).shouldShowMessageUi(anyInt());
+        verify(mVersioningMessageController, never()).shouldShowMessageUiAsync(anyInt(), any());
         verify(mMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
     }
 
     @Test
     public void testMaybeShow_shouldNotShow() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
-        when(mVersioningMessageController.shouldShowMessageUi(
-                        MessageType.VERSION_OUT_OF_DATE_INSTANT_MESSAGE))
-                .thenReturn(false);
+        doCallback(1, (Callback<Boolean> callback) -> callback.onResult(false))
+                .when(mVersioningMessageController)
+                .shouldShowMessageUiAsync(
+                        eq(MessageType.VERSION_OUT_OF_DATE_INSTANT_MESSAGE), any());
 
         VersioningMessageBanner.maybeShow(
                 mContext, mMessageDispatcher, mModalDialogManager, mProfile);
@@ -86,9 +90,10 @@ public class VersioningMessageBannerUnitTest {
     @Test
     public void testMaybeShow_shouldShow() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
-        when(mVersioningMessageController.shouldShowMessageUi(
-                        MessageType.VERSION_OUT_OF_DATE_INSTANT_MESSAGE))
-                .thenReturn(true);
+        doCallback(1, (Callback<Boolean> callback) -> callback.onResult(true))
+                .when(mVersioningMessageController)
+                .shouldShowMessageUiAsync(
+                        eq(MessageType.VERSION_OUT_OF_DATE_INSTANT_MESSAGE), any());
         VersioningMessageBanner.maybeShow(
                 mContext, mMessageDispatcher, mModalDialogManager, mProfile);
         verify(mMessageDispatcher)
