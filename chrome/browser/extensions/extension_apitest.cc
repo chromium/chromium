@@ -41,8 +41,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -255,18 +256,30 @@ void ExtensionApiTest::EmbeddedTestServerAcceptConnections() {
   embedded_test_server()->StartAcceptingConnections();
 }
 
+net::EmbeddedTestServer& ExtensionApiTest::GetWebSocketServer() {
+  if (!websocket_server_) {
+    websocket_server_ = std::make_unique<net::test_server::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::Type::TYPE_HTTP);
+    net::test_server::InstallDefaultWebSocketHandlers(websocket_server_.get());
+  }
+  return *websocket_server_;
+}
+
 bool ExtensionApiTest::StartWebSocketServer(
-    const base::FilePath& root_directory,
     bool enable_basic_auth) {
-  websocket_server_ = std::make_unique<net::SpawnedTestServer>(
-      net::SpawnedTestServer::TYPE_WS, root_directory);
-  websocket_server_->set_websocket_basic_auth(enable_basic_auth);
+  // Initialize `websocket_server_`, if needed.
+  GetWebSocketServer();
+
+  if (enable_basic_auth) {
+    net::test_server::RegisterBasicAuthHandler(*websocket_server_,
+                                               /*username=*/"foo",
+                                               /*password=*/"bar");
+  }
 
   if (!websocket_server_->Start())
     return false;
 
-  test_config_->Set(kTestWebSocketPort,
-                    websocket_server_->host_port_pair().port());
+  test_config_->Set(kTestWebSocketPort, websocket_server_->port());
 
   return true;
 }

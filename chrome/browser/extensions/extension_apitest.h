@@ -5,16 +5,20 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_APITEST_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_APITEST_H_
 
+#include <memory>
 #include <string>
 #include <string_view>
 
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
 
 namespace base {
 class FilePath;
+}
+
+namespace net::test_server {
+class EmbeddedTestServer;
 }
 
 class GURL;
@@ -114,11 +118,14 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // StartEmbeddedTestServer() instead.
   void EmbeddedTestServerAcceptConnections();
 
+  // Returns the test WebSocket EmbeddedTestServer. Can be used to configure
+  // the server before it has started.
+  net::test_server::EmbeddedTestServer& GetWebSocketServer();
+
   // Start the test WebSocket server, and store details of its state. Those
   // details will be available to javascript tests using
   // chrome.test.getConfig(). Enable HTTP basic authentication if needed.
-  bool StartWebSocketServer(const base::FilePath& root_directory,
-                            bool enable_basic_auth = false);
+  bool StartWebSocketServer(bool enable_basic_auth = false);
 
   // Sets the additional string argument `customArg` to the test config object,
   // which is available to javascript tests using chrome.test.getConfig().
@@ -151,7 +158,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   std::unique_ptr<base::Value::Dict> test_config_;
 
   // Hold the test WebSocket server.
-  std::unique_ptr<net::SpawnedTestServer> websocket_server_;
+  std::unique_ptr<net::test_server::EmbeddedTestServer> websocket_server_;
 
   // Test data directory shared with //extensions.
   base::FilePath shared_test_data_dir_;

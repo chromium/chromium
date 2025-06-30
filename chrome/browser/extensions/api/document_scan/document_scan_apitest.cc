@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/containers/map_util.h"
+#include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"

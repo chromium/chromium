@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"

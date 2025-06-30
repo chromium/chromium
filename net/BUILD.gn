@@ -2179,6 +2179,8 @@ static_library("test_support") {
     "test/embedded_test_server/websocket_check_origin_handler.h",
     "test/embedded_test_server/websocket_close_handler.cc",
     "test/embedded_test_server/websocket_close_handler.h",
+    "test/embedded_test_server/websocket_close_immediately_handler.cc",
+    "test/embedded_test_server/websocket_close_immediately_handler.h",
     "test/embedded_test_server/websocket_close_observer_handler.cc",
     "test/embedded_test_server/websocket_close_observer_handler.h",
     "test/embedded_test_server/websocket_connection.cc",

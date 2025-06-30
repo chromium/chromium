@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -2442,7 +2443,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // TODO(crbug.com/40715657): Test is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_WebSocketRequest) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
+  ASSERT_TRUE(StartWebSocketServer());
   ASSERT_TRUE(
       RunExtensionTest("webrequest", {.extension_url = "test_websocket.html"}))
       << message_;
@@ -2454,7 +2455,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_WebSocketRequest) {
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        DISABLED_WebSocketRequestAuthRequired) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory(), true));
+  ASSERT_TRUE(StartWebSocketServer(/*enable_basic_auth=*/true));
   ASSERT_TRUE(RunExtensionTest("webrequest",
                                {.extension_url = "test_websocket_auth.html"}))
       << message_;
@@ -2464,7 +2465,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 // requests.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebSocketRequestOnWorker) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
+  ASSERT_TRUE(StartWebSocketServer());
   ASSERT_TRUE(RunExtensionTest("webrequest",
                                {.extension_url = "test_websocket_worker.html"}))
       << message_;
@@ -2482,7 +2483,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebSocketRequestOnWorker) {
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, MAYBE_WebSocketCleanClose) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
+  ASSERT_TRUE(StartWebSocketServer());
   ASSERT_TRUE(RunExtensionTest(
       "webrequest", {.extension_url = "test_websocket_clean_close.html"}))
       << message_;
