@@ -17,6 +17,9 @@ base::Value ProtocolHandlerInfo::AsDebugValue() const {
   base::Value::Dict root;
   root.Set("protocol", protocol);
   root.Set("url", url.spec());
+  if (!name.empty()) {
+    root.Set("name", name);
+  }
   return base::Value(std::move(root));
 }
 

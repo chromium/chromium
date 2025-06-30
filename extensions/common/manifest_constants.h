@@ -131,6 +131,7 @@ inline constexpr char kPlatformAppBackgroundScripts[] =
     "app.background.scripts";
 inline constexpr char kPlatformAppContentSecurityPolicy[] =
     "app.content_security_policy";
+inline constexpr char kProtocolHandlers[] = "protocol_handlers";
 inline constexpr char kPublicKey[] = "key";
 inline constexpr char kRemoveButton[] = "remove_button";
 inline constexpr char kReplacementWebApp[] = "replacement_web_app";
@@ -544,6 +545,25 @@ inline constexpr char kInvalidPermissionWithDetail[] =
     "Invalid value for 'permissions[*]': *.";
 inline constexpr char16_t kInvalidPermissions[] =
     u"Invalid value for 'permissions'.";
+inline constexpr char kInvalidProtocolHandlersEmpty[] =
+    "The 'protocol_handlers' value must be a non-empty list.";
+inline constexpr char kInvalidProtocolHandlers[] =
+    "Invalid value for 'protocol_handlers'.";
+inline constexpr char kProtocolHandlerEmptyName[] =
+    "The 'name' must be a non-empty string.";
+inline constexpr char kProtocolHandlerSchemeNotInSafeList[] =
+    "Not allowed to register custom handlers for unprefixed schemes that are "
+    "not in the safe list.";
+inline constexpr char kProtocolHandlerUrlTokenMissing[] =
+    "The custom handler url does not contain the '%s' token.";
+inline constexpr char kProtocolHandlerUrlInvalidSyntax[] =
+    "The custom handler url syntax is not valid.";
+inline constexpr char kProtocolHandlerUntrustworthyScheme[] =
+    "The custom handler scheme is not considered as 'Potentially Trustworthy'.";
+inline constexpr char kProtocolHandlerOpaqueOrigin[] =
+    "The custom handler url must not have an 'Opaque Origin'";
+inline constexpr char kProtocolHandlerIncompabibleOrigins[] =
+    "The custom handler url must satisfy the 'Same Origin' restriction.";
 inline constexpr char16_t kInvalidReplacementWebApp[] =
     u"Invalid value for 'replacement_web_app'.";
 inline constexpr char kInvalidRulesetID[] =

@@ -141,6 +141,14 @@ BASE_DECLARE_FEATURE(kAllowLegacyMV2Extensions);
 // accessible resource restrictions.
 BASE_DECLARE_FEATURE(kExtensionWARForRedirect);
 
+// If enabled, allows an extension to specify protocol_handlers keys in the
+// Manifest, registering a group of custom handlers so that the browser can
+// handle navigation requests to URLs with unknown schemes. This feature
+// provides similar behavior and capabilities than the one implemented by
+// the 'registerProtocolHandler' Web API, defined in the Custom Handlers
+// section of the HTML specification.
+BASE_DECLARE_FEATURE(kExtensionProtocolHandlers);
+
 // If enabled, only manifest v3 extensions is allowed while v2 will be disabled.
 // Note that this feature is now only checked by `ExtensionManagement` which
 // represents enterprise extension configurations. Flip the feature will block

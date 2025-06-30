@@ -34,6 +34,7 @@
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+#include "extensions/common/manifest_handlers/protocol_handler_info.h"
 #include "extensions/common/manifest_handlers/replacement_apps.h"
 #include "extensions/common/manifest_handlers/requirements_info.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
@@ -82,6 +83,7 @@ void RegisterCommonManifestHandlers() {
   registry->RegisterHandler(std::make_unique<OAuth2ManifestHandler>());
   registry->RegisterHandler(std::make_unique<OfflineEnabledHandler>());
   registry->RegisterHandler(std::make_unique<OptionsPageHandler>());
+  registry->RegisterHandler(std::make_unique<ProtocolHandlersParser>());
   registry->RegisterHandler(std::make_unique<ReplacementAppsHandler>());
   registry->RegisterHandler(std::make_unique<RequirementsHandler>());
   registry->RegisterHandler(std::make_unique<SandboxedPageHandler>());

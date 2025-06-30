@@ -80,6 +80,7 @@ const char* kDisallowedFeatures[] = {
     extensions::manifest_keys::kPermissions,
     extensions::manifest_keys::kPlatformAppBackground,
     extensions::manifest_keys::kPlatformAppContentSecurityPolicy,
+    extensions::manifest_keys::kProtocolHandlers,
     extensions::manifest_keys::kReplacementWebApp,
     extensions::manifest_keys::kSockets,
     extensions::manifest_keys::kTheme,

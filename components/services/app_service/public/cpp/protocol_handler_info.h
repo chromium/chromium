@@ -26,6 +26,7 @@ struct ProtocolHandlerInfo {
 
   std::string protocol;
   GURL url;
+  std::string name;
 };
 using ProtocolHandlers = std::vector<ProtocolHandlerInfo>;
 
