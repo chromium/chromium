@@ -2838,9 +2838,9 @@ AXObject* AXObject::GetCommandForElement() const {
 }
 
 // Interest for invoking elements (with the `interestfor` attribute) should
-// have details relationships with their target, when that interest for is
-// a) visible, b) is rich, and c) not the next element in the DOM (depth first
-// search order).
+// have details relationships with their target, when that interest target is
+// a) a popover, b) visible, c) is "rich", and d) not the next element in the
+// DOM (depth first search order).
 AXObject* AXObject::GetInterestForTargetPopover() const {
   if (!GetElement()) {
     return nullptr;
@@ -2851,7 +2851,13 @@ AXObject* AXObject::GetInterestForTargetPopover() const {
     return nullptr;
   }
 
-  Element* popover = GetElement()->InterestForElement();
+  // Only return if the target is a popover.
+  HTMLElement* popover =
+      DynamicTo<HTMLElement>(GetElement()->InterestForElement());
+  if (!popover || !popover->IsPopover()) {
+    return nullptr;
+  }
+
   if (ElementTraversal::NextSkippingChildren(*GetElement()) == popover) {
     // The next element is already the popover.
     return nullptr;

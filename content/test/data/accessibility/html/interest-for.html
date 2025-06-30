@@ -17,22 +17,35 @@
 @AURALINUX-ALLOW:haspopup:*
 @AURALINUX-ALLOW:has-interest-for*
 -->
+
+<style>
+  [popover] {
+    display: block; /* Make all popovers visible */
+  }
+</style>
+
 <!-- Rich interest for -->
 
 <!-- Set details relation when target is rich -->
-<div id="interestee1"><input></div>
+<div popover id="interestee1"><input></div>
 <button interestfor="interestee1">Button</button>
 
 <!-- No details relation when interest for is next in the dom -->
 <button interestfor="interestee2">Button</button>
-<div id="interestee2"><input></div>
+<div popover id="interestee2"><input></div>
 
 <!-- Plain interest for -->
 
 <!-- No details relation when target is not rich, will use as name -->
-<div id="interestee3">Plain #3</div>
+<div popover id="interestee3">Plain #3</div>
 <button interestfor="interestee3"></button>
 
 <!-- Use as description if there's already a name-->
-<div id="interestee4">Plain #4</div>
+<div popover id="interestee4">Plain #4</div>
 <button interestfor="interestee4">Button</button>
+
+<!-- Non-popover target -->
+
+<!-- No details relation when target is not a popover -->
+<div id="interestee5">Plain #5</div>
+<button interestfor="interestee5"></button>
