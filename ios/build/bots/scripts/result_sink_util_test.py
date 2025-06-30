@@ -257,11 +257,13 @@ class UnitTest(unittest.TestCase):
     self.assertEqual(result_dict['fineName'], 'myclass')
     self.assertEqual(result_dict['caseNameComponents'], ['testname'])
 
+    # gtest expected format:
+    #   infra/go/src/infra/tools/result_adapter/gtest.go
     result_dict = result_sink_util._get_struct_test_dict(
-        'myclass/subclass.testname')
+        'myclass/param.testname')
     self.assertIsNone(result_dict['coarseName'], None)
     self.assertEqual(result_dict['fineName'], 'myclass')
-    self.assertEqual(result_dict['caseNameComponents'], ['testname'])
+    self.assertEqual(result_dict['caseNameComponents'], ['testname/param'])
 
   @mock.patch.object(requests.Session, 'post')
   @mock.patch('%s.open' % 'result_sink_util',

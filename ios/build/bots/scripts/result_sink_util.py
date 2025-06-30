@@ -153,23 +153,41 @@ def _get_struct_test_dict(test_id):
   # We may encounter gtests or XCTests which are parsed differently.
   # Attempt to parse gtests based on:
   #     infra/go/src/infra/tools/result_adapter/gtest.go
+  # Type-parameterised test (e.g. MyInstantiation/FooTest/MyType.DoesBar)
   re_match = re.search(r'^((\w+)/)?(\w+)/(\w+)\.(\w+)$', test_id)
   if re_match:
-    struct_test_dict['fineName'] = re_match.group(3)
-    struct_test_dict['caseNameComponents'] = [re_match.group(5)]
+    suite = re_match.group(3)
+    name = re_match.group(5)
+    instantiation = re_match.group(2)
+    case_id = re_match.group(4)
     found_match = True
 
+  # Value-parameterised test (e.g. MyInstantiation/FooTest.DoesBar/TestValue)
   re_match = re.search(r'^((\w+)/)?(\w+)\.(\w+)/(\w+)$', test_id)
   if not found_match and re_match:
-    struct_test_dict['fineName'] = re_match.group(3)
-    struct_test_dict['caseNameComponents'] = [re_match.group(4)]
+    suite = re_match.group(3)
+    name = re_match.group(4)
+    instantiation = re_match.group(2)
+    case_id = re_match.group(5)
     found_match = True
 
+  # Neither type nor value-parameterised (e.g. FooTest.DoesBar)
   re_match = re.search(r'^(\w+)\.(\w+)$', test_id)
   if not found_match and re_match:
-    struct_test_dict['fineName'] = re_match.group(1)
-    struct_test_dict['caseNameComponents'] = [re_match.group(2)]
+    suite = re_match.group(1)
+    name = re_match.group(2)
+    instantiation = ""
+    case_id = ""
     found_match = True
+
+  if found_match:
+    struct_test_dict['fineName'] = suite
+    if not case_id:
+      struct_test_dict['caseNameComponents'] = [name]
+    elif not instantiation:
+      struct_test_dict['caseNameComponents'] = ['%s/%s' % (name, case_id)]
+    else:
+      struct_test_dict['caseNameComponents'] = ['%s/%s.%s' % (name, instantiation, case_id)]
 
   # XCTests format.
   re_match = re.search(r'(.*)/(.*)', test_id)
