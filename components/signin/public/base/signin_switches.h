@@ -148,6 +148,9 @@ BASE_DECLARE_FEATURE(kFullscreenSignInPromoUseDate);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kInterceptBubblesDismissibleByAvatarButton);
 
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kOfferMigrationToDiceUsers);
+
 #if BUILDFLAG(IS_IOS)
 
 // Features to enable identities in auth error (stale token).

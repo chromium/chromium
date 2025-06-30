@@ -1654,6 +1654,11 @@ extern const char kNotificationSchedulerImmediateBackgroundTaskDescription[];
 extern const char kNotificationsSystemFlagName[];
 extern const char kNotificationsSystemFlagDescription[];
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+extern const char kOfferMigrationToDiceUsersName[];
+extern const char kOfferMigrationToDiceUsersDescription[];
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 extern const char kOrganicRepeatableQueriesName[];
 extern const char kOrganicRepeatableQueriesDescription[];
 

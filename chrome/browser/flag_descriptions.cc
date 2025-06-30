@@ -2854,6 +2854,13 @@ const char kNotificationsSystemFlagDescription[] =
     "Enable support for using the system notification toasts and notification "
     "center on platforms where these are available.";
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const char kOfferMigrationToDiceUsersName[] = "Offer migration to Dice users";
+const char kOfferMigrationToDiceUsersDescription[] =
+    "When enabled, offers the implicitly signed-in users a dialog to migrate "
+    "to explicitly signed-in state.";
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 const char kOmitCorsClientCertName[] =
     "Omit TLS client certificates if credential mode disallows";
 const char kOmitCorsClientCertDescription[] =

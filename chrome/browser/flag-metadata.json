@@ -7045,6 +7045,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "offer-migration-to-dice-users",
+    "owners": [ "ankushkush@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "offline-auto-fetch",
     "owners": [ "tbansal@google.com" ],
     "expiry_milestone": 135

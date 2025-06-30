@@ -12734,6 +12734,13 @@ const FeatureEntry kFeatureEntries[] = {
          chromeos::features::kMultiCaptureReworkedUsageIndicators)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    {"offer-migration-to-dice-users",
+     flag_descriptions::kOfferMigrationToDiceUsersName,
+     flag_descriptions::kOfferMigrationToDiceUsersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(switches::kOfferMigrationToDiceUsers)}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
