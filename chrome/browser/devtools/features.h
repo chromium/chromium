@@ -82,8 +82,6 @@ extern const base::FeatureParam<bool> kDevToolsVeLoggingTesting;
 
 BASE_DECLARE_FEATURE(kDevToolsAnimationStylesInStylesTab);
 
-BASE_DECLARE_FEATURE(kDevToolsAutomaticFileSystems);
-
 BASE_DECLARE_FEATURE(kDevToolsWellKnown);
 
 BASE_DECLARE_FEATURE(kDevToolsAiGeneratedTimelineLabels);

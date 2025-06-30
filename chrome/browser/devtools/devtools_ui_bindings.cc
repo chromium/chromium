@@ -1322,15 +1322,6 @@ void DevToolsUIBindings::ConnectAutomaticFileSystem(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
         frontend_host_);
-  // This is a no-op if the DevToolsAutomaticFileSystems feature is turned off.
-  if (!base::FeatureList::IsEnabled(features::kDevToolsAutomaticFileSystems)) {
-    VLOG(1) << "Ignoring attempt to connect automatic file system "
-            << file_system_path << " with UUID " << file_system_uuid
-            << " because the DevToolsAutomaticFileSystems feature is disabled";
-    ConnectAutomaticFileSystemDone(std::move(callback), false);
-    return;
-  }
-
   // Ensure that the |file_system_uuid| is indeed a valid UUID.
   base::Uuid uuid = base::Uuid::ParseCaseInsensitive(file_system_uuid);
   if (!uuid.is_valid()) {
@@ -1779,13 +1770,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     response_dict.Set("devToolsAiAssistanceFileAgent",
                       std::move(ai_assistance_file_agent_dict));
   }
-
-  base::Value::Dict devtools_automatic_file_systems_dict;
-  devtools_automatic_file_systems_dict.Set(
-      "enabled",
-      base::FeatureList::IsEnabled(::features::kDevToolsAutomaticFileSystems));
-  response_dict.Set("devToolsAutomaticFileSystems",
-                    std::move(devtools_automatic_file_systems_dict));
 
   base::Value::Dict devtools_well_known_dict;
   devtools_well_known_dict.Set(

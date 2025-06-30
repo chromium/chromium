@@ -12022,10 +12022,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsProjectSettingsName,
      flag_descriptions::kDevToolsProjectSettingsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDevToolsWellKnown)},
-    {"devtools-automatic-workspace-folders",
-     flag_descriptions::kDevToolsAutomaticWorkspaceFoldersName,
-     flag_descriptions::kDevToolsAutomaticWorkspaceFoldersDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(features::kDevToolsAutomaticFileSystems)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -474,16 +474,6 @@ const char kDeprecateUnloadDescription[] =
     "explicitly disabled by Permissions-Policy, even during the gradual "
     "rollout of their deprecation.";
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kDevToolsAutomaticWorkspaceFoldersName[] =
-    "DevTools Automatic Workspace Folders";
-const char kDevToolsAutomaticWorkspaceFoldersDescription[] =
-    "When this and the DevTools Project Settings flags are turned on, DevTools "
-    "will automatically add workspace folders based on a workspace "
-    "configuration "
-    "in the project settings.";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 const char kDevToolsPrivacyUIName[] = "DevTools Privacy UI";
 const char kDevToolsPrivacyUIDescription[] =
     "Enables the Privacy UI in the current 'Security' panel in DevTools.";
