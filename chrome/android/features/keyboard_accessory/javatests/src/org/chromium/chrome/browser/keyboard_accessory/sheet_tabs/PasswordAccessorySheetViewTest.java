@@ -344,6 +344,47 @@ public class PasswordAccessorySheetViewTest {
 
     @Test
     @MediumTest
+    public void testDisplaysBackupCredentialCorrectly() {
+        assertThat(mView.get().getChildCount(), is(0));
+        final UserInfoField kUnusedInfoField =
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
+                        .setDisplayText("Unused Name")
+                        .setA11yDescription("Unused Password")
+                        .setCallback(cb -> {})
+                        .build();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserInfo mainCredentialInfo = new UserInfo("psl.matched.origin.com", false);
+                    mainCredentialInfo.addField(kUnusedInfoField);
+                    mainCredentialInfo.addField(kUnusedInfoField);
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    mainCredentialInfo,
+                                    AccessorySheetDataPiece.Type.PASSWORD_INFO));
+
+                    UserInfo backupCredentialInfo =
+                            new UserInfo("psl.matched.origin.com", false, null, true);
+                    backupCredentialInfo.addField(kUnusedInfoField);
+                    backupCredentialInfo.addField(kUnusedInfoField);
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    backupCredentialInfo,
+                                    AccessorySheetDataPiece.Type.PASSWORD_INFO));
+                });
+
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(2)));
+        assertThat(getUserInfoAt(0).getTitle().isShown(), is(true));
+        assertThat(getUserInfoAt(0).getTitle().getText(), is("psl.matched.origin.com"));
+        assertThat(getUserInfoAt(1).getTitle().isShown(), is(true));
+        assertThat(
+                getUserInfoAt(1).getTitle(),
+                withText(R.string.password_accessory_recovery_password_title));
+    }
+
+    @Test
+    @MediumTest
     public void testOptionToggleRenderedIfNotEmpty() throws ExecutionException {
         assertThat(mView.get().getChildCount(), is(0));
         ThreadUtils.runOnUiThreadBlocking(

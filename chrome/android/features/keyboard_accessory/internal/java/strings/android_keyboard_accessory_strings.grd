@@ -262,6 +262,9 @@
       <message name="IDS_SELECT_PASSKEY" desc="Title of the button that opens Android Credential Manager UI when there are no passkeys in the keyboard accessory. The user can select passkeys from other providers there.">
         Select passkey
       </message>
+      <message name="IDS_PASSWORD_ACCESSORY_RECOVERY_PASSWORD_TITLE" desc="Title marking that a saved credential offered for filling is a recovery password which the user can try filling if the main password doesn't work.">
+        Recovery password
+      </message>
     </messages>
   </release>
 </grit>
