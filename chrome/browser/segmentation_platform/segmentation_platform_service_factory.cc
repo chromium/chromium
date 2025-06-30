@@ -49,10 +49,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/segmentation_platform/client_util/tab_data_collection_util.h"
-#endif
-
 namespace segmentation_platform {
 namespace {
 const char kSegmentationPlatformProfileObserverKey[] =
@@ -92,17 +88,6 @@ void InitTabDataCollection(
     std::unique_ptr<TabFetcher> tab_fetcher) {
   auto rank_dispatcher = std::make_unique<TabRankDispatcher>(
       service, session_sync_service, std::move(tab_fetcher));
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformCollectTabRankData)) {
-    const char kSegmentationTabDataCollectionUtilUserDataKey[] =
-        "segmentation_tab_tab_data_collection_util";
-    auto tab_collection_util =
-        std::make_unique<TabDataCollectionUtil>(service, rank_dispatcher.get());
-    service->SetUserData(kSegmentationTabDataCollectionUtilUserDataKey,
-                         std::move(tab_collection_util));
-  }
-#endif
   service->SetUserData(kSegmentationTabRankDispatcherUserDataKey,
                        std::move(rank_dispatcher));
 }

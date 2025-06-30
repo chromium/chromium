@@ -3263,8 +3263,6 @@ static_library("browser") {
       "segmentation_platform/android/contextual_page_action_controller_android.cc",
       "segmentation_platform/android/home_modules_ranking_helper.cc",
       "segmentation_platform/android/segmentation_platform_service_factory_android.cc",
-      "segmentation_platform/client_util/tab_data_collection_util.cc",
-      "segmentation_platform/client_util/tab_data_collection_util.h",
       "serial/android/serial_bridge.cc",
       "serial/android/web_serial_chooser_android.cc",
       "sessions/session_restore_android.cc",
