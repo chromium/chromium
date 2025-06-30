@@ -2136,8 +2136,8 @@
   },
   {
     "name": "devtools-project-settings",
-    "owners": [ "bmeurer@chromium.org" ],
-    "expiry_milestone": 140
+    "owners": [ "bmeurer@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "direct-sockets-in-service-workers",
