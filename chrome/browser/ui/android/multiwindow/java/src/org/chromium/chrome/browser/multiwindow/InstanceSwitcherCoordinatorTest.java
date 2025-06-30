@@ -196,14 +196,8 @@ public class InstanceSwitcherCoordinatorTest {
     public void testRestoreWindow_InstanceSwitcherV2() throws Exception {
         // Initialize instance list with 2 active instances and 1 inactive instance.
         InstanceInfo[] instances =
-                new InstanceInfo[] {
-                    new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
-                    new InstanceInfo(
-                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
-                    new InstanceInfo(
-                            2, -1, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false, 0)
-                };
+                createPersistedInstances(
+                        /* numActiveInstances= */ 2, /* numInactiveInstances= */ 1);
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
@@ -246,6 +240,55 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isEnabled()))
                 .perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testBlockInstanceRestorationAtLimit_InstanceSwitcherV2() throws Exception {
+        // Initialize instance list with MAX_INSTANCE_COUNT active instances, 1 inactive instance.
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ MAX_INSTANCE_COUNT,
+                        /* numInactiveInstances= */ 1);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null,
+                            null,
+                            null,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances));
+                });
+
+        // Verify that the active list is showing when the menu is initially displayed.
+        onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+
+        // Switch to the inactive list.
+        onView(allOf(withText("Inactive (1)"), isDescendantOfA(withId(R.id.tabs))))
+                .perform(click());
+
+        // Verify that the "Restore" button is disabled before a selection is made.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+
+        // Click on the inactive list item.
+        onView(withId(R.id.inactive_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(0, click()));
+
+        // Verify that the "Restore" button is still disabled.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
     }
 
     @Test
