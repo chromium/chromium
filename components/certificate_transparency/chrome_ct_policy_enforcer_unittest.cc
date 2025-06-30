@@ -19,8 +19,9 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/certificate_transparency/ct_known_logs.h"
-#include "crypto/rsa_private_key.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
+#include "crypto/keypair.h"
+#include "crypto/test_support.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -46,7 +47,7 @@ namespace {
 const char kTestLogID[] =
     "\x68\xf6\x98\xf8\x1f\x64\x82\xbe\x3a\x8c\xee\xb9\x28\x1d\x4c\xfc\x71\x51"
     "\x5d\x67\x93\xd4\x44\xd1\x0a\x67\xac\xbb\x4f\x4f\xfb\xc4";
-static_assert(std::size(kTestLogID) - 1 == crypto::kSHA256Length,
+static_assert(std::size(kTestLogID) - 1 == crypto::hash::kSha256Size,
               "Incorrect log ID length.");
 
 // A Static CT API extension that encodes a leaf index with value 42:
@@ -77,8 +78,8 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     chain_ =
         X509Certificate::CreateFromBytes(base::as_byte_span(der_test_cert));
     ASSERT_TRUE(chain_.get());
-    test_log_id_ = std::string(kTestLogID, crypto::kSHA256Length);
-    another_log_id_.assign(crypto::kSHA256Length, 1);
+    test_log_id_ = std::string(kTestLogID, crypto::hash::kSha256Size);
+    another_log_id_.assign(crypto::hash::kSha256Size, 1);
   }
 
   scoped_refptr<ChromeCTPolicyEnforcer> MakeChromeCTPolicyEnforcer(
@@ -110,7 +111,8 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
       if (i < desired_log_keys.size())
         sct->log_id = desired_log_keys[i];
       else
-        sct->log_id = std::string(crypto::kSHA256Length, static_cast<char>(i));
+        sct->log_id =
+            std::string(crypto::hash::kSha256Size, static_cast<char>(i));
 
       EXPECT_TRUE(base::Time::FromUTCExploded({2022, 4, 0, 15, 0, 0, 0, 0},
                                               &sct->timestamp));
@@ -127,7 +129,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     static const char kTestRetiredLogID[] =
         "\xcd\xb5\x17\x9b\x7f\xc1\xc0\x46\xfe\xea\x31\x13\x6a\x3f\x8f\x00\x2e"
         "\x61\x82\xfa\xf8\x89\x6f\xec\xc8\xb2\xf5\xb5\xab\x60\x49\x00";
-    static_assert(std::size(kTestRetiredLogID) - 1 == crypto::kSHA256Length,
+    static_assert(std::size(kTestRetiredLogID) - 1 == crypto::hash::kSha256Size,
                   "Incorrect log ID length.");
     base::Time retirement_time;
     ASSERT_TRUE(base::Time::FromUTCExploded({2022, 4, 0, 16, 0, 0, 0, 0},
@@ -139,7 +141,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     scoped_refptr<SignedCertificateTimestamp> sct(
         new SignedCertificateTimestamp());
     sct->origin = desired_origin;
-    sct->log_id = std::string(kTestRetiredLogID, crypto::kSHA256Length);
+    sct->log_id = std::string(kTestRetiredLogID, crypto::hash::kSha256Size);
     if (timestamp_after_disqualification_date) {
       sct->timestamp = retirement_time + base::Hours(1);
     } else {
@@ -555,7 +557,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   disqualified_logs.emplace_back(test_log_id_, retirement_time);
   for (size_t i = 1; i < 5; ++i) {
     disqualified_logs.emplace_back(
-        std::string(crypto::kSHA256Length, static_cast<char>(i)),
+        std::string(crypto::hash::kSha256Size, static_cast<char>(i)),
         retirement_time);
   }
   std::sort(std::begin(disqualified_logs), std::end(disqualified_logs));
@@ -584,7 +586,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   disqualified_logs.emplace_back(test_log_id_, retirement_time);
   for (size_t i = 1; i < 5; ++i) {
     disqualified_logs.emplace_back(
-        std::string(crypto::kSHA256Length, static_cast<char>(i)),
+        std::string(crypto::hash::kSha256Size, static_cast<char>(i)),
         retirement_time);
   }
   std::sort(std::begin(disqualified_logs), std::end(disqualified_logs));
@@ -601,10 +603,6 @@ TEST_F(ChromeCTPolicyEnforcerTest,
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, UpdatedSCTRequirements) {
-  std::unique_ptr<crypto::RSAPrivateKey> private_key(
-      crypto::RSAPrivateKey::Create(1024));
-  ASSERT_TRUE(private_key);
-
   // Test multiple validity periods
   base::Time time_2015_3_0_25_11_25_0_0 =
       CreateTime({2015, 3, 0, 25, 11, 25, 0, 0});
@@ -648,8 +646,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdatedSCTRequirements) {
     // Create a self-signed certificate with exactly the validity period.
     std::string cert_data;
     ASSERT_TRUE(net::x509_util::CreateSelfSignedCert(
-        private_key->key(), net::x509_util::DIGEST_SHA256, "CN=test",
-        i * 10 + scts_required, validity_start, validity_end, {}, &cert_data));
+        crypto::test::FixedRsa2048PrivateKeyForTesting().key(),
+        net::x509_util::DIGEST_SHA256, "CN=test", i * 10 + scts_required,
+        validity_start, validity_end, {}, &cert_data));
     scoped_refptr<X509Certificate> cert(
         X509Certificate::CreateFromBytes(base::as_byte_span(cert_data)));
     ASSERT_TRUE(cert);
