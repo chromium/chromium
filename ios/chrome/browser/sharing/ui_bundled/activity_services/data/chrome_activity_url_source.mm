@@ -69,8 +69,9 @@ BASE_FEATURE(kShareNSExtensionItemKillSwitch,
   if (base::FeatureList::IsEnabled(kShareNSExtensionItemKillSwitch)) {
     return _shareURL;
   }
-  if ([activityType isEqualToString:UIActivityTypeMessage]) {
-    // Message does not seem to support NSItemProvider.
+  if ([activityType isEqualToString:UIActivityTypeMessage] ||
+      [activityType isEqualToString:UIActivityTypeMail]) {
+    // Message and mail do not seem to support NSItemProvider.
     return _shareURL;
   }
   NSItemProvider* provider =
