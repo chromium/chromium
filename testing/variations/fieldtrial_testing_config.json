@@ -8285,6 +8285,21 @@
             ]
         }
     ],
+    "DirectCompositorThreadIpcWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DirectCompositorThreadIpc"
+                    ]
+                }
+            ]
+        }
+    ],
     "DirtyWritebackMaxBytes": [
         {
             "platforms": [
