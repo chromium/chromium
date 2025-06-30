@@ -136,26 +136,9 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
         }
       };
 
-  // Erase to count prefetches.
-  EraseNotAlivePipelines();
-
-  // TODO(kenoss): Judge limit exceeded after judging triggering prefetch.
-  //
-  // `SearchPreloadSignalResult` measures the difference between "the client
-  // judged it should preload" and "preload is actually triggered". So, the
-  // limit check below should be moved to
-  // `OnAutocompleteResultChangedProcessOne()`.
   if (base::FeatureList::IsEnabled(
           features::kDsePreload2OnSuggestNonDefalutMatch)) {
     for (const auto& match : result) {
-      // Limit the number of prefetches.
-      if (pipelines_.size() >= features::kDsePreload2MaxPrefetch.Get()) {
-        record_histograms(
-            {SearchPreloadSignalResult::kNotTriggeredLimitExceeded,
-             std::nullopt});
-        return;
-      }
-
       auto signal_results = OnAutocompleteResultChangedProcessOne(
           profile, search_preload_service, *template_url_service, match,
           no_vary_search_hint);
@@ -166,13 +149,6 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
       return;
     }
     const auto& match = *result.default_match();
-
-    // Limit the number of prefetches.
-    if (pipelines_.size() >= features::kDsePreload2MaxPrefetch.Get()) {
-      record_histograms({SearchPreloadSignalResult::kNotTriggeredLimitExceeded,
-                         std::nullopt});
-      return;
-    }
 
     auto signal_results = OnAutocompleteResultChangedProcessOne(
         profile, search_preload_service, *template_url_service, match,
@@ -210,6 +186,14 @@ SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
     return {std::nullopt, std::nullopt};
   }
 
+  // Erase to count prefetches.
+  EraseNotAlivePipelines();
+  // Limit the number of prefetches.
+  if (pipelines_.size() >= features::kDsePreload2MaxPrefetch.Get()) {
+    return {SearchPreloadSignalResult::kNotTriggeredLimitExceeded,
+            std::nullopt};
+  }
+
   std::optional<GURL> maybe_canonical_url =
       GetCanonicalUrlForSearchPreload(profile, match.destination_url);
   if (!maybe_canonical_url.has_value()) {
@@ -220,7 +204,6 @@ SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
   }
   const GURL& canonical_url = maybe_canonical_url.value();
 
-  // TODO(crbug.com/403198750): Limit the number of active pipelines.
   if (!pipelines_.contains(canonical_url)) {
     pipelines_.insert_or_assign(
         canonical_url, std::make_unique<SearchPreloadPipeline>(canonical_url));
@@ -228,6 +211,7 @@ SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
   pipelines_[canonical_url]->UpdateConfidence(GetWebContents(), confidence);
 
   CHECK(should_prefetch);
+
   const GURL prefetch_url =
       GetPrefetchUrlFromMatch(*match.search_terms_args, template_url_service,
                               /*is_navigation_likely=*/false);
