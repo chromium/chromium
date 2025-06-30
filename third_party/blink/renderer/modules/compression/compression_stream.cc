@@ -19,10 +19,12 @@ CompressionStream* CompressionStream::Create(ScriptState* script_state,
 }
 
 ReadableStream* CompressionStream::readable() const {
+  CHECK(initialized_);
   return transform_->Readable();
 }
 
 WritableStream* CompressionStream::writable() const {
+  CHECK(initialized_);
   return transform_->Writable();
 }
 
@@ -50,6 +52,8 @@ CompressionStream::CompressionStream(ScriptState* script_state,
                               MakeGarbageCollected<DeflateTransformer>(
                                   script_state, deflate_format, deflate_level),
                               exception_state);
+  CHECK(transform_);
+  initialized_ = true;
 }
 
 }  // namespace blink
