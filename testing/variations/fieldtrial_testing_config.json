@@ -14358,6 +14358,21 @@
             ]
         }
     ],
+    "LogCrWebJavaScriptErrors": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LogCrWebJavaScriptErrors"
+                    ]
+                }
+            ]
+        }
+    ],
     "LogJavaScriptErrors": [
         {
             "platforms": [
