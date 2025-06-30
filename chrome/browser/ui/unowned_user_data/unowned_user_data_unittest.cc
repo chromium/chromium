@@ -11,34 +11,29 @@ namespace {
 
 class TestScopedUnownedUserData {
  public:
-  static const char* kDataKey;
+  DECLARE_USER_DATA(TestScopedUnownedUserData);
 
   explicit TestScopedUnownedUserData(UnownedUserDataHost& host)
-      : scoped_data_holder_(host, this) {}
+      : scoped_data_holder_(host, *this) {}
   ~TestScopedUnownedUserData() = default;
-
-  static TestScopedUnownedUserData* Get(UnownedUserDataHost& host) {
-    return ScopedUnownedUserData<TestScopedUnownedUserData>::Get(host);
-  }
 
  private:
   ScopedUnownedUserData<TestScopedUnownedUserData> scoped_data_holder_;
 };
 
-const char* TestScopedUnownedUserData::kDataKey = "TestScopedUnownedUserData";
+DEFINE_USER_DATA(TestScopedUnownedUserData);
 
 class TestUnownedUserDataSubclass
     : public UnownedUserDataInterface<TestUnownedUserDataSubclass> {
  public:
-  static const char* kDataKey;
+  DECLARE_USER_DATA(TestUnownedUserDataSubclass);
 
   explicit TestUnownedUserDataSubclass(UnownedUserDataHost& host)
-      : UnownedUserDataInterface(host, this) {}
+      : UnownedUserDataInterface(host) {}
   ~TestUnownedUserDataSubclass() override = default;
 };
 
-const char* TestUnownedUserDataSubclass::kDataKey =
-    "TestUnownedUserDataSubclass";
+DEFINE_USER_DATA(TestUnownedUserDataSubclass);
 
 }  // namespace
 

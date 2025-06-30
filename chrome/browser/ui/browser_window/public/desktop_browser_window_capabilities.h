@@ -22,7 +22,7 @@ class WebContents;
 // BrowserWindowInterface.
 class DesktopBrowserWindowCapabilities {
  public:
-  static const char* kDataKey;
+  DECLARE_USER_DATA(DesktopBrowserWindowCapabilities);
 
   DesktopBrowserWindowCapabilities(
       DesktopBrowserWindowCapabilitiesDelegate* delegate,

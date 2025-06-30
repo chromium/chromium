@@ -5,35 +5,13 @@
 #ifndef CHROME_BROWSER_UI_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_
 #define CHROME_BROWSER_UI_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_
 
+#include <concepts>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
-
-class UnownedUserDataHost;
-
-namespace internal {
-
-// Internal base class for handling setting / unsetting the UnownedUserData
-// on the UnownedUserDataHost. Should not be used directly outside of this
-// file.
-class ScopedUnownedUserDataBase {
- protected:
-  ScopedUnownedUserDataBase(UnownedUserDataHost& host,
-                            const char* key,
-                            void* data);
-  virtual ~ScopedUnownedUserDataBase();
-
-  static void* GetInternal(UnownedUserDataHost& host, const char* key);
-
- private:
-  using PassKey = base::PassKey<ScopedUnownedUserDataBase>;
-
-  raw_ref<UnownedUserDataHost> host_;
-  const char* key_;
-  raw_ptr<void> data_;
-};
-
-}  // namespace internal
+#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
+#include "ui/base/interaction/typed_identifier.h"
 
 // A scoped class to set and unset an UnownedUserData entry on an
 // UnownedUserDataHost.
@@ -41,37 +19,62 @@ class ScopedUnownedUserDataBase {
 // Example Usage:
 //   class MyFeature {
 //    public:
-//     static const char* kDataKey;
+//     // This provides both the kDataKey and the Get() function.
+//     DECLARE_USER_DATA(MyFeature);
+//
+//     // The class doesn't have to contain its own holder, but if you want you
+//     // can add one to the private data and initialize it in the constructor:
 //
 //     explicit MyFeature(UnownedUserDataHost& host)
-//         : scoped_data_holder_(host) {}
-//
-//     static MyFeature* FromHost(UnownedUserDataHost& host) {
-//       return ScopedUnownedUserData<MyFeature>::Get(host);
-//     }
+//         : scoped_data_holder_(host, *this) {}
 //
 //    private:
-//     ScopedUnowneduserData<MyFeature> scoped_data_holder_;
+//     ScopedUnownedUserData<MyFeature> scoped_data_holder_;
 //   };
 //
-//   const char* MyFeature::kDataKey = "MyFeature";
+//   DEFINE_USER_DATA(MyFeature);
 //
 // Note: See also UnownedUserDataInterface, if you prefer an inheritance pattern
 // and want slightly less boilerplate.
 template <class T>
-class ScopedUnownedUserData : public internal::ScopedUnownedUserDataBase {
+class ScopedUnownedUserData {
  public:
-  ScopedUnownedUserData(UnownedUserDataHost& host, T* data)
-      : ScopedUnownedUserDataBase(host, T::kDataKey, data) {}
-  ~ScopedUnownedUserData() override = default;
+  using PassKey = base::PassKey<ScopedUnownedUserData<T>>;
+
+  ScopedUnownedUserData(UnownedUserDataHost& host, T& data)
+      : host_(host), data_(data) {
+    host_->Set(PassKey(), T::kDataKey, *data_);
+  }
+
+  virtual ~ScopedUnownedUserData() { host_->Erase(PassKey(), T::kDataKey); }
 
   static T* Get(UnownedUserDataHost& host) {
-    return static_cast<T*>(GetInternal(host, T::kDataKey));
+    return host.Get(PassKey(), T::kDataKey);
   }
 
   static const T* Get(const UnownedUserDataHost& host) {
-    return Get(const_cast<UnownedUserDataHost&>(host));
+    return host.Get(PassKey(), T::kDataKey);
   }
+
+ private:
+  raw_ref<UnownedUserDataHost> host_;
+  raw_ref<T> data_;
 };
+
+// Helper macros. See above for usage.
+
+#define DECLARE_USER_DATA(ClassName)                         \
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(ClassName, kDataKey); \
+  static ClassName* Get(UnownedUserDataHost& host);          \
+  static const ClassName* Get(const UnownedUserDataHost& host)
+
+#define DEFINE_USER_DATA(ClassName)                                  \
+  ClassName* ClassName::Get(UnownedUserDataHost& host) {             \
+    return ScopedUnownedUserData<ClassName>::Get(host);              \
+  }                                                                  \
+  const ClassName* ClassName::Get(const UnownedUserDataHost& host) { \
+    return ScopedUnownedUserData<ClassName>::Get(host);              \
+  }                                                                  \
+  DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(ClassName, ClassName, kDataKey)
 
 #endif  // CHROME_BROWSER_UI_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_

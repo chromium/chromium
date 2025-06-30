@@ -116,11 +116,13 @@ void LogClusterUKM(const TabStripModel* tab_strip_model,
 
 namespace commerce {
 
+DEFINE_USER_DATA(ProductSpecificationsEntryPointController);
+
 // TODO(b/340252809): No need to have browser as a dependency.
 ProductSpecificationsEntryPointController::
     ProductSpecificationsEntryPointController(BrowserWindowInterface* browser)
     : browser_(browser),
-      scoped_data_holder_(browser->GetUnownedUserDataHost(), this) {
+      scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {
   CHECK(browser_);
   browser_->GetTabStripModel()->AddObserver(this);
   shopping_service_ =

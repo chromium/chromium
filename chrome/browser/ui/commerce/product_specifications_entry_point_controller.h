@@ -45,8 +45,7 @@ class ProductSpecificationsEntryPointController
       BrowserWindowInterface* browser);
   ~ProductSpecificationsEntryPointController() override;
 
-  static constexpr const char* kDataKey =
-      "ProductSpecificationsEntryPointController";
+  DECLARE_USER_DATA(ProductSpecificationsEntryPointController);
 
   static ProductSpecificationsEntryPointController* From(
       BrowserWindowInterface* browser_window_interface);

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 
-#include <ostream>
-
 #include "base/check.h"
 
 UnownedUserDataHost::UnownedUserDataHost() = default;
@@ -21,14 +19,11 @@ UnownedUserDataHost::~UnownedUserDataHost() {
                       << "First remaining key: " << map_.begin()->first;
 }
 
-void UnownedUserDataHost::MarkKeyForTesting(const char* key) {
+void UnownedUserDataHost::MarkKeyForTestingImpl(UntypedKey key) {
   testing_keys_.insert(key);
 }
 
-void UnownedUserDataHost::Set(
-    base::PassKey<internal::ScopedUnownedUserDataBase> pass_key,
-    const char* key,
-    void* data) {
+void UnownedUserDataHost::SetImpl(UntypedKey key, void* data) {
   CHECK(data) << "Assigning bad data for key: " << key;
   bool inserted = map_.insert_or_assign(key, data).second;
   // Ensure a new value was inserted into the map unless the key was explicitly
@@ -38,9 +33,7 @@ void UnownedUserDataHost::Set(
       << "Attempted to reinsert data for key: " << key;
 }
 
-void UnownedUserDataHost::Erase(
-    base::PassKey<internal::ScopedUnownedUserDataBase> pass_key,
-    const char* key) {
+void UnownedUserDataHost::EraseImpl(UntypedKey key) {
   bool erased = map_.erase(key);
   // The value should have been erased unless the key was marked as being used
   // in testing. In that case, the previous testing instance may have erased the
@@ -49,9 +42,7 @@ void UnownedUserDataHost::Erase(
       << "Erasing invalid data for key: " << key;
 }
 
-void* UnownedUserDataHost::Get(
-    base::PassKey<internal::ScopedUnownedUserDataBase>,
-    const char* key) {
+void* UnownedUserDataHost::GetImpl(UntypedKey key) {
   auto iter = map_.find(key);
   return iter == map_.end() ? nullptr : iter->second;
 }

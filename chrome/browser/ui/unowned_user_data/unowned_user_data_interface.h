@@ -13,18 +13,17 @@ class UnownedUserDataHost;
 // UnownedUserDataHost. This interface provides the Get() method and ownership
 // of the ScopedUnownedUserData<> member to reduce the boilerplate of
 // subclasses.
+//
 // Since this is not a pure virtual class, consumers may also use
 // ScopedUnownedUserData<> directly to avoid multiple inheritance.
 template <class T>
 class UnownedUserDataInterface {
  public:
-  UnownedUserDataInterface(UnownedUserDataHost& host, T* data)
-      : scoped_user_data_(host, data) {}
   virtual ~UnownedUserDataInterface() = default;
 
-  static T* Get(UnownedUserDataHost& host) {
-    return ScopedUnownedUserData<T>::Get(host);
-  }
+ protected:
+  explicit UnownedUserDataInterface(UnownedUserDataHost& host)
+      : scoped_user_data_(host, *static_cast<T*>(this)) {}
 
  private:
   ScopedUnownedUserData<T> scoped_user_data_;

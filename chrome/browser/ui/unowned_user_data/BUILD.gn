@@ -13,10 +13,10 @@ source_set("unowned_user_data") {
     "unowned_user_data_interface.h",
   ]
 
-  sources = [
-    "scoped_unowned_user_data.cc",
-    "unowned_user_data_host.cc",
-  ]
+  sources = [ "unowned_user_data_host.cc" ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//ui/base",
+  ]
 }
