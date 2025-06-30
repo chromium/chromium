@@ -71,8 +71,8 @@ bool ShouldDisplaySearchEngineChoiceScreen(
         *template_url_service);
   }
 
-  // If the app has been started via an external intent, and skip the Dialog
-  // promo up to switches::kSearchEngineChoiceMaximumSkipCount() times.
+  // If the app has been started via an external intent, skip the Dialog
+  // promo up to kSearchEngineChoiceMaximumSkipCount times.
   if (app_started_via_external_intent && !is_first_run_entrypoint &&
       condition ==
           search_engines::SearchEngineChoiceScreenConditions::kEligible) {
@@ -80,7 +80,7 @@ bool ShouldDisplaySearchEngineChoiceScreen(
     const int count = pref_service->GetInteger(
         prefs::kDefaultSearchProviderChoiceScreenSkippedCount);
 
-    if (count < switches::kSearchEngineChoiceMaximumSkipCount.Get()) {
+    if (count < kSearchEngineChoiceMaximumSkipCount) {
       pref_service->SetInteger(
           prefs::kDefaultSearchProviderChoiceScreenSkippedCount, count + 1);
 

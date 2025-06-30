@@ -9,6 +9,12 @@ class ProfileIOS;
 
 // Utilities for the search engine choice screen.
 
+// Maximum number of times the search engine choice screen can be skipped
+// because the application is started via an external intent. Once this
+// count is reached, the search engine choice screen is presented on all
+// restarts until the user has made a decision.
+constexpr int kSearchEngineChoiceMaximumSkipCount = 10;
+
 // Whether or not the choice screen should be displayed for existing users.
 // The parameter `app_started_via_external_intent` is used only if
 // `is_first_run_entrypoint` is set to `false . The value is ignored otherwise.

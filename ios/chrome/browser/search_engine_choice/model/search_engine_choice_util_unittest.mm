@@ -94,11 +94,11 @@ TEST_F(SearchEngineChoiceUtilTest,
 TEST_F(
     SearchEngineChoiceUtilTest,
     ShowChoiceScreenIfPoliciesAreNotSetStartedByExternalIntentAlmostMaxCount) {
-  ASSERT_GT(switches::kSearchEngineChoiceMaximumSkipCount.Get(), 0);
+  ASSERT_GT(kSearchEngineChoiceMaximumSkipCount, 0);
   PrefService* pref_service = profile().GetPrefs();
   pref_service->SetInteger(
       prefs::kDefaultSearchProviderChoiceScreenSkippedCount,
-      switches::kSearchEngineChoiceMaximumSkipCount.Get() - 1);
+      kSearchEngineChoiceMaximumSkipCount - 1);
 
   EXPECT_FALSE(ShouldDisplaySearchEngineChoiceScreen(
       profile(), /*is_first_run_entrypoint=*/false,
@@ -116,7 +116,7 @@ TEST_F(
   PrefService* pref_service = profile().GetPrefs();
   pref_service->SetInteger(
       prefs::kDefaultSearchProviderChoiceScreenSkippedCount,
-      switches::kSearchEngineChoiceMaximumSkipCount.Get());
+      kSearchEngineChoiceMaximumSkipCount);
 
   EXPECT_TRUE(ShouldDisplaySearchEngineChoiceScreen(
       profile(), /*is_first_run_entrypoint=*/false,
