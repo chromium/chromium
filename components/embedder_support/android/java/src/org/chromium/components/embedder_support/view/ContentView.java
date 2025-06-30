@@ -28,6 +28,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -43,7 +44,6 @@ import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -416,7 +416,7 @@ public class ContentView extends FrameLayout
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
                 && Build.VERSION.SDK_INT <= 38
-                && DeviceFormFactor.isDesktop()) {
+                && DeviceInfo.isDesktop()) {
             if (mPendingTwoFingerSwipeDownEvent != null) {
                 // We expect to receive a two finger swipe event after having received a down from
                 // two finger swipe.

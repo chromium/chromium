@@ -30,6 +30,7 @@ import android.view.autofill.AutofillValue;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.chromium.base.DeviceInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +40,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.MotionEventTestUtils;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -119,7 +119,7 @@ public class ContentViewTest {
     @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testIgnoreFakeTwoFingerSwipeEventsOnDesktop() {
         // This is a test for desktop-only hack.
-        if (!DeviceFormFactor.isDesktop()) {
+        if (!DeviceInfo.isDesktop()) {
             return;
         }
         EventForwarder forwarder = mock(EventForwarder.class);

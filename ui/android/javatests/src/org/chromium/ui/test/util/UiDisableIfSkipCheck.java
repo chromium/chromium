@@ -6,6 +6,7 @@ package org.chromium.ui.test.util;
 
 import android.content.Context;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisableIfSkipCheck;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -41,7 +42,7 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
     }
 
     private boolean isDesktopBuild() {
-        return DeviceFormFactor.isDesktop();
+        return DeviceInfo.isDesktop();
     }
 
     private boolean isTablet() {

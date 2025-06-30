@@ -18,6 +18,7 @@ import android.view.KeyboardShortcutInfo;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.DeviceInfo;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -38,7 +39,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -615,7 +615,7 @@ public class KeyboardShortcuts {
                 R.string.keyboard_shortcut_chrome_feature_group_header);
 
         // Developer tools.
-        if (DeviceFormFactor.isDesktop()) {
+        if (DeviceInfo.isDesktop()) {
             new KeyboardShortcutDefinition(
                     KeyboardShortcutsSemanticMeaning.DEV_TOOLS,
                     new KeyCombo(
