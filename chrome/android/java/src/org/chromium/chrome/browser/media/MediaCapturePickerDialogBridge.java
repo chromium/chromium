@@ -4,15 +4,15 @@
 
 package org.chromium.chrome.browser.media;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** Glue for the media capture picker dialog UI code and communication with the native backend. */
+@NullMarked
 public class MediaCapturePickerDialogBridge implements MediaCapturePickerDialog.Delegate {
     private long mNativeMediaCapturePickerDialogBridge;
 
@@ -57,7 +57,7 @@ public class MediaCapturePickerDialogBridge implements MediaCapturePickerDialog.
     }
 
     @Override
-    public void onPickTab(@NonNull WebContents webContents, boolean audioShare) {
+    public void onPickTab(WebContents webContents, boolean audioShare) {
         // We know `mNativeMediaCapturePickerDialogBridge` is non-zero because
         // `destroy` will only be called after the dialog is dismissed.
         assert mNativeMediaCapturePickerDialogBridge != 0;
