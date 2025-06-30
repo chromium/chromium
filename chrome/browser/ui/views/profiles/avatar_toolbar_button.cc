@@ -508,8 +508,8 @@ AvatarToolbarButton::CreateScopedInfiniteDelayOverrideForTesting(
       CreateScopedInfiniteDelayOverrideForTesting(delay_type);
 }
 
-void AvatarToolbarButton::TriggerTimeoutForTesting(AvatarDelayType delay_type) {
-  delegate_->TriggerTimeoutForTesting(delay_type);  // IN-TEST
+void AvatarToolbarButton::ClearActiveStateForTesting() {
+  delegate_->ClearActiveStateForTesting();  // IN-TEST
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

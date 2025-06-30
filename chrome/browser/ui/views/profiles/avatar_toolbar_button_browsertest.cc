@@ -187,7 +187,7 @@ class AvatarToolbarButtonBaseBrowserTest {
     // By default make all delays infinite to avoid flakiness. The tests that
     // needs to test bypass the delay effects will have to enforce timing out
     // the delays using
-    // `AvatarToolbarButton::TriggerTimeoutForTesting()`. This allows to
+    // `AvatarToolbarButton::ClearActiveStateForTesting()`. This allows to
     // properly test the behavior pre/post delay without being time dependent.
     SetInfiniteAvatarDelay(AvatarDelayType::kNameGreeting);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -210,8 +210,8 @@ class AvatarToolbarButtonBaseBrowserTest {
 
   // Allows overriding the delay of different events that have a timing
   // duration. Sets the delay to infinite in order to be able to test the
-  // behavior while the delay is happening. In order to stop the delay, use
-  // `AvatarToolbarButton::TriggerTimeoutForTesting()` at any point.
+  // behavior while the delay is happening. In order to clear the current state,
+  // use `AvatarToolbarButton::ClearActiveStateForTesting()` at any point.
   void SetInfiniteAvatarDelay(AvatarDelayType delay_type) {
     delay_resets_.push_back(
         AvatarToolbarButton::CreateScopedInfiniteDelayOverrideForTesting(
@@ -344,7 +344,7 @@ class AvatarToolbarButtonBaseBrowserTest {
       const std::u16string& email,
       const std::u16string& name = u"account_name") {
     AccountInfo account_info = SigninWithImage(email, name);
-    avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+    avatar->ClearActiveStateForTesting();
     // Make sure the cross window animation replay is not triggered. This is
     // needed to clear the animation in all windows.
     delay_resets_.push_back(
@@ -360,7 +360,7 @@ class AvatarToolbarButtonBaseBrowserTest {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (base::FeatureList::IsEnabled(
             switches::kEnableHistorySyncOptinExpansionPill)) {
-      avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+      avatar->ClearActiveStateForTesting();
     }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
@@ -431,7 +431,7 @@ class AvatarToolbarButtonBaseBrowserTest {
   AccountInfo EnableSyncWithImageAndClearGreeting(AvatarToolbarButton* avatar,
                                                   const std::u16string& email) {
     AccountInfo account_info = EnableSyncWithImage(email);
-    avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+    avatar->ClearActiveStateForTesting();
     // Make sure the cross window animation replay is not triggered. This is
     // needed to clear the animation in all windows.
     delay_resets_.push_back(
@@ -713,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
 
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   ClearHistorySyncOptinPromoIfEnabled(avatar);
   // Once the name is not shown anymore, we expect no text.
   EXPECT_EQ(avatar->GetText(), std::u16string());
@@ -745,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, MAYBE_ShowNameOnSync) {
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
 
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // Once the name is not shown anymore, we expect no text.
   EXPECT_EQ(avatar->GetText(), std::u16string());
 }
@@ -993,7 +993,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, TooltipText) {
 
   EXPECT_EQ(avatar->GetRenderedTooltipText(gfx::Point()), account_name);
 
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
 
   // Tooltip is the same after hiding the name.
   EXPECT_EQ(avatar->GetRenderedTooltipText(gfx::Point()), account_name);
@@ -1089,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
   ASSERT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
                                        base::UTF8ToUTF16(account.given_name)));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should NOT be followed by the history sync opt-in entry point
   // if sync is already enabled.
   EXPECT_TRUE(avatar->GetText().empty());
@@ -1123,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
   ASSERT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
                                        base::UTF8ToUTF16(account.given_name)));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should NOT be followed by the history sync opt-in entry point
   // if promotions are disabled.
   EXPECT_TRUE(avatar->GetText().empty());
@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
   SigninWithImage(/*email=*/u"test@gmail.com", account_name);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should NOT be followed by the history sync opt-in entry point
   // if sync is not allowed.
   EXPECT_TRUE(avatar->GetText().empty());
@@ -1194,7 +1194,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinManagedTypeTest,
   SigninWithImage(/*email=*/u"test@gmail.com", account_name);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should NOT be followed by the history sync opt-in entry point
   // if sync is not allowed.
   EXPECT_TRUE(avatar->GetText().empty());
@@ -1241,7 +1241,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
   SigninWithImage(/*email=*/u"test@gmail.com", account_name);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
@@ -1273,7 +1273,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
   SigninWithImage(/*email=*/u"test@gmail.com", account_name);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
@@ -1305,7 +1305,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
   SigninWithImage(/*email=*/u"test@gmail.com", account_name);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
@@ -1336,7 +1336,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
   SigninWithImage(/*email=*/u"test@gmail.com", account_name);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
@@ -1372,7 +1372,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
   SimulatePassphraseError();
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // No history sync opt-in entry point should be shown if the error is shown
   // before the greeting times out.
   EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
@@ -1418,7 +1418,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
   const AccountInfo account_info = SigninWithImage(email, account_name);
   EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(
       avatar->GetText(),
@@ -1444,7 +1444,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
   const AccountInfo account_info = SigninWithImage(email, account_name);
   EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(
       avatar->GetText(),
@@ -1472,12 +1472,12 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
   const AccountInfo account_info = SigninWithImage(email, account_name);
   EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(
       avatar->GetText(),
       l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  avatar->ClearActiveStateForTesting();
   // The button should return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
 }
@@ -1493,12 +1493,12 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
   ASSERT_EQ(
       avatar->GetText(),
       l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, u"Account name"));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(
       avatar->GetText(),
       l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  avatar->ClearActiveStateForTesting();
   // The button should return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
 }
@@ -1531,12 +1531,12 @@ IN_PROC_BROWSER_TEST_P(
   AddSignedInImage(account_info.account_id);
   EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(
       avatar->GetText(),
       l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  avatar->ClearActiveStateForTesting();
   // Once the history sync opt-in entry point collapses, the button should
   // return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
@@ -1548,7 +1548,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(
       avatar->GetText(),
       l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  avatar->ClearActiveStateForTesting();
   // Once the history sync opt-in entry point collapses, the button should
   // return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
@@ -1580,13 +1580,13 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
   SigninWithImage(/*email=*/u"test@gmail.com", account_name_1);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name_1));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(
       avatar->GetText(),
       l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
   int shown_count = 1;
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  avatar->ClearActiveStateForTesting();
   // The button comes back to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
   for (; shown_count < user_education::features::GetNewBadgeShowCount();
@@ -1597,7 +1597,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
     EXPECT_EQ(
         avatar->GetText(),
         l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-    avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+    avatar->ClearActiveStateForTesting();
     // The button comes back to the normal state.
     EXPECT_TRUE(avatar->GetText().empty());
   }
@@ -1612,7 +1612,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
   SigninWithImage(/*email=*/u"test2@gmail.com", account_name_2);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name_2));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point
   // (rate limiting is per account).
   EXPECT_EQ(
@@ -1695,7 +1695,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
       SigninWithImage(/*email=*/u"test@gmail.com", account_name);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(
       avatar->GetText(),
@@ -1760,7 +1760,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
       SigninWithImage(/*email=*/u"test@gmail.com", account_name);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(
       avatar->GetText(),
@@ -1775,7 +1775,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
       "Signin.SyncOptIn.IdentityPill.Shown",
       signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
       /*expected_count=*/0);
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  avatar->ClearActiveStateForTesting();
   // The button comes back to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
   // Simulate inactivity for enough time to trigger the new session.
@@ -1844,7 +1844,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
   SigninWithImage(/*email=*/u"test@gmail.com", account_name_1);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name_1));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
   EXPECT_EQ(
       avatar->GetText(),
@@ -1877,7 +1877,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
   SigninWithImage(/*email=*/u"test2@gmail.com", account_name_2);
   ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, account_name_2));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point
   // (rate limiting is per account).
   EXPECT_EQ(
@@ -1911,7 +1911,7 @@ IN_PROC_BROWSER_TEST_P(
       SigninWithImage(/*email=*/u"test@gmail.com", account_name);
   ASSERT_EQ(avatar_1->GetText(), l10n_util::GetStringFUTF16(
                                      IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar_1->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar_1->ClearActiveStateForTesting();
 
   // The greeting should be followed by the history sync opt-in.
   EXPECT_EQ(
@@ -1934,7 +1934,7 @@ IN_PROC_BROWSER_TEST_P(
       "Signin.SyncOptIn.IdentityPill.Shown",
       signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
       /*expected_count=*/0);
-  avatar_1->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  avatar_1->ClearActiveStateForTesting();
   // The button in both browsers comes back to the normal state.
   EXPECT_TRUE(avatar_1->GetText().empty());
   EXPECT_TRUE(avatar_2->GetText().empty());
@@ -2352,7 +2352,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
-  EnableSyncWithImageAndClearGreeting(avatar_button, u"work@managed.com");
+  EnableSyncWithImage(u"work@managed.com");
   SimulateSyncPaused();
   // Sync Paused has priority over the Work badge.
   ExpectSyncPaused(avatar_button);
@@ -2436,12 +2436,12 @@ IN_PROC_BROWSER_TEST_P(
   // shown.
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   if (IsParamFeatureEnabled()) {
     // The greeting is followed by the history sync opt-in.
     EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
                                      IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
-    avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+    avatar->ClearActiveStateForTesting();
   }
   // Once the name (or sync promo) is not shown anymore, we expect no text.
   EXPECT_EQ(avatar->GetText(), std::u16string());
@@ -2450,11 +2450,15 @@ IN_PROC_BROWSER_TEST_P(
 // TODO(crbug.com/331746545): Check flaky test issue on windows.
 // TODO(crbug.com/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge DISABLED_PRE_SignedInWithNewSessionKeepWorkBadge
-#define MAYBE_SignedInWithNewSessionKeepWorkBadge DISABLED_SignedInWithNewSessionKeepWorkBadge
+#define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge \
+  DISABLED_PRE_SignedInWithNewSessionKeepWorkBadge
+#define MAYBE_SignedInWithNewSessionKeepWorkBadge \
+  DISABLED_SignedInWithNewSessionKeepWorkBadge
 #else
-#define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge PRE_SignedInWithNewSessionKeepWorkBadge
-#define MAYBE_SignedInWithNewSessionKeepWorkBadge SignedInWithNewSessionKeepWorkBadge
+#define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge \
+  PRE_SignedInWithNewSessionKeepWorkBadge
+#define MAYBE_SignedInWithNewSessionKeepWorkBadge \
+  SignedInWithNewSessionKeepWorkBadge
 #endif
 // Tests the flow for a managed sign-in.
 IN_PROC_BROWSER_TEST_P(
@@ -2469,12 +2473,12 @@ IN_PROC_BROWSER_TEST_P(
   // shown.
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   if (IsParamFeatureEnabled()) {
     // The greeting is followed by the history sync opt-in.
     EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
                                      IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
-    avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+    avatar->ClearActiveStateForTesting();
   }
 
   // Once the name (or sync promo) is not shown anymore, we expect no text since
@@ -2505,12 +2509,12 @@ IN_PROC_BROWSER_TEST_P(
   // the management acceptance after restart).
   EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, u"TestName"));
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   if (IsParamFeatureEnabled()) {
     // The greeting is followed by the history sync opt-in.
     EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
                                      IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
-    avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+    avatar->ClearActiveStateForTesting();
   }
 
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
@@ -2557,7 +2561,7 @@ IN_PROC_BROWSER_TEST_P(
   if (IsParamFeatureEnabled()) {
     EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
                                      IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
-    avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+    avatar->ClearActiveStateForTesting();
   }
   EXPECT_EQ(avatar->GetText(), u"Work");
 }
@@ -2636,11 +2640,9 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(new_browser_avatar_button->GetText(), std::u16string());
 
   // Simulate all the timer ends.
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kSigninPendingText);
-  opened_browser_avatar_button->TriggerTimeoutForTesting(
-      AvatarDelayType::kSigninPendingText);
-  new_browser_avatar_button->TriggerTimeoutForTesting(
-      AvatarDelayType::kSigninPendingText);
+  avatar->ClearActiveStateForTesting();
+  opened_browser_avatar_button->ClearActiveStateForTesting();
+  new_browser_avatar_button->ClearActiveStateForTesting();
 
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
@@ -2673,7 +2675,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
                                        std::u16string(kGivenName)));
 
-  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  avatar->ClearActiveStateForTesting();
   // The error text is expected to be shown even if the error delay has not
   // reached yet.
   EXPECT_EQ(avatar->GetText(),

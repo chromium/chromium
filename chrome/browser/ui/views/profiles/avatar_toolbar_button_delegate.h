@@ -97,7 +97,7 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   // Testing functions: check `AvatarToolbarButton` equivalent functions.
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedInfiniteDelayOverrideForTesting(AvatarDelayType delay_type);
-  void TriggerTimeoutForTesting(AvatarDelayType delay_type);
+  void ClearActiveStateForTesting();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedZeroDelayOverrideSigninPendingTextForTesting();

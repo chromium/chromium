@@ -260,6 +260,8 @@ class StateProvider {
   explicit StateProvider(Profile* profile, StateObserver* state_observer)
       : profile_(*profile), state_observer_(*state_observer) {}
 
+  virtual ~StateProvider() = default;
+
   // TODO(b/324018028): Consider changing `IsActive()` to be non-virtual and
   // return a member variable `is_active_` that can be controlled by the derived
   // classes that sets the active/inactive state when needed, also requesting
@@ -333,7 +335,9 @@ class StateProvider {
   // it should call this method to attempt to propagate the changes.
   void RequestUpdate() { state_observer_->OnStateProviderUpdateRequest(this); }
 
-  virtual ~StateProvider() = default;
+  // Clears the state (makes it inactive). Should be used only for testing
+  // purposes.
+  virtual void ClearForTesting() { NOTREACHED(); }
 
  protected:
   Profile& profile() const { return profile_.get(); }
@@ -555,6 +559,8 @@ class ShowIdentityNameStateProvider : public StateProvider,
     return GetShortProfileName(profile());
   }
 
+  void ClearForTesting() override { OnIdentityAnimationTimeout(); }
+
   // IdentityManager::Observer:
   // Needed if the first sync promo account should be displayed.
   void OnPrimaryAccountChanged(
@@ -621,8 +627,6 @@ class ShowIdentityNameStateProvider : public StateProvider,
     // Try to show the name if we were waiting for an image.
     MaybeShowIdentityName();
   }
-
-  void ForceDelayTimeoutForTesting() { OnIdentityAnimationTimeout(); }
 
  private:
   // Initiates showing the identity.
@@ -761,7 +765,7 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
     Collapse();
   }
 
-  void ForceDelayTimeoutForTesting() { Collapse(); }
+  void ClearForTesting() { Collapse(); }
 
   // StateManagerObserver:
   void OnButtonStateChanged(std::optional<ButtonState> old_state,
@@ -991,9 +995,7 @@ class HistorySyncOptinStateProvider : public StateProvider {
         base::Unretained(this));
   }
 
-  void ForceDelayTimeoutForTesting() {
-    coordinator_->ForceDelayTimeoutForTesting();
-  }
+  void ClearForTesting() override { coordinator_->ClearForTesting(); }
 
  private:
   void OnButtonClick(bool is_source_accelerator) {
@@ -1366,13 +1368,13 @@ class SigninPendingStateProvider : public StateProvider,
     return {kColorToolbarInkDropHover, kColorAvatarButtonNormalRipple};
   }
 
-  // Only show the text when the delay timer is not running.
-  bool ShouldShowText() const { return !display_text_delay_timer_.IsRunning(); }
-
-  void ForceTimerTimeoutForTesting() {
+  void ClearForTesting() override {
     display_text_delay_timer_.FireNow();
     display_text_delay_timer_.Stop();
   }
+
+  // Only show the text when the delay timer is not running.
+  bool ShouldShowText() const { return !display_text_delay_timer_.IsRunning(); }
 
  private:
   // signin::IdentityManager::Observer:
@@ -1589,12 +1591,6 @@ class StateManager : public StateObserver,
   // Special setter for the explicit state as it is controlled externally.
   void SetExplicitStateProvider(
       std::unique_ptr<ExplicitStateProvider> explicit_state_provider) {
-    if (auto it = states_.find(ButtonState::kExplicitTextShowing);
-        it != states_.end()) {
-      // Attempt to clear existing states if not already done.
-      static_cast<ExplicitStateProvider*>(it->second.get())->Clear();
-    }
-
     // Invalidate the pointer as the map will reorder it's element when adding a
     // new state and the pointer will not be valid anymore. The value will be
     // set later again with `ComputeButtonActiveState()`.
@@ -2087,42 +2083,11 @@ AvatarToolbarButtonDelegate::CreateScopedInfiniteDelayOverrideForTesting(
   }
 }
 
-void AvatarToolbarButtonDelegate::TriggerTimeoutForTesting(
-    AvatarDelayType delay_type) {
-  switch (delay_type) {
-    case AvatarDelayType::kNameGreeting:
-      if (state_manager_->GetButtonActiveState() ==
-          ButtonState::kShowIdentityName) {
-        auto* show_identity_state =
-            static_cast<internal::ShowIdentityNameStateProvider*>(
-                state_manager_->GetActiveStateProvider());
-        CHECK(show_identity_state);
-        show_identity_state->ForceDelayTimeoutForTesting();  // IN-TEST
-      }
-      break;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    case AvatarDelayType::kSigninPendingText:
-      if (state_manager_->GetButtonActiveState() ==
-          ButtonState::kSigninPending) {
-        auto* signin_pending_state =
-            static_cast<internal::SigninPendingStateProvider*>(
-                state_manager_->GetActiveStateProvider());
-        CHECK(signin_pending_state);
-        signin_pending_state->ForceTimerTimeoutForTesting();  // IN-TEST
-      }
-      break;
-    case AvatarDelayType::kHistorySyncOptin:
-      if (state_manager_->GetButtonActiveState() ==
-          ButtonState::kHistorySyncOptin) {
-        auto* history_sync_optin_state =
-            static_cast<internal::HistorySyncOptinStateProvider*>(
-                state_manager_->GetActiveStateProvider());
-        CHECK(history_sync_optin_state);
-        history_sync_optin_state->ForceDelayTimeoutForTesting();  // IN-TEST
-      }
-      break;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-  }
+void AvatarToolbarButtonDelegate::ClearActiveStateForTesting() {
+  internal::StateProvider* active_state_provider =
+      state_manager_->GetActiveStateProvider();
+  CHECK(active_state_provider);
+  active_state_provider->ClearForTesting();
 }
 
 // static

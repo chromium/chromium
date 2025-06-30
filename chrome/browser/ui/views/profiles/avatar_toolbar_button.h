@@ -143,8 +143,8 @@ class AvatarToolbarButton : public ToolbarButton {
   // after delay expiry while controlling those events..
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedInfiniteDelayOverrideForTesting(AvatarDelayType delay_type);
-  // Force stop any ongoing delay, this expects the proper state to be active.
-  void TriggerTimeoutForTesting(AvatarDelayType delay_type);
+  // Clears the active state (makes it inactive).
+  void ClearActiveStateForTesting();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Specific override for the SigninPending text delay. Setting a zero value
   // make it possible to test the creation of browser after the delay has
