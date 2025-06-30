@@ -271,6 +271,9 @@ void LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent event,
                                     const CardMetadataLoggingContext& context) {
   switch (event) {
     case CardMetadataLoggingEvent::kShown: {
+      LogBenefitFormEventToAllBenefitHistograms(
+          context.instrument_ids_to_available_benefit_sources,
+          CardBenefitFormEvent::kSuggestionWithBenefitShown);
       if (context.masked_server_card_count >= 2) {
         LogBenefitFormEventToAllBenefitHistograms(
             context.instrument_ids_to_available_benefit_sources,

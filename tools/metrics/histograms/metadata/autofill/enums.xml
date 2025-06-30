@@ -3272,6 +3272,9 @@ Called by update_autofill_enums.py.-->
 <!-- LINT.IfChange(CardBenefitFormEvent) -->
 
 <enum name="CardBenefitFormEvent">
+  <int value="0"
+      label="Suggestions containing cards with a benefit available were shown
+             (once)"/>
   <int value="1"
       label="Suggestions containing cards with a benefit available were shown
              when the user had two or more server cards (once)"/>
