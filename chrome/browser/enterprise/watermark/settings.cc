@@ -34,11 +34,12 @@ SkAlpha PercentageToSkAlpha(int percent_value) {
   return std::clamp(percent_value, 0, 100) * 255 / 100;
 }
 
-// Helper function to get opacity to Skia alpha value (0-255).
+// Helper function to get opacity as a Skia alpha value (0-255)
+// from a percentage value (0-100)
 // Order of precedence:
-// 1. Command-line flag (0-100 percent).
-// 2. PrefService preference (0-100 percent).
-// 3. Default percentage value (0-100 percent).
+// 1. The command line flag value takes precedence over any other settings.
+// 2. If the user has set a custom value in the PrefService, that value is used.
+// 3. Otherwise, the default value stored in the PrefService is returned.
 int GetOpacity(const PrefService* prefs,
                const char* pref_name,
                const char* cmd_opacity_percent_flag) {
@@ -100,8 +101,6 @@ SkColor GetOutlineColor(const PrefService* prefs) {
   return SkColorSetA(kBaseOutlineRGB, alpha);
 }
 
-// Returns the font size for the watermark.
-// This function always returns a positive integer (>= 1).
 int GetFontSize(const PrefService* prefs) {
   if (!base::FeatureList::IsEnabled(
           enterprise_watermark::kEnableWatermarkCustomization)) {

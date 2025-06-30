@@ -16,6 +16,8 @@ SkColor GetDefaultOutlineColor();
 int GetDefaultFontSize();
 SkColor GetFillColor(const PrefService* prefs);
 SkColor GetOutlineColor(const PrefService* prefs);
+// Returns the font size for the watermark.
+// This function always returns a positive integer (>= 1).
 int GetFontSize(const PrefService* prefs);
 
 }  // namespace enterprise_watermark
