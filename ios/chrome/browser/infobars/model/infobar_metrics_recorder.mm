@@ -153,6 +153,16 @@ const char kInfobarCollaborationGroupModalEventHistogram[] =
 const char kInfobarCollaborationGroupBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.kInfobarCollaborationGroup";
 
+// Histogram names for collaboration out-of-date message banner.
+const char kInfobarCollaborationOutOfDateBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.kInfobarCollaborationOutOfDate";
+const char kInfobarCollaborationOutOfDateBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.kInfobarCollaborationOutOfDate";
+const char kInfobarCollaborationOutOfDateModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.kInfobarCollaborationOutOfDate";
+const char kInfobarCollaborationOutOfDateBadgeTappedHistogram[] =
+    "Mobile.Messages.Badge.Tapped.kInfobarCollaborationOutOfDate";
+
 }  // namespace
 
 @interface InfobarMetricsRecorder ()
@@ -217,6 +227,10 @@ const char kInfobarCollaborationGroupBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarCollaborationGroupBannerEventHistogram,
                                 event);
       break;
+    case InfobarType::kInfobarTypeCollaborationOutOfDate:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarCollaborationOutOfDateBannerEventHistogram, event);
+      break;
   }
 }
 
@@ -271,6 +285,11 @@ const char kInfobarCollaborationGroupBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarCollaborationGroupBannerDismissTypeHistogram, dismissType);
       break;
+    case InfobarType::kInfobarTypeCollaborationOutOfDate:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarCollaborationOutOfDateBannerDismissTypeHistogram,
+          dismissType);
+      break;
   }
 }
 
@@ -323,6 +342,10 @@ const char kInfobarCollaborationGroupBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarCollaborationGroupModalEventHistogram,
                                 event);
       break;
+    case InfobarType::kInfobarTypeCollaborationOutOfDate:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarCollaborationOutOfDateModalEventHistogram, event);
+      break;
   }
 }
 
@@ -369,6 +392,10 @@ const char kInfobarCollaborationGroupBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeCollaborationGroup:
       UMA_HISTOGRAM_ENUMERATION(kInfobarCollaborationGroupBadgeTappedHistogram,
                                 state);
+      break;
+    case InfobarType::kInfobarTypeCollaborationOutOfDate:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarCollaborationOutOfDateBadgeTappedHistogram, state);
       break;
   }
 }

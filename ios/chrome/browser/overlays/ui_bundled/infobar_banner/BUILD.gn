@@ -26,6 +26,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/overlays/ui_bundled:util",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/autofill_address_profile",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/collaboration_group",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/collaboration_out_of_date",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/confirm",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/passwords",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/permissions",

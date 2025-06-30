@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("collaboration_out_of_date") {
+  sources = [
+    "collaboration_out_of_date_infobar_banner_overlay_mediator.h",
+    "collaboration_out_of_date_infobar_banner_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/collaboration/model/messaging/infobar",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
+    "//ui/base",
+  ]
+}
