@@ -4308,9 +4308,12 @@ TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
 }
 
 TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
+  SetCacheType(net::GENERATED_BYTE_CODE_CACHE);
+
   SetMaxSize(-1);
   SetBackendToTest(BackendToTest::kSimple);
   InitCache();
+
   // We don't know what it will pick, but it's limited to what
   // disk_cache::PreferredCacheSize would return, scaled by the size experiment,
   // which only goes as much as 4x. It definitely should not be MAX_UINT64.
@@ -4325,27 +4328,27 @@ TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
             static_cast<unsigned>(max_default_size));
 
   uint64_t max_size_without_scaling = simple_cache_impl_->index()->max_size();
+  uint64_t max_file_size_without_scaling = simple_cache_impl_->MaxFileSize();
 
-  // Scale to 200%. Depending on whether the default is scaled to 400%, this
-  // should increase or reduce the size.
+  // Scale to 200%. Default is 100%. This should increase.
   {
     base::test::ScopedFeatureList scoped_feature_list;
     std::map<std::string, std::string> field_trial_params;
     field_trial_params["percent_relative_size"] = "200";
     scoped_feature_list.InitAndEnableFeatureWithParameters(
-        disk_cache::kChangeDiskCacheSizeExperiment, field_trial_params);
+        disk_cache::kChangeGeneratedCodeCacheSizeExperiment,
+        field_trial_params);
 
     InitCache();
 
     uint64_t max_size_scaled = simple_cache_impl_->index()->max_size();
+    uint64_t max_file_size_scaled = simple_cache_impl_->MaxFileSize();
 
-    if (kHTTPCacheSizeIsIncreased) {
-      EXPECT_GE(max_size_without_scaling, max_size_scaled);
-      EXPECT_LE(max_size_without_scaling, 2 * max_size_scaled);
-    } else {
-      EXPECT_GE(max_size_scaled, max_size_without_scaling);
-      EXPECT_LE(max_size_scaled, 2 * max_size_without_scaling);
-    }
+    EXPECT_GE(max_size_scaled, max_size_without_scaling);
+    EXPECT_LE(max_size_scaled, 2 * max_size_without_scaling);
+
+    EXPECT_GE(max_file_size_scaled, max_file_size_without_scaling);
+    EXPECT_LE(max_file_size_scaled, 2 * max_file_size_without_scaling);
   }
 }
 

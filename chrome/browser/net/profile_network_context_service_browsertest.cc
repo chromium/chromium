@@ -189,24 +189,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest,
   CheckDiskCacheSizeHistogramRecorded();
 }
 
-class DiskCachesizeExperiment : public ProfileNetworkContextServiceBrowsertest {
- public:
-  DiskCachesizeExperiment() = default;
-  ~DiskCachesizeExperiment() override = default;
-
-  void SetUp() override {
-    std::map<std::string, std::string> field_trial_params;
-    field_trial_params["percent_relative_size"] = "200";
-    feature_list_.InitAndEnableFeatureWithParameters(
-        disk_cache::kChangeDiskCacheSizeExperiment, field_trial_params);
-    ProfileNetworkContextServiceBrowsertest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(DiskCachesizeExperiment, ScaledCacheSize) {
+IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest, CacheSize) {
   // We don't have a great way of directly checking that the disk cache has the
   // correct max size, but we can make sure that we set up our network context
   // params correctly and that the histogram is recorded.
