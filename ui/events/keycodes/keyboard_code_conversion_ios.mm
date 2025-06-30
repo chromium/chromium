@@ -192,14 +192,15 @@ char32_t ReadLastUnicodeCharacter(NSString* characters) {
   if (characters.length == 0) {
     return 0;
   }
-  char16_t trail = [characters characterAtIndex:characters.length - 1];
+  // Use uint16_t instead of char16_t to suppress a compiler warning.
+  uint16_t trail = [characters characterAtIndex:characters.length - 1];
   if (CBU16_IS_SINGLE(trail)) {
     return trail;
   }
   if (characters.length == 1 || !CBU16_IS_TRAIL(trail)) {
     return 0;
   }
-  char16_t lead = [characters characterAtIndex:characters.length - 2];
+  uint16_t lead = [characters characterAtIndex:characters.length - 2];
   if (!CBU16_IS_LEAD(lead)) {
     return 0;
   }

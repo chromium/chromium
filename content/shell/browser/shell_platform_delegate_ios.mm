@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_config.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "content/public/browser/web_contents.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/color_chooser/shell_color_chooser_ios.h"
 #include "content/shell/browser/shell.h"
