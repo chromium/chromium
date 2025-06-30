@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] .test 3
+  assert_equals: \n<div class="test flex-row" data-expected-width="60" data-expected-height="60">\n  <canvas width="50" height="50" style="height: 0px; min-height: max-content">\n</canvas></div>\nheight expected 60 but got 10
+[FAIL] .test 4
+  assert_equals: \n<div class="test flex-row" data-expected-width="60" data-expected-height="60">\n  <canvas width="50" height="50" style="height: 100px; max-height: max-content"></canvas>\n</div>\nheight expected 60 but got 110
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Worker construction for a file URL should fail
+  Failed to construct 'Worker': Script at 'file:///static-import-worker.js' cannot be accessed from origin 'http://web-platform.test:8001'.
+Harness: the test ran to completion.
+
