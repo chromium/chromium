@@ -19,6 +19,18 @@ dictionary DisconnectedAccount {
   required USVString account_id;
 };
 
+dictionary IdentityCredentialErrorInit {
+  DOMString error;
+  DOMString url;
+};
+
+[Exposed=Window, SecureContext]
+interface IdentityCredentialError : DOMException {
+  constructor(optional DOMString message = "", optional IdentityCredentialErrorInit options = {});
+  readonly attribute DOMString error;
+  readonly attribute DOMString url;
+};
+
 partial dictionary CredentialRequestOptions {
   IdentityCredentialRequestOptions identity;
 };
@@ -103,6 +115,7 @@ dictionary IdentityProviderAccountList {
 dictionary IdentityAssertionResponse {
   USVString token;
   USVString continue_on;
+  IdentityCredentialErrorInit error;
 };
 
 dictionary IdentityProviderClientMetadata {
