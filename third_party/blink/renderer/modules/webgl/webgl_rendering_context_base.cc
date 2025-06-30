@@ -2002,12 +2002,9 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
                                           /*export_only_if_update=*/false);
   }
 
-  if (was_dirty) {
-    GetOrCreateCanvasResourceProvider();
-  }
-  PaintRenderingResultsToCanvas(source_buffer);
-  if (has_dispatcher && was_dirty && GetOrCreateCanvasResourceProvider()) {
-    return resource_provider_.get()->ProduceCanvasResource(reason);
+  auto* resource_provider = PaintRenderingResultsToCanvas(source_buffer);
+  if (has_dispatcher && was_dirty && resource_provider) {
+    return resource_provider->ProduceCanvasResource(reason);
   }
   return nullptr;
 }
