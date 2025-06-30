@@ -7741,9 +7741,6 @@ const char kScalableIphDebugName[] = "Scalable Iph Debug";
 const char kScalableIphDebugDescription[] =
     "Enables debug feature of Scalable Iph";
 
-const char kSealKeyName[] = "Secret key for Seal feature";
-const char kSealKeyDescription[] = "Secret key for Seal feature.";
-
 const char kShelfAutoHideSeparationName[] =
     "Enable separate shelf auto-hide preferences.";
 const char kShelfAutoHideSeparationDescription[] =

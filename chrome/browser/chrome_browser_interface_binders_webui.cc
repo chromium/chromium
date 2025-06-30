@@ -258,7 +258,6 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_search_proxy.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom.h"
-#include "chrome/browser/ui/webui/ash/emoji/seal.mojom.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting.mojom.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom.h"
@@ -1148,8 +1147,6 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       new_window_proxy::mojom::NewWindowProxy, ash::EmojiUI>(map);
-  RegisterWebUIControllerInterfaceBinder<seal::mojom::SealService,
-                                         ash::EmojiUI>(map);
 
   if (base::FeatureList::IsEnabled(features::kSkyVault) &&
       base::FeatureList::IsEnabled(features::kSkyVaultV2)) {

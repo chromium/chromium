@@ -18,7 +18,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
-#include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
 #include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
@@ -319,10 +318,6 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
   if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerMojoSearch)) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_MOJO_SEARCH);
-  }
-  if (SealUtils::ShouldEnable()) {
-    enabled_features.push_back(
-        emoji_picker::mojom::Feature::EMOJI_PICKER_SEAL_SUPPORT);
   }
 
   if (base::FeatureList::IsEnabled(

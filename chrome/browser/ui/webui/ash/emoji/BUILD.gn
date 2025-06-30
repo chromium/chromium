@@ -21,16 +21,6 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 }
 
-mojom("seal_mojom") {
-  sources = [ "seal.mojom" ]
-
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//ui/gfx/geometry/mojom",
-    "//url/mojom:url_mojom_gurl",
-  ]
-}
-
 static_library("emoji") {
   sources = [
     "bubble_utils.cc",
@@ -43,15 +33,10 @@ static_library("emoji") {
     "emoji_ui.h",
     "new_window_proxy.cc",
     "new_window_proxy.h",
-    "seal.cc",
-    "seal.h",
-    "seal_utils.cc",
-    "seal_utils.h",
   ]
 
   public_deps = [
     ":mojo_bindings",
-    ":seal_mojom",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
@@ -75,7 +60,6 @@ static_library("emoji") {
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
     "//chrome/browser/resources/chromeos/emoji_picker:resources",
-    "//chrome/browser/resources/chromeos/seal:resources",
     "//chromeos/ash/components/emoji:resources",
     "//components/prefs",
     "//net",
@@ -99,7 +83,6 @@ source_set("unit_tests") {
     "bubble_utils_unittest.cc",
     "emoji_page_handler_unittest.cc",
     "emoji_ui_unittest.cc",
-    "seal_unittest.cc",
   ]
 
   deps = [

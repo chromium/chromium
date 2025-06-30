@@ -123,10 +123,6 @@
     "META": {"sizes": {"includes": [150]}},
     "includes": [2400],
   },
-  "chrome/browser/resources/chromeos/seal/resources.grd": {
-    "META": {"sizes": {"includes": [50]}},
-    "includes": [2420],
-  },
   "chrome/browser/resources/component_extension_resources.grd": {
     "includes": [2440],
     "structures": [2460],

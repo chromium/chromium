@@ -20,8 +20,7 @@ enum Feature {
   // user.
   EMOJI_PICKER_GIF_SUPPORT = 2,
   // NOTE: Skip `3` (which was used for jelly support before).
-  // Extends the emoji picker with Seal support.
-  EMOJI_PICKER_SEAL_SUPPORT = 4,
+  // NOTE: Skip `4` (which was used for seal support before).
   // Extends the emoji picker with global variant grouping by syncing skin tone
   // and gender preferences between emojis.
   EMOJI_PICKER_VARIANT_GROUPING_SUPPORT = 5,

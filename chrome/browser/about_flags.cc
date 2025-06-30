@@ -10488,12 +10488,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUseAdHocSigningForWebAppShims)},
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"seal-key", flag_descriptions::kSealKeyName,
-     flag_descriptions::kSealKeyDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kSealKey, "")},
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS)
     {"profiles-reordering", flag_descriptions::kProfilesReorderingName,
      flag_descriptions::kProfilesReorderingDescription, kOsDesktop,

@@ -8,30 +8,17 @@ import './emoji_group.js';
 
 import type {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import type {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import type {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NO_INTERNET_SEARCH_ERROR_MSG} from './constants.js';
 import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {getTemplate} from './emoji_search.html.js';
-import {createCustomEvent, EMOJI_IMG_BUTTON_CLICK, GIF_ERROR_TRY_AGAIN} from './events.js';
+import {GIF_ERROR_TRY_AGAIN} from './events.js';
 import Fuse from './fuse.js';
 import {Status} from './tenor_types.mojom-webui.js';
 import type {CategoryData, EmojiGroupData, EmojiVariants, Gender, Tone} from './types.js';
 import {CategoryEnum} from './types.js';
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'seal-snackbar': { show(): void } & HTMLElement;
-  }
-}
-
-interface Image {
-  url: Url;
-  size: Size;
-}
 
 export interface EmojiSearch {
   $: {
@@ -39,8 +26,6 @@ export interface EmojiSearch {
     searchShadow: HTMLElement,
   };
 }
-
-const SEAL_DEFAULT_STYLE_NAME = 'seal';
 
 export class EmojiSearch extends PolymerElement {
   static get is() {
@@ -59,7 +44,6 @@ export class EmojiSearch extends PolymerElement {
       searchResults: {type: Array},
       needIndexing: {type: Boolean, value: false},
       gifSupport: {type: Boolean, value: false},
-      sealSupport: {type: Boolean, value: false},
       status: {type: Status, value: null},
       nextGifPos: {type: String, value: ''},
       errorMessage: {type: String, value: NO_INTERNET_SEARCH_ERROR_MSG},
@@ -68,7 +52,6 @@ export class EmojiSearch extends PolymerElement {
       useGroupedPreference: {type: Boolean, value: false},
       globalTone: {type: Number, value: null, readonly: true},
       globalGender: {type: Number, value: null, readonly: true},
-      sealMode: {type: Boolean, value: false},
     };
   }
   categoriesData: EmojiGroupData;
@@ -77,14 +60,12 @@ export class EmojiSearch extends PolymerElement {
   private searchResults: EmojiGroupData;
   private needIndexing: boolean;
   private gifSupport: boolean;
-  private sealSupport: boolean;
   private status: Status|null;
   private closeGifNudgeOverlay: () => void;
   private useMojoSearch = false;
   private useGroupedPreference: boolean;
   private globalTone: Tone|null = null;
   private globalGender: Gender|null = null;
-  private sealMode: boolean;
 
   // TODO(b/235419647): Update the config to use extended search.
   private fuseConfig: Fuse.IFuseOptions<EmojiVariants> = {
@@ -120,11 +101,6 @@ export class EmojiSearch extends PolymerElement {
   }
 
   private async onSearch(newSearch: string): Promise<void> {
-    this.sealMode = this.isSealMode(newSearch);
-    if (this.sealMode) {
-      return;
-    }
-
     const localSearchResults = this.useMojoSearch ?
         await this.computeEmojiSearchResults(newSearch) :
         this.computeLocalSearchResults(newSearch);
@@ -404,11 +380,6 @@ export class EmojiSearch extends PolymerElement {
           .then((searchResults) => {
             this.push(['searchResults', gifIndex, 'emoji'], ...searchResults);
           });
-
-      // As part of loading more GIFs process, we also show seal snackbar.
-      if (!this.sealMode && this.sealSupport) {
-        this.shadowRoot?.querySelector('seal-snackbar')?.show();
-      }
     }
   }
 
@@ -511,39 +482,6 @@ export class EmojiSearch extends PolymerElement {
 
   getSearchQuery(): string {
     return this.$.search.getValue();
-  }
-
-  isSealMode(query: string): boolean {
-    return query.includes(':');
-  }
-
-  onSealToastConfirmed() {
-    if (!this.sealMode && this.sealSupport) {
-      this.setSearchQuery(`${SEAL_DEFAULT_STYLE_NAME}: ${this.getSearchQuery()}`);
-    }
-  }
-
-  onSealQueryChange(e: CustomEvent<string>) {
-    this.setSearchQuery(e.detail);
-  }
-
-  onSealImageClick(e: CustomEvent<Image>) {
-    this.dispatchEvent(createCustomEvent(
-        EMOJI_IMG_BUTTON_CLICK,
-        {
-          name: 'image',
-          category: CategoryEnum.GIF,
-          visualContent: {
-            id: 'seal',
-            url: {
-              full: e.detail.url,
-              preview: e.detail.url,
-              previewImage: e.detail.url,
-            },
-            previewSize: e.detail.size,
-          },
-        },
-        ));
   }
 
   /**

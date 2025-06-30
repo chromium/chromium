@@ -8699,11 +8699,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "seal-key",
-    "owners": [ "greywang@google.com", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "search-in-cct",
     "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 150

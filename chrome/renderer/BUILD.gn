@@ -42,9 +42,6 @@ grit("resources") {
   ]
   if (is_chromeos) {
     deps += [
-      # The JS binding files of seal.mojom will be imported to Google3 via
-      # copybara.
-      "//chrome/browser/ui/webui/ash/emoji:seal_mojom_js",
       "//chrome/browser/ui/webui/ash/lobster:lobster_mojom_js",
       "//chromeos/ash/components/enhanced_network_tts/mojom:mojom_js",
       "//chromeos/ash/services/ime/public/mojom:mojom_js",

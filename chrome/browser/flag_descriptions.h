@@ -4531,9 +4531,6 @@ extern const char kArcWindowPredictorDescription[];
 extern const char kScalableIphDebugName[];
 extern const char kScalableIphDebugDescription[];
 
-extern const char kSealKeyName[];
-extern const char kSealKeyDescription[];
-
 extern const char kShelfAutoHideSeparationName[];
 extern const char kShelfAutoHideSeparationDescription[];
 

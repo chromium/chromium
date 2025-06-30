@@ -101,7 +101,6 @@ export class EmojiPickerApp extends PolymerElement {
       },
       incognito: {type: Boolean, value: true},
       gifSupport: {type: Boolean, value: false},
-      sealSupport: {type: Boolean, value: false},
       variantGroupingSupport: {type: Boolean, value: false},
       showGifNudgeOverlay: {type: Boolean, value: false},
       nextGifPos: {type: Object, value: () => ({})},
@@ -126,7 +125,6 @@ export class EmojiPickerApp extends PolymerElement {
   private textSubcategoryBarEnabled: boolean;
   private incognito: boolean;
   private gifSupport: boolean;
-  private sealSupport: boolean;
   private variantGroupingSupport: boolean;
   private showGifNudgeOverlay: boolean;
   private activeVariant: EmojiGroupComponent|null = null;
@@ -466,7 +464,6 @@ export class EmojiPickerApp extends PolymerElement {
   private setActiveFeatures(featureList: Feature[]) {
     this.gifSupport = featureList.includes(Feature.EMOJI_PICKER_GIF_SUPPORT);
     this.useMojoSearch = featureList.includes(Feature.EMOJI_PICKER_MOJO_SEARCH);
-    this.sealSupport = featureList.includes(Feature.EMOJI_PICKER_SEAL_SUPPORT);
     this.variantGroupingSupport =
         featureList.includes(Feature.EMOJI_PICKER_VARIANT_GROUPING_SUPPORT);
 

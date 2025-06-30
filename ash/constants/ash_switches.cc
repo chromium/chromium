@@ -943,9 +943,6 @@ const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 // smaller shelf in clamshell mode.
 const char kShelfHotseat[] = "shelf-hotseat";
 
-// Supply secret key for Seal feature.
-const char kSealKey[] = "seal-key";
-
 // Testing grace period for DeviceScheduledReboot policy. Useful for tast tests.
 // See `ShouldSkipRebootDueToGracePeriod` in scheduled_task_util.h.
 const char kScheduledRebootGracePeriodInSecondsForTesting[] =
