@@ -808,13 +808,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Experimental.Usage.{PermissionType}.CrossOriginFrame.TopLevelHeaderPolicy"
-    enum="PermissionsPolicyConfiguration" expires_after="2025-03-09">
+    enum="PermissionsPolicyConfiguration" expires_after="2025-09-09">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Recorded whenever a permission is used in a cross-origin frame. Records what
     type of permission header policy the top-level document defined for the
     accessed feature.
+
+    Warning: this histogram was expired from 2025-03-09 to 2025-06-27; data may
+    be missing.
   </summary>
   <token key="PermissionType"
       variants="PermissionTypesSupportPermissionsPolicy"/>
