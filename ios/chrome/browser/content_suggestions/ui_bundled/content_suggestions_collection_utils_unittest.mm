@@ -271,7 +271,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, fakeOmniboxHeight) {
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
       /*disabled_features=*/{});
-  EXPECT_EQ(65, FakeOmniboxHeight());
+  EXPECT_EQ(64, FakeOmniboxHeight());
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, pinnedFakeOmniboxHeight) {
