@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_validator.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 
 class PrefService;

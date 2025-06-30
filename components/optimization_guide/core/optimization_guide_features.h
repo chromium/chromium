@@ -70,8 +70,6 @@ BASE_DECLARE_FEATURE(kTextSafetyClassifier);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kTextSafetyScanLanguageDetection);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kOnDeviceModelValidation);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAiSettingsPageForceAvailable);
@@ -410,29 +408,6 @@ std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks();
 // Whether the on-device model should be limited to running only on the CPU.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ForceCpuBackendForOnDeviceModel();
-
-// Whether the on-device model will be validated when updated using a set of
-// prompts with expected output.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsOnDeviceModelValidationEnabled();
-
-// Whether on-device sessions should be blocked on validation failures.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldOnDeviceModelBlockOnValidationFailure();
-
-// Whether the validation result for a model should be cleared if Chrome's
-// version changes.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldOnDeviceModelClearValidationOnVersionChange();
-
-// The delay from when a new model is received (or startup if validation has not
-// completed) until the validation is run.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetOnDeviceModelValidationDelay();
-
-// The maximum number of attempts model validation will be retried.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelValidationAttemptCount();
 
 // Returns whether the icon view should be enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

@@ -157,11 +157,6 @@ BASE_FEATURE(kTextSafetyScanLanguageDetection,
              "TextSafetyScanLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether the on-device model validation checks are enabled.
-BASE_FEATURE(kOnDeviceModelValidation,
-             "OnDeviceModelValidation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether performance class should be fetched each startup or just after a
 // version update.
 BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
@@ -709,37 +704,6 @@ bool ForceCpuBackendForOnDeviceModel() {
       &kOptimizationGuideOnDeviceModel, "on_device_model_force_cpu_backend",
       false};
   return kForceCpuBackend.Get();
-}
-
-bool IsOnDeviceModelValidationEnabled() {
-  return base::FeatureList::IsEnabled(kOnDeviceModelValidation);
-}
-
-bool ShouldOnDeviceModelBlockOnValidationFailure() {
-  static const base::FeatureParam<bool> kParam{
-      &kOnDeviceModelValidation, "on_device_model_block_on_validation_failure",
-      false};
-  return kParam.Get();
-}
-
-bool ShouldOnDeviceModelClearValidationOnVersionChange() {
-  static const base::FeatureParam<bool> kParam{
-      &kOnDeviceModelValidation,
-      "on_device_model_clear_validation_on_version_change", false};
-  return kParam.Get();
-}
-
-base::TimeDelta GetOnDeviceModelValidationDelay() {
-  static const base::FeatureParam<base::TimeDelta> kParam{
-      &kOnDeviceModelValidation, "on_device_model_validation_delay",
-      base::Seconds(30)};
-  return kParam.Get();
-}
-
-int GetOnDeviceModelValidationAttemptCount() {
-  static const base::FeatureParam<int> kParam{
-      &kOnDeviceModelValidation, "on_device_model_validation_attempt_count", 3};
-  return kParam.Get();
 }
 
 bool ShouldEnableOptimizationGuideIconView() {

@@ -39,11 +39,6 @@ extern const char kOptimizationGuideServiceModelQualtiyDefaultURL[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLoadedHintLocalHistogramString[];
 
-// The local histogram used to record that the on-device model validation
-// completed with an error.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelValidationErrorHistogramString[];
-
 // The name of the language override request header.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOptimizationGuideLanguageOverrideHeaderKey[];

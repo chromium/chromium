@@ -4,9 +4,51 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_validator.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 
 namespace optimization_guide {
+
+namespace features {
+
+// Whether the on-device model validation checks are enabled.
+BASE_FEATURE(kOnDeviceModelValidation,
+             "OnDeviceModelValidation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsOnDeviceModelValidationEnabled() {
+  return base::FeatureList::IsEnabled(kOnDeviceModelValidation);
+}
+
+bool ShouldOnDeviceModelBlockOnValidationFailure() {
+  static const base::FeatureParam<bool> kParam{
+      &kOnDeviceModelValidation, "on_device_model_block_on_validation_failure",
+      false};
+  return kParam.Get();
+}
+
+bool ShouldOnDeviceModelClearValidationOnVersionChange() {
+  static const base::FeatureParam<bool> kParam{
+      &kOnDeviceModelValidation,
+      "on_device_model_clear_validation_on_version_change", false};
+  return kParam.Get();
+}
+
+base::TimeDelta GetOnDeviceModelValidationDelay() {
+  static const base::FeatureParam<base::TimeDelta> kParam{
+      &kOnDeviceModelValidation, "on_device_model_validation_delay",
+      base::Seconds(30)};
+  return kParam.Get();
+}
+
+int GetOnDeviceModelValidationAttemptCount() {
+  static const base::FeatureParam<int> kParam{
+      &kOnDeviceModelValidation, "on_device_model_validation_attempt_count", 3};
+  return kParam.Get();
+}
+
+}  // namespace features
 
 OnDeviceModelValidator::OnDeviceModelValidator(
     const proto::OnDeviceModelValidationConfig& validation_config,
