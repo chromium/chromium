@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/common/buildflags.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -319,6 +320,9 @@ class BrowserWindowFeatures {
     return exclusive_access_manager_.get();
   }
 
+  static UserDataFactoryWithOwner<BrowserWindowInterface>&
+  GetUserDataFactoryForTesting();
+
  protected:
   BrowserWindowFeatures();
 
@@ -327,6 +331,8 @@ class BrowserWindowFeatures {
   // virtual std::unique_ptr<FooFeature> CreateFooFeature();
 
  private:
+  static UserDataFactoryWithOwner<BrowserWindowInterface>& GetUserDataFactory();
+
   // A collection of features specific to desktop versions of Chrome.
   std::unique_ptr<DesktopBrowserWindowCapabilities>
       desktop_browser_window_capabilities_;

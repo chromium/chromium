@@ -2410,6 +2410,7 @@ if (!is_android) {
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/toolbar/cast:browser_tests",
       "//chrome/browser/ui/toolbar/pinned_toolbar:browser_tests",
+      "//chrome/browser/ui/unowned_user_data",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",

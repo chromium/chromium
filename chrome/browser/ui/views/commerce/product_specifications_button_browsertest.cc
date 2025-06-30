@@ -9,10 +9,13 @@
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
@@ -34,7 +37,8 @@
 class MockProductSpecificationsEntryPointController
     : public commerce::ProductSpecificationsEntryPointController {
  public:
-  explicit MockProductSpecificationsEntryPointController(Browser* browser)
+  explicit MockProductSpecificationsEntryPointController(
+      BrowserWindowInterface* browser)
       : commerce::ProductSpecificationsEntryPointController(browser) {}
   ~MockProductSpecificationsEntryPointController() override = default;
 
@@ -53,22 +57,21 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
                 &ProductSpecificationsButtonBrowserTest::SetTestingFactory,
                 base::Unretained(this)));
+    factory_override_ =
+        BrowserWindowFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting(
+                base::BindRepeating([](BrowserWindowInterface& browser) {
+                  return std::make_unique<
+                      MockProductSpecificationsEntryPointController>(&browser);
+                }));
   }
 
   void SetUpOnMainThread() override {
-    browser()->GetUnownedUserDataHost().MarkKeyForTesting(
-        commerce::ProductSpecificationsEntryPointController::kDataKey);
-    controller_ =
-        std::make_unique<MockProductSpecificationsEntryPointController>(
-            browser());
-    product_specifications_button()->SetEntryPointControllerForTesting(
-        controller_.get());
     ON_CALL(*controller(), ShouldExecuteEntryPointShow)
         .WillByDefault(testing::Return(true));
   }
 
   void TearDownOnMainThread() override {
-    controller_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -98,7 +101,8 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   MockProductSpecificationsEntryPointController* controller() {
-    return controller_.get();
+    return static_cast<MockProductSpecificationsEntryPointController*>(
+        commerce::ProductSpecificationsEntryPointController::From(browser()));
   }
 
   bool GetRenderTabSearchBeforeTabStrip() {
@@ -123,7 +127,7 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
  private:
   base::CallbackListSubscription dependency_manager_subscription_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<MockProductSpecificationsEntryPointController> controller_;
+  UserDataFactory::ScopedOverride factory_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,

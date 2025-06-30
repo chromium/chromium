@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_UNOWNED_USER_DATA_UNOWNED_USER_DATA_HOST_H_
 
 #include <map>
-#include <set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
@@ -30,14 +29,6 @@ class UnownedUserDataHost {
   using UntypedKey = ui::ElementIdentifier;
   template <typename T>
   using PassKey = base::PassKey<ScopedUnownedUserData<T>>;
-
-  // Marks the given `key` as being used in testing. This allows tests to
-  // override the value in the map for the given key (which would normally
-  // result in a crash).
-  template <typename T>
-  void MarkKeyForTesting(Key<T> key) {
-    MarkKeyForTestingImpl(key.identifier());
-  }
 
   // Sets the entry in the map for the given `key` to `data`.
   // CHECKs that there is no existing entry.
@@ -67,13 +58,11 @@ class UnownedUserDataHost {
   }
 
  private:
-  void MarkKeyForTestingImpl(UntypedKey id);
   void SetImpl(UntypedKey key, void* data);
   void EraseImpl(UntypedKey id);
   void* GetImpl(UntypedKey key);
 
   std::map<UntypedKey, raw_ptr<void>> map_;
-  std::set<UntypedKey> testing_keys_;
 };
 
 #endif  // CHROME_BROWSER_UI_UNOWNED_USER_DATA_UNOWNED_USER_DATA_HOST_H_

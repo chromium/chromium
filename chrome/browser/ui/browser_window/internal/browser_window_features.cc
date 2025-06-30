@@ -161,8 +161,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
               browser->GetProfile());
       if (shopping_service && commerce::CanLoadProductSpecificationsFullPageUi(
                                   shopping_service->GetAccountChecker())) {
-        product_specifications_entry_point_controller_ = std::make_unique<
-            commerce::ProductSpecificationsEntryPointController>(browser);
+        product_specifications_entry_point_controller_ =
+            GetUserDataFactory()
+                .CreateInstance<
+                    commerce::ProductSpecificationsEntryPointController>(
+                    *browser, browser);
       }
     }
 
@@ -249,8 +252,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   desktop_browser_window_capabilities_ =
-      std::make_unique<DesktopBrowserWindowCapabilities>(
-          browser, browser->window(), browser->GetUnownedUserDataHost());
+      GetUserDataFactory().CreateInstance<DesktopBrowserWindowCapabilities>(
+          *browser, browser, browser->window(),
+          browser->GetUnownedUserDataHost());
 
   exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
       browser->window()->GetExclusiveAccessContext());
@@ -505,3 +509,17 @@ bool BrowserWindowFeatures::HasFindBarController() const {
 }
 
 BrowserWindowFeatures::BrowserWindowFeatures() = default;
+
+// static
+UserDataFactoryWithOwner<BrowserWindowInterface>&
+BrowserWindowFeatures::GetUserDataFactoryForTesting() {
+  return GetUserDataFactory();
+}
+
+// static
+UserDataFactoryWithOwner<BrowserWindowInterface>&
+BrowserWindowFeatures::GetUserDataFactory() {
+  static base::NoDestructor<UserDataFactoryWithOwner<BrowserWindowInterface>>
+      factory;
+  return *factory;
+}

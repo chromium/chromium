@@ -19,27 +19,21 @@ UnownedUserDataHost::~UnownedUserDataHost() {
                       << "First remaining key: " << map_.begin()->first;
 }
 
-void UnownedUserDataHost::MarkKeyForTestingImpl(UntypedKey key) {
-  testing_keys_.insert(key);
-}
-
 void UnownedUserDataHost::SetImpl(UntypedKey key, void* data) {
   CHECK(data) << "Assigning bad data for key: " << key;
-  bool inserted = map_.insert_or_assign(key, data).second;
+  const bool inserted = map_.insert_or_assign(key, data).second;
   // Ensure a new value was inserted into the map unless the key was explicitly
   // marked as being used for testing (in which case, we allow it to be
   // overwritten).
-  CHECK(inserted || testing_keys_.contains(key))
-      << "Attempted to reinsert data for key: " << key;
+  CHECK(inserted) << "Attempted to reinsert data for key: " << key;
 }
 
 void UnownedUserDataHost::EraseImpl(UntypedKey key) {
-  bool erased = map_.erase(key);
+  const bool erased = map_.erase(key);
   // The value should have been erased unless the key was marked as being used
   // in testing. In that case, the previous testing instance may have erased the
   // entry in the map, and we don't expect a second erasure.
-  CHECK(erased || testing_keys_.contains(key))
-      << "Erasing invalid data for key: " << key;
+  CHECK(erased) << "Erasing invalid data for key: " << key;
 }
 
 void* UnownedUserDataHost::GetImpl(UntypedKey key) {
