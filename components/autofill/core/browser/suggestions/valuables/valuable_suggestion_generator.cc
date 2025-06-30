@@ -71,6 +71,8 @@ Suggestion CreateManageLoyaltyCardsSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
       SuggestionType::kManageLoyaltyCard);
+  suggestion.voice_over =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS_A11Y_HINT);
   suggestion.icon = Suggestion::Icon::kSettings;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   suggestion.trailing_icon = Suggestion::Icon::kGoogleWallet;

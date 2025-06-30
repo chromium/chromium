@@ -241,6 +241,10 @@
     </message>
   </if>
 
+  <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS_A11Y_HINT" desc="Voice over text that is read out when the manage loyalty cards at the bottom of the Autofill popup is selected.">
+    Manage loyalty cards in Google Wallet
+  </message>
+
   <message name="IDS_AUTOFILL_SCAN_CREDIT_CARD" desc="An item in the autofill popup that triggers a new credit card to be scanned using the camera on the device." formatter_data="android_java">
     Scan new card
   </message>
