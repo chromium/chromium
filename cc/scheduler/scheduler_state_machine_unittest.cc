@@ -8,7 +8,6 @@
 
 #include <array>
 
-
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -16,6 +15,7 @@
 #include "cc/base/features.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/scheduler/scheduler.h"
+#include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1228,6 +1228,48 @@ TEST(SchedulerStateMachineTest, TestMainFrameThrottling) {
     state.AdvanceTimeBy(base::Hertz(120));
   }
 
+  EXPECT_EQ(begin_main_frame_count, 5);
+}
+
+TEST(SchedulerStateMachineTest,
+     TestMainFrameThrottlingWithMainThreadScrolling) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kThrottleMainFrameTo60Hz};
+
+  SchedulerSettings default_scheduler_settings;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  state.FrameIntervalUpdated(base::Hertz(120));
+  state.AdvanceTimeBy(base::Seconds(1280));  // Start at an arbitrary point.
+  // Main thread scrolling.
+  state.SetTreePrioritiesAndScrollState(
+      SMOOTHNESS_TAKES_PRIORITY,
+      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, true);
+
+  int begin_main_frame_count = 0;
+  for (int i = 0; i < 10; i++) {
+    state.SetNeedsBeginMainFrame();
+    begin_main_frame_count +=
+        RunOneFrameAndReturnWhetherMainFrameIsIssued(state) ? 1 : 0;
+    state.AdvanceTimeBy(base::Hertz(120));
+  }
+
+  // No throttling.
+  EXPECT_EQ(begin_main_frame_count, 10);
+
+  // Non-passive scroll handler, but not blocking.
+  state.SetTreePrioritiesAndScrollState(
+      SMOOTHNESS_TAKES_PRIORITY,
+      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, false);
+  begin_main_frame_count = 0;
+  for (int i = 0; i < 10; i++) {
+    state.SetNeedsBeginMainFrame();
+    begin_main_frame_count +=
+        RunOneFrameAndReturnWhetherMainFrameIsIssued(state) ? 1 : 0;
+    state.AdvanceTimeBy(base::Hertz(120));
+  }
+  // Throttling.
   EXPECT_EQ(begin_main_frame_count, 5);
 }
 
@@ -2484,7 +2526,7 @@ TEST(SchedulerStateMachineTest, TestImplLatencyTakesPriorityImplInvalidations) {
   // Set smoothness priority (used while scrolling).
   state.SetTreePrioritiesAndScrollState(
       SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
 
   // Impl-side invalidation creates a pending tree which is not yet activated.
   bool needs_first_draw_on_activation = true;
@@ -3114,7 +3156,7 @@ TEST(SchedulerStateMachineTest, TestFullPipelineMode) {
   // should wait for main frame.
   state.SetTreePrioritiesAndScrollState(
       SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
   EXPECT_EQ(SchedulerStateMachine::BeginImplFrameDeadlineMode::BLOCKED,
             state.CurrentBeginImplFrameDeadlineMode());
 
@@ -3462,7 +3504,7 @@ TEST_P(DisableFrameRateLimitSchedulerStateMachineTests,
   EXPECT_FALSE(state.ShouldTriggerBeginImplFrameDeadlineImmediately());
   state.SetTreePrioritiesAndScrollState(
       SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
   EXPECT_TRUE(state.ShouldTriggerBeginImplFrameDeadlineImmediately());
 
   // Trigger the deadline.
@@ -3551,7 +3593,7 @@ void ScrollingSchedulerStateMachineTest::SetUp() {
   state.set_is_scrolling(true);
   state.SetTreePrioritiesAndScrollState(
       SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
 }
 
 // Tests that when we should wait for scroll events, that we do not send

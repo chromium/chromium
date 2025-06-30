@@ -670,6 +670,14 @@ bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
     result = true;
   }
 
+  // Throttling main frame production when the current scroll is blocked on it
+  // is visually bad, as it loses the benefit of high refresh rate. Don't
+  // throttle. This is more expensive, but is required to reach perceptual
+  // visual parity between throttled and non-throttled scrolling.
+  if (is_current_scroll_main_painted_) {
+    result = false;
+  }
+
   TRACE_EVENT_INSTANT("cc", __PRETTY_FUNCTION__, "result", result);
   return result;
 }
@@ -1638,9 +1646,11 @@ void SchedulerStateMachine::DidReceiveCompositorFrameAck() {
 
 void SchedulerStateMachine::SetTreePrioritiesAndScrollState(
     TreePriority tree_priority,
-    ScrollHandlerState scroll_handler_state) {
+    ScrollHandlerState scroll_handler_state,
+    bool is_current_scroll_main_painted) {
   tree_priority_ = tree_priority;
   scroll_handler_state_ = scroll_handler_state;
+  is_current_scroll_main_painted_ = is_current_scroll_main_painted;
 }
 
 void SchedulerStateMachine::SetCriticalBeginMainFrameToActivateIsFast(

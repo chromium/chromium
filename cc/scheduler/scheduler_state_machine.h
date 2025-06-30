@@ -256,7 +256,8 @@ class CC_EXPORT SchedulerStateMachine {
   // Indicates whether to prioritize impl thread latency (i.e., animation
   // smoothness) over new content activation.
   void SetTreePrioritiesAndScrollState(TreePriority tree_priority,
-                                       ScrollHandlerState scroll_handler_state);
+                                       ScrollHandlerState scroll_handler_state,
+                                       bool is_current_scroll_main_painted);
 
   // Indicates if the main thread will likely respond within 1 vsync.
   void SetCriticalBeginMainFrameToActivateIsFast(bool is_fast);
@@ -501,6 +502,7 @@ class CC_EXPORT SchedulerStateMachine {
   TreePriority tree_priority_ = NEW_CONTENT_TAKES_PRIORITY;
   ScrollHandlerState scroll_handler_state_ =
       ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
+  bool is_current_scroll_main_painted_ = false;
   bool critical_begin_main_frame_to_activate_is_fast_ = true;
   bool main_thread_missed_last_deadline_ = false;
   bool defer_begin_main_frame_ = false;

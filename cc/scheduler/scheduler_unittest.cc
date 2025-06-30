@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/scheduler/scheduler_state_machine.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -1699,7 +1700,7 @@ TEST_F(SchedulerTest,
   SetUpScheduler(EXTERNAL_BFS);
   scheduler_->SetTreePrioritiesAndScrollState(
       SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
 
   EXPECT_SCOPED(CheckMainFrameNotSkippedAfterLateCommit());
@@ -3383,7 +3384,7 @@ TEST_F(SchedulerTest, ImplLatencyTakesPriority) {
 
   scheduler_->SetTreePrioritiesAndScrollState(
       SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
   scheduler_->SetCriticalBeginMainFrameToActivateIsFast(true);
   EXPECT_TRUE(scheduler_->ImplLatencyTakesPriority());
   scheduler_->SetCriticalBeginMainFrameToActivateIsFast(false);
@@ -3391,7 +3392,7 @@ TEST_F(SchedulerTest, ImplLatencyTakesPriority) {
 
   scheduler_->SetTreePrioritiesAndScrollState(
       SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, true);
   scheduler_->SetCriticalBeginMainFrameToActivateIsFast(true);
   EXPECT_FALSE(scheduler_->ImplLatencyTakesPriority());
   scheduler_->SetCriticalBeginMainFrameToActivateIsFast(false);
@@ -3399,7 +3400,7 @@ TEST_F(SchedulerTest, ImplLatencyTakesPriority) {
 
   scheduler_->SetTreePrioritiesAndScrollState(
       SAME_PRIORITY_FOR_BOTH_TREES,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
   scheduler_->SetCriticalBeginMainFrameToActivateIsFast(true);
   EXPECT_FALSE(scheduler_->ImplLatencyTakesPriority());
   scheduler_->SetCriticalBeginMainFrameToActivateIsFast(false);
@@ -3407,7 +3408,7 @@ TEST_F(SchedulerTest, ImplLatencyTakesPriority) {
 
   scheduler_->SetTreePrioritiesAndScrollState(
       SAME_PRIORITY_FOR_BOTH_TREES,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, true);
   scheduler_->SetCriticalBeginMainFrameToActivateIsFast(true);
   EXPECT_FALSE(scheduler_->ImplLatencyTakesPriority());
   scheduler_->SetCriticalBeginMainFrameToActivateIsFast(false);
@@ -3527,8 +3528,10 @@ bool SchedulerTest::BeginMainFrameOnCriticalPath(
   SetUpScheduler(EXTERNAL_BFS);
   fake_compositor_timing_history_->SetAllEstimatesTo(durations);
   client_->Reset();
-  scheduler_->SetTreePrioritiesAndScrollState(tree_priority,
-                                              scroll_handler_state);
+  scheduler_->SetTreePrioritiesAndScrollState(
+      tree_priority, scroll_handler_state,
+      scroll_handler_state ==
+          ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER);
   scheduler_->SetNeedsBeginMainFrame();
   EXPECT_FALSE(client_->last_begin_main_frame_args().IsValid());
   EXPECT_SCOPED(AdvanceFrame());
@@ -3798,7 +3801,7 @@ TEST_F(SchedulerTest, CriticalBeginMainFrameToActivateIsFast) {
   // still prioritize impl thread latency.
   scheduler_->SetTreePrioritiesAndScrollState(
       SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER, true);
   scheduler_->SetNeedsRedraw();
   // An interval of 2ms makes sure that the main frame is considered slow.
   base::TimeDelta interval = base::Milliseconds(2);
@@ -3970,7 +3973,7 @@ TEST_F(SchedulerTest, ShouldDeferInvalidation_BMFQueueDurationNotCriticalSlow) {
   scheduler_->SetNeedsBeginMainFrame();
   scheduler_->SetTreePrioritiesAndScrollState(
       TreePriority::SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER);
+      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER, false);
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
   fake_compositor_timing_history_
       ->SetBeginMainFrameQueueDurationNotCriticalEstimate(kSlowDuration);

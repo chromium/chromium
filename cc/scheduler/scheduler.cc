@@ -196,9 +196,10 @@ void Scheduler::DidReceiveCompositorFrameAck() {
 
 void Scheduler::SetTreePrioritiesAndScrollState(
     TreePriority tree_priority,
-    ScrollHandlerState scroll_handler_state) {
-  state_machine_.SetTreePrioritiesAndScrollState(tree_priority,
-                                                 scroll_handler_state);
+    ScrollHandlerState scroll_handler_state,
+    bool is_current_scroll_main_painted) {
+  state_machine_.SetTreePrioritiesAndScrollState(
+      tree_priority, scroll_handler_state, is_current_scroll_main_painted);
   ProcessScheduledActions();
 }
 
