@@ -6,6 +6,5 @@ found in the LICENSE file.
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:alpha="@dimen/progress_bar_bg_alpha"
-        android:color="@macro/progress_bar_foreground" />
+    <item android:color="@macro/progress_bar_background" />
 </selector>
