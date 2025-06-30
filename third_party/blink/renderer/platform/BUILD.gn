@@ -587,7 +587,6 @@ component("platform") {
     "exported/web_encrypted_media_client.cc",
     "exported/web_encrypted_media_key_information.cc",
     "exported/web_encrypted_media_request.cc",
-    "exported/web_font.cc",
     "exported/web_font_description.cc",
     "exported/web_http_body.cc",
     "exported/web_icon_sizes_parser.cc",
@@ -2185,7 +2184,6 @@ source_set("blink_platform_unittests_sources") {
     "exported/web_string_test.cc",
     "exported/web_thread_safe_data_test.cc",
     "fonts/bitmap_glyphs_block_list_test.cc",
-    "fonts/cursor_position_test.cc",
     "fonts/fallback_list_composite_key_test.cc",
     "fonts/font_cache_test.cc",
     "fonts/font_description_test.cc",
@@ -2568,7 +2566,6 @@ test("blink_platform_perftests") {
     "testing/blink_perf_test_suite.cc",
     "testing/blink_perf_test_suite.h",
     "testing/run_all_perf_tests.cc",
-    "testing/shape_result_perf_test.cc",
     "testing/shaping_line_breaker_perf_test.cc",
   ]
 

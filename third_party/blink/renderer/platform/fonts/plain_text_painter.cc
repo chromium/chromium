@@ -198,59 +198,6 @@ float PlainTextPainter::ComputeInlineSizeWithoutBidi(const TextRun& run,
   return CreateNode(run, font, !kSupportsBidi).AccumulateInlineSize(nullptr);
 }
 
-int PlainTextPainter::OffsetForPositionWithoutBidi(
-    const TextRun& run,
-    const Font& font,
-    float position,
-    IncludePartialGlyphsOption partial_option,
-    BreakGlyphsOption break_option) {
-  const PlainTextNode& node = CreateNode(run, font, /* supports_bidi */ false);
-  unsigned total_offset;
-  if (run.Rtl()) {
-    total_offset = node.TextContent().length();
-    for (const auto& item : base::Reversed(node.ItemList())) {
-      const ShapeResult* word_result = item.GetShapeResult();
-      total_offset -= word_result->NumCharacters();
-      if (position >= 0 && position <= word_result->Width()) {
-        int offset_for_word = word_result->OffsetForPosition(
-            position, item.Text(), partial_option, break_option);
-        return total_offset + offset_for_word;
-      }
-      position -= word_result->Width();
-    }
-  } else {
-    total_offset = 0;
-    for (const auto& item : node.ItemList()) {
-      const ShapeResult* word_result = item.GetShapeResult();
-      int offset_for_word = word_result->OffsetForPosition(
-          position, item.Text(), partial_option, break_option);
-      DCHECK_GE(offset_for_word, 0);
-      total_offset += offset_for_word;
-      if (position >= 0 && position <= word_result->Width()) {
-        return total_offset;
-      }
-      position -= word_result->Width();
-    }
-  }
-  return total_offset;
-}
-
-gfx::RectF PlainTextPainter::SelectionRectForTextWithoutBidi(
-    const TextRun& run,
-    unsigned from_index,
-    unsigned to_index,
-    const Font& font,
-    const gfx::PointF& left_baseline,
-    float height) {
-  const PlainTextNode& node = CreateNode(run, font, /* supports_bidi */ false);
-  CharacterRange range = node.ComputeCharacterRange(from_index, to_index);
-  float rounded_x = std::round(left_baseline.x() + range.start);
-  return gfx::RectF(
-      rounded_x, left_baseline.y(),
-      std::round(left_baseline.x() + range.start + range.Width()) - rounded_x,
-      height);
-}
-
 void PlainTextPainter::DidSwitchFrame() {
   for (auto& cache : cache_map_.Values()) {
     cache->DidSwitchFrame();

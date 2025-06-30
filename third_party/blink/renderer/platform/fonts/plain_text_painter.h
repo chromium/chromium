@@ -92,24 +92,6 @@ class PLATFORM_EXPORT PlainTextPainter
   // This doesn't apply BiDi reorder for compatibility.
   float ComputeInlineSizeWithoutBidi(const TextRun& run, const Font& font);
 
-  // Returns text offset in `run` for the specified pixel position.
-  // This doesn't apply BiDi reorder for compatibility.
-  int OffsetForPositionWithoutBidi(const TextRun& run,
-                                   const Font& font,
-                                   float position,
-                                   IncludePartialGlyphsOption partial_option,
-                                   BreakGlyphsOption break_option);
-
-  // Returns a bounding rectangle for a sub-range from `from_index` to
-  // `to_index` (exclusive) of `run`.
-  // This doesn't apply BiDi reorder for compatibility.
-  gfx::RectF SelectionRectForTextWithoutBidi(const TextRun& run,
-                                             unsigned from_index,
-                                             unsigned to_index,
-                                             const Font& font,
-                                             const gfx::PointF& left_baseline,
-                                             float height);
-
   // This function should be called between the end of an animation frame and
   // the beginning of the next animation frame. This is for <canvas>, and we
   // don't need to call this for the shared instance.

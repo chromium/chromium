@@ -49,11 +49,6 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
     TextRun text_run(text, TextDirection::kLtr,
                      /* directional_override */ false,
                      /* normalize_space */ true);
-    gfx::RectF text_bounds =
-        MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas)
-            ->SelectionRectForTextWithoutBidi(
-                text_run, 0, text_run.length(), *font, gfx::PointF(),
-                font->GetFontDescription().ComputedSize());
 
     // X direction.
     if (RuntimeEnabledFeatures::CanvasTextNgEnabled(nullptr)) {
@@ -63,15 +58,11 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
     } else {
       EXPECT_EQ(78, font->DeprecatedWidth(text_run));
     }
-    EXPECT_EQ(0, text_bounds.x());
-    EXPECT_EQ(78, text_bounds.right());
 
     // Y direction.
     const FontMetrics& font_metrics = font_data->GetFontMetrics();
     EXPECT_EQ(11, font_metrics.FloatAscent());
     EXPECT_EQ(3, font_metrics.FloatDescent());
-    EXPECT_EQ(0, text_bounds.y());
-    EXPECT_EQ(12, text_bounds.bottom());
   });
 }
 
