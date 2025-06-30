@@ -558,8 +558,13 @@ void CertGenerator::GenerateCert() {
     cert_builder_->SetInhibitAnyPolicy(/*skip_certs=*/GetUint64());
   }
   if (GetBool()) {
+    base::Time max_time;
+    ASSERT_TRUE(base::Time::FromString("31 Dec 9999 23:59:59 GMT", &max_time));
     base::Time not_before = base::Time() + base::Microseconds(GetUint64());
     base::Time not_after = base::Time() + base::Microseconds(GetUint64());
+    // BoringSSL doesn't allow setting the validity time above the year 9999.
+    not_before = std::min(max_time, not_before);
+    not_after = std::min(max_time, not_after);
     cert_builder_->SetValidity(not_before, not_after);
   }
   if (GetBool()) {
