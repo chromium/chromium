@@ -878,7 +878,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
         std::move(matches_pending_permissions_check_.front());
     matches_pending_permissions_check_.pop_front();
     std::vector<uint8_t> public_key_spki_der =
-        platform_keys::GetSubjectPublicKeyInfoBlob(certificate);
+        platform_keys::GetSubjectPublicKeyInfo(certificate);
 
     extension_key_permissions_service_->CanUseKey(
         public_key_spki_der, /*is_sign_operation=*/true,
@@ -963,7 +963,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       return;
     }
     extension_key_permissions_service_->SetUserGrantedSigningPermission(
-        platform_keys::GetSubjectPublicKeyInfoBlob(selected_cert_),
+        platform_keys::GetSubjectPublicKeyInfo(selected_cert_),
         base::BindOnce(&SelectTask::OnPermissionsUpdated,
                        weak_factory_.GetWeakPtr()));
   }

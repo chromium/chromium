@@ -90,7 +90,7 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
       *platform_keys_service_,
       GetAttributeForKey(
           GetPlatformKeysTokenId(cert_scope),
-          chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(cert),
+          chromeos::platform_keys::GetSubjectPublicKeyInfo(cert),
           chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,
           _))
       .WillRepeatedly(

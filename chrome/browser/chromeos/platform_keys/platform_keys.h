@@ -93,9 +93,7 @@ std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error);
 
 // Returns the DER encoding of the X.509 Subject Public Key Info of the public
 // key in |certificate|.
-std::string GetSubjectPublicKeyInfo(
-    const scoped_refptr<net::X509Certificate>& certificate);
-std::vector<uint8_t> GetSubjectPublicKeyInfoBlob(
+std::vector<uint8_t> GetSubjectPublicKeyInfo(
     const scoped_refptr<net::X509Certificate>& certificate);
 
 // Intersects the two certificate lists |certs1| and |certs2| and passes the
@@ -127,7 +125,7 @@ struct PublicKeyInfo {
   ~PublicKeyInfo();
 
   // The X.509 Subject Public Key Info of the key in DER encoding.
-  std::string public_key_spki_der;
+  std::vector<uint8_t> public_key_spki_der;
 
   // The type of the key.
   net::X509Certificate::PublicKeyType key_type =
@@ -189,7 +187,7 @@ bool GetPublicKey(const scoped_refptr<net::X509Certificate>& certificate,
 // If |spki| is any other key type, returns false and does not update any
 // of the output parameters.
 // All pointer arguments must not be null.
-bool GetPublicKeyBySpki(const std::string& spki,
+bool GetPublicKeyBySpki(base::span<const uint8_t> spki,
                         net::X509Certificate::PublicKeyType* key_type,
                         size_t* key_size_bits);
 

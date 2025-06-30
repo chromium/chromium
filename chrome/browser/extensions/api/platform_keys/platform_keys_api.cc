@@ -276,8 +276,7 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   }
 
   PublicKeyInfo key_info;
-  key_info.public_key_spki_der.assign(std::begin(public_key_spki_der),
-                                      std::end(public_key_spki_der));
+  key_info.public_key_spki_der = public_key_spki_der;
 
   if (!chromeos::platform_keys::GetPublicKeyBySpki(key_info.public_key_spki_der,
                                                    &key_info.key_type,

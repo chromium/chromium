@@ -227,7 +227,7 @@ void IsCertificateAllowed(IsCertificateAllowedCallback callback,
   ash::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
       context)
       ->IsCorporateKey(
-          chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(cert),
+          chromeos::platform_keys::GetSubjectPublicKeyInfo(cert),
           base::BindOnce(&CheckCorporateFlag, std::move(callback)));
 }
 

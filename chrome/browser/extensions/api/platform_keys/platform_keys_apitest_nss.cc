@@ -228,7 +228,7 @@ class PlatformKeysTest : public PlatformKeysTestBase {
     auto* extension_key_permissions_service_unowned =
         extension_key_permissions_service.get();
     std::vector<uint8_t> subject_public_key_info =
-        chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(client_cert1_);
+        chromeos::platform_keys::GetSubjectPublicKeyInfo(client_cert1_);
 
     // Mimics the behaviour of the ExtensionPlatformKeysService, which sets the
     // one-time signing permission when the key is registered for corporate

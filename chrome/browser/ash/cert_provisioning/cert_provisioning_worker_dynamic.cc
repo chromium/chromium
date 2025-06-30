@@ -897,7 +897,7 @@ void CertProvisioningWorkerDynamic::ImportCert() {
   }
 
   std::vector<uint8_t> public_key_from_cert =
-      chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(cert);
+      chromeos::platform_keys::GetSubjectPublicKeyInfo(cert);
   if (public_key_from_cert != public_key_) {
     failure_message_no_pii_ =
         "Downloaded certificate does not match the expected key pair.";
