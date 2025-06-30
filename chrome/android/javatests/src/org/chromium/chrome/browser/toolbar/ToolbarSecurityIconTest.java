@@ -62,6 +62,7 @@ public final class ToolbarSecurityIconTest {
     private static final boolean IS_SMALL_DEVICE = true;
     private static final boolean IS_OFFLINE_PAGE = true;
     private static final boolean IS_PAINT_PREVIEW = true;
+    private static final boolean IS_READER_MODE_PAGE = true;
     private static final int[] SECURITY_LEVELS =
             new int[] {
                 ConnectionSecurityLevel.NONE,
@@ -138,20 +139,21 @@ public final class ToolbarSecurityIconTest {
     public void testGetSecurityLevel() {
         assertEquals(
                 ConnectionSecurityLevel.NONE,
-                mLocationBarModel.getSecurityLevel(null, !IS_OFFLINE_PAGE));
+                mLocationBarModel.getSecurityLevel(null, !IS_OFFLINE_PAGE, !IS_READER_MODE_PAGE));
         assertEquals(
                 ConnectionSecurityLevel.NONE,
-                mLocationBarModel.getSecurityLevel(null, IS_OFFLINE_PAGE));
+                mLocationBarModel.getSecurityLevel(null, IS_OFFLINE_PAGE, !IS_READER_MODE_PAGE));
         assertEquals(
                 ConnectionSecurityLevel.NONE,
-                mLocationBarModel.getSecurityLevel(mTab, IS_OFFLINE_PAGE));
+                mLocationBarModel.getSecurityLevel(mTab, IS_OFFLINE_PAGE, IS_READER_MODE_PAGE));
 
         for (int securityLevel : SECURITY_LEVELS) {
             doReturn(securityLevel).when(mLocationBarModel).getSecurityLevelFromStateModel(any());
             assertEquals(
                     "Wrong security level returned for " + securityLevel,
                     securityLevel,
-                    mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));
+                    mLocationBarModel.getSecurityLevel(
+                            mTab, !IS_OFFLINE_PAGE, !IS_READER_MODE_PAGE));
         }
 
         doReturn(ConnectionSecurityLevel.SECURE)
@@ -161,12 +163,12 @@ public final class ToolbarSecurityIconTest {
         assertEquals(
                 "Wrong security level returned for HTTPS publisher URL",
                 ConnectionSecurityLevel.SECURE,
-                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));
+                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE, !IS_READER_MODE_PAGE));
         doReturn(new GURL("http://example.com")).when(mTrustedCdn).getPublisherUrl();
         assertEquals(
                 "Wrong security level returned for HTTP publisher URL",
                 ConnectionSecurityLevel.WARNING,
-                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));
+                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE, !IS_READER_MODE_PAGE));
 
         doReturn(ConnectionSecurityLevel.DANGEROUS)
                 .when(mLocationBarModel)
@@ -175,7 +177,7 @@ public final class ToolbarSecurityIconTest {
         assertEquals(
                 "Wrong security level returned for publisher URL on insecure page",
                 ConnectionSecurityLevel.DANGEROUS,
-                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));
+                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE, !IS_READER_MODE_PAGE));
     }
 
     @Test
@@ -192,6 +194,7 @@ public final class ToolbarSecurityIconTest {
                             IS_SMALL_DEVICE,
                             IS_OFFLINE_PAGE,
                             !IS_PAINT_PREVIEW,
+                            !IS_READER_MODE_PAGE,
                             PdfPageType.NONE));
             assertEquals(
                     "Wrong tablet resource for security level " + securityLevel,
@@ -201,6 +204,7 @@ public final class ToolbarSecurityIconTest {
                             !IS_SMALL_DEVICE,
                             IS_OFFLINE_PAGE,
                             !IS_PAINT_PREVIEW,
+                            !IS_READER_MODE_PAGE,
                             PdfPageType.NONE));
 
             assertEquals(
@@ -211,6 +215,7 @@ public final class ToolbarSecurityIconTest {
                             IS_SMALL_DEVICE,
                             IS_OFFLINE_PAGE,
                             IS_PAINT_PREVIEW,
+                            !IS_READER_MODE_PAGE,
                             PdfPageType.NONE));
             assertEquals(
                     "Wrong tablet resource for security level " + securityLevel,
@@ -220,6 +225,7 @@ public final class ToolbarSecurityIconTest {
                             !IS_SMALL_DEVICE,
                             IS_OFFLINE_PAGE,
                             IS_PAINT_PREVIEW,
+                            !IS_READER_MODE_PAGE,
                             PdfPageType.NONE));
 
             assertEquals(
@@ -230,6 +236,7 @@ public final class ToolbarSecurityIconTest {
                             IS_SMALL_DEVICE,
                             !IS_OFFLINE_PAGE,
                             !IS_PAINT_PREVIEW,
+                            !IS_READER_MODE_PAGE,
                             PdfPageType.TRANSIENT_SECURE));
             assertEquals(
                     "Wrong tablet resource for security level " + securityLevel,
@@ -239,6 +246,7 @@ public final class ToolbarSecurityIconTest {
                             !IS_SMALL_DEVICE,
                             !IS_OFFLINE_PAGE,
                             !IS_PAINT_PREVIEW,
+                            !IS_READER_MODE_PAGE,
                             PdfPageType.TRANSIENT_SECURE));
 
             assertEquals(
@@ -249,6 +257,7 @@ public final class ToolbarSecurityIconTest {
                             IS_SMALL_DEVICE,
                             !IS_OFFLINE_PAGE,
                             !IS_PAINT_PREVIEW,
+                            !IS_READER_MODE_PAGE,
                             PdfPageType.TRANSIENT_INSECURE));
             assertEquals(
                     "Wrong tablet resource for security level " + securityLevel,
@@ -258,6 +267,7 @@ public final class ToolbarSecurityIconTest {
                             !IS_SMALL_DEVICE,
                             !IS_OFFLINE_PAGE,
                             !IS_PAINT_PREVIEW,
+                            !IS_READER_MODE_PAGE,
                             PdfPageType.TRANSIENT_INSECURE));
 
             assertEquals(
@@ -268,6 +278,7 @@ public final class ToolbarSecurityIconTest {
                             IS_SMALL_DEVICE,
                             !IS_OFFLINE_PAGE,
                             !IS_PAINT_PREVIEW,
+                            !IS_READER_MODE_PAGE,
                             PdfPageType.LOCAL));
             assertEquals(
                     "Wrong tablet resource for security level " + securityLevel,
@@ -277,7 +288,28 @@ public final class ToolbarSecurityIconTest {
                             !IS_SMALL_DEVICE,
                             !IS_OFFLINE_PAGE,
                             !IS_PAINT_PREVIEW,
+                            !IS_READER_MODE_PAGE,
                             PdfPageType.LOCAL));
+            assertEquals(
+                    "Wrong phone resource for security level " + securityLevel,
+                    R.drawable.ic_reader_mode_24dp,
+                    mLocationBarModel.getSecurityIconResource(
+                            securityLevel,
+                            IS_SMALL_DEVICE,
+                            !IS_OFFLINE_PAGE,
+                            !IS_PAINT_PREVIEW,
+                            IS_READER_MODE_PAGE,
+                            PdfPageType.NONE));
+            assertEquals(
+                    "Wrong tablet resource for security level " + securityLevel,
+                    R.drawable.ic_reader_mode_24dp,
+                    mLocationBarModel.getSecurityIconResource(
+                            securityLevel,
+                            !IS_SMALL_DEVICE,
+                            !IS_OFFLINE_PAGE,
+                            !IS_PAINT_PREVIEW,
+                            IS_READER_MODE_PAGE,
+                            PdfPageType.NONE));
         }
 
         assertEquals(
@@ -287,6 +319,7 @@ public final class ToolbarSecurityIconTest {
                         IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW,
+                        !IS_READER_MODE_PAGE,
                         PdfPageType.NONE));
         assertEquals(
                 R.drawable.omnibox_info,
@@ -295,6 +328,7 @@ public final class ToolbarSecurityIconTest {
                         !IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW,
+                        !IS_READER_MODE_PAGE,
                         PdfPageType.NONE));
 
         assertEquals(
@@ -304,6 +338,7 @@ public final class ToolbarSecurityIconTest {
                         IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW,
+                        !IS_READER_MODE_PAGE,
                         PdfPageType.NONE));
         assertEquals(
                 R.drawable.omnibox_not_secure_warning,
@@ -312,6 +347,7 @@ public final class ToolbarSecurityIconTest {
                         !IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW,
+                        !IS_READER_MODE_PAGE,
                         PdfPageType.NONE));
 
         assertEquals(
@@ -321,6 +357,7 @@ public final class ToolbarSecurityIconTest {
                         IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW,
+                        !IS_READER_MODE_PAGE,
                         PdfPageType.NONE));
         assertEquals(
                 R.drawable.omnibox_dangerous,
@@ -329,6 +366,7 @@ public final class ToolbarSecurityIconTest {
                         !IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW,
+                        !IS_READER_MODE_PAGE,
                         PdfPageType.NONE));
 
         assertEquals(
@@ -338,6 +376,7 @@ public final class ToolbarSecurityIconTest {
                         IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW,
+                        !IS_READER_MODE_PAGE,
                         PdfPageType.NONE));
         assertEquals(
                 R.drawable.omnibox_https_valid_page_info,
@@ -346,6 +385,7 @@ public final class ToolbarSecurityIconTest {
                         !IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW,
+                        !IS_READER_MODE_PAGE,
                         PdfPageType.NONE));
     }
 
@@ -432,6 +472,7 @@ public final class ToolbarSecurityIconTest {
                         IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW,
+                        !IS_READER_MODE_PAGE,
                         PdfPageType.LOCAL));
     }
 }

@@ -446,7 +446,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         final @ColorInt int secureColor =
                 OmniboxResourceProvider.getUrlBarSecureColor(mContext, brandedColorScheme);
 
-        int securityLevel = getSecurityLevel(getTab(), isOfflinePage);
+        int securityLevel = getSecurityLevel(getTab(), isOfflinePage, isReaderModePage());
         SpannableDisplayTextCacheKey cacheKey =
                 new SpannableDisplayTextCacheKey(
                         url.getSpec(),
@@ -602,9 +602,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return PdfUtils.getPdfPageType(mTab.getNativePage());
     }
 
+    private boolean isReaderModePage() {
+        if (!hasTab()) return false;
+        return DomDistillerUrlUtils.isDistilledPage(assumeNonNull(getTab()).getUrl());
+    }
+
     @Override
     public int getSecurityLevel() {
-        return getSecurityLevel(getTab(), isOfflinePage());
+        return getSecurityLevel(getTab(), isOfflinePage(), isReaderModePage());
     }
 
     @Override
@@ -618,11 +623,13 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     @Override
     public @DrawableRes int getSecurityIconResource(boolean isTablet) {
         boolean isOfflinePage = isOfflinePage();
+        boolean isReaderModePage = isReaderModePage();
         return getSecurityIconResource(
-                getSecurityLevel(getTab(), isOfflinePage),
+                getSecurityLevel(getTab(), isOfflinePage, isReaderModePage),
                 !isTablet,
                 isOfflinePage,
                 isPaintPreview(),
+                isReaderModePage,
                 getPdfPageType());
     }
 
@@ -633,7 +640,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @VisibleForTesting
     @ConnectionSecurityLevel
-    int getSecurityLevel(@Nullable Tab tab, boolean isOfflinePage) {
+    int getSecurityLevel(@Nullable Tab tab, boolean isOfflinePage, boolean isReaderModePage) {
         if (tab == null || isOfflinePage) {
             return ConnectionSecurityLevel.NONE;
         }
@@ -664,6 +671,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             boolean isSmallDevice,
             boolean isOfflinePage,
             boolean isPaintPreview,
+            boolean isReaderModePage,
             int pdfPageType) {
         // Paint Preview appears on top of WebContents and shows a visual representation of the page
         // that has been previously stored locally.
@@ -673,6 +681,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // on a slow connection. In this case, the previews UI takes precedence.
         if (isOfflinePage) {
             return R.drawable.ic_offline_pin_24dp;
+        }
+
+        // Reader mode is when chrome is viewing distilled content. In this case, a reader mode icon
+        // is shown.
+        if (isReaderModePage) {
+            return R.drawable.ic_reader_mode_24dp;
         }
 
         // Pdf page is a native page used to render downloaded pdf files.

@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.embedder_support.util.UrlConstants.CHROME_NATIVE_SCHEME;
 import static org.chromium.components.embedder_support.util.UrlConstants.CHROME_SCHEME;
+import static org.chromium.components.embedder_support.util.UrlConstants.DISTILLER_SCHEME;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -105,9 +106,6 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
     /** The key to access this object from a {@Tab}. */
     public static final Class<ReaderModeManager> USER_DATA_KEY = ReaderModeManager.class;
-
-    /** The scheme used to access DOM-Distiller. */
-    public static final String DOM_DISTILLER_SCHEME = "chrome-distiller";
 
     /** The intent extra that indicates origin from Reader Mode */
     public static final String EXTRA_READER_MODE_PARENT =
@@ -278,7 +276,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     @Override
     public void onPageLoadFinished(Tab tab, GURL url) {
         if (!DomDistillerFeatures.sReaderModeAutoDistill.isEnabled()
-                || url.getScheme().equals(DOM_DISTILLER_SCHEME)
+                || url.getScheme().equals(DISTILLER_SCHEME)
                 || url.getScheme().equals(CHROME_SCHEME)
                 || url.getScheme().equals(CHROME_NATIVE_SCHEME)) {
             return;
@@ -710,7 +708,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
         String distillerUrl =
                 DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
-                        DOM_DISTILLER_SCHEME, url.getSpec(), webContents.getTitle());
+                        DISTILLER_SCHEME, url.getSpec(), webContents.getTitle());
 
         assertNonNull(activity);
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();

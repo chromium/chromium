@@ -247,6 +247,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_check_googblue_24dp_animated.xml",
     "java/res/drawable/ic_custom_radio_unchecked.xml",
     "java/res/drawable/ic_offline_pin_blue_white.xml",
+    "java/res/drawable/ic_reader_mode_24dp.xml",
     "java/res/drawable/ic_settings_gear_24dp.xml",
     "java/res/drawable/ic_settings_gear_24dp.xml",
     "java/res/drawable/incognito_card_bg.xml",

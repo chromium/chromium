@@ -13,15 +13,13 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 /** Wrapper for the dom_distiller::url_utils. */
 @JNINamespace("dom_distiller::url_utils::android")
 @NullMarked
 public final class DomDistillerUrlUtils {
-    // Keep in sync with components/dom_distiller/core/url_constants.cc
-    public static final String DOM_DISTILLER_SCHEME = "chrome-distiller";
-
     private DomDistillerUrlUtils() {}
 
     /**
@@ -56,10 +54,16 @@ public final class DomDistillerUrlUtils {
         return DomDistillerUrlUtilsJni.get().getOriginalUrlFromDistillerUrl(url.getSpec());
     }
 
-    public static boolean isDistilledPage(String url) {
-        if (TextUtils.isEmpty(url)) return false;
-        if (!url.startsWith(DOM_DISTILLER_SCHEME + ":")) return false;
-        return DomDistillerUrlUtilsJni.get().isDistilledPage(url);
+    /**
+     * Returns whether the url is for a distilled page.
+     *
+     * @param urlSpec The url spec of the page See {GURL#getSpec}.
+     * @return whether the url is for a distilled page.
+     */
+    public static boolean isDistilledPage(@Nullable String urlSpec) {
+        if (TextUtils.isEmpty(urlSpec)) return false;
+        if (!urlSpec.startsWith(UrlConstants.DISTILLER_SCHEME + ":")) return false;
+        return DomDistillerUrlUtilsJni.get().isDistilledPage(urlSpec);
     }
 
     /**
@@ -68,8 +72,9 @@ public final class DomDistillerUrlUtils {
      * @param url The url of the page.
      * @return whether the url is for a distilled page.
      */
-    public static boolean isDistilledPage(GURL url) {
-        if (!url.getScheme().equals(DOM_DISTILLER_SCHEME)) return false;
+    public static boolean isDistilledPage(@Nullable GURL url) {
+        if (url == null) return false;
+        if (!url.getScheme().equals(UrlConstants.DISTILLER_SCHEME)) return false;
         return isDistilledPage(url.getSpec());
     }
 

@@ -366,7 +366,6 @@ chrome_java_resources = [
   "java/res/drawable/ic_person_add_40dp.xml",
   "java/res/drawable/ic_pip_24dp.xml",
   "java/res/drawable/ic_play_circle.xml",
-  "java/res/drawable/ic_reader_mode_24dp.xml",
   "java/res/drawable/ic_reading_list_folder_24dp.xml",
   "java/res/drawable/ic_recent_tabs_bulk_20dp.xml",
   "java/res/drawable/ic_select_check_box_24dp.xml",
