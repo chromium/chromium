@@ -66,6 +66,7 @@ source_set("webview_entry_point") {
   deps = [
     "//android_webview",
     "//base",
+    "//base:jni_onload",
   ]
   sources = [ "webview_entry_point.cc" ]
 }

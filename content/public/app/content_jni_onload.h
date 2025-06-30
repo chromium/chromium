@@ -7,7 +7,6 @@
 
 #include <jni.h>
 
-#include "base/android/base_jni_onload.h"
 #include "content/common/content_export.h"
 
 namespace content {

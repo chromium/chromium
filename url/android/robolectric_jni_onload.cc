@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include <jni.h>
 
-#include "base/android/base_jni_onload.h"
+#include "base/android/base_jni_init.h"
 #include "base/android/jni_android.h"
 #include "url/android/gurl_test_init.h"
 

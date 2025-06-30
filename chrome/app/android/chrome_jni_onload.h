@@ -5,8 +5,6 @@
 #ifndef CHROME_APP_ANDROID_CHROME_JNI_ONLOAD_H_
 #define CHROME_APP_ANDROID_CHROME_JNI_ONLOAD_H_
 
-#include "base/android/base_jni_onload.h"
-
 namespace android {
 
 bool OnJNIOnLoadInit();

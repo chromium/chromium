@@ -1325,8 +1325,8 @@ component("base") {
   }
   if (is_android || is_robolectric) {
     sources += [
-      "android/base_jni_onload.cc",
-      "android/base_jni_onload.h",
+      "android/base_jni_init.cc",
+      "android/base_jni_init.h",
       "android/callback_android.cc",
       "android/callback_android.h",
       "android/command_line_android.cc",
@@ -2499,6 +2499,18 @@ component("base") {
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
+  }
+}
+
+if (is_android) {
+  # This source_set must end up in the root component of a shared library, and
+  # the NativeInitializationHook definition must also be in the root component.
+  source_set("jni_onload") {
+    sources = [
+      "android/jni_onload.cc",
+      "android/jni_onload.h",
+    ]
+    deps = [ ":base" ]
   }
 }
 

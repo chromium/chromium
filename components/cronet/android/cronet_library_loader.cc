@@ -13,7 +13,7 @@
 #include <utility>
 
 #include "base/android/android_info.h"
-#include "base/android/base_jni_onload.h"
+#include "base/android/base_jni_init.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_registrar.h"

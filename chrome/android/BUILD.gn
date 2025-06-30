@@ -3404,7 +3404,7 @@ if (_is_default_toolchain) {
   template("libchrome_impl") {
     chrome_common_shared_library(target_name) {
       sources = [ "../browser/android/chrome_entry_point.cc" ]
-      deps = []
+      deps = [ "//base:jni_onload" ]
       if (defined(invoker.deps)) {
         deps += invoker.deps
       }
@@ -3450,6 +3450,7 @@ template("libmonochrome_tmpl") {
     sources = [ "../browser/android/monochrome_entry_point.cc" ]
     deps = [
       "//android_webview",
+      "//base:jni_onload",
       "//components/crash/android:crashpad_main",
     ]
     if (defined(invoker.deps)) {
