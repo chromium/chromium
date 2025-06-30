@@ -1965,7 +1965,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
       bool export_only_if_update);
 
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider();
-  CanvasResourceProvider* PaintRenderingResultsToCanvas(
+  CanvasResourceProvider* PaintRenderingResultsToResourceProvider(
       SourceDrawingBuffer source_buffer,
       bool* resource_provider_was_updated = nullptr);
   void TexImageHelperMediaVideoFrame(

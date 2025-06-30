@@ -1684,7 +1684,7 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   // Note: we push a frame only if (a) there is fresh content to produce and
   // (b) we successfully produced that content.
   bool resource_provider_was_updated = false;
-  auto* resource_provider = PaintRenderingResultsToCanvas(
+  auto* resource_provider = PaintRenderingResultsToResourceProvider(
       kBackBuffer, &resource_provider_was_updated);
   if (resource_provider && resource_provider_was_updated) {
     const int width = GetDrawingBuffer()->Size().width();
@@ -1960,7 +1960,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
   }
 
   CanvasResourceProvider* provider =
-      PaintRenderingResultsToCanvas(source_buffer);
+      PaintRenderingResultsToResourceProvider(source_buffer);
 
   return provider ? provider->Snapshot(reason) : nullptr;
 }
@@ -1976,7 +1976,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
                                           /*export_only_if_update=*/false);
   }
 
-  auto* resource_provider = PaintRenderingResultsToCanvas(source_buffer);
+  auto* resource_provider =
+      PaintRenderingResultsToResourceProvider(source_buffer);
   if (has_dispatcher && was_dirty && resource_provider) {
     return resource_provider->ProduceCanvasResource(reason);
   }
@@ -2069,13 +2070,14 @@ WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
 }
 
 CanvasResourceProvider*
-WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
+WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     SourceDrawingBuffer source_buffer,
     bool* resource_provider_was_updated /*=nullptr*/) {
   CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
 
-  TRACE_EVENT0("blink",
-               "WebGLRenderingContextBase::PaintRenderingResultsToCanvas");
+  TRACE_EVENT0(
+      "blink",
+      "WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider");
   if (resource_provider_was_updated != nullptr) {
     *resource_provider_was_updated = false;
   }
