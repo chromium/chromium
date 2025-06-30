@@ -7,5 +7,6 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.history.HistoryItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/list_item_rounded_background_selector"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />
