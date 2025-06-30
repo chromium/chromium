@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_HOST_H_
 
 #include "base/check.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -16,10 +15,9 @@ class PaintCanvas;
 
 namespace blink {
 
-class PLATFORM_EXPORT CanvasResourceHost
-    : public CanvasHibernationHandler::Delegate {
+class PLATFORM_EXPORT CanvasResourceHost {
  public:
-  ~CanvasResourceHost() override = default;
+  virtual ~CanvasResourceHost() = default;
 
   virtual void NotifyGpuContextLost() = 0;
   virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;

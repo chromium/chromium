@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -42,10 +43,12 @@ enum class RasterModeHint {
   kPreferCPU,
 };
 
-class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
-                                               public CanvasResourceHost,
-                                               public CanvasImageSource,
-                                               public ImageBitmapSource {
+class CORE_EXPORT CanvasRenderingContextHost
+    : public GarbageCollectedMixin,
+      public CanvasResourceHost,
+      public CanvasImageSource,
+      public ImageBitmapSource,
+      public CanvasHibernationHandler::Delegate {
  public:
   enum class HostType {
     kNone,
