@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -17,7 +18,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/test_web_ui.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -38,12 +38,14 @@ namespace {
 
 constexpr size_t kBioEnrollCapacity = 3;
 constexpr char kTestPIN[] = "1234";
-constexpr uint8_t kCredentialID[] = {0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa,
-                                     0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa};
+constexpr auto kCredentialID =
+    std::to_array<uint8_t>({0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa,
+                            0xa, 0xa, 0xa, 0xa, 0xa, 0xa});
 constexpr char kRPID[] = "example.com";
 constexpr char kRPName[] = "Example Corp";
-constexpr uint8_t kUserID[] = {0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1,
-                               0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1};
+constexpr auto kUserID =
+    std::to_array<uint8_t>({0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1,
+                            0x1, 0x1, 0x1, 0x1, 0x1, 0x1});
 constexpr char kUserName[] = "alice@example.com";
 constexpr char kUserDisplayName[] = "Alice Example <alice@example.com>";
 
@@ -184,13 +186,11 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
   config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
   handler_->GetDiscoveryFactory()->SetCtap2Config(config);
 
-  std::vector<uint8_t> credential_id =
-      device::fido_parsing_utils::Materialize(kCredentialID);
+  const auto credential_id = base::ToVector(kCredentialID);
 
   device::PublicKeyCredentialRpEntity rp(kRPID, kRPName);
-  device::PublicKeyCredentialUserEntity user(
-      device::fido_parsing_utils::Materialize(kUserID), kUserName,
-      kUserDisplayName);
+  device::PublicKeyCredentialUserEntity user(base::ToVector(kUserID), kUserName,
+                                             kUserDisplayName);
 
   ASSERT_TRUE(
       handler_->GetDiscoveryFactory()->mutable_state()->InjectResidentKey(
@@ -226,8 +226,7 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
   base::RunLoop().RunUntilIdle();
 
   device::PublicKeyCredentialUserEntity updated_user(
-      device::fido_parsing_utils::Materialize(kUserID), new_username,
-      new_displayname);
+      base::ToVector(kUserID), new_username, new_displayname);
 
   EXPECT_EQ(handler_->GetDiscoveryFactory()
                 ->mutable_state()
@@ -415,9 +414,7 @@ class PasskeysHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(PasskeysHandlerTest, TestHandleEdit) {
-  std::vector<uint8_t> credential_id =
-      device::fido_parsing_utils::Materialize(kCredentialID);
-  std::string credential_id_hex = base::HexEncode(credential_id);
+  std::string credential_id_hex = base::HexEncode(kCredentialID);
   EXPECT_CALL(
       *weak_local_cred_man_,
       Edit(testing::ElementsAreArray(kCredentialID),
@@ -455,8 +452,7 @@ TEST_F(PasskeysHandlerTest, TestHandleEdit) {
 }
 
 TEST_F(PasskeysHandlerTest, TestRecordPasskeyDelete) {
-  std::vector<uint8_t> credential_id =
-      device::fido_parsing_utils::Materialize(kCredentialID);
+  const auto credential_id = base::ToVector(kCredentialID);
   std::string credential_id_hex = base::HexEncode(credential_id);
   EXPECT_CALL(*weak_local_cred_man_,
               Delete(testing::ElementsAreArray(kCredentialID),
