@@ -159,7 +159,7 @@ sorted so that the things that make the biggest difference are first.
 *** note
 **Warning:** If you are a Google employee, do not follow the instructions below.
 See
-[go/chrome-linux-build#setup-remote-execution](https://goto.google.com/chrome-linux-build#setup-remote-execution)
+[go/chrome-linux-build#set-up-remote-execution](https://goto.google.com/chrome-linux-build#set-up-remote-execution)
 instead.
 ***
 
@@ -200,7 +200,7 @@ configuration to use the correct one for Chromium contributors:
 *** note
 **Warning:** If you are a Google employee, do not follow the instructions below.
 See
-[go/chrome-linux-build#setup-remote-execution](https://goto.google.com/chrome-linux-build#setup-remote-execution)
+[go/chrome-linux-build#set-up-remote-execution](https://goto.google.com/chrome-linux-build#set-up-remote-execution)
 instead.
 ***
 
