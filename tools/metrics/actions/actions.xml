@@ -3605,6 +3605,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.ManualTranslate">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    Translation is manually requested via menu or toolbar button.
+  </description>
+</action>
+
 <action name="Android.MergeState.ColdStart">
   <owner>twellington@chromium.org</owner>
   <description>
@@ -9381,6 +9388,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="CustomTabs.OpenInBrowser">
+  <owner>jinsukkim@google.com</owner>
+  <description>
+    Emitted by CCT when the URL in CCT is opened in browser.
+  </description>
+</action>
+
 <action name="CustomTabs.StartedInitially">
   <owner>tedchoc@chromium.org</owner>
   <description>
@@ -9424,6 +9438,14 @@ should be able to be added at any place in this file.
     User tapped the Open in Browser button on the toolbar in custom tabs. Note
     that taps on overflow menu item with same function are recorded under
     CustomTabsMenuOpenInChrome.
+  </description>
+</action>
+
+<action name="CustomTabs.ToolbarShareClicked">
+  <owner>jinsukkim@google.com</owner>
+  <description>
+    User tapped the Share button on the toolbar in custom tabs. Note that taps
+    on overflow menu item with same function are recorded under MobileMenuShare.
   </description>
 </action>
 

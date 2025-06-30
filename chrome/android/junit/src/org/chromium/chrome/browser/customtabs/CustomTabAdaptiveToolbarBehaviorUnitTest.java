@@ -18,6 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.CPA_ONLY_MODE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.READER_MODE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.SHARE;
@@ -41,6 +42,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
@@ -186,28 +188,65 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
 
         when(mIntentDataProvider.getOpenInBrowserButtonState())
                 .thenReturn(OPEN_IN_BROWSER_STATE_ON);
+        var watcher1 =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("CustomTabs.AdaptiveToolbarButton.ChosenRanking", 0)
+                        .expectNoRecords("CustomTabs.AdaptiveToolbarButton.HiddenReason")
+                        .build();
         assertEquals(OPEN_IN_BROWSER, mBehavior.resultFilter(segmentationResults));
+        watcher1.assertExpected();
 
         when(mIntentDataProvider.getOpenInBrowserButtonState())
                 .thenReturn(OPEN_IN_BROWSER_STATE_OFF);
+        var watcher2 =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("CustomTabs.AdaptiveToolbarButton.ChosenRanking")
+                        .expectIntRecords(
+                                "CustomTabs.AdaptiveToolbarButton.HiddenReason", CPA_ONLY_MODE)
+                        .build();
         assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
+        watcher2.assertExpected();
 
         when(mIntentDataProvider.getOpenInBrowserButtonState())
                 .thenReturn(OPEN_IN_BROWSER_STATE_DEFAULT);
+        var watcher3 =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("CustomTabs.AdaptiveToolbarButton.ChosenRanking", 0)
+                        .expectNoRecords("CustomTabs.AdaptiveToolbarButton.HiddenReason")
+                        .build();
         assertEquals(OPEN_IN_BROWSER, mBehavior.resultFilter(segmentationResults));
+        watcher3.assertExpected();
 
         segmentationResults = List.of(SHARE, TRANSLATE);
+        var watcher4 =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("CustomTabs.AdaptiveToolbarButton.ChosenRanking")
+                        .expectIntRecords(
+                                "CustomTabs.AdaptiveToolbarButton.HiddenReason", CPA_ONLY_MODE)
+                        .build();
         assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
+        watcher4.assertExpected();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":contextual_only/true")
     public void resultFilter_skipStaticActionInContextualOnlyMode() {
         List<Integer> segmentationResults = List.of(READER_MODE, SHARE, TRANSLATE);
+        var watcher1 =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("CustomTabs.AdaptiveToolbarButton.ChosenRanking", 0)
+                        .build();
         assertEquals(READER_MODE, mBehavior.resultFilter(segmentationResults));
+        watcher1.assertExpected();
 
         segmentationResults = List.of(SHARE, TRANSLATE);
+        var watcher2 =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "CustomTabs.AdaptiveToolbarButton.HiddenReason", CPA_ONLY_MODE)
+                        .build();
         assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
+        watcher1.assertExpected();
     }
 
     @Test

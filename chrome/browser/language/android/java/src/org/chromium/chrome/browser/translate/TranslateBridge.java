@@ -11,6 +11,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.LocaleUtils;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
@@ -29,6 +30,7 @@ public class TranslateBridge {
      * Translates the given tab when the necessary state has been computed (e.g. source language).
      */
     public static void translateTabWhenReady(Tab tab) {
+        RecordUserAction.record("Android.ManualTranslate");
         TranslateBridgeJni.get().manualTranslateWhenReady(assertNonNull(tab.getWebContents()));
     }
 

@@ -233,6 +233,7 @@ public class CustomTabToolbarCoordinator {
                 && params.getType() == CustomButtonParams.ButtonType.CCT_SHARE_BUTTON
                 && supplier != null
                 && supplier.get() != null) {
+            RecordUserAction.record("CustomTabs.ToolbarShareClicked");
             supplier.get()
                     .share(
                             tab,

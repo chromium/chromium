@@ -160,6 +160,20 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Unavailable: Device is on manufacturer exclude list"/>
 </enum>
 
+<!--LINT.IfChange(CustomTabsMtbHiddenReason) -->
+
+<enum name="CustomTabsMtbHiddenReason">
+  <int value="0" label="Other reason"/>
+  <int value="1" label="Invalid variant"/>
+  <int value="2" label="Duplicated action"/>
+  <int value="3" label="In CPA-only mode"/>
+  <int value="4" label="No space for button"/>
+  <int value="5" label="Toolbar width limit"/>
+  <int value="6" label="Omnibox enabled"/>
+</enum>
+
+<!--LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabMtbHiddenReason.java:CustomTabMtbHiddenReason) -->
+
 <enum name="CustomTabsParallelRequestStatusOnStart">
   <int value="0" label="No Parallel Request was requested"/>
   <int value="1" label="Parallel request successfully started"/>
