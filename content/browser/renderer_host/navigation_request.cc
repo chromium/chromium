@@ -5149,7 +5149,13 @@ void NavigationRequest::OnRequestFailedInternal(
   // try to delete this NavigationRequest along with it.
   render_frame_host_ = std::nullopt;
 
-  ssl_info_ = status.ssl_info;
+  // Do not update ssl_info_ on HTTP_RESPONSE_CODE_FAILURE (e.g., HTTP 4xx/5xx
+  // errors). In these cases, URLLoaderCompletionStatus does not have ssl_info.
+  // The existing ssl_info_ should be preserved by design, so the certificate is
+  // retained for error pages, ensuring correct security UI and metrics.
+  if (status.error_code != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
+    ssl_info_ = status.ssl_info;
+  }
 
   devtools_instrumentation::OnNavigationRequestFailed(*this, status);
 

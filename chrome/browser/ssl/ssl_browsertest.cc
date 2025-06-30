@@ -5517,6 +5517,78 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_PushStateSSLState) {
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
 }
 
+namespace {
+
+// A request handler returns different HTTP response codes
+// to simulate server responses in browser tests.
+std::unique_ptr<net::test_server::HttpResponse> SimpleHttpResponseCodeHandler(
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  if (request.relative_url == "/code-200") {
+    response->set_code(net::HTTP_OK);
+    response->set_content("HTTP OK");
+    response->set_content_type("text/html");
+  } else if (request.relative_url == "/code-500") {
+    response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+    response->AddCustomHeader("Content-Length", "0");
+  } else {
+    response->set_code(net::HTTP_NOT_FOUND);
+    response->AddCustomHeader("Content-Length", "0");
+  }
+  return response;
+}
+
+}  // namespace
+
+// Checks that when navigating to the following scenarios with various HTTP
+// response codes on a server with a valid SSL certificate, the SSL state
+// (certificate) remains present.
+IN_PROC_BROWSER_TEST_F(SSLUITest, SSLStateOnDifferentHttpResponses) {
+  https_server_.RegisterRequestHandler(
+      base::BindRepeating(&SimpleHttpResponseCodeHandler));
+  ASSERT_TRUE(https_server_.Start());
+
+  // 1) Navigating to a page that returns HTTP 200.
+  // The SSL certificate state should remain present.
+  GURL success_url = https_server_.GetURL("/code-200");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), success_url));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  auto* helper = SecurityStateTabHelper::FromWebContents(tab);
+  EXPECT_TRUE(helper->GetVisibleSecurityState()->certificate);
+
+  content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_TRUE(entry->GetSSL().certificate);
+
+  // 2) Navigating to a page that returns HTTP 500 with empty content.
+  // The browser shows a default error page for the HTTP 500 response.
+  // The SSL certificate state should still remain present.
+  GURL error_url = https_server_.GetURL("/code-500");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
+
+  tab = browser()->tab_strip_model()->GetActiveWebContents();
+  helper = SecurityStateTabHelper::FromWebContents(tab);
+  EXPECT_TRUE(helper->GetVisibleSecurityState()->certificate);
+
+  entry = tab->GetController().GetVisibleEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_TRUE(entry->GetSSL().certificate);
+
+  // 3) Navigating to a page that returns HTTP 404 with empty content.
+  // The browser shows a default error page for the HTTP 404 response.
+  // The SSL certificate state should still remain present.
+  GURL not_found_url = https_server_.GetURL("/not-found");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), not_found_url));
+  tab = browser()->tab_strip_model()->GetActiveWebContents();
+  helper = SecurityStateTabHelper::FromWebContents(tab);
+  EXPECT_TRUE(helper->GetVisibleSecurityState()->certificate);
+
+  entry = tab->GetController().GetVisibleEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_TRUE(entry->GetSSL().certificate);
+}
+
 // Regression test for http://crbug.com/635833 (crash when a window with no
 // NavigationEntry commits).
 IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreLocalhostCertErrors,
