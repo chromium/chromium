@@ -822,7 +822,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         // 2) Optional button view may be made hidden due to width constraint.
         View optionalButtonContainer = findViewById(R.id.optional_toolbar_button_container);
-        return optionalButtonContainer.getVisibility() == View.VISIBLE;
+        return optionalButtonContainer != null
+                && optionalButtonContainer.getVisibility() == View.VISIBLE;
     }
 
     private boolean hasMultipleDevButtons() {
