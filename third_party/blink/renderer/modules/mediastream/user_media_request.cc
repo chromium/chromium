@@ -80,6 +80,16 @@ enum class GetDisplayMediaIncludeExcludeConstraint {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class GetDisplayMediaSystemWindowOrExcludeConstraint {
+  kNotSpecified = 0,
+  kSystem = 1,
+  kWindow = 2,
+  kExclude = 3,
+  kMaxValue = kExclude
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class GetDisplayMediaConstraintsDisplaySurface {
   kNotSpecified = 0,
   kTab = 1,
@@ -293,6 +303,28 @@ void RecordGetDisplayMediaIncludeExcludeConstraintUma(
        : include_or_exclude == V8DisplayMediaIncludeOrExclude::Enum::kInclude
            ? GetDisplayMediaIncludeExcludeConstraint::kInclude
            : GetDisplayMediaIncludeExcludeConstraint::kExclude);
+  base::UmaHistogramEnumeration(histogram_name, value);
+}
+
+void RecordGetDisplayMediaSystemWindowOrExcludeConstraintUma(
+    std::optional<V8DisplayMediaSystemWindowOrExclude::Enum>
+        system_window_or_exclude,
+    const std::string& histogram_name) {
+  GetDisplayMediaSystemWindowOrExcludeConstraint value =
+      GetDisplayMediaSystemWindowOrExcludeConstraint::kNotSpecified;
+  if (system_window_or_exclude.has_value()) {
+    switch (system_window_or_exclude.value()) {
+      case V8DisplayMediaSystemWindowOrExclude::Enum::kExclude:
+        value = GetDisplayMediaSystemWindowOrExcludeConstraint::kExclude;
+        break;
+      case V8DisplayMediaSystemWindowOrExclude::Enum::kWindow:
+        value = GetDisplayMediaSystemWindowOrExcludeConstraint::kWindow;
+        break;
+      case V8DisplayMediaSystemWindowOrExclude::Enum::kSystem:
+        value = GetDisplayMediaSystemWindowOrExcludeConstraint::kSystem;
+        break;
+    }
+  }
   base::UmaHistogramEnumeration(histogram_name, value);
 }
 
@@ -522,6 +554,16 @@ UserMediaRequest* UserMediaRequest::Create(
       }
     }
     result->set_window_audio_preference(value);
+    if (media_type == UserMediaRequestType::kDisplayMedia) {
+      std::optional<V8DisplayMediaSystemWindowOrExclude::Enum>
+          window_audio_preference;
+      if (options->hasWindowAudio()) {
+        window_audio_preference = options->windowAudio().AsEnum();
+      }
+      RecordGetDisplayMediaSystemWindowOrExcludeConstraintUma(
+          window_audio_preference,
+          "Media.GetDisplayMedia.Constraints.WindowAudio");
+    }
   } else {
     // if the feature is not enabled, we'll set kExclude to never share audio
     // when sharing windows.

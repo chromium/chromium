@@ -3848,6 +3848,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.GetDisplayMedia.Constraints.WindowAudio"
+    enum="GetDisplayMediaSystemWindowOrExcludeConstraint"
+    expires_after="2026-06-27">
+  <owner>brandstrom@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Records whether getDisplayMedia was called with the windowAudio constraint.
+  </summary>
+</histogram>
+
 <histogram name="Media.GetDisplayMedia.RequiresUserActivationResult"
     enum="GetDisplayMediaTransientActivation" expires_after="2025-03-14">
   <owner>eladalon@chromium.org</owner>
