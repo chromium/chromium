@@ -68,3 +68,5 @@ crbug.com/403641201 external/wpt/css/css-pseudo/active-selection-021.html [ Fail
 external/wpt/urlpattern/urlpattern.https.any.worker.html [ Crash Failure ]
 crbug.com/397523920 external/wpt/trusted-types/modify-attributes-in-callback.html [ Crash ]
 crbug.com/396958489 external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]
+
+[ Mac14-arm64 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output

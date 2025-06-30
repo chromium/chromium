@@ -2701,6 +2701,21 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.https.html [ 
 crbug.com/324447993 external/wpt/web-locks/clientids.https.html [ Failure ]
 crbug.com/343770003 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
 crbug.com/355428699 external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Failure Pass Timeout ]
+[ Mac14-arm64 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output
+[ Mac14 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure Timeout ]  # Flaky output
+[ Mac15 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output
+[ Mac15-arm64 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output
+[ Mac12-arm64 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output
+[ Win11-arm64 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output
+[ Mac12 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output
+[ Win10.20h2 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure Timeout ]  # Flaky output
+[ Mac13 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure Timeout ]  # Flaky output
+[ Mac13-arm64 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output
+[ Linux ] external/wpt/clear-site-data/clear-cache.https.html [ Failure Timeout ]  # Flaky output
+[ Win11 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure Timeout ]  # Flaky output
+external/wpt/navigation-api/navigate-event/navigate-multiple-location.html [ Crash ]
+external/wpt/navigation-api/navigate-event/navigate-multiple-history-pushState.html [ Crash ]
+[ Mac ] external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Failure ]
 
 # These tests crash due to DCHECKs. Only CQ/debug CI builders enable DCHECKs;
 # `*-blink-rel` builders don't.
@@ -5819,7 +5834,7 @@ crbug.com/1048761 [ Linux ] external/wpt/websockets/interfaces/WebSocket/send/00
 crbug.com/1048761 [ Win ] external/wpt/websockets/interfaces/WebSocket/send/006.html?wpt_flags=h2 [ Failure ]
 
 # These tests are very flaky and driving up shard retry rates: crbug.com/426959932
-external/wpt/editing/other/join-different-white-space-style-paragraphs.html?* [ Pass Failure ]
+external/wpt/editing/other/join-different-white-space-style-paragraphs.html?* [ Failure Pass ]
 crbug.com/415323248 crbug.com/415292402 crbug.com/413189476 virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.js [ Failure Pass Timeout ]
 crbug.com/417924844 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
 crbug.com/417816138 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynn.html [ Skip Timeout ]

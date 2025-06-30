@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] "anchor" argument of setValidity(): passing self
+  Failed to execute 'setValidity' on 'ElementInternals': The Element argument should be a shadow-including descendant of the target element.
+Harness: the test ran to completion.
+
