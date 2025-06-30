@@ -218,8 +218,7 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   FormAutofillUtilsTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillReplaceCachedWebElementsByRendererIds,
-         features::kAutofillIgnoreCheckableElements},
+        {features::kAutofillReplaceCachedWebElementsByRendererIds},
         /*disabled_features=*/{});
   }
   ~FormAutofillUtilsTest() override = default;
@@ -265,13 +264,11 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
       <button type=kButtonPopover>Foo</button>
       <fieldset></fieldset>
       <input type=button>
-      <input type=checkbox>
       <input type=color>
       <input type=datetime-local>
       <input type=file>
       <input type=hidden>
       <input type=image>
-      <input type=radio>
       <input type=range>
       <input type=reset>
       <input type=submit>
@@ -282,10 +279,12 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
 
       <!-- These form controls are extracted. -->
       <input>
+      <input type=checkbox>
       <input type=email>
       <input type=month>
       <input type=number>
       <input type=password>
+      <input type=radio>
       <input type=search>
       <input type=tel>
       <input type=text>
@@ -298,11 +297,12 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
   FormData form_data =
       *ExtractFormData(GetFormElementById(GetDocument(), "form-id"));
   using enum FormControlType;
-  EXPECT_THAT(form_data.fields(),
-              FormControlTypesAre(kInputText, kInputEmail, kInputMonth,
-                                  kInputNumber, kInputPassword, kInputSearch,
-                                  kInputTelephone, kInputText, kInputUrl,
-                                  kInputDate, kSelectOne, kTextArea));
+  EXPECT_THAT(
+      form_data.fields(),
+      FormControlTypesAre(kInputText, kInputCheckbox, kInputEmail, kInputMonth,
+                          kInputNumber, kInputPassword, kInputRadio,
+                          kInputSearch, kInputTelephone, kInputText, kInputUrl,
+                          kInputDate, kSelectOne, kTextArea));
 }
 
 // Tests that WebFormElementToFormData() sets the
@@ -2191,12 +2191,13 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_OwnedForm) {
       Optional(Property(
           &FormData::fields,
           ElementsAre(Property(&FormFieldData::name, u"text_input"),
+                      Property(&FormFieldData::name, u"check_input"),
                       Property(&FormFieldData::name, u"number_input"),
                       Property(&FormFieldData::name, u"select_input")))));
   histogram_tester.ExpectTotalCount("Autofill.ExtractFormUnowned.FieldCount2",
                                     0);
   histogram_tester.ExpectUniqueSample("Autofill.ExtractFormOwned.FieldCount2",
-                                      3, 1);
+                                      4, 1);
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
@@ -2218,11 +2219,12 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
       Optional(Property(
           &FormData::fields,
           ElementsAre(Property(&FormFieldData::name, u"text_input"),
+                      Property(&FormFieldData::name, u"check_input"),
                       Property(&FormFieldData::name, u"number_input"),
                       Property(&FormFieldData::name, u"select_input")))));
   histogram_tester.ExpectTotalCount("Autofill.ExtractFormOwned.FieldCount2", 0);
   histogram_tester.ExpectUniqueSample("Autofill.ExtractFormUnowned.FieldCount2",
-                                      3, 1);
+                                      4, 1);
 }
 
 // Tests that GetOwnedFormControls() doesn't return disconnected elements.

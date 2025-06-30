@@ -487,10 +487,7 @@ public class AwAutofillTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "disable-features=AutofillServerCommunication",
-        "enable-features=AutofillIgnoreCheckableElements"
-    })
+    @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     @Feature({"AndroidWebView"})
     public void testBasicAutofill() throws Throwable {
         final String url =
@@ -512,7 +509,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                                     <input type='color' id='color1'><input type='file' id='file1'>
                                     <input type='image' id='image1'>
                             </form>""");
-        final int totalControls = 3; // text1, select1, textarea1
+        final int totalControls = 4; // text1, checkbox1, select1, textarea1
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -563,9 +560,9 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals("30", htmlInfo0.getAttribute("maxlength"));
         assertEquals("NAME_FIRST", htmlInfo0.getAttribute("ua-autofill-hints"));
 
-        // Verify select control filled correctly in ViewStructure.
+        // Verify checkbox control filled correctly in ViewStructure.
         TestViewStructure child1 = viewStructure.getChild(1);
-        assertEquals(View.AUTOFILL_TYPE_LIST, child1.getAutofillType());
+        assertEquals(View.AUTOFILL_TYPE_TOGGLE, child1.getAutofillType());
         assertEquals("", child1.getHint());
         assertNull(child1.getAutofillHints());
         assertFalse(child1.getDimensRect().isEmpty());
@@ -573,15 +570,16 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(0, child1.getDimensScrollX());
         assertEquals(0, child1.getDimensScrollY());
         TestViewStructure.TestHtmlInfo htmlInfo1 = child1.getHtmlInfo();
-        assertEquals("month", htmlInfo1.getAttribute("name"));
-        assertEquals("select1", htmlInfo1.getAttribute("id"));
-        CharSequence[] options = child1.getAutofillOptions();
-        assertEquals("Jan", options[0]);
-        assertEquals("Feb", options[1]);
+        assertEquals("checkbox", htmlInfo1.getAttribute("type"));
+        assertEquals("checkbox1", htmlInfo1.getAttribute("id"));
+        assertEquals("showpassword", htmlInfo1.getAttribute("name"));
+        assertEquals("", htmlInfo1.getAttribute("label"));
+        assertNull(htmlInfo1.getAttribute("maxlength"));
+        assertNull(htmlInfo1.getAttribute("ua-autofill-hints"));
 
-        // Verify textarea control is filled correctly in ViewStructure.
+        // Verify select control filled correctly in ViewStructure.
         TestViewStructure child2 = viewStructure.getChild(2);
-        assertEquals(View.AUTOFILL_TYPE_TEXT, child2.getAutofillType());
+        assertEquals(View.AUTOFILL_TYPE_LIST, child2.getAutofillType());
         assertEquals("", child2.getHint());
         assertNull(child2.getAutofillHints());
         assertFalse(child2.getDimensRect().isEmpty());
@@ -589,13 +587,30 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(0, child2.getDimensScrollX());
         assertEquals(0, child2.getDimensScrollY());
         TestViewStructure.TestHtmlInfo htmlInfo2 = child2.getHtmlInfo();
-        assertEquals("textarea1", htmlInfo2.getAttribute("name"));
+        assertEquals("month", htmlInfo2.getAttribute("name"));
+        assertEquals("select1", htmlInfo2.getAttribute("id"));
+        CharSequence[] options = child2.getAutofillOptions();
+        assertEquals("Jan", options[0]);
+        assertEquals("Feb", options[1]);
+
+        // Verify textarea control is filled correctly in ViewStructure.
+        TestViewStructure child3 = viewStructure.getChild(3);
+        assertEquals(View.AUTOFILL_TYPE_TEXT, child3.getAutofillType());
+        assertEquals("", child3.getHint());
+        assertNull(child3.getAutofillHints());
+        assertFalse(child3.getDimensRect().isEmpty());
+        // The field has no scroll, should always be zero.
+        assertEquals(0, child3.getDimensScrollX());
+        assertEquals(0, child3.getDimensScrollY());
+        TestViewStructure.TestHtmlInfo htmlInfo3 = child3.getHtmlInfo();
+        assertEquals("textarea1", htmlInfo3.getAttribute("name"));
 
         // Autofill form and verify filled values.
         SparseArray<AutofillValue> values = new SparseArray<AutofillValue>();
         values.append(child0.getId(), AutofillValue.forText("Juan"));
-        values.append(child1.getId(), AutofillValue.forList(1));
-        values.append(child2.getId(), AutofillValue.forText("aaa"));
+        values.append(child1.getId(), AutofillValue.forToggle(true));
+        values.append(child2.getId(), AutofillValue.forList(1));
+        values.append(child3.getId(), AutofillValue.forText("aaa"));
         cnt = getCallbackCount();
         clearChangedValues();
         invokeAutofill(values);
@@ -603,7 +618,10 @@ public class AwAutofillTest extends AwParameterizedTest {
         waitForCallbackAndVerifyTypes(
                 cnt,
                 new Integer[] {
-                    AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED,
+                    AUTOFILL_VALUE_CHANGED,
+                    AUTOFILL_VALUE_CHANGED,
+                    AUTOFILL_VALUE_CHANGED,
+                    AUTOFILL_VALUE_CHANGED,
                 });
 
         // Verify form filled by Javascript
@@ -611,14 +629,18 @@ public class AwAutofillTest extends AwParameterizedTest {
                 executeJavaScriptAndWaitForResult("document.getElementById('text1').value;");
         assertEquals("\"Juan\"", value0);
         String value1 =
-                executeJavaScriptAndWaitForResult("document.getElementById('select1').value;");
-        assertEquals("\"2\"", value1);
+                executeJavaScriptAndWaitForResult("document.getElementById('checkbox1').value;");
+        assertEquals("\"on\"", value1);
         String value2 =
+                executeJavaScriptAndWaitForResult("document.getElementById('select1').value;");
+        assertEquals("\"2\"", value2);
+        String value3 =
                 executeJavaScriptAndWaitForResult("document.getElementById('textarea1').value;");
-        assertEquals("\"aaa\"", value2);
+        assertEquals("\"aaa\"", value3);
         ArrayList<Pair<Integer, AutofillValue>> changedValues = getChangedValues();
         assertEquals("Juan", changedValues.get(0).second.getTextValue());
-        assertEquals(1, changedValues.get(1).second.getListValue());
+        assertTrue(changedValues.get(1).second.getToggleValue());
+        assertEquals(1, changedValues.get(2).second.getListValue());
     }
 
     /** Tests that a frame-transcending form is filled correctly. */
@@ -1514,10 +1536,7 @@ public class AwAutofillTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "disable-features=AutofillServerCommunication",
-        "enable-features=AutofillIgnoreCheckableElements"
-    })
+    @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     @Feature({"AndroidWebView"})
     public void testUaAutofillHints() throws Throwable {
         loadHTML(
@@ -1536,7 +1555,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                         <input name=\"bill-country\" id=\"frmCountryB\">
                         <input type='submit'>
                     </form>""");
-        final int totalControls = 5;
+        final int totalControls = 6;
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('frmAddressB').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -1572,7 +1591,11 @@ public class AwAutofillTest extends AwParameterizedTest {
 
         TestViewStructure child4 = viewStructure.getChild(4);
         TestViewStructure.TestHtmlInfo htmlInfo4 = child4.getHtmlInfo();
-        assertEquals("ADDRESS_HOME_COUNTRY", htmlInfo4.getAttribute("ua-autofill-hints"));
+        assertNull(htmlInfo4.getAttribute("ua-autofill-hints"));
+
+        TestViewStructure child5 = viewStructure.getChild(5);
+        TestViewStructure.TestHtmlInfo htmlInfo5 = child5.getHtmlInfo();
+        assertEquals("ADDRESS_HOME_COUNTRY", htmlInfo5.getAttribute("ua-autofill-hints"));
     }
 
     @Test

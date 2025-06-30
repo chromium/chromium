@@ -13,6 +13,9 @@ PHONE_HOME_NUMBER | BILL_PHONE<>exchange | Exchange |  | BILL_TO_ADDRESS<>firstN
 PHONE_HOME_EXTENSION | BILL_PHONE<>extension | Extension |  | BILL_TO_ADDRESS<>firstName_1
 PHONE_HOME_CITY_AND_NUMBER | bill_phone | Contact Phone: |  | BILL_TO_ADDRESS<>firstName_1
 EMAIL_ADDRESS | CURRENT_USER<>email | E-mail Address: |  | BILL_TO_ADDRESS<>firstName_1
+UNKNOWN_TYPE | EMAIL_OPT_STATUS_ARRAY<>opt_status | Yes, sign me up for Sale Alerts. (optional) | true | BILL_TO_ADDRESS<>firstName_1
+UNKNOWN_TYPE | indShipIsBillTo | Yes | true | BILL_TO_ADDRESS<>firstName_1
+UNKNOWN_TYPE | indShipIsBillTo | No | false | BILL_TO_ADDRESS<>firstName_1
 NAME_FIRST | SHIP_TO_ADDRESS<>firstName | First Name: |  | SHIP_TO_ADDRESS<>firstName_2
 NAME_LAST | SHIP_TO_ADDRESS<>lastName | Last Name: |  | SHIP_TO_ADDRESS<>firstName_2
 ADDRESS_HOME_LINE1 | SHIP_TO_ADDRESS<>address1 | Address: |  | SHIP_TO_ADDRESS<>firstName_2

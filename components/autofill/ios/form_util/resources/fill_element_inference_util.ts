@@ -324,10 +324,7 @@ gCrWebLegacy.fill.isCheckableElement = function(element: any): boolean {
  *     can be autofilled.
  */
 gCrWebLegacy.fill.isAutofillableInputElement = function(element: Element): boolean {
-  return isTextField(element) ||
-      (gCrWebLegacy.fill.isCheckableElement(element) &&
-       !gCrWebLegacy.autofill_form_features
-            .isAutofillIgnoreCheckableElementsEnabled());
+  return isTextField(element) || gCrWebLegacy.fill.isCheckableElement(element);
 };
 
 /**

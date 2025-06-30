@@ -19,6 +19,8 @@ PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | BDayPhone_tel1 | Daytime Phone |  | Log
 PHONE_HOME_NUMBER_PREFIX | BDayPhone_tel2 | Exchange |  | LoginName_1
 PHONE_HOME_NUMBER_SUFFIX | BDayPhone_tel3 | Last four digits |  | LoginName_1
 PHONE_HOME_EXTENSION | BDayPhone_ext1 | Ext |  | LoginName_1
+UNKNOWN_TYPE | same | Yes | 1 | LoginName_1
+UNKNOWN_TYPE | same | No | 0 | LoginName_1
 NAME_FIRST | SFirstName | First Name* |  | -default
 NAME_MIDDLE_INITIAL | SMI | MI |  | -default
 NAME_LAST | SLastName | Last Name* |  | -default
@@ -39,6 +41,8 @@ UNKNOWN_TYPE | education | Education | 0 | custtype_2
 UNKNOWN_TYPE | hob | Where did you hear about Newegg.com? | 0 | custtype_2
 UNKNOWN_TYPE | FirstPurchase | Is this your first Newegg.com purchase? | 0 | custtype_2
 UNKNOWN_TYPE | GameHours | How many hours per week do you play PC games? | 0 | custtype_2
+UNKNOWN_TYPE | Spam | Sign me up for exclusive newsletter deals, sweepstakes, and 24-hour sales only available to subscribers | 1 | custtype_2
+UNKNOWN_TYPE | SMS | I would like to receive SMS messages via my wireless device. | 1 | custtype_2
 
 UNKNOWN_TYPE | Description | Search site |  | Description_1
 

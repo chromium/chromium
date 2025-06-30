@@ -6,5 +6,6 @@ NAME_LAST | lname | * Last Name |  | fname_1
 EMAIL_ADDRESS | emLogin | * E-mail address |  | fname_1
 UNKNOWN_TYPE | pw | * Password |  | fname_1
 UNKNOWN_TYPE | verifypw | * Re-Confirm Password |  | fname_1
+UNKNOWN_TYPE | wantMsg | I'd like to hear about new product information, special discounts and offers exclusive to Epson customers only. Please sign me up! | on | fname_1
 
 UNKNOWN_TYPE | query | United States |  | query_1

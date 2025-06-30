@@ -24,13 +24,6 @@ let autofillAcrossIframes: boolean = false;
 let autofillAcrossIframesThrottling: boolean = false;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_across_iframes_ios)
 
-// LINT.IfChange(autofill_ignore_checkable_elements)
-/**
- * If true, checkboxes and radio buttons aren't extracted anymore.
- */
-let autofillIgnoreCheckableElements: boolean = false;
-// LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_ignore_checkable_elements)
-
 // LINT.IfChange(autofill_isolated_content_world)
 /**
  Enables the logic necessary for Autofill to work from an isolated content world
@@ -103,20 +96,6 @@ function setAutofillAcrossIframesThrottling(enabled: boolean): void {
  */
 function isAutofillAcrossIframesThrottlingEnabled(): boolean {
   return autofillAcrossIframesThrottling;
-}
-
-/**
- * @see autofillIgnoreCheckableElements
- */
-function setAutofillIgnoreCheckableElements(enabled: boolean): void {
-  autofillIgnoreCheckableElements = enabled;
-}
-
-/**
- * @see autofillIgnoreCheckableElements
- */
-function isAutofillIgnoreCheckableElementsEnabled(): boolean {
-  return autofillIgnoreCheckableElements;
 }
 
 /**
@@ -212,8 +191,6 @@ gCrWebLegacy.autofill_form_features = {
   isAutofillAcrossIframesEnabled,
   setAutofillAcrossIframesThrottling,
   isAutofillAcrossIframesThrottlingEnabled,
-  setAutofillIgnoreCheckableElements,
-  isAutofillIgnoreCheckableElementsEnabled,
   setAutofillIsolatedContentWorld,
   isAutofillIsolatedContentWorldEnabled,
   setAutofillCorrectUserEditedBitInParsedField,

@@ -20,6 +20,7 @@ CREDIT_CARD_NUMBER | paymentFormInfo.creditCardNumber | Credit Card Number: |  |
 CREDIT_CARD_EXP_MONTH | paymentFormInfo.creditCardExpMonth | Expiration Date: |   | paymentFormInfo.creditCardType_2
 CREDIT_CARD_EXP_2_DIGIT_YEAR | paymentFormInfo.creditCardExpYear | Expiration Date: | -1 | paymentFormInfo.creditCardType_2
 CREDIT_CARD_VERIFICATION_CODE | paymentFormInfo.creditCardCvv | CID |  | paymentFormInfo.creditCardType_2
+UNKNOWN_TYPE | sameAsBilling | Same as Billing | on | addrsForm[0].firstName_1
 NAME_FIRST | addrsForm[2].firstName | *First Name: |  | addrsForm[2].firstName_3
 NAME_MIDDLE_INITIAL | addrsForm[2].middleInitial | Middle Initial: |  | addrsForm[2].firstName_3
 NAME_LAST | addrsForm[2].lastName | *Last Name: |  | addrsForm[2].firstName_3
@@ -37,5 +38,6 @@ EMAIL_ADDRESS | addrsForm[2].email | *Email Address: |  | addrsForm[2].firstName
 UNKNOWN_TYPE | loginForm.loginName | *Login Name: |  | addrsForm[2].firstName_3
 UNKNOWN_TYPE | loginForm.password | *Password: |  | addrsForm[2].firstName_3
 UNKNOWN_TYPE | loginForm.passwordConfirm | *Password Confirm: |  | addrsForm[2].firstName_3
+UNKNOWN_TYPE | loginForm.autoLogin | Log me in automatically(Cookies must be enabled) | on | addrsForm[2].firstName_3
 
 UNKNOWN_TYPE | zip |  |  | zip_1

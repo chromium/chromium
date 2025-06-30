@@ -8,6 +8,9 @@ ADDRESS_HOME_STATE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$s
 ADDRESS_HOME_ZIP | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$zip | Zip/Postal Code |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
 PHONE_HOME_CITY_AND_NUMBER | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$billphone2 | Billing Phone |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
 EMAIL_ADDRESS | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$email2 | Email |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
+UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$chbox2 | Send me exclusive offers, deals and expert reviews. | on | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
+UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$same | Same as billing address. | same | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
+UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$giftOrder | This order is a gift. Prices will not appear on invoice. | gift | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1
 NAME_FIRST | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname | First Name |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
 NAME_MIDDLE_INITIAL | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingMi | M.I. |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
 NAME_LAST | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingLastname | Last Name |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2

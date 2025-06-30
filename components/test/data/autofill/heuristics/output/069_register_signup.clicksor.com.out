@@ -12,4 +12,5 @@ ADDRESS_HOME_CITY | city | City: |  | email1_1
 ADDRESS_HOME_STATE | province | State: |  | email1_1
 ADDRESS_HOME_ZIP | zipCode | Zip                           code: |  | email1_1
 ADDRESS_HOME_COUNTRY | country | Country: | US | email1_1
+UNKNOWN_TYPE | termcheck | By checking this box I acknowledge                           that I have read and agree to the Clicksor™ | ON | email1_1
 UNKNOWN_TYPE | securityCode | Enter                           the security code shown below: |  | email1_1

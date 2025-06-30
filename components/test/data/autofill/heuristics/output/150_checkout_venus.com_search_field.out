@@ -9,3 +9,8 @@ ADDRESS_HOME_STATE | ctl00$Body1$ucShippingAddress$ddlState | *State: | Select S
 ADDRESS_HOME_ZIP | ctl00$Body1$ucShippingAddress$txtZip | *Zip Code: |  | ctl00$searchterm_1
 ADDRESS_HOME_COUNTRY | ctl00$Body1$ucShippingAddress$ddlCountry |  | US | ctl00$searchterm_1
 PHONE_HOME_CITY_AND_NUMBER | ctl00$Body1$ucShippingAddress$txtDayPhone | *Phone xxx-xxx-xxxx |  | ctl00$searchterm_1
+UNKNOWN_TYPE | ctl00$Body1$billShip | Yes, they are the same. | rbShipSame | ctl00$searchterm_1
+UNKNOWN_TYPE | ctl00$Body1$billShip | No, I need to add my billing address. | rbShipNotSame | ctl00$searchterm_1
+UNKNOWN_TYPE | ctl00$Body1$rptShipMethods$ctl00$shipMethod | 28 | 28 | ctl00$searchterm_1
+UNKNOWN_TYPE | ctl00$Body1$rptShipMethods$ctl01$shipMethod | 28 | 3 | ctl00$searchterm_1
+UNKNOWN_TYPE | ctl00$Body1$rptShipMethods$ctl02$shipMethod | 3 | 16 | ctl00$searchterm_1

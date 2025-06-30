@@ -10,6 +10,7 @@ ADDRESS_HOME_CITY | ctl00$mainContentPlaceHolder$billingAddressForm$city | City 
 ADDRESS_HOME_STATE | ctl00$mainContentPlaceHolder$billingAddressForm$stateProvince | State/Province | -1 | ctl00$mainContentPlaceHolder$emailAddress_1
 ADDRESS_HOME_ZIP | ctl00$mainContentPlaceHolder$billingAddressForm$zipCode | Zip/Postal Code |  | ctl00$mainContentPlaceHolder$emailAddress_1
 ADDRESS_HOME_COUNTRY | ctl00$mainContentPlaceHolder$billingAddressForm$country | Country | 249 | ctl00$mainContentPlaceHolder$emailAddress_1
+UNKNOWN_TYPE | ctl00$mainContentPlaceHolder$shippingSameAsBilling |  | on | ctl00$mainContentPlaceHolder$emailAddress_1
 NAME_FIRST | ctl00$mainContentPlaceHolder$shippingAddressForm$firstName | First Name |  | ctl00$mainContentPlaceHolder$shippingAddressForm$firstName_2
 NAME_MIDDLE_INITIAL | ctl00$mainContentPlaceHolder$shippingAddressForm$middleInitial | M.I. |  | ctl00$mainContentPlaceHolder$shippingAddressForm$firstName_2
 NAME_LAST | ctl00$mainContentPlaceHolder$shippingAddressForm$lastName | Last Name |  | ctl00$mainContentPlaceHolder$shippingAddressForm$firstName_2
