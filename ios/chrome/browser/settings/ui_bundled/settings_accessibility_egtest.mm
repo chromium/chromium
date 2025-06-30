@@ -10,6 +10,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -94,6 +95,10 @@ id<GREYMatcher> BandwidthSettingsButton() {
 
 // Closes a sub-settings menu, and then the general Settings menu.
 - (void)closeSubSettingsMenu {
+  // Disable EarlGrey synchronization to avoid infinite spinner loop.
+  // Tapping a settings done button triggers the layout update and the internal
+  // timer used by UIKit possibly gets stuck.
+  ScopedSynchronizationDisabler disabler;
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
