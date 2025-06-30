@@ -57,7 +57,7 @@ source_set("impl") {
     ":commerce",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/toasts:toasts",
+    "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views/side_panel",
