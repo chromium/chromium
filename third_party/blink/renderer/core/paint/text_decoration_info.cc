@@ -275,17 +275,17 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
                                      float line_offset) {
   const float double_offset_from_thickness = ResolvedThickness() + 1.0f;
   float double_offset;
-  int wavy_offset_factor;
+  float wavy_offset;
   switch (line) {
     case TextDecorationLine::kUnderline:
     case TextDecorationLine::kSpellingError:
     case TextDecorationLine::kGrammarError:
       double_offset = double_offset_from_thickness;
-      wavy_offset_factor = 1;
+      wavy_offset = double_offset_from_thickness;
       break;
     case TextDecorationLine::kOverline:
       double_offset = -double_offset_from_thickness;
-      wavy_offset_factor = 1;
+      wavy_offset = -double_offset_from_thickness;
       break;
     case TextDecorationLine::kLineThrough:
       // Floor double_offset in order to avoid double-line gap to appear
@@ -293,7 +293,7 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
       // is drawn because of rounding downstream in
       // GraphicsContext::DrawLineForText.
       double_offset = floorf(double_offset_from_thickness);
-      wavy_offset_factor = 0;
+      wavy_offset = 0;
       break;
     case TextDecorationLine::kNone:
     case TextDecorationLine::kBlink:
@@ -322,7 +322,7 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
       gfx::PointF(local_origin_) + gfx::Vector2dF(0, line_offset);
   line_geometry_ = DecorationGeometry::Make(
       style, gfx::RectF(start_point, gfx::SizeF(width_, ResolvedThickness())),
-      double_offset, wavy_offset_factor, base::OptionalToPtr(spelling_wave));
+      double_offset, wavy_offset, base::OptionalToPtr(spelling_wave));
   line_geometry_.antialias = antialias;
 }
 

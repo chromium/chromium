@@ -212,11 +212,10 @@ class WavyGeometry {
 };
 
 gfx::RectF WavyGeometry::PaintRect(const DecorationGeometry& geometry) const {
-  // The offset from the local origin is the (wavy) double offset and the
-  // origin of the wavy pattern rect (around minus half the amplitude).
-  gfx::PointF origin =
-      geometry.line.origin() + bounds_.OffsetFromOrigin() +
-      gfx::Vector2dF{0.f, geometry.double_offset * geometry.wavy_offset_factor};
+  // The offset from the local origin is the wavy offset and the origin of the
+  // wavy pattern rect (around minus half the amplitude).
+  gfx::PointF origin = geometry.line.origin() + bounds_.OffsetFromOrigin() +
+                       gfx::Vector2dF{0.f, geometry.wavy_offset};
   // Get the height of the wavy tile, and the width of the decoration.
   gfx::SizeF size(geometry.line.width(), bounds_.height());
   return {origin, size};
@@ -265,7 +264,7 @@ const WavyGeometry& GetWavyGeometry(const DecorationGeometry& line_geometry) {
 DecorationGeometry DecorationGeometry::Make(StrokeStyle style,
                                             const gfx::RectF& line,
                                             float double_offset,
-                                            int wavy_offset_factor,
+                                            float wavy_offset,
                                             const WaveDefinition* custom_wave) {
   DecorationGeometry geometry;
   geometry.style = style;
@@ -275,7 +274,7 @@ DecorationGeometry DecorationGeometry::Make(StrokeStyle style,
   if (geometry.style == kWavyStroke) {
     geometry.wavy_wave =
         custom_wave ? *custom_wave : MakeWave(geometry.Thickness());
-    geometry.wavy_offset_factor = wavy_offset_factor;
+    geometry.wavy_offset = wavy_offset;
   }
   return geometry;
 }

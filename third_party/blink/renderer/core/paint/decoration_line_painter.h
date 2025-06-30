@@ -38,17 +38,19 @@ struct DecorationGeometry {
   static DecorationGeometry Make(StrokeStyle style,
                                  const gfx::RectF& line,
                                  float double_offset,
-                                 int wavy_offset_factor,
+                                 float wavy_offset,
                                  const WaveDefinition* custom_wave);
 
   float Thickness() const { return line.height(); }
 
   StrokeStyle style = kSolidStroke;
   gfx::RectF line;
+
+  // Only used for kDoubleStroke lines.
   float double_offset = 0;
 
-  // Only used for kWavy lines.
-  int wavy_offset_factor = 0;
+  // Only used for kWavyStroke lines.
+  float wavy_offset = 0;
   WaveDefinition wavy_wave;
 
   bool antialias = false;
