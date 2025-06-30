@@ -352,31 +352,6 @@ class _TransitiveValuesBuilder:
         retain_android_manifests=True)
 
 
-def _GradlePrebuiltJarPaths(params):
-  """Returns a list of prebuilt jar paths for Gradle."""
-  filt = lambda p: p['is_prebuilt'] or p.get('gradle_treat_as_prebuilt')
-  return sorted(params.deps().of_type('java_library').filter(filt).collect(
-      'unprocessed_jar_path'))
-
-
-def _GradleLibraryProjectDeps(params):
-  """Returns a list of library project dependencies for Gradle."""
-  ret = {}
-
-  def visit_func(cur):
-    if not cur.is_library() or cur['is_prebuilt']:
-      return False
-    if cur.get('gradle_treat_as_prebuilt'):
-      return True
-    ret[cur] = 1
-    return False
-
-  # Need |ret| rather than walk's return value since
-  # gradle_treat_as_prebuilt deps are traversed but not themselves included.
-  params.deps().walk(visit_func)
-  return list(ret)
-
-
 def _MergeAssets(all_assets):
   """Merges all assets from the given deps.
 
@@ -414,29 +389,6 @@ def _MergeAssets(all_assets):
     return [f'{src}:{dest}' for dest, src in items]
 
   return create_list(compressed), create_list(uncompressed), locale_paks
-
-
-def _ExtractSharedLibsFromRuntimeDeps(runtime_deps_file):
-  """Extracts a list of .so paths from a runtime_deps file."""
-  ret = []
-  with open(runtime_deps_file, encoding='utf-8') as f:
-    for line in f:
-      line = line.rstrip()
-      if not line.endswith('.so'):
-        continue
-      # Only unstripped .so files are listed in runtime deps.
-      # Convert to the stripped .so by going up one directory.
-      ret.append(os.path.normpath(line.replace('lib.unstripped/', '')))
-  ret.reverse()
-  return ret
-
-
-def _CreateJavaLibrariesList(library_paths):
-  """Returns a java literal array with the "base" library names:
-  e.g. libfoo.so -> foo
-  """
-  names = ['"%s"' % os.path.basename(s)[3:-3] for s in library_paths]
-  return ('{%s}' % ','.join(sorted(set(names))))
 
 
 def _CreateJavaLocaleListFromAssets(assets, locale_paks):
@@ -639,26 +591,6 @@ def main():
     if path := params.get('incremental_install_json_path'):
       config['incremental_install_json_path'] = path
       config['incremental_apk_path'] = params['incremental_apk_path']
-
-  if has_classpath:
-    # TODO(agrieve): Have generate_gradle.py compute these values directly.
-    dependent_android_projects = []
-    dependent_java_projects = []
-    for c in _GradleLibraryProjectDeps(params):
-      if c['requires_android']:
-        dependent_android_projects.append(c.path)
-      else:
-        dependent_java_projects.append(c.path)
-
-    config['gradle'] = {}
-    config['gradle']['dependent_android_projects'] = dependent_android_projects
-    config['gradle']['dependent_java_projects'] = dependent_java_projects
-    dependent_prebuilt_jars = _GradlePrebuiltJarPaths(params)
-    if dependent_prebuilt_jars:
-      config['gradle']['dependent_prebuilt_jars'] = dependent_prebuilt_jars
-    if apk_under_test_params:
-      config['gradle']['apk_under_test'] = os.path.basename(
-          apk_under_test_params['apk_path'])
 
   if is_bundle_module:
     config['unprocessed_jar_path'] = params['unprocessed_jar_path']
@@ -879,32 +811,23 @@ def main():
     if final_dex_path := params.get('final_dex_path'):
       config['final_dex_path'] = final_dex_path
 
-    library_paths = []
-    java_libraries_list = None
-    if path := params.get('shared_libraries_runtime_deps_file'):
-      library_paths = _ExtractSharedLibsFromRuntimeDeps(path)
-      java_libraries_list = _CreateJavaLibrariesList(library_paths)
-
-    secondary_abi_library_paths = []
-    if path := params.get('secondary_abi_shared_libraries_runtime_deps_file'):
-      secondary_abi_library_paths = _ExtractSharedLibsFromRuntimeDeps(path)
-      secondary_abi_library_paths.sort()
-      paths_without_parent_dirs = [
-          p for p in secondary_abi_library_paths if os.path.sep not in p
-      ]
-      if paths_without_parent_dirs:
-        sys.stderr.write('Found secondary native libraries from primary '
-                         'toolchain directory. This is a bug!\n')
-        sys.stderr.write('\n'.join(paths_without_parent_dirs))
-        sys.stderr.write('\n\nIt may be helpful to run: \n')
-        sys.stderr.write('    gn path out/Default //chrome/android:'
-                         'monochrome_secondary_abi_lib //base:base\n')
-        sys.exit(1)
+    library_paths = params.native_libraries()
+    secondary_abi_libraries = params.secondary_abi_native_libraries()
+    paths_without_parent_dirs = [
+        p for p in secondary_abi_libraries if os.path.sep not in p
+    ]
+    if paths_without_parent_dirs:
+      sys.stderr.write('Found secondary native libraries from primary '
+                       'toolchain directory. This is a bug!\n')
+      sys.stderr.write('\n'.join(paths_without_parent_dirs))
+      sys.stderr.write('\n\nIt may be helpful to run: \n')
+      sys.stderr.write('    gn path out/Default //chrome/android:'
+                       'monochrome_secondary_abi_lib //base:base\n')
+      sys.exit(1)
 
     config['native'] = {}
     config['native']['libraries'] = library_paths
-    config['native']['secondary_abi_libraries'] = secondary_abi_library_paths
-    config['native']['java_libraries_list'] = java_libraries_list
+    config['native']['secondary_abi_libraries'] = secondary_abi_libraries
 
     if is_bundle_module:
       loadable_modules = params.get('loadable_modules', [])

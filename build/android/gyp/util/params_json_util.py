@@ -18,6 +18,7 @@ methods for dependency traversal.
 
 import functools
 import json
+import os
 
 # Types that should never be used as a dependency of another build config.
 _ROOT_TYPES = frozenset([
@@ -69,6 +70,16 @@ _CLASSPATH_TYPES = frozenset([
 # Track inputs for use in depfiles.
 _input_paths = []
 
+# By default scripts are run from the output directory, otherwise call
+# set_output_dir() before using methods in this module.
+_output_dir_path = ''
+
+
+def set_output_dir(path):
+  """Resolve paths relative to this directory."""
+  global _output_dir_path
+  _output_dir_path = path
+
 
 def all_read_file_paths():
   """Returns a list of all paths read by _get_json()."""
@@ -77,6 +88,7 @@ def all_read_file_paths():
 
 def _get_json(path):
   """Reads a JSON file and records the path for depfile tracking."""
+  path = os.path.join(_output_dir_path, path)
   _input_paths.append(path)
   with open(path, encoding='utf-8') as f:
     config = json.load(f)
@@ -291,6 +303,18 @@ class DepsList(_HashableList):
     return [p[key_name] for p in self if key_name in p]
 
 
+def _extract_native_libraries_from_runtime_deps(path):
+  """Extracts a list of .so paths from a runtime_deps file."""
+  with open(os.path.join(_output_dir_path, path), encoding='utf-8') as f:
+    lines = f.read().splitlines()
+  ret = [
+      os.path.normpath(l.replace('lib.unstripped/', '')) for l in lines
+      if l.endswith('.so')
+  ]
+  ret.reverse()
+  return ret
+
+
 class ParamsJson(dict):
   """A dictionary-like view of a .params.json file with helper methods."""
 
@@ -458,3 +482,13 @@ class ParamsJson(dict):
     if self.is_library():
       return self.deps().of_type('android_resources')
     return self.deps().recursive_resource_deps().of_type('android_resources')
+
+  def native_libraries(self):
+    if path := self.get('shared_libraries_runtime_deps_file'):
+      return _extract_native_libraries_from_runtime_deps(path)
+    return []
+
+  def secondary_abi_native_libraries(self):
+    if path := self.get('secondary_abi_shared_libraries_runtime_deps_file'):
+      return _extract_native_libraries_from_runtime_deps(path)
+    return []
