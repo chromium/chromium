@@ -44,6 +44,8 @@ class PDFiumOnDemandSearchifier {
   bool HasFailed() const { return state_ == State::kFailed; }
   bool IsIdleForTesting() const { return state_ == State::kIdle; }
 
+  bool PerformedOCR() const { return performed_ocr_; }
+
  private:
   enum class State { kIdle, kWaitingForResults, kFailed };
 
@@ -100,6 +102,9 @@ class PDFiumOnDemandSearchifier {
   bool current_page_was_loaded_ = false;
   std::vector<int> current_page_image_object_indices_;
   std::vector<OcrResult> current_page_ocr_results_;
+
+  // Records if any call to OCR service was successful.
+  bool performed_ocr_ = false;
 
   // Scheduled pages to be searchified.
   base::circular_deque<int> pages_queue_;

@@ -615,9 +615,8 @@ PDFiumEngine::~PDFiumEngine() {
                                 base::TimeTicks::Now() - engine_creation_time_);
   }
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // `searchifier_` is created when at least one page needs searchify.
-  if (searchifier_) {
-    base::UmaHistogramBoolean("PDF.SearchifySuccessful", has_searchify_text_);
+  if (searchifier_ && searchifier_->PerformedOCR()) {
+    base::UmaHistogramBoolean("PDF.SearchifySuccessful2", has_searchify_text_);
   }
 
   // Should be reset before document is unloaded.

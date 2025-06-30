@@ -267,6 +267,8 @@ void PDFiumOnDemandSearchifier::OnGotOcrResult(
   CHECK_EQ(state_, State::kWaitingForResults);
   CHECK(current_page_);
 
+  performed_ocr_ = true;
+
   if (annotation) {
     current_page_ocr_results_.emplace_back(image_index, std::move(annotation),
                                            image_size);
