@@ -42,7 +42,8 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       version_info::Channel channel,
-      std::string locale);
+      std::string locale,
+      TemplateURLService* template_url_service);
   ~TestComposeboxQueryController() override;
 
   // Mutators.

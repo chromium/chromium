@@ -168,8 +168,13 @@ export class ComposeboxElement extends CrLitElement {
     this.fire('toggle-composebox');
   }
 
-  protected onSubmitClick_() {
-    this.submitting_ = true;
+  protected onSubmitClick_(e: KeyboardEvent|MouseEvent) {
+    if (this.$.input.value.trim()) {
+      this.submitting_ = true;
+      this.pageHandler_.submitQuery(
+          this.$.input.value.trim(), (e as MouseEvent).button || 0, e.altKey,
+          e.ctrlKey, e.metaKey, e.shiftKey);
+    }
   }
 }
 

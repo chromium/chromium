@@ -10,4 +10,11 @@ interface ComposeboxPageHandler {
     NotifySessionStarted();
     // Called when a user ends a composebox session.
     NotifySessionAbandoned();
+    // Called when a user submits a query with valid input.
+    SubmitQuery(string query_text,
+                uint8 mouse_button,
+                bool alt_key,
+                bool ctrl_key,
+                bool meta_key,
+                bool shift_key);
 };
