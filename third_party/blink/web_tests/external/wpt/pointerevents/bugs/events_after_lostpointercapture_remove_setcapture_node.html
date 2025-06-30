@@ -9,7 +9,7 @@
         <script src="/resources/testdriver.js"></script>
         <script src="/resources/testdriver-actions.js"></script>
         <script src="/resources/testdriver-vendor.js"></script>
-        <script src="pointerevent_support.js"></script>
+        <script src="../pointerevent_support.js"></script>
     </head>
     <body>
         <input type="button" id="button" value="Set Capture"><br>
@@ -22,17 +22,16 @@
           let target1 = document.getElementById('target1');
           let captureButton = document.getElementById('button');
           let targets = [target0, target1, captureButton];
-          const LOG_EVENT_TYPES = ['pointerover', 'pointerenter', 'pointerdown', 'pointermove', 'pointerout', 'pointerleave', 'gotpointercapture', 'lostpointercapture'];
 
           promise_test(async (test) => {
             captureButton.focus();
             let events = [];
             let logEvent = event => events.push(`${event.type}@${event.target.id}`);
 
+            document.addEventListener('lostpointercapture', logEvent);
             for (const target of targets) {
-              for (const eventType of LOG_EVENT_TYPES) {
-                target.addEventListener(eventType, logEvent);
-              }
+              target.addEventListener('lostpointercapture', logEvent);
+              target.addEventListener('pointerup', logEvent);
             }
 
             let finishPromise = getEvent('pointerup', captureButton, test);
@@ -48,19 +47,8 @@
             getEvent('lostpointercapture', target0, test).then((event) => {
               target1.remove();
             });
-            getEvent('gotpointercapture', target1, test).then((event) => {
-              assert_unreached("target1 is removed and should never get pointer capture.");
-            });
 
             // Inject mouse inputs.
-            //
-            // TODO(crbug.com/40942362): While the test does not expect the second pointer-capture
-            // (see the assert_unreached above), it needs to wait for the dispatch of another event
-            // E afterwards to guarantee that the pending capture for the second capture is actualy
-            // cleared without a gotpointercapture event.  This event E would ideally be the first
-            // pointerup event but Blink wrongly dispatches the first pointerup event to target1!
-            // We are adding an extra pair of down/up actions here and removed pointerup logging to
-            // maintain Blink's test coverage without violating this test's goal.
             new test_driver.Actions()
                 .pointerMove(0, 0, {origin: captureButton})
                 .pointerDown()
@@ -72,15 +60,12 @@
 
             await finishPromise;
 
+            // TODO(crbug.com/40942362): Blink shows two bugs for this test:
+            // - sends the pointerup to deleted target1, and
+            // - sends lostpointercapture to target0 twice only when the document
+            //   event listener above is present.
             assert_equals(events.join(", "), [
-                // Pointer down on button
-                "pointerover@button", "pointerenter@button", "pointermove@button", "pointerdown@button",
-                // Captured by target0
-                "pointerout@button", "pointerleave@button", "pointerover@target0", "pointerenter@target0", "gotpointercapture@target0", "pointermove@target0",
-                // Captured by target1, losing capture on target0 which removes target1.
-                "lostpointercapture@target0", "pointerout@target0", "pointerleave@target0",
-                // Uncaptured pointer re-enters button and is lifted.
-                "pointerover@button", "pointerenter@button", "pointerdown@button"
+              "lostpointercapture@target0", "pointerup@button", "pointerup@button"
             ].join(", "));
           }, "setPointerCapture target removed by lostpointercapture");
         </script>
