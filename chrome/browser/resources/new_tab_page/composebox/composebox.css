@@ -127,6 +127,7 @@
       var(--color-new-tab-page-composebox-hover);
   --cr-icon-button-size: 48px;
   animation: icon-fade-in var(--expand-duration) linear;
+  color: var(--color-new-tab-page-composebox-upload-button);
   opacity: 1;
 }
 

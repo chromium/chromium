@@ -266,6 +266,7 @@
   E_CPONLY(kColorNewTabPageComposeboxCancelButton) \
   E_CPONLY(kColorNewTabPageComposeboxHover) \
   E_CPONLY(kColorNewTabPageComposeboxSubmitButton) \
+  E_CPONLY(kColorNewTabPageComposeboxUploadButton) \
   E_CPONLY(kColorNewTabPageControlBackgroundHovered) \
   E_CPONLY(kColorNewTabPageControlBackgroundSelected) \
   E_CPONLY(kColorNewTabPageDialogBackground) \
