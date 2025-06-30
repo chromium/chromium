@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/grit/browser_resources.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -27,6 +27,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/tooltip_icon.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
@@ -109,13 +110,10 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
                                          .set_bottom(0));
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG),
-      *bundle.GetImageSkiaNamed(IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_DARK),
-      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
-                          base::Unretained(this)));
-
-  header_view->AddChildView(std::move(image_view));
+  auto image = std::make_unique<views::ImageView>(
+      bundle.GetThemedLottieImageNamed(IDR_VIRTUAL_CARD_ENROLL_DIALOG_LOTTIE));
+  image->GetViewAccessibility().SetIsInvisible(true);
+  header_view->AddChildView(std::move(image));
 
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
   GetBubbleFrameView()->SetTitleView(
