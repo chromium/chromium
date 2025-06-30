@@ -28,21 +28,12 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace views {
-class ImageView;
-class Label;
-class Link;
-class Textarea;
-class Throbber;
-}  // namespace views
-
 namespace enterprise_connectors {
 
 // Dialog shown for Deep Scanning to offer the possibility of cancelling the
 // upload to the user.
 class ContentAnalysisDialogController
-    : public ContentAnalysisDialogDelegate,
-      public content::WebContentsObserver,
+    : public content::WebContentsObserver,
       public download::DownloadItem::Observer {
  public:
   // TestObserver should be implemented by tests that need to track when certain
@@ -54,36 +45,36 @@ class ContentAnalysisDialogController
 
     // Called at the start of ContentAnalysisDialogController's constructor.
     // `dialog` is a pointer to the newly constructed
-    // ContentAnalysisDialogController and should be kept in memory by the test
+    // ContentAnalysisDialogDelegate and should be kept in memory by the test
     // in order to validate its state.
-    virtual void ConstructorCalled(ContentAnalysisDialogController* dialog,
+    virtual void ConstructorCalled(ContentAnalysisDialogDelegate* dialog,
                                    base::TimeTicks timestamp) {}
 
     // Called at the end of ContentAnalysisDialogController::Show. `timestamp`
     // is the time used by ContentAnalysisDialogController to decide whether the
     // pending state has been shown for long enough. The test can keep this time
     // in memory and validate the pending time was sufficient in DialogUpdated.
-    virtual void ViewsFirstShown(ContentAnalysisDialogController* dialog,
+    virtual void ViewsFirstShown(ContentAnalysisDialogDelegate* dialog,
                                  base::TimeTicks timestamp) {}
 
     // Called at the end of ContentAnalysisDialogController::UpdateDialog.
     // `result` is the value that UpdatedDialog used to transition from the
     // pending state to the success/failure/warning state.
-    virtual void DialogUpdated(ContentAnalysisDialogController* dialog,
+    virtual void DialogUpdated(ContentAnalysisDialogDelegate* dialog,
                                FinalContentAnalysisResult result) {}
 
     // Called at the start of CancelDialogAndDelete(). `dialog` is a pointer
     // that will soon be destructed. Along with `result`, it is used by the test
     // to validate the dialog should be canceled or deleted.
     virtual void CancelDialogAndDeleteCalled(
-        ContentAnalysisDialogController* dialog,
+        ContentAnalysisDialogDelegate* dialog,
         FinalContentAnalysisResult result) {}
 
     // Called at the end of ContentAnalysisDialogController's destructor.
-    // `dialog` is a pointer to the ContentAnalysisDialogController being
+    // `dialog` is a pointer to the ContentAnalysisDialogDelegate being
     // destructed. It can be used to compare it to the pointer obtained from
     // ConstructorCalled to ensure which view is being destroyed.
-    virtual void DestructorCalled(ContentAnalysisDialogController* dialog) {}
+    virtual void DestructorCalled(ContentAnalysisDialogDelegate* dialog) {}
   };
 
   static void SetObserverForTesting(TestObserver* observer);
@@ -114,20 +105,13 @@ class ContentAnalysisDialogController
   // nothing should be shown.
   void ShowResult(FinalContentAnalysisResult result);
 
-  inline bool is_cloud() const { return is_cloud_; }
-
   // Cancels the dialog an schedules it for deletion if visible, otherwise
   // simply deletes it soon.
   void CancelDialogAndDelete();
 
-  // Accessors used to validate the views in tests.
-  views::ImageView* GetTopImageForTesting() const;
-  views::Throbber* GetSideIconSpinnerForTesting() const;
-  views::StyledLabel* GetMessageForTesting() const;
-  views::Link* GetLearnMoreLinkForTesting() const;
-  views::Label* GetBypassJustificationLabelForTesting() const;
-  views::Textarea* GetBypassJustificationTextareaForTesting() const;
-  views::Label* GetJustificationTextLengthForTesting() const;
+  void CloseDialog(views::Widget::ClosedReason reason);
+
+  ContentAnalysisDialogDelegate* dialog_delegate_for_testing();
 
  private:
   // Friend the unit test class for this so it can call the private dtor.
@@ -150,8 +134,8 @@ class ContentAnalysisDialogController
   // Helper function to determine whether dialog should be shown immediately.
   bool ShouldShowDialogNow();
 
-  void AcceptButtonCallback();
-  void CancelButtonCallback();
+  void AcceptButtonClicked();
+  void CancelButtonClicked();
 
   // This callback used by DialogDelegate::SetCancelCallback and is used to
   // ensure the auto-closing success dialog handles focus correctly.
@@ -195,6 +179,9 @@ class ContentAnalysisDialogController
   // being analyzed.  Input events of this contents are ignored for the life
   // time of the dialog.
   base::WeakPtr<content::WebContents> top_level_contents_;
+
+  std::unique_ptr<ContentAnalysisDialogDelegate> dialog_delegate_;
+  std::unique_ptr<views::Widget> widget_;
 
   base::WeakPtrFactory<ContentAnalysisDialogController> weak_ptr_factory_{this};
 };

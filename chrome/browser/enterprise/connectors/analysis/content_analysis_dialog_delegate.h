@@ -59,14 +59,13 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
       content::WebContents::Getter web_contents_getter,
       bool is_cloud,
       safe_browsing::DeepScanAccessPoint access_point,
-      int files_count);
+      int files_count,
+      FinalContentAnalysisResult final_result);
   ~ContentAnalysisDialogDelegate() override;
 
   // views::DialogDelegate:
   std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
-  views::Widget* GetWidget() override;
-  const views::Widget* GetWidget() const override;
   ui::mojom::ModalType GetModalType() const override;
   views::View* GetContentsView() override;
 
@@ -94,12 +93,31 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
   // `UpdateDialogAppearance()` call.
   void UpdateDialogAppearance();
 
+  // Resets internal members to avoid dangling pointers. Only call this when the
+  // owning widget is about to be destroyed.
+  void Shutdown();
+
+  // Returns the text entered by the user to justify bypassing a warning, or
+  // null if no bypass justification text field was shown.
+  std::optional<std::u16string> GetJustification();
+
   bool has_learn_more_url() const;
   bool bypass_requires_justification() const;
+  bool is_cloud() const;
+  FinalContentAnalysisResult final_result() const;
 
-  // TODO(crbug.com/422111748): Change this to "private" after
-  // `ContentAnalysisDialogController` no longer inherits from this class.
- protected:
+  base::WeakPtr<ContentAnalysisDialogDelegate> GetWeakPtr();
+
+  // Accessors used to validate the views in tests.
+  views::ImageView* GetTopImageForTesting() const;
+  views::Throbber* GetSideIconSpinnerForTesting() const;
+  views::StyledLabel* GetMessageForTesting() const;
+  views::Link* GetLearnMoreLinkForTesting() const;
+  views::Label* GetBypassJustificationLabelForTesting() const;
+  views::Textarea* GetBypassJustificationTextareaForTesting() const;
+  views::Label* GetJustificationTextLengthForTesting() const;
+
+ private:
   // Helper functions to set/get various parts of the dialog depending on the
   // values of `dialog_state_` and `delegate_base_`.
   void SetupButtons();
@@ -183,6 +201,8 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
   // text (files_count_==0). This changes what text and top image are shown to
   // the user.
   int files_count_;
+
+  base::WeakPtrFactory<ContentAnalysisDialogDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace enterprise_connectors

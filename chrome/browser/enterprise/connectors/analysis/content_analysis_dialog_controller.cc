@@ -60,39 +60,26 @@ ContentAnalysisDialogController::ContentAnalysisDialogController(
     int files_count,
     FinalContentAnalysisResult final_result,
     download::DownloadItem* download_item)
-    : ContentAnalysisDialogDelegate(delegate.get(),
-                                    CreateWebContentsGetter(),
-                                    is_cloud,
-                                    access_point,
-                                    files_count),
-      content::WebContentsObserver(contents),
+    : content::WebContentsObserver(contents),
       delegate_base_(std::move(delegate)),
       download_item_(download_item) {
   DVLOG(1) << __func__;
   DCHECK(delegate_base_);
 
-  // TODO(crbug.com/422111748): Move this to the code that initializes the
-  // DialogDelegate once this class no longer inherits from it.
-  final_result_ = final_result;
-  SetOwnedByWidget(OwnedByWidgetPassKey());
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-  DialogDelegate::SetAcceptCallback(
-      base::BindOnce(&ContentAnalysisDialogController::AcceptButtonCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
-  DialogDelegate::SetCancelCallback(
-      base::BindOnce(&ContentAnalysisDialogController::CancelButtonCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+  dialog_delegate_ = std::make_unique<ContentAnalysisDialogDelegate>(
+      delegate_base_.get(), CreateWebContentsGetter(), is_cloud, access_point,
+      files_count, final_result);
+  dialog_delegate_->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   if (observer_for_testing) {
-    observer_for_testing->ConstructorCalled(this, base::TimeTicks::Now());
+    observer_for_testing->ConstructorCalled(dialog_delegate_.get(),
+                                            base::TimeTicks::Now());
   }
 
-  if (final_result_ != FinalContentAnalysisResult::SUCCESS) {
-    UpdateStateFromFinalResult(final_result_);
+  if (final_result != FinalContentAnalysisResult::SUCCESS) {
+    dialog_delegate_->UpdateStateFromFinalResult(final_result);
   }
-
-  SetupButtons();
 
   if (download_item_) {
     download_item_->AddObserver(this);
@@ -108,7 +95,7 @@ ContentAnalysisDialogController::ContentAnalysisDialogController(
   scoped_ignore_input_events_ =
       top_level_contents_->IgnoreInputEvents(std::nullopt);
 
-  if (ShowDialogDelay().is_zero() || !is_pending()) {
+  if (ShowDialogDelay().is_zero() || !dialog_delegate_->is_pending()) {
     DVLOG(1) << __func__ << ": Showing in ctor";
     ShowDialogNow();
   } else {
@@ -117,12 +104,6 @@ ContentAnalysisDialogController::ContentAnalysisDialogController(
         base::BindOnce(&ContentAnalysisDialogController::ShowDialogNow,
                        weak_ptr_factory_.GetWeakPtr()),
         ShowDialogDelay());
-  }
-
-  if (is_warning() && bypass_requires_justification()) {
-    bypass_justification_text_length_->SetEnabledColor(
-        bypass_justification_text_length_->GetColorProvider()->GetColor(
-            ui::kColorAlertHighSeverity));
   }
 }
 
@@ -140,39 +121,41 @@ void ContentAnalysisDialogController::ShowDialogNow() {
     // clipboard). In such a case, we don't show a dialog and instead simply
     // accept/cancel the result immediately. See crbug.com/374120523 and
     // crbug.com/388049470 for more context.
-    if (!is_pending()) {
-      CancelButtonCallback();
+    if (!dialog_delegate_->is_pending()) {
+      CancelButtonClicked();
     }
     return;
   }
 
   // If the web contents is still valid when the delay timer goes off and the
   // dialog has not yet been shown, show it now.
-  if (web_contents() && !contents_view_) {
+  if (web_contents() && !widget_) {
     DVLOG(1) << __func__ << ": first time";
     first_shown_timestamp_ = base::TimeTicks::Now();
-    constrained_window::ShowWebModalDialogViews(this, web_contents());
+    widget_ = constrained_window::ShowWebModalDialogViewsOwned(
+        dialog_delegate_.get(), web_contents(),
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    widget_->MakeCloseSynchronous(
+        base::BindOnce(&ContentAnalysisDialogController::CloseDialog,
+                       weak_ptr_factory_.GetWeakPtr()));
     if (observer_for_testing) {
-      observer_for_testing->ViewsFirstShown(this, first_shown_timestamp_);
+      observer_for_testing->ViewsFirstShown(dialog_delegate_.get(),
+                                            first_shown_timestamp_);
     }
   }
 }
 
-void ContentAnalysisDialogController::AcceptButtonCallback() {
-  DCHECK(delegate_base_);
-  DCHECK(is_warning());
-  accepted_or_cancelled_ = true;
-  std::optional<std::u16string> justification = std::nullopt;
-  if (delegate_base_->BypassRequiresJustification() && bypass_justification_) {
-    justification = bypass_justification_->GetText();
-  }
-  delegate_base_->BypassWarnings(justification);
-}
-
-void ContentAnalysisDialogController::CancelButtonCallback() {
+void ContentAnalysisDialogController::AcceptButtonClicked() {
   accepted_or_cancelled_ = true;
   if (delegate_base_) {
-    delegate_base_->Cancel(is_warning());
+    delegate_base_->BypassWarnings(dialog_delegate_->GetJustification());
+  }
+}
+
+void ContentAnalysisDialogController::CancelButtonClicked() {
+  accepted_or_cancelled_ = true;
+  if (delegate_base_) {
+    delegate_base_->Cancel(dialog_delegate_->is_warning());
   }
 }
 
@@ -204,9 +187,9 @@ void ContentAnalysisDialogController::PrimaryPageChanged(content::Page& page) {
 
 void ContentAnalysisDialogController::ShowResult(
     FinalContentAnalysisResult result) {
-  DCHECK(is_pending());
+  DCHECK(dialog_delegate_->is_pending());
 
-  UpdateStateFromFinalResult(result);
+  dialog_delegate_->UpdateStateFromFinalResult(result);
 
   // Update the pending dialog only after it has been shown for a minimum amount
   // of time.
@@ -225,14 +208,6 @@ void ContentAnalysisDialogController::ShowResult(
 ContentAnalysisDialogController::~ContentAnalysisDialogController() {
   DVLOG(1) << __func__;
 
-  // TODO(crbug.com/422111748): Update this cleanup code when this class stops
-  // inheriting from ContentAnalysisDialogDelegate.
-  ContentAnalysisDialogDelegate::delegate_base_ = nullptr;
-
-  if (bypass_justification_) {
-    bypass_justification_->SetController(nullptr);
-  }
-
   if (top_level_contents_) {
     scoped_ignore_input_events_.reset();
     top_level_contents_->RestoreFocus();
@@ -241,25 +216,26 @@ ContentAnalysisDialogController::~ContentAnalysisDialogController() {
     download_item_->RemoveObserver(this);
   }
   if (observer_for_testing) {
-    observer_for_testing->DestructorCalled(this);
+    observer_for_testing->DestructorCalled(dialog_delegate_.get());
   }
 }
 
 bool ContentAnalysisDialogController::ShouldShowDialogNow() {
-  DCHECK(!is_pending());
+  DCHECK(!dialog_delegate_->is_pending());
   // If the final result is fail closed, display ui regardless of cloud or local
   // analysis.
-  if (final_result_ == FinalContentAnalysisResult::FAIL_CLOSED) {
+  if (dialog_delegate_->final_result() ==
+      FinalContentAnalysisResult::FAIL_CLOSED) {
     DVLOG(1) << __func__ << ": show fail-closed ui.";
     return true;
   }
   // Otherwise, show dialog now only if it is cloud analysis and the verdict is
   // not success.
-  return is_cloud_ && !is_success();
+  return dialog_delegate_->is_cloud() && !dialog_delegate_->is_success();
 }
 
 void ContentAnalysisDialogController::UpdateDialog() {
-  if (!contents_view_ && !is_pending()) {
+  if (!widget_ && !dialog_delegate_->is_pending()) {
     // If the dialog is no longer pending, a final verdict was received before
     // the dialog was displayed.  Show the verdict right away only if
     // ShouldShowDialogNow() returns true.
@@ -267,41 +243,62 @@ void ContentAnalysisDialogController::UpdateDialog() {
     return;
   }
 
-  UpdateDialogAppearance();
+  dialog_delegate_->UpdateDialogAppearance();
 
   // Schedule the dialog to close itself in the success case.
-  if (is_success()) {
+  if (dialog_delegate_->is_success()) {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&DialogDelegate::CancelDialog,
-                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&ContentAnalysisDialogDelegate::CancelDialog,
+                       dialog_delegate_->GetWeakPtr()),
         GetSuccessDialogTimeout());
   }
 
   if (observer_for_testing) {
-    observer_for_testing->DialogUpdated(this, final_result_);
+    observer_for_testing->DialogUpdated(dialog_delegate_.get(),
+                                        dialog_delegate_->final_result());
   }
 
   // Cancel the dialog as it is updated in tests in the failure dialog case.
   // This is necessary to terminate tests that end when the dialog is closed.
-  if (observer_for_testing && is_failure()) {
-    CancelDialog();
+  if (observer_for_testing && dialog_delegate_->is_failure()) {
+    CloseDialog(views::Widget::ClosedReason::kCancelButtonClicked);
   }
 }
 
 void ContentAnalysisDialogController::CancelDialogAndDelete() {
   if (observer_for_testing) {
-    observer_for_testing->CancelDialogAndDeleteCalled(this, final_result_);
+    observer_for_testing->CancelDialogAndDeleteCalled(
+        dialog_delegate_.get(), dialog_delegate_->final_result());
   }
 
-  if (contents_view_) {
+  if (widget_) {
     DVLOG(1) << __func__ << ": dialog will be canceled";
-    CancelDialog();
+    CloseDialog(views::Widget::ClosedReason::kCancelButtonClicked);
   } else {
     DVLOG(1) << __func__ << ": dialog will be deleted soon";
     will_be_deleted_soon_ = true;
     content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
   }
+}
+
+void ContentAnalysisDialogController::CloseDialog(
+    views::Widget::ClosedReason reason) {
+  if (reason == views::Widget::ClosedReason::kAcceptButtonClicked) {
+    AcceptButtonClicked();
+  }
+  if (reason == views::Widget::ClosedReason::kCancelButtonClicked) {
+    CancelButtonClicked();
+  }
+
+  dialog_delegate_->Shutdown();
+
+  delete this;
+}
+
+ContentAnalysisDialogDelegate*
+ContentAnalysisDialogController::dialog_delegate_for_testing() {
+  return dialog_delegate_.get();
 }
 
 // static
@@ -328,42 +325,6 @@ void ContentAnalysisDialogController::SetObserverForTesting(
   observer_for_testing = observer;
 }
 
-views::ImageView* ContentAnalysisDialogController::GetTopImageForTesting()
-    const {
-  return image_;
-}
-
-views::Throbber* ContentAnalysisDialogController::GetSideIconSpinnerForTesting()
-    const {
-  return side_icon_spinner_;
-}
-
-views::StyledLabel* ContentAnalysisDialogController::GetMessageForTesting()
-    const {
-  return message_;
-}
-
-views::Link* ContentAnalysisDialogController::GetLearnMoreLinkForTesting()
-    const {
-  return learn_more_link_;
-}
-
-views::Label*
-ContentAnalysisDialogController::GetBypassJustificationLabelForTesting() const {
-  return justification_text_label_;
-}
-
-views::Textarea*
-ContentAnalysisDialogController::GetBypassJustificationTextareaForTesting()
-    const {
-  return bypass_justification_;
-}
-
-views::Label*
-ContentAnalysisDialogController::GetJustificationTextLengthForTesting() const {
-  return bypass_justification_text_length_;
-}
-
 void ContentAnalysisDialogController::OnDownloadUpdated(
     download::DownloadItem* download) {
   if (download->GetDangerType() ==
@@ -385,24 +346,26 @@ void ContentAnalysisDialogController::OnDownloadOpened(
 
 void ContentAnalysisDialogController::OnDownloadDestroyed(
     download::DownloadItem* download) {
+  // `CancelDialogWithoutCallback` will delete `this` so we need to preemptively
+  // stop observing `download_item_`.
+  download_item_->RemoveObserver(this);
+  download_item_ = nullptr;
+
   if (!accepted_or_cancelled_) {
     CancelDialogWithoutCallback();
   }
-  download_item_ = nullptr;
 }
 
 void ContentAnalysisDialogController::CancelDialogWithoutCallback() {
-  // TODO(crbug.com/422111748): Update this cleanup code when this class stops
-  // inheriting from ContentAnalysisDialogDelegate.
-  ContentAnalysisDialogDelegate::delegate_base_ = nullptr;
+  dialog_delegate_->Shutdown();
 
   // Reset `delegate` so no logic runs when the dialog is cancelled.
   delegate_base_.reset(nullptr);
 
-  // view may be null if the dialog was delayed and never shown before the
+  // `widget_` may be null if the dialog was delayed and never shown before the
   // verdict is known.
-  if (contents_view_) {
-    CancelDialog();
+  if (widget_) {
+    CloseDialog(views::Widget::ClosedReason::kCancelButtonClicked);
   }
 }
 
