@@ -2659,6 +2659,19 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="WRITE_STATUS_FAILED_TO_COALESCE_PACKET"/>
 </enum>
 
+<!-- LINT.IfChange(RequestPriority) -->
+
+<enum name="RequestPriority">
+  <int value="0" label="THROTTLED"/>
+  <int value="1" label="IDLE"/>
+  <int value="2" label="LOWEST"/>
+  <int value="3" label="LOW"/>
+  <int value="4" label="MEDIUM"/>
+  <int value="5" label="HIGHEST"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/base/request_priority.h:RequestPriority) -->
+
 <enum name="ResolutionCategory">
   <int value="0" label="RESOLVE_SUCCESS"/>
   <int value="1" label="RESOLVE_FAIL"/>

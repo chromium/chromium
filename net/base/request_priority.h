@@ -17,6 +17,14 @@ namespace net {
 //
 // This enum should be synchronized with the enum NetRequestPriority in
 // tools/metrics/histograms/enums.xml.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// TODO(crbug.com/421051258): Convert this to an enum class, and use the kXXX
+// naming convention.
+//
+// LINT.IfChange(RequestPriority)
 enum RequestPriority {
   THROTTLED = 0,  // Used to signal that resources
                   // should be reserved for following
@@ -30,7 +38,11 @@ enum RequestPriority {
   MEDIUM = 4,
   HIGHEST = 5,
   MAXIMUM_PRIORITY = HIGHEST,
+  // Define `kMaxValue` for histograms. Clang automatically checks that
+  // kMaxValue is correctly set for the enum.
+  kMaxValue = HIGHEST,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:RequestPriority)
 
 // For simplicity, one can assume that one can index into array of
 // NUM_PRIORITIES elements with a RequestPriority (i.e.,

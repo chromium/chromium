@@ -19,7 +19,7 @@ namespace net {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. (See HttpssvcDnsRcode in
 // tools/metrics/histograms/enums.xml.)
-enum HttpssvcDnsRcode {
+enum class HttpssvcDnsRcode {
   kTimedOut = 0,
   kUnrecognizedRcode,
   kMissingDnsResponse,
