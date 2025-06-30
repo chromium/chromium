@@ -128,12 +128,22 @@ class FakeNativeBufferI420 : public blink::WebRtcVideoFrameAdapter {
  public:
   FakeNativeBufferI420(int width, int height, bool allow_to_i420)
       : blink::WebRtcVideoFrameAdapter(
-            media::VideoFrame::CreateBlackFrame(gfx::Size(480, 360))),
+            media::VideoFrame::CreateBlackFrame(gfx::Size(480, 360)),
+            base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
+                nullptr)),
         width_(width),
         height_(height),
         allow_to_i420_(allow_to_i420),
         test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
+    const gfx::Size kSize360p(480, 360);
+    const gfx::Rect kRect360p(0, 0, 480, 360);
+
     test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+
+    fake_frame_ = CreateTestFrame(kSize360p, kRect360p, kSize360p,
+                                  media::VideoFrame::STORAGE_OWNED_MEMORY,
+                                  media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                                  base::TimeDelta(), test_sii_.get());
   }
 
   Type type() const override { return Type::kNative; }
@@ -149,17 +159,11 @@ class FakeNativeBufferI420 : public blink::WebRtcVideoFrameAdapter {
   }
 
   scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override {
-    const gfx::Size kSize360p(480, 360);
-    const gfx::Rect kRect360p(0, 0, 480, 360);
-
     // The strictness of the mock ensures zero copy.
     auto resources =
         base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
 
-    return CreateTestFrame(kSize360p, kRect360p, kSize360p,
-                           media::VideoFrame::STORAGE_OWNED_MEMORY,
-                           media::VideoPixelFormat::PIXEL_FORMAT_NV12,
-                           base::TimeDelta(), test_sii_.get());
+    return fake_frame_;
   }
 
  private:
@@ -167,6 +171,7 @@ class FakeNativeBufferI420 : public blink::WebRtcVideoFrameAdapter {
   const int height_;
   const bool allow_to_i420_;
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
+  scoped_refptr<media::VideoFrame> fake_frame_;
 };
 
 class RTCVideoEncoderWrapper : public webrtc::VideoEncoder {
@@ -1318,8 +1323,12 @@ TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
   ASSERT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 
+#if !BUILDFLAG(IS_WIN)
   auto frame = media::VideoFrame::CreateBlackFrame(
       gfx::Size(kInputFrameWidth, kInputFrameHeight));
+#else
+  auto frame = media::VideoFrame::CreateEOSFrame();
+#endif
   frame->set_timestamp(base::Milliseconds(1));
   webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
