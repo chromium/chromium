@@ -1960,7 +1960,7 @@ targets.mixin(
             targets.cipd_package(
                 package = "infra/tools/mac_toolchain/${platform}",
                 location = ".",
-                revision = "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d",
+                revision = "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab",
             ),
         ],
     ),
