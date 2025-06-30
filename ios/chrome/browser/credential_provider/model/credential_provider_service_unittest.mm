@@ -143,6 +143,45 @@ class CredentialProviderServiceTest : public PlatformTest {
         });
   }
 
+  bool WaitForCredentialUsername(NSString* username, NSUInteger index) {
+    // For add and remove operations to propagate to the credential store, both
+    // the message loop and the NSRunLoop need to spin.
+    return base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForActionTimeout,
+        /* run_message_loop = */ true, ^{
+          return credential_store_.credentials.count > index &&
+                 [credential_store_.credentials[index].username
+                     isEqualToString:username];
+        });
+  }
+
+  bool WaitForCredentialPassword(NSString* password, NSUInteger index) {
+    // For add and remove operations to propagate to the credential store, both
+    // the message loop and the NSRunLoop need to spin.
+    return base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForActionTimeout,
+        /* run_message_loop = */ true, ^{
+          return credential_store_.credentials.count > index &&
+                 [credential_store_.credentials[index].password
+                     isEqualToString:password];
+        });
+  }
+
+  bool WaitForCredentialTimestamp(const base::Time& timestamp,
+                                  NSUInteger index) {
+    // For add and remove operations to propagate to the credential store, both
+    // the message loop and the NSRunLoop need to spin.
+    const int64_t lastUsedTime =
+        timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds();
+    return base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForActionTimeout,
+        /* run_message_loop = */ true, ^{
+          return credential_store_.credentials.count > index &&
+                 credential_store_.credentials[index].lastUsedTime ==
+                     lastUsedTime;
+        });
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -520,16 +559,8 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
   ASSERT_TRUE(WaitForCredentialCount(2u));
 }
 
-// TODO(crbug.com/407946269): Fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_OnLoginsChanged_WithPerformanceImprovements_SingleOperation \
-  OnLoginsChanged_WithPerformanceImprovements_SingleOperation
-#else
-#define MAYBE_OnLoginsChanged_WithPerformanceImprovements_SingleOperation \
-  DISABLED_OnLoginsChanged_WithPerformanceImprovements_SingleOperation
-#endif
 TEST_F(CredentialProviderServiceTest,
-       MAYBE_OnLoginsChanged_WithPerformanceImprovements_SingleOperation) {
+       OnLoginsChanged_WithPerformanceImprovements_SingleOperation) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatureState(
       kCredentialProviderPerformanceImprovements, true);
@@ -570,8 +601,9 @@ TEST_F(CredentialProviderServiceTest,
                                                 change_list);
   task_environment_.RunUntilIdle();
 
+  ASSERT_TRUE(WaitForCredentialPassword(@"54321", /*index=*/0));
+
   ASSERT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].password, @"54321");
   histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 2);
 
   // Test deleting a password.
@@ -770,13 +802,7 @@ TEST_F(CredentialProviderServiceTest, DeletePasskey) {
   EXPECT_TRUE(WaitForCredentialCount(0u));
 }
 
-// TODO(crbug.com/407946269): Fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_UpdatePasskey UpdatePasskey
-#else
-#define MAYBE_UpdatePasskey DISABLED_UpdatePasskey
-#endif
-TEST_F(CredentialProviderServiceTest, MAYBE_UpdatePasskey) {
+TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
   CreateCredentialProviderService(/*with_account_store=*/true);
 
   ASSERT_EQ(credential_store_.credentials.count, 0u);
@@ -801,18 +827,20 @@ TEST_F(CredentialProviderServiceTest, MAYBE_UpdatePasskey) {
       },
       /*updated_by_user=*/true);
 
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(WaitForCredentialUsername(@"new_passkey_username", /*index=*/0));
+
   test_passkey_model_->UpdatePasskeyTimestamp(passkey.credential_id(),
                                               timestamp);
 
   task_environment_.RunUntilIdle();
 
+  ASSERT_TRUE(WaitForCredentialTimestamp(timestamp, /*index=*/0));
+
   ASSERT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].username,
-              @"new_passkey_username");
   EXPECT_NSEQ(credential_store_.credentials[0].userDisplayName,
               @"new_passkey_display_name");
-  ASSERT_EQ(credential_store_.credentials[0].lastUsedTime,
-            timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 TEST_F(CredentialProviderServiceTest,
