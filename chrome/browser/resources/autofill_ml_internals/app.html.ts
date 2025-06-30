@@ -5,9 +5,21 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {AutofillMlInternalsAppElement} from './app.js';
+import type {MLPredictionLog} from './autofill_ml_internals.mojom-webui.js';
 
 export function getHtml(this: AutofillMlInternalsAppElement) {
   return html`
-<h1>Autofill ML Internals</h1>
-<div id="greeting">${this.message_}</div>`;
+    <h1>Autofill ML Internals</h1>
+    <p>${this.message_}</p>
+
+    <h2>Prediction Logs</h2>
+    <div id="logs-container">
+      ${this.logs_.map((log: MLPredictionLog) => html`
+        <div class="log-entry">
+          <div>Form Signature: ${log.formSignature}</div>
+          <div>Field Signatures: ${log.fieldSignatures.join(', ')}</div>
+        </div>
+      `)}
+    </div>
+  `;
 }

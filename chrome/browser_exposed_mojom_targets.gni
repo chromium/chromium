@@ -80,6 +80,7 @@ browser_exposed_mojom_targets = [
   "//components/attribution_reporting:registration_mojom",
   "//components/attribution_reporting:source_type_mojom",
   "//components/autofill/content/common/mojom:mojom",
+  "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
   "//components/autofill/core/common/mojom:mojo_types",
   "//components/browsing_topics/mojom:mojo_bindings",
   "//components/commerce/core/internals/mojom:mojo_bindings",

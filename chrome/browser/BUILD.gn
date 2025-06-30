@@ -4461,6 +4461,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/access_code_cast:impl",
       "//chrome/browser/ui/webui/actor_internals",
       "//chrome/browser/ui/webui/app_service_internals",
+      "//chrome/browser/ui/webui/autofill_ml_internals",
       "//chrome/browser/ui/webui/infobar_internals",
       "//chrome/browser/ui/webui/infobar_internals:impl",
 
@@ -8684,6 +8685,7 @@ static_library("browser_generated_files") {
     "//chrome/browser/v8_compile_hints/proto",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common/request_header_integrity:buildflags",
+    "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
     "//components/data_sharing/data_sharing_internals/webui:mojo_bindings",
     "//components/webui/chrome_urls/mojom:mojo_bindings",
   ]
@@ -8733,6 +8735,7 @@ static_library("browser_generated_files") {
       "//chrome/browser/ui/webui/web_app_internals:mojo_bindings",
       "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/browser/webauthn/proto",
+      "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
     ]
     if (!is_official_build) {
       public_deps +=

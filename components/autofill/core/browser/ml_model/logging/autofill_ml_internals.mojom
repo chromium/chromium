@@ -1,0 +1,26 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module autofill_ml_internals.mojom;
+
+// Represents a single ML prediction log entry.
+struct MLPredictionLog {
+  string form_signature;
+  array<string> field_signatures;
+};
+
+// The frontend implements this interface to receive log updates from the
+// browser process.
+interface Page {
+  // Called by the backend when a new prediction log is available.
+  OnLogAdded(MLPredictionLog log);
+};
+
+// The browser process implements this interface. The frontend uses this to
+// establish communication.
+interface PageHandler {
+  // The frontend calls this method to register its Page interface and start
+  // receiving log updates.
+  SetPage(pending_remote<Page> page);
+};
