@@ -378,7 +378,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
           initWithDelegate:self
       changeProfileHandler:changeProfileHandler];
 
-  // Make sure -[AuthenticationFlow startSignInWithCompletion:] doesn't call
+  // Make sure -[AuthenticationFlow startSignIn] doesn't call
   // the completion block synchronously.
   // Related to http://crbug.com/1246480.
   __weak __typeof(self) weakSelf = self;
