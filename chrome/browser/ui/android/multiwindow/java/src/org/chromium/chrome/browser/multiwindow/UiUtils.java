@@ -157,8 +157,14 @@ class UiUtils {
             }
         } else if (totalTabCount == 0) { // The window will be closed
             msg = res.getString(R.string.instance_switcher_close_confirm_deleted_tabs_zero);
-        } else if (totalTabCount == 1) { // The tab YouTube will be closed
-            msg = res.getString(R.string.instance_switcher_close_confirm_deleted_tabs_one, title);
+        } else if (totalTabCount == 1) {
+            // V1. The tab YouTube will be closed. V2. YouTube will be closed.
+            msg =
+                    res.getString(
+                            isInstanceSwitcherV2Enabled()
+                                    ? R.string.instance_switcher_close_confirm_deleted_tabs_one_v2
+                                    : R.string.instance_switcher_close_confirm_deleted_tabs_one,
+                            title);
         } else { // YouTube and 3 more tabs will be closed
             msg =
                     res.getQuantityString(

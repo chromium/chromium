@@ -5821,6 +5821,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_ONE" desc="The phrase used in the message when there is a single tab to delete.">
         The tab <ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> will be closed
       </message>
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_ONE_V2" desc="The phrase used in the message when there is a single tab to delete.">
+        <ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> will be closed
+      </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_MANY" desc="The phrase used in the message when there are multiple tabs to delete.">
         {TAB_COUNT, plural,
           =1 {<ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> and <ph name="TAB_COUNT_ONE">%2$s</ph> more tab will be closed}
