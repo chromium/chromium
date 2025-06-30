@@ -53,12 +53,10 @@ class ActorKeyedService : public KeyedService {
   static ActorKeyedService* Get(content::BrowserContext* context);
 
   // Starts tracking an existing task. Returns the new task ID.
-  TaskId AddTask(std::unique_ptr<ActorTask> task);
+  TaskId AddActiveTask(std::unique_ptr<ActorTask> task);
 
-  // In the future we may want to return a more limited or const-version of
-  // ActorTasks. The purpose of this method is to get information about tasks,
-  // not to modify them.
-  const std::map<TaskId, std::unique_ptr<ActorTask>>& GetTasks();
+  const std::map<TaskId, const ActorTask*> GetActiveTasks();
+  const std::map<TaskId, const ActorTask*> GetInactiveTasks();
 
   // Starts a new task with an execution engine and returns the new task's id.
   TaskId CreateTask();
@@ -137,8 +135,9 @@ class ActorKeyedService : public KeyedService {
           callback,
       optimization_guide::proto::ActionsResult result);
 
-  // In the future we may want to divide this between active and inactive tasks.
-  std::map<TaskId, std::unique_ptr<ActorTask>> tasks_;
+  std::map<TaskId, std::unique_ptr<ActorTask>> active_tasks_;
+  // Stores completed tasks. May want to add cancelled tasks in the future.
+  std::map<TaskId, std::unique_ptr<ActorTask>> inactive_tasks_;
 
   std::unique_ptr<ui::ActorUiStateManagerInterface> actor_ui_state_manager_;
 

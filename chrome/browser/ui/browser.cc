@@ -471,7 +471,7 @@ bool IsActorExecutionEngineActingOnTab(Profile* profile,
 #endif
   auto* actor_service = actor::ActorKeyedService::Get(profile);
   if (actor_service) {
-    for (auto& [task_id, task] : actor_service->GetTasks()) {
+    for (auto& [task_id, task] : actor_service->GetActiveTasks()) {
       if (task->GetExecutionEngine()->HasTaskForTab(tab)) {
         return true;
       }

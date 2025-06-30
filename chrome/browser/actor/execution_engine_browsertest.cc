@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicksInBackgroundTab) {
       std::make_unique<actor::ActorTask>(std::move(execution_engine));
   auto* actor_task = actor_task_owned.get();
   const auto task_id = actor_task->id();
-  actor_service->AddTask(std::move(actor_task_owned));
+  actor_service->AddActiveTask(std::move(actor_task_owned));
 
   // Create a single Actions proto with two click actions on the background tab.
   std::optional<int> button1_id = content::GetDOMNodeId(

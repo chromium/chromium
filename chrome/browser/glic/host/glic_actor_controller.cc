@@ -237,7 +237,8 @@ actor::ExecutionEngine& GlicActorController::GetExecutionEngineForTesting(
     auto task = std::make_unique<actor::ActorTask>(
         std::make_unique<actor::ExecutionEngine>(profile_, tab));
     actor_task_ = task.get();
-    actor::ActorKeyedService::Get(profile_.get())->AddTask(std::move(task));
+    actor::ActorKeyedService::Get(profile_.get())
+        ->AddActiveTask(std::move(task));
   }
   return *actor_task_->GetExecutionEngine();
 }

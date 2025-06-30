@@ -60,6 +60,7 @@ void ActorTask::Stop() {
         mojom::ActionResultCode::kTaskWentAway);
   }
   SetState(State::kFinished);
+  end_time_ = base::Time::Now();
 }
 
 void ActorTask::Pause() {
@@ -81,6 +82,10 @@ void ActorTask::Resume() {
 
 bool ActorTask::IsPaused() const {
   return GetState() == State::kPausedByClient;
+}
+
+base::Time ActorTask::GetEndTime() const {
+  return end_time_;
 }
 
 std::ostream& operator<<(std::ostream& os, const ActorTask::State& state) {
