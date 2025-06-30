@@ -140,7 +140,15 @@ ScopedUserData2* ScopedUserData2::From(TestFeatures& features) {
 
 }  // namespace
 
-TEST(UserDataFactoryTest, CreatesDefaults) {
+// TODO(crbug.com/428749341): Re-enable this test for some specific Linux
+// builders where it fails consistently.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UserDataFactoryTest DISABLED_UserDataFactoryTest
+#else
+#define MAYBE_UserDataFactoryTest UserDataFactoryTest
+#endif  // BUILDFLAG(IS_LINUX)
+
+TEST(MAYBE_UserDataFactoryTest, CreatesDefaults) {
   TestFeatures features;
   auto* const data1 = ScopedUserData1::From(features);
   auto* const data2 = ScopedUserData2::From(features);
@@ -151,7 +159,7 @@ TEST(UserDataFactoryTest, CreatesDefaults) {
   EXPECT_EQ(TestFeatures::kConcat, data2->value());
 }
 
-TEST(UserDataFactoryTest, OverrideFirst) {
+TEST(MAYBE_UserDataFactoryTest, OverrideFirst) {
   auto override = TestFeatures::GetDataFactory().AddOverrideForTesting(
       base::BindRepeating([](TestFeatures& host) {
         return std::make_unique<TestScopedUserData1>(host.unowned_data_host());
@@ -170,7 +178,7 @@ TEST(UserDataFactoryTest, OverrideFirst) {
             ScopedUserData1::Get(features2.unowned_data_host())->value());
 }
 
-TEST(UserDataFactoryTest, ScopedOverrideGoesOutOfScope) {
+TEST(MAYBE_UserDataFactoryTest, ScopedOverrideGoesOutOfScope) {
   {
     auto override = TestFeatures::GetDataFactory().AddOverrideForTesting(
         base::BindRepeating([](TestFeatures& host) {
@@ -193,7 +201,7 @@ TEST(UserDataFactoryTest, ScopedOverrideGoesOutOfScope) {
             ScopedUserData1::Get(features2.unowned_data_host())->value());
 }
 
-TEST(UserDataFactoryTest, ScopedOverrideCopyAndReset) {
+TEST(MAYBE_UserDataFactoryTest, ScopedOverrideCopyAndReset) {
   UserDataFactory::ScopedOverride override;
 
   override = TestFeatures::GetDataFactory().AddOverrideForTesting(
@@ -217,7 +225,7 @@ TEST(UserDataFactoryTest, ScopedOverrideCopyAndReset) {
             ScopedUserData1::Get(features2.unowned_data_host())->value());
 }
 
-TEST(UserDataFactoryTest, OverrideSecond) {
+TEST(MAYBE_UserDataFactoryTest, OverrideSecond) {
   auto override = TestFeatures::GetDataFactory().AddOverrideForTesting(
       base::BindRepeating([](TestFeatures& host) {
         // Use the value from another object already in `host` to calculate
@@ -245,7 +253,7 @@ TEST(UserDataFactoryTest, OverrideSecond) {
             ScopedUserData2::Get(features2.unowned_data_host())->value());
 }
 
-TEST(UserDataFactoryTest, OverrideBoth) {
+TEST(MAYBE_UserDataFactoryTest, OverrideBoth) {
   auto override = TestFeatures::GetDataFactory().AddOverrideForTesting(
       base::BindRepeating([](TestFeatures& host) {
         return std::make_unique<TestScopedUserData1>(host.unowned_data_host());

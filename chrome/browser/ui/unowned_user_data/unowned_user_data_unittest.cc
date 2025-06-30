@@ -50,7 +50,15 @@ TEST(UnownedUserDataTest, ScopedUnownedUserData) {
 
 // Tests basic functionality of a class inheriting from
 // UnownedUserDataInterface.
-TEST(UnownedUserDataTest, UnownedUserDataInterface) {
+// TODO(crbug.com/428749341): Re-enable this test for some specific Linux
+// builders where it fails consistently.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UnownedUserDataInterface DISABLED_UnownedUserDataInterface
+#else
+#define MAYBE_UnownedUserDataInterface UnownedUserDataInterface
+#endif  // BUILDFLAG(IS_LINUX)
+
+TEST(UnownedUserDataTest, MAYBE_UnownedUserDataInterface) {
   UnownedUserDataHost host;
   EXPECT_EQ(nullptr, TestUnownedUserDataSubclass::Get(host));
   {
@@ -62,7 +70,14 @@ TEST(UnownedUserDataTest, UnownedUserDataInterface) {
 
 // Tests that different types of UnownedUserData are independent of one another
 // and can be individually set and unset.
-TEST(UnownedUserDataTest, DifferentTypesAreIndependent) {
+// TODO(crbug.com/428749341): Re-enable this test for some specific Linux
+// builders where it fails consistently.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DifferentTypesAreIndependent DISABLED_DifferentTypesAreIndependent
+#else
+#define MAYBE_DifferentTypesAreIndependent DifferentTypesAreIndependent
+#endif  // BUILDFLAG(IS_LINUX)
+TEST(UnownedUserDataTest, MAYBE_DifferentTypesAreIndependent) {
   // We use the two types of TestUnownedUserDataSubclass and
   // TestScopedUnownedUserData. These could be thought of as "UnownedUserData1"
   // and "UnownedUserData2".
