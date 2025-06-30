@@ -93,7 +93,6 @@ _STABLE_ONLY_ALLOWLISTED_ENUMS = {
 
 # TODO(crbug.com/393179188): Remove this allowlist. Do not add new entries here.
 _NATIVE_ALLOWLIST = {
-    'cc.mojom.BrowserControlsParams',
     'cc.mojom.BrowserControlsState',
     'cc.mojom.OverscrollBehavior',
     'cc.mojom.TouchAction',
