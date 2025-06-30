@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_delete_configuration.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_leave_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"

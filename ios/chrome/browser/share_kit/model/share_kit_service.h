@@ -13,7 +13,6 @@
 @protocol ShareKitAvatarPrimitive;
 @class ShareKitAvatarConfiguration;
 @class ShareKitDeleteConfiguration;
-@class ShareKitFacePileConfiguration;
 @class ShareKitJoinConfiguration;
 @class ShareKitLeaveConfiguration;
 @class ShareKitLookupGaiaIDConfiguration;
@@ -51,9 +50,6 @@ class ShareKitService : public KeyedService {
   // Initiates the flow to join the group, using `config` and returns its
   // sessionID.
   virtual NSString* JoinTabGroup(ShareKitJoinConfiguration* config) = 0;
-
-  // Returns a new FacePile view for the given `config`.
-  virtual UIView* FacePileView(ShareKitFacePileConfiguration* config);
 
   // Reads the info for the groups passed in `config` and returns the result
   // through the config callback.

@@ -9,8 +9,6 @@ source_set("model") {
     "share_kit_avatar_primitive.h",
     "share_kit_delete_configuration.h",
     "share_kit_delete_configuration.mm",
-    "share_kit_face_pile_configuration.h",
-    "share_kit_face_pile_configuration.mm",
     "share_kit_flow_outcome.h",
     "share_kit_join_configuration.h",
     "share_kit_join_configuration.mm",
