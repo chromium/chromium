@@ -1713,6 +1713,10 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
     scopes = std::vector<GURL>();
     scopes->reserve(registration_data_list.size());
   }
+  // `blink::ServiceWorkerLongestScopeMatcher` finds the registration with the
+  // longest matching scope. To ensure we find the definitive longest match, we
+  // must iterate through the entire list of registrations. Therefore, we can't
+  // break the loop early, even after a match is found.
   for (const auto& registration_data : registration_data_list) {
     if (matcher.MatchLongest(registration_data->scope)) {
       match = registration_data->registration_id;
@@ -1724,7 +1728,7 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
   if (match != blink::mojom::kInvalidServiceWorkerRegistrationId)
     status = database_->ReadRegistration(match, key, &data, resources.get());
 
-  if (scopes.has_value() && storage_shared_buffer_) {
+  if (return_scopes && scopes.has_value() && storage_shared_buffer_) {
     storage_shared_buffer_->PutRegistrationScopes(key, *scopes);
   }
 
