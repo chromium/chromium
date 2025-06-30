@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/task/delay_policy.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -772,6 +773,10 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
                  SchedulerStateMachine::BeginImplFrameDeadlineModeToString(
                      deadline_mode_));
     deadline_ = new_deadline;
+    if (base::ShouldRecordSubsampledMetric(0.001)) {
+      UMA_HISTOGRAM_ENUMERATION("Compositing.Scheduler.DeadlineMode",
+                                deadline_mode_);
+    }
     static const unsigned char* debug_tracing_enabled =
         TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
             TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"));

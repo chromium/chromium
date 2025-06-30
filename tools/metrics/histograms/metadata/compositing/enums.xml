@@ -33,6 +33,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="No, candidate uses an unsupported strategy"/>
 </enum>
 
+<!--LINT.IfChange(BeginImplFrameDeadlineMode) -->
+
+<enum name="BeginImplFrameDeadlineMode">
+  <int value="0" label="None"/>
+  <int value="1" label="Immediate"/>
+  <int value="2" label="Wait for scroll"/>
+  <int value="3" label="Regular"/>
+  <int value="4" label="Late"/>
+  <int value="5" label="Blocked"/>
+</enum>
+
+<!--LINT.ThenChange(//cc/scheduler/scheduler_state_machine.cc:BeginImplFrameDeadlineMode) -->
+
 <enum name="BufferFormat">
   <summary>The possible format of buffers. See ui/gfx/buffer_types.h.</summary>
   <int value="0" label="R_8"/>

@@ -68,6 +68,7 @@ class CC_EXPORT SchedulerStateMachine {
   // The scheduler uses a deadline to wait for main thread updates before
   // submitting a compositor frame. BeginImplFrameDeadlineMode specifies when
   // the deadline should run.
+  // LINT.IfChange(BeginImplFrameDeadlineMode)
   enum class BeginImplFrameDeadlineMode {
     NONE = 0,       // No deadline should be scheduled e.g. for synchronous
                     // compositor.
@@ -82,6 +83,8 @@ class CC_EXPORT SchedulerStateMachine {
                   // frame arrives.
     kMaxValue = BLOCKED,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/compositing/enums.xml:BeginImplFrameDeadlineMode)
+
   // TODO(nuskos): Update Scheduler::ScheduleBeginImplFrameDeadline event to
   // used typed macros so we can remove this ToString function.
   static const char* BeginImplFrameDeadlineModeToString(
