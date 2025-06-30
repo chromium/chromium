@@ -104,16 +104,8 @@ PresentQLPreviewController GetHistogramEnum(
 
 - (id<QLPreviewItem>)previewController:(QLPreviewController*)controller
                     previewItemAtIndex:(NSInteger)index {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-  // TODO(crbug.com/423946341): The Xcode 26 SDK moved ARQuickLookPreviewItem
-  // between frameworks in a way that breaks running the app on older iOS OSes
-  // when building with the new SDK. This is a simple workaround.
-  Class klass = NSClassFromString(@"ARQuickLookPreviewItem");
-  ARQuickLookPreviewItem* item = [[klass alloc] initWithFileAtURL:_sourceURL];
-#else
   ARQuickLookPreviewItem* item =
       [[ARQuickLookPreviewItem alloc] initWithFileAtURL:_sourceURL];
-#endif
   item.allowsContentScaling = _allowScaling;
   item.canonicalWebPageURL = _canonicalURL;
   return item;
