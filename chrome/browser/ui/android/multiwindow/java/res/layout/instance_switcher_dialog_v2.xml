@@ -48,12 +48,6 @@ found in the LICENSE file.
             android:divider="@null"/>
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/max_instance_info"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/instance_switcher_dialog_max_info_top_padding"
-        android:gravity="start"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+    <include layout="@layout/instance_switcher_cmd_item_v2" />
+
 </LinearLayout>

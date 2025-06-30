@@ -12,14 +12,15 @@ found in the LICENSE file.
     android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    style="@style/ListItemContainer" >
+    android:layout_marginTop="@dimen/instance_switcher_dialog_list_item_padding">
   <LinearLayout
       android:id="@+id/new_window"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
-      android:visibility="gone">
+      android:visibility="gone"
+      android:paddingVertical="5dp"
+      android:background="@drawable/list_item_background_bottom">
     <ImageView
         android:id="@+id/favicon"
         android:src="@drawable/ic_add"
@@ -40,4 +41,12 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         app:leading="@dimen/text_size_large_leading" />
   </LinearLayout>
+  <TextView
+        android:id="@+id/max_instance_info"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/instance_switcher_dialog_max_info_top_padding"
+        android:gravity="start"/>
 </RelativeLayout>

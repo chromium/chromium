@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
@@ -533,48 +532,64 @@ public class InstanceSwitcherCoordinatorTest {
                         .getActivity()
                         .getString(
                                 R.string.max_number_of_windows_instance_switcher_v2_active_tab,
-                                5,
-                                4);
-        onView(withText(activeMaxInfoText)).inRoot(isDialog()).check(matches(isDisplayed()));
+                                MAX_INSTANCE_COUNT,
+                                MAX_INSTANCE_COUNT - 1);
 
-        // Verify + new window command is not added to the dialog.
-        onView(withId(R.id.new_window)).inRoot(isDialog()).check(doesNotExist());
+        // Verify that we show the max info message for the active tab.
+        onView(withId(R.id.max_instance_info))
+                .inRoot(isDialog())
+                .check(matches(withText(activeMaxInfoText)))
+                .check(matches(isDisplayed()));
 
-        // Switch to the inactive instance tab, verify we show max instance info message in inactive
-        // list and close the inactive instance.
+        // Verify the "+ New window" command is not displayed.
+        onView(withId(R.id.new_window))
+                .inRoot(isDialog())
+                .check(matches(withEffectiveVisibility(GONE)));
+
+        // Generate the expected max info text for the inactive tab.
         String inactiveMaxInfoText =
                 mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.max_number_of_windows_instance_switcher_v2_inactive_tab,
-                                5,
-                                4);
-        onView(allOf(withText("Inactive (1)"), isDescendantOfA(withId(R.id.tabs))))
+                                MAX_INSTANCE_COUNT,
+                                MAX_INSTANCE_COUNT - 1);
+
+        // Switch to the inactive instance tab.
+        onView(
+                        allOf(
+                                withText(String.format("Inactive (%d)", 1)),
+                                isDescendantOfA(withId(R.id.tabs))))
                 .perform(click());
-        onView(withText(inactiveMaxInfoText)).inRoot(isDialog()).check(matches(isDisplayed()));
+
+        // Verify we show the max instance info message in the inactive list.
+        onView(withId(R.id.max_instance_info))
+                .inRoot(isDialog())
+                .check(matches(withText(inactiveMaxInfoText)))
+                .check(matches(isDisplayed()));
+
         closeInstanceAt(0, /* isActiveInstance= */ false, closeCallbackHelper);
 
-        // Verify that we show max instance info message on the active instance tab.
-        onView(allOf(withText("Active (5)"), isDescendantOfA(withId(R.id.tabs)))).perform(click());
-        activeMaxInfoText =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string.max_number_of_windows_instance_switcher_v2_active_tab,
-                                5,
-                                4);
-        onView(withText(activeMaxInfoText)).inRoot(isDialog()).check(matches(isDisplayed()));
+        // Switch to the active instance tab.
+        onView(
+                        allOf(
+                                withText(String.format("Active (%d)", MAX_INSTANCE_COUNT)),
+                                isDescendantOfA(withId(R.id.tabs))))
+                .perform(click());
 
-        // Close an active instance.
+        // Close an active instance (e.g., the third one, at index 2).
         closeInstanceAt(2, /* isActiveInstance= */ true, closeCallbackHelper);
 
         // Verify max instance info message is gone.
-        onView(withText(activeMaxInfoText)).inRoot(isDialog()).check(matches(not(isDisplayed())));
-
-        // List positions 0 ~ 3: instances. 4: 'new window' command.
-        onView(withId(R.id.active_instance_list))
+        onView(withId(R.id.max_instance_info))
                 .inRoot(isDialog())
-                .perform(actionOnItemAtPosition(4, click()));
+                .check(matches(not(isDisplayed())));
+
+        // Verify the "+ New window" command is now displayed and click it.
+        onView(withId(R.id.new_window))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed())) // Assert it's now visible
+                .perform(click());
         newWindowCallbackHelper.waitForCallback(newWindowClickCount);
     }
 
