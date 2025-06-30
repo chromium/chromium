@@ -123,18 +123,20 @@ def _ExtractNodeComment(node: IDLNode) -> str:
     greater than zero.
   """
 
-  # The IDL parser doesn't annotate Operation nodes with their line number
-  # correctly, but the Arguments child node will have the correct line number,
-  # so use that instead.
-  if node.GetClass() == 'Operation':
-    return _ExtractNodeComment(node.GetOneOf('Arguments'))
-
   # Extended attributes for a node can actually be formatted onto a preceding
   # line, so if this node has an extended attribute we instead look for the
   # description relative to the extended attribute node.
   ext_attribute_node = node.GetOneOf('ExtAttributes')
   if ext_attribute_node is not None:
     return _ExtractNodeComment(ext_attribute_node)
+
+  # The IDL parser doesn't annotate Operation nodes with their line number
+  # correctly, but the Arguments child node will have the correct line number,
+  # so use that instead.
+  # Note: If the Operation node had any extended attributes, it will have
+  # already been handled by the conditional before this one.
+  if node.GetClass() == 'Operation':
+    return _ExtractNodeComment(node.GetOneOf('Arguments'))
 
   # Look through the lines above the current node and extract every consecutive
   # line that is a comment until a blank or non-comment line is found.

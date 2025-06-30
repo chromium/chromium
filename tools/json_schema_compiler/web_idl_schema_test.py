@@ -402,7 +402,6 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual('Description for the returns object itself.',
                      return_function_returns_value.get('description'))
 
-
   # Tests that API events are processed as expected.
   def testEvents(self):
     schema = self.idl_basics
@@ -696,8 +695,6 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   # Tests that extended attributes being listed on the the line previous to a
   # node come through correctly and don't throw off and associated descriptions.
-  # TODO(crbug.com/340297705): Add checks for functions here once support for
-  # processing their descriptions is complete.
   def testPreviousLineExtendedAttributes(self):
     idl = web_idl_schema.Load('test/web_idl/preceding_extended_attributes.idl')
     self.assertEqual(1, len(idl))
@@ -708,6 +705,15 @@ class WebIdlSchemaTest(unittest.TestCase):
         'Comment on a schema that has extended attributes on a previous line.',
         schema['description'],
     )
+
+    function = getFunction(schema, 'functionExample')
+    self.assertEqual('Description on a function.', function.get('description'))
+    async_return = getFunctionAsyncReturn(schema, 'functionExample')
+    # The extended attribute on the function causes 'optional': True to not be
+    # present on the async return.
+    self.assertNotIn('optional', async_return)
+    self.assertEqual('Promise return description.',
+                     async_return.get('description'))
 
   # Tests that an API interface with the platforms extended attribute has these
   # values in a platforms attribute after processing.

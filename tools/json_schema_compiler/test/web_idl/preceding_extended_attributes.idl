@@ -6,8 +6,10 @@
 [nodoc]
 interface PrecedingExtendedAttributes {
 
-  // Blank for now.
-  // TODO(crbug.com/340297705): Add similar here for functions.
+  // Description on a function.
+  // |Returns|: Promise return description.
+  [requiredCallback]
+  static Promise<boolean> functionExample();
 };
 
 partial interface Browser {
