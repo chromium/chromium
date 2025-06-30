@@ -282,6 +282,17 @@ void SecurePaymentConfirmationAppFactory::
   if (!request->authenticator ||
       (!is_available && !base::FeatureList::IsEnabled(
                             ::features::kSecurePaymentConfirmationDebug))) {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            blink::features::kSecurePaymentConfirmationUxRefresh)) {
+      request->delegate->SetCanMakePaymentEvenWithoutApps();
+      // Skip getting matching credential IDs since the authenticator is not
+      // available.
+      OnRetrievedCredentials(std::move(request), /*credentials=*/{});
+      return;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -588,12 +599,17 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
     request->mojo_request->instrument->icon = GURL();
   }
 
-  if (!request->delegate->GetSpec() ||
-      ((!request->authenticator || !request->credential) &&
-       !(PaymentsExperimentalFeatures::IsEnabled(
-             features::kSecurePaymentConfirmationFallback) ||
-         base::FeatureList::IsEnabled(
-             blink::features::kSecurePaymentConfirmationUxRefresh)))) {
+  bool skipSpcAppCreation = !request->delegate->GetSpec() ||
+                            !request->authenticator || !request->credential;
+#if BUILDFLAG(IS_ANDROID)
+  skipSpcAppCreation =
+      skipSpcAppCreation &&
+      !PaymentsExperimentalFeatures::IsEnabled(
+          features::kSecurePaymentConfirmationFallback) &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationUxRefresh);
+#endif  // BUILDFLAG(IS_ANDROID)
+  if (skipSpcAppCreation) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
