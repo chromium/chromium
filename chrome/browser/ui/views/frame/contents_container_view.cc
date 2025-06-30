@@ -22,12 +22,10 @@
 #include "ui/views/layout/proposed_layout.h"
 
 namespace {
-
-constexpr int kContentCornerRadius = 6;
+constexpr gfx::RoundedCornersF kContentCornerRadius{6};
 constexpr int kContentOutlineCornerRadius = 8;
 constexpr int kContentOutlineThickness = 1;
 constexpr int kSplitViewContentPadding = 4;
-
 }  // namespace
 
 ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
@@ -36,6 +34,7 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
   contents_view_ = AddChildView(
       std::make_unique<ContentsWebView>(browser_view->GetProfile()));
   scrim_view_ = AddChildView(std::make_unique<ScrimView>(kColorSplitViewScrim));
+  scrim_view_->SetRoundedCorners(kContentCornerRadius);
   mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
       browser_view, contents_view_));
 }
@@ -47,7 +46,7 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
   // split.
   if (!is_in_split) {
     SetBorder(nullptr);
-    contents_view_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{0});
+    contents_view_->SetBackgroundRadii(gfx::RoundedCornersF{0});
     mini_toolbar_->SetVisible(false);
     scrim_view_->SetVisible(false);
     return;
@@ -64,8 +63,10 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
       views::CreateRoundedRectBorder(kContentOutlineThickness,
                                      kContentOutlineCornerRadius, color),
       gfx::Insets(kSplitViewContentPadding)));
-  contents_view_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{kContentCornerRadius});
+
+  if (contents_view_->GetBackgroundRadii() != kContentCornerRadius) {
+    contents_view_->SetBackgroundRadii(kContentCornerRadius);
+  }
   // Mini toolbar should only be visible for the inactive contents
   // container view or both depending on configuration.
   mini_toolbar_->UpdateState(is_active);
