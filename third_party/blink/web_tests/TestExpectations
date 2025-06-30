@@ -2713,9 +2713,9 @@ crbug.com/355428699 external/wpt/scroll-to-text-fragment/find-range-from-text-di
 [ Mac13-arm64 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output
 [ Linux ] external/wpt/clear-site-data/clear-cache.https.html [ Failure Timeout ]  # Flaky output
 [ Win11 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure Timeout ]  # Flaky output
-external/wpt/navigation-api/navigate-event/navigate-multiple-location.html [ Crash ]
-external/wpt/navigation-api/navigate-event/navigate-multiple-history-pushState.html [ Crash ]
-[ Mac ] external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Failure ]
+crbug.com/428506172 external/wpt/navigation-api/navigate-event/navigate-multiple-location.html [ Crash ]
+crbug.com/428506172 external/wpt/navigation-api/navigate-event/navigate-multiple-history-pushState.html [ Crash ]
+crbug.com/428331359 [ Mac ] external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Failure ]
 
 # These tests crash due to DCHECKs. Only CQ/debug CI builders enable DCHECKs;
 # `*-blink-rel` builders don't.
