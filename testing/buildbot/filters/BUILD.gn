@@ -371,6 +371,7 @@ source_set("gl_tests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.arm64_proguard_rel.gl_tests.filter",
+    "//testing/buildbot/filters/android.desktop.corsola.gl_tests_passthrough.filter",
     "//testing/buildbot/filters/android.emulator_10.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator_11.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",

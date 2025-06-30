@@ -1,0 +1,8 @@
+# crbug.com/428187558
+-GpuFenceTest.BasicGpuFenceTest
+-SignalTest.BasicSignalQueryTest
+-SignalTest.BasicSignalSyncTokenTest
+-SignalTest.EmptySignalSyncTokenTest
+-SignalTest.InvalidSignalQueryUnboundTest
+-SignalTest.InvalidSignalSyncTokenTest
+-SignalTest.SignalQueryUnboundTest
