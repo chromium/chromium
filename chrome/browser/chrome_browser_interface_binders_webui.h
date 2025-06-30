@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_INTERFACE_BINDERS_WEBUI_H_
 #define CHROME_BROWSER_CHROME_BROWSER_INTERFACE_BINDERS_WEBUI_H_
 
-#include "mojo/public/cpp/bindings/binder_map.h"
-
 namespace content {
 class RenderFrameHost;
 class WebUIBrowserInterfaceBrokerRegistry;
 }  // namespace content
 
+namespace mojo {
+template <typename>
+class BinderMapWithContext;
+}  // namespace mojo
 
 namespace chrome::internal {
 

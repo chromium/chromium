@@ -13,12 +13,12 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page.h"
-#include "content/public/browser/per_web_ui_browser_interface_broker.h"
 
 class GURL;
 
 namespace content {
 
+class PerWebUIBrowserInterfaceBroker;
 class RenderFrameHost;
 class WebUI;
 class WebUIBrowserInterfaceBrokerRegistry;

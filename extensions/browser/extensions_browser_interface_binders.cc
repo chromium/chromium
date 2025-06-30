@@ -14,6 +14,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/mojom/keep_alive.mojom.h"  // nogncheck
+#include "mojo/public/cpp/bindings/binder_map.h"
 
 namespace extensions {
 

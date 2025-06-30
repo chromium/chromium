@@ -11,6 +11,7 @@
 #include "content/public/browser/internal_webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 

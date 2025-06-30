@@ -11,6 +11,7 @@
 
 #include "base/functional/function_ref.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
 namespace content {
 class WebUI;

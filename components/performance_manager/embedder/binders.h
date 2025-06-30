@@ -8,7 +8,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EMBEDDER_BINDERS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EMBEDDER_BINDERS_H_
 
-#include "mojo/public/cpp/bindings/binder_map.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace content {
@@ -16,6 +15,11 @@ class BrowserChildProcessHost;
 class RenderFrameHost;
 class RenderProcessHost;
 }  // namespace content
+
+namespace mojo {
+template <typename>
+class BinderMapWithContext;
+}  // namespace mojo
 
 namespace performance_manager {
 

@@ -18,6 +18,7 @@
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_test_utils.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace ash::settings {

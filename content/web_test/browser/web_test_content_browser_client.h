@@ -13,7 +13,6 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/web_test/common/fake_bluetooth_chooser.mojom-forward.h"
 #include "content/web_test/common/web_test.mojom-forward.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -34,6 +33,11 @@ namespace web_pref {
 struct WebPreferences;
 }
 }  // namespace blink
+
+namespace mojo {
+template <typename>
+class BinderMapWithContext;
+}  // namespace mojo
 
 namespace content {
 class FakeBluetoothChooser;

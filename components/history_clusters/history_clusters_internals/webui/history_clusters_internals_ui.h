@@ -7,6 +7,7 @@
 
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 

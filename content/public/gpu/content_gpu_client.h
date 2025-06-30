@@ -11,7 +11,6 @@
 #include "content/common/content_export.h"
 #include "content/public/common/content_client.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
 
 namespace gpu {
 struct GpuPreferences;
@@ -19,6 +18,10 @@ class GpuDriverBugWorkarounds;
 class Scheduler;
 class SharedImageManager;
 class SyncPointManager;
+}
+
+namespace mojo {
+class BinderMap;
 }
 
 namespace viz {

@@ -18,6 +18,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/camera_app_ui/camera_app_ui.h"

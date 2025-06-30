@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/webui/on_device_translation_internals/on_device_translation_internals.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class OnDeviceTranslationInternalsPageHandlerImpl;

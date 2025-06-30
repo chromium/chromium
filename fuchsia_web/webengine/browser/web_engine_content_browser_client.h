@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/content_browser_client.h"
 #include "fuchsia_web/webengine/browser/content_directory_loader_factory.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
 
 class WebEngineBrowserMainParts;
 

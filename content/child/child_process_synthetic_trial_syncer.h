@@ -11,7 +11,6 @@
 #include "components/variations/synthetic_trials.h"
 #include "content/common/content_export.h"
 #include "content/common/synthetic_trial_configuration.mojom.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {

@@ -15,7 +15,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window.h"
@@ -24,6 +23,10 @@
 namespace display {
 class NativeDisplayDelegate;
 }
+
+namespace mojo {
+class BinderMap;
+}  // namespace mojo
 
 namespace ui {
 enum class DomCode : uint32_t;

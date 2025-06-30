@@ -9,6 +9,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class ActorInternalsUI;

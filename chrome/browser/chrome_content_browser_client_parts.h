@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "components/download/public/common/quarantine_connection.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -35,6 +34,11 @@ struct ServiceWorkerVersionBaseInfo;
 class SiteInstance;
 class WebContents;
 }
+
+namespace mojo {
+template <typename>
+class BinderMapWithContext;
+}  // namespace mojo
 
 namespace storage {
 class FileSystemBackend;

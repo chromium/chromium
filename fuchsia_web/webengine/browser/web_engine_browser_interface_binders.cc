@@ -6,6 +6,7 @@
 
 #include "fuchsia_web/webengine/browser/frame_impl.h"
 #include "fuchsia_web/webengine/browser/web_engine_media_resource_provider_impl.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 void PopulateFuchsiaFrameBinders(
