@@ -1203,7 +1203,7 @@ public class TouchToFillPaymentMethodViewTest {
             AutofillSuggestion suggestion,
             FillableItemCollectionInfo collectionInfo,
             Runnable actionCallback) {
-        PaymentsPayload payload = (PaymentsPayload) suggestion.getPayload();
+        PaymentsPayload payload = suggestion.getPaymentsPayload();
         PropertyModel.Builder creditCardSuggestionModelBuilder =
                 new PropertyModel.Builder(NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
                         .with(MAIN_TEXT, suggestion.getLabel())

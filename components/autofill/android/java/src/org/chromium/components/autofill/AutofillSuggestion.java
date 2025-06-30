@@ -47,9 +47,7 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param featureForIph The IPH feature for the autofill suggestion. If present, it'll be
      *     attempted to be shown in the keyboard accessory.
      * @param customIconUrl The {@link GURL} for the custom icon, if any.
-     * @param payload Additional data passed with the suggestion. Currently only
-     *     AutofillProfilePayload may passed. New payloads can be added by implementing the {@link
-     *     AutofillSuggestion.Payload} interface.
+     * @param payload Additional data passed with the suggestion.
      */
     @VisibleForTesting
     public AutofillSuggestion(
@@ -142,8 +140,18 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mIphDescriptionText;
     }
 
-    public @Nullable Payload getPayload() {
-        return mPayload;
+    public @Nullable AutofillProfilePayload getAutofillProfilePayload() {
+        if (mPayload instanceof AutofillProfilePayload) {
+            return (AutofillProfilePayload) mPayload;
+        }
+        return null;
+    }
+
+    public @Nullable PaymentsPayload getPaymentsPayload() {
+        if (mPayload instanceof PaymentsPayload) {
+            return (PaymentsPayload) mPayload;
+        }
+        return null;
     }
 
     @Override
