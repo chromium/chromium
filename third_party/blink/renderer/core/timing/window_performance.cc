@@ -616,10 +616,7 @@ void WindowPerformance::EventTimingProcessingStart(
   // Set prevent_counting_as_interaction to true for all the event entries when
   // the selection autoscroll happens at the current event presentation frame
   // or the previous frame.
-  if (RuntimeEnabledFeaturesBase::
-          EventTimingSelectionAutoScrollNoInteractionIdEnabled()) {
-    reporting_info.prevent_counting_as_interaction |= IsAutoscrollActive();
-  }
+  reporting_info.prevent_counting_as_interaction |= IsAutoscrollActive();
 
   // We always have a Hit test target before starting event dispatch.  During
   // event dispatch we might change target via event retargetting or
