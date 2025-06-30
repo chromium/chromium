@@ -21,11 +21,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual void NotifyGpuContextLost() = 0;
   virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
-
   virtual bool IsPrinting() const { return false; }
-  virtual bool IsHibernating() const { return false; }
-
-  virtual void SetTransferToGPUTextureWasInvoked() {}
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
 };
 

@@ -112,7 +112,11 @@ class CORE_EXPORT CanvasRenderingContextHost
   bool IsValidImageSize() const;
   bool IsPaintable() const;
 
+  virtual bool IsHibernating() const { return false; }
+
   virtual bool LowLatencyEnabled() const { return false; }
+
+  virtual void SetTransferToGPUTextureWasInvoked() {}
 
   // Required by template functions in WebGLRenderingContextBase
   int width() const { return Size().width(); }
