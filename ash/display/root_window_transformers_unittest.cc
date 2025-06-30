@@ -434,12 +434,12 @@ TEST_F(RootWindowTransformersTest, LetterBoxPillarBox) {
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   std::unique_ptr<RootWindowTransformer> transformer(
       CreateCurrentRootWindowTransformerForMirroring());
-  // Y margin must be margin is (400 - 500/400 * 200) / 2 = 75
+  // Y margin is (400 - 500/400 * 200) / 2 = 75
   EXPECT_EQ(gfx::Insets::TLBR(0, 75, 0, 75), transformer->GetHostInsets());
 
   // Pillar boxed
   UpdateDisplay("200x400,500x400");
-  // X margin must be margin is (500 - 200) / 2 = 150
+  // X margin is (500 - 200) / 2 = 150
   transformer = CreateCurrentRootWindowTransformerForMirroring();
   EXPECT_EQ(gfx::Insets::TLBR(150, 0, 150, 0), transformer->GetHostInsets());
 }
@@ -461,17 +461,16 @@ TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
 
     const bool need_transpose = rotation == display::Display::ROTATE_90 ||
                                 rotation == display::Display::ROTATE_270;
-    // Y margin is (400 - 500/400 * 200) / 2 = 75 for no rotation. Transposed
-    // on 90/270 degree.
+    // X margin is (500 - 200) / 2 = 150 for with rotation.
+    // Y margin is (400 - 500/400 * 200) / 2 = 75 for without rotation.
     gfx::Insets expected_insets =
-        need_transpose ? gfx::Insets::VH(75, 0) : gfx::Insets::VH(0, 75);
+        need_transpose ? gfx::Insets::VH(150, 0) : gfx::Insets::VH(0, 75);
     EXPECT_EQ(expected_insets, transformer->GetHostInsets());
 
-    // Expected rect in mirror of the source root, with y margin applied for no
-    // rotation. Transposed on 90/270 degree.
-    gfx::RectF expected_rect(0, 75, 500, 250);
-    if (need_transpose)
-      expected_rect.Transpose();
+    // Expected rect in mirror of the source root, x margin applied for with
+    // rotation and y margin applied for without rotation.
+    gfx::RectF expected_rect = need_transpose ? gfx::RectF(150, 0, 200, 400)
+                                              : gfx::RectF(0, 75, 500, 250);
 
     gfx::RectF rect = transformer->GetTransform().MapRect(
         gfx::RectF(transformer->GetRootWindowBounds(gfx::Size())));

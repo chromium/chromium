@@ -269,18 +269,6 @@ void MirrorWindowController::UpdateWindow(
     auto* mirroring_host_info =
         mirroring_host_info_map_[display_info.id()].get();
 
-    const bool should_undo_rotation = ShouldUndoRotationForMirror();
-
-    if (!should_undo_rotation && !display_manager->IsInUnifiedMode()) {
-      // Use the rotation from source display without panel orientation
-      // applied instead of the display transform hint in |source_compositor|
-      // so that panel orientation is not applied to the mirror host.
-      mirroring_host_info->ash_host->AsWindowTreeHost()
-          ->SetDisplayTransformHint(display::DisplayRotationToOverlayTransform(
-              display_manager->GetDisplayInfo(reflecting_source_id_)
-                  .GetActiveRotation()));
-    }
-
     aura::Window* mirror_window = mirroring_host_info->mirror_window;
     mirror_window->SetBounds(gfx::Rect(mirror_size));
     mirror_window->Show();
