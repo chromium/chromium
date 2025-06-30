@@ -628,8 +628,7 @@ void ShoppingService::PDPMetricsCallback(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata,
     const GURL& url) {
-  if (!IsRegionLockedFeatureEnabled(kShoppingPDPMetrics,
-                                    kShoppingPDPMetricsRegionLaunched)) {
+  if (!IsRegionLockedFeatureEnabled(kShoppingPDPMetrics)) {
     return;
   }
 
@@ -1002,14 +1001,6 @@ void ShoppingService::IsShoppingPage(const GURL& url,
       url, optimization_guide::proto::OptimizationType::SHOPPING_PAGE_TYPES,
       base::BindOnce(&ShoppingService::HandleOptGuideShoppingPageTypesResponse,
                      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
-}
-
-bool ShoppingService::IsRegionLockedFeatureEnabled(
-    const base::Feature& feature,
-    const base::Feature& region_specific_feature) {
-  return commerce::IsRegionLockedFeatureEnabled(
-      feature, region_specific_feature, country_on_startup_,
-      locale_on_startup_);
 }
 
 bool ShoppingService::IsRegionLockedFeatureEnabled(

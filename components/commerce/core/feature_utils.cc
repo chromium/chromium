@@ -59,10 +59,9 @@ bool IsShoppingListEligible(AccountChecker* account_checker) {
 }
 
 bool IsPriceInsightsApiEnabled(AccountChecker* account_checker) {
-  return account_checker &&
-         commerce::IsRegionLockedFeatureEnabled(
-             kPriceInsights, kPriceInsightsRegionLaunched,
-             account_checker->GetCountry(), account_checker->GetLocale());
+  return account_checker && commerce::IsRegionLockedFeatureEnabled(
+                                kPriceInsights, account_checker->GetCountry(),
+                                account_checker->GetLocale());
 }
 
 bool IsPriceInsightsEligible(AccountChecker* account_checker) {
@@ -71,16 +70,16 @@ bool IsPriceInsightsEligible(AccountChecker* account_checker) {
 }
 
 bool IsSubscriptionsApiEnabled(AccountChecker* account_checker) {
-  return IsRegionLockedFeatureEnabled(
-      kSubscriptionsApi, kSubscriptionsApiRegionLaunched,
-      account_checker->GetCountry(), account_checker->GetLocale());
+  return IsRegionLockedFeatureEnabled(kSubscriptionsApi,
+                                      account_checker->GetCountry(),
+                                      account_checker->GetLocale());
 }
 
 bool IsPriceAnnotationsEnabled(AccountChecker* account_checker) {
   return account_checker &&
-         commerce::IsRegionLockedFeatureEnabled(
-             kPriceAnnotations, kPriceAnnotationsRegionLaunched,
-             account_checker->GetCountry(), account_checker->GetLocale());
+         commerce::IsRegionLockedFeatureEnabled(kPriceAnnotations,
+                                                account_checker->GetCountry(),
+                                                account_checker->GetLocale());
 }
 
 bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs) {
@@ -167,9 +166,9 @@ bool IsProductSpecificationsSettingVisible(AccountChecker* account_checker) {
 
 bool IsDiscountInfoApiEnabled(AccountChecker* account_checker) {
   return account_checker &&
-         commerce::IsRegionLockedFeatureEnabled(
-             kEnableDiscountInfoApi, kEnableDiscountInfoApiRegionLaunched,
-             account_checker->GetCountry(), account_checker->GetLocale());
+         commerce::IsRegionLockedFeatureEnabled(kEnableDiscountInfoApi,
+                                                account_checker->GetCountry(),
+                                                account_checker->GetLocale());
 }
 
 bool IsDiscountEligibleToShowOnNavigation(AccountChecker* account_checker) {
@@ -180,23 +179,23 @@ bool IsDiscountEligibleToShowOnNavigation(AccountChecker* account_checker) {
 
 bool IsMerchantViewerEnabled(AccountChecker* account_checker) {
   return account_checker &&
-         commerce::IsRegionLockedFeatureEnabled(
-             kCommerceMerchantViewer, kCommerceMerchantViewerRegionLaunched,
-             account_checker->GetCountry(), account_checker->GetLocale());
+         commerce::IsRegionLockedFeatureEnabled(kCommerceMerchantViewer,
+                                                account_checker->GetCountry(),
+                                                account_checker->GetLocale());
 }
 
 bool IsShoppingPageTypesApiEnabled(AccountChecker* account_checker) {
   return account_checker &&
-         commerce::IsRegionLockedFeatureEnabled(
-             kShoppingPageTypes, kShoppingPageTypesRegionLaunched,
-             account_checker->GetCountry(), account_checker->GetLocale());
+         commerce::IsRegionLockedFeatureEnabled(kShoppingPageTypes,
+                                                account_checker->GetCountry(),
+                                                account_checker->GetLocale());
 }
 
 bool IsDiscountAutofillEnabled(AccountChecker* account_checker) {
   return account_checker && account_checker->IsSignedIn() &&
          account_checker->IsAnonymizedUrlDataCollectionEnabled() &&
-         commerce::IsRegionLockedFeatureEnabled(
-             kDiscountAutofill, kDiscountAutofillRegionLaunched,
-             account_checker->GetCountry(), account_checker->GetLocale());
+         commerce::IsRegionLockedFeatureEnabled(kDiscountAutofill,
+                                                account_checker->GetCountry(),
+                                                account_checker->GetLocale());
 }
 }  // namespace commerce

@@ -363,11 +363,6 @@ class ShoppingService : public KeyedService,
   // determined by this service at startup.
   bool IsRegionLockedFeatureEnabled(const base::Feature& feature);
 
-  // DEPRECATED: Use the above method for new features.
-  bool IsRegionLockedFeatureEnabled(
-      const base::Feature& feature,
-      const base::Feature& region_specific_feature);
-
   // This is a feature check for the "shopping list". This will only return true
   // if the user has the feature flag enabled, is signed-in, has MSBB enabled,
   // has webapp activity enabled, is allowed by enterprise policy, and (if

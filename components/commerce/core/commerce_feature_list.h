@@ -24,15 +24,12 @@ BASE_DECLARE_FEATURE(kCommerceAllowLocalImages);
 BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates);
 BASE_DECLARE_FEATURE(kCommerceLocalPDPDetection);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewer);
-BASE_DECLARE_FEATURE(kCommerceMerchantViewerRegionLaunched);
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 
 BASE_DECLARE_FEATURE(kPriceAnnotations);
-BASE_DECLARE_FEATURE(kPriceAnnotationsRegionLaunched);
 
 // Feature flag for Price Insights.
 BASE_DECLARE_FEATURE(kPriceInsights);
-BASE_DECLARE_FEATURE(kPriceInsightsRegionLaunched);
 extern const char kPriceInsightsDelayChipParam[];
 extern const base::FeatureParam<bool> kPriceInsightsDelayChip;
 extern const char kPriceInsightsChipLabelExpandOnHighPriceParam[];
@@ -56,15 +53,11 @@ BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey);
 BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceProductVersion);
 BASE_DECLARE_FEATURE(kShoppingPageTypes);
-BASE_DECLARE_FEATURE(kShoppingPageTypesRegionLaunched);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
-BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
 BASE_DECLARE_FEATURE(kSubscriptionsApi);
-BASE_DECLARE_FEATURE(kSubscriptionsApiRegionLaunched);
 BASE_DECLARE_FEATURE(kTrackByDefaultOnMobile);
 // Feature flag for showing discounts on checkout autofill.
 BASE_DECLARE_FEATURE(kDiscountAutofill);
-BASE_DECLARE_FEATURE(kDiscountAutofillRegionLaunched);
 
 BASE_DECLARE_FEATURE(kShoppingAlternateServer);
 
@@ -81,7 +74,6 @@ enum class DiscountDialogAutoPopupBehavior {
   kNoAutoPopup = 2
 };
 BASE_DECLARE_FEATURE(kEnableDiscountInfoApi);
-BASE_DECLARE_FEATURE(kEnableDiscountInfoApiRegionLaunched);
 BASE_DECLARE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting);
 BASE_DECLARE_FEATURE(kDiscountDialogAutoPopupCounterfactual);
 extern const char kHistoryClustersBehaviorParam[];
@@ -228,12 +220,6 @@ bool IsEnabledForCountryAndLocale(const base::Feature& feature,
 // user has the feature flag enabled or (if applicable) is in an enabled
 // country and locale.
 bool IsRegionLockedFeatureEnabled(const base::Feature& feature,
-                                  const std::string& country_code,
-                                  const std::string& locale);
-
-// DEPRECATED: Use the above function for new features.
-bool IsRegionLockedFeatureEnabled(const base::Feature& feature,
-                                  const base::Feature& feature_region_launched,
                                   const std::string& country_code,
                                   const std::string& locale);
 

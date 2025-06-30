@@ -25,7 +25,7 @@ const char kLowPriceParamSeePriceHistory[] = "SeePriceHistory";
 
 bool IsPriceInsightsRegionEnabled() {
   return commerce::IsRegionLockedFeatureEnabled(
-      commerce::kPriceInsights, commerce::kPriceInsightsRegionLaunched,
+      commerce::kPriceInsights,
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       GetApplicationContext()->GetApplicationLocaleStorage()->Get());
 }
