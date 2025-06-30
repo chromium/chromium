@@ -1,0 +1,54 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+package sync_pb;
+
+import "google/protobuf/descriptor.proto";
+
+// Configuration for per-field attribution in collaborative Sync data types.
+// Attaching this as an option to a field within a Sync entity's proto
+// definition (e.g., in a SharedTab or SharedTabGroup) enables the tracking of
+// metadata related to cross-user collaboration, such as which user last
+// modified that specific field.
+message SyncCollaborationAttribution {
+  enum AttributionType {
+    // Default value. No attribution tracking for this field.
+    NONE = 0;
+    // Track the user who last modified this field.
+    LAST_MODIFIED_BY_USER = 1;
+  }
+
+  // Specifies the type of attribution to be applied to the annotated field.
+  optional AttributionType attribution_type = 1;
+
+  // A stable identifier for the annotated field, used to distinguish it from
+  // other fields within the same Chrome Sync data type message that also
+  // have attribution annotations. This identifier is used to associate
+  // attribution information (like the last modifier) with this specific field
+  // of the Sync Entity.
+  //
+  // This name is also used in the metadata of SyncEntity that are sent to
+  // clients, such that the client code key to find the related attribution
+  // data.
+  //
+  // Because of this, the name MUST be unique across all fields annotated with
+  // `sync_collaboration_attribution` within a single EntitySpecifics. For
+  // example, all `name` values within `SharedTabGroupData` must be distinct.
+  //
+  // Recommended format: `lower_snake_case`.
+  // Examples: "tab_group_title", "tab_url", "tab_group_color".
+  optional string name = 2;
+}
+
+extend google.protobuf.FieldOptions {
+  // IMPORTANT: the extension number needs to be declared. See
+  // go/extension-declaration-reserved-numbers for more information.
+  optional SyncCollaborationAttribution sync_collaboration_attribution =
+      535801565;
+}

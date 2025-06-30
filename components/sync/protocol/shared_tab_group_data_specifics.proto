@@ -16,6 +16,10 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// copybara:uncomment_begin(google-only)
+// import "components/sync/protocol/sync_collaboration_attribution.proto";
+// copybara:uncomment_end
+
 import "components/sync/protocol/unique_position.proto";
 
 // LINT.IfChange(SharedTabGroupDataSpecifics)
@@ -42,7 +46,14 @@ message SharedTabGroupDataSpecifics {
 
 message SharedTabGroup {
   // The displayed title of the group, shown on the tab group.
-  optional string title = 1;
+  optional string title = 1
+      // copybara:uncomment_begin(google-only)
+      // [(sync_collaboration_attribution) = {
+      //   attribution_type: LAST_MODIFIED_BY_USER
+      //   name: "tab_group_title"
+      // }]
+      // copybara:uncomment_end
+      ;
 
   // These colors map to tab_groups::TabGroupColorId. They DO NOT match the enum
   // integer values due to "kGrey" being in the "Unspecified" field.
@@ -59,7 +70,14 @@ message SharedTabGroup {
     ORANGE = 9;
   }
   // The color of the tab group, mapped to tab_groups::TabGroupColorId.
-  optional Color color = 2;
+  optional Color color = 2
+      // copybara:uncomment_begin(google-only)
+      // [(sync_collaboration_attribution) = {
+      //   attribution_type: LAST_MODIFIED_BY_USER
+      //   name: "tab_group_color"
+      // }]
+      // copybara:uncomment_end
+      ;
 
   // Saved tab group GUID from which this shared tab group was created.
   optional string originating_tab_group_guid = 3;
@@ -67,9 +85,25 @@ message SharedTabGroup {
 
 message SharedTab {
   // The URL of the page.
-  optional string url = 1;
+  optional string url = 1
+      // copybara:uncomment_begin(google-only)
+      // [(sync_collaboration_attribution) = {
+      //   attribution_type: LAST_MODIFIED_BY_USER
+      //   name: "tab_url"
+      // }]
+      // copybara:uncomment_end
+      ;
+
   // The title of the page.
-  optional string title = 2;
+  optional string title = 2
+      // copybara:uncomment_begin(google-only)
+      // [(sync_collaboration_attribution) = {
+      //   attribution_type: LAST_MODIFIED_BY_USER
+      //   name: "tab_title"
+      // }]
+      // copybara:uncomment_end
+      ;
+
   // The GUID of the SharedTabGroup this is a member of.
   optional string shared_tab_group_guid = 4;
   // The UniquePosition within a SharedTabGroup.
@@ -78,4 +112,7 @@ message SharedTab {
   reserved 3;
   reserved "favicon_url";
 }
-// LINT.ThenChange(//components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)
+// LINT.ThenChange(
+//  //components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics,
+//  //components/sync/protocol/shared_tab_group_data_specifics_full_proto_unittest.cc.cc:ShouldReflectAndReadCustomAnnotations
+// )

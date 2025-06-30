@@ -47,3 +47,37 @@ if (is_android) {
     sources = sync_protocol_sources
   }
 }
+
+action("prepare_full_proto") {
+  script = "prepare_full_proto.py"
+
+  inputs = [
+    "sync_collaboration_attribution.proto",
+    "shared_tab_group_data_specifics.proto",
+    "unique_position.proto",
+  ]
+
+  outputs = [
+    "$target_gen_dir/sync_collaboration_attribution_full_proto.proto",
+    "$target_gen_dir/shared_tab_group_data_specifics_full_proto.proto",
+    "$target_gen_dir/unique_position_full_proto.proto",
+  ]
+
+  args = [ rebase_path(target_gen_dir, root_build_dir) ]
+
+  foreach(f, inputs) {
+    args += [ rebase_path(f, root_build_dir) ]
+  }
+}
+
+proto_library("full_proto") {
+  testonly = true
+  proto_in_dir = root_gen_dir
+  proto_out_dir = "."
+  sources = get_target_outputs(":prepare_full_proto")
+
+  proto_deps = [ ":prepare_full_proto" ]
+
+  use_protobuf_full = true
+  import_dirs = [ "//third_party/protobuf/src" ]
+}

@@ -334,7 +334,10 @@ group("gn_all") {
     }
 
     if (!is_android && !is_ios && !is_fuchsia) {
-      deps += [ "//ui/webui/examples:webui_examples" ]
+      deps += [
+        "//components/sync:full_proto_unittests",
+        "//ui/webui/examples:webui_examples",
+      ]
     }
 
     if (use_ozone) {
