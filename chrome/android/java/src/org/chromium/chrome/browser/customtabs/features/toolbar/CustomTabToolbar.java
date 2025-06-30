@@ -195,6 +195,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private int mBlockingStatus3pcd;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
     private Supplier<AppMenuHandler> mAppMenuHandler;
+    private AppMenuObserver mAppMenuObserver;
 
     private final Handler mTaskHandler = new Handler();
     private final ButtonVisibilityRule mButtonVisibilityRule =
@@ -839,6 +840,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBar.updateOptionalButton(buttonData);
     }
 
+    /** Resets optional button internal state. */
+    public void resetOptionalButtonState() {
+        mLocationBar.resetOptionalButtonState(/* resetFallbackMenu= */ true);
+    }
+
     @Override
     public void requestKeyboardFocus() {
         setFocusOnFirstFocusableDescendant(this);
@@ -1422,6 +1428,22 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 minimizeHighlighted);
     }
 
+    /**
+     * Record the histogram for fallback UI used instead of the hidden adaptive toolbar button.
+     *
+     * @param variant Toolbar button type.
+     */
+    public void maybeRecordHistogramForAdaptiveToolbarButtonFallbackUi(
+            @AdaptiveToolbarButtonVariant int variant) {
+        if (variant != mLocationBar.mVariantForFallbackMenu) return;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTab.AdaptiveToolbarButton.FallbackUi",
+                variant,
+                AdaptiveToolbarButtonVariant.MAX_VALUE);
+        mLocationBar.mVariantForFallbackMenu = AdaptiveToolbarButtonVariant.UNKNOWN;
+    }
+
     /** Custom tab-specific implementation of the LocationBar interface. */
     @VisibleForTesting
     public class CustomTabLocationBar
@@ -1482,6 +1504,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private ToolbarBrandingOverlayCoordinator mBrandingOverlayCoordinator;
 
         private OptionalButtonCoordinator mOptionalButtonCoordinator;
+        private @AdaptiveToolbarButtonVariant int mVariantForFallbackMenu;
         private final ObservableSupplierImpl<Tracker> mTrackerSupplier =
                 new ObservableSupplierImpl<>();
 
@@ -1660,32 +1683,31 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 return;
             }
 
+            View indicator = mMenuButton.findViewById(R.id.menu_dot);
             boolean show =
                     AdaptiveToolbarFeatures.isDynamicAction(buttonVariant)
                             && buttonVariant != AdaptiveToolbarButtonVariant.READER_MODE;
-            mMenuButton.findViewById(R.id.menu_dot).setVisibility(show ? View.VISIBLE : View.GONE);
+            indicator.setVisibility(show ? View.VISIBLE : View.GONE);
             if (!show) return;
 
+            mVariantForFallbackMenu = buttonVariant;
             int menuId = getHighlightMenuId(buttonVariant);
-            if (menuId < 0) return;
+            assert menuId > 0 : "Menu item for the optional toolbar action should be found";
 
             mAppMenuHandler.get().setMenuHighlight(menuId, false);
-            AppMenuObserver menuObserver =
+            if (mAppMenuObserver != null) mAppMenuHandler.get().removeObserver(mAppMenuObserver);
+            mAppMenuObserver =
                     new AppMenuObserver() {
                         @Override
                         public void onMenuVisibilityChanged(boolean isVisible) {
-                            // TODO(crbug.com/424807997): Do this toggling in MenuButton MVC. Do it
-                            // upon page navigation as well.
-                            if (isVisible) {
-                                mMenuButton.findViewById(R.id.menu_dot).setVisibility(View.GONE);
-                                mAppMenuHandler.get().removeObserver(this);
-                            }
+                            // TODO(crbug.com/424807997): Do this toggling in MenuButton MVC.
+                            if (isVisible) resetOptionalButtonState(/* resetFallbackMenu= */ false);
                         }
 
                         @Override
                         public void onMenuHighlightChanged(boolean highlighting) {}
                     };
-            mAppMenuHandler.get().addObserver(menuObserver);
+            mAppMenuHandler.get().addObserver(mAppMenuObserver);
         }
 
         private int getHighlightMenuId(@AdaptiveToolbarButtonVariant int buttonVariant) {
@@ -1719,6 +1741,27 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 } else if (mIntentDataProvider.getColorProvider().hasCustomToolbarColor()) {
                     ImageViewCompat.setImageTintList(menuDot, mTint);
                 }
+            }
+        }
+
+        /**
+         * Resets optional button internal state regarding the fallback UI indicator for CPA.
+         *
+         * @param resetFallbackMenu {@code true} if the CPA type for which a fallback menu is shown
+         *     should be reset.
+         */
+        public void resetOptionalButtonState(boolean resetFallbackMenu) {
+            if (mAppMenuHandler.get() == null) return;
+
+            // Hides the menu dot, and turns off the highlight on the fallback menu item.
+            View indicator = mMenuButton.findViewById(R.id.menu_dot);
+            indicator.setVisibility(View.GONE);
+            if (resetFallbackMenu) {
+                mVariantForFallbackMenu = AdaptiveToolbarButtonVariant.UNKNOWN;
+            }
+            if (mAppMenuObserver != null) {
+                mAppMenuHandler.get().removeObserver(mAppMenuObserver);
+                mAppMenuObserver = null;
             }
         }
 
@@ -2635,5 +2678,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     OptionalButtonCoordinator getOptionalButtonCoordinatorForTesting() {
         return mLocationBar.mOptionalButtonCoordinator;
+    }
+
+    @AdaptiveToolbarButtonVariant
+    int getVariantForFallbackMenuForTesting() {
+        return mLocationBar.mVariantForFallbackMenu;
     }
 }

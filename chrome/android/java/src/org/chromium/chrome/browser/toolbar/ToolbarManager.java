@@ -1424,6 +1424,10 @@ public class ToolbarManager
                         onBackPressStateChanged();
                         mLocationBarModel.notifyDidStartNavigation(
                                 navigationHandle.isSameDocument());
+                        if (mIsCustomTab) {
+                            ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
+                            ((CustomTabToolbar) toolbarLayout).resetOptionalButtonState();
+                        }
                     }
 
                     @Override
