@@ -525,8 +525,8 @@ TEST_P(InstallIsolatedWebAppCommandHelperInvalidVersionTest,
   auto manifest = CreateDefaultManifest(url_info.origin().GetURL());
   manifest->version = GetParam().version;
 
-  base::expected<WebAppInstallInfo, std::string> result =
-      command_helper->ValidateManifestAndCreateInstallInfo(
+  base::expected<base::Version, std::string> result =
+      command_helper->ValidateManifestAndGetVersion(
           /*expected_version=*/std::nullopt, *manifest);
   EXPECT_THAT(result, ErrorIs(HasSubstr(GetParam().error)));
 }
@@ -556,8 +556,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
       /*response_reader_factory=*/nullptr);
 
-  base::expected<WebAppInstallInfo, std::string> result =
-      command_helper->ValidateManifestAndCreateInstallInfo(
+  base::expected<base::Version, std::string> result =
+      command_helper->ValidateManifestAndGetVersion(
           base::Version("99.99.99"),
           *CreateDefaultManifest(url_info.origin().GetURL()));
   EXPECT_THAT(result,
@@ -572,8 +572,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
       /*response_reader_factory=*/nullptr);
 
-  base::expected<WebAppInstallInfo, std::string> result =
-      command_helper->ValidateManifestAndCreateInstallInfo(
+  base::expected<base::Version, std::string> result =
+      command_helper->ValidateManifestAndGetVersion(
           /*expected_version=*/std::nullopt,
           *CreateDefaultManifest(url_info.origin().GetURL()));
   EXPECT_THAT(result, HasValue());
@@ -590,8 +590,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       CreateDefaultManifest(url_info.origin().GetURL());
   manifest->id = url_info.origin().GetURL().Resolve("/test-manifest-id");
 
-  base::expected<WebAppInstallInfo, std::string> result =
-      command_helper->ValidateManifestAndCreateInstallInfo(
+  base::expected<base::Version, std::string> result =
+      command_helper->ValidateManifestAndGetVersion(
           /*expected_version=*/std::nullopt, *manifest);
   EXPECT_THAT(result, ErrorIs(HasSubstr(R"(Manifest `id` must be "/")")));
 }
@@ -607,48 +607,10 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       CreateDefaultManifest(url_info.origin().GetURL());
   manifest->scope = url_info.origin().GetURL().Resolve("/scope");
 
-  base::expected<WebAppInstallInfo, std::string> result =
-      command_helper->ValidateManifestAndCreateInstallInfo(
+  base::expected<base::Version, std::string> result =
+      command_helper->ValidateManifestAndGetVersion(
           /*expected_version=*/std::nullopt, *manifest);
   EXPECT_THAT(result, ErrorIs(HasSubstr("Scope should resolve to the origin")));
-}
-
-TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
-       ScopeIsResolvedToRootWhenManifestScopeIsSlash) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
-      url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
-      /*response_reader_factory=*/nullptr);
-
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->scope = url_info.origin().GetURL().Resolve("/");
-
-  base::expected<WebAppInstallInfo, std::string> result =
-      command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/std::nullopt, *manifest);
-  EXPECT_THAT(result, ValueIs(Field(&WebAppInstallInfo::scope,
-                                    Eq(url_info.origin().GetURL()))));
-}
-
-TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
-       UntranslatedNameIsEmptyWhenNameAndShortNameAreNotPresent) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
-      url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
-      /*response_reader_factory=*/nullptr);
-
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->name = std::nullopt;
-  manifest->short_name = std::nullopt;
-
-  base::expected<WebAppInstallInfo, std::string> result =
-      command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/std::nullopt, *manifest);
-  EXPECT_THAT(result,
-              ErrorIs(HasSubstr(
-                  "App manifest must have either 'name' or 'short_name'")));
 }
 
 class InstallIsolatedWebAppCommandHelperManifestIconsTest
@@ -673,50 +635,59 @@ class InstallIsolatedWebAppCommandHelperManifestIconsTest
     return image;
   }
 
+  std::unique_ptr<MockDataRetriever> GetDataRetrieverForSuccessfulDownloads(
+      IsolatedWebAppUrlInfo url_info) {
+    GURL image_url = GetImageUrl(url_info);
+    DownloadedIconsHttpResults http_result = {
+        {IconUrlWithSize::CreateForUnspecifiedSize(image_url),
+         net::HttpStatusCode::HTTP_OK},
+    };
+
+    std::map<GURL, std::vector<SkBitmap>> icons = {{
+        image_url,
+        {gfx::test::CreateBitmap(kImageSize, SK_ColorRED)},
+    }};
+
+    std::unique_ptr<MockDataRetriever> fake_data_retriever =
+        CreateDefaultDataRetriever(GetTestApplicationUrl(url_info));
+    EXPECT_CALL(
+        *fake_data_retriever,
+        GetIcons(_,
+                 UnorderedElementsAre(
+                     IconUrlWithSize::CreateForUnspecifiedSize(image_url)),
+                 /*skip_page_favicons=*/true,
+                 /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
+        .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kCompleted, icons,
+                                     http_result));
+    return fake_data_retriever;
+  }
+
+  GURL GetImageUrl(IsolatedWebAppUrlInfo url_info) {
+    return url_info.origin().GetURL().Resolve("icon.png");
+  }
+
+  GURL GetTestApplicationUrl(IsolatedWebAppUrlInfo url_info) {
+    return url_info.origin().GetURL();
+  }
+
   constexpr static int kImageSize = 96;
 };
 
 TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
        ManifestIconIsDownloaded) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-
-  kSomeTestApplicationUrl = url_info.origin().GetURL();
-  GURL img_url = url_info.origin().GetURL().Resolve("icon.png");
+  GURL image_url = GetImageUrl(url_info);
 
   blink::mojom::ManifestPtr manifest = CreateManifest();
-  manifest->icons = {CreateImageResourceForAnyPurpose(img_url)};
+  manifest->icons = {CreateImageResourceForAnyPurpose(image_url)};
 
-  std::map<GURL, std::vector<SkBitmap>> icons = {{
-      img_url,
-      {gfx::test::CreateBitmap(kImageSize, SK_ColorRED)},
-  }};
-
-  DownloadedIconsHttpResults http_result = {
-      {IconUrlWithSize::CreateForUnspecifiedSize(img_url),
-       net::HttpStatusCode::HTTP_OK},
-  };
-
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever(kSomeTestApplicationUrl);
-  EXPECT_CALL(*fake_data_retriever,
-              GetIcons(_,
-                       UnorderedElementsAre(
-                           IconUrlWithSize::CreateForUnspecifiedSize(img_url)),
-                       /*skip_page_favicons=*/true,
-                       /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
-      .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kCompleted,
-                                   std::move(icons), http_result));
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
-      url_info, std::move(fake_data_retriever),
+      url_info, GetDataRetrieverForSuccessfulDownloads(url_info),
       /*response_reader_factory=*/nullptr);
 
-  ASSERT_OK_AND_ASSIGN(auto install_info,
-                       command_helper->ValidateManifestAndCreateInstallInfo(
-                           std::nullopt, *manifest));
-
   base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
-  command_helper->RetrieveIconsAndPopulateInstallInfo(
-      std::move(install_info), web_contents(), future.GetCallback());
+  command_helper->RetrieveInstallInfoWithIconsFromManifest(
+      *manifest, web_contents(), base::Version("1.0.0"), future.GetCallback());
   auto result = future.Take();
   EXPECT_THAT(result, HasValue());
 
@@ -735,7 +706,53 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
       result,
       ValueIs(Field(
           "manifest_icons", &WebAppInstallInfo::manifest_icons,
-          UnorderedElementsAre(Field(&apps::IconInfo::url, Eq(img_url))))));
+          UnorderedElementsAre(Field(&apps::IconInfo::url, Eq(image_url))))));
+}
+
+TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
+       ScopeIsResolvedToRootWhenManifestScopeIsSlash) {
+  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  GURL image_url = GetImageUrl(url_info);
+
+  blink::mojom::ManifestPtr manifest =
+      CreateDefaultManifest(url_info.origin().GetURL());
+  manifest->scope = url_info.origin().GetURL().Resolve("/");
+  manifest->icons = {CreateImageResourceForAnyPurpose(image_url)};
+
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, GetDataRetrieverForSuccessfulDownloads(url_info),
+      /*response_reader_factory=*/nullptr);
+
+  base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
+  command_helper->RetrieveInstallInfoWithIconsFromManifest(
+      *manifest, web_contents(), base::Version("1.0.0"), future.GetCallback());
+  auto result = future.Take();
+  EXPECT_THAT(result, ValueIs(Field(&WebAppInstallInfo::scope,
+                                    Eq(url_info.origin().GetURL()))));
+}
+
+TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
+       UntranslatedNameIsEmptyWhenNameAndShortNameAreNotPresent) {
+  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  GURL image_url = GetImageUrl(url_info);
+
+  blink::mojom::ManifestPtr manifest =
+      CreateDefaultManifest(url_info.origin().GetURL());
+  manifest->name = std::nullopt;
+  manifest->short_name = std::nullopt;
+  manifest->icons = {CreateImageResourceForAnyPurpose(image_url)};
+
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info, GetDataRetrieverForSuccessfulDownloads(url_info),
+      /*response_reader_factory=*/nullptr);
+
+  base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
+  command_helper->RetrieveInstallInfoWithIconsFromManifest(
+      *manifest, web_contents(), base::Version("1.0.0"), future.GetCallback());
+  auto result = future.Take();
+  EXPECT_THAT(result,
+              ErrorIs(HasSubstr(
+                  "App manifest must have either 'name' or 'short_name'")));
 }
 
 TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
@@ -757,17 +774,13 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
       url_info, std::move(fake_data_retriever),
       /*response_reader_factory=*/nullptr);
 
-  ASSERT_OK_AND_ASSIGN(auto install_info,
-                       command_helper->ValidateManifestAndCreateInstallInfo(
-                           std::nullopt, *manifest));
-
   base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
-  command_helper->RetrieveIconsAndPopulateInstallInfo(
-      std::move(install_info), web_contents(), future.GetCallback());
+  command_helper->RetrieveInstallInfoWithIconsFromManifest(
+      *manifest, web_contents(), base::Version("1.0.0"), future.GetCallback());
   auto result = future.Take();
-  EXPECT_THAT(
-      result,
-      ErrorIs(HasSubstr("Error during icon downloading: AbortedDueToFailure")));
+  EXPECT_THAT(result,
+              ErrorIs(HasSubstr(
+                  "Error during icon downloading, stopping installation.")));
 }
 
 struct VerifyRelocationVisitor {

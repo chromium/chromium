@@ -41,6 +41,8 @@ struct WebAppInstallInfoConstructOptions {
   bool bypass_icon_generation_if_no_url = false;
   // Skip downloading favicons from the WebContents.
   bool skip_page_favicons = true;
+  // If the download should end early if any failures occur.
+  bool fail_all_if_any_fail = false;
 };
 
 // The role of this job is to take a `blink::mojom::Manifest`, parse it,

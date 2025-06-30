@@ -464,7 +464,7 @@ void ManifestToWebAppInstallInfoJob::Start(
 
   data_retriever_->GetIcons(
       web_contents.get(), icon_urls_to_download, options_.skip_page_favicons,
-      /*fail_all_if_any_fail=*/false,
+      options_.fail_all_if_any_fail,
       base::BindOnce(
           &ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo,
           weak_ptr_factory_.GetWeakPtr()));

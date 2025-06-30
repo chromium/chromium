@@ -102,13 +102,13 @@ class PrepareInstallInfoJob {
   void CheckInstallabilityAndRetrieveManifest(
       base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback);
 
-  void ValidateManifestAndCreateInstallInfo(
-      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
+  void ValidateManifestAndGetVersion(
+      base::OnceCallback<void(base::Version)> next_step_callback,
       blink::mojom::ManifestPtr manifest);
 
-  void RetrieveIconsAndPopulateInstallInfo(
+  void ParseInstallInfoFromManifest(
       base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-      WebAppInstallInfo install_info);
+      const base::Version parsed_version);
 
   void FinishJob(WebAppInstallInfo info);
 
@@ -117,6 +117,7 @@ class PrepareInstallInfoJob {
   const IwaSourceWithMode source_;
   const std::optional<base::Version> expected_version_;
   const raw_ref<content::WebContents> web_contents_;
+  blink::mojom::ManifestPtr manifest_;
   const raw_ref<IsolatedWebAppInstallCommandHelper> command_helper_;
 
   ResultCallback callback_;

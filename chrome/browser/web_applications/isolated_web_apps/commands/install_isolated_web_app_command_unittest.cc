@@ -618,7 +618,7 @@ TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
       ExecuteCommand(Parameters{.url_info = url_info}),
       ErrorIs(Field(
           &InstallIsolatedWebAppCommandError::message,
-          HasSubstr("Error during icon downloading: AbortedDueToFailure"))));
+          HasSubstr("Error during icon downloading, stopping installation."))));
 
   EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
               BucketsAre(base::Bucket(false, 1)));

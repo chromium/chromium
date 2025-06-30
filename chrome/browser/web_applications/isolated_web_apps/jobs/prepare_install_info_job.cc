@@ -59,8 +59,8 @@ void PrepareInstallInfoJob::Start(
       weak_factory_.GetWeakPtr(),
       &PrepareInstallInfoJob::LoadInstallUrl,
       &PrepareInstallInfoJob::CheckInstallabilityAndRetrieveManifest,
-      &PrepareInstallInfoJob::ValidateManifestAndCreateInstallInfo,
-      &PrepareInstallInfoJob::RetrieveIconsAndPopulateInstallInfo,
+      &PrepareInstallInfoJob::ValidateManifestAndGetVersion,
+      &PrepareInstallInfoJob::ParseInstallInfoFromManifest,
       &PrepareInstallInfoJob::FinishJob);
   // clang-format on
 }
@@ -91,24 +91,22 @@ void PrepareInstallInfoJob::CheckInstallabilityAndRetrieveManifest(
                      Error::kAppIsNotInstallable));
 }
 
-void PrepareInstallInfoJob::ValidateManifestAndCreateInstallInfo(
-    base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
+void PrepareInstallInfoJob::ValidateManifestAndGetVersion(
+    base::OnceCallback<void(base::Version)> next_step_callback,
     blink::mojom::ManifestPtr manifest) {
-  base::expected<WebAppInstallInfo, std::string> install_info =
-      command_helper_->ValidateManifestAndCreateInstallInfo(expected_version_,
-                                                            *manifest);
+  base::expected<base::Version, std::string> version_validation_result =
+      command_helper_->ValidateManifestAndGetVersion(expected_version_,
+                                                     *manifest);
+  manifest_ = std::move(manifest);
   RunNextStepOnSuccess(std::move(next_step_callback),
-                       Error::kCantValidateManifest, std::move(install_info));
+                       Error::kCantValidateManifest, version_validation_result);
 }
 
-void PrepareInstallInfoJob::RetrieveIconsAndPopulateInstallInfo(
+void PrepareInstallInfoJob::ParseInstallInfoFromManifest(
     base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-    WebAppInstallInfo install_info) {
-  CHECK(!expected_version_ ||
-        *expected_version_ == install_info.isolated_web_app_version);
-
-  command_helper_->RetrieveIconsAndPopulateInstallInfo(
-      std::move(install_info), *web_contents_,
+    const base::Version parsed_version) {
+  command_helper_->RetrieveInstallInfoWithIconsFromManifest(
+      *manifest_, *web_contents_, std::move(parsed_version),
       base::BindOnce(
           &PrepareInstallInfoJob::RunNextStepOnSuccess<WebAppInstallInfo>,
           weak_factory_.GetWeakPtr(), std::move(next_step_callback),
@@ -116,6 +114,8 @@ void PrepareInstallInfoJob::RetrieveIconsAndPopulateInstallInfo(
 }
 
 void PrepareInstallInfoJob::FinishJob(WebAppInstallInfo info) {
+  CHECK(!expected_version_ ||
+        *expected_version_ == info.isolated_web_app_version);
   url_loader_.reset();
   std::move(callback_).Run(std::move(info));
 }

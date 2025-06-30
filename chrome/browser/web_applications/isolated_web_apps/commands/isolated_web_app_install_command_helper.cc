@@ -37,6 +37,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -551,17 +552,11 @@ void IsolatedWebAppInstallCommandHelper::
   std::move(callback).Run(std::move(opt_manifest));
 }
 
-base::expected<WebAppInstallInfo, std::string>
-IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
+base::expected<base::Version, std::string>
+IsolatedWebAppInstallCommandHelper::ValidateManifestAndGetVersion(
     const std::optional<base::Version>& expected_version,
     const blink::mojom::Manifest& manifest) {
   const GURL& manifest_url = manifest.manifest_url;
-
-  ASSIGN_OR_RETURN(
-      auto info,
-      WebAppInstallInfo::Create(manifest_url, manifest.id, manifest.start_url));
-
-  UpdateWebAppInfoFromManifest(manifest, &info);
 
   if (!manifest.version.has_value()) {
     return base::unexpected(
@@ -577,7 +572,7 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
 
   ASSIGN_OR_RETURN(
       auto version, ParseIwaVersion(version_string),
-      [&](auto error) -> base::expected<WebAppInstallInfo, std::string> {
+      [&](auto error) -> base::expected<base::Version, std::string> {
         return base::unexpected(base::StrCat(
             {"Failed to parse `version` from the manifest: It must be in the "
              "form `x.y.z`, where `x`, `y`, and `z` are numbers without "
@@ -591,7 +586,6 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
         ") does not match the version provided in the manifest (" +
         version.GetString() + ")");
   }
-  info.isolated_web_app_version = std::move(version);
 
   std::string encoded_id = manifest.id.path();
 
@@ -617,51 +611,57 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
                       ", origin: ", origin.Serialize()}));
   }
 
-  if (info.title.empty()) {
-    return base::unexpected(base::StrCat(
-        {"App manifest must have either 'name' or 'short_name'. manifest_url: ",
-         manifest_url.possibly_invalid_spec()}));
-  }
-
-  info.user_display_mode = mojom::UserDisplayMode::kStandalone;
-
-  return info;
+  CHECK(version.IsValid());
+  return version;
 }
 
-void IsolatedWebAppInstallCommandHelper::RetrieveIconsAndPopulateInstallInfo(
-    WebAppInstallInfo install_info,
-    content::WebContents& web_contents,
-    base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
-        callback) {
-  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(install_info);
-  data_retriever_->GetIcons(
-      &web_contents, std::move(icon_urls),
-      /*skip_page_favicons=*/true,
-      // IWAs should not refer to resources which don't exist.
-      /*fail_all_if_any_fail=*/true,
-      base::BindOnce(&IsolatedWebAppInstallCommandHelper::OnRetrieveIcons,
-                     weak_factory_.GetWeakPtr(), std::move(install_info),
-                     std::move(callback)));
+void IsolatedWebAppInstallCommandHelper::
+    RetrieveInstallInfoWithIconsFromManifest(
+        const blink::mojom::Manifest& manifest,
+        content::WebContents& web_contents,
+        const base::Version parsed_version,
+        base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
+            callback) {
+  // install source needs to be peaced together properly.
+  WebAppInstallInfoConstructOptions construct_options;
+  construct_options.fail_all_if_any_fail = true;
+  manifest_to_install_info_job_ =
+      ManifestToWebAppInstallInfoJob::CreateAndStart(
+          manifest, *data_retriever_.get(), /*background_installation=*/false,
+          webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER,
+          web_contents.GetWeakPtr(), [](IconUrlSizeSet& icon_url_size_set) {},
+          manifest_to_info_debug_data_,
+          base::BindOnce(&IsolatedWebAppInstallCommandHelper::
+                             OnGettingInstallInfoFromManifest,
+                         weak_factory_.GetWeakPtr(), std::move(parsed_version),
+                         std::move(callback)),
+          construct_options);
 }
 
-void IsolatedWebAppInstallCommandHelper::OnRetrieveIcons(
-    WebAppInstallInfo install_info,
+void IsolatedWebAppInstallCommandHelper::OnGettingInstallInfoFromManifest(
+    const base::Version parsed_version,
     base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
         callback,
-    IconsDownloadedResult result,
-    IconsMap icons_map,
-    DownloadedIconsHttpResults unused_icons_http_results) {
-  if (result != IconsDownloadedResult::kCompleted) {
-    std::move(callback).Run(base::unexpected(
-        base::StrCat({"Error during icon downloading: ",
-                      IconsDownloadedResultToString(result)})));
+    std::unique_ptr<WebAppInstallInfo> install_info) {
+  install_info->isolated_web_app_version = std::move(parsed_version);
+
+  if (install_info->title.empty()) {
+    std::move(callback).Run(base::unexpected(base::StrCat(
+        {"App manifest must have either 'name' or 'short_name'. manifest_url: ",
+         install_info->manifest_url.possibly_invalid_spec()})));
     return;
   }
 
-  PopulateProductIcons(&install_info, &icons_map);
-  PopulateOtherIcons(&install_info, icons_map);
+  // The existence of generated icons mean that icon downloads had failed.
+  if (install_info->is_generated_icon) {
+    std::move(callback).Run(base::unexpected(base::StrCat(
+        {"Error during icon downloading, stopping installation."})));
+    return;
+  }
 
-  std::move(callback).Run(std::move(install_info));
+  install_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+
+  std::move(callback).Run(std::move(*install_info.get()));
 }
 
 }  // namespace web_app

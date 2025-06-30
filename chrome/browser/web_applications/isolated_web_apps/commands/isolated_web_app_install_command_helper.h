@@ -18,6 +18,7 @@
 #include "base/types/optional_ref.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -164,14 +165,14 @@ class IsolatedWebAppInstallCommandHelper {
       base::OnceCallback<void(
           base::expected<blink::mojom::ManifestPtr, std::string>)> callback);
 
-  base::expected<WebAppInstallInfo, std::string>
-  ValidateManifestAndCreateInstallInfo(
+  base::expected<base::Version, std::string> ValidateManifestAndGetVersion(
       const std::optional<base::Version>& expected_version,
       const blink::mojom::Manifest& manifest);
 
-  void RetrieveIconsAndPopulateInstallInfo(
-      WebAppInstallInfo install_info,
+  void RetrieveInstallInfoWithIconsFromManifest(
+      const blink::mojom::Manifest& manifest,
       content::WebContents& web_contents,
+      const base::Version parsed_version,
       base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
           callback);
 
@@ -203,17 +204,17 @@ class IsolatedWebAppInstallCommandHelper {
       bool valid_manifest_for_web_app,
       webapps::InstallableStatusCode error_code);
 
-  void OnRetrieveIcons(
-      WebAppInstallInfo install_info,
+  void OnGettingInstallInfoFromManifest(
+      const base::Version parsed_version,
       base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
           callback,
-      IconsDownloadedResult result,
-      IconsMap icons_map,
-      DownloadedIconsHttpResults unused_icons_http_results);
+      std::unique_ptr<WebAppInstallInfo> install_info);
 
   IsolatedWebAppUrlInfo url_info_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<IsolatedWebAppResponseReaderFactory> response_reader_factory_;
+  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
+  base::Value::Dict manifest_to_info_debug_data_;
 
   base::WeakPtrFactory<IsolatedWebAppInstallCommandHelper> weak_factory_{this};
 };
