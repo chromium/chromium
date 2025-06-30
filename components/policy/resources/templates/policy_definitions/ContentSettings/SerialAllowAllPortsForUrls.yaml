@@ -13,7 +13,6 @@ features:
   dynamic_refresh: true
   per_profile: false
 future_on:
-- android
 - fuchsia
 owners:
 - reillyg@chromium.org
@@ -25,5 +24,6 @@ schema:
 supported_on:
 - chrome_os:94-
 - chrome.*:94-
+- android:140-
 tags: []
 type: list
