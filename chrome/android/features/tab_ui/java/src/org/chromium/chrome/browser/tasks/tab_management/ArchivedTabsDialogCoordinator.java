@@ -74,7 +74,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.TabUndoBarController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -408,7 +408,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final BackPressManager mBackPressManager;
     private final TabArchiveSettings mTabArchiveSettings;
     private final ModalDialogManager mModalDialogManager;
-    private final UndoBarController mUndoBarController;
+    private final TabUndoBarController mUndoBarController;
     private final ActionConfirmationDialog mActionConfirmationDialog;
     private final ViewGroup mDialogView;
     private final ViewGroup mTabSwitcherView;
@@ -490,7 +490,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         .getTabModelSelector()
                         .getModel(/* incognito= */ false);
         mUndoBarController =
-                new UndoBarController(
+                new TabUndoBarController(
                         mActivity,
                         mArchivedTabModelOrchestrator.getTabModelSelector(),
                         /* snackbarManageable= */ this,
