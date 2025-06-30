@@ -91,9 +91,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
                      bool is_opaque);
   // virtual for mocking
   virtual void OnMainThreadReceivedImage();
-  void DispatchFrameSync(scoped_refptr<CanvasResource>&&,
-                         const SkIRect& damage_rect,
-                         bool is_opaque);
   void ReplaceBeginFrameAck(const viz::BeginFrameArgs& args) {
     current_begin_frame_ack_ = viz::BeginFrameAck(args, true);
   }
