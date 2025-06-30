@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/p2p/socket_dispatcher.h"
 #include "third_party/blink/renderer/platform/testing/fake_mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/webrtc/rtc_base/network/ecn_marking.h"
+#include "third_party/webrtc/api/transport/ecn_marking.h"
 
 namespace blink {
 
