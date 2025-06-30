@@ -40,14 +40,6 @@ namespace enterprise_management {
 class GetUserEligiblePromotionsResponse;
 }  // namespace enterprise_management
 
-// Interface for observing promotion eligibility fetching events.
-class PolicyPromotionObserver : public base::CheckedObserver {
- public:
-  virtual void OnPromotionEligibilityFetched(
-      const std::string& callback_id,
-      enterprise_management::GetUserEligiblePromotionsResponse response) = 0;
-};
-
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public content::WebUIMessageHandler,
                         public policy::PolicyValueAndStatusAggregator::Observer,
@@ -73,11 +65,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
 
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
-
-  void AddPolicyPromotionObserver(PolicyPromotionObserver* observer);
-  void RemovePolicyPromotionObserver(PolicyPromotionObserver* observer);
-
-  bool HasPromotionBeenChecked() const { return promotion_checked_; }
 
  private:
   void HandleExportPoliciesJson(const base::Value::List& args);
@@ -151,10 +138,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   uint32_t export_to_json_count_ = 0;
   uint32_t copy_to_json_count_ = 0;
   uint32_t upload_report_count_ = 0;
-
-  base::ObserverList<PolicyPromotionObserver> promotion_eligibility_observers_;
-
-  bool promotion_checked_ = false;
 
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
 };

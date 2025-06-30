@@ -3614,7 +3614,6 @@ if (!is_android) {
       "../browser/ui/webui/ntp/new_tab_ui_browsertest.cc",
       "../browser/ui/webui/policy/policy_test_ui_browsertest.cc",
       "../browser/ui/webui/policy/policy_ui_browsertest.cc",
-      "../browser/ui/webui/policy/policy_ui_managed_status_browsertest.cc",
       "../browser/ui/webui/prefs_internals_browsertest.cc",
       "../browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_browsertest.cc",
       "../browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler_browsertest.cc",
