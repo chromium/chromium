@@ -257,8 +257,7 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
 void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     content::RenderFrameHost* render_frame_host,
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
-  map->Add<network_hints::mojom::NetworkHintsHandler>(
-      base::BindRepeating(&BindNetworkHintsHandler));
+  map->Add<network_hints::mojom::NetworkHintsHandler>(&BindNetworkHintsHandler);
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   auto create_spellcheck_host =
@@ -268,19 +267,18 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
                                     std::move(receiver));
       };
   map->Add<spellcheck::mojom::SpellCheckHost>(
-      base::BindRepeating(create_spellcheck_host),
-      content::GetUIThreadTaskRunner({}));
+      create_spellcheck_host, content::GetUIThreadTaskRunner({}));
 #endif
 
   if (base::FeatureList::IsEnabled(
           features::kWebViewMediaIntegrityApiBlinkExtension)) {
     map->Add<blink::mojom::WebViewMediaIntegrityService>(
-        base::BindRepeating(&BindMediaIntegrityServiceReceiver));
+        &BindMediaIntegrityServiceReceiver);
   }
 
   if (base::FeatureList::IsEnabled(::features::kWebPayments)) {
-    map->Add<payments::mojom::PaymentRequest>(base::BindRepeating(
-        &ForwardToJavaFrame<payments::mojom::PaymentRequest>));
+    map->Add<payments::mojom::PaymentRequest>(
+        &ForwardToJavaFrame<payments::mojom::PaymentRequest>);
   }
 }
 

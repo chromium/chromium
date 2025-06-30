@@ -673,11 +673,10 @@ void ShellContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   PerformanceManagerRegistry::GetInstance()
       ->GetBinders()
       .ExposeInterfacesToRenderFrame(map);
-  map->Add<network_hints::mojom::NetworkHintsHandler>(
-      base::BindRepeating(&BindNetworkHintsHandler));
+  map->Add<network_hints::mojom::NetworkHintsHandler>(&BindNetworkHintsHandler);
 #if BUILDFLAG(IS_WIN)
   map->Add<media::mojom::MediaFoundationPreferences>(
-      base::BindRepeating(&BindMediaFoundationPreferences));
+      &BindMediaFoundationPreferences);
 #endif  // BUILDFLAG(IS_WIN)
 }
 

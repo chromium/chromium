@@ -153,12 +153,12 @@ class TestContentBrowserClient : public ChromeContentBrowserClient {
     // `content::RegisterWebUIControllerInterfaceBinder()`.
     using Interface = custom_help_bubble::mojom::CustomHelpBubbleHandlerFactory;
     map->Add<Interface>(
-        base::BindRepeating([](content::RenderFrameHost* host,
-                               mojo::PendingReceiver<Interface> receiver) {
+        [](content::RenderFrameHost* host,
+           mojo::PendingReceiver<Interface> receiver) {
           CHECK(!host->GetParentOrOuterDocument());
           CHECK((content::internal::SafeDownCastAndBindInterface<
                  Interface, TestWebUIHelpBubbleController>(host, receiver)));
-        }));
+        });
   }
 };
 

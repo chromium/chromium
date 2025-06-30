@@ -316,7 +316,7 @@ class TestWebUIContentBrowserClient
                                            CacheTestWebUIController>(map);
 
     map->Add<content::mojom::StringWrapper>(
-        base::BindRepeating(&TestWebUIContentBrowserClient::BindStringWrapper));
+        &TestWebUIContentBrowserClient::BindStringWrapper);
   }
 
   static void BindStringWrapper(

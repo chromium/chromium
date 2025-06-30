@@ -15,6 +15,22 @@
 namespace mojo {
 namespace internal {
 
+// A wrapper around a string literal that can be used to verify at compile time
+// that the string has a static lifetime. This is achieved by using a
+// `consteval` constructor, which ensures that the constructor is evaluated at
+// compile time. Since the constructor takes a `const char*`, the compiler can
+// only evaluate it if the provided string is a literal with a static lifetime.
+// If a string with a dynamic lifetime is passed, the compilation will fail.
+class StaticString {
+ public:
+  explicit consteval StaticString(const char* str) : str_(str) {}
+
+  explicit operator std::string_view() const { return str_; }
+
+ private:
+  const char* str_;
+};
+
 template <typename ContextType>
 struct BinderContextTraits {
   using ValueType = ContextType;
@@ -28,6 +44,9 @@ struct BinderContextTraits {
                                    mojo::PendingReceiver<Interface> receiver)>;
 
   template <typename Interface>
+  using FuncType = void(ContextType, mojo::PendingReceiver<Interface> receiver);
+
+  template <typename Interface>
   static GenericBinderType MakeGenericBinder(BinderType<Interface> binder) {
     return base::BindRepeating(&BindGenericReceiver<Interface>,
                                std::move(binder));
@@ -39,6 +58,19 @@ struct BinderContextTraits {
                                   mojo::ScopedMessagePipeHandle receiver_pipe) {
     binder.Run(std::move(context),
                mojo::PendingReceiver<Interface>(std::move(receiver_pipe)));
+  }
+
+  template <typename Interface>
+  static GenericBinderType MakeGenericBinder(FuncType<Interface>* func) {
+    return base::BindRepeating(&BindGenericFunctor<Interface>, func);
+  }
+
+  template <typename Interface>
+  static void BindGenericFunctor(FuncType<Interface>* func,
+                                 ContextType context,
+                                 mojo::ScopedMessagePipeHandle receiver_pipe) {
+    func(std::move(context),
+         mojo::PendingReceiver<Interface>(std::move(receiver_pipe)));
   }
 };
 
@@ -58,6 +90,9 @@ struct BinderContextTraits<void> {
       base::RepeatingCallback<void(mojo::PendingReceiver<Interface> receiver)>;
 
   template <typename Interface>
+  using FuncType = void(mojo::PendingReceiver<Interface> receiver);
+
+  template <typename Interface>
   static GenericBinderType MakeGenericBinder(BinderType<Interface> binder) {
     return base::BindRepeating(&BindGenericReceiver<Interface>,
                                std::move(binder));
@@ -67,6 +102,17 @@ struct BinderContextTraits<void> {
   static void BindGenericReceiver(const BinderType<Interface>& binder,
                                   mojo::ScopedMessagePipeHandle receiver_pipe) {
     binder.Run(mojo::PendingReceiver<Interface>(std::move(receiver_pipe)));
+  }
+
+  template <typename Interface>
+  static GenericBinderType MakeGenericBinder(FuncType<Interface>* func) {
+    return base::BindRepeating(&BindGenericFunctor<Interface>, func);
+  }
+
+  template <typename Interface>
+  static void BindGenericFunctor(FuncType<Interface>* func,
+                                 mojo::ScopedMessagePipeHandle receiver_pipe) {
+    func(mojo::PendingReceiver<Interface>(std::move(receiver_pipe)));
   }
 };
 
