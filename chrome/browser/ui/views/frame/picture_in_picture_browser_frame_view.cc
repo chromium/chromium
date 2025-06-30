@@ -544,13 +544,11 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     auto image_view = std::make_unique<ContentSettingImageView>(
         std::move(model), this, this, browser_view->browser(), font_list);
 
-    // The ContentSettingImageView loses 4px of margin that we don't want to
-    // lose in the document picture-in-picture toolbar. Meanwhile, it should
-    // have vertical margins set to keep the hover-over highlight circular.
-    // Otherwise, the highlight will occupy the full height of the top control.
+    // The ContentSettingImageView should have vertical margins set to keep the
+    // hover-over highlight circular. Otherwise, the highlight will occupy the
+    // full height of the top control.
     image_view->SetProperty(views::kMarginsKey,
-                            gfx::Insets::TLBR(KIconViewVerticalMargin, 0,
-                                              KIconViewVerticalMargin, 4));
+                            gfx::Insets::VH(KIconViewVerticalMargin, 0));
     // Adjust internal padding on each side to 4px to ensure a min size of
     // 24x24, consistent with other icon views. The default paddings are
     // narrower.
