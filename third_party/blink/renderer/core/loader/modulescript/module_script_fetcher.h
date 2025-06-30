@@ -11,12 +11,12 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
 namespace blink {
 
 class ConsoleMessage;
 class ModuleScriptLoader;
+class ResourceFetcher;
 
 // ModuleScriptFetcher is an abstract class to fetch module scripts. Derived
 // classes are expected to fetch a module script for the given FetchParameters
