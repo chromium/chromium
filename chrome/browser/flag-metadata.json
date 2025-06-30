@@ -4539,12 +4539,12 @@
   {
     "name": "enable-webrtc-allow-input-volume-adjustment",
     "owners": [ "peah@chromium.org", "silen@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 156
   },
   {
     "name": "enable-webrtc-apm-downmix-capture-audio-method",
     "owners": [ "peah@chromium.org", "silen@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 156
   },
   {
     "name": "enable-webrtc-hide-local-ips-with-mdns",
