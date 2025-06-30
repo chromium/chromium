@@ -285,9 +285,16 @@ public class NativePageFactory {
                             () ->
                                     HistoryManagerUtils.showHistoryManager(
                                             mActivity, tab, tab.getProfile()));
+
+            NativePageHost host = new TabShim(tab, mBrowserControlsManager, mTabModelSelector);
+            NativePageNavigationDelegate navigationDelegate =
+                    new NativePageNavigationDelegateImpl(
+                            mActivity, tab.getProfile(), host, mTabModelSelector, tab);
+
             return new RecentTabsPage(
                     mActivity,
                     recentTabsManager,
+                    navigationDelegate,
                     mBrowserControlsManager,
                     mTabStripHeightSupplier,
                     mEdgeToEdgeControllerSupplier);

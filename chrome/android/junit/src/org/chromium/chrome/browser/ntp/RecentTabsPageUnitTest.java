@@ -61,6 +61,7 @@ public class RecentTabsPageUnitTest {
                 new RecentTabsPage(
                         mActivity,
                         mRecentTabsManager,
+                        /* navigationDelegate */ null,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(0),
                         mEdgeToEdgeSupplier);

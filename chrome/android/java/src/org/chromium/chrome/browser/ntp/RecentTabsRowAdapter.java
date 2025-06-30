@@ -14,9 +14,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.LruCache;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -31,6 +29,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
@@ -126,6 +125,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     private final List<Group> mGroups;
     private final DefaultFaviconHelper mDefaultFaviconHelper;
     private final RecentTabsManager mRecentTabsManager;
+    private final ContextMenuManager mContextMenuManager;
     private final RecentlyClosedTabsGroup mRecentlyClosedTabsGroup = new RecentlyClosedTabsGroup();
     private final SeparatorGroup mVisibleSeparatorGroup = new SeparatorGroup(true);
     private final SeparatorGroup mInvisibleSeparatorGroup = new SeparatorGroup(false);
@@ -139,7 +139,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
      * A generic group of objects to be shown in the RecentTabsRowAdapter, such as the list of
      * recently closed tabs.
      */
-    abstract class Group {
+    abstract class Group extends ContextMenuManager.EmptyDelegate {
         /**
          * @return The type of group: GroupType.CONTENT or GroupType.SEPARATOR.
          */
@@ -251,23 +251,26 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
 
         /**
          * Called when the context menu for the group view is being built.
-         * @param menu The context menu being built.
+         *
          * @param activity The current activity.
+         * @param view The {@link View} of the group.
          */
-        void onCreateContextMenuForGroup(ContextMenu menu, Activity activity) {}
+        void onCreateContextMenuForGroup(Activity activity, View view) {}
 
         /**
          * Called when a context menu for one of the child views is being built.
+         *
          * @param childPosition The position of the child in the group.
-         * @param menu The context menu being built.
          * @param activity The current activity.
+         * @param view The {@link View} of the child.
          */
-        void onCreateContextMenuForChild(int childPosition, ContextMenu menu, Activity activity) {}
+        void onCreateContextMenuForChild(int childPosition, Activity activity, View view) {}
     }
 
     /** A group containing all the tabs associated with a foreign session from a synced device. */
     class ForeignSessionGroup extends Group {
         private final ForeignSession mForeignSession;
+        private ForeignSessionTab mLongPressedRow;
 
         ForeignSessionGroup(ForeignSession foreignSession) {
             mForeignSession = foreignSession;
@@ -362,42 +365,16 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
 
         @Override
-        public void onCreateContextMenuForGroup(ContextMenu menu, Activity activity) {
-            menu.add(R.string.recent_tabs_open_all_menu_option)
-                    .setOnMenuItemClickListener(
-                            item -> {
-                                RecordHistogram.recordEnumeratedHistogram(
-                                        "HistoryPage.OtherDevicesMenu",
-                                        OtherSessionsActions.OPEN_ALL,
-                                        OtherSessionsActions.NUM_ENTRIES);
-                                openAllTabs();
-                                return true;
-                            });
-            menu.add(R.string.recent_tabs_hide_menu_option)
-                    .setOnMenuItemClickListener(
-                            item -> {
-                                RecordHistogram.recordEnumeratedHistogram(
-                                        "HistoryPage.OtherDevicesMenu",
-                                        OtherSessionsActions.HIDE_FOR_NOW,
-                                        OtherSessionsActions.NUM_ENTRIES);
-                                mRecentTabsManager.deleteForeignSession(mForeignSession);
-                                return true;
-                            });
+        public void onCreateContextMenuForGroup(Activity activity, View view) {
+            mLongPressedRow = null;
+            mContextMenuManager.showListContextMenu(view, this);
         }
 
         @Override
-        public void onCreateContextMenuForChild(
-                int childPosition, ContextMenu menu, Activity activity) {
-            final ForeignSessionTab foreignSessionTab = getChild(childPosition);
-            OnMenuItemClickListener listener =
-                    item -> {
-                        mRecentTabsManager.openForeignSessionTab(
-                                mForeignSession,
-                                foreignSessionTab,
-                                WindowOpenDisposition.NEW_BACKGROUND_TAB);
-                        return true;
-                    };
-            menu.add(R.string.contextmenu_open_in_new_tab).setOnMenuItemClickListener(listener);
+        public void onCreateContextMenuForChild(int childPosition, Activity activity, View view) {
+            mLongPressedRow = getChild(childPosition);
+            if (mLongPressedRow == null) return;
+            mContextMenuManager.showListContextMenu(view, this);
         }
 
         private void openAllTabs() {
@@ -417,6 +394,45 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             if (firstTab != null) {
                 mRecentTabsManager.openForeignSessionTab(
                         mForeignSession, firstTab, WindowOpenDisposition.CURRENT_TAB);
+            }
+        }
+
+        @Override
+        public void openItem(int windowDisposition) {
+            mRecentTabsManager.openForeignSessionTab(
+                    mForeignSession, mLongPressedRow, windowDisposition);
+        }
+
+        @Override
+        public void openAllItems() {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "HistoryPage.OtherDevicesMenu",
+                    OtherSessionsActions.OPEN_ALL,
+                    OtherSessionsActions.NUM_ENTRIES);
+            openAllTabs();
+        }
+
+        @Override
+        public void hideAllItems() {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "HistoryPage.OtherDevicesMenu",
+                    OtherSessionsActions.HIDE_FOR_NOW,
+                    OtherSessionsActions.NUM_ENTRIES);
+            mRecentTabsManager.deleteForeignSession(mForeignSession);
+            openAllTabs();
+        }
+
+        @Override
+        public boolean isItemSupported(int menuItemId) {
+            switch (menuItemId) {
+                case ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB:
+                    return mLongPressedRow != null;
+                case ContextMenuManager.ContextMenuItemId.OPEN_ALL:
+                    return mLongPressedRow == null;
+                case ContextMenuManager.ContextMenuItemId.HIDE_ALL:
+                    return mLongPressedRow == null;
+                default:
+                    return false;
             }
         }
     }
@@ -528,8 +544,9 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
      * page.
      */
     class RecentlyClosedTabsGroup extends Group {
-        static final int ID_OPEN_IN_NEW_TAB = 1;
-        static final int ID_REMOVE_ALL = 2;
+        @StringRes static final int ID_OPEN_IN_NEW_TAB = R.string.contextmenu_open_in_new_tab;
+        @StringRes static final int ID_REMOVE_ALL = R.string.remove_all;
+        private RecentlyClosedEntry mLongPressedRow;
 
         @Override
         public @GroupType int getGroupType() {
@@ -739,39 +756,37 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
 
         @Override
-        public void onCreateContextMenuForGroup(ContextMenu menu, Activity activity) {}
+        public void onCreateContextMenuForGroup(Activity activity, View view) {}
 
         @Override
         public void onCreateContextMenuForChild(
-                final int childPosition, ContextMenu menu, Activity activity) {
-            final RecentlyClosedEntry recentlyClosedEntry = getChild(childPosition);
-            if (recentlyClosedEntry == null) return;
-            OnMenuItemClickListener listener =
-                    item -> {
-                        switch (item.getItemId()) {
-                            case ID_REMOVE_ALL:
-                                mRecentTabsManager.clearRecentlyClosedEntries();
-                                break;
-                            case ID_OPEN_IN_NEW_TAB:
-                                mRecentTabsManager.openRecentlyClosedTab(
-                                        (RecentlyClosedTab) recentlyClosedEntry,
-                                        WindowOpenDisposition.NEW_BACKGROUND_TAB);
-                                break;
-                            default:
-                                assert false;
-                        }
-                        return true;
-                    };
-            if (recentlyClosedEntry instanceof RecentlyClosedTab) {
-                menu.add(
-                                ContextMenu.NONE,
-                                ID_OPEN_IN_NEW_TAB,
-                                ContextMenu.NONE,
-                                R.string.contextmenu_open_in_new_tab)
-                        .setOnMenuItemClickListener(listener);
+                final int childPosition, Activity activity, View view) {
+            mLongPressedRow = getChild(childPosition);
+            if (mLongPressedRow == null) return;
+            mContextMenuManager.showListContextMenu(view, this);
+        }
+
+        @Override
+        public void openItem(int windowDisposition) {
+            mRecentTabsManager.openRecentlyClosedTab(
+                    (RecentlyClosedTab) mLongPressedRow, windowDisposition);
+        }
+
+        @Override
+        public void removeAllItems() {
+            mRecentTabsManager.clearRecentlyClosedEntries();
+        }
+
+        @Override
+        public boolean isItemSupported(int menuItemId) {
+            switch (menuItemId) {
+                case ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB:
+                    return mLongPressedRow instanceof RecentlyClosedTab;
+                case ContextMenuManager.ContextMenuItemId.REMOVE_ALL:
+                    return mLongPressedRow != null;
+                default:
+                    return false;
             }
-            menu.add(ContextMenu.NONE, ID_REMOVE_ALL, ContextMenu.NONE, R.string.remove_all)
-                    .setOnMenuItemClickListener(listener);
         }
     }
 
@@ -839,15 +854,19 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     /**
-     * Creates a RecentTabsRowAdapter used to populate an ExpandableList with other
-     * devices and foreign tab cells.
+     * Creates a RecentTabsRowAdapter used to populate an ExpandableList with other devices and
+     * foreign tab cells.
      *
      * @param activity The Android activity this adapter will work in.
      * @param recentTabsManager The RecentTabsManager that will act as the data source.
      */
-    public RecentTabsRowAdapter(Activity activity, RecentTabsManager recentTabsManager) {
+    public RecentTabsRowAdapter(
+            Activity activity,
+            RecentTabsManager recentTabsManager,
+            ContextMenuManager contextMenuManager) {
         mActivity = activity;
         mRecentTabsManager = recentTabsManager;
+        mContextMenuManager = contextMenuManager;
         mGroups = new ArrayList<>();
         mFaviconCaches.put(FaviconLocality.LOCAL, new FaviconCache(MAX_NUM_FAVICONS_TO_CACHE));
         mFaviconCaches.put(FaviconLocality.FOREIGN, new FaviconCache(MAX_NUM_FAVICONS_TO_CACHE));

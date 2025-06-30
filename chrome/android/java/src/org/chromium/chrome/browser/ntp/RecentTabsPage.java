@@ -21,12 +21,15 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -46,13 +49,14 @@ public class RecentTabsPage
                 View.OnAttachStateChangeListener,
                 View.OnCreateContextMenuListener,
                 InvalidationAwareThumbnailProvider,
-                BrowserControlsStateProvider.Observer {
+                BrowserControlsStateProvider.Observer,
+                TouchEnabledDelegate {
     private final Activity mActivity;
     @Nullable private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ExpandableListView mListView;
     private final String mTitle;
     private final ViewGroup mView;
-
+    private final ContextMenuManager mContextMenuManager;
     private RecentTabsManager mRecentTabsManager;
     private RecentTabsRowAdapter mAdapter;
 
@@ -70,12 +74,14 @@ public class RecentTabsPage
     private final Callback<Integer> mTabStripHeightChangeCallback;
     private SmoothTransitionDelegate mSmoothTransitionDelegate;
     private EdgeToEdgePadAdjuster mPadAdjuster;
+    private boolean mIsTouchEnabled = true;
 
     /**
      * Constructor returns an instance of RecentTabsPage.
      *
      * @param activity The activity this view belongs to.
      * @param recentTabsManager The RecentTabsManager which provides the model data.
+     * @param navigationDelegate The {@link NativePageNavigationDelegate} for handling navigation.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} used to provide
      *     offset values.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
@@ -84,6 +90,7 @@ public class RecentTabsPage
     public RecentTabsPage(
             Activity activity,
             RecentTabsManager recentTabsManager,
+            NativePageNavigationDelegate navigationDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<Integer> tabStripHeightSupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
@@ -96,7 +103,12 @@ public class RecentTabsPage
         LayoutInflater inflater = LayoutInflater.from(activity);
         mView = (ViewGroup) inflater.inflate(R.layout.recent_tabs_page, null);
         mListView = mView.findViewById(R.id.odp_listview);
-        mAdapter = new RecentTabsRowAdapter(activity, recentTabsManager);
+
+        mContextMenuManager =
+                new ContextMenuManager(
+                        navigationDelegate, this, mActivity::closeContextMenu, "RecentTabs");
+
+        mAdapter = new RecentTabsRowAdapter(activity, recentTabsManager, mContextMenuManager);
         mListView.setAdapter(mAdapter);
         mListView.setOnChildClickListener(this);
         mListView.setGroupIndicator(null);
@@ -235,6 +247,7 @@ public class RecentTabsPage
     @Override
     public boolean onChildClick(
             ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+        if (!mIsTouchEnabled) return true;
         return mAdapter.getGroup(groupPosition).onChildClick(childPosition);
     }
 
@@ -271,18 +284,29 @@ public class RecentTabsPage
         // Would prefer to have this context menu view managed internal to RecentTabsGroupView
         // Unfortunately, setting either onCreateContextMenuListener or onLongClickListener
         // disables the native onClick (expand/collapse) behaviour of the group view.
+
+        // Due to issues with theming the android context menu,
+        // we switch to using ContextMenuAdapter that is managed internally.
+        // Due to the reason listed above, we use onCreateContextMenu to catch any long presses
+        // from the user, and then keep a boolean internally to disable click events during a long
+        // press.
+        menu.clear();
+
         ExpandableListView.ExpandableListContextMenuInfo info =
                 (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 
         int type = ExpandableListView.getPackedPositionType(info.packedPosition);
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 
+        View anchorView = info.targetView;
+        if (anchorView == null) return;
+
         if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-            mAdapter.getGroup(groupPosition).onCreateContextMenuForGroup(menu, mActivity);
+            mAdapter.getGroup(groupPosition).onCreateContextMenuForGroup(mActivity, anchorView);
         } else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
             int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
             mAdapter.getGroup(groupPosition)
-                    .onCreateContextMenuForChild(childPosition, menu, mActivity);
+                    .onCreateContextMenuForChild(childPosition, mActivity, anchorView);
         }
     }
 
@@ -365,5 +389,10 @@ public class RecentTabsPage
 
     Callback<Integer> getTabStripHeightChangeCallbackForTesting() {
         return mTabStripHeightChangeCallback;
+    }
+
+    @Override
+    public void setTouchEnabled(boolean enabled) {
+        mIsTouchEnabled = enabled;
     }
 }

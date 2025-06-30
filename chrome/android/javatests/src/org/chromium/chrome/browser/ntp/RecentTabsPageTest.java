@@ -5,12 +5,16 @@
 package org.chromium.chrome.browser.ntp;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
@@ -18,7 +22,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
@@ -143,7 +146,7 @@ public class RecentTabsPageTest {
         final View view = waitForView(title);
 
         openContextMenuAndInvokeItem(
-                mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_OPEN_IN_NEW_TAB);
+                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_OPEN_IN_NEW_TAB);
         verify(mManager, times(1))
                 .openRecentlyClosedTab(mTabModel, tab, WindowOpenDisposition.NEW_BACKGROUND_TAB);
 
@@ -157,7 +160,7 @@ public class RecentTabsPageTest {
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
         openContextMenuAndInvokeItem(
-                mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(title);
     }
@@ -220,7 +223,7 @@ public class RecentTabsPageTest {
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
         openContextMenuAndInvokeItem(
-                mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(groupString);
 
@@ -294,7 +297,7 @@ public class RecentTabsPageTest {
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
         openContextMenuAndInvokeItem(
-                mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(groupString);
     }
@@ -385,7 +388,7 @@ public class RecentTabsPageTest {
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
         openContextMenuAndInvokeItem(
-                mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(groupString);
     }
@@ -467,7 +470,7 @@ public class RecentTabsPageTest {
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
         openContextMenuAndInvokeItem(
-                mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+                view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(eventString);
     }
@@ -586,13 +589,8 @@ public class RecentTabsPageTest {
     }
 
     private static void openContextMenuAndInvokeItem(
-            final Activity activity, final View view, final int itemId) {
-        // IMPLEMENTATION NOTE: Instrumentation.invokeContextMenuAction would've been much simpler,
-        // but it requires the View to be focused which is hard to achieve in touch mode.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    view.performLongClick();
-                    activity.getWindow().performContextMenuIdentifierAction(itemId, 0);
-                });
+            final View view, @StringRes final int stringId) {
+        onView(is(view)).perform(longClick());
+        onView(withText(stringId)).check(matches(isDisplayed())).perform(click());
     }
 }
