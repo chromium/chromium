@@ -41,7 +41,6 @@ std::unique_ptr<web::FakeWebState> ReaderModeTest::CreateWebState() {
   // Attach tab helpers
   ReaderModeTabHelper::CreateForWebState(
       web_state.get(), DistillerServiceFactory::GetForProfile(profile()));
-  SnapshotTabHelper::CreateForWebState(web_state.get());
 
   return web_state;
 }

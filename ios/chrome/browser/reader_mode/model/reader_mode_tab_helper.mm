@@ -261,7 +261,11 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
   // Generic snapshot image generation on side-swipe has a long tail latency.
   // Force update the snapshot storage to ensure that the latest snapshot is
   // presented before a transition.
-  SnapshotTabHelper::FromWebState(web_state_)->UpdateSnapshotWithCallback(nil);
+  SnapshotTabHelper* snapshot_tab_helper =
+      SnapshotTabHelper::FromWebState(web_state_);
+  if (snapshot_tab_helper) {
+    snapshot_tab_helper->UpdateSnapshotWithCallback(nil);
+  }
 }
 
 void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
@@ -428,7 +432,11 @@ void ReaderModeTabHelper::DestroyReaderModeWebState() {
   // Cancel any ongoing distillation task.
   distiller_viewer_.reset();
   // Update the snapshot with the original web page.
-  SnapshotTabHelper::FromWebState(web_state_)->UpdateSnapshotWithCallback(nil);
+  SnapshotTabHelper* snapshot_tab_helper =
+      SnapshotTabHelper::FromWebState(web_state_);
+  if (snapshot_tab_helper) {
+    snapshot_tab_helper->UpdateSnapshotWithCallback(nil);
+  }
 }
 
 void ReaderModeTabHelper::SetLastCommittedUrl(const GURL& url) {
