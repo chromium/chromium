@@ -1963,10 +1963,6 @@
       status: "stable",
     },
     {
-      name: "EventTimingHandleKeyboardEventSimulatedClick",
-      status: "stable",
-    },
-    {
       name: "EventTimingInteractionCount",
       status: "experimental",
     },

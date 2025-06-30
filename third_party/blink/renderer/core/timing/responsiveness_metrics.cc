@@ -422,13 +422,10 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       }
     }
 
-    if (RuntimeEnabledFeaturesBase::
-            EventTimingHandleKeyboardEventSimulatedClickEnabled()) {
       // Try handle keyboard event simulated click.
       if (TryHandleKeyboardEventSimulatedClick(entry, pointer_id)) {
         return true;
       }
-    }
 
     // We do not rely on the |pointer_id| for clicks because they may be
     // inaccurate. Instead, we rely on the last pointer id seen.
