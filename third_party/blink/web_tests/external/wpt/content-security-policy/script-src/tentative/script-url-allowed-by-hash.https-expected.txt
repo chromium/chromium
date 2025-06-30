@@ -7,6 +7,10 @@ This is a testharness.js-based test.
   assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
 [FAIL] script-src-elem should allow script by its url hash - header
   assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] url hashes should allow dynamically inserted script if allowlisted - header
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] url hashes should allow redirected scripts - header
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
 [FAIL] script-src should allow script by its url hash - metatag
   assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
 [FAIL] A parseable url-hash should ignore hostname allowlists - metatag
@@ -14,6 +18,10 @@ This is a testharness.js-based test.
 [FAIL] default-src should allow script by its url hash - metatag
   assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
 [FAIL] script-src-elem should allow script by its url hash - metatag
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] url hashes should allow dynamically inserted script if allowlisted - metatag
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] url hashes should allow redirected scripts - metatag
   assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
 Harness: the test ran to completion.
 

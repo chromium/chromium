@@ -949,7 +949,7 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
     }
     if (base::FeatureList::IsEnabled(
             network::features::kCSPScriptSrcHashesInV1) &&
-        CheckURLHash(url, directive.source_list)) {
+        CheckURLHash(url_before_redirects, directive.source_list)) {
       return CSPCheckResult::Allowed();
     }
   }
