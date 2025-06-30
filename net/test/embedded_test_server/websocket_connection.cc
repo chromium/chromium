@@ -23,6 +23,7 @@
 #include "net/socket/stream_socket.h"
 #include "net/test/embedded_test_server/websocket_handler.h"
 #include "net/test/embedded_test_server/websocket_message_assembler.h"
+#include "net/websockets/websocket_errors.h"
 #include "net/websockets/websocket_frame.h"
 #include "net/websockets/websocket_frame_parser.h"
 #include "net/websockets/websocket_handshake_challenge.h"
@@ -124,9 +125,18 @@ void WebSocketConnection::RespondToCloseFrame(std::optional<uint16_t> code,
     return;
   }
 
-  CHECK(base::IsStringUTF8AllowingNoncharacters(message));
-  scoped_refptr<IOBufferWithSize> close_frame = CreateCloseFrame(code, message);
-  SendInternal(std::move(close_frame), /*wait_for_handshake=*/false);
+  // Only need to send a close frame if one was not already sent.
+  if (state_ != WebSocketState::kWaitingForClientClose) {
+    CHECK(base::IsStringUTF8AllowingNoncharacters(message));
+    scoped_refptr<IOBufferWithSize> close_frame;
+    if (code != kWebSocketErrorNoStatusReceived) {
+      close_frame = CreateCloseFrame(code, message);
+    } else {
+      close_frame = CreateCloseFrame(/*code=*/std::nullopt, /*message=*/"");
+    }
+    SendInternal(std::move(close_frame), /*wait_for_handshake=*/false);
+  }
+
   DisconnectAfterAnyWritesDone();
 }
 

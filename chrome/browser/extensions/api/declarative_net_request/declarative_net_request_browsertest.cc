@@ -134,7 +134,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
@@ -305,6 +304,10 @@ class DeclarativeNetRequestBrowserTest
     embedded_test_server()->RegisterRequestMonitor(
         base::BindRepeating(&DeclarativeNetRequestBrowserTest::MonitorRequest,
                             base::Unretained(this)));
+
+    // Set up WebSockets for any test that needs it. This does not interfere
+    // with non-WebSocket requests.
+    net::test_server::InstallDefaultWebSocketHandlers(embedded_test_server());
 
     content::SetupCrossSiteRedirector(embedded_test_server());
 
@@ -3547,8 +3550,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, Redirect) {
 #if !BUILDFLAG(IS_ANDROID)
 // Test that the badge text for an extension will update to reflect the number
 // of actions taken on requests matching the extension's ruleset.
-// TODO(crbug.com/371298229): Port to desktop Android when extension badges are
-// supported.
+// TODO(crbug.com/371298229): Fix a dependency_manager.cc DCHECK that this
+// triggers on Android.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        ActionsMatchedCountAsBadgeText) {
   // Load the extension with a background script so scripts can be run from its
@@ -6901,12 +6904,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
 
-  // Start a web socket test server.
-  net::SpawnedTestServer websocket_test_server(
-      net::SpawnedTestServer::TYPE_WS, net::GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(websocket_test_server.Start());
   std::string websocket_url =
-      websocket_test_server.GetURL("echo-with-no-extension").spec();
+      net::test_server::GetWebSocketURL(*embedded_test_server(),
+                                        "/echo-with-no-extension")
+          .spec();
 
   static constexpr char kOpenWebSocketsScript[] = R"(
     {
