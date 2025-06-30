@@ -16,6 +16,8 @@ const char kNTPCustomizationNewBadgeShownAction[] =
     "MobileNTPCustomizationNewBadgeShown";
 const char kNTPCustomizationNewBadgeTappedAction[] =
     "MobileNTPCustomizationNewBadgeTapped";
+const char kNTPMIAEntryPointTappedAction[] = "MobileNTPMIAEntryPointTapped";
+const char kNTPIncognitoButtonTappedAction[] = "MobileNTPIncognitoButtonTapped";
 
 #pragma mark - Histograms
 

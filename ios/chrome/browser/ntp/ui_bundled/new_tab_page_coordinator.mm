@@ -1937,6 +1937,7 @@
 }
 
 - (void)openMIA {
+  [self.NTPMetricsRecorder recordMIATapped];
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:GetUrlForAim(self.templateURLService)];
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
@@ -1965,6 +1966,7 @@
 }
 
 - (void)openIncognitoSearch {
+  [self.NTPMetricsRecorder recordIncognitoTapped];
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:YES];
   command.shouldFocusOmnibox = YES;
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(

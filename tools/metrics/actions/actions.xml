@@ -25213,6 +25213,21 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileNTPIncognitoButtonTapped">
+  <owner>radunitescu@google.com</owner>
+  <description>
+    Recorded when a taps on the Incognito button in the quick actions buttons in
+    NTP. iOS only.
+  </description>
+</action>
+
+<action name="MobileNTPMIAEntryPointTapped">
+  <owner>radunitescu@google.com</owner>
+  <description>
+    Recorded when a user taps on the AI Mode button in NTP. iOS only.
+  </description>
+</action>
+
 <action name="MobileNTPMostVisited">
   <owner>dewittj@chromium.org</owner>
   <description>Recorded when a user clicks on a Most Visited tile.</description>
