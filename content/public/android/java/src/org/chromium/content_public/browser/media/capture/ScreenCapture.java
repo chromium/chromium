@@ -173,6 +173,11 @@ public class ScreenCapture {
                 // images until the C++ side is finished using them.
                 final Image image = maybeAcquireImage(reader);
 
+                // Don't close old `ImageHandler`s until we have a Image written to the new
+                // Image handler. This is to make sure that if the OS is still trying to write
+                // to an older Surface from `ImageReader` it can.
+                closeImageHandlersBefore(this);
+
                 // If we have not yet closed images, this may return null. We need to retry
                 // after closing an image.
                 if (image == null) return;
@@ -348,6 +353,8 @@ public class ScreenCapture {
                 mMediaProjection.stop();
                 mMediaProjection = null;
             }
+            // Iterate backwards since closeNow() will cause the `ImageHandler` to be removed from
+            // the queue.
             for (int i = mImageHandlerQueue.size() - 1; i >= 0; i--) {
                 // Note that we can only immediately close the ImageHandler if we are guaranteed the
                 // native side will not try to access Images from it again. We are guaranteed this
@@ -409,6 +416,15 @@ public class ScreenCapture {
     }
 
     @GuardedBy("mBackgroundLock")
+    private void closeImageHandlersBefore(ImageHandler imageHandler) {
+        int idx = mImageHandlerQueue.indexOf(imageHandler);
+        assert idx != -1;
+        for (int i = idx - 1; i >= 0; i--) {
+            mImageHandlerQueue.get(i).close();
+        }
+    }
+
+    @GuardedBy("mBackgroundLock")
     private void recreateListener(CaptureState captureState) {
         assert mBackgroundThread.getLooper().isCurrentThread();
 
@@ -417,10 +433,6 @@ public class ScreenCapture {
         assert mVirtualDisplay != null;
         mVirtualDisplay.resize(captureState.width, captureState.height, captureState.dpi);
         mVirtualDisplay.setSurface(imageHandler.getSurface());
-
-        if (mImageHandlerQueue.size() >= 2) {
-            mImageHandlerQueue.get(mImageHandlerQueue.size() - 2).close();
-        }
     }
 
     @GuardedBy("mBackgroundLock")
