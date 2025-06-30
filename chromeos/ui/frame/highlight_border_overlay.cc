@@ -175,7 +175,13 @@ void HighlightBorderOverlay::OnWindowPropertyChanged(aura::Window* window,
       rounded_corner_radius_ = corner_radius;
       UpdateNinePatchLayer();
     }
+
+    return;
+  }
+
+  if (key == chromeos::kWindowStateTypeKey) {
     UpdateLayerVisibilityAndBounds();
+    return;
   }
 }
 
