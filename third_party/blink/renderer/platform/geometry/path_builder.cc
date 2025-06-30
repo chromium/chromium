@@ -252,8 +252,7 @@ PathBuilder& PathBuilder::AddContouredRect(
 
   // This would include the outer border of the rect, as well as shadow and
   // margin.
-  if (origin_rect == target_rect ||
-      contoured_rect.GetCornerCurvature().IsHyperellipse()) {
+  if (origin_rect == target_rect) {
     // A rect with no insets/outsets, we can draw all the corners and not worry
     // about intersections.
     const Corner top_right_corner = contoured_rect.TopRightCorner();

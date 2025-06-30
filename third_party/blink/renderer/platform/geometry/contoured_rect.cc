@@ -180,18 +180,14 @@ gfx::PointF ContouredRect::Corner::QuadraticControlPoint() const {
 // This method creates a corner from a target (this) and an origin.
 // The resulting "aligned" corner has its coordinates and curvature adjusted
 // in such a way that it would have consistent thickness along its entire path.
-Corner ContouredRect::Corner::AlignedToOrigin(const Corner& origin) const {
+Corner ContouredRect::Corner::AlignedToOrigin(const Corner& origin,
+                                              float thickness_start,
+                                              float thickness_end) const {
   if (origin.IsEmpty() || *this == origin) {
     return *this;
   }
 
   const float curvature = origin.Curvature();
-
-  // The thickness is derived from the difference between the target and the
-  // origin, in the v1 (start->outer) and v2 (outer->end) directions.
-  const float thickness_start = (origin.v2().Length() - v2().Length());
-  const float thickness_end = (origin.v1().Length() - v1().Length());
-
   // The curve should start at a position perpendicular to the curve, with the
   // thickness as the distance. We use the hull of the superellipse (x*2 - 1/2,
   // y*2 - 1/2), normalize a vector in that direction, and find its
