@@ -62,18 +62,7 @@ void BucketRanges::ResetChecksum() {
 }
 
 bool BucketRanges::Equals(const BucketRanges* other) const {
-  if (checksum_ != other->checksum_) {
-    return false;
-  }
-  if (ranges_.size() != other->ranges_.size()) {
-    return false;
-  }
-  for (size_t index = 0; index < ranges_.size(); ++index) {
-    if (ranges_[index] != other->ranges_[index]) {
-      return false;
-    }
-  }
-  return true;
+  return checksum_ == other->checksum_ && ranges_ == other->ranges_;
 }
 
 }  // namespace base
