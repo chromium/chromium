@@ -626,6 +626,9 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
     self.separator.alpha = 0;
 
+    _buttonStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+        0, 0, 0, [self endButtonFakeboxTrailingSpace]);
+
     _lastAnimationPercent = percent;
     return;
   }
