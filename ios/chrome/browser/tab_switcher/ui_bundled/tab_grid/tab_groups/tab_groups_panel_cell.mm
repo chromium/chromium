@@ -105,7 +105,7 @@ const CGFloat kDotSize = 14;
   _faviconsGrid.favicon2 = nil;
   _faviconsGrid.favicon3 = nil;
   _faviconsGrid.favicon4 = nil;
-  self.facePile = nil;
+  self.facePileProvider = nil;
   self.item = nil;
 }
 
@@ -158,7 +158,7 @@ const CGFloat kDotSize = 14;
 #pragma mark - Setters
 
 - (void)setFacePileProvider:(id<FacePileProviding>)facePileProvider {
-  if (_facePileProvider == facePileProvider) {
+  if ([_facePileProvider isEqualFacePileProviding:facePileProvider]) {
     return;
   }
   _facePileProvider = facePileProvider;

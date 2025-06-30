@@ -1942,7 +1942,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   }
 }
 
-- (UIView*)facePileViewForItem:(GridItemIdentifier*)itemID {
+- (id<FacePileProviding>)facePileProviderForItem:(GridItemIdentifier*)itemID {
   // Only implemented by the "RegularGridMediator".
   return nil;
 }

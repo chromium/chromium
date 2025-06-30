@@ -15,6 +15,7 @@ namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
 
+@protocol RegularGridMediatorDelegate;
 class ShareKitService;
 
 // Mediates between model layer and regular grid UI layer.
@@ -25,6 +26,9 @@ class ShareKitService;
 // as it also close all inactives tabs.
 // TODO(crbug.com/40273478): Refactor these to be a mutator.
 @property(nonatomic, weak) id<GridCommands> inactiveTabsGridCommands;
+
+// Regular delegate.
+@property(nonatomic, weak) id<RegularGridMediatorDelegate> regularDelegate;
 
 // Designated initialized. `tabGroupSyncService`, `shareKitService` and
 // `messagingService`: can be `nullptr`.

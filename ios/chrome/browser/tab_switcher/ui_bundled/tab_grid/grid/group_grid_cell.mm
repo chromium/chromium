@@ -12,6 +12,7 @@
 #import "base/notreached.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -41,6 +42,13 @@ const CGFloat kTopBarInset = 10;
 const CGFloat kTopBarLargeInset = 20;
 
 }  // namespace
+
+@interface GroupGridCell ()
+
+// The face pile view.
+@property(nonatomic, strong) UIView* facePile;
+
+@end
 
 @implementation GroupGridCell {
   // The dot/facepile container view constraints enabled under accessibility
@@ -203,7 +211,7 @@ const CGFloat kTopBarLargeInset = 20;
   self.selected = NO;
   self.opacity = 1.0;
   self.hidden = NO;
-  self.facePile = nil;
+  self.facePileProvider = nil;
 }
 
 #pragma mark - UIAccessibility
@@ -307,6 +315,15 @@ const CGFloat kTopBarLargeInset = 20;
   // Make sure alpha is synchronized with opacity.
   _opacity = alpha;
   super.alpha = _opacity;
+}
+
+- (void)setFacePileProvider:(id<FacePileProviding>)facePileProvider {
+  if ([_facePileProvider isEqualFacePileProviding:facePileProvider]) {
+    return;
+  }
+  _facePileProvider = facePileProvider;
+
+  self.facePile = [_facePileProvider facePileView];
 }
 
 - (void)setFacePile:(UIView*)facePile {
