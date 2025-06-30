@@ -165,7 +165,6 @@ webauthn_pb::EnclaveLocalState::WrappedPIN GetTestWrappedPIN() {
   webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin;
   wrapped_pin.set_wrapped_pin(StringOfZeros(30));
   wrapped_pin.set_claim_key(StringOfZeros(32));
-  wrapped_pin.set_generation(0);
   wrapped_pin.set_form(wrapped_pin.FORM_SIX_DIGITS);
   wrapped_pin.set_hash(wrapped_pin.HASH_SCRYPT);
   wrapped_pin.set_hash_difficulty(1 << 12);

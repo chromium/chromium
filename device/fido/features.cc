@@ -215,4 +215,10 @@ BASE_FEATURE(kWebAuthnLargeBlobForICloudKeychain,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
+// Deprecation flag. Intended to be disabled once the enclave no longer requires
+// a PIN generation number.
+BASE_FEATURE(kWebAuthnSendPinGeneration,
+             "WebAuthenticationSendPinGeneration",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

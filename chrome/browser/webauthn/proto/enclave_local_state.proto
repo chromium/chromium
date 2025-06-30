@@ -15,20 +15,18 @@ message EnclaveLocalState {
   // rate limiting. Thus, locally and in the metadata of the virtual member of
   // the security domain, there is a wrapped version.
   message WrappedPIN {
-    // The PIN, encrypted to the security domain secret. The plaintext is a
-    // CBOR structure containing the scrypt-hash of the PIN, claim key,
-    // generation number, plus recovery key store counter ID and handle.
+    reserved 3;
+    reserved "generation";
+
+    // The PIN, encrypted to the security domain secret. The plaintext is a CBOR
+    // structure containing the scrypt-hash of the PIN, claim key, plus recovery
+    // key store counter ID and handle.
     bytes wrapped_pin = 1;
 
     // A key used to encrypt claimed PIN hashes for validation at the enclave.
     // These are encrypted to ensure that the enclave has access to the local
     // state needed to unwrap the security domain secret.
     bytes claim_key = 2;
-
-    // The generation number of the GPM PIN. Starts from zero and increases
-    // strictly monotonically when the GPM PIN changes. The enclave enforces
-    // a high-water mark.
-    int64 generation = 3;
 
     enum Form {
       // Never used. Only for detecting when the form is missing.

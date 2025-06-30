@@ -264,9 +264,6 @@ std::optional<int> CheckPINInvariants(
   if (wrapped_pin.claim_key().size() != 32) {
     return __LINE__;
   }
-  if (wrapped_pin.generation() < 0) {
-    return __LINE__;
-  }
   if (wrapped_pin.form() == wrapped_pin.FORM_UNSPECIFIED) {
     return __LINE__;
   }
@@ -506,7 +503,6 @@ cbor::Value::ArrayValue BuildRecoveryKeyStorePINWrappingEnclaveRequest(
 // Build an enclave request to wrap a PIN with the security domain secret.
 cbor::Value::ArrayValue BuildPINWrappingEnclaveRequest(
     base::span<const uint8_t> hashed_pin,
-    int64_t generation,
     base::span<const uint8_t, 32> claim_key,
     base::span<const uint8_t, enclave::kCounterIDLen> counter_id,
     base::span<const uint8_t, enclave::kVaultHandleLen - 1>
@@ -516,7 +512,9 @@ cbor::Value::ArrayValue BuildPINWrappingEnclaveRequest(
   request.emplace(enclave::kRequestCommandKey,
                   enclave::kPasskeysWrapPinCommandName);
   request.emplace(enclave::kPinHash, hashed_pin);
-  request.emplace(enclave::kGeneration, generation);
+  if (base::FeatureList::IsEnabled(device::kWebAuthnSendPinGeneration)) {
+    request.emplace(enclave::kGeneration, 0);
+  }
   request.emplace(enclave::kClaimKey, claim_key);
   request.emplace(enclave::kRequestWrappedSecretKey, wrapped_secret);
   request.emplace(enclave::kRequestCounterIDKey, counter_id);
@@ -942,14 +940,12 @@ struct HashedPIN {
   // Copies the values of this structure into a `WrappedPIN` protobuf with a
   // random claim key. The inner `wrapped_pin` member is not set and needs to be
   // filled in by the caller once that value is available.
-  std::unique_ptr<EnclaveLocalState::WrappedPIN> ToWrappedPIN(
-      int64_t generation) const {
+  std::unique_ptr<EnclaveLocalState::WrappedPIN> ToWrappedPIN() const {
     uint8_t claim_key[32];
     crypto::RandBytes(claim_key);
 
     auto ret = std::make_unique<EnclaveLocalState::WrappedPIN>();
     ret->set_claim_key(VecToString(claim_key));
-    ret->set_generation(generation);
     ret->set_form(this->metadata.is_six_digits
                       ? EnclaveLocalState::WrappedPIN::FORM_SIX_DIGITS
                       : EnclaveLocalState::WrappedPIN::FORM_ARBITRARY);
@@ -2028,13 +2024,7 @@ class EnclaveManager::StateMachine {
     // recovery key store.
     CHECK(std::holds_alternative<PINHashed>(event));
     hashed_pin_ = std::move(std::get_if<PINHashed>(&event)->value());
-
-    int64_t generation = 0;
-    if (is_pin_update_) {
-      generation = user_->wrapped_pin().generation() + 1;
-    }
-    wrapped_pin_proto_ = hashed_pin_->ToWrappedPIN(generation);
-
+    wrapped_pin_proto_ = hashed_pin_->ToWrappedPIN();
     DownloadRecoveryKeyStoreKeys();
   }
 
@@ -2140,7 +2130,7 @@ class EnclaveManager::StateMachine {
         //      with that PIN in the future.
         ConcatEnclaveRequests(
             BuildPINWrappingEnclaveRequest(
-                hashed_pin_->hashed, wrapped_pin_proto_->generation(),
+                hashed_pin_->hashed,
                 ToSizedSpan<32>(wrapped_pin_proto_->claim_key()), counter_id,
                 vault_handle_without_type, wrapped_secret),
             BuildRecoveryKeyStorePINChangeEnclaveRequest(
@@ -2240,9 +2230,8 @@ class EnclaveManager::StateMachine {
     if (!updating_pin_member && !is_set_pin_) {
       CHECK(wrapped_pin_proto_->wrapped_pin().empty());
       wrapped_pin_proto_->set_wrapped_pin(BuildWrappedPIN(
-          *hashed_pin_, /*generation=*/0,
-          ToSizedSpan<32>(wrapped_pin_proto_->claim_key()), vault_.get(),
-          store_keys_args_for_joining_->keys.back()));
+          *hashed_pin_, ToSizedSpan<32>(wrapped_pin_proto_->claim_key()),
+          vault_.get(), store_keys_args_for_joining_->keys.back()));
     }
     const std::string& vault_public_key =
         vault_->application_keys()[0].asymmetric_key_pair().public_key();
@@ -2602,13 +2591,14 @@ class EnclaveManager::StateMachine {
   // encrypted) by the security domain secret.
   static std::string BuildWrappedPIN(
       const HashedPIN& hashed_pin,
-      int64_t generation,
       base::span<const uint8_t, 32> claim_key,
       const trusted_vault_pb::Vault* vault,
       base::span<const uint8_t> security_domain_secret) {
     cbor::Value::MapValue map;
     map.emplace(1, base::span<const uint8_t>(hashed_pin.hashed));
-    map.emplace(2, generation);
+    if (base::FeatureList::IsEnabled(device::kWebAuthnSendPinGeneration)) {
+      map.emplace(2, 0);  // Generation number.
+    }
     map.emplace(3, claim_key);
     map.emplace(4, base::as_byte_span(vault->vault_parameters().counter_id()));
     // The vault handle in the wrapped PIN doesn't include the first byte,
@@ -3603,16 +3593,15 @@ unsigned EnclaveManager::renewal_attempts_for_testing() const {
 std::string EnclaveManager::MakeWrappedPINForTesting(
     base::span<const uint8_t> security_domain_secret,
     std::string_view pin) {
-  constexpr int32_t kGeneration = 0;
   std::unique_ptr<HashedPIN> hashed = HashPINSlowly(pin);
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin =
-      hashed->ToWrappedPIN(kGeneration);
+      hashed->ToWrappedPIN();
   const uint8_t kFakeCounterId[8] = {};
   const uint8_t kFakeVaultHandle[16] = {};
 
   cbor::Value::MapValue map;
   map.emplace(1, base::span<const uint8_t>(hashed->hashed));
-  map.emplace(2, kGeneration);
+  // 2 used to correspond to the generation.
   map.emplace(3, ToSizedSpan<32>(wrapped_pin->claim_key()));
   map.emplace(4, base::span<const uint8_t>(kFakeCounterId));
   map.emplace(5, base::span<const uint8_t>(kFakeVaultHandle));

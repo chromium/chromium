@@ -157,6 +157,10 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnLargeBlobForICloudKeychain);
 #endif  // BUILDFLAG(IS_MAC)
 
+// Sends a PIN generation number to the enclave on a PIN wrapping request.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnSendPinGeneration);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
