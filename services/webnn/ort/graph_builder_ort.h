@@ -119,6 +119,8 @@ class GraphBuilderOrt {
   void InsertCastNode(base::cstring_view input,
                       base::cstring_view output,
                       OperandDataType to_data_type);
+  std::string CreateCastNode(base::cstring_view input,
+                             OperandDataType to_data_type);
 
   void AddExpandNode(base::cstring_view node_name,
                      base::cstring_view input,
@@ -132,6 +134,13 @@ class GraphBuilderOrt {
   std::string ClampIndices(base::cstring_view indices,
                            OperandDataType data_type,
                            uint32_t dim_size);
+
+  // Clamp the indices to ensure that all values in indices are within bounds
+  // [-s, s) along axis of size s, i.e. -input_shape[i] <= indices[..., i] <=
+  // input_shape[i] - 1. The data type of indices is assumed to be int64.
+  std::string ClampGatherNDIndices(base::cstring_view indices,
+                                   base::span<const uint32_t> input_shape,
+                                   base::span<const uint32_t> indices_shape);
 
   template <typename T>
   void AddBinaryOperation(const T& operation, base::cstring_view op_type);
@@ -150,6 +159,7 @@ class GraphBuilderOrt {
   void AddElementWiseUnaryOperation(
       const mojom::ElementWiseUnary& element_wise_unary);
   void AddExpandOperation(const mojom::Expand& expand);
+  void AddGatherNDOperation(const mojom::GatherND& gather_nd);
   void AddGemmOperation(const mojom::Gemm& gemm);
   void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
@@ -157,6 +167,7 @@ class GraphBuilderOrt {
   void AddReshapeOperation(const mojom::Reshape& reshape);
   void AddScatterElementsOperation(
       const mojom::ScatterElements& scatter_elements);
+  void AddScatterNDOperation(const mojom::ScatterND& scatter_nd);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
   void AddSplitOperation(const mojom::Split& split);
   void AddTransposeOperation(const mojom::Transpose& transpose);

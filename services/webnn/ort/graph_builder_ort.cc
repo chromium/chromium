@@ -59,6 +59,7 @@ constexpr base::cstring_view kOpTypeConvTranspose2d = "ConvTranspose";
 constexpr base::cstring_view kOpTypeExpand = "Expand";
 constexpr base::cstring_view kOpTypeGather = "Gather";
 constexpr base::cstring_view kOpTypeGatherElements = "GatherElements";
+constexpr base::cstring_view kOpTypeGatherND = "GatherND";
 constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
 constexpr base::cstring_view kOpTypeLeakyRelu = "LeakyRelu";
@@ -67,6 +68,7 @@ constexpr base::cstring_view kOpTypePRelu = "PRelu";
 constexpr base::cstring_view kOpTypeRelu = "Relu";
 constexpr base::cstring_view kOpTypeReshape = "Reshape";
 constexpr base::cstring_view kOpTypeScatterElements = "ScatterElements";
+constexpr base::cstring_view kOpTypeScatterND = "ScatterND";
 constexpr base::cstring_view kOpTypeSigmoid = "Sigmoid";
 constexpr base::cstring_view kOpTypeSoftmax = "Softmax";
 constexpr base::cstring_view kOpTypeSoftsign = "Softsign";
@@ -274,6 +276,13 @@ void GraphBuilderOrt::InsertCastNode(base::cstring_view input,
   AddCastNode(node_name, input, output, to_data_type);
 }
 
+std::string GraphBuilderOrt::CreateCastNode(base::cstring_view input,
+                                            OperandDataType to_data_type) {
+  const std::string output = GenerateOperandName();
+  InsertCastNode(input, output, to_data_type);
+  return output;
+}
+
 void GraphBuilderOrt::AddExpandNode(base::cstring_view node_name,
                                     base::cstring_view input,
                                     base::cstring_view output,
@@ -334,6 +343,45 @@ std::string GraphBuilderOrt::ClampIndices(base::cstring_view indices,
   std::array<const char*, 1> outputs = {output.c_str()};
 
   model_editor_.AddNode(kOpTypeClamp, node_name, inputs, outputs);
+  return output;
+}
+
+std::string GraphBuilderOrt::ClampGatherNDIndices(
+    base::cstring_view indices,
+    base::span<const uint32_t> input_shape,
+    base::span<const uint32_t> indices_shape) {
+  CHECK_GT(input_shape.size(), 0u);
+  CHECK_GT(indices_shape.size(), 0u);
+
+  uint32_t indices_last_dim_size = indices_shape[indices_shape.size() - 1];
+  std::array<int64_t, 1> min_max_shape = {
+      static_cast<int64_t>(indices_last_dim_size)};
+
+  base::FixedArray<int64_t> min_value(indices_last_dim_size);
+  base::FixedArray<int64_t> max_value(indices_last_dim_size);
+  for (uint32_t axis = 0; axis < indices_last_dim_size; ++axis) {
+    min_value[axis] = -static_cast<int64_t>(input_shape[axis]);
+    max_value[axis] = static_cast<int64_t>(input_shape[axis]) - 1;
+  }
+
+  // ONNX Clip can only have `min` and `max` as scalars, so here use Min and Max
+  // to emulate a clamp operation.
+  std::string min = CreateInitializer<int64_t>(min_max_shape, min_value);
+  const std::string max_node_name =
+      GenerateNodeName(base::JoinString({kInserted, kOpTypeMax}, kUnderscore));
+  const std::string max_output = GenerateOperandName();
+  std::array<const char*, 2> max_inputs = {indices.c_str(), min.c_str()};
+  std::array<const char*, 1> max_outputs = {max_output.c_str()};
+  model_editor_.AddNode(kOpTypeMax, max_node_name, max_inputs, max_outputs);
+
+  std::string max = CreateInitializer<int64_t>(min_max_shape, max_value);
+  const std::string min_node_name =
+      GenerateNodeName(base::JoinString({kInserted, kOpTypeMin}, kUnderscore));
+  const std::string output = GenerateOperandName();
+  std::array<const char*, 2> min_inputs = {max_output.c_str(), max.c_str()};
+  std::array<const char*, 1> min_outputs = {output.c_str()};
+  model_editor_.AddNode(kOpTypeMin, min_node_name, min_inputs, min_outputs);
+
   return output;
 }
 
@@ -786,6 +834,38 @@ void GraphBuilderOrt::AddGatherOperation(const T& operation,
   model_editor_.AddNode(op_type, node_name, inputs, outputs, attributes);
 }
 
+void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
+  const std::string node_name = GenerateNodeName(gather_nd.label);
+  const std::string input = GetOperandNameById(gather_nd.input_operand_id);
+  const std::string indices = GetOperandNameById(gather_nd.indices_operand_id);
+  const std::string output = GetOperandNameById(gather_nd.output_operand_id);
+
+  const OperandDescriptor& input_descriptor =
+      GetOperand(gather_nd.input_operand_id).descriptor;
+  const OperandDescriptor& indices_descriptor =
+      GetOperand(gather_nd.indices_operand_id).descriptor;
+  CHECK(context_properties_.data_type_limits.gather_nd_input.Supports(
+      input_descriptor));
+  CHECK(context_properties_.data_type_limits.gather_nd_indices.Supports(
+      indices_descriptor));
+
+  // ONNX GatherND only supports int64 indices.
+  std::string int64_indices =
+      indices_descriptor.data_type() == OperandDataType::kInt64
+          ? indices
+          : CreateCastNode(indices, OperandDataType::kInt64);
+
+  // Clamp the indices operand to prevent out-of-bounds reading which will cause
+  // ORT CPU EP to throw a runtime error.
+  std::string clamped_indices = ClampGatherNDIndices(
+      int64_indices, input_descriptor.shape(), indices_descriptor.shape());
+
+  std::array<const char*, 2> inputs = {input.c_str(), clamped_indices.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeGatherND, node_name, inputs, outputs);
+}
+
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   const std::string node_name = GenerateNodeName(gemm.label);
   const std::string input_a = GetOperandNameById(gemm.a_operand_id);
@@ -976,7 +1056,7 @@ void GraphBuilderOrt::AddScatterElementsOperation(
   CHECK(context_properties_.data_type_limits.scatter_elements_indices.Supports(
       indices_descriptor));
 
-  // Clamp the indices operand to prevent out-of-bounds reading which will cause
+  // Clamp the indices operand to prevent out-of-bounds writing which will cause
   // ORT CPU EP to throw a runtime error.
   std::string clamped_indices =
       ClampIndices(indices, indices_descriptor.data_type(),
@@ -992,6 +1072,45 @@ void GraphBuilderOrt::AddScatterElementsOperation(
 
   model_editor_.AddNode(kOpTypeScatterElements, node_name, inputs, outputs,
                         attributes);
+}
+
+void GraphBuilderOrt::AddScatterNDOperation(
+    const mojom::ScatterND& scatter_nd) {
+  const std::string node_name = GenerateNodeName(scatter_nd.label);
+  const std::string input = GetOperandNameById(scatter_nd.input_operand_id);
+  const std::string indices = GetOperandNameById(scatter_nd.indices_operand_id);
+  const std::string updates = GetOperandNameById(scatter_nd.updates_operand_id);
+  const std::string output = GetOperandNameById(scatter_nd.output_operand_id);
+
+  const OperandDescriptor& input_descriptor =
+      GetOperand(scatter_nd.input_operand_id).descriptor;
+  const OperandDescriptor& updates_descriptor =
+      GetOperand(scatter_nd.updates_operand_id).descriptor;
+  const OperandDescriptor& indices_descriptor =
+      GetOperand(scatter_nd.indices_operand_id).descriptor;
+  CHECK(context_properties_.data_type_limits.scatter_nd_input.Supports(
+      input_descriptor));
+  CHECK(context_properties_.data_type_limits.scatter_nd_updates.Supports(
+      updates_descriptor));
+  CHECK(context_properties_.data_type_limits.scatter_nd_indices.Supports(
+      indices_descriptor));
+
+  // ONNX ScatterND only supports int64 indices.
+  std::string int64_indices =
+      indices_descriptor.data_type() == OperandDataType::kInt64
+          ? indices
+          : CreateCastNode(indices, OperandDataType::kInt64);
+
+  // Clamp the indices operand to prevent out-of-bounds writing which will cause
+  // ORT CPU EP to throw a runtime error.
+  std::string clamped_indices = ClampGatherNDIndices(
+      int64_indices, input_descriptor.shape(), indices_descriptor.shape());
+
+  std::array<const char*, 3> inputs = {input.c_str(), clamped_indices.c_str(),
+                                       updates.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeScatterND, node_name, inputs, outputs);
 }
 
 void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
@@ -1162,6 +1281,10 @@ GraphBuilderOrt::BuildModel() {
                            kOpTypeGatherElements);
         break;
       }
+      case mojom::Operation::Tag::kGatherNd: {
+        AddGatherNDOperation(*operation->get_gather_nd());
+        break;
+      }
       case mojom::Operation::Tag::kGelu: {
         CHECK(data_type_limits.gelu_input.Supports(
             GetOperand(operation->get_gelu()->input_operand_id).descriptor));
@@ -1205,6 +1328,10 @@ GraphBuilderOrt::BuildModel() {
         AddScatterElementsOperation(*operation->get_scatter_elements());
         break;
       }
+      case mojom::Operation::Tag::kScatterNd: {
+        AddScatterNDOperation(*operation->get_scatter_nd());
+        break;
+      }
       case mojom::Operation::Tag::kSigmoid: {
         CHECK(data_type_limits.sigmoid_input.Supports(
             GetOperand(operation->get_sigmoid()->input_operand_id).descriptor));
@@ -1240,7 +1367,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kElu:
-      case mojom::Operation::Tag::kGatherNd:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kHardSigmoid:
@@ -1255,7 +1381,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kResample2d:
       case mojom::Operation::Tag::kReverse:
-      case mojom::Operation::Tag::kScatterNd:
       case mojom::Operation::Tag::kSlice:
       case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kTile:

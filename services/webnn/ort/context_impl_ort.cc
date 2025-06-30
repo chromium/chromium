@@ -129,8 +129,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
        /*gather_elements_indices=*/
        {DataTypeConstraint::kInt32To64, kMaxNonScalarRank},
-       /*gather_nd_input=*/{},
-       /*gather_nd_indices=*/{},
+       /*gather_nd_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
+       /*gather_nd_indices=*/
+       {DataTypeConstraint::kInt32To64, kMaxNonScalarRank},
        /*gelu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*gemm_a=*/
        {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::Exactly(2)},
@@ -184,9 +186,12 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
        /*scatter_elements_indices=*/
        {DataTypeConstraint::kInt32To64, kMaxNonScalarRank},
-       /*scatter_nd_input=*/{},
-       /*scatter_nd_indices=*/{},
-       /*scatter_nd_updates=*/{},
+       /*scatter_nd_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
+       /*scatter_nd_indices=*/
+       {DataTypeConstraint::kInt32To64, kMaxNonScalarRank},
+       /*scatter_nd_updates=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*slice_input=*/{},
        /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
