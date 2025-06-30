@@ -8597,6 +8597,12 @@ const char kEnableGenericOidcAuthProfileManagementDescription[] =
     "Enables profile management triggered by generic OIDC authentications.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+const char kEnableHlsPlaybackName[] = "Enable direct playback of HLS manifests";
+const char kEnableHlsPlaybackDescription[] =
+    "Enables built-in HLS player for adaptive playback and live streams.";
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 const char kProfilesReorderingName[] = "Profiles Reordering";
 const char kProfilesReorderingDescription[] =

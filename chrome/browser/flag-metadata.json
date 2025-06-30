@@ -3533,6 +3533,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-hls-playback",
+    "owners": ["tmathmeyer@chromium.org", "videostack-eng@google.com"],
+    "expiry_milestone": 141
+  },
+  {
     "name": "enable-holding-space-suggestions",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
     "expiry_milestone": 140

@@ -10501,6 +10501,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kEnableExtensionsExplicitBrowserSignin)},
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+    {"enable-hls-playback", flag_descriptions::kEnableHlsPlaybackName,
+     flag_descriptions::kEnableHlsPlaybackDescription,
+     kOsMac | kOsWin | kOsLinux | kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kBuiltInHlsPlayer)},
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"flex-firmware-update", flag_descriptions::kFlexFirmwareUpdateName,
      flag_descriptions::kFlexFirmwareUpdateDescription, kOsCrOS,

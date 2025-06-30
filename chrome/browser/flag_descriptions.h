@@ -5048,6 +5048,11 @@ extern const char kEnableGenericOidcAuthProfileManagementName[];
 extern const char kEnableGenericOidcAuthProfileManagementDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+extern const char kEnableHlsPlaybackName[];
+extern const char kEnableHlsPlaybackDescription[];
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 extern const char kProfilesReorderingName[];
 extern const char kProfilesReorderingDescription[];

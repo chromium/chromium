@@ -9916,6 +9916,7 @@ from previous Chrome versions.
   <int value="-1520645293" label="InterestFeedNoticeCardAutoDismiss:disabled"/>
   <int value="-1520630395" label="DefaultPassthroughCommandDecoder:disabled"/>
   <int value="-1520542714" label="AccessibilityManifestV3GoogleTts:enabled"/>
+  <int value="-1519536015" label="enable-hls-playback:disabled"/>
   <int value="-1517929127" label="DelegatedCompositing:enabled"/>
   <int value="-1517518406" label="force-update-menu-type"/>
   <int value="-1516955483" label="AutoDisableAccessibility:enabled"/>
@@ -17597,6 +17598,7 @@ from previous Chrome versions.
   <int value="1328943848" label="EnterpriseFileObfuscation:disabled"/>
   <int value="1330264457" label="OmniboxUIExperimentVerticalLayout:disabled"/>
   <int value="1330592192" label="FedCmLightweightMode:enabled"/>
+  <int value="1330600806" label="enable-hls-playback:enabled"/>
   <int value="1331098784" label="ReducedReferrerGranularity:enabled"/>
   <int value="1332120969" label="ChromeDuet:disabled"/>
   <int value="1332891404"
