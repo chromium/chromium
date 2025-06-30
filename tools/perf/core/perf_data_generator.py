@@ -554,7 +554,7 @@ BUILDERS = {
         }],
         'dimension': {
             'cpu': 'x86-64',
-            'os': 'Windows-10',
+            'os': 'Windows 10 version 22H2 (Windows-10-19045)',
             'pool': 'chrome.tests',
         },
         'perf_trigger':
