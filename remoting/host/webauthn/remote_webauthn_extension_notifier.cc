@@ -209,15 +209,21 @@ void RemoteWebAuthnExtensionNotifier::Core::WakeUpExtension() {
 const std::vector<base::FilePath::StringType>&
 RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds() {
   static const base::NoDestructor<std::vector<base::FilePath::StringType>> ids({
-    // Prod extension ID
-    FILE_PATH_LITERAL("djjmngfglakhkhmgcfdmjalogilepkhd"),
+      // Prod security key extension ID
+      FILE_PATH_LITERAL("djjmngfglakhkhmgcfdmjalogilepkhd"),
 
-    // For debug builds we wake up both extensions, so that developers don't
-    // have to build and install the dev extension for using WebAuthn
-    // forwarding.
+      // Prod companion extension ID
+      FILE_PATH_LITERAL("inomeogfingihgjfjlpeplalcfajhgai"),
+
+  // For debug builds we wake up both extensions, so that developers don't
+  // have to build and install the dev extension for using WebAuthn
+  // forwarding.
 #if !defined(NDEBUG)
-        // Dev extension ID
-        FILE_PATH_LITERAL("hfmpidnhglhndeamkbopljnclamhmnaj"),
+      // Dev security key extension ID
+      FILE_PATH_LITERAL("hfmpidnhglhndeamkbopljnclamhmnaj"),
+
+      // Dev companion extension ID
+      FILE_PATH_LITERAL("hpodccmdligbeohchckkeajbfohibipg"),
 #endif
   });
   return *ids;
