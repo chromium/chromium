@@ -10,6 +10,7 @@ import android.os.HandlerThread;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -33,7 +34,9 @@ public abstract class PlatformServiceBridge {
     public static PlatformServiceBridge getInstance() {
         synchronized (sInstanceLock) {
             if (sInstance == null) {
-                sInstance = ServiceLoaderUtil.maybeCreate(PlatformServiceBridge.class);
+                try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                    sInstance = ServiceLoaderUtil.maybeCreate(PlatformServiceBridge.class);
+                }
                 if (sInstance == null) {
                     sInstance = new NoOpPlatformServiceBridge();
                 }
