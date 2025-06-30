@@ -408,6 +408,7 @@ const char kDataSharingNonProductionEnvironmentName[] =
 const char kDataSharingNonProductionEnvironmentDescription[] =
     "Sets data sharing server environment.";
 
+// LINT.IfChange(DataSharingVersioning)
 // Data Sharing versioning test scenarios.
 const char kDataSharingVersioningStatesName[] =
     "Data Sharing Versioning Test Scenarios";
@@ -416,6 +417,7 @@ const char kDataSharingVersioningStatesDescription[] =
 const char kDataSharingSharedDataTypesEnabled[] = "Version out-of-date, no UI";
 const char kDataSharingSharedDataTypesEnabledWithUi[] =
     "Version out-of-date, show UI ";
+// LINT.ThenChange(//ios/chrome/browser/flags/ios_chrome_flag_descriptions.cc:DataSharingVersioning)
 
 const char kDbdRevampDesktopName[] = "Revamped Delete Browsing Data dialog";
 const char kDbdRevampDesktopDescription[] =

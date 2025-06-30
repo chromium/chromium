@@ -4612,6 +4612,7 @@ const FeatureEntry::FeatureVariation kTouchToSearchCalloutVariations[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// LINT.IfChange(DataSharingVersioningChoices)
 const FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
     {"Default", "", ""},
     {flag_descriptions::kDataSharingSharedDataTypesEnabled,
@@ -4622,6 +4623,7 @@ const FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
     {"Disabled", switches::kDisableFeatures,
      "SharedDataTypesKillSwitch, DataSharingEnableUpdateChromeUI"},
 };
+// LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:DataSharingVersioningChoices)
 
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
@@ -11290,10 +11292,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          data_sharing::features::kDataSharingNonProductionEnvironment)},
 
+    // LINT.IfChange(DataSharingVersioning)
     {"shared-data-types-kill-switch",
      flag_descriptions::kDataSharingVersioningStatesName,
      flag_descriptions::kDataSharingVersioningStatesDescription, kOsAll,
      MULTI_VALUE_TYPE(kDataSharingVersioningStateChoices)},
+    // LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:DataSharingVersioning)
 
     {"history-sync-alternative-illustration",
      flag_descriptions::kHistorySyncAlternativeIllustrationName,
