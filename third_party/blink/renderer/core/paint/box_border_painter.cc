@@ -166,6 +166,10 @@ gfx::Rect CalculateSideRect(const FloatRoundedRect& outer_border,
 
 ContouredRect CalculateAdjustedInnerBorder(const ContouredRect& inner_border,
                                            BoxSide side) {
+  if (!inner_border.GetCornerCurvature().IsHyperellipse()) {
+    return inner_border;
+  }
+
   // Expand the inner border as necessary to make it a rounded rect (i.e. radii
   // contained within each edge).  This function relies on the fact we only get
   // radii not contained within each edge if one of the radii for an edge is
