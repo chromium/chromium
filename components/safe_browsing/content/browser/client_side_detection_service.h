@@ -31,9 +31,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/optimization_guide/proto/common_types.pb.h"
-#include "components/optimization_guide/proto/features/scam_detection.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -65,9 +62,6 @@ enum class SBClientDetectionClassifyThresholdsResult {
   kMaxValue = kModelLabelNotFound,
 };
 
-using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
-using ScamDetectionResponse = optimization_guide::proto::ScamDetectionResponse;
-
 // Main service which pushes models to the renderers, responds to classification
 // requests. This owns two ModelLoader objects.
 class ClientSideDetectionService
@@ -98,20 +92,6 @@ class ClientSideDetectionService
     GetSafeBrowsingURLLoaderFactory() = 0;
     virtual bool ShouldSendModelToBrowserContext(
         content::BrowserContext* context) = 0;
-    // Starts listening to the on-device model update through OptimizationGuide.
-    // A check will be made in the delegate to confirm that it's not listening
-    // for availability before subscribing. This will be called when the user
-    // preferences change and the user is subscribed to Enhanced Safe Browsing.
-    virtual void StartListeningToOnDeviceModelUpdate() = 0;
-    // Stops listening to the on-device model update through OptimizationGuide.
-    // A check is handled in the delegate if the user is already stopped
-    // listening for on-device model updates.
-    virtual void StopListeningToOnDeviceModelUpdate() = 0;
-    // Returns the on-device model session which allows us to execute the model.
-    virtual std::unique_ptr<
-        optimization_guide::OptimizationGuideModelExecutor::Session>
-    GetModelExecutorSession() = 0;
-    virtual void LogOnDeviceModelEligibilityReason() = 0;
   };
 
   ClientSideDetectionService(
@@ -230,31 +210,6 @@ class ClientSideDetectionService
   // debugging metadata.
   int GetTriggerModelVersion();
 
-  // Called from the delegate when the on-device model is available to create a
-  // session.
-  void NotifyOnDeviceModelAvailable();
-
-  // Returns |on_device_model_available_| which indicates the availability of
-  // on-device model session creation. Also logs failed eligibility reason
-  // histograms if |log_failed_eligibility_reason| is true.
-  bool IsOnDeviceModelAvailable(bool log_failed_eligibility_reason);
-
-  // Resets the session that's created by the on-device model. This occurs when
-  // there is a new page navigation and at the start and end of
-  // |InquireOnDeviceModel|.
-  void ResetOnDeviceSession(bool inquiry_complete);
-
-  // Called from the host class when the proper requirements are met to inquire
-  // the on-device model.
-  virtual void InquireOnDeviceModel(
-      std::string rendered_texts,
-      base::OnceCallback<
-          void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
-          callback);
-
-  // For testing the on-device model flow in unit test.
-  void SetOnDeviceAvailabilityForTesting(bool available);
-
  private:
   friend class ClientSideDetectionServiceTest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
@@ -269,16 +224,6 @@ class ClientSideDetectionService
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest, GetNumReportTestESB);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
                            TestModelFollowsPrefs);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
-                           TestOnDeviceModelFetchCall);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
-                           TestSessionCreationFailure);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
-                           TestSessionCreationSuccess);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
-                           TestSessionExecutionSuccess);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
-                           TestSessionExecutionFailure);
 
   // CacheState holds all information necessary to respond to a caller without
   // actually making a HTTP request.
@@ -347,10 +292,6 @@ class ClientSideDetectionService
   void RenderProcessHostDestroyed(content::RenderProcessHost* rph) override;
   void RenderProcessReady(content::RenderProcessHost* rph) override;
 
-  void ModelExecutionCallback(
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult
-          result);
-
   // Whether the service is running or not.  When the service is not running,
   // it won't download the model nor report detected phishing URLs.
   bool enabled_ = false;
@@ -406,19 +347,6 @@ class ClientSideDetectionService
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       observed_render_process_hosts_{this};
-
-  // This is used to check before fetching the session when the correct trigger
-  // is called to generate the on-device model LLM. This is set through the
-  // delegate.
-  bool on_device_model_available_ = false;
-
-  base::TimeTicks session_execution_start_time_;
-  // The underlying session provided by optimization guide component.
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session_;
-  base::OnceCallback<void(
-      std::optional<optimization_guide::proto::ScamDetectionResponse>)>
-      inquire_on_device_model_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

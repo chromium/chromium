@@ -19,7 +19,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/proto/features/scam_detection.pb.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
@@ -384,12 +383,12 @@ class ClientSideDetectionHost
       std::optional<bool> did_match_high_confidence_allowlist,
       std::string inner_text);
 
-  // Callback function when InquireOnDeviceModel from the CSD service is
-  // completed.
+  // Callback function when InquireOnDeviceModel from the intelligent scan
+  // delegate is completed.
   void OnInquireOnDeviceModelDone(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
-      std::optional<optimization_guide::proto::ScamDetectionResponse> response);
+      std::optional<IntelligentScanDelegate::IntelligentScanResult> response);
 
   // Returns bool if for a |client_side_detection_Type|, the last URL is the
   // same as the last committed URL on the RenderFrameHost.

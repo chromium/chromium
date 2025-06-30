@@ -26,8 +26,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
@@ -78,37 +76,6 @@ struct ClientSideDetectionService::ClientPhishingReportInfo {
   GURL phishing_url;
 };
 
-void LogOnDeviceModelSessionCreationSuccess(bool success) {
-  base::UmaHistogramBoolean(
-      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", success);
-}
-
-void LogOnDeviceModelExecutionSuccessAndTime(
-    bool success,
-    base::TimeTicks session_execution_start_time) {
-  base::UmaHistogramBoolean("SBClientPhishing.OnDeviceModelExecutionSuccess",
-                            success);
-  base::UmaHistogramMediumTimes(
-      "SBClientPhishing.OnDeviceModelExecutionDuration",
-      base::TimeTicks::Now() - session_execution_start_time);
-}
-
-void LogOnDeviceModelExecutionParse(bool success) {
-  base::UmaHistogramBoolean(
-      "SBClientPhishing.OnDeviceModelResponseParseSuccess", success);
-}
-
-void LogOnDeviceModelSessionAliveOnNewRequest(bool is_alive) {
-  base::UmaHistogramBoolean(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", is_alive);
-}
-
-void LogOnDeviceModelCallbackStateOnSuccessfulResponse(bool is_alive) {
-  base::UmaHistogramBoolean(
-      "SBClientPhishing.OnDeviceModelSuccessfulResponseCallbackAlive",
-      is_alive);
-}
-
 ClientSideDetectionService::CacheState::CacheState(bool phish, base::Time time)
     : is_phishing(phish), timestamp(time) {}
 
@@ -156,14 +123,9 @@ ClientSideDetectionService::~ClientSideDetectionService() {
 
 void ClientSideDetectionService::Shutdown() {
   url_loader_factory_.reset();
-  delegate_->StopListeningToOnDeviceModelUpdate();
   delegate_.reset();
   enabled_ = false;
   client_side_phishing_model_.reset();
-  on_device_model_available_ = false;
-  if (session_) {
-    session_.reset();
-  }
 }
 
 void ClientSideDetectionService::OnPrefsUpdated() {
@@ -184,12 +146,6 @@ void ClientSideDetectionService::OnPrefsUpdated() {
                             weak_factory_.GetWeakPtr()));
     if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
       client_side_phishing_model_->SubscribeToImageEmbedderOptimizationGuide();
-      if (base::FeatureList::IsEnabled(
-              kClientSideDetectionBrandAndIntentForScamDetection) ||
-          base::FeatureList::IsEnabled(
-              kClientSideDetectionLlamaForcedTriggerInfoForScamDetection)) {
-        delegate_->StartListeningToOnDeviceModelUpdate();
-      }
     } else {
       UnsubscribeToModelSubscription();
     }
@@ -216,26 +172,11 @@ void ClientSideDetectionService::OnPrefsUpdated() {
 }
 
 void ClientSideDetectionService::UnsubscribeToModelSubscription() {
-  delegate_->StopListeningToOnDeviceModelUpdate();
-  on_device_model_available_ = false;
   // We will check for the model object below because we also call this function
   // when the model object is not available.
   if (client_side_phishing_model_) {
     client_side_phishing_model_->UnsubscribeToImageEmbedderOptimizationGuide();
   }
-}
-
-void ClientSideDetectionService::NotifyOnDeviceModelAvailable() {
-  on_device_model_available_ = true;
-}
-
-bool ClientSideDetectionService::IsOnDeviceModelAvailable(
-    bool log_failed_eligibility_reason) {
-  if (log_failed_eligibility_reason && !on_device_model_available_ &&
-      delegate_) {
-    delegate_->LogOnDeviceModelEligibilityReason();
-  }
-  return on_device_model_available_;
 }
 
 void ClientSideDetectionService::SendClientReportPhishingRequest(
@@ -834,124 +775,12 @@ ClientSideDetectionService::RegisterCallbackForModelUpdates(
   return client_side_phishing_model_->RegisterCallback(callback);
 }
 
-void ClientSideDetectionService::ResetOnDeviceSession(bool inquiry_complete) {
-  // Because of the use of DeleteSoon below, we can't guarantee that session_
-  // is still available when the callback is invoked.
-  if (session_) {
-    // Reset session immediately so that future inference is not affected by the
-    // old context.
-    // TODO(crbug.com/380928557): Call session_.reset() directly once
-    // crbug.com/384774788 is fixed.
-    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                   std::move(session_));
-    if (!inquiry_complete) {
-      LogOnDeviceModelSessionAliveOnNewRequest(true);
-    }
-  }
-}
-
-void ClientSideDetectionService::InquireOnDeviceModel(
-    std::string rendered_texts,
-    base::OnceCallback<
-        void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
-        callback) {
-  // We have checked the model availability prior to calling this function, but
-  // we want to check one last time before creating a session.
-  if (!IsOnDeviceModelAvailable(/*log_failed_eligibility_reason=*/false)) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  // Close off the previous session if session's model execution from a previous
-  // call into InquireOnDeviceModel is still happening.
-  if (session_) {
-    LogOnDeviceModelSessionAliveOnNewRequest(true);
-    session_.reset();
-  } else {
-    LogOnDeviceModelSessionAliveOnNewRequest(false);
-  }
-
-  base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
-
-  session_ = delegate_->GetModelExecutorSession();
-
-  if (!session_) {
-    LogOnDeviceModelSessionCreationSuccess(false);
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  base::UmaHistogramMediumTimes(
-      "SBClientPhishing.OnDeviceModelSessionCreationTime",
-      base::TimeTicks::Now() - session_creation_start_time);
-  LogOnDeviceModelSessionCreationSuccess(true);
-
-  ScamDetectionRequest request;
-  request.set_rendered_text(rendered_texts);
-
-  inquire_on_device_model_callback_ = std::move(callback);
-  session_execution_start_time_ = base::TimeTicks::Now();
-  session_->ExecuteModel(
-      *std::make_unique<ScamDetectionRequest>(request),
-      base::BindRepeating(&ClientSideDetectionService::ModelExecutionCallback,
-                          weak_factory_.GetWeakPtr()));
-}
-
-void ClientSideDetectionService::ModelExecutionCallback(
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
-  if (!result.response.has_value()) {
-    LogOnDeviceModelExecutionSuccessAndTime(/*success=*/false,
-                                            session_execution_start_time_);
-    if (inquire_on_device_model_callback_) {
-      std::move(inquire_on_device_model_callback_).Run(std::nullopt);
-    }
-    return;
-  }
-
-  // This is a non-error response, but it's not completed, yet so we wait till
-  // it's complete. We will not respond to the callback yet because of this.
-  if (!result.response->is_complete) {
-    return;
-  }
-
-  LogOnDeviceModelExecutionSuccessAndTime(/*success=*/true,
-                                          session_execution_start_time_);
-
-  auto scam_detection_response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::ScamDetectionResponse>(
-      result.response->response);
-
-  if (!scam_detection_response) {
-    LogOnDeviceModelExecutionParse(false);
-    if (inquire_on_device_model_callback_) {
-      std::move(inquire_on_device_model_callback_).Run(std::nullopt);
-    }
-    return;
-  }
-
-  LogOnDeviceModelExecutionParse(true);
-
-  ResetOnDeviceSession(/*inquiry_complete=*/true);
-
-  LogOnDeviceModelCallbackStateOnSuccessfulResponse(
-      !!inquire_on_device_model_callback_);
-  if (inquire_on_device_model_callback_) {
-    std::move(inquire_on_device_model_callback_).Run(scam_detection_response);
-  }
-}
-
 // IN-TEST
 void ClientSideDetectionService::SetModelAndVisualTfLiteForTesting(
     const base::FilePath& model,
     const base::FilePath& visual_tf_lite) {
   client_side_phishing_model_->SetModelAndVisualTfLiteForTesting(  // IN-TEST
       model, visual_tf_lite);
-}
-
-// IN-TEST
-void ClientSideDetectionService::SetOnDeviceAvailabilityForTesting(
-    bool available) {
-  on_device_model_available_ = available;
 }
 
 }  // namespace safe_browsing

@@ -180,12 +180,6 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
   MOCK_METHOD0(GetModelType, CSDModelType());
   MOCK_METHOD0(IsModelAvailable, bool());
-  MOCK_METHOD(
-      void,
-      InquireOnDeviceModel,
-      (std::string,
-       base::OnceCallback<void(
-           std::optional<optimization_guide::proto::ScamDetectionResponse>)>));
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -2481,7 +2475,6 @@ class ClientSideDetectionHostScamDetectionTest
   void SetUp() override {
     ClientSideDetectionHostTest::SetUp();
     SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-    csd_service_->SetOnDeviceAvailabilityForTesting(true);
     database_manager_->SetAllowlistLookupDetailsForUrl(example_url_, false);
 
     ON_CALL(*raw_token_fetcher_, Start(_))
@@ -2490,6 +2483,8 @@ class ClientSideDetectionHostScamDetectionTest
               std::move(callback).Run("fake_access_token");
             }));
     ON_CALL(*intelligent_scan_delegate_, ShouldRequestIntelligentScan(_))
+        .WillByDefault(Return(true));
+    ON_CALL(*intelligent_scan_delegate_, IsOnDeviceModelAvailable(_))
         .WillByDefault(Return(true));
     NavigateAndCommit(example_url_);
   }
@@ -2557,22 +2552,21 @@ class ClientSideDetectionHostScamDetectionTest
   }
 
   void SetInquireOnDeviceModelCallback(bool should_return_response) {
-    EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _))
+    EXPECT_CALL(*intelligent_scan_delegate_, InquireOnDeviceModel(_, _))
         .WillOnce(testing::Invoke(
-            [=, this](
-                std::string rendered_text,
-                base::OnceCallback<void(
-                    std::optional<
-                        optimization_guide::proto::ScamDetectionResponse>)>
-                    callback) {
+            [=, this](std::string rendered_text,
+                      base::OnceCallback<void(
+                          std::optional<
+                              ClientSideDetectionHost::IntelligentScanDelegate::
+                                  IntelligentScanResult>)> callback) {
               if (!should_return_response) {
                 std::move(callback).Run(std::nullopt);
                 return;
               }
-              optimization_guide::proto::ScamDetectionResponse
-                  scam_detection_response;
-              scam_detection_response.set_brand(example_brand_);
-              scam_detection_response.set_intent(example_intent_);
+              ClientSideDetectionHost::IntelligentScanDelegate::
+                  IntelligentScanResult scam_detection_response;
+              scam_detection_response.brand = example_brand_;
+              scam_detection_response.intent = example_intent_;
               std::move(callback).Run(scam_detection_response);
             }));
   }
@@ -2739,7 +2733,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       .WillOnce(Return(false));
   // Because the delegate has disabled intelligent scan, we will
   // NOT inquire the on-device model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  EXPECT_CALL(*intelligent_scan_delegate_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/std::nullopt,
@@ -2830,7 +2824,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   raw_delegate_->ForceEmptyInnerText();
   // Because the inner text is empty, we will NOT inquire the on-device model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  EXPECT_CALL(*intelligent_scan_delegate_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/IntelligentScanInfo::EMPTY_TEXT,
@@ -2862,7 +2856,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   // Because the URL is on the HC allowlist, we will NOT inquire the
   // on-device model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  EXPECT_CALL(*intelligent_scan_delegate_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/IntelligentScanInfo::ALLOWLISTED,
@@ -2894,10 +2888,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   }
 
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
-  csd_service_->SetOnDeviceAvailabilityForTesting(false);
+  EXPECT_CALL(*intelligent_scan_delegate_, IsOnDeviceModelAvailable(_))
+      .WillOnce(Return(false));
   // Because the on-device model is unavailable, we will NOT inquire the
   // on-device model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  EXPECT_CALL(*intelligent_scan_delegate_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/
