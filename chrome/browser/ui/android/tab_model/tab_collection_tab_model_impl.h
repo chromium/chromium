@@ -66,6 +66,9 @@ class TabCollectionTabModelImpl {
                        const std::optional<base::Token>& j_tab_group_id,
                        bool is_pinned);
 
+  // Removes a list of tabs from the tab model.
+  void RemoveTabRecursive(JNIEnv* env, TabAndroid* tab);
+
   // Returns the count of tabs in a group. Returns 0 if not group not found.
   size_t GetTabCountForGroup(JNIEnv* env, const base::Token& token);
 

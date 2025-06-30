@@ -133,6 +133,13 @@ void TabCollectionTabModelImpl::AddTabRecursive(
                                          index, tab_group_id, is_pinned);
 }
 
+void TabCollectionTabModelImpl::RemoveTabRecursive(JNIEnv* env,
+                                                   TabAndroid* tab) {
+  int index = GetIndexOfTabRecursive(env, tab);
+  CHECK_NE(index, kInvalidTabIndex);
+  tab_strip_collection_->RemoveTabAtIndexRecursive(index);
+}
+
 size_t TabCollectionTabModelImpl::GetTabCountForGroup(
     JNIEnv* env,
     const base::Token& token) {

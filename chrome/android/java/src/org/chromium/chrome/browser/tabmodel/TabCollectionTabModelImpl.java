@@ -21,12 +21,14 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -438,7 +440,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void removeTab(Tab tab) {}
+    public void removeTab(Tab tab) {
+        removeTabsAndSelectNext(
+                Collections.singletonList(tab),
+                null,
+                TabSelectionType.FROM_CLOSE,
+                /* pauseMedia= */ false,
+                TabCloseType.SINGLE);
+
+        for (TabModelObserver obs : mTabModelObservers) obs.tabRemoved(tab);
+    }
 
     @Override
     public void setActive(boolean active) {
@@ -710,6 +721,70 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     // Internal methods.
 
+    private void removeTabsAndSelectNext(
+            List<Tab> tabsToRemove,
+            @Nullable Tab recommendedNextTab,
+            @TabSelectionType int selectionType,
+            boolean pauseMedia,
+            @TabCloseType int closeType) {
+        assert selectionType == TabSelectionType.FROM_CLOSE
+                || selectionType == TabSelectionType.FROM_EXIT;
+
+        if (tabsToRemove.isEmpty()) return;
+
+        Tab currentTabInModel = mCurrentTabSupplier.get();
+        if (recommendedNextTab != null && tabsToRemove.contains(recommendedNextTab)) {
+            recommendedNextTab = null;
+        }
+        Tab nextTab =
+                recommendedNextTab != null
+                        ? recommendedNextTab
+                        : TabModelImplUtil.getNextTabIfClosed(
+                                this,
+                                mModelDelegate,
+                                mCurrentTabSupplier,
+                                mNextTabPolicySupplier,
+                                tabsToRemove,
+                                /* uponExit= */ false,
+                                closeType);
+        Tab nearbyTab = null;
+        boolean nextIsIncognito = nextTab == null ? false : nextTab.isIncognitoBranded();
+        boolean nextIsInOtherModel = nextIsIncognito != isIncognitoBranded();
+        if ((nextTab == null || nextIsInOtherModel) && closeType != TabCloseType.ALL) {
+            nearbyTab =
+                    TabModelImplUtil.findNearbyNotClosingTab(
+                            this, tabsToRemove.indexOf(currentTabInModel), tabsToRemove);
+        }
+
+        for (Tab tab : tabsToRemove) {
+            assert mTabIdToTabs.containsKey(tab.getId()) : "Tab not found in tab model.";
+            if (pauseMedia) TabUtils.pauseMedia(tab);
+            // TODO(crbug.com/428692223): Vectorize this.
+            TabCollectionTabModelImplJni.get()
+                    .removeTabRecursive(mNativeTabCollectionTabModelImplPtr, tab);
+            tab.onRemovedFromTabModel(mCurrentTabSupplier);
+            mTabIdToTabs.remove(tab.getId());
+        }
+        mTabCountSupplier.set(getCount());
+
+        if (nextTab != currentTabInModel) {
+            if (nextIsInOtherModel) {
+                mCurrentTabSupplier.set(nearbyTab);
+            }
+
+            TabModel nextModel = mModelDelegate.getModel(nextIsIncognito);
+            nextModel.setIndex(nextModel.indexOf(nextTab), selectionType);
+        }
+
+        if (ChromeFeatureList.sTabFreezeOnUndoableClosureKillSwitch.isEnabled() && pauseMedia) {
+            for (Tab tab : tabsToRemove) {
+                if (!TabUtils.isCapturingForMedia(tab)) continue;
+                // If media is being captured freeze the tab to disconnect it.
+                tab.freeze();
+            }
+        }
+    }
+
     @NativeMethods
     interface Natives {
         long init(TabCollectionTabModelImpl javaObject, @JniType("Profile*") Profile profile);
@@ -737,6 +812,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 int index,
                 @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
                 boolean isPinned);
+
+        void removeTabRecursive(
+                long nativeTabCollectionTabModelImpl, @JniType("TabAndroid*") Tab tabs);
 
         int getTabCountForGroup(
                 long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);

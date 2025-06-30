@@ -114,27 +114,24 @@ public class TabModelImplUtil {
      *
      * @param model The {@link TabModel} to act on.
      * @param closingIndex The index of the tab that is closing.
+     * @param closingTabs The list of tabs that are closing. This is used to avoid returning a tab
+     *     that is closing.
      * @return The closest tab or null if no tab could be found.
      */
-    private static @Nullable Tab findNearbyNotClosingTab(
+    public static @Nullable Tab findNearbyNotClosingTab(
             TabModel model, int closingIndex, List<Tab> closingTabs) {
-        if (closingIndex > 0) {
-            // Search for the first tab before the closing tab.
-            for (int i = closingIndex - 1; i >= 0; i--) {
-                Tab tab = model.getTabAtChecked(i);
-                if (!tab.isClosing() && !closingTabs.contains(tab)) {
-                    return tab;
-                }
+        Tab nearestTab = null;
+        for (int i = 0; i < model.getCount(); i++) {
+            if (i == closingIndex) {
+                continue;
+            } else if (i > closingIndex && nearestTab != null) {
+                return nearestTab;
             }
-        }
-        // If this is the first tab or all tabs before the closing tab are closed then search the
-        // other direction.
-        for (int i = closingIndex + 1; i < model.getCount(); i++) {
             Tab tab = model.getTabAtChecked(i);
             if (!tab.isClosing() && !closingTabs.contains(tab)) {
-                return tab;
+                nearestTab = tab;
             }
         }
-        return null;
+        return nearestTab;
     }
 }
