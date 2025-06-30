@@ -39,6 +39,12 @@ LogoutButtonTray::LogoutButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kLogoutButton) {
   DCHECK(shelf);
   Shell::Get()->session_controller()->AddObserver(this);
+  // Restore Active state
+  PrefService* active_pref =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (active_pref) {
+    OnActiveUserPrefServiceChanged(active_pref);
+  }
 
   button_ =
       tray_container()->AddChildView(std::make_unique<views::MdTextButton>(
