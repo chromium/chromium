@@ -5283,6 +5283,38 @@ TEST_F(DiskCacheEntryTest, BlockFileKeyLenCalc) {
             disk_cache::kMaxInternalKeyLength + 1);
 }
 
+// nullptr is only acceptable to pass to WriteData with writes of length 0;
+// everything else should fail explicitly.
+TEST_P(DiskCacheGenericEntryTest, WriteDataNulBuf) {
+  InitCache();
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry("key", &entry), IsOk());
+  ASSERT_TRUE(entry != nullptr);
+
+  const int kSize = 10;
+  auto buffer = CacheTestCreateAndFillBuffer(kSize, /*no_nulls=*/false);
+
+  for (int stream = 0; stream < SupportedStreamCount(); ++stream) {
+    EXPECT_EQ(net::ERR_INVALID_ARGUMENT,
+              WriteData(entry, stream, /*offset=*/0,
+                        /*buf=*/nullptr, kSize, /*truncate=*/false));
+    EXPECT_EQ(net::ERR_INVALID_ARGUMENT,
+              WriteData(entry, stream, /*offset=*/0,
+                        /*buf=*/nullptr, kSize, /*truncate=*/true));
+
+    // Make sure that buf=nullptr, len=0 can truncate right.
+    EXPECT_EQ(kSize,
+              WriteData(entry, stream, /*offset=*/0,
+                        /*buf=*/buffer.get(), kSize, /*truncate=*/false));
+    EXPECT_EQ(kSize, entry->GetDataSize(stream));
+    EXPECT_EQ(0, WriteData(entry, stream, /*offset=*/0,
+                           /*buf=*/nullptr, /*=*/0, /*truncate=*/true));
+    EXPECT_EQ(0, entry->GetDataSize(stream));
+  }
+  entry->Close();
+}
+
 class DiskCacheSimplePrefetchTest : public DiskCacheEntryTest {
  public:
   DiskCacheSimplePrefetchTest() = default;

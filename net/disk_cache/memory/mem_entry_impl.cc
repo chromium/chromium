@@ -404,6 +404,10 @@ int MemEntryImpl::InternalWriteData(int index, int offset, IOBuffer* buf,
   if (offset < 0 || buf_len < 0)
     return net::ERR_INVALID_ARGUMENT;
 
+  if (!buf && buf_len != 0) {
+    return net::ERR_INVALID_ARGUMENT;
+  }
+
   unsigned u_offset = static_cast<unsigned>(offset);
   unsigned u_buf_len = static_cast<unsigned>(buf_len);
 

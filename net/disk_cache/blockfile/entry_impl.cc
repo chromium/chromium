@@ -870,6 +870,10 @@ int EntryImpl::WriteData(int index,
   if (offset < 0 || buf_len < 0)
     return net::ERR_INVALID_ARGUMENT;
 
+  if (!buf && buf_len != 0) {
+    return net::ERR_INVALID_ARGUMENT;
+  }
+
   if (!background_queue_.get())
     return net::ERR_UNEXPECTED;
 
