@@ -521,9 +521,10 @@ class AppMenu implements OnKeyListener {
         }
 
         // Find the height for each menu item.
-        int[] heightList = new int[mAdapter.getCount()];
-        boolean[] canBeLastList = new boolean[mAdapter.getCount()];
-        for (int i = 0; i < mAdapter.getCount(); i++) {
+        int itemCount = mAdapter == null ? 0 : mAdapter.getCount();
+        int[] heightList = new int[itemCount];
+        boolean[] canBeLastList = new boolean[itemCount];
+        for (int i = 0; i < itemCount; i++) {
             heightList[i] = sizingHelper.getInitialHeightForView(i);
             canBeLastList[i] = sizingHelper.canBeLastVisibleInitialView(i);
         }
