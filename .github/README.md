@@ -10,7 +10,7 @@ IDE/agent integration. Please check with your organization before using GitHub
 Copilot.
 
 ## Where is copilot-instructions.md?
-[`copilot-intructions.md`](../copilot-instructions.md) is typically a single
+[`copilot-instructions.md`](../copilot-instructions.md) is typically a single
 instruction file that contains default instructions for a workspace. These
 instructions are automatically included in every chat request.
 
