@@ -367,11 +367,10 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
   OffscreenFontCache& font_cache = GetOffscreenFontCache();
   FontDescription* cached_font = font_cache.GetFont(new_font);
   CanvasRenderingContextHost* const host = Host();
-  bool use_locale = RuntimeEnabledFeatures::CanvasTextLangEnabled();
-  const LayoutLocale* locale = use_locale ? LocaleFromLang() : nullptr;
+  const LayoutLocale* locale = LocaleFromLang();
 
   if (cached_font) {
-    if (use_locale && locale != cached_font->Locale()) {
+    if (locale != cached_font->Locale()) {
       cached_font->SetLocale(locale);
     }
     GetState().SetFont(*cached_font, host->GetFontSelector());
@@ -383,9 +382,7 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
     }
     FontDescription desc = FontStyleResolver::ComputeFont(
         *style, host->GetFontSelector()->BaseFontSelector());
-    if (use_locale) {
-      desc.SetLocale(locale);
-    }
+    desc.SetLocale(locale);
     font_cache.AddFont(new_font, desc);
     GetState().SetFont(desc, host->GetFontSelector());
   }

@@ -31,7 +31,7 @@ interface mixin BaseRenderingContext2D {
     [NoAllocDirectCall, RaisesException] void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy, [EnforceRange] long dirtyX, [EnforceRange] long dirtyY, [EnforceRange] long dirtyWidth, [EnforceRange] long dirtyHeight);
 
     // text
-    [RuntimeEnabled=CanvasTextLang] attribute DOMString lang; // (default: "inherit")
+    attribute DOMString lang; // (default: "inherit")
     [HighEntropy] attribute DOMString font; // (default 10px sans-serif)
     attribute CanvasTextAlign textAlign; // "start", "end", "left", "right", "center" (default: "start")
     attribute CanvasTextBaseline textBaseline; // "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" (default: "alphabetic")

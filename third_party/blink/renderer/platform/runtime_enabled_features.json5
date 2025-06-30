@@ -806,11 +806,6 @@
       base_feature: "none",
     },
     {
-      // https://chromestatus.com/feature/5066778773028864
-      name: "CanvasTextLang",
-      status: "stable",
-    },
-    {
       // crbug.com/389726691.
       name: "CanvasTextNg",
       origin_trial_feature_name: "CanvasTextNg",

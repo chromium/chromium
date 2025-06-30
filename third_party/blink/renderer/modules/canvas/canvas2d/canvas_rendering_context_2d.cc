@@ -488,8 +488,7 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
   HTMLCanvasElement* const element = canvas();
   Document& document = element->GetDocument();
   CanvasFontCache* canvas_font_cache = document.GetCanvasFontCache();
-  bool use_locale = RuntimeEnabledFeatures::CanvasTextLangEnabled();
-  const LayoutLocale* locale = use_locale ? LocaleFromLang() : nullptr;
+  const LayoutLocale* locale = LocaleFromLang();
 
   // Map the <canvas> font into the text style. If the font uses keywords like
   // larger/smaller, these will work relative to the canvas.
@@ -499,7 +498,7 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
     if (i != fonts_resolved_using_current_style_.end()) {
       auto add_result = font_lru_list_.PrependOrMoveToFirst(new_font);
       DCHECK(!add_result.is_new_entry);
-      if (use_locale && i->value.Locale() != locale) {
+      if (i->value.Locale() != locale) {
         i->value.SetLocale(locale);
       }
       GetState().SetFont(i->value, Host()->GetFontSelector());
@@ -512,9 +511,7 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
           document.GetStyleResolver().CreateComputedStyleBuilder();
       FontDescription element_font_description(
           computed_style->GetFontDescription());
-      if (use_locale) {
-        element_font_description.SetLocale(locale);
-      }
+      element_font_description.SetLocale(locale);
       // Reset the computed size to avoid inheriting the zoom factor from the
       // <canvas> element.
       element_font_description.SetComputedSize(
@@ -550,9 +547,7 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
     // We need to reset Computed and Adjusted size so we skip zoom and
     // minimum font size for detached canvas.
     FontDescription final_description(resolved_font->GetFontDescription());
-    if (use_locale) {
-      final_description.SetLocale(locale);
-    }
+    final_description.SetLocale(locale);
     final_description.SetComputedSize(final_description.SpecifiedSize());
     final_description.SetAdjustedSize(final_description.SpecifiedSize());
     GetState().SetFont(final_description, Host()->GetFontSelector());
