@@ -21,49 +21,49 @@
         'accuracy',
         dict({
           'type': 'number',
-          'value': 9.1011,
+          'value': 3.003,
         }),
       ]),
       list([
         'latitude',
         dict({
           'type': 'number',
-          'value': 1.234,
+          'value': 1.001,
         }),
       ]),
       list([
         'longitude',
         dict({
           'type': 'number',
-          'value': 5.678,
+          'value': 2.002,
         }),
       ]),
       list([
         'altitude',
         dict({
           'type': 'number',
-          'value': 12.1314,
+          'value': 4.004,
         }),
       ]),
       list([
         'altitudeAccuracy',
         dict({
           'type': 'number',
-          'value': 15.1617,
+          'value': 5.005,
         }),
       ]),
       list([
         'heading',
         dict({
           'type': 'number',
-          'value': 18.192,
+          'value': 6.006,
         }),
       ]),
       list([
         'speed',
         dict({
           'type': 'number',
-          'value': 21.2223,
+          'value': 7.007,
         }),
       ]),
     ]),
@@ -77,21 +77,21 @@
         'accuracy',
         dict({
           'type': 'number',
-          'value': 16.1718,
+          'value': 10.01,
         }),
       ]),
       list([
         'latitude',
         dict({
           'type': 'number',
-          'value': 10.1112,
+          'value': 8.008,
         }),
       ]),
       list([
         'longitude',
         dict({
           'type': 'number',
-          'value': 13.1415,
+          'value': 9.009,
         }),
       ]),
       list([
@@ -129,49 +129,49 @@
         'accuracy',
         dict({
           'type': 'number',
-          'value': 9.1011,
+          'value': 3.003,
         }),
       ]),
       list([
         'latitude',
         dict({
           'type': 'number',
-          'value': 1.234,
+          'value': 1.001,
         }),
       ]),
       list([
         'longitude',
         dict({
           'type': 'number',
-          'value': 5.678,
+          'value': 2.002,
         }),
       ]),
       list([
         'altitude',
         dict({
           'type': 'number',
-          'value': 12.1314,
+          'value': 4.004,
         }),
       ]),
       list([
         'altitudeAccuracy',
         dict({
           'type': 'number',
-          'value': 15.1617,
+          'value': 5.005,
         }),
       ]),
       list([
         'heading',
         dict({
           'type': 'number',
-          'value': 18.192,
+          'value': 6.006,
         }),
       ]),
       list([
         'speed',
         dict({
           'type': 'number',
-          'value': 21.2223,
+          'value': 7.007,
         }),
       ]),
     ]),
@@ -185,21 +185,21 @@
         'accuracy',
         dict({
           'type': 'number',
-          'value': 16.1718,
+          'value': 10.01,
         }),
       ]),
       list([
         'latitude',
         dict({
           'type': 'number',
-          'value': 10.1112,
+          'value': 8.008,
         }),
       ]),
       list([
         'longitude',
         dict({
           'type': 'number',
-          'value': 13.1415,
+          'value': 9.009,
         }),
       ]),
       list([

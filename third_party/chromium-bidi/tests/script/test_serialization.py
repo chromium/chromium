@@ -578,6 +578,7 @@ async def test_serialization_iframe(websocket, context_id, html, iframe):
         'type': 'node',
         'value': {
             'attributes': {
+                'allow': 'geolocation *',
                 'src': iframe_url
             },
             'childNodeCount': 1,

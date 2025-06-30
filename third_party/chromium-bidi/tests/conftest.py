@@ -626,7 +626,8 @@ def html(local_server_http, local_server_http_another_host):
 def iframe():
     """Return a factory for <iframe> with the given src."""
     def iframe(src=""):
-        return f'<iframe src="{src}" />'
+        # Geolocation is required for Geolocation testing in iframes.
+        return f'<iframe allow="geolocation *" src="{src}" />'
 
     return iframe
 

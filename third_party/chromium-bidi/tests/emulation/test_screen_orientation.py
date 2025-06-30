@@ -15,7 +15,7 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import execute_command
+from test_helpers import execute_command, goto_url
 
 SOME_BIDI_SCREEN_ORIENTATION = {
     "natural": "landscape",
@@ -35,10 +35,8 @@ async def initial_screen_orientation(websocket, context_id):
     return await get_screen_orientation(websocket, context_id)
 
 
-async def get_screen_orientation(websocket, context_id):
-    """
-    Returns browsing context's current orientation.
-    """
+@pytest_asyncio.fixture(autouse=True)
+async def activate_context(websocket, context_id):
     # Activation is required, as orientation is only available on an active
     # context.
     await execute_command(websocket, {
@@ -48,6 +46,11 @@ async def get_screen_orientation(websocket, context_id):
         }
     })
 
+
+async def get_screen_orientation(websocket, context_id):
+    """
+    Returns browsing context's current orientation.
+    """
     resp = await execute_command(
         websocket, {
             "method": "script.evaluate",
@@ -165,3 +168,53 @@ async def test_screen_orientation_per_browsing_context(
         websocket, context_id) == SOME_WEB_SCREEN_ORIENTATION
     assert await get_screen_orientation(
         websocket, another_context_id) == ANOTHER_WEB_SCREEN_ORIENTATION
+
+
+@pytest.mark.asyncio
+async def test_screen_orientation_iframe(websocket, context_id, iframe_id,
+                                         initial_screen_orientation, html):
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setScreenOrientationOverride',
+            'params': {
+                'contexts': [context_id],
+                'screenOrientation': SOME_BIDI_SCREEN_ORIENTATION
+            }
+        })
+
+    assert await get_screen_orientation(
+        websocket, iframe_id) == SOME_WEB_SCREEN_ORIENTATION
+
+    pytest.xfail(
+        "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3532")
+
+    # Move iframe out of process.
+    await goto_url(websocket, iframe_id,
+                   html("<h1>FRAME</h1>", same_origin=False))
+
+    assert await get_screen_orientation(
+        websocket, iframe_id) == SOME_WEB_SCREEN_ORIENTATION
+
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setScreenOrientationOverride',
+            'params': {
+                'contexts': [context_id],
+                'screenOrientation': ANOTHER_BIDI_SCREEN_ORIENTATION
+            }
+        })
+
+    assert await get_screen_orientation(
+        websocket, iframe_id) == SOME_WEB_SCREEN_ORIENTATION
+
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setScreenOrientationOverride',
+            'params': {
+                'contexts': [context_id],
+                'screenOrientation': None
+            }
+        })
+
+    assert await get_screen_orientation(
+        websocket, iframe_id) == initial_screen_orientation

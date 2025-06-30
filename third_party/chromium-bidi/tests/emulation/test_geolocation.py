@@ -17,17 +17,17 @@ import pytest
 from permissions import set_permission
 from test_helpers import execute_command, get_origin, goto_url
 
-SOME_LATITUDE = 1.234
-SOME_LONGITUDE = 5.678
-SOME_ACCURACY = 9.1011
-SOME_ALTITUDE = 12.1314
-SOME_ALTITUDE_ACCURACY = 15.1617
-SOME_HEADING = 18.192
-SOME_SPEED = 21.2223
+SOME_LATITUDE = 1.001
+SOME_LONGITUDE = 2.002
+SOME_ACCURACY = 3.003
+SOME_ALTITUDE = 4.004
+SOME_ALTITUDE_ACCURACY = 5.005
+SOME_HEADING = 6.006
+SOME_SPEED = 7.007
 
-ANOTHER_LATITUDE = 10.1112
-ANOTHER_LONGITUDE = 13.1415
-ANOTHER_ACCURACY = 16.1718
+ANOTHER_LATITUDE = 8.008
+ANOTHER_LONGITUDE = 9.009
+ANOTHER_ACCURACY = 10.01
 
 SOME_COORDINATES = {
     'latitude': SOME_LATITUDE,
@@ -208,3 +208,63 @@ async def test_geolocation_per_user_context(websocket, url_example,
     emulated_geolocation_2 = await get_geolocation(websocket,
                                                    browsing_context_id_2)
     assert emulated_geolocation_2 == snapshot()
+
+
+@pytest.mark.asyncio
+async def test_geolocation_iframe(websocket, context_id, iframe_id,
+                                  url_example, url_example_another_origin):
+    await set_permission(websocket, get_origin(url_example),
+                         {'name': 'geolocation'}, 'granted')
+
+    await goto_url(websocket, iframe_id, url_example)
+
+    initial_geolocation = await get_geolocation(websocket, context_id)
+
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setGeolocationOverride',
+            'params': {
+                'contexts': [context_id],
+                'coordinates': SOME_COORDINATES
+            }
+        })
+
+    emulated_geolocation = await get_geolocation(websocket, context_id)
+    iframe_geolocation = await get_geolocation(websocket, iframe_id)
+    assert iframe_geolocation == emulated_geolocation
+
+    pytest.xfail(
+        "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3532")
+
+    # Move iframe out of process.
+    await goto_url(websocket, iframe_id, url_example_another_origin)
+    await set_permission(websocket, get_origin(url_example_another_origin),
+                         {'name': 'geolocation'}, 'granted')
+
+    iframe_geolocation = await get_geolocation(websocket, iframe_id)
+    assert iframe_geolocation == emulated_geolocation
+
+    # Update emulation.
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setGeolocationOverride',
+            'params': {
+                'contexts': [context_id],
+                'coordinates': ANOTHER_COORDINATES
+            }
+        })
+    emulated_geolocation = await get_geolocation(websocket, context_id)
+    iframe_geolocation = await get_geolocation(websocket, iframe_id)
+    assert iframe_geolocation == emulated_geolocation
+
+    # Reset emulation.
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setGeolocationOverride',
+            'params': {
+                'contexts': [context_id],
+                'coordinates': None
+            }
+        })
+    iframe_geolocation = await get_geolocation(websocket, iframe_id)
+    assert iframe_geolocation == initial_geolocation

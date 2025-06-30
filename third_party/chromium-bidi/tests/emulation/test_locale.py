@@ -50,7 +50,7 @@ def another_locale(default_locale, some_locale):
     `some_locale`.
     """
     for locale in LOCALES:
-        if locale != default_locale and locale != another_locale:
+        if locale != default_locale and locale != some_locale:
             return locale
 
     raise Exception(
@@ -172,7 +172,6 @@ async def test_locale_iframe(websocket, context_id, iframe_id, html,
             }
         })
 
-    assert await get_locale(websocket, context_id) == some_locale
     assert await get_locale(websocket, iframe_id) == some_locale
 
     pytest.xfail(
@@ -192,8 +191,17 @@ async def test_locale_iframe(websocket, context_id, iframe_id, html,
                 'locale': another_locale
             }
         })
-    assert await get_locale(websocket, context_id) == another_locale
     assert await get_locale(websocket, iframe_id) == another_locale
+
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setLocaleOverride',
+            'params': {
+                'contexts': [context_id],
+                'locale': None
+            }
+        })
+    assert await get_locale(websocket, iframe_id) == default_locale
 
 
 @pytest.mark.asyncio
