@@ -260,7 +260,15 @@ TEST_F(WebStateTest, CreateFullPagePdf_InvalidURLs) {
 
 // Tests that CreateFullPagePdf invokes completion callback nil when the
 // WebState content is not HTML (e.g. a PDF file).
-TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
+// TODO(crbug.com/428630864): Flaky on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_CreateFullPagePdfWebStatePdfContent \
+  CreateFullPagePdfWebStatePdfContent
+#else
+#define MAYBE_CreateFullPagePdfWebStatePdfContent \
+  DISABLED_CreateFullPagePdfWebStatePdfContent
+#endif
+TEST_F(WebStateTest, MAYBE_CreateFullPagePdfWebStatePdfContent) {
   CGRect fake_bounds = CGRectMake(0, 0, 100, 100);
   UIGraphicsPDFRenderer* pdf_renderer =
       [[UIGraphicsPDFRenderer alloc] initWithBounds:fake_bounds];
