@@ -95,13 +95,6 @@ struct CacheEntry {
   blink.mojom.FetchAPIResponse response;
 };
 
-// Result of CacheStorageCache's Keys method. |status| is only set if there is a
-// failure.
-union CacheKeysResult {
-  CacheStorageError status;
-  array<blink.mojom.FetchAPIRequest> keys;
-};
-
 // Handles calls for each individual cache. A cache relates directly to Cache
 // defined on spec: https://w3c.github.io/ServiceWorker/#cache-interface
 interface CacheStorageCache {
@@ -132,7 +125,7 @@ interface CacheStorageCache {
   // Returns all keys (which are requests) of matching |request| and
   // |query_options|.
   Keys(blink.mojom.FetchAPIRequest? request, CacheQueryOptions query_options, int64 trace_id)
-      => (CacheKeysResult result);
+      => result<array<blink.mojom.FetchAPIRequest>, CacheStorageError>;
 
   // Perform a batch of operations, used for PUT and DELETE operations.
   Batch(array<BatchOperation> batch_operations, int64 trace_id)

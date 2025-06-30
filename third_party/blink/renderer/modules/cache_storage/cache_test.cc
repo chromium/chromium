@@ -177,9 +177,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
       CheckUrlIfProvided(fetch_api_request->url);
       CheckCacheQueryOptionsIfProvided(query_options);
     }
-    mojom::blink::CacheKeysResultPtr result =
-        mojom::blink::CacheKeysResult::NewStatus(error_);
-    std::move(callback).Run(std::move(result));
+    std::move(callback).Run(base::unexpected(error_));
   }
   void Batch(Vector<mojom::blink::BatchOperationPtr> batch_operations,
              int64_t trace_id,
@@ -631,9 +629,7 @@ class KeysTestCache : public NotImplementedErrorCache {
             mojom::blink::CacheQueryOptionsPtr query_options,
             int64_t trace_id,
             KeysCallback callback) override {
-    mojom::blink::CacheKeysResultPtr result =
-        mojom::blink::CacheKeysResult::NewKeys(std::move(requests_));
-    std::move(callback).Run(std::move(result));
+    std::move(callback).Run(base::ok(std::move(requests_)));
   }
 
  private:

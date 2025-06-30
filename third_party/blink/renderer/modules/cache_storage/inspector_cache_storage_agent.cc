@@ -434,26 +434,26 @@ class GetCacheKeysForRequestData {
         WTF::BindOnce(
             [](DataRequestParams params,
                std::unique_ptr<GetCacheKeysForRequestData> self,
-               mojom::blink::CacheKeysResultPtr result) {
-              if (result->is_status()) {
+               mojom::blink::CacheStorageCache::KeysResult result) {
+              if (!result.has_value()) {
                 self->callback_wrapper_->SendFailure(
                     ProtocolResponse::ServerError(
                         String::Format(
                             "Error requesting requests for cache %s: %s",
                             params.cache_name.Latin1().c_str(),
-                            CacheStorageErrorString(result->get_status()))
+                            CacheStorageErrorString(result.error()))
                             .Utf8()));
               } else {
-                if (result->get_keys().empty()) {
+                if (result.value().empty()) {
                   auto array = std::make_unique<protocol::Array<DataEntry>>();
                   self->callback_wrapper_->SendSuccess(std::move(array), 0);
                   return;
                 }
                 scoped_refptr<ResponsesAccumulator> accumulator =
                     base::AdoptRef(new ResponsesAccumulator(
-                        result->get_keys().size(), params,
+                        result.value().size(), params,
                         self->cache_remote_.Unbind(), self->callback_wrapper_));
-                accumulator->Dispatch(std::move(result->get_keys()));
+                accumulator->Dispatch(std::move(result.value()));
               }
             },
             params_, std::move(self)));
