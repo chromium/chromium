@@ -136,4 +136,12 @@ UIColor* UIColorFromSkColor(SkColor color) {
                          alpha:SkColorGetA(color) / 255.0f];
 }
 
+SkColor UIColorToSkColor(UIColor* color) {
+  CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
+  [color getRed:&red green:&green blue:&blue alpha:&alpha];
+
+  return SkColorSetARGB(alpha * 255.0f, red * 255.0f, green * 255.0f,
+                        blue * 255.0f);
+}
+
 }  // namespace skia

@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "skia/ext/skia_utils_ios.h"
 
 @implementation HomeCustomizationBackgroundPickerActionSheetMediator {
   raw_ptr<HomeBackgroundCustomizationService>
@@ -39,7 +40,7 @@
                                                              .collectionImage];
       break;
     case HomeCustomizationBackgroundStyle::kColor:
-      // TODO(crbug.com/408243803): Apply NTP background color to NTP.
+      [self applyBackgroundColor:backgroundConfiguration];
       break;
     case HomeCustomizationBackgroundStyle::kDefault:
       break;
@@ -73,6 +74,14 @@
       collectionImage.image_url, collectionImage.thumbnail_image_url,
       attribution_line_1, attribution_line_2,
       collectionImage.attribution_action_url, collectionImage.collection_id);
+}
+
+// Applies a background color to the NTP.
+- (void)applyBackgroundColor:
+    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
+  _homeBackgroundCustomizationService->SetBackgroundColor(
+      skia::UIColorToSkColor(backgroundConfiguration.backgroundColor),
+      sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
 }
 
 @end

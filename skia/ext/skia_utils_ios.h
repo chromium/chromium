@@ -51,6 +51,9 @@ SK_API std::vector<SkBitmap> ImageDataToSkBitmapsWithMaxSize(NSData* image_data,
 // Returns a UIColor for an SKColor.
 SK_API UIColor* UIColorFromSkColor(SkColor color);
 
+// Returns a SKColor for an UIColor.
+SK_API SkColor UIColorToSkColor(UIColor* color);
+
 #endif  // __OBJC__
 
 }  // namespace skia

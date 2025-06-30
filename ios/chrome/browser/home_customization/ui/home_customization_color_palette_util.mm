@@ -75,15 +75,9 @@ CreateColorPaletteConfigurationFromSeedColor(UIColor* seed_color) {
   HomeCustomizationColorPaletteConfiguration* config =
       [[HomeCustomizationColorPaletteConfiguration alloc] init];
 
-  CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
-  [seed_color getRed:&red green:&green blue:&blue alpha:&alpha];
-
-  SkColor sk_color = SkColorSetARGB(
-      static_cast<U8CPU>(alpha * 255.0), static_cast<U8CPU>(red * 255.0),
-      static_cast<U8CPU>(green * 255.0), static_cast<U8CPU>(blue * 255.0));
-
-  std::unique_ptr<ui::Palette> palette = ui::GeneratePalette(
-      sk_color, ui::ColorProviderKey::SchemeVariant::kTonalSpot);
+  std::unique_ptr<ui::Palette> palette =
+      ui::GeneratePalette(skia::UIColorToSkColor(seed_color),
+                          ui::ColorProviderKey::SchemeVariant::kTonalSpot);
   const ui::TonalPalette& primary = palette->primary();
 
   config.seedColor = seed_color;
