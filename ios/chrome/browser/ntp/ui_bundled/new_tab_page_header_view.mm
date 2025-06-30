@@ -1188,6 +1188,11 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   if (!self.miaButton) {
     return;
   }
+
+  if (UIAccessibilityIsReduceMotionEnabled()) {
+    return;
+  }
+
   _miaAnimationView = [self createMIAAnimationView];
   _miaAnimationView.userInteractionEnabled = NO;
   _miaAnimationView.alpha =
