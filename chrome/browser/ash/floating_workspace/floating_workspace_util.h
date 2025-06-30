@@ -16,24 +16,15 @@ enum class FloatingWorkspaceVersion {
   // Default value, indicates no version was enabled.
   kNoVersionEnabled = 0,
 
-  // Version 1.
-  // TODO(crbug.com/419505108): clean up related code - V1 is never used in
-  // production.
-  kFloatingWorkspaceV1Enabled = 1,
-
-  // Version 2.
-  kFloatingWorkspaceV2Enabled = 2,
+  // Floating Workspace is fully enabled.
+  kFloatingWorkspaceV2Enabled = 1,
 
   // FloatingWorkspaceService is to be used for automatic sign-out
   // functionality, but not for app restore.
-  kAutoSignoutOnly = 3,
+  kAutoSignoutOnly = 2,
 };
 
 ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
-// DEPRECATED. V1 is no longer being used.
-// TODO(crbug.com/297795546): Clean up V1 code path
-ASH_EXPORT bool IsFloatingWorkspaceV1Enabled();
 
 // DEPRECATED. Please use `IsFloatingWorkspaceEnabled` which takes the `profile`
 // argument.

@@ -6,7 +6,11 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <memory>
+#include <optional>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -15,40 +19,40 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_dialog.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "components/app_constants/constants.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_sync_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -58,12 +62,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
-#include "components/sync_sessions/open_tabs_ui_delegate.h"
-#include "components/sync_sessions/session_sync_service.h"
-#include "components/sync_sessions/synced_session.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/user_activity/user_activity_detector.h"
-#include "ui/chromeos/devicetype_utils.h"
 
 namespace {
 
@@ -181,12 +180,6 @@ void FloatingWorkspaceService::Init(
   }
 
   if (version_ == floating_workspace_util::FloatingWorkspaceVersion::
-                      kFloatingWorkspaceV1Enabled) {
-    InitForV1();
-    return;
-  }
-
-  if (version_ == floating_workspace_util::FloatingWorkspaceVersion::
                       kFloatingWorkspaceV2Enabled &&
       floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
     InitForV2(sync_service, desk_sync_service, device_info_sync_service);
@@ -199,81 +192,6 @@ void FloatingWorkspaceService::Init(
     // TODO(crbug.com/419508619): fix naming (now we call `InitForV2` in the
     // code path where the `version_` is not `kFloatingWorkspaceV2Enabled`).
     InitForV2(sync_service, desk_sync_service, device_info_sync_service);
-  }
-}
-
-void FloatingWorkspaceService::SubscribeToForeignSessionUpdates() {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-  // If sync is disabled no need to observe anything.
-  if (!sync_service || !sync_service->IsSyncFeatureEnabled()) {
-    return;
-  }
-  foreign_session_updated_subscription_ =
-      session_sync_service_->SubscribeToForeignSessionsChanged(
-          base::BindRepeating(
-              &FloatingWorkspaceService::
-                  RestoreBrowserWindowsFromMostRecentlyUsedDevice,
-              weak_pointer_factory_.GetWeakPtr()));
-}
-
-void FloatingWorkspaceService::
-    RestoreBrowserWindowsFromMostRecentlyUsedDevice() {
-  if (!should_run_restore_)
-    return;
-  if (base::TimeTicks::Now() >
-      initialization_timeticks_ +
-          ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
-              .Get()) {
-    // No need to restore any remote session 3 seconds (TBD) after login.
-    StopRestoringSession();
-    return;
-  }
-  const sync_sessions::SyncedSession* most_recently_used_remote_session =
-      GetMostRecentlyUsedRemoteSession();
-  const sync_sessions::SyncedSession* local_session = GetLocalSession();
-  if (!most_recently_used_remote_session ||
-      (local_session &&
-       local_session->GetModifiedTime() >
-           most_recently_used_remote_session->GetModifiedTime())) {
-    // If local session is the most recently modified or no remote session,
-    // dispatch a delayed task to check whether any foreign session got updated.
-    // If remote session is not updated after the delay, launch local session.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession,
-            weak_pointer_factory_.GetWeakPtr()),
-        ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
-            .Get());
-    StopRestoringSession();
-    return;
-  }
-
-  // Restore most recently used remote session.
-  RestoreForeignSessionWindows(most_recently_used_remote_session);
-  StopRestoringSession();
-}
-
-void FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession() {
-  // A task generated by RestoreBrowserWindowsFromMostRecentlyUsedDevice
-  // will call this method with a delay, at this time if local session is
-  // still more recent, restore the local session.
-  const sync_sessions::SyncedSession* local_session = GetLocalSession();
-  const sync_sessions::SyncedSession* most_recently_used_remote_session =
-      GetMostRecentlyUsedRemoteSession();
-  if (local_session) {
-    if (!most_recently_used_remote_session ||
-        local_session->GetModifiedTime() >
-            most_recently_used_remote_session->GetModifiedTime()) {
-      // This is a delayed task, if at this time local session is still
-      // most recent, restore local session.
-      RestoreLocalSessionWindows();
-    } else {
-      RestoreForeignSessionWindows(most_recently_used_remote_session);
-    }
-  } else if (most_recently_used_remote_session) {
-    RestoreForeignSessionWindows(most_recently_used_remote_session);
   }
 }
 
@@ -459,11 +377,6 @@ void FloatingWorkspaceService::SuspendDone(base::TimeDelta sleep_duration) {
 
 void FloatingWorkspaceService::OnDeviceInfoChange() {}
 
-void FloatingWorkspaceService::InitForV1() {
-  session_sync_service_ =
-      SessionSyncServiceFactory::GetInstance()->GetForProfile(profile_);
-}
-
 void FloatingWorkspaceService::InitForV2(
     syncer::SyncService* sync_service,
     desks_storage::DeskSyncService* desk_sync_service,
@@ -480,55 +393,6 @@ void FloatingWorkspaceService::InitForV2(
   SetUpServiceAndObservers(sync_service, desk_sync_service,
                            device_info_sync_service);
   InitiateSigninTask();
-}
-
-const sync_sessions::SyncedSession*
-FloatingWorkspaceService::GetMostRecentlyUsedRemoteSession() {
-  sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      remote_sessions;
-  if (!open_tabs || !open_tabs->GetAllForeignSessions(&remote_sessions)) {
-    return nullptr;
-  }
-  // GetAllForeignSessions returns remote sessions in sorted way
-  // with most recent at first.
-  return remote_sessions.front();
-}
-
-const sync_sessions::SyncedSession*
-FloatingWorkspaceService::GetLocalSession() {
-  sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
-  const sync_sessions::SyncedSession* local_session = nullptr;
-  if (!open_tabs || !open_tabs->GetLocalSession(&local_session))
-    return nullptr;
-  return local_session;
-}
-
-void FloatingWorkspaceService::RestoreForeignSessionWindows(
-    const sync_sessions::SyncedSession* session) {
-  sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
-  if (!open_tabs) {
-    return;
-  }
-  std::vector<const sessions::SessionWindow*> session_windows =
-      open_tabs->GetForeignSession(session->GetSessionTag());
-  if (session_windows.empty()) {
-    return;
-  }
-  SessionRestore::RestoreForeignSessionWindows(
-      profile_, session_windows.begin(), session_windows.end());
-}
-
-void FloatingWorkspaceService::RestoreLocalSessionWindows() {
-  // Restore local session based on user settings in
-  // chrome://settings/onStartup.
-  UserSessionManager::GetInstance()->LaunchBrowser(profile_);
-}
-
-sync_sessions::OpenTabsUIDelegate*
-FloatingWorkspaceService::GetOpenTabsUIDelegate() {
-  DCHECK(session_sync_service_);
-  return session_sync_service_->GetOpenTabsUIDelegate();
 }
 
 void FloatingWorkspaceService::StartCaptureAndUploadActiveDesk() {
@@ -637,11 +501,6 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
       base::BindOnce(&FloatingWorkspaceService::OnTemplateCaptured,
                      weak_pointer_factory_.GetWeakPtr()),
       DeskTemplateType::kFloatingWorkspace);
-}
-
-void FloatingWorkspaceService::CaptureAndUploadActiveDeskForTest(
-    std::unique_ptr<DeskTemplate> desk_template) {
-  OnTemplateCaptured(std::nullopt, std::move(desk_template));
 }
 
 void FloatingWorkspaceService::StopProgressBarAndRestoreFloatingWorkspace() {

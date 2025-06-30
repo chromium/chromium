@@ -1112,17 +1112,6 @@ BASE_FEATURE(kIgnoreDeviceFlexArcEnabledPolicy,
 // and if we show the user selectable UI when the policy is enabled.
 BASE_FEATURE(kFloatingSso, "FloatingSso", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables Floating Workspace feature on ChromeOS
-BASE_FEATURE(kFloatingWorkspace,
-             "FloatingWorkspace",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Maximum delay to wait for restoring Floating Workspace after login.
-constexpr base::FeatureParam<base::TimeDelta>
-    kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin{
-        &kFloatingWorkspace, "MaxTimeAvailableForRestoreAfterLogin",
-        base::Seconds(3)};
-
 // Enables or disables Floating Workspace V2 feature on ChromeOS
 BASE_FEATURE(kFloatingWorkspaceV2,
              "FloatingWorkspaceV2",
@@ -3764,10 +3753,6 @@ bool ShouldIgnoreDeviceFlexArcEnabledPolicy() {
 
 bool IsFloatingSsoAllowed() {
   return base::FeatureList::IsEnabled(kFloatingSso);
-}
-
-bool IsFloatingWorkspaceEnabled() {
-  return base::FeatureList::IsEnabled(kFloatingWorkspace);
 }
 
 bool IsFloatingWorkspaceV2Enabled() {

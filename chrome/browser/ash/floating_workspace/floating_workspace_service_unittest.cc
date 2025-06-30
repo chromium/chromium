@@ -5,35 +5,41 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/wm/desks/desk.h"
-#include "ash/wm/desks/templates/saved_desk_metrics_util.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "base/check_deref.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/pass_key.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
-#include "chrome/browser/ui/ash/session/test_session_controller.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_dialog.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_ui.h"
 #include "chrome/common/pref_names.h"
@@ -45,30 +51,32 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/fake_desk_sync_service.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/sync_sessions/open_tabs_ui_delegate.h"
-#include "components/sync_sessions/synced_session.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
@@ -82,28 +90,10 @@ namespace ash::floating_workspace {
 
 namespace {
 
-constexpr char kLocalSessionName[] = "local_session";
-constexpr char kRemoteSessionOneName[] = "remote_session_1";
-constexpr char kRemoteSession2Name[] = "remote_session_2";
 constexpr char kTestAccount[] = "usertest@gmail.com";
 constexpr GaiaId::Literal kFakeGaia("fakegaia");
 constexpr char kTestAccount2[] = "usertest2@gmail.com";
 constexpr GaiaId::Literal kFakeGaia2("fakegaia2");
-constexpr base::Time most_recent_time =
-    base::Time::FromSecondsSinceUnixEpoch(15);
-constexpr base::Time more_recent_time =
-    base::Time::FromSecondsSinceUnixEpoch(10);
-constexpr base::Time least_recent_time =
-    base::Time::FromSecondsSinceUnixEpoch(5);
-
-std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
-    const std::string& session_name,
-    const base::Time& session_time) {
-  auto session = std::make_unique<sync_sessions::SyncedSession>();
-  session->SetSessionName(session_name);
-  session->SetModifiedTime(session_time);
-  return session;
-}
 
 // Creates an app_restore::RestoreData object with `num_windows.size()` apps,
 // where the ith app has `num_windows[i]` windows. The windows
@@ -213,115 +203,7 @@ class MockDesksClient : public DesksClient {
   base::Uuid restored_template_uuid_;
 };
 
-class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
- public:
-  MockOpenTabsUIDelegate() = default;
-
-  bool GetAllForeignSessions(
-      std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                          VectorExperimental>>* sessions) override {
-    *sessions = foreign_sessions_;
-    std::ranges::sort(*sessions, std::greater(),
-                      [](const sync_sessions::SyncedSession* session) {
-                        return session->GetModifiedTime();
-                      });
-
-    return !sessions->empty();
-  }
-
-  bool GetLocalSession(
-      const sync_sessions::SyncedSession** local_session) override {
-    *local_session = local_session_;
-    return *local_session != nullptr;
-  }
-
-  void SetForeignSessionsForTesting(
-      std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                          VectorExperimental>> foreign_sessions) {
-    foreign_sessions_ = foreign_sessions;
-  }
-
-  void SetLocalSessionForTesting(sync_sessions::SyncedSession* local_session) {
-    local_session_ = local_session;
-  }
-
-  MOCK_METHOD3(GetForeignTab,
-               bool(const std::string& tag,
-                    const SessionID tab_id,
-                    const sessions::SessionTab** tab));
-
-  MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
-
-  MOCK_METHOD1(
-      GetForeignSession,
-      std::vector<const sessions::SessionWindow*>(const std::string& tag));
-
-  MOCK_METHOD2(GetForeignSessionTabs,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionTab*>* tabs));
-
- private:
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      foreign_sessions_;
-  raw_ptr<sync_sessions::SyncedSession, DanglingUntriaged> local_session_ =
-      nullptr;
-};
-
 }  // namespace
-
-class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
- public:
-  explicit TestFloatingWorkSpaceService(
-      TestingProfile* profile,
-      raw_ptr<desks_storage::FakeDeskSyncService> fake_desk_sync_service,
-      raw_ptr<syncer::TestSyncService> mock_sync_service,
-      raw_ptr<syncer::FakeDeviceInfoSyncService> fake_device_info_sync_service,
-      floating_workspace_util::FloatingWorkspaceVersion version)
-      : FloatingWorkspaceService(profile, version) {
-    Init(mock_sync_service, fake_desk_sync_service,
-         fake_device_info_sync_service);
-    mock_open_tabs_ = std::make_unique<MockOpenTabsUIDelegate>();
-  }
-
-  void RestoreLocalSessionWindows() override {
-    mock_open_tabs_->GetLocalSession(&restored_session_.AsEphemeralRawAddr());
-  }
-
-  void RestoreForeignSessionWindows(
-      const sync_sessions::SyncedSession* session) override {
-    restored_session_ = session;
-  }
-
-  const sync_sessions::SyncedSession* GetRestoredSession() {
-    return restored_session_.get();
-  }
-
-  void SetLocalSessionForTesting(sync_sessions::SyncedSession* session) {
-    mock_open_tabs_->SetLocalSessionForTesting(session);
-  }
-
-  void SetForeignSessionForTesting(
-      std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                          VectorExperimental>> foreign_sessions) {
-    mock_open_tabs_->SetForeignSessionsForTesting(foreign_sessions);
-  }
-
- private:
-  sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
-    return mock_open_tabs_.get();
-  }
-
-  void LaunchFloatingWorkspaceTemplate(
-      const DeskTemplate* desk_template) override {
-    restored_floating_workspace_template_ = desk_template;
-  }
-
-  raw_ptr<const sync_sessions::SyncedSession> restored_session_ = nullptr;
-  raw_ptr<const DeskTemplate, DanglingUntriaged>
-      restored_floating_workspace_template_ = nullptr;
-  raw_ptr<DeskTemplate> uploaded_desk_template_ = nullptr;
-  std::unique_ptr<MockOpenTabsUIDelegate> mock_open_tabs_;
-};
 
 class FloatingWorkspaceServiceTest : public testing::Test {
  public:
@@ -590,22 +472,6 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
-class FloatingWorkspaceServiceV1Test : public FloatingWorkspaceServiceTest {
- protected:
-  FloatingWorkspaceServiceV1Test() = default;
-  ~FloatingWorkspaceServiceV1Test() override = default;
-
-  void SetUp() override {
-    scoped_feature_list().InitWithFeatures({features::kFloatingWorkspace}, {});
-    FloatingWorkspaceServiceTest::SetUp();
-  }
-
-  void TearDown() override {
-    FloatingWorkspaceServiceTest::TearDown();
-    scoped_feature_list().Reset();
-  }
-};
-
 class FloatingWorkspaceServiceV2Test : public FloatingWorkspaceServiceTest {
  protected:
   FloatingWorkspaceServiceV2Test() = default;
@@ -643,207 +509,6 @@ class FloatingWorkspaceServiceV2Test : public FloatingWorkspaceServiceTest {
     return floating_workspace_service;
   }
 };
-
-TEST_F(FloatingWorkspaceServiceV1Test, RestoreRemoteSession) {
-  PopulateAppsCache();
-  std::unique_ptr<sync_sessions::SyncedSession> local_session =
-      CreateNewSession(kLocalSessionName, more_recent_time);
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      foreign_sessions;
-  // This remote session has most recent timestamp and should be restored.
-  const std::unique_ptr<sync_sessions::SyncedSession>
-      most_recent_remote_session =
-          CreateNewSession(kRemoteSessionOneName, most_recent_time);
-  const std::unique_ptr<sync_sessions::SyncedSession>
-      less_recent_remote_session =
-          CreateNewSession(kRemoteSession2Name, least_recent_time);
-  foreign_sessions.push_back(less_recent_remote_session.get());
-  foreign_sessions.push_back(most_recent_remote_session.get());
-  TestFloatingWorkSpaceService test_floating_workspace_service(
-      profile(), /*fake_desk_sync_service=*/nullptr,
-      /*mock_sync_service=*/nullptr,
-      /*fake_device_info_sync_service*/ nullptr,
-      floating_workspace_util::FloatingWorkspaceVersion::
-          kFloatingWorkspaceV1Enabled);
-  test_floating_workspace_service.SetLocalSessionForTesting(
-      local_session.get());
-  test_floating_workspace_service.SetForeignSessionForTesting(foreign_sessions);
-  test_floating_workspace_service
-      .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-
-  task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
-          .Get() +
-      base::Seconds(1));
-  EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
-  EXPECT_EQ(
-      kRemoteSessionOneName,
-      test_floating_workspace_service.GetRestoredSession()->GetSessionName());
-}
-
-TEST_F(FloatingWorkspaceServiceV1Test, RestoreLocalSession) {
-  PopulateAppsCache();
-  // Local session has most recent timestamp and should be restored.
-  std::unique_ptr<sync_sessions::SyncedSession> local_session =
-      CreateNewSession(kLocalSessionName, most_recent_time);
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      foreign_sessions;
-  const std::unique_ptr<sync_sessions::SyncedSession>
-      most_recent_remote_session =
-          CreateNewSession(kRemoteSessionOneName, more_recent_time);
-  const std::unique_ptr<sync_sessions::SyncedSession>
-      less_recent_remote_session =
-          CreateNewSession(kRemoteSession2Name, least_recent_time);
-  foreign_sessions.push_back(less_recent_remote_session.get());
-  foreign_sessions.push_back(most_recent_remote_session.get());
-  TestFloatingWorkSpaceService test_floating_workspace_service(
-      profile(), /*fake_desk_sync_service=*/nullptr,
-      /*mock_sync_service=*/nullptr,
-      /*fake_device_info_sync_service*/ nullptr,
-      floating_workspace_util::FloatingWorkspaceVersion::
-          kFloatingWorkspaceV1Enabled);
-  test_floating_workspace_service.SetLocalSessionForTesting(
-      local_session.get());
-  test_floating_workspace_service.SetForeignSessionForTesting(foreign_sessions);
-  test_floating_workspace_service
-      .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-
-  task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
-          .Get() +
-      base::Seconds(1));
-  EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
-  EXPECT_EQ(
-      kLocalSessionName,
-      test_floating_workspace_service.GetRestoredSession()->GetSessionName());
-}
-
-TEST_F(FloatingWorkspaceServiceV1Test, RestoreRemoteSessionAfterUpdated) {
-  PopulateAppsCache();
-  // Local session has most recent timestamp and should be restored.
-  std::unique_ptr<sync_sessions::SyncedSession> local_session =
-      CreateNewSession(kLocalSessionName, most_recent_time);
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      foreign_sessions;
-  const std::unique_ptr<sync_sessions::SyncedSession>
-      most_recent_remote_session =
-          CreateNewSession(kRemoteSessionOneName, more_recent_time);
-  const std::unique_ptr<sync_sessions::SyncedSession>
-      less_recent_remote_session =
-          CreateNewSession(kRemoteSession2Name, least_recent_time);
-  foreign_sessions.push_back(less_recent_remote_session.get());
-  foreign_sessions.push_back(most_recent_remote_session.get());
-  TestFloatingWorkSpaceService test_floating_workspace_service(
-      profile(), /*fake_desk_sync_service=*/nullptr,
-      /*mock_sync_service=*/nullptr,
-      /*fake_device_info_sync_service*/ nullptr,
-      floating_workspace_util::FloatingWorkspaceVersion::
-          kFloatingWorkspaceV1Enabled);
-  test_floating_workspace_service.SetLocalSessionForTesting(
-      local_session.get());
-  test_floating_workspace_service.SetForeignSessionForTesting(foreign_sessions);
-  test_floating_workspace_service
-      .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-
-  // Simulate remote session update arrives 1 seconds after service
-  // initialization.
-  base::TimeDelta remote_session_update_arrival_time = base::Seconds(1);
-  task_environment().FastForwardBy(remote_session_update_arrival_time);
-  // Remote session got updated during the 3 second delay of dispatching task
-  // and updated remote session is most recent.
-  base::Time remote_session_updated_time = most_recent_time + base::Seconds(5);
-  // Now previously less recent remote session becomes most recent
-  // and should be restored.
-  less_recent_remote_session->SetModifiedTime(remote_session_updated_time);
-
-  task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
-          .Get() -
-      remote_session_update_arrival_time);
-  EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
-  EXPECT_EQ(
-      less_recent_remote_session->GetSessionName(),
-      test_floating_workspace_service.GetRestoredSession()->GetSessionName());
-}
-
-TEST_F(FloatingWorkspaceServiceV1Test, NoLocalSession) {
-  PopulateAppsCache();
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      foreign_sessions;
-  const std::unique_ptr<sync_sessions::SyncedSession>
-      most_recent_remote_session =
-          CreateNewSession(kRemoteSessionOneName, more_recent_time);
-  const std::unique_ptr<sync_sessions::SyncedSession>
-      less_recent_remote_session =
-          CreateNewSession(kRemoteSession2Name, least_recent_time);
-  foreign_sessions.push_back(less_recent_remote_session.get());
-  foreign_sessions.push_back(most_recent_remote_session.get());
-  TestFloatingWorkSpaceService test_floating_workspace_service(
-      profile(), /*fake_desk_sync_service=*/nullptr,
-      /*mock_sync_service=*/nullptr,
-      /*fake_device_info_sync_service*/ nullptr,
-      floating_workspace_util::FloatingWorkspaceVersion::
-          kFloatingWorkspaceV1Enabled);
-  test_floating_workspace_service.SetForeignSessionForTesting(foreign_sessions);
-  test_floating_workspace_service
-      .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-
-  // Wait for kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin seconds.
-  task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
-          .Get());
-
-  EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
-  EXPECT_EQ(
-      most_recent_remote_session->GetSessionName(),
-      test_floating_workspace_service.GetRestoredSession()->GetSessionName());
-}
-
-TEST_F(FloatingWorkspaceServiceV1Test, NoRemoteSession) {
-  PopulateAppsCache();
-
-  std::unique_ptr<sync_sessions::SyncedSession> local_session =
-      CreateNewSession(kLocalSessionName, least_recent_time);
-
-  TestFloatingWorkSpaceService test_floating_workspace_service(
-      profile(), /*fake_desk_sync_service=*/nullptr,
-      /*mock_sync_service=*/nullptr, /*fake_device_info_sync_service*/ nullptr,
-      floating_workspace_util::FloatingWorkspaceVersion::
-          kFloatingWorkspaceV1Enabled);
-  test_floating_workspace_service.SetLocalSessionForTesting(
-      local_session.get());
-  test_floating_workspace_service
-      .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-
-  // Wait for kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin seconds.
-  task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
-          .Get());
-
-  EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
-  EXPECT_EQ(
-      kLocalSessionName,
-      test_floating_workspace_service.GetRestoredSession()->GetSessionName());
-}
-
-TEST_F(FloatingWorkspaceServiceV1Test, NoSession) {
-  PopulateAppsCache();
-
-  TestFloatingWorkSpaceService test_floating_workspace_service(
-      profile(), /*fake_desk_sync_service=*/nullptr,
-      /*mock_sync_service=*/nullptr, /*fake_device_info_sync_service*/ nullptr,
-      floating_workspace_util::FloatingWorkspaceVersion::
-          kFloatingWorkspaceV1Enabled);
-  test_floating_workspace_service
-      .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-
-  // Wait for kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin seconds.
-  task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
-          .Get());
-
-  EXPECT_FALSE(test_floating_workspace_service.GetRestoredSession());
-}
 
 TEST_F(FloatingWorkspaceServiceV2Test, RestoreFloatingWorkspaceTemplate) {
   PopulateAppsCache();

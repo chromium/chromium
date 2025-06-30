@@ -11,15 +11,13 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -29,10 +27,6 @@ namespace ash::floating_workspace_util {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFloatingWorkspaceV2Enabled, false);
-}
-
-bool IsFloatingWorkspaceV1Enabled() {
-  return features::IsFloatingWorkspaceEnabled();
 }
 
 bool IsFloatingWorkspaceV2Enabled() {
