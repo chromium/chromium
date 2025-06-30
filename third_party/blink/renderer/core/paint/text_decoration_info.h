@@ -111,9 +111,7 @@ class CORE_EXPORT TextDecorationInfo {
   void SetSpellingOrGrammarErrorLineData(const TextDecorationOffset&);
 
   // These methods do not depend on |SetDecorationIndex|.
-  LayoutUnit Width() const { return width_; }
   const ComputedStyle& TargetStyle() const { return target_style_; }
-  float TargetAscent() const { return target_ascent_; }
   // Returns the scaling factor for the decoration.
   // It can be different from FragmentItem::SvgScalingFactor() if the
   // text works as a resource.
@@ -123,18 +121,8 @@ class CORE_EXPORT TextDecorationInfo {
   }
 
   // |SetDecorationIndex| may change the results of these methods.
-  float ComputedFontSize() const { return computed_font_size_; }
   const SimpleFontData* FontData() const { return font_data_; }
-  float Ascent() const { return ascent_; }
-  ETextDecorationStyle DecorationStyle() const;
-  ResolvedUnderlinePosition FlippedUnderlinePosition() const {
-    return flipped_underline_position_;
-  }
-  ResolvedUnderlinePosition OriginalUnderlinePosition() const {
-    return original_underline_position_;
-  }
   Color LineColor() const;
-  float ResolvedThickness() const { return resolved_thickness_; }
 
   // SetLineData must be called before using the remaining methods.
   const DecorationGeometry& GetGeometry() const { return line_geometry_; }
@@ -156,6 +144,21 @@ class CORE_EXPORT TextDecorationInfo {
       const ComputedStyle* decorating_box_style) const;
 
   void UpdateForDecorationIndex();
+
+  // These methods do not depend on |SetDecorationIndex|.
+  LayoutUnit Width() const { return width_; }
+  float TargetAscent() const { return target_ascent_; }
+
+  // |SetDecorationIndex| may change the results of these methods.
+  float ComputedFontSize() const { return computed_font_size_; }
+  float Ascent() const { return ascent_; }
+  ResolvedUnderlinePosition FlippedUnderlinePosition() const {
+    return flipped_underline_position_;
+  }
+  ResolvedUnderlinePosition OriginalUnderlinePosition() const {
+    return original_underline_position_;
+  }
+  float ResolvedThickness() const { return resolved_thickness_; }
 
   // The |ComputedStyle| of the target text/box to paint decorations for.
   const ComputedStyle& target_style_;
@@ -183,13 +186,13 @@ class CORE_EXPORT TextDecorationInfo {
   // Geometry of the target text/box.
   const LineRelativeOffset local_origin_;
   const LayoutUnit width_;
+  const float target_ascent_ = 0.f;
+  const float scaling_factor_;
 
   // Cached properties for the current |decoration_index_|.
-  const float target_ascent_ = 0.f;
   float ascent_ = 0.f;
   float computed_font_size_ = 0.f;
   float resolved_thickness_ = 0.f;
-  const float scaling_factor_;
 
   int decoration_index_ = 0;
 

@@ -496,8 +496,7 @@ void TextPainter::PaintDecorationLine(
         *fragment_paint_info,
         decoration_info.InkSkipClipUpper(decoration_bounds.y()),
         decoration_bounds.height(),
-        std::min(decoration_info.ResolvedThickness(),
-                 kDecorationClipMaxDilation));
+        std::min(geometry.Thickness(), kDecorationClipMaxDilation));
   }
 
   DecorationLinePainter decoration_painter(graphics_context_);
