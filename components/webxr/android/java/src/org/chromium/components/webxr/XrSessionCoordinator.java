@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.Surface;
 
 import androidx.annotation.IntDef;
@@ -193,6 +194,7 @@ public class XrSessionCoordinator {
         // The active session must be set before creating the host activity, since it will be
         // notified once the activity is ready.
         sActiveSessionInstance = this;
+        mWebContents = webContents;
         mActiveSessionType = SessionType.VR;
         sActiveSessionAvailableSupplier.set(SessionType.VR);
 
@@ -289,6 +291,19 @@ public class XrSessionCoordinator {
     public static void onActiveXrSessionButtonTouched() {
         assumeNonNull(sActiveSessionInstance);
         sActiveSessionInstance.onXrSessionButtonTouched();
+    }
+
+    public static boolean dispatchKeyEvent(KeyEvent event) {
+        if (sActiveSessionInstance == null || sActiveSessionInstance.mWebContents == null) {
+            return false;
+        }
+
+        Activity activity = getActivity(sActiveSessionInstance.mWebContents);
+        if (activity == null) {
+            return false;
+        }
+
+        return activity.dispatchKeyEvent(event);
     }
 
     public void onDrawingSurfaceReady(

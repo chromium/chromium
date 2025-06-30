@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.SurfaceView;
 
 import org.chromium.base.Log;
@@ -83,5 +84,12 @@ public class XrHostActivity extends Activity {
         super.onBackPressed();
 
         XrSessionCoordinator.endActiveSessionFromXrHost();
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (DEBUG_LOGS) Log.e(TAG, "dispatchKeyEvent");
+
+        return XrSessionCoordinator.dispatchKeyEvent(event) || super.dispatchKeyEvent(event);
     }
 }
