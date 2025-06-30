@@ -52,7 +52,6 @@
   "$build/siso": {
     "configs": [
       "builder",
-      "no-remote-timeout",
       "remote-link"
     ],
     "enable_cloud_monitoring": true,
