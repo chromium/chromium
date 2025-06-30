@@ -1008,7 +1008,7 @@ TEST_F(NetworkCertLoaderTest, BasicWithServerCertDB) {
                                       cert_loader_->client_certs()));
 }
 
-TEST_F(NetworkCertLoaderTest, UpdateCertListOnNewCertInServerCertDB) {
+TEST_F(NetworkCertLoaderTest, UpdateCertListOnServerCertDBChanges) {
   StartCertLoaderWithPrimaryDB();
   std::unique_ptr<net::ServerCertificateDatabaseService> server_cert_db =
       CreateServerCertDbService();
@@ -1024,25 +1024,41 @@ TEST_F(NetworkCertLoaderTest, UpdateCertListOnNewCertInServerCertDB) {
     EXPECT_TRUE(cert_loader_->authority_certs().empty());
   }
 
-  auto update_waiter = CreateUpdateWaiter();
+  // Test adding a cert to ServerCertificateDatabase.
   auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  std::string root_hash;
   {
+    auto update_waiter = CreateUpdateWaiter();
     base::test::TestFuture<bool> future;
     std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
     cert_infos.push_back(net::MakeCertInfo(
         root->GetDER(), chrome_browser_server_certificate_database::
                             CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
+    root_hash = cert_infos[0].sha256hash_hex;
     server_cert_db->AddOrUpdateUserCertificates(std::move(cert_infos),
                                                 future.GetCallback());
     EXPECT_TRUE(future.Take());
+
+    // Adding the new cert to the DB should have triggered an update of the
+    // NetworkCertLoader and the new cert should be available.
+    ASSERT_TRUE(update_waiter->Wait());
+    ASSERT_EQ(1U, cert_loader_->authority_certs().size());
+    EXPECT_TRUE(net::x509_util::IsSameCertificate(
+        cert_loader_->authority_certs()[0].cert(), root->GetCertBuffer()));
   }
 
-  // Adding the new cert to the DB should have triggered an update of the
-  // NetworkCertLoader and the new cert should be available.
-  ASSERT_TRUE(update_waiter->Wait());
-  ASSERT_EQ(1U, cert_loader_->authority_certs().size());
-  EXPECT_TRUE(net::x509_util::IsSameCertificate(
-      cert_loader_->authority_certs()[0].cert(), root->GetCertBuffer()));
+  // Test removing a cert from ServerCertificateDatabase.
+  {
+    auto update_waiter = CreateUpdateWaiter();
+    base::test::TestFuture<bool> future;
+    server_cert_db->DeleteCertificate(root_hash, future.GetCallback());
+    EXPECT_TRUE(future.Take());
+
+    // Deleting the cert from the DB should have triggered an update of the
+    // NetworkCertLoader and the cert should no longer be returned.
+    ASSERT_TRUE(update_waiter->Wait());
+    EXPECT_EQ(0U, cert_loader_->authority_certs().size());
+  }
 }
 
 }  // namespace ash

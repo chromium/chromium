@@ -414,6 +414,7 @@ class NetworkCertLoader::ServerCertDbCache {
     DCHECK(certificates_update_running());
     VLOG(1) << "UpdateCertificates: " << cert_infos.size();
 
+    authority_certs_.clear();
     for (const auto& cert_info : cert_infos) {
       // TODO(crbug.com/390333881): This includes all certificates from the DB
       // (trusted, untrusted "hint" certificates, and distrusted certs). This
