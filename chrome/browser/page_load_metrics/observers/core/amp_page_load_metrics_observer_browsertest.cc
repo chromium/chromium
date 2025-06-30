@@ -158,7 +158,13 @@ IN_PROC_BROWSER_TEST_P(AmpPageLoadMetricsBrowserTest, AmpMainFrame) {
   ExpectMetricCountForUrl(url, "SubFrameAmpPageLoad", 0);
 }
 
-IN_PROC_BROWSER_TEST_P(AmpPageLoadMetricsBrowserTest, AmpSubframe) {
+// TODO(crbug.com/428095827): Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AmpSubframe DISABLED_AmpSubframe
+#else
+#define MAYBE_AmpSubframe AmpSubframe
+#endif
+IN_PROC_BROWSER_TEST_P(AmpPageLoadMetricsBrowserTest, MAYBE_AmpSubframe) {
   // Navigate to an empty page to inject SpeculationRules if prerendered case.
   GURL empty_url = https_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), empty_url));
