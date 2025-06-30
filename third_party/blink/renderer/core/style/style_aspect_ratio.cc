@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/style/style_aspect_ratio.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
+
+#include "third_party/blink/renderer/platform/geometry/physical_size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
