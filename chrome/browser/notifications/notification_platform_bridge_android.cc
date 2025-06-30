@@ -26,6 +26,8 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/safe_browsing/android/notification_content_detection_manager_android.h"
+#include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
@@ -341,6 +343,25 @@ void NotificationPlatformBridgeAndroid::OnReportUnwarnedNotificationAsSpam(
                      base::DoNothing()));
 }
 
+void NotificationPlatformBridgeAndroid::OnNotificationShowOriginalNotification(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_object,
+    std::string& origin,
+    std::string& profile_id,
+    jboolean incognito) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  CHECK(profile_manager);
+
+  profile_manager->LoadProfile(
+      GetProfileBaseNameFromProfileId(profile_id), incognito,
+      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                     NotificationOperation::kShowOriginalNotification,
+                     NotificationHandler::Type::WEB_PERSISTENT, GURL(origin),
+                     /*notification_id=*/"", std::nullopt /* action index */,
+                     std::nullopt /* reply */, std::nullopt /* by_user */,
+                     base::DoNothing()));
+}
+
 void NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_object,
@@ -496,6 +517,13 @@ void NotificationPlatformBridgeAndroid::AlwaysAllowNotifications(
       ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
       base::Value(base::Value::Dict().Set(
           safe_browsing::kIsAllowlistedByUserKey, true)));
+
+  safe_browsing::NotificationContentDetectionUkmUtil::
+      RecordSuspiciousNotificationInteractionUkm(
+          static_cast<int>(
+              safe_browsing::SuspiciousNotificationWarningInteractions::
+                  kAlwaysAllow),
+          url);
 
   // Send a new notification to tell the user that Chrome will no longer hide
   // notifications from `url`.

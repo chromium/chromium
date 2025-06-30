@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace content {
 struct NotificationDatabaseData;
@@ -36,6 +37,16 @@ void SendNotificationContentDetectionDataToMQLSServer(
     NotificationContentDetectionMQLSMetadata metadata,
     bool success,
     const content::NotificationDatabaseData& notification_database_data);
+
+// Used for logging notification content detection warning interaction UKM. This
+// should be a class so that the `UkmRecorder::GetSourceIdForNotificationEvent`
+// method can be used for obtaining the source id for a given origin.
+class NotificationContentDetectionUkmUtil {
+ public:
+  static void RecordSuspiciousNotificationInteractionUkm(
+      int suspicious_interaction_type,
+      const GURL& requesting_origin);
+};
 
 }  // namespace safe_browsing
 

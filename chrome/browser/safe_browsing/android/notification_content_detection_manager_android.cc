@@ -12,7 +12,7 @@
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_handler.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -39,19 +39,43 @@ void UpdateSuspiciousNotificationIds(HostContentSettingsMap* hcsm,
   base::Value::Dict dict = cur_value.is_dict() ? std::move(cur_value.GetDict())
                                                : base::Value::Dict();
   base::Value::List notification_id_list =
-      dict.FindList(safe_browsing::kSuspiciousNotificationIdsKey)
-          ? std::move(
-                *dict.FindList(safe_browsing::kSuspiciousNotificationIdsKey))
+      dict.FindList(kSuspiciousNotificationIdsKey)
+          ? std::move(*dict.FindList(kSuspiciousNotificationIdsKey))
           : base::Value::List();
   notification_id_list.Append(notification_id);
   // Set the updated value in the host content settings map.
-  dict.Set(safe_browsing::kSuspiciousNotificationIdsKey,
+  dict.Set(kSuspiciousNotificationIdsKey,
            base::Value::List(std::move(notification_id_list)));
   hcsm->SetWebsiteSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(origin),
       ContentSettingsPattern::Wildcard(),
       ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS,
       base::Value(std::move(dict)));
+}
+
+void MaybeLogSuspiciousNotificationUnsubscribeUkm(HostContentSettingsMap* hcsm,
+                                                  const GURL& origin,
+                                                  std::string notification_id,
+                                                  Profile* profile) {
+  CHECK(hcsm);
+  CHECK(origin.is_valid());
+  // If suspicious, then log UKM.
+  base::Value cur_value(hcsm->GetWebsiteSetting(
+      origin, origin, ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS));
+  base::Value::Dict dict = cur_value.is_dict() ? std::move(cur_value.GetDict())
+                                               : base::Value::Dict();
+  base::Value::List notification_id_list =
+      dict.FindList(kSuspiciousNotificationIdsKey)
+          ? std::move(*dict.FindList(kSuspiciousNotificationIdsKey))
+          : base::Value::List();
+
+  if (notification_id_list.contains(notification_id)) {
+    NotificationContentDetectionUkmUtil::
+        RecordSuspiciousNotificationInteractionUkm(
+            static_cast<int>(
+                SuspiciousNotificationWarningInteractions::kUnsubscribe),
+            origin);
+  }
 }
 
 }  // namespace safe_browsing

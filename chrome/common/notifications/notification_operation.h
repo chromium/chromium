@@ -14,7 +14,8 @@ enum class NotificationOperation {
   kReportAsSafe = 4,
   kReportWarnedAsSpam = 5,
   kReportUnwarnedAsSpam = 6,
-  kMaxValue = kReportUnwarnedAsSpam,
+  kShowOriginalNotification = 7,
+  kMaxValue = kShowOriginalNotification,
 };
 
 #endif  // CHROME_COMMON_NOTIFICATIONS_NOTIFICATION_OPERATION_H_

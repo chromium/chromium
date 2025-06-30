@@ -287,7 +287,7 @@ public class NotificationPlatformBridge {
             case NotificationConstants.ACTION_SHOW_ORIGINAL_NOTIFICATION:
                 NotificationContentDetectionManager.showOriginalNotification(
                         attributes.notificationId);
-                return false;
+                return true;
             case NotificationConstants.ACTION_ALWAYS_ALLOW:
                 NotificationContentDetectionManager.onNotificationPreAlwaysAllow(
                         attributes.notificationId,
@@ -370,6 +370,10 @@ public class NotificationPlatformBridge {
             // No activity needs to be launched when unsubscribing a notification, report the job
             // as completed.
             reportTrampolineTrackerJobCompleted(intent);
+            return true;
+        } else if (NotificationConstants.ACTION_SHOW_ORIGINAL_NOTIFICATION.equals(
+                intent.getAction())) {
+            sInstance.onNotificationShowOriginalNotification(attributes);
             return true;
         } else if (NotificationConstants.ACTION_ALWAYS_ALLOW.equals(intent.getAction())) {
             sInstance.onNotificationCommitAlwaysAllow(attributes);
@@ -1752,6 +1756,17 @@ public class NotificationPlatformBridge {
         }
     }
 
+    private void onNotificationShowOriginalNotification(
+            NotificationIdentifyingAttributes identifyingAttributes) {
+        NotificationPlatformBridgeJni.get()
+                .onNotificationShowOriginalNotification(
+                        mNativeNotificationPlatformBridge,
+                        NotificationPlatformBridge.this,
+                        identifyingAttributes.origin,
+                        identifyingAttributes.profileId,
+                        identifyingAttributes.incognito);
+    }
+
     /**
      * Called when the user clicks the `ACTION_ALWAYS_ALLOW` button, calls
      * `NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin` in native code to
@@ -1897,6 +1912,13 @@ public class NotificationPlatformBridge {
                 NotificationPlatformBridge caller,
                 @JniType("std::string") String notificationId,
                 @NotificationType int notificationType,
+                @JniType("std::string") String origin,
+                @JniType("std::string") String profileId,
+                boolean incognito);
+
+        void onNotificationShowOriginalNotification(
+                long nativeNotificationPlatformBridgeAndroid,
+                NotificationPlatformBridge caller,
                 @JniType("std::string") String origin,
                 @JniType("std::string") String profileId,
                 boolean incognito);

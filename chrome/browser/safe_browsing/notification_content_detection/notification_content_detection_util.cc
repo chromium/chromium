@@ -9,6 +9,8 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "content/public/browser/notification_database_data.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 
@@ -136,6 +138,16 @@ void SendNotificationContentDetectionDataToMQLSServer(
   *log_entry->log_ai_data_request()->mutable_notification_content_detection() =
       *logging_data;
   optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
+}
+
+void NotificationContentDetectionUkmUtil::
+    RecordSuspiciousNotificationInteractionUkm(int suspicious_interaction_type,
+                                               const GURL& requesting_origin) {
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForNotificationEvent(
+      base::PassKey<NotificationContentDetectionUkmUtil>(), requesting_origin);
+  ukm::builders::SuspiciousNotificationInteraction builder(source_id);
+  builder.SetSuspiciousInteractionType(suspicious_interaction_type);
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace safe_browsing

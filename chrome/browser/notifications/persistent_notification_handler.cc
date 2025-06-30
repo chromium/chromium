@@ -55,6 +55,10 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/android/notification_content_detection_manager_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 using content::BrowserThread;
 
 namespace {
@@ -292,8 +296,10 @@ void PersistentNotificationHandler::OnAppTerminating() {
   close_completed_callbacks_.Clear();
 }
 
-void PersistentNotificationHandler::DisableNotifications(Profile* profile,
-                                                         const GURL& origin) {
+void PersistentNotificationHandler::DisableNotifications(
+    Profile* profile,
+    const GURL& origin,
+    const std::optional<std::string>& notification_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(
@@ -308,7 +314,9 @@ void PersistentNotificationHandler::DisableNotifications(Profile* profile,
   NotificationPermissionContext::UpdatePermission(profile, origin,
                                                   CONTENT_SETTING_BLOCK);
 #endif
-  // Remove `origin` from user allowlisted sites when user unsubscribes.
+  // Remove `origin` from user allowlisted sites when user unsubscribes. On
+  // Android, log the suspicious notification unsubscribe ukm event if the
+  // notification was suspicious.
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile);
   if (hcsm && origin.is_valid()) {
     hcsm->SetWebsiteSettingCustomScope(
@@ -317,6 +325,12 @@ void PersistentNotificationHandler::DisableNotifications(Profile* profile,
         ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
         base::Value(base::Value::Dict().Set(
             safe_browsing::kIsAllowlistedByUserKey, false)));
+#if BUILDFLAG(IS_ANDROID)
+    if (notification_id.has_value()) {
+      safe_browsing::MaybeLogSuspiciousNotificationUnsubscribeUkm(
+          hcsm, origin, notification_id.value(), profile);
+    }
+#endif
   }
 }
 
@@ -348,6 +362,18 @@ void PersistentNotificationHandler::ReportUnwarnedNotificationAsSpam(
     Profile* profile) {
   OnMaybeReport(notification_id, url, profile, /*did_show_warning=*/false,
                 /*did_user_unsubscribe=*/true);
+}
+
+void PersistentNotificationHandler::RecordShowOriginalNotification(
+    const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+  safe_browsing::NotificationContentDetectionUkmUtil::
+      RecordSuspiciousNotificationInteractionUkm(
+          static_cast<int>(
+              safe_browsing::SuspiciousNotificationWarningInteractions::
+                  kShowOriginalNotification),
+          url);
+#endif
 }
 
 void PersistentNotificationHandler::OnMaybeReport(

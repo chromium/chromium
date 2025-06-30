@@ -37,6 +37,7 @@
 #include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
@@ -46,12 +47,17 @@
 #include "content/public/common/persistent_notification_status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/android/notification_content_detection_manager_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using ::testing::_;
 using ::testing::Return;
@@ -220,6 +226,7 @@ TEST_F(PersistentNotificationHandlerTest, OnClose_Programmatically) {
 }
 
 TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   std::unique_ptr<NotificationPermissionContext> permission_context =
       std::make_unique<NotificationPermissionContext>(profile_.get());
 
@@ -242,9 +249,25 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
       base::Value(base::Value::Dict().Set(
           safe_browsing::kIsAllowlistedByUserKey, true)));
 
+  // Set non-null `SUSPICIOUS_NOTIFICATION_IDS` value.
+  base::Value::List suspicious_notification_ids;
+  suspicious_notification_ids.Append("1");
+  suspicious_notification_ids.Append("2");
+  base::Value::Dict suspicious_notification_id_dict;
+  suspicious_notification_id_dict.Set("suspicious-notification-ids",
+                                      std::move(suspicious_notification_ids));
+  hcsm->SetWebsiteSettingDefaultScope(
+      origin_, GURL(), ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS,
+      base::Value(suspicious_notification_id_dict.Clone()));
+
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
-  handler->DisableNotifications(profile_.get(), origin_);
+#if BUILDFLAG(IS_ANDROID)
+  handler->RecordShowOriginalNotification(origin_);
+#endif
+  handler->DisableNotifications(
+      profile_.get(), origin_,
+      /*notification_id=*/"non-suspicious-notification-id");
 
   // Disabling the permission should set
   // `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to false.
@@ -270,7 +293,57 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
                     nullptr /* render_frame_host */, origin_, origin_)
                 .status,
             kExpectedDisabledStatus);
+  // Note: we expect that this UKM does not record the unsubscribe
+  // event, since the unsubscribe occurred for on a notification that did not
+  // show a warning.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::SuspiciousNotificationInteraction::kEntryName);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], "SuspiciousInteractionType",
+      static_cast<int>(
+          safe_browsing::SuspiciousNotificationWarningInteractions::
+              kShowOriginalNotification));
+#else
+  EXPECT_EQ(0u, ukm_entries.size());
+#endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PersistentNotificationHandlerTest,
+       DisableNotificationAfterWarningLogsUKM) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  std::unique_ptr<NotificationPermissionContext> permission_context =
+      std::make_unique<NotificationPermissionContext>(profile_.get());
+
+  // Set `SUSPICIOUS_NOTIFICATION_IDS` value.
+  std::string suspicious_id = "suspicious_id";
+  base::Value::List suspicious_notification_ids;
+  suspicious_notification_ids.Append(suspicious_id);
+  base::Value::Dict suspicious_notification_id_dict;
+  suspicious_notification_id_dict.Set("suspicious-notification-ids",
+                                      std::move(suspicious_notification_ids));
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  hcsm->SetWebsiteSettingDefaultScope(
+      origin_, GURL(), ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS,
+      base::Value(suspicious_notification_id_dict.Clone()));
+
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->DisableNotifications(profile_.get(), origin_, suspicious_id);
+
+  // Disabling notifications after a warning was shown should log the UKM.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::SuspiciousNotificationInteraction::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], "SuspiciousInteractionType",
+      static_cast<int>(
+          safe_browsing::SuspiciousNotificationWarningInteractions::
+              kUnsubscribe));
+}
+#endif
 
 class PersistentNotificationHandlerWithNotificationContentDetection
     : public PersistentNotificationHandlerTest,

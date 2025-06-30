@@ -123,6 +123,15 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       std::string& profile_id,
       jboolean incognito);
 
+  void OnNotificationShowOriginalNotification(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_object,
+      std::string& origin,
+      std::string& profile_id,
+      jboolean incognito);
+
+  void RecordShowOriginalNotification(const GURL& url);
+
   // Called by the Java implementation when the user decides they no longer want
   // to receive warnings for suspicious notifications that come from `origin`.
   void OnNotificationAlwaysAllowFromOrigin(

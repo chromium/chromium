@@ -65,8 +65,13 @@ class NotificationHandler {
                        const std::optional<std::u16string>& reply,
                        base::OnceClosure completed_closure);
 
-  // Called when notifications of the given origin have to be disabled.
-  virtual void DisableNotifications(Profile* profile, const GURL& origin);
+  // Called when notifications of the given origin have to be disabled. The
+  // |notification_id| is included on Android and indicates the notification
+  // that led to further notifications being disabled.
+  virtual void DisableNotifications(
+      Profile* profile,
+      const GURL& origin,
+      const std::optional<std::string>& notification_id);
 
   // Called when the settings page for the given origin has to be opened.
   virtual void OpenSettings(Profile* profile, const GURL& origin);
@@ -87,6 +92,10 @@ class NotificationHandler {
       const std::string& notification_id,
       const GURL& url,
       Profile* profile);
+
+  // Called when a user taps to show the original contents of a notification
+  // after being shown a suspicious notification warning.
+  virtual void RecordShowOriginalNotification(const GURL& url);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_HANDLER_H_

@@ -28,8 +28,10 @@ void NotificationHandler::OnClick(Profile* profile,
   std::move(completed_closure).Run();
 }
 
-void NotificationHandler::DisableNotifications(Profile* profile,
-                                               const GURL& origin) {
+void NotificationHandler::DisableNotifications(
+    Profile* profile,
+    const GURL& origin,
+    const std::optional<std::string>& notification_id) {
   NOTREACHED();
 }
 
@@ -57,5 +59,9 @@ void NotificationHandler::ReportUnwarnedNotificationAsSpam(
     const std::string& notification_id,
     const GURL& url,
     Profile* profile) {
+  NOTREACHED();
+}
+
+void NotificationHandler::RecordShowOriginalNotification(const GURL& url) {
   NOTREACHED();
 }

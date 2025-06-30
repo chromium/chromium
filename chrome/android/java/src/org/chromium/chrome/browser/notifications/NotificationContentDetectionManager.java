@@ -280,7 +280,8 @@ public class NotificationContentDetectionManager {
     /**
      * All user interactions that can happen when a warning is shown for a suspicious notification.
      * Must be kept in sync with SuspiciousNotificationWarningInteractions in
-     * safe_browsing/enums.xml.
+     * safe_browsing/enums.xml and
+     * safe_browsing/android/notification_content_detection_manager_android.h.
      */
     @IntDef({
         SuspiciousNotificationWarningInteractions.WARNING_SHOWN,

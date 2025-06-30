@@ -164,7 +164,7 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
         observer.OnNotificationClosed(notification_id);
       break;
     case NotificationOperation::kDisablePermission:
-      handler->DisableNotifications(profile_, origin);
+      handler->DisableNotifications(profile_, origin, notification_id);
       break;
     case NotificationOperation::kSettings:
       handler->OpenSettings(profile_, origin);
@@ -179,6 +179,9 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     case NotificationOperation::kReportUnwarnedAsSpam:
       handler->ReportUnwarnedNotificationAsSpam(notification_id, origin,
                                                 profile_);
+      break;
+    case NotificationOperation::kShowOriginalNotification:
+      handler->RecordShowOriginalNotification(origin);
       break;
   }
 }

@@ -45,6 +45,10 @@ class ExtensionMessagePort;
 class ManifestV2ExperimentManager;
 }
 
+namespace safe_browsing {
+class NotificationContentDetectionUkmUtil;
+}
+
 namespace weblayer {
 class BackgroundSyncDelegateImpl;
 }
@@ -174,6 +178,12 @@ class METRICS_EXPORT UkmRecorder {
   // for recording nonpersistent notification UKM events.
   static SourceId GetSourceIdForNotificationEvent(
       base::PassKey<NonPersistentNotificationHandler>,
+      const GURL& url);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording suspicious notification interaction UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<safe_browsing::NotificationContentDetectionUkmUtil>,
       const GURL& url);
 
   // This method should be called when the system is about to shutdown, but

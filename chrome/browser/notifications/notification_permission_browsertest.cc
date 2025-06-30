@@ -358,7 +358,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
 
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<NonPersistentNotificationHandler>();
-  handler->DisableNotifications(browser()->profile(), TesterUrl());
+  handler->DisableNotifications(browser()->profile(), TesterUrl(),
+                                /*notification_id=*/std::nullopt);
 
   const auto action_entries = ukm_recorder.GetEntriesByName("Permission");
   ASSERT_EQ(2u, action_entries.size());

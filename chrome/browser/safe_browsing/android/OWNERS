@@ -2,3 +2,5 @@ vakh@chromium.org
 xinghuilu@chromium.org
 
 per-file download_protection_*=file://chrome/browser/safe_browsing/download_protection/OWNERS
+
+per-file notification_content_detection*=file://chrome/browser/safe_browsing/notification_content_detection/OWNERS

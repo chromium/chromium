@@ -23797,6 +23797,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SuspiciousNotificationInteraction">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Recorded when the user takes an action on a suspicious notification whose
+    contents were replaced by a warning.
+  </summary>
+  <metric name="SuspiciousInteractionType"
+      enum="SuspiciousNotificationWarningInteractions">
+    <summary>
+      The type of action that the user has taken after receiving a notification
+      content detection warning.
+    </summary>
+  </metric>
+</event>
+
 <event name="Tab.Screenshot">
   <owner>sayman@chromium.org</owner>
   <summary>

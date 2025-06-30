@@ -587,7 +587,8 @@ IN_PROC_BROWSER_TEST_P(
   // Unsubscribe from notifications then re-enable them.
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
-  handler->DisableNotifications(browser()->profile(), GURL(kNonAllowlistedUrl));
+  handler->DisableNotifications(browser()->profile(), GURL(kNonAllowlistedUrl),
+                                /*notification_id=*/std::nullopt);
   NotificationPermissionContext::UpdatePermission(
       browser()->profile(), GURL(kNonAllowlistedUrl), CONTENT_SETTING_ALLOW);
 

@@ -134,6 +134,14 @@ ukm::SourceId UkmRecorder::GetSourceIdForNotificationEvent(
                                                SourceIdType::NOTIFICATION_ID);
 }
 
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForNotificationEvent(
+    base::PassKey<safe_browsing::NotificationContentDetectionUkmUtil>,
+    const GURL& url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(url,
+                                               SourceIdType::NOTIFICATION_ID);
+}
+
 void UkmRecorder::RecordOtherURL(ukm::SourceIdObj source_id, const GURL& url) {
   UpdateSourceURL(source_id.ToInt64(), url);
 }

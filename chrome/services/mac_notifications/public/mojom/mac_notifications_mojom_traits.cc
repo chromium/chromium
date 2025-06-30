@@ -21,6 +21,7 @@ EnumTraits<mac_notifications::mojom::NotificationOperation,
     case NotificationOperation::kReportAsSafe:
     case NotificationOperation::kReportWarnedAsSpam:
     case NotificationOperation::kReportUnwarnedAsSpam:
+    case NotificationOperation::kShowOriginalNotification:
       // This is not supported in macOS notifications.
       break;
   }
