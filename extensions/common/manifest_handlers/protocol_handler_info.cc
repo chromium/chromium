@@ -44,7 +44,7 @@ bool IsValidProtocolHandler(const std::string& protocol,
     is_valid = false;
   }
 
-  switch (blink::IsValidCustomHandlerURLSyntax(url)) {
+  switch (blink::IsValidCustomHandlerURLSyntax(url, security_level)) {
     case blink::URLSyntaxErrorCode::kNoError:
       break;
     case blink::URLSyntaxErrorCode::kMissingToken:

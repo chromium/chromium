@@ -91,7 +91,7 @@ static bool VerifyCustomHandlerURL(
   String error_message;
 
   if (!VerifyCustomHandlerURLSyntax(full_url, base_url, user_url,
-                                    error_message)) {
+                                    security_level, error_message)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       error_message);
     return false;
@@ -140,10 +140,11 @@ bool VerifyCustomHandlerScheme(const String& scheme,
 bool VerifyCustomHandlerURLSyntax(const KURL& full_url,
                                   const KURL& base_url,
                                   const String& user_url,
+                                  ProtocolHandlerSecurityLevel security_level,
                                   String& error_message) {
   StringUtf8Adaptor url_adaptor(user_url);
-  URLSyntaxErrorCode code =
-      IsValidCustomHandlerURLSyntax(GURL(full_url), url_adaptor.AsStringView());
+  URLSyntaxErrorCode code = IsValidCustomHandlerURLSyntax(
+      GURL(full_url), url_adaptor.AsStringView(), security_level);
   switch (code) {
     case URLSyntaxErrorCode::kNoError:
       return true;

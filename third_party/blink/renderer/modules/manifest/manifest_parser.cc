@@ -1661,9 +1661,13 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
   String error_message;
   bool is_valid_protocol = protocol.has_value();
 
+  ProtocolHandlerSecurityLevel security_level =
+      execution_context_->IsIsolatedContext()
+          ? ProtocolHandlerSecurityLevel::kIsolatedAppFeatures
+          : ProtocolHandlerSecurityLevel::kStrict;
   if (is_valid_protocol &&
       !VerifyCustomHandlerScheme(protocol.value(), error_message,
-                                 ProtocolHandlerSecurityLevel::kStrict)) {
+                                 security_level)) {
     AddErrorInfo(error_message);
     is_valid_protocol = false;
   }
@@ -1692,7 +1696,7 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
     KURL full_url(manifest_url_, tokenless_url);
 
     if (!VerifyCustomHandlerURLSyntax(full_url, manifest_url_, user_url,
-                                      error_message)) {
+                                      security_level, error_message)) {
       AddErrorInfo(error_message);
       is_valid_url = false;
     }
