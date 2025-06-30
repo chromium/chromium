@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
+namespace blink {
 
 // This class allows nodes to share code without dictating data member layout.
 template <typename T>
@@ -131,7 +131,7 @@ class DoublyLinkedList {
  private:
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(!IsStackAllocatedTypeV<T>);
+      static_assert(!WTF::IsStackAllocatedTypeV<T>);
       static_assert(
           !IsGarbageCollectedType<T>::value ||
               !std::is_same<PointerType, T*>::value,
@@ -298,9 +298,6 @@ DoublyLinkedList<T, PointerType>::InsertAfter(T* node, T* insertion_point) {
   return {node, true};
 }
 
-}  // namespace WTF
-
-using WTF::DoublyLinkedListNode;
-using WTF::DoublyLinkedList;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DOUBLY_LINKED_LIST_H_

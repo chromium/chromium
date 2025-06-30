@@ -79,7 +79,7 @@ static inline bool operator!=(const DecoderCacheKey& a,
 // Base class for all cache entries.
 class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
   USING_FAST_MALLOC(CacheEntry);
-  friend class WTF::DoublyLinkedListNode<CacheEntry>;
+  friend class DoublyLinkedListNode<CacheEntry>;
 
  public:
   enum CacheType {
