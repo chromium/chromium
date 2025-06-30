@@ -1651,11 +1651,8 @@ bool WebGLRenderingContextBase::PushFrame() {
   if (!must_paint_to_canvas_ && !must_clear_now)
     return false;
 
-  if (!Host()->LowLatencyEnabled() &&
-      GetDrawingBuffer()->IsUsingGpuCompositing()) {
-    // If LowLatency is not enabled, and it's using Gpu Compositing, it will try
-    // to export the mailbox, synctoken and callback mechanism for the
-    // compositor to present the frame in the offscrencanvas.
+  if (GetDrawingBuffer()->IsUsingGpuCompositing()) {
+    // Export the DrawingBuffer's SI directly if possible.
     if (PushFrameNoCopy())
       return true;
   }
@@ -1689,19 +1686,13 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   scoped_refptr<CanvasResource> resource = nullptr;
   bool produced_frame = false;
 
-  if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
-    resource = ExportLowLatencyCanvasResource(kBackBuffer,
-                                              /*export_only_if_update=*/true);
-    produced_frame = !!resource;
-  } else {
-    bool resource_provider_was_updated = false;
-    auto* resource_provider = PaintRenderingResultsToCanvas(
-        kBackBuffer, &resource_provider_was_updated);
-    produced_frame = resource_provider && resource_provider_was_updated;
-    if (produced_frame) {
-      resource =
-          resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas);
-    }
+  bool resource_provider_was_updated = false;
+  auto* resource_provider = PaintRenderingResultsToCanvas(
+      kBackBuffer, &resource_provider_was_updated);
+  produced_frame = resource_provider && resource_provider_was_updated;
+  if (produced_frame) {
+    resource =
+        resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas);
   }
 
   if (produced_frame) {
