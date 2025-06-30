@@ -49,6 +49,8 @@ class LegacyInteractionStrategy : public DesktopInteractionStrategy {
   std::unique_ptr<DesktopDisplayInfoMonitor> CreateDisplayInfoMonitor()
       override;
   std::unique_ptr<LocalInputMonitor> CreateLocalInputMonitor() override;
+  std::unique_ptr<CurtainMode> CreateCurtainMode(
+      base::WeakPtr<ClientSessionControl> client_session_control) override;
 
  protected:
   LegacyInteractionStrategy(

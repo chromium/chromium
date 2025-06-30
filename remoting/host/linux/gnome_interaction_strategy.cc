@@ -32,6 +32,7 @@
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_resolution.h"
+#include "remoting/host/curtain_mode.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/desktop_display_info_loader.h"
 #include "remoting/host/desktop_display_info_monitor.h"
@@ -80,6 +81,24 @@ base::OnceCallback<Ret(base::expected<Success, Error>)> MakeExpectedCallback(
         }
       },
       std::move(success), std::move(error));
+}
+
+class CurtainModeWayland : public CurtainMode {
+ public:
+  CurtainModeWayland();
+
+  CurtainModeWayland(const CurtainModeWayland&) = delete;
+  CurtainModeWayland& operator=(const CurtainModeWayland&) = delete;
+
+  bool Activate() override;
+};
+
+CurtainModeWayland::CurtainModeWayland() = default;
+
+bool CurtainModeWayland::Activate() {
+  // Wayland support is only implemented for headless sessions which are
+  // already curtained.
+  return true;
 }
 
 }  // namespace
@@ -276,6 +295,11 @@ GnomeInteractionStrategy::CreateLocalInputMonitor() {
                          base::RepeatingClosure on_error) override {}
   };
   return std::make_unique<GnomeLocalInputMonitor>();
+}
+
+std::unique_ptr<CurtainMode> GnomeInteractionStrategy::CreateCurtainMode(
+    base::WeakPtr<ClientSessionControl> client_session_control) {
+  return std::make_unique<CurtainModeWayland>();
 }
 
 GnomeInteractionStrategy::GnomeInteractionStrategy(

@@ -166,8 +166,7 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
 
   // Detach the session from the local console if the caller requested.
   if (desktop_environment_options().enable_curtaining()) {
-    curtain_ = CurtainMode::Create(caller_task_runner(), ui_task_runner(),
-                                   client_session_control);
+    curtain_ = interaction_strategy().CreateCurtainMode(client_session_control);
     if (!curtain_->Activate()) {
       LOG(ERROR) << "Failed to activate the curtain mode.";
       curtain_ = nullptr;

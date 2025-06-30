@@ -22,6 +22,7 @@
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/desktop_environment_options.h"
+#include "remoting/host/curtain_mode.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_capturer_wrapper.h"
@@ -187,6 +188,14 @@ LegacyInteractionStrategy::CreateLocalInputMonitor() {
 
   return LocalInputMonitor::Create(caller_task_runner_, input_task_runner_,
                                    ui_task_runner_);
+}
+
+std::unique_ptr<CurtainMode> LegacyInteractionStrategy::CreateCurtainMode(
+    base::WeakPtr<ClientSessionControl> client_session_control) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  return CurtainMode::Create(caller_task_runner_, ui_task_runner_,
+                             client_session_control);
 }
 
 LegacyInteractionStrategy::LegacyInteractionStrategy(

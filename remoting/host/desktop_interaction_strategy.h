@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
@@ -23,6 +24,8 @@
 
 namespace remoting {
 
+class ClientSessionControl;
+class CurtainMode;
 class DesktopDisplayInfoMonitor;
 class LocalInputMonitor;
 
@@ -63,6 +66,8 @@ class DesktopInteractionStrategy {
   virtual std::unique_ptr<DesktopDisplayInfoMonitor>
   CreateDisplayInfoMonitor() = 0;
   virtual std::unique_ptr<LocalInputMonitor> CreateLocalInputMonitor() = 0;
+  virtual std::unique_ptr<CurtainMode> CreateCurtainMode(
+      base::WeakPtr<ClientSessionControl> client_session_control) = 0;
 
  protected:
   // Wraps raw capturer in a differ wrapper if appropriate, and calls
