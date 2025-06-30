@@ -61,9 +61,7 @@ String BuildJustificationText(const String& text_content,
           const InlineItemResults& base_results = base_line.Results();
           if (!base_results.empty()) {
             const unsigned base_end =
-                RuntimeEnabledFeatures::RubyJustificationFixEnabled()
-                    ? std::min(base_results.back().EndOffset(), end_offset)
-                    : base_line.EndOffsetForJustify();
+                std::min(base_results.back().EndOffset(), end_offset);
             line_text_builder.Append(BuildJustificationText(
                 text_content, base_results, base_results.front().StartOffset(),
                 base_end, base_line.MayHaveTextCombineOrRubyItem()));
