@@ -1681,25 +1681,18 @@ void WebGLRenderingContextBase::Dispose() {
 bool WebGLRenderingContextBase::PushFrameWithCopy() {
   bool submitted_frame = false;
 
-  // Note: we push a frame only if (a) there is fresh content to produce and (b)
-  // we successfully produced that content.
-  scoped_refptr<CanvasResource> resource = nullptr;
-  bool produced_frame = false;
-
+  // Note: we push a frame only if (a) there is fresh content to produce and
+  // (b) we successfully produced that content.
   bool resource_provider_was_updated = false;
   auto* resource_provider = PaintRenderingResultsToCanvas(
       kBackBuffer, &resource_provider_was_updated);
-  produced_frame = resource_provider && resource_provider_was_updated;
-  if (produced_frame) {
-    resource =
-        resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas);
-  }
-
-  if (produced_frame) {
+  if (resource_provider && resource_provider_was_updated) {
     const int width = GetDrawingBuffer()->Size().width();
     const int height = GetDrawingBuffer()->Size().height();
     auto size = SkIRect::MakeWH(width, height);
-    submitted_frame = Host()->PushFrame(std::move(resource), size);
+    submitted_frame = Host()->PushFrame(
+        resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas),
+        size);
   }
   MarkLayerComposited();
   return submitted_frame;
