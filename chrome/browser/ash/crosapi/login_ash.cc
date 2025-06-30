@@ -101,57 +101,6 @@ void LoginAsh::LaunchSamlUserSession(const std::string& email,
   std::move(callback).Run(std::nullopt);
 }
 
-void LoginAsh::LaunchSharedManagedGuestSession(const std::string& password,
-                                               OptionalErrorCallback callback) {
-  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
-
-  std::optional<std::string> error =
-      chromeos::SharedSessionHandler::Get()->LaunchSharedManagedGuestSession(
-          password);
-  if (error) {
-    std::move(callback).Run(error);
-    return;
-  }
-
-  std::move(callback).Run(std::nullopt);
-}
-
-void LoginAsh::EnterSharedSession(const std::string& password,
-                                  OptionalErrorCallback callback) {
-  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
-
-  chromeos::SharedSessionHandler::Get()->EnterSharedSession(
-      password,
-      base::BindOnce(&LoginAsh::OnOptionalErrorCallbackComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void LoginAsh::UnlockSharedSession(const std::string& password,
-                                   OptionalErrorCallback callback) {
-  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
-
-  const user_manager::UserManager* user_manager =
-      user_manager::UserManager::Get();
-  const user_manager::User* active_user = user_manager->GetActiveUser();
-  if (!active_user ||
-      active_user->GetType() != user_manager::UserType::kPublicAccount ||
-      !active_user->CanLock()) {
-    std::move(callback).Run(extensions::login_api_errors::kNoUnlockableSession);
-    return;
-  }
-
-  chromeos::SharedSessionHandler::Get()->UnlockSharedSession(
-      password,
-      base::BindOnce(&LoginAsh::OnOptionalErrorCallbackComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void LoginAsh::EndSharedSession(EndSharedSessionCallback callback) {
-  chromeos::SharedSessionHandler::Get()->EndSharedSession(
-      base::BindOnce(&LoginAsh::OnOptionalErrorCallbackComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void LoginAsh::AddExternalLogoutRequestObserver(
     mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer) {
   mojo::Remote<mojom::ExternalLogoutRequestObserver> remote(

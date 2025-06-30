@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/extensions/api/login.h"
 #include "chrome/common/pref_names.h"
@@ -101,6 +102,19 @@ void UnlockSession(
       }).Then(std::move(callback)));
 }
 
+base::OnceCallback<void(const std::optional<std::string>&)>
+AdaptOptionalErrorCallback(
+    base::OnceCallback<void(base::expected<void, std::string>)> callback) {
+  return base::BindOnce([](const std::optional<std::string>& result)
+                            -> base::expected<void, std::string> {
+           if (result.has_value()) {
+             return base::unexpected(result.value());
+           }
+           return base::ok();
+         })
+      .Then(std::move(callback));
+}
+
 }  // namespace
 
 namespace internal {
@@ -111,6 +125,10 @@ void LoginAsyncFunctionBase::OnResult(
     base::expected<void, std::string> result) {
   Respond(result.has_value() ? NoArguments()
                              : Error(std::move(result.error())));
+}
+
+ExtensionFunction::ResponseAction LoginAsyncFunctionBase::MaybeResponded() {
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 }  // namespace internal
@@ -211,7 +229,7 @@ LoginUnlockManagedGuestSessionFunction::Run() {
   UnlockSession(
       parameters->password, user_manager::UserType::kPublicAccount,
       base::BindOnce(&LoginUnlockManagedGuestSessionFunction::OnResult, this));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  return MaybeResponded();
 }
 
 LoginLockCurrentSessionFunction::LoginLockCurrentSessionFunction() = default;
@@ -235,7 +253,7 @@ ExtensionFunction::ResponseAction LoginUnlockCurrentSessionFunction::Run() {
   UnlockSession(
       parameters->password, std::nullopt,
       base::BindOnce(&LoginUnlockCurrentSessionFunction::OnResult, this));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  return MaybeResponded();
 }
 
 LoginLaunchSamlUserSessionFunction::LoginLaunchSamlUserSessionFunction() =
@@ -268,12 +286,13 @@ LoginLaunchSharedManagedGuestSessionFunction::Run() {
       api::login::LaunchSharedManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  auto callback = base::BindOnce(
-      &LoginLaunchSharedManagedGuestSessionFunction::OnResult, this);
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 
-  GetLoginApi()->LaunchSharedManagedGuestSession(parameters->password,
-                                                 std::move(callback));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  std::optional<std::string> result =
+      chromeos::SharedSessionHandler::Get()->LaunchSharedManagedGuestSession(
+          parameters->password);
+  return RespondNow(!result.has_value() ? NoArguments()
+                                        : Error(std::move(result.value())));
 }
 
 LoginEnterSharedSessionFunction::LoginEnterSharedSessionFunction() = default;
@@ -283,11 +302,13 @@ ExtensionFunction::ResponseAction LoginEnterSharedSessionFunction::Run() {
   auto parameters = api::login::EnterSharedSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  auto callback =
-      base::BindOnce(&LoginEnterSharedSessionFunction::OnResult, this);
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 
-  GetLoginApi()->EnterSharedSession(parameters->password, std::move(callback));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  chromeos::SharedSessionHandler::Get()->EnterSharedSession(
+      parameters->password,
+      AdaptOptionalErrorCallback(
+          base::BindOnce(&LoginEnterSharedSessionFunction::OnResult, this)));
+  return MaybeResponded();
 }
 
 LoginUnlockSharedSessionFunction::LoginUnlockSharedSessionFunction() = default;
@@ -297,22 +318,32 @@ ExtensionFunction::ResponseAction LoginUnlockSharedSessionFunction::Run() {
   auto parameters = api::login::EnterSharedSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  auto callback =
-      base::BindOnce(&LoginUnlockSharedSessionFunction::OnResult, this);
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 
-  GetLoginApi()->UnlockSharedSession(parameters->password, std::move(callback));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  const auto* user_manager = user_manager::UserManager::Get();
+  const user_manager::User* active_user = user_manager->GetActiveUser();
+  if (!active_user ||
+      active_user->GetType() != user_manager::UserType::kPublicAccount ||
+      !active_user->CanLock()) {
+    return RespondNow(
+        Error(extensions::login_api_errors::kNoUnlockableSession));
+  }
+
+  chromeos::SharedSessionHandler::Get()->UnlockSharedSession(
+      parameters->password,
+      AdaptOptionalErrorCallback(
+          base::BindOnce(&LoginUnlockSharedSessionFunction::OnResult, this)));
+  return MaybeResponded();
 }
 
 LoginEndSharedSessionFunction::LoginEndSharedSessionFunction() = default;
 LoginEndSharedSessionFunction::~LoginEndSharedSessionFunction() = default;
 
 ExtensionFunction::ResponseAction LoginEndSharedSessionFunction::Run() {
-  auto callback =
-      base::BindOnce(&LoginEndSharedSessionFunction::OnResult, this);
-
-  GetLoginApi()->EndSharedSession(std::move(callback));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  chromeos::SharedSessionHandler::Get()->EndSharedSession(
+      AdaptOptionalErrorCallback(
+          base::BindOnce(&LoginEndSharedSessionFunction::OnResult, this)));
+  return MaybeResponded();
 }
 
 LoginSetDataForNextLoginAttemptFunction::

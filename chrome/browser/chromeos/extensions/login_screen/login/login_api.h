@@ -17,8 +17,8 @@ class LoginAsyncFunctionBase : public ExtensionFunction {
  protected:
   ~LoginAsyncFunctionBase() override;
 
-  // ExtensionFunction:
   void OnResult(base::expected<void, std::string> result);
+  ResponseAction MaybeResponded();
 };
 }  // namespace internal
 
@@ -195,8 +195,7 @@ class LoginLaunchSamlUserSessionFunction
   ResponseAction Run() override;
 };
 
-class LoginLaunchSharedManagedGuestSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+class LoginLaunchSharedManagedGuestSessionFunction : public ExtensionFunction {
  public:
   LoginLaunchSharedManagedGuestSessionFunction();
 
@@ -217,7 +216,7 @@ class LoginLaunchSharedManagedGuestSessionFunction
 };
 
 class LoginEnterSharedSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+    : public internal::LoginAsyncFunctionBase {
  public:
   LoginEnterSharedSessionFunction();
 
@@ -238,7 +237,7 @@ class LoginEnterSharedSessionFunction
 };
 
 class LoginUnlockSharedSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+    : public internal::LoginAsyncFunctionBase {
  public:
   LoginUnlockSharedSessionFunction();
 
@@ -258,8 +257,7 @@ class LoginUnlockSharedSessionFunction
   ResponseAction Run() override;
 };
 
-class LoginEndSharedSessionFunction
-    : public ExtensionFunctionWithOptionalErrorResult {
+class LoginEndSharedSessionFunction : public internal::LoginAsyncFunctionBase {
  public:
   LoginEndSharedSessionFunction();
 

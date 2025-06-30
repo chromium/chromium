@@ -42,7 +42,6 @@ class LoginAsh : public mojom::Login {
   void BindReceiver(mojo::PendingReceiver<mojom::Login> receiver);
 
   // crosapi::mojom::Login:
-  void EndSharedSession(EndSharedSessionCallback callback) override;
   void AddExternalLogoutRequestObserver(
       mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer)
       override;
@@ -73,27 +72,6 @@ class LoginAsh : public mojom::Login {
   // `UnlockManagedGuestSession()`.
   void LaunchManagedGuestSession(const std::optional<std::string>& password,
                                  OptionalErrorCallback callback);
-
-  // Starts a ChromeOS Managed Guest Session which will host the shared user
-  // sessions. An initial shared session is entered with `password` as the
-  // password. When this shared session is locked, it can only be unlocked by
-  // calling `UnlockSharedSession()` with the same password.
-  void LaunchSharedManagedGuestSession(const std::string& password,
-                                       OptionalErrorCallback callback);
-  // Enters the shared session with the given password. If the session is
-  // locked, it can only be unlocked by calling `UnlockSharedSession()` with
-  // the same password.
-  // Fails if  there is already a shared session running. Can only be called
-  // from the lock screen.
-  void EnterSharedSession(const std::string& password,
-                          OptionalErrorCallback callback);
-  // Unlocks the shared session with the provided password. Fails if the
-  // password does not match the one provided to
-  // `LaunchSharedManagedGuestSession()` or `EnterSharedSession()`.
-  // Fails if  there is no existing shared session. Can only be called from the
-  // lock screen.
-  void UnlockSharedSession(const std::string& password,
-                           OptionalErrorCallback callback);
 
   // Launches a SAML user session with the provided email, gaiaId, password
   // and oauth_code cookie.

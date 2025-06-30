@@ -36,12 +36,7 @@ interface Login {
   // LockCurrentSession@11 was removed.
   // AddLacrosCleanupTriggeredObserver@13 was removed.
   // ShowGuestSessionConfirmationDialog@17 was removed.
-
-  // Ends the shared session. Security- and privacy-sensitive data in the
-  // session will be cleaned up on a best effort basis.
-  // Can be called from both the lock screen or in session.
-  // Fails if there is no existing shared session.
-  EndSharedSession@8() => (string? error);
+  // EndSharedSession@8 was removed.
 
   // Adds an observer for the external logout request events.
   [MinVersion=3]
