@@ -115,6 +115,10 @@ const CGFloat kMIACircleAnimationSizeNormal = 40.0;
 // the fakebox.
 const CGFloat kMIACircleAnimationSizeEnlarged = 48.0;
 
+// The amount of invisible padding added to the MIA button when displayed as a
+// single button to avoid missing touches.
+const CGFloat kMIAButtonTouchAreaExtend = 5.0;
+
 // The amount to inset the Fakebox from the rest of the modules on Home.
 CGFloat FakeboxHorizontalMargin(id<UITraitEnvironment> environment) {
   if (IsSplitToolbarMode(environment) && ShouldEnlargeLogoAndFakebox()) {
@@ -1115,6 +1119,27 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       [self updateAnimationOnMIAButton];
     }
   }
+}
+
+- (UIView*)hitTest:(CGPoint)point withEvent:(UIEvent*)event {
+  // When MIA appears as a solitary button, expand its active touch zone to
+  // ensure all nearby taps are registered.
+  if (self.useSingleButtonMIA) {
+    CGRect miaButtonFrameInHeader = [self.miaButton convertRect:self.bounds
+                                                         toView:self];
+    UIEdgeInsets touchAreaExtend = UIEdgeInsetsMake(
+        -kMIAButtonTouchAreaExtend, -kMIAButtonTouchAreaExtend,
+        -kMIAButtonTouchAreaExtend, -kMIAButtonTouchAreaExtend);
+
+    CGRect extendedTouchArea =
+        UIEdgeInsetsInsetRect(miaButtonFrameInHeader, touchAreaExtend);
+
+    if (CGRectContainsPoint(extendedTouchArea, point)) {
+      return self.miaButton;
+    }
+  }
+
+  return [super hitTest:point withEvent:event];
 }
 
 #pragma mark - MIA
