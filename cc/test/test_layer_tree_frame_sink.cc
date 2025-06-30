@@ -341,7 +341,13 @@ void TestLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
   DebugScopedSetImplThread impl(task_runner_provider_);
   DCHECK(!ack.has_damage);
   DCHECK(ack.frame_id.IsSequenceValid());
-  support_->DidNotProduceFrame(ack);
+  // When this sink is detached, it'll destroy it's support_ and then
+  // TestInProcessContextProvider, which then destroys RasterInProcessContext,
+  // where a runloop can deliver a DidNotProduceFrame call to this sink class
+  // and trigger a nullptr crash without this check.
+  if (support_) {
+    support_->DidNotProduceFrame(ack);
+  }
 }
 
 void TestLayerTreeFrameSink::DidReceiveCompositorFrameAck(
