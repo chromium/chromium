@@ -31,11 +31,11 @@ WTF::StringView CannotReturnStringViewOfTemporaryString() {
 }
 
 WTF::StringView CannotReturnStringViewOfLocalAtomicString() {
-  WTF::AtomicString local_string{};
+  blink::AtomicString local_string{};
   return local_string; // expected-error {{address of stack memory associated with local variable 'local_string' returned}}
 }
 
-WTF::AtomicString ReturnsAnAtomicString() {
+blink::AtomicString ReturnsAnAtomicString() {
   return {};
 }
 

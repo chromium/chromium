@@ -71,8 +71,8 @@ struct HashTraits<blink::Member<blink::HighlightRegistryMapEntry>>
       const blink::Member<blink::HighlightRegistryMapEntry>& a,
       const blink::Member<blink::HighlightRegistryMapEntry>& b) {
     DCHECK(a && b);
-    return HashTraits<AtomicString>::Equal(a->highlight_name,
-                                           b->highlight_name);
+    return HashTraits<blink::AtomicString>::Equal(a->highlight_name,
+                                                  b->highlight_name);
   }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;

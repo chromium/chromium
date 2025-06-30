@@ -1678,7 +1678,7 @@ FetchLaterResult* FetchLaterManager::FetchLater(
 
   // 8. If request’s URL’s scheme is not an HTTPS scheme, then throw a
   // TypeError.
-  if (!request->Url().ProtocolIs(WTF::g_https_atom)) {
+  if (!request->Url().ProtocolIs(g_https_atom)) {
     exception_state.ThrowTypeError("fetchLater is only supported over HTTPS.");
     return nullptr;
   }

@@ -271,10 +271,10 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     return String(*this);
   }
 
-  AtomicString AsAtomicString() const {
-    return AtomicString(*this, Is8Bit()
-                                   ? WTF::AtomicStringUCharEncoding::kIs8Bit
-                                   : WTF::AtomicStringUCharEncoding::kIs16Bit);
+  blink::AtomicString AsAtomicString() const {
+    return blink::AtomicString(
+        *this, Is8Bit() ? blink::AtomicStringUCharEncoding::kIs8Bit
+                        : blink::AtomicStringUCharEncoding::kIs16Bit);
   }
 
   ALWAYS_INLINE bool Is8Bit() const {

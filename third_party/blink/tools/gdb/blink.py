@@ -135,8 +135,8 @@ class LCharStringPrinter(StringPrinter):
         return lstring_to_string(self.val)
 
 
-class WTFAtomicStringPrinter(StringPrinter):
-    "Print a WTF::AtomicString"
+class BlinkAtomicStringPrinter(StringPrinter):
+    "Print a blink::AtomicString"
 
     def to_string(self):
         return self.val['string_']
@@ -184,7 +184,7 @@ class blinkKURLPrinter(StringPrinter):
     "Print a blink::KURL"
 
     def to_string(self):
-        return WTFAtomicStringPrinter(self.val['string_']).to_string()
+        return BlinkAtomicStringPrinter(self.val['string_']).to_string()
 
 
 class blinkLayoutUnitPrinter:
@@ -492,9 +492,9 @@ def add_pretty_printers():
     pretty_printers = (
         (re.compile("^WTF::Vector<.*>$"), WTFVectorPrinter),
         (re.compile("^WTF::HashTable<.*>$"), WTFHashTablePrinter),
-        (re.compile("^WTF::AtomicString$"), WTFAtomicStringPrinter),
         (re.compile("^WTF::String$"), WTFStringPrinter),
         (re.compile("^WTF::StringImpl$"), WTFStringImplPrinter),
+        (re.compile("^blink::AtomicString$"), BlinkAtomicStringPrinter),
         (re.compile("^blink::FixedPoint<.*>$"), blinkFixedPointPrinter),
         (re.compile("^blink::KURL$"), blinkKURLPrinter),
         (re.compile("^blink::LayoutUnit$"), blinkLayoutUnitPrinter),

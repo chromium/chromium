@@ -20,7 +20,8 @@ void CreateFuzzer(const std::string& input) {
   WTF::String header_value(input);
 
   blink::HTTPHeaderMap headers;
-  headers.Set(blink::http_names::kUnencodedDigest, AtomicString(header_value));
+  headers.Set(blink::http_names::kUnencodedDigest,
+              blink::AtomicString(header_value));
   auto result = blink::UnencodedDigest::Create(headers);
 }
 
@@ -28,7 +29,7 @@ FUZZ_TEST(UnencodedDigest, CreateFuzzer)
     .WithDomains(fuzztest::PrintableAsciiString());
 
 void MatchFuzzer(const std::string& arbitrary) {
-  AtomicString valid_header_value(
+  blink::AtomicString valid_header_value(
       "sha-256=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:");
   blink::HTTPHeaderMap headers;
   headers.Set(blink::http_names::kUnencodedDigest, valid_header_value);

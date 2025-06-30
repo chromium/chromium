@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(WeakResultTest, BasicOperations) {
   AtomicStringTable::WeakResult null;
@@ -47,7 +47,7 @@ TEST(WeakResultTest, UTF8) {
   EXPECT_EQ(foo_unicode.Utf8(), "foo😀");
 
   AtomicStringTable::WeakResult result =
-      WTF::AtomicStringTable::Instance().WeakFindLowercase(AtomicString("FOO"));
+      AtomicStringTable::Instance().WeakFindLowercase(AtomicString("FOO"));
   EXPECT_FALSE(result.IsNull());
 
   // This is a particularly icky case; a 16-bit AtomicString that contains
@@ -55,28 +55,28 @@ TEST(WeakResultTest, UTF8) {
   // added directly to the AtomicStringTable.
   String too_wide_string("Foo");
   too_wide_string.Ensure16Bit();
-  result = WTF::AtomicStringTable::Instance().WeakFindLowercase(
+  result = AtomicStringTable::Instance().WeakFindLowercase(
       AtomicString(too_wide_string.Impl()));
   EXPECT_FALSE(result.IsNull());
 
   AtomicStringTable::WeakResult result_latin1 =
-      WTF::AtomicStringTable::Instance().WeakFindLowercase(
+      AtomicStringTable::Instance().WeakFindLowercase(
           AtomicString::FromUTF8("Foó"));
   EXPECT_FALSE(result_latin1.IsNull());
 
   // Only ASCII is lowercased.
-  result_latin1 = WTF::AtomicStringTable::Instance().WeakFindLowercase(
+  result_latin1 = AtomicStringTable::Instance().WeakFindLowercase(
       AtomicString::FromUTF8("FoÓ"));
   EXPECT_TRUE(result_latin1.IsNull());
 
   AtomicStringTable::WeakResult result_unicode =
-      WTF::AtomicStringTable::Instance().WeakFindLowercase(
+      AtomicStringTable::Instance().WeakFindLowercase(
           AtomicString::FromUTF8("foO😀"));
   EXPECT_FALSE(result_unicode.IsNull());
 
-  result_unicode = WTF::AtomicStringTable::Instance().WeakFindLowercase(
+  result_unicode = AtomicStringTable::Instance().WeakFindLowercase(
       AtomicString::FromUTF8("Goo😀"));
   EXPECT_TRUE(result_unicode.IsNull());
 }
 
-}  // namespace WTF
+}  // namespace blink

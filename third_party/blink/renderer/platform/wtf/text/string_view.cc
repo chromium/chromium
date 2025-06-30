@@ -203,16 +203,16 @@ String StringView::ToString() const {
   return StringImpl::Create8BitIfPossible(Span16());
 }
 
-AtomicString StringView::ToAtomicString() const {
+blink::AtomicString StringView::ToAtomicString() const {
   if (IsNull())
-    return g_null_atom;
+    return blink::g_null_atom;
   if (empty())
-    return g_empty_atom;
+    return blink::g_empty_atom;
   if (StringImpl* impl = SharedImpl())
-    return AtomicString(impl);
+    return blink::AtomicString(impl);
   if (Is8Bit())
-    return AtomicString(Span8());
-  return AtomicString(Span16());
+    return blink::AtomicString(Span8());
+  return blink::AtomicString(Span16());
 }
 
 String StringView::EncodeForDebugging() const {

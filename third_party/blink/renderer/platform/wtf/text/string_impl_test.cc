@@ -64,7 +64,7 @@ TEST(StringImplTest, LowerASCII) {
       test_string_impl.get(),
       StringImpl::Create(base::span_from_cstring("lInk"))->LowerASCII().get()));
 
-  blink::CaseMap case_map(g_empty_atom);
+  blink::CaseMap case_map(blink::g_empty_atom);
   EXPECT_TRUE(Equal(
       case_map.ToLower(StringImpl::Create(base::span_from_cstring("LINK")))
           .Impl(),
@@ -137,7 +137,7 @@ TEST(StringImplTest, UpperASCII) {
       test_string_impl.get(),
       StringImpl::Create(base::span_from_cstring("lInk"))->UpperASCII().get()));
 
-  blink::CaseMap case_map(g_empty_atom);
+  blink::CaseMap case_map(blink::g_empty_atom);
   EXPECT_TRUE(Equal(
       case_map.ToUpper(StringImpl::Create(base::span_from_cstring("LINK")))
           .Impl(),

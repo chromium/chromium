@@ -61,6 +61,10 @@ typedef const struct __CFString* CFStringRef;
 @class NSString;
 #endif
 
+namespace blink {
+class AtomicStringTable;
+}  // namespace blink
+
 namespace WTF {
 
 enum TextCaseSensitivity {
@@ -506,7 +510,7 @@ class WTF_EXPORT StringImpl {
   static const std::array<UChar, 256> kLatin1CaseFoldTable;
 
  private:
-  friend class AtomicStringTable;
+  friend class blink::AtomicStringTable;
   enum Flags {
     // These two fields are never modified for the lifetime of the StringImpl.
     // It is therefore safe to read them with a relaxed operation.

@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-namespace WTF {
+namespace blink {
 
 DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_null_atom);
 DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_empty_atom);
@@ -51,6 +51,10 @@ DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_xmlns_atom);
 DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_xlink_atom);
 DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_http_atom);
 DEFINE_GLOBAL(WTF_EXPORT, AtomicString, g_https_atom);
+
+}  // namespace blink
+
+namespace WTF {
 
 // This is not an AtomicString because it is unlikely to be used as an
 // event/element/attribute name, so it shouldn't pollute the AtomicString hash
@@ -99,12 +103,18 @@ NOINLINE unsigned StringImpl::HashSlowCase() const {
   return ExistingHash();
 }
 
+}  // namespace WTF
+namespace blink {
+
 void AtomicString::Init() {
   DCHECK(IsMainThread());
 
   new (base::NotNullTag::kNotNull, (void*)&g_null_atom) AtomicString;
   new (base::NotNullTag::kNotNull, (void*)&g_empty_atom) AtomicString("");
 }
+
+}  // namespace blink
+namespace WTF {
 
 scoped_refptr<StringImpl> AddStaticASCIILiteral(
     base::span<const char> literal) {
@@ -120,7 +130,7 @@ void NewlineThenWhitespaceStringsTable::Init() {
     auto* string_impl =
         StringImpl::CreateStatic(base::span(whitespace_buffer).first(length));
     new (base::NotNullTag::kNotNull, (void*)(&g_table_[length]))
-        String(AtomicString(string_impl).GetString());
+        String(blink::AtomicString(string_impl).GetString());
   }
 }
 
@@ -149,18 +159,20 @@ void StringStatics::Init() {
   new (base::NotNullTag::kNotNull, (void*)&g_empty_string16_bit)
       String(StringImpl::empty16_bit_);
 
+  using blink::AtomicString;
   // FIXME: These should be allocated at compile time.
-  new (base::NotNullTag::kNotNull, (void*)&g_star_atom) AtomicString("*");
-  new (base::NotNullTag::kNotNull, (void*)&g_xml_atom)
+  new (base::NotNullTag::kNotNull, (void*)&blink::g_star_atom)
+      AtomicString("*");
+  new (base::NotNullTag::kNotNull, (void*)&blink::g_xml_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xml")));
-  new (base::NotNullTag::kNotNull, (void*)&g_xmlns_atom)
+  new (base::NotNullTag::kNotNull, (void*)&blink::g_xmlns_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xmlns")));
-  new (base::NotNullTag::kNotNull, (void*)&g_xlink_atom)
+  new (base::NotNullTag::kNotNull, (void*)&blink::g_xlink_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xlink")));
   new (base::NotNullTag::kNotNull, (void*)&g_xmlns_with_colon) String("xmlns:");
-  new (base::NotNullTag::kNotNull, (void*)&g_http_atom)
+  new (base::NotNullTag::kNotNull, (void*)&blink::g_http_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("http")));
-  new (base::NotNullTag::kNotNull, (void*)&g_https_atom)
+  new (base::NotNullTag::kNotNull, (void*)&blink::g_https_atom)
       AtomicString(AddStaticASCIILiteral(base::span_from_cstring("https")));
 
   NewlineThenWhitespaceStringsTable::Init();

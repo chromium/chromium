@@ -203,8 +203,8 @@ Step:
     |
     kNameTest OptionalPredicateList
     {
-      AtomicString local_name;
-      AtomicString namespace_uri;
+      blink::AtomicString local_name;
+      blink::AtomicString namespace_uri;
       if (!parser_->ExpandQName($1, local_name, namespace_uri)) {
         parser_->got_namespace_error_ = true;
         YYABORT;
@@ -226,8 +226,8 @@ Step:
     |
     AxisSpecifier kNameTest OptionalPredicateList
     {
-      AtomicString local_name;
-      AtomicString namespace_uri;
+      blink::AtomicString local_name;
+      blink::AtomicString namespace_uri;
       if (!parser_->ExpandQName($2, local_name, namespace_uri)) {
         parser_->got_namespace_error_ = true;
         YYABORT;

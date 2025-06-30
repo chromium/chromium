@@ -1188,8 +1188,8 @@ namespace xpathyy {
   case 12: // Step: kNameTest OptionalPredicateList
 #line 205 "third_party/blink/renderer/core/xml/xpath_grammar.y"
     {
-      AtomicString local_name;
-      AtomicString namespace_uri;
+      blink::AtomicString local_name;
+      blink::AtomicString namespace_uri;
       if (!parser_->ExpandQName(yystack_[1].value.as < String > (), local_name, namespace_uri)) {
         parser_->got_namespace_error_ = true;
         YYABORT;
@@ -1217,8 +1217,8 @@ namespace xpathyy {
   case 14: // Step: AxisSpecifier kNameTest OptionalPredicateList
 #line 228 "third_party/blink/renderer/core/xml/xpath_grammar.y"
     {
-      AtomicString local_name;
-      AtomicString namespace_uri;
+      blink::AtomicString local_name;
+      blink::AtomicString namespace_uri;
       if (!parser_->ExpandQName(yystack_[1].value.as < String > (), local_name, namespace_uri)) {
         parser_->got_namespace_error_ = true;
         YYABORT;

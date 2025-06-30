@@ -63,22 +63,22 @@ class FontIndexer {
 
   // Determines whether the fonts with |name| appear to vary along the specified
   // axis, by comparing font digests at extreme values to |default_font_digest|.
-  bool DoFontsWithNameHaveVaryingWeights(WTF::AtomicString name,
+  bool DoFontsWithNameHaveVaryingWeights(blink::AtomicString name,
                                          int64_t default_font_digest);
-  bool DoFontsWithNameHaveVaryingWidths(WTF::AtomicString name,
+  bool DoFontsWithNameHaveVaryingWidths(blink::AtomicString name,
                                         int64_t default_font_digest);
-  bool DoFontsWithNameHaveVaryingSlopes(WTF::AtomicString name,
+  bool DoFontsWithNameHaveVaryingSlopes(blink::AtomicString name,
                                         int64_t default_font_digest);
 
   // Determines whether a font lookup for |name| with |font_description| results
   // in a typeface with |digest|.
-  bool DoesFontHaveDigest(WTF::AtomicString name,
+  bool DoesFontHaveDigest(blink::AtomicString name,
                           blink::FontDescription font_description,
                           int64_t digest);
 
   // Enumerates fonts with |name| and prints tab-separated lines with each
   // font's details.
-  void PrintAllFontsWithName(WTF::AtomicString name);
+  void PrintAllFontsWithName(blink::AtomicString name);
 
   blink::FontCache* font_cache_;
   bool has_font_list_loaded_ = false;

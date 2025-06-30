@@ -36,25 +36,28 @@
 namespace WTF {
 
 template <>
-struct HashTraits<AtomicString> : SimpleClassHashTraits<AtomicString> {
-  static unsigned GetHash(const AtomicString& key) { return key.Hash(); }
+struct HashTraits<blink::AtomicString>
+    : SimpleClassHashTraits<blink::AtomicString> {
+  static unsigned GetHash(const blink::AtomicString& key) { return key.Hash(); }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 
   // Unlike other types, we can return a const reference for AtomicString's
   // empty value (g_null_atom).
-  typedef const AtomicString& PeekOutType;
+  typedef const blink::AtomicString& PeekOutType;
 
-  static const AtomicString& EmptyValue() { return g_null_atom; }
-  static PeekOutType Peek(const AtomicString& value) { return value; }
+  static const blink::AtomicString& EmptyValue() { return blink::g_null_atom; }
+  static PeekOutType Peek(const blink::AtomicString& value) { return value; }
 
-  static bool IsEmptyValue(const AtomicString& value) { return value.IsNull(); }
+  static bool IsEmptyValue(const blink::AtomicString& value) {
+    return value.IsNull();
+  }
 
-  static bool IsDeletedValue(const AtomicString& value) {
+  static bool IsDeletedValue(const blink::AtomicString& value) {
     return HashTraits<String>::IsDeletedValue(value.string_);
   }
 
-  static void ConstructDeletedValue(AtomicString& slot) {
+  static void ConstructDeletedValue(blink::AtomicString& slot) {
     HashTraits<String>::ConstructDeletedValue(slot.string_);
   }
 };

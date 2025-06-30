@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -38,7 +38,7 @@ class UCharBuffer {
       // This is a very common case from HTML parsing, so we take
       // the size penalty from inlining.
       return StringHasher::ComputeHashAndMaskTop8BitsInline<
-          ConvertTo8BitHashReader>((const char*)chars, len);
+          WTF::ConvertTo8BitHashReader>((const char*)chars, len);
     } else {
       return StringHasher::ComputeHashAndMaskTop8Bits((const char*)chars,
                                                       len * 2);
@@ -103,7 +103,8 @@ struct StringViewLookupTranslator {
       return StringHasher::ComputeHashAndMaskTop8Bits(
           base::as_chars(buf.Span8()).data(), buf.length());
     } else if (IsOnly8Bit(buf.Span16())) {
-      return StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
+      return StringHasher::ComputeHashAndMaskTop8Bits<
+          WTF::ConvertTo8BitHashReader>(
           base::as_chars(buf.RawByteSpan()).data(), buf.length());
     } else {
       return StringHasher::ComputeHashAndMaskTop8Bits(
@@ -504,4 +505,4 @@ bool AtomicStringTable::ReleaseAndRemoveIfNeeded(StringImpl* string) {
   return true;
 }
 
-}  // namespace WTF
+}  // namespace blink

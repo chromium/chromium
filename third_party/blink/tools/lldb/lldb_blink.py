@@ -40,7 +40,7 @@ def __lldb_init_module(debugger, dict):
         'type summary add --expand -F lldb_blink.WTFStringImpl_SummaryProvider WTF::StringImpl'
     )
     debugger.HandleCommand(
-        'type summary add --expand -F lldb_blink.WTFAtomicString_SummaryProvider WTF::AtomicString'
+        'type summary add --expand -F lldb_blink.BlinkAtomicString_SummaryProvider blink::AtomicString'
     )
     debugger.HandleCommand(
         'type summary add --expand -F lldb_blink.WTFVector_SummaryProvider -x "WTF::Vector<.+>$"'
@@ -77,7 +77,7 @@ def WTFStringImpl_SummaryProvider(valobj, dict):
         provider.get_length(), provider.is_8bit(), provider.to_string())
 
 
-def WTFAtomicString_SummaryProvider(valobj, dict):
+def BlinkAtomicString_SummaryProvider(valobj, dict):
     return WTFString_SummaryProvider(
         valobj.GetChildMemberWithName('string_'), dict)
 

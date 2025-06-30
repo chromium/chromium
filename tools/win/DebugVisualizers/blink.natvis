@@ -82,7 +82,7 @@
       <Item Name="HashRaw">*(int*)&amp;hash_and_flags_ >> 8</Item>
     </Expand>
   </Type>
-  <Type Name="WTF::AtomicString">
+  <Type Name="blink::AtomicString">
     <DisplayString IncludeView="bare">{string_,view(bare)}</DisplayString>
     <DisplayString>{string_}</DisplayString>
   </Type>

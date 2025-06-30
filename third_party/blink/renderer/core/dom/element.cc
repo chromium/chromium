@@ -1825,8 +1825,7 @@ bool Element::HasAttributeIgnoringNamespace(
   if (!HasElementData()) {
     return false;
   }
-  WTF::AtomicStringTable::WeakResult hint =
-      WeakLowercaseIfNecessary(local_name);
+  AtomicStringTable::WeakResult hint = WeakLowercaseIfNecessary(local_name);
   SynchronizeAttributeHinted(local_name, hint);
   if (hint.IsNull()) {
     return false;
@@ -3239,7 +3238,7 @@ bool Element::toggleAttribute(const AtomicString& qualified_name,
   // an HTML document, then set qualifiedName to qualifiedName in ASCII
   // lowercase.
   AtomicString lowercase_name = LowercaseIfNecessary(qualified_name);
-  WTF::AtomicStringTable::WeakResult hint(lowercase_name.Impl());
+  AtomicStringTable::WeakResult hint(lowercase_name.Impl());
   // 3. Let attribute be the first attribute in the context object’s attribute
   // list whose qualified name is qualifiedName, and null otherwise.
   SynchronizeAttributeHinted(lowercase_name, hint);
@@ -3282,7 +3281,7 @@ bool Element::toggleAttribute(const AtomicString& qualified_name,
   // an HTML document, then set qualifiedName to qualifiedName in ASCII
   // lowercase.
   AtomicString lowercase_name = LowercaseIfNecessary(qualified_name);
-  WTF::AtomicStringTable::WeakResult hint(lowercase_name.Impl());
+  AtomicStringTable::WeakResult hint(lowercase_name.Impl());
   // 3. Let attribute be the first attribute in the context object’s attribute
   // list whose qualified name is qualifiedName, and null otherwise.
   SynchronizeAttributeHinted(lowercase_name, hint);
@@ -7004,8 +7003,7 @@ Attr* Element::getAttributeNode(const AtomicString& local_name) {
   if (!HasElementData()) {
     return nullptr;
   }
-  WTF::AtomicStringTable::WeakResult hint =
-      WeakLowercaseIfNecessary(local_name);
+  AtomicStringTable::WeakResult hint = WeakLowercaseIfNecessary(local_name);
   SynchronizeAttributeHinted(local_name, hint);
   const Attribute* attribute =
       GetElementData()->Attributes().FindHinted(local_name, hint);
@@ -7033,8 +7031,7 @@ bool Element::hasAttribute(const AtomicString& local_name) const {
   if (!HasElementData()) {
     return false;
   }
-  WTF::AtomicStringTable::WeakResult hint =
-      WeakLowercaseIfNecessary(local_name);
+  AtomicStringTable::WeakResult hint = WeakLowercaseIfNecessary(local_name);
   SynchronizeAttributeHinted(local_name, hint);
   return GetElementData()->Attributes().FindHinted(local_name, hint);
 }
@@ -11660,15 +11657,15 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
   return true;
 }
 
-WTF::AtomicStringTable::WeakResult Element::WeakLowercaseIfNecessary(
+AtomicStringTable::WeakResult Element::WeakLowercaseIfNecessary(
     const AtomicString& name) const {
   if (name.IsLowerASCII()) [[likely]] {
-    return WTF::AtomicStringTable::WeakResult(name);
+    return AtomicStringTable::WeakResult(name);
   }
   if (IsHTMLElement() && IsA<HTMLDocument>(GetDocument())) [[likely]] {
-    return WTF::AtomicStringTable::Instance().WeakFindLowercase(name);
+    return AtomicStringTable::Instance().WeakFindLowercase(name);
   }
-  return WTF::AtomicStringTable::WeakResult(name);
+  return AtomicStringTable::WeakResult(name);
 }
 
 // Note, SynchronizeAttributeHinted is safe to call between a WeakFind() and
@@ -11684,7 +11681,7 @@ WTF::AtomicStringTable::WeakResult Element::WeakLowercaseIfNecessary(
 // without worry for UaF or false positives.
 void Element::SynchronizeAttributeHinted(
     const AtomicString& local_name,
-    WTF::AtomicStringTable::WeakResult hint) const {
+    AtomicStringTable::WeakResult hint) const {
   // This version of SynchronizeAttribute() is streamlined for the case where
   // you don't have a full QualifiedName, e.g when called from DOM API.
   if (!HasElementData()) {
@@ -11713,7 +11710,7 @@ void Element::SynchronizeAttributeHinted(
 
 const AtomicString& Element::GetAttributeHinted(
     const AtomicString& name,
-    WTF::AtomicStringTable::WeakResult hint) const {
+    AtomicStringTable::WeakResult hint) const {
   if (!HasElementData()) {
     return g_null_atom;
   }
@@ -11727,7 +11724,7 @@ const AtomicString& Element::GetAttributeHinted(
 
 std::pair<wtf_size_t, const QualifiedName> Element::LookupAttributeQNameHinted(
     AtomicString name,
-    WTF::AtomicStringTable::WeakResult hint) const {
+    AtomicStringTable::WeakResult hint) const {
   if (!HasElementData()) {
     return std::make_pair(kNotFound,
                           QualifiedName(LowercaseIfNecessary(std::move(name))));
@@ -11841,7 +11838,7 @@ void Element::SetSynchronizedLazyAttribute(const QualifiedName& name,
 }
 
 void Element::SetAttributeHinted(AtomicString local_name,
-                                 WTF::AtomicStringTable::WeakResult hint,
+                                 AtomicStringTable::WeakResult hint,
                                  String value,
                                  ExceptionState& exception_state) {
   bool is_valid = RuntimeEnabledFeatures::RelaxDOMValidNamesEnabled()
@@ -11874,7 +11871,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
 }
 
 void Element::SetAttributeHinted(AtomicString local_name,
-                                 WTF::AtomicStringTable::WeakResult hint,
+                                 AtomicStringTable::WeakResult hint,
                                  const V8TrustedType* trusted_string,
                                  ExceptionState& exception_state) {
   if (!Document::IsValidName(local_name)) {
@@ -12027,7 +12024,7 @@ Attr* Element::setAttributeNode(Attr* attr_node,
 }
 
 void Element::RemoveAttributeHinted(const AtomicString& name,
-                                    WTF::AtomicStringTable::WeakResult hint) {
+                                    AtomicStringTable::WeakResult hint) {
   if (!HasElementData()) {
     return;
   }

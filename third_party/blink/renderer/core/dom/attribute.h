@@ -39,7 +39,7 @@ namespace base {
 template <>
 inline constexpr bool kCanSafelyConvertToByteSpan<::blink::Attribute> =
     kCanSafelyConvertToByteSpan<::blink::QualifiedName> &&
-    kCanSafelyConvertToByteSpan<::WTF::AtomicString>;
+    kCanSafelyConvertToByteSpan<::blink::AtomicString>;
 }
 
 namespace blink {

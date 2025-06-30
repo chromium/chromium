@@ -84,7 +84,7 @@ void Initialize() {
   internal::InitializeDoubleConverter();
 
   internal::InitializeMainThreadStackEstimate();
-  AtomicString::Init();
+  blink::AtomicString::Init();
   StringStatics::Init();
 }
 

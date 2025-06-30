@@ -29,7 +29,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (use_default) {
     locale = &blink::LayoutLocale::GetDefault();
   } else {
-    locale = blink::LayoutLocale::Get(AtomicString(maybe_locale));
+    locale = blink::LayoutLocale::Get(blink::AtomicString(maybe_locale));
   }
 
   if (!locale) {
@@ -42,7 +42,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   }
 
-  auto string_data = AtomicString(
+  auto string_data = blink::AtomicString(
       fuzzed_data.ConsumeRandomLengthString(fuzzed_data.RemainingBytes()));
   std::ignore = hyphen->HyphenLocations(string_data);
 

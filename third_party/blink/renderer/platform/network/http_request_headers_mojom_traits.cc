@@ -38,8 +38,8 @@ bool StructTraits<
   }
   out->Clear();
   for (const auto& header : headers) {
-    out->Set(AtomicString(header->key),
-             AtomicString(WTF::String(header->value)));
+    out->Set(blink::AtomicString(header->key),
+             blink::AtomicString(WTF::String(header->value)));
   }
   return true;
 }

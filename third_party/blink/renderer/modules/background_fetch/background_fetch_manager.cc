@@ -91,8 +91,8 @@ bool ShouldBlockCredentials(ExecutionContext* execution_context,
 bool ShouldBlockScheme(const KURL& request_url) {
   // Require http(s), i.e. block data:, wss: and file:
   // https://github.com/WICG/background-fetch/issues/44
-  return !request_url.ProtocolIs(WTF::g_http_atom) &&
-         !request_url.ProtocolIs(WTF::g_https_atom);
+  return !request_url.ProtocolIs(g_http_atom) &&
+         !request_url.ProtocolIs(g_https_atom);
 }
 
 bool ShouldBlockDanglingMarkup(const KURL& request_url) {

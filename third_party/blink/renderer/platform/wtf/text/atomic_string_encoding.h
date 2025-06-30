@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_ENCODING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_ENCODING_H_
 
-namespace WTF {
+namespace blink {
 
 enum class AtomicStringUCharEncoding {
   kUnknown,
@@ -17,6 +17,6 @@ enum class AtomicStringUCharEncoding {
   kIs16Bit,
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_ENCODING_H_

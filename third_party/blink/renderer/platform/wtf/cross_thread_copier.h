@@ -113,8 +113,8 @@ struct CrossThreadCopier<SegmentedBuffer>
 };
 
 template <>
-struct CrossThreadCopier<AtomicString>
-    : public CrossThreadCopierPassThrough<AtomicString> {
+struct CrossThreadCopier<blink::AtomicString>
+    : public CrossThreadCopierPassThrough<blink::AtomicString> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

@@ -32,7 +32,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(AtomicStringTest, Number) {
   int16_t int_value = 1234;
@@ -75,4 +75,4 @@ TEST(AtomicStringTest, ImplEquality) {
   EXPECT_NE(bar.Impl(), baz.Impl());
 }
 
-}  // namespace WTF
+}  // namespace blink

@@ -597,6 +597,7 @@ TEST(HashMapTest, InitializerList) {
 }
 
 TEST(HashMapTest, IsValidKey) {
+  using blink::AtomicString;
   static_assert(HashTraits<int>::kSafeToCompareToEmptyOrDeleted,
                 "type should be comparable to empty or deleted");
   static_assert(HashTraits<int*>::kSafeToCompareToEmptyOrDeleted,

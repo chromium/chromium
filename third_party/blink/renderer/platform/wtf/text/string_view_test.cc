@@ -16,6 +16,10 @@
 
 namespace WTF {
 
+using blink::AtomicString;
+using blink::g_empty_atom;
+using blink::g_null_atom;
+
 const char kChars[] = "12345";
 const char16_t kCharsU[] = u"12345";
 const LChar* const kChars8 = reinterpret_cast<const LChar*>(kChars);

@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
-namespace WTF {
+namespace blink {
 
 ASSERT_SIZE(AtomicString, String);
 
@@ -137,4 +137,4 @@ void AtomicString::Show() const {
 }
 #endif
 
-}  // namespace WTF
+}  // namespace blink

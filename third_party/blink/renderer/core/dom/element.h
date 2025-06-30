@@ -413,7 +413,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void setAttribute(AtomicString name,
                     String value,
                     ExceptionState& exception_state = ASSERT_NO_EXCEPTION) {
-    WTF::AtomicStringTable::WeakResult weak_lowercase_name =
+    AtomicStringTable::WeakResult weak_lowercase_name =
         WeakLowercaseIfNecessary(name);
     SetAttributeHinted(std::move(name), weak_lowercase_name, std::move(value),
                        exception_state);
@@ -423,7 +423,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void setAttribute(AtomicString name,
                     const V8TrustedType* trusted_string,
                     ExceptionState& exception_state) {
-    WTF::AtomicStringTable::WeakResult weak_lowercase_name =
+    AtomicStringTable::WeakResult weak_lowercase_name =
         WeakLowercaseIfNecessary(name);
     SetAttributeHinted(std::move(name), weak_lowercase_name, trusted_string,
                        exception_state);
@@ -459,7 +459,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   //   document, then set qualifiedName to qualifiedName in ASCII lowercase.
   //   https://dom.spec.whatwg.org/#concept-element-attributes-get-by-name
   AtomicString LowercaseIfNecessary(AtomicString) const;
-  WTF::AtomicStringTable::WeakResult WeakLowercaseIfNecessary(
+  AtomicStringTable::WeakResult WeakLowercaseIfNecessary(
       const AtomicString&) const;
 
   // NoncedElement implementation: this is only used by HTMLElement and
@@ -2169,23 +2169,22 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // the `hint` can be constructed from calling AtomicString::Impl().
   const AtomicString& GetAttributeHinted(
       const AtomicString& name,
-      WTF::AtomicStringTable::WeakResult hint) const;
+      AtomicStringTable::WeakResult hint) const;
   void RemoveAttributeHinted(const AtomicString& name,
-                             WTF::AtomicStringTable::WeakResult hint);
-  void SynchronizeAttributeHinted(
-      const AtomicString& name,
-      WTF::AtomicStringTable::WeakResult hint) const;
+                             AtomicStringTable::WeakResult hint);
+  void SynchronizeAttributeHinted(const AtomicString& name,
+                                  AtomicStringTable::WeakResult hint) const;
   void SetAttributeHinted(AtomicString name,
-                          WTF::AtomicStringTable::WeakResult hint,
+                          AtomicStringTable::WeakResult hint,
                           String value,
                           ExceptionState& = ASSERT_NO_EXCEPTION);
   void SetAttributeHinted(AtomicString name,
-                          WTF::AtomicStringTable::WeakResult hint,
+                          AtomicStringTable::WeakResult hint,
                           const V8TrustedType* trusted_string,
                           ExceptionState& exception_state);
   std::pair<wtf_size_t, const QualifiedName> LookupAttributeQNameHinted(
       AtomicString name,
-      WTF::AtomicStringTable::WeakResult hint) const;
+      AtomicStringTable::WeakResult hint) const;
   wtf_size_t ValidateAttributeIndex(wtf_size_t index,
                                     const QualifiedName& qname) const;
 

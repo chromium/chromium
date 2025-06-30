@@ -18,6 +18,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
@@ -30,9 +31,6 @@ class CodePointIterator;
 }
 
 namespace WTF {
-
-class AtomicString;
-class String;
 
 enum class Utf8ConversionMode : uint8_t {
   // Unpaired surrogates are encoded using the standard UTF-8 encoding scheme,
@@ -138,12 +136,13 @@ class WTF_EXPORT StringView {
   inline StringView(const String& string LIFETIME_BOUND);
 
   // From an AtomicString, implemented in atomic_string.h
-  inline StringView(const AtomicString& string LIFETIME_BOUND,
+  inline StringView(const blink::AtomicString& string LIFETIME_BOUND,
                     unsigned offset,
                     unsigned length);
-  inline StringView(const AtomicString& string LIFETIME_BOUND, unsigned offset);
+  inline StringView(const blink::AtomicString& string LIFETIME_BOUND,
+                    unsigned offset);
   // NOLINTNEXTLINE(google-explicit-constructor)
-  inline StringView(const AtomicString& string LIFETIME_BOUND);
+  inline StringView(const blink::AtomicString& string LIFETIME_BOUND);
 
   // From a literal string or LChar buffer:
   explicit StringView(base::span<const LChar> chars)
@@ -275,7 +274,7 @@ class WTF_EXPORT StringView {
   StringView LowerASCIIMaybeUsingBuffer(StackBackingStore& backing_store) const;
 
   String ToString() const;
-  AtomicString ToAtomicString() const;
+  blink::AtomicString ToAtomicString() const;
 
   // Returns a version suitable for gtest and base/logging.*.  It prepends and
   // appends double-quotes, and escapes characters other than ASCII printables.
