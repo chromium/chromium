@@ -27,6 +27,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/about_sys:build_ts",
     "//chrome/browser/resources/app_home:build_ts",
     "//chrome/browser/resources/app_settings:build_ts",
+    "//chrome/browser/resources/autofill_ml_internals:build_ts",
     "//chrome/browser/resources/bookmarks:build_ts",
     "//chrome/browser/resources/browser_switch:build_ts",
     "//chrome/browser/resources/certificate_manager:build_ts",

@@ -32,6 +32,7 @@ group("resources") {
       "about_sys:resources",
       "access_code_cast:resources",
       "app_service_internals:resources",
+      "autofill_ml_internals:resources",
       "bookmarks:resources",
       "certificate_manager:resources",
       "commerce/product_specifications:resources",

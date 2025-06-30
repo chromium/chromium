@@ -188,6 +188,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/about_sys_resources.pak",
         "$root_gen_dir/chrome/access_code_cast_resources.pak",
         "$root_gen_dir/chrome/app_service_internals_resources.pak",
+        "$root_gen_dir/chrome/autofill_ml_internals_resources.pak",
         "$root_gen_dir/chrome/bookmarks_resources.pak",
         "$root_gen_dir/chrome/certificate_manager_resources.pak",
         "$root_gen_dir/chrome/commerce_product_specifications_resources.pak",
@@ -236,6 +237,7 @@ template("chrome_extra_paks") {
       ]
       deps += [
         "//chrome/browser/resources:dev_ui_paks",
+        "//chrome/browser/resources/autofill_ml_internals:resources",
         "//chrome/browser/resources/commerce/product_specifications:resources",
         "//chrome/browser/resources/data_sharing:resources",
         "//chrome/browser/resources/lens/overlay:resources",
