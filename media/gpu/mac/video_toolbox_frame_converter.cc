@@ -270,9 +270,6 @@ void VideoToolboxFrameConverter::Convert(
       base::BindOnce(&VideoToolboxFrameConverter::OnVideoFrameReleased, this,
                      shared_image, std::move(image)));
 
-  // It should be possible to use VideoFrame::WrapExternalGpuMemoryBuffer(),
-  // which would allow the renderer to map the IOSurface, but this is more
-  // expensive whenever the renderer is not doing readback.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       video_pixel_format, shared_image, shared_image->creation_sync_token(),
       std::move(release_cb), coded_size, visible_rect, natural_size,
