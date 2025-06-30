@@ -1787,6 +1787,12 @@ void AutofillAgent::HidePopup() {
     return;
   }
 
+  // The browser code also calls `ClearPreviewedForm` on hiding the popup.
+  // However, there can be instances in which the render frame is already
+  // switched out by the time this call happens. If that render frame is later
+  // retrieved from BFCache, the preview is still active. Clearing preview here
+  // prevents that.
+  ClearPreviewedForm();
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     autofill_driver->HidePopup();
   }
