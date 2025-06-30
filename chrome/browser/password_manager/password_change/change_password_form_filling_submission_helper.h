@@ -27,6 +27,7 @@ class PasswordManagerDriver;
 
 class PasswordChangeSubmissionVerifier;
 class ModelQualityLogsUploader;
+class ChangePasswordFormWaiter;
 
 // Helper class which fills a form, submits it and verifies submission result.
 // Upon completion invokes `result_callback` to notify the result of submission.
@@ -57,8 +58,8 @@ class ChangePasswordFormFillingSubmissionHelper {
   void FillChangePasswordForm(
       password_manager::PasswordFormManager* form_manager,
       const std::u16string& username,
-      const std::u16string& old_password,
-      const std::u16string& new_password);
+      const std::u16string& original_password,
+      const std::u16string& generated_password);
 
   // Triggers verification if `web_contents` is the same as initial WebContents.
   void OnPasswordFormSubmission(content::WebContents* web_contents);
@@ -75,6 +76,8 @@ class ChangePasswordFormFillingSubmissionHelper {
     return submission_verifier_.get();
   }
 
+  ChangePasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
+
   ButtonClickHelper* click_helper() { return click_helper_.get(); }
 
   password_manager::PasswordFormManager* form_manager() {
@@ -85,15 +88,11 @@ class ChangePasswordFormFillingSubmissionHelper {
  private:
   void TriggerFilling(
       const password_manager::PasswordForm& form,
-      base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      const std::u16string& username,
-      const std::u16string& old_password,
-      const std::u16string& new_password);
+      base::WeakPtr<password_manager::PasswordManagerDriver> driver);
 
   void ChangePasswordFormFilled(
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
       autofill::FieldRendererId field_id,
-      const std::u16string& backup_password,
       const std::optional<autofill::FormData>& submitted_form);
 
   void OnSubmitWithEnterResult(
@@ -118,19 +117,40 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   void OnSubmissionDetectedOrTimeout();
 
-  base::OneShotTimer timeout_timer_;
+  void OnChangePasswordFormFound(
+      password_manager::PasswordFormManager* form_manager);
+
   const raw_ptr<content::WebContents> web_contents_;
+
   base::OnceCallback<void(bool)> callback_;
+
+  // Helper for uploading model logs.
   raw_ptr<ModelQualityLogsUploader> logs_uploader_;
+
+  // PasswordFormManager associated with current change password form.
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
 
-  bool submission_detected_ = false;
+  std::u16string username_;
+  std::u16string original_password_;
+  std::u16string generated_password_;
 
-  std::unique_ptr<PasswordChangeSubmissionVerifier> submission_verifier_;
+  // Callback for receiving Annotated Page Content.
   base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
       capture_annotated_page_content_;
 
+  // Timeout for verifying submission detection.
+  base::OneShotTimer timeout_timer_;
+
+  bool submission_detected_ = false;
+
+  // Helper object which verifies whether password was updated successfully.
+  std::unique_ptr<PasswordChangeSubmissionVerifier> submission_verifier_;
+
   std::unique_ptr<ButtonClickHelper> click_helper_;
+
+  // Helper object which finds for a new PasswordFormManager when filling of an
+  // old form failed.
+  std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
 
   base::WeakPtrFactory<ChangePasswordFormFillingSubmissionHelper>
       weak_ptr_factory_{this};

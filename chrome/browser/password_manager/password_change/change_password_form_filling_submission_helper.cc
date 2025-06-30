@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
@@ -88,11 +89,15 @@ ChangePasswordFormFillingSubmissionHelper::
 void ChangePasswordFormFillingSubmissionHelper::FillChangePasswordForm(
     password_manager::PasswordFormManager* form_manager,
     const std::u16string& username,
-    const std::u16string& old_password,
-    const std::u16string& new_password) {
+    const std::u16string& original_password,
+    const std::u16string& generated_password) {
   CHECK(form_manager);
   CHECK(form_manager->GetParsedObservedForm());
   CHECK(form_manager->GetDriver());
+
+  username_ = username;
+  original_password_ = original_password;
+  generated_password_ = generated_password;
 
   // TODO(crbug.com/422125487): Fix metrics duplication.
   form_manager_ = form_manager->Clone();
@@ -104,8 +109,7 @@ void ChangePasswordFormFillingSubmissionHelper::FillChangePasswordForm(
       base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::TriggerFilling,
                      weak_ptr_factory_.GetWeakPtr(),
                      *form_manager->GetParsedObservedForm(),
-                     form_manager->GetDriver(), username, old_password,
-                     new_password));
+                     form_manager->GetDriver()));
 
   // Proceed with verifying password on timeout, in case submission was not
   // captured.
@@ -150,10 +154,7 @@ GURL ChangePasswordFormFillingSubmissionHelper::GetURL() const {
 
 void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
     const password_manager::PasswordForm& form,
-    base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-    const std::u16string& username,
-    const std::u16string& old_password,
-    const std::u16string& new_password) {
+    base::WeakPtr<password_manager::PasswordManagerDriver> driver) {
   CHECK(form_manager_);
   if (!driver) {
     // Fail immediately as something went terribly wrong (e.g. page crashed).
@@ -163,18 +164,18 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
 
   driver->FillChangePasswordForm(
       form.password_element_renderer_id, form.new_password_element_renderer_id,
-      form.confirmation_password_element_renderer_id, old_password,
-      new_password,
+      form.confirmation_password_element_renderer_id, original_password_,
+      generated_password_,
       base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled,
           weak_ptr_factory_.GetWeakPtr(), driver,
-          form.new_password_element_renderer_id, old_password));
+          form.new_password_element_renderer_id));
 
   password_manager::PasswordForm form_to_save(form);
-  form_to_save.username_value = username;
-  form_to_save.password_value = old_password;
+  form_to_save.username_value = username_;
+  form_to_save.password_value = original_password_;
   password_manager::PasswordFormManager::PresaveGeneratedPasswordAsBackup(
-      *form_manager_, form_to_save, new_password);
+      *form_manager_, form_to_save, generated_password_);
   // Fetch newly saved password so that it's included in the matches when we
   // save the submitted form.
   form_manager_->GetFormFetcher()->Fetch();
@@ -183,7 +184,6 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
 void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     autofill::FieldRendererId field_id,
-    const std::u16string& backup_password,
     const std::optional<autofill::FormData>& submitted_form) {
   if (!driver) {
     // Fail immediately as something went terribly wrong (e.g. page crashed).
@@ -197,8 +197,13 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
   }
 
   if (!submitted_form) {
-    // TODO(crbug.com/398754700): Change password form disappeared, consider
-    // searching for change-pwd form again.
+    // Change password form disappeared, some websites practice updating form
+    // dynamically which resets the form. Try to find a new change-pwd form.
+    form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
+        web_contents_,
+        base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
+                           OnChangePasswordFormFound,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -207,7 +212,7 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
       base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
                      password_manager::PossibleUsernameData>(
           password_manager::kMaxSingleUsernameFieldsToStore));
-  form_manager_->UpdateBackupPassword(backup_password);
+  form_manager_->UpdateBackupPassword(original_password_);
   driver->SubmitFormWithEnter(
       field_id,
       base::BindOnce(
@@ -333,4 +338,21 @@ void ChangePasswordFormFillingSubmissionHelper::
       submission_detected_);
 
   submission_verifier_->CheckSubmissionOutcome(std::move(callback_));
+}
+
+void ChangePasswordFormFillingSubmissionHelper::OnChangePasswordFormFound(
+    password_manager::PasswordFormManager* form_manager) {
+  form_waiter_.reset();
+
+  if (!form_manager) {
+    std::move(callback_).Run(false);
+    return;
+  }
+
+  CHECK(form_manager->GetParsedObservedForm());
+  CHECK(form_manager->GetDriver());
+
+  form_manager_ = form_manager->Clone();
+  TriggerFilling(*form_manager->GetParsedObservedForm(),
+                 form_manager->GetDriver());
 }
