@@ -37,10 +37,9 @@ class AwHttpAuthHandler : public content::LoginDelegate {
   bool HandleOnUIThread(content::WebContents* web_contents);
 
   void Proceed(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& obj,
                const base::android::JavaParamRef<jstring>& username,
                const base::android::JavaParamRef<jstring>& password);
-  void Cancel(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Cancel(JNIEnv* env);
 
  private:
   void Start();

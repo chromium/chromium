@@ -26,16 +26,15 @@ void AwPicture::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jint AwPicture::GetWidth(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+jint AwPicture::GetWidth(JNIEnv* env) {
   return picture_->cullRect().roundOut().width();
 }
 
-jint AwPicture::GetHeight(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+jint AwPicture::GetHeight(JNIEnv* env) {
   return picture_->cullRect().roundOut().height();
 }
 
 void AwPicture::Draw(JNIEnv* env,
-                     const JavaParamRef<jobject>& obj,
                      const JavaParamRef<jobject>& canvas) {
   const SkIRect bounds = picture_->cullRect().roundOut();
   if (bounds.isEmpty()) {

@@ -33,13 +33,9 @@ class AwDrawFnImpl {
 
   ~AwDrawFnImpl();
 
-  void ReleaseHandle(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
-  jint GetFunctorHandle(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
-  jlong GetCompositorFrameConsumer(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void ReleaseHandle(JNIEnv* env);
+  jint GetFunctorHandle(JNIEnv* env);
+  jlong GetCompositorFrameConsumer(JNIEnv* env);
 
   int functor_handle() { return functor_handle_; }
   void OnSync(AwDrawFn_OnSyncParams* params);

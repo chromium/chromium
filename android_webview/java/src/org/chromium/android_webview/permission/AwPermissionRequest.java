@@ -72,8 +72,7 @@ public class AwPermissionRequest {
     public void grant() {
         validate();
         if (mNativeAwPermissionRequest != 0) {
-            AwPermissionRequestJni.get()
-                    .onAccept(mNativeAwPermissionRequest, AwPermissionRequest.this, true);
+            AwPermissionRequestJni.get().onAccept(mNativeAwPermissionRequest, true);
             destroyNative();
         }
         mProcessed = true;
@@ -82,8 +81,7 @@ public class AwPermissionRequest {
     public void deny() {
         validate();
         if (mNativeAwPermissionRequest != 0) {
-            AwPermissionRequestJni.get()
-                    .onAccept(mNativeAwPermissionRequest, AwPermissionRequest.this, false);
+            AwPermissionRequestJni.get().onAccept(mNativeAwPermissionRequest, false);
             destroyNative();
         }
         mProcessed = true;
@@ -109,7 +107,7 @@ public class AwPermissionRequest {
 
     @NativeMethods
     interface Natives {
-        void onAccept(long nativeAwPermissionRequest, AwPermissionRequest caller, boolean allowed);
+        void onAccept(long nativeAwPermissionRequest, boolean allowed);
 
         void destroy(long nativeAwPermissionRequest);
     }

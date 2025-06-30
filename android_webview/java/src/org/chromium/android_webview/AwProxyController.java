@@ -55,7 +55,7 @@ public class AwProxyController {
         String result =
                 AwProxyControllerJni.get()
                         .setProxyOverride(
-                                AwProxyController.this,
+                                this,
                                 urlSchemes,
                                 proxyUrls,
                                 bypassRules,
@@ -72,7 +72,7 @@ public class AwProxyController {
             throw new IllegalArgumentException("Executor must not be null");
         }
 
-        AwProxyControllerJni.get().clearProxyOverride(AwProxyController.this, listener, executor);
+        AwProxyControllerJni.get().clearProxyOverride(this, listener, executor);
     }
 
     @CalledByNativeUnchecked
@@ -85,7 +85,7 @@ public class AwProxyController {
     interface Natives {
         @JniType("std::string")
         String setProxyOverride(
-                AwProxyController caller,
+                AwProxyController self,
                 String[] urlSchemes,
                 String[] proxyUrls,
                 String[] bypassRules,
@@ -93,6 +93,6 @@ public class AwProxyController {
                 Executor executor,
                 boolean reverseBypass);
 
-        void clearProxyOverride(AwProxyController caller, Runnable listener, Executor executor);
+        void clearProxyOverride(AwProxyController self, Runnable listener, Executor executor);
     }
 }

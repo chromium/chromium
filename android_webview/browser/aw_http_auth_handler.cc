@@ -53,7 +53,6 @@ AwHttpAuthHandler::~AwHttpAuthHandler() {
 }
 
 void AwHttpAuthHandler::Proceed(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
                                 const JavaParamRef<jstring>& user,
                                 const JavaParamRef<jstring>& password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -64,7 +63,7 @@ void AwHttpAuthHandler::Proceed(JNIEnv* env,
   }
 }
 
-void AwHttpAuthHandler::Cancel(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void AwHttpAuthHandler::Cancel(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (callback_) {
     std::move(callback_).Run(std::nullopt);

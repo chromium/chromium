@@ -76,7 +76,6 @@ AwTracingController::AwTracingController(JNIEnv* env,
 AwTracingController::~AwTracingController() {}
 
 bool AwTracingController::Start(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
                                 std::string& categories,
                                 jint jmode) {
   base::trace_event::TraceConfig trace_config(
@@ -85,8 +84,7 @@ bool AwTracingController::Start(JNIEnv* env,
       trace_config, content::TracingController::StartTracingDoneCallback());
 }
 
-bool AwTracingController::StopAndFlush(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj) {
+bool AwTracingController::StopAndFlush(JNIEnv* env) {
   // privacy_filtering_enabled=true is required for filtering out potential PII.
   return content::TracingController::GetInstance()->StopTracing(
       AwTraceDataEndpoint::Create(
@@ -118,8 +116,7 @@ void AwTracingController::OnTraceDataReceived(
   }
 }
 
-bool AwTracingController::IsTracing(JNIEnv* env,
-                                    const JavaParamRef<jobject>& obj) {
+bool AwTracingController::IsTracing(JNIEnv* env) {
   return content::TracingController::GetInstance()->IsTracing();
 }
 

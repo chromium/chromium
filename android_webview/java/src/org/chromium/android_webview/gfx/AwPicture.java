@@ -61,17 +61,17 @@ public class AwPicture extends Picture {
 
     @Override
     public int getWidth() {
-        return AwPictureJni.get().getWidth(mNativeAwPicture, AwPicture.this);
+        return AwPictureJni.get().getWidth(mNativeAwPicture);
     }
 
     @Override
     public int getHeight() {
-        return AwPictureJni.get().getHeight(mNativeAwPicture, AwPicture.this);
+        return AwPictureJni.get().getHeight(mNativeAwPicture);
     }
 
     @Override
     public void draw(Canvas canvas) {
-        AwPictureJni.get().draw(mNativeAwPicture, AwPicture.this, canvas);
+        AwPictureJni.get().draw(mNativeAwPicture, canvas);
     }
 
     @SuppressWarnings("deprecation")
@@ -83,10 +83,10 @@ public class AwPicture extends Picture {
     interface Natives {
         void destroy(long nativeAwPicture);
 
-        int getWidth(long nativeAwPicture, AwPicture caller);
+        int getWidth(long nativeAwPicture);
 
-        int getHeight(long nativeAwPicture, AwPicture caller);
+        int getHeight(long nativeAwPicture);
 
-        void draw(long nativeAwPicture, AwPicture caller, Canvas canvas);
+        void draw(long nativeAwPicture, Canvas canvas);
     }
 }

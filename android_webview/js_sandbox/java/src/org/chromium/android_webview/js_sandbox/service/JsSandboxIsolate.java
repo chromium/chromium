@@ -65,7 +65,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
             }
             JsSandboxIsolateJni.get()
                     .evaluateJavascript(
-                            mJsSandboxIsolate, this, code, new JsSandboxIsolateCallback(callback));
+                            mJsSandboxIsolate, code, new JsSandboxIsolateCallback(callback));
         }
     }
 
@@ -87,7 +87,6 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
             JsSandboxIsolateJni.get()
                     .evaluateJavascriptWithFd(
                             mJsSandboxIsolate,
-                            this,
                             afd.getParcelFileDescriptor().getFd(),
                             afd.getLength(),
                             afd.getStartOffset(),
@@ -102,7 +101,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
             if (mJsSandboxIsolate == 0) {
                 return;
             }
-            JsSandboxIsolateJni.get().destroyNative(mJsSandboxIsolate, this);
+            JsSandboxIsolateJni.get().destroyNative(mJsSandboxIsolate);
             mJsSandboxIsolate = 0;
         }
     }
@@ -124,7 +123,6 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
                     JsSandboxIsolateJni.get()
                             .provideNamedData(
                                     mJsSandboxIsolate,
-                                    this,
                                     name,
                                     afd.getParcelFileDescriptor().detachFd(),
                                     (int) afd.getLength());
@@ -220,7 +218,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
                 throw new IllegalStateException("setConsoleCallback() called after close()");
             }
             mConsoleCallback.set(callback);
-            JsSandboxIsolateJni.get().setConsoleEnabled(mJsSandboxIsolate, this, callback != null);
+            JsSandboxIsolateJni.get().setConsoleEnabled(mJsSandboxIsolate, callback != null);
         }
     }
 
@@ -260,31 +258,21 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
         void initializeEnvironment();
 
         // The calling code must not call any methods after it called destroyNative().
-        void destroyNative(long nativeJsSandboxIsolate, JsSandboxIsolate caller);
+        void destroyNative(long nativeJsSandboxIsolate);
 
         boolean evaluateJavascript(
-                long nativeJsSandboxIsolate,
-                JsSandboxIsolate caller,
-                String script,
-                JsSandboxIsolateCallback callback);
+                long nativeJsSandboxIsolate, String script, JsSandboxIsolateCallback callback);
 
         boolean evaluateJavascriptWithFd(
                 long nativeJsSandboxIsolate,
-                JsSandboxIsolate caller,
                 int fd,
                 long length,
                 long offset,
                 JsSandboxIsolateFdCallback callback,
                 ParcelFileDescriptor pfd);
 
-        boolean provideNamedData(
-                long nativeJsSandboxIsolate,
-                JsSandboxIsolate caller,
-                String name,
-                int fd,
-                int length);
+        boolean provideNamedData(long nativeJsSandboxIsolate, String name, int fd, int length);
 
-        void setConsoleEnabled(
-                long nativeJsSandboxIsolate, JsSandboxIsolate caller, boolean enable);
+        void setConsoleEnabled(long nativeJsSandboxIsolate, boolean enable);
     }
 }

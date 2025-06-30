@@ -49,7 +49,6 @@ class AwPermissionRequest {
   // Invoked by Java peer when request is processed, |granted| indicates the
   // request was granted or not.
   void OnAccept(JNIEnv* env,
-                const base::android::JavaParamRef<jobject>& jcaller,
                 jboolean granted);
   void Destroy(JNIEnv* env);
 

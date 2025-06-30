@@ -34,17 +34,11 @@ public class RootBeginFrameSourceWebView implements DisplayAndroidObserver {
     @Override
     public void onRefreshRateChanged(float refreshRate) {
         RootBeginFrameSourceWebViewJni.get()
-                .onUpdateRefreshRate(
-                        mNativeRootBeginFrameSourceWebView,
-                        RootBeginFrameSourceWebView.this,
-                        refreshRate);
+                .onUpdateRefreshRate(mNativeRootBeginFrameSourceWebView, refreshRate);
     }
 
     @NativeMethods
     interface Natives {
-        void onUpdateRefreshRate(
-                long nativeRootBeginFrameSourceWebView,
-                RootBeginFrameSourceWebView caller,
-                float refreshRate);
+        void onUpdateRefreshRate(long nativeRootBeginFrameSourceWebView, float refreshRate);
     }
 }

@@ -221,11 +221,6 @@ AwQuotaManagerBridge::AwQuotaManagerBridge(AwBrowserContext* browser_context)
 
 AwQuotaManagerBridge::~AwQuotaManagerBridge() = default;
 
-void AwQuotaManagerBridge::Init(JNIEnv* env,
-                                const JavaParamRef<jobject>& object) {
-  java_ref_ = JavaObjectWeakGlobalRef(env, object);
-}
-
 StoragePartition* AwQuotaManagerBridge::GetStoragePartition() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -354,7 +349,6 @@ void OnUsageAndQuotaObtained(
 
 void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     const JavaParamRef<jstring>& origin,
     const JavaParamRef<jobject>& callback,
     bool is_quota) {

@@ -26,11 +26,11 @@ public class AwDevToolsServer {
                 AwNetLogsConnection.stopNetLogService();
             }
         }
-        AwDevToolsServerJni.get().setRemoteDebuggingEnabled(AwDevToolsServer.this, enabled);
+        AwDevToolsServerJni.get().setRemoteDebuggingEnabled(enabled);
     }
 
     @NativeMethods
     interface Natives {
-        void setRemoteDebuggingEnabled(AwDevToolsServer caller, boolean enabled);
+        void setRemoteDebuggingEnabled(boolean enabled);
     }
 }

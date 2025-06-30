@@ -107,9 +107,7 @@ void AwRenderProcess::Cleanup() {
   // |this| is now deleted.
 }
 
-bool AwRenderProcess::TerminateChildProcess(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+bool AwRenderProcess::TerminateChildProcess(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   bool result = render_process_host_->Shutdown(0);
@@ -129,9 +127,7 @@ bool AwRenderProcess::TerminateChildProcess(
   return result;
 }
 
-bool AwRenderProcess::IsProcessLockedToSiteForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+bool AwRenderProcess::IsProcessLockedToSiteForTesting(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   return render_process_host_->IsProcessLockedToSiteForTesting();  // IN-TEST

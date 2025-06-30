@@ -31,13 +31,13 @@ public final class AwDrawFnImpl {
     public AwDrawFnImpl(DrawFnAccess access) {
         mAccess = access;
         mNativeAwDrawFnImpl = AwDrawFnImplJni.get().create();
-        mHandle = AwDrawFnImplJni.get().getFunctorHandle(mNativeAwDrawFnImpl, AwDrawFnImpl.this);
+        mHandle = AwDrawFnImplJni.get().getFunctorHandle(mNativeAwDrawFnImpl);
     }
 
     /** Destroy on UI thread. Client should stop using CompositorFrameConsumer before this */
     public void destroy() {
         assert mNativeAwDrawFnImpl != 0;
-        AwDrawFnImplJni.get().releaseHandle(mNativeAwDrawFnImpl, AwDrawFnImpl.this);
+        AwDrawFnImplJni.get().releaseHandle(mNativeAwDrawFnImpl);
         // Native side is free to destroy itself after ReleaseHandle.
         mNativeAwDrawFnImpl = 0;
     }
@@ -49,8 +49,7 @@ public final class AwDrawFnImpl {
     /** Return the raw native pointer to CompositorFrameConsumer */
     public long getNativeCompositorFrameConsumer() {
         assert mNativeAwDrawFnImpl != 0;
-        return AwDrawFnImplJni.get()
-                .getCompositorFrameConsumer(mNativeAwDrawFnImpl, AwDrawFnImpl.this);
+        return AwDrawFnImplJni.get().getCompositorFrameConsumer(mNativeAwDrawFnImpl);
     }
 
     /** Insert draw functor into recording canvas */
@@ -73,11 +72,11 @@ public final class AwDrawFnImpl {
 
     @NativeMethods
     interface Natives {
-        int getFunctorHandle(long nativeAwDrawFnImpl, AwDrawFnImpl caller);
+        int getFunctorHandle(long nativeAwDrawFnImpl);
 
-        long getCompositorFrameConsumer(long nativeAwDrawFnImpl, AwDrawFnImpl caller);
+        long getCompositorFrameConsumer(long nativeAwDrawFnImpl);
 
-        void releaseHandle(long nativeAwDrawFnImpl, AwDrawFnImpl caller);
+        void releaseHandle(long nativeAwDrawFnImpl);
 
         void setDrawFnFunctionTable(long functionTablePointer);
 

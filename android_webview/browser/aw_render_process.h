@@ -26,12 +26,9 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  bool TerminateChildProcess(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj);
+  bool TerminateChildProcess(JNIEnv* env);
 
-  bool IsProcessLockedToSiteForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  bool IsProcessLockedToSiteForTesting(JNIEnv* env);
 
   explicit AwRenderProcess(content::RenderProcessHost* render_process_host);
 

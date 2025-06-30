@@ -399,9 +399,7 @@ void AwPacProcessor::Destroy(base::WaitableEvent* event) {
   event->Signal();
 }
 
-void AwPacProcessor::DestroyNative(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void AwPacProcessor::DestroyNative(JNIEnv* env) {
   delete this;
 }
 
@@ -439,7 +437,6 @@ bool AwPacProcessor::SetProxyScript(std::string script) {
 }
 
 jboolean AwPacProcessor::SetProxyScript(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
                                         std::string& script) {
   return SetProxyScript(script);
 }
@@ -460,7 +457,6 @@ bool AwPacProcessor::MakeProxyRequest(std::string url, std::string* result) {
 
 ScopedJavaLocalRef<jstring> AwPacProcessor::MakeProxyRequest(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jurl) {
   std::string url = ConvertJavaStringToUTF8(env, jurl);
   std::string result;

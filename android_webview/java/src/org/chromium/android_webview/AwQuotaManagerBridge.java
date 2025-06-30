@@ -47,7 +47,6 @@ public class AwQuotaManagerBridge {
 
     public AwQuotaManagerBridge(long nativeAwQuotaManagerBridge) {
         mNativeAwQuotaManagerBridge = nativeAwQuotaManagerBridge;
-        AwQuotaManagerBridgeJni.get().init(mNativeAwQuotaManagerBridge, AwQuotaManagerBridge.this);
     }
 
     /*
@@ -163,7 +162,6 @@ public class AwQuotaManagerBridge {
         AwQuotaManagerBridgeJni.get()
                 .getUsageAndQuotaForOrigin(
                         mNativeAwQuotaManagerBridge,
-                        AwQuotaManagerBridge.this,
                         origin,
                         callback,
                         true);
@@ -178,7 +176,6 @@ public class AwQuotaManagerBridge {
         AwQuotaManagerBridgeJni.get()
                 .getUsageAndQuotaForOrigin(
                         mNativeAwQuotaManagerBridge,
-                        AwQuotaManagerBridge.this,
                         origin,
                         callback,
                         false);
@@ -192,8 +189,6 @@ public class AwQuotaManagerBridge {
 
     @NativeMethods
     interface Natives {
-        void init(long nativeAwQuotaManagerBridge, AwQuotaManagerBridge caller);
-
         void deleteAllDataFramework(long nativeAwQuotaManagerBridge);
 
         void deleteOriginFramework(long nativeAwQuotaManagerBridge, String origin);
@@ -214,7 +209,6 @@ public class AwQuotaManagerBridge {
 
         void getUsageAndQuotaForOrigin(
                 long nativeAwQuotaManagerBridge,
-                AwQuotaManagerBridge caller,
                 String origin,
                 Callback<Long> callback,
                 boolean isQuota);

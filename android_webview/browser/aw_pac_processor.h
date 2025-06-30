@@ -27,16 +27,13 @@ class AwPacProcessor {
   AwPacProcessor& operator=(const AwPacProcessor&) = delete;
 
   ~AwPacProcessor();
-  void DestroyNative(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
+  void DestroyNative(JNIEnv* env);
 
   jboolean SetProxyScript(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
                           std::string& jscript);
   bool SetProxyScript(std::string script);
   base::android::ScopedJavaLocalRef<jstring> MakeProxyRequest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jurl);
   bool MakeProxyRequest(std::string url, std::string* result);
   void SetNetworkAndLinkAddresses(

@@ -101,8 +101,7 @@ public class AwTracingController {
 
         String categoryFilter =
                 constructCategoryFilterString(predefinedCategories, customIncludedCategories);
-        AwTracingControllerJni.get()
-                .start(mNativeAwTracingController, AwTracingController.this, categoryFilter, mode);
+        AwTracingControllerJni.get().start(mNativeAwTracingController, categoryFilter, mode);
         return RESULT_SUCCESS;
     }
 
@@ -110,14 +109,12 @@ public class AwTracingController {
     public boolean stopAndFlush(@Nullable OutputStream outputStream) {
         if (!isTracing()) return false;
         mOutputStream = outputStream;
-        AwTracingControllerJni.get()
-                .stopAndFlush(mNativeAwTracingController, AwTracingController.this);
+        AwTracingControllerJni.get().stopAndFlush(mNativeAwTracingController);
         return true;
     }
 
     public boolean isTracing() {
-        return AwTracingControllerJni.get()
-                .isTracing(mNativeAwTracingController, AwTracingController.this);
+        return AwTracingControllerJni.get().isTracing(mNativeAwTracingController);
     }
 
     // Combines configuration bits into a category string usable by chromium.
@@ -176,16 +173,15 @@ public class AwTracingController {
 
     @NativeMethods
     interface Natives {
-        long init(AwTracingController caller);
+        long init(AwTracingController self);
 
         boolean start(
                 long nativeAwTracingController,
-                AwTracingController caller,
                 @JniType("std::string") String categories,
                 int traceMode);
 
-        boolean stopAndFlush(long nativeAwTracingController, AwTracingController caller);
+        boolean stopAndFlush(long nativeAwTracingController);
 
-        boolean isTracing(long nativeAwTracingController, AwTracingController caller);
+        boolean isTracing(long nativeAwTracingController);
     }
 }

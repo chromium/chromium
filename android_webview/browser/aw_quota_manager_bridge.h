@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -46,8 +45,6 @@ class AwQuotaManagerBridge
   static scoped_refptr<AwQuotaManagerBridge> Create(
       AwBrowserContext* browser_context);
 
-  // Called by Java.
-  void Init(JNIEnv* env, const base::android::JavaParamRef<jobject>& object);
   // Delete all browsing data stored by the profile this bridge is attached to.
   void DeleteBrowsingData(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& callback);
@@ -73,7 +70,6 @@ class AwQuotaManagerBridge
                   const base::android::JavaParamRef<jobject>& callback);
   void GetUsageAndQuotaForOrigin(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& object,
       const base::android::JavaParamRef<jstring>& origin,
       const base::android::JavaParamRef<jobject>& callback,
       bool is_quota);
@@ -95,7 +91,6 @@ class AwQuotaManagerBridge
   storage::QuotaManager* GetQuotaManager() const;
 
   raw_ptr<AwBrowserContext> browser_context_;
-  JavaObjectWeakGlobalRef java_ref_;
 
   base::WeakPtrFactory<AwQuotaManagerBridge> weak_factory_{this};
 };

@@ -48,7 +48,6 @@ AwPermissionRequest::~AwPermissionRequest() {
 }
 
 void AwPermissionRequest::OnAccept(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jcaller,
                                    jboolean accept) {
   OnAcceptInternal(accept);
 }

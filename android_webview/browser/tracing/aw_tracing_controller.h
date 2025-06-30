@@ -18,12 +18,10 @@ class AwTracingController {
   AwTracingController& operator=(const AwTracingController&) = delete;
 
   bool Start(JNIEnv* env,
-             const base::android::JavaParamRef<jobject>& obj,
              std::string& jcategories,
              jint mode);
-  bool StopAndFlush(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
-  bool IsTracing(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  bool StopAndFlush(JNIEnv* env);
+  bool IsTracing(JNIEnv* env);
 
  private:
   ~AwTracingController();

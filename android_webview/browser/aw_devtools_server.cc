@@ -152,7 +152,6 @@ bool IsAwDevToolsServerStarted() {
 
 static void JNI_AwDevToolsServer_SetRemoteDebuggingEnabled(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jboolean enabled) {
   if (enabled) {
     StartAwDevToolsServer();

@@ -363,7 +363,6 @@ JsSandboxIsolate::~JsSandboxIsolate() {
 // isolate_task_runner_.
 jboolean JsSandboxIsolate::EvaluateJavascript(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& jcode,
     const base::android::JavaParamRef<jobject>& j_callback) {
   std::string code = ConvertJavaStringToUTF8(env, jcode);
@@ -383,7 +382,6 @@ jboolean JsSandboxIsolate::EvaluateJavascript(
 // checks for streaming failures.
 jboolean JsSandboxIsolate::EvaluateJavascriptWithFd(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const jint fd,
     const jlong length,
     const jlong offset,
@@ -404,9 +402,7 @@ jboolean JsSandboxIsolate::EvaluateJavascriptWithFd(
 }
 
 // Called from Binder thread.
-void JsSandboxIsolate::DestroyNative(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void JsSandboxIsolate::DestroyNative(JNIEnv* env) {
   control_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&JsSandboxIsolate::DestroyWhenPossible,
                                 base::Unretained(this)));
@@ -415,7 +411,6 @@ void JsSandboxIsolate::DestroyNative(
 // Called from Binder thread.
 jboolean JsSandboxIsolate::ProvideNamedData(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& jname,
     const jint fd,
     const jint length) {
@@ -429,7 +424,6 @@ jboolean JsSandboxIsolate::ProvideNamedData(
 // Called from Binder thread.
 void JsSandboxIsolate::SetConsoleEnabled(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const jboolean enable) {
   control_task_runner_->PostTask(
       FROM_HERE,

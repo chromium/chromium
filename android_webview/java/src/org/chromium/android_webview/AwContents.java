@@ -2943,7 +2943,7 @@ public class AwContents implements SmartClipProvider {
         }
 
         return new ScriptHandler(
-                AwContents.this,
+                this,
                 AwContentsJni.get()
                         .addDocumentStartJavaScript(mNativeAwContents, script, allowedOriginRules));
     }

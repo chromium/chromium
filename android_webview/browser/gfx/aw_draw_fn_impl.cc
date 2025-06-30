@@ -232,25 +232,19 @@ AwDrawFnImpl::AwDrawFnImpl()
 
 AwDrawFnImpl::~AwDrawFnImpl() = default;
 
-void AwDrawFnImpl::ReleaseHandle(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void AwDrawFnImpl::ReleaseHandle(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   --g_instance_count;
   render_thread_manager_.RemoveFromCompositorFrameProducerOnUI();
   g_draw_fn_function_table->release_functor(functor_handle_);
 }
 
-jint AwDrawFnImpl::GetFunctorHandle(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+jint AwDrawFnImpl::GetFunctorHandle(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return functor_handle_;
 }
 
-jlong AwDrawFnImpl::GetCompositorFrameConsumer(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+jlong AwDrawFnImpl::GetCompositorFrameConsumer(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return reinterpret_cast<intptr_t>(GetCompositorFrameConsumer());
 }

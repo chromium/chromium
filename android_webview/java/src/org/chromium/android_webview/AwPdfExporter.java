@@ -89,12 +89,7 @@ public class AwPdfExporter {
         mAttributes = attributes;
         mFd = fd;
         AwPdfExporterJni.get()
-                .exportToPdf(
-                        mNativeAwPdfExporter,
-                        AwPdfExporter.this,
-                        mFd.getFd(),
-                        pages,
-                        cancellationSignal);
+                .exportToPdf(mNativeAwPdfExporter, this, mFd.getFd(), pages, cancellationSignal);
     }
 
     @CalledByNative
@@ -178,7 +173,7 @@ public class AwPdfExporter {
     interface Natives {
         void exportToPdf(
                 long nativeAwPdfExporter,
-                AwPdfExporter caller,
+                AwPdfExporter self,
                 int fd,
                 int[] pages,
                 CancellationSignal cancellationSignal);

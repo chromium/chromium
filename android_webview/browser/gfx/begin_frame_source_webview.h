@@ -84,7 +84,6 @@ class RootBeginFrameSourceWebView : public BeginFrameSourceWebView {
   static RootBeginFrameSourceWebView* GetInstance();
 
   void OnUpdateRefreshRate(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
                            float refresh_rate);
 
   // As this is implementation of root BeginFrameSourceWebView this is actual
