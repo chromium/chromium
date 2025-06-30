@@ -105,6 +105,10 @@ MockFeedback = class {
 
     const addUtterance = this.addUtterance_.bind(this);
     class MockTts extends PrimaryTts {
+      constructor() {
+        super(/*skipOnVoicesHandlerForTesting=*/ true);
+      }
+
       /** @override */
       speak(...args) {
         addUtterance(...args);

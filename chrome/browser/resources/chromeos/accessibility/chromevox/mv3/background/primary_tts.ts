@@ -96,15 +96,17 @@ export class PrimaryTts extends AbstractTts {
   private utteranceQueueInterruptedByInterjection_: Utterance[] = [];
 
 
-  constructor() {
+  constructor(skipOnVoicesHandlerForTesting = false) {
     super();
 
     this.currentPunctuationEcho_ =
         SettingsManager.getNumber(TtsSettings.PUNCTUATION_ECHO);
 
-    BridgeHelper.registerHandler(
-        TARGET, Action.ON_VOICES_CHANGED,
-        () => this.updateVoice(SettingsManager.getString('voiceName')));
+    if (!skipOnVoicesHandlerForTesting) {
+      BridgeHelper.registerHandler(
+          TARGET, Action.ON_VOICES_CHANGED,
+          () => this.updateVoice(SettingsManager.getString('voiceName')));
+    }
 
     this.setDefaultVoiceIfChromecast_();
 

@@ -38,6 +38,9 @@ common_tsc_dir =
 # Messageformat third_party directory.
 messageformat_dir = "//third_party/node/node_modules/messageformat/lib/"
 
+# Location of sre dependency.
+sre_browser_file = "//third_party/chromevox/third_party/sre/sre_browser.js"
+
 # List of all modules that are included in one or more of the production
 # chromevox scripts.
 #
@@ -192,6 +195,7 @@ ts_library("ts_build") {
   extra_deps = [
     #copied files
     ":stage_ts_build",
+    ":stage_ts_build_sre",
   ]
 
   definitions = [
@@ -222,6 +226,11 @@ ts_library("ts_build") {
     "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir),
     "/chromevox/mv3/third_party/messageformat/messageformat.rollup.js|" +
         rebase_path("$messageformat_dir/messageformat.d.ts", target_gen_dir),
+
+    # Point the TS compiler to the copied version of sre_browser.js.
+    "/chromevox/mv3/third_party/sre/sre_browser.js|" +
+        rebase_path("$ts_build_staging_dir/third_party/sre/sre_browser.js",
+                    target_gen_dir),
   ]
 
   in_files = ts_modules + js_modules
@@ -242,6 +251,7 @@ run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = chromevox_out_dir
   deps = [
+    ":copy_sre",
     ":minify_js_messageformat",
     ":ts_build",
     "../../common:copied_files",
@@ -481,4 +491,17 @@ minify_js("minify_js_messageformat") {
   in_folder = "$target_gen_dir/messageformat"
   in_files = [ "messageformat.rollup.js" ]
   out_folder = "$chromevox_out_dir/third_party/messageformat/"
+}
+
+# Copy sre_browser.js to the staging directory so that it can be used at build
+# time.
+copy("stage_ts_build_sre") {
+  sources = [ "$sre_browser_file" ]
+  outputs = [ "$ts_build_staging_dir/third_party/sre/sre_browser.js" ]
+}
+
+# Copy sre_browser.js to chromevox_out_dir so that it can be used at runtime.
+copy("copy_sre") {
+  sources = [ "$sre_browser_file" ]
+  outputs = [ "$chromevox_out_dir/third_party/sre/sre_browser.js" ]
 }

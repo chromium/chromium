@@ -177,9 +177,9 @@ export class ChromeVoxRange {
    * Navigate to the given range - it both sets the range and outputs it.
    * @param focus Focus the range; defaults to true.
    */
-  private navigateTo_(
+  private async navigateTo_(
       range: CursorRange, focus?: boolean, speechProps?: TtsSpeechProperties,
-      skipSettingSelection?: boolean, skipOutput?: boolean): void {
+      skipSettingSelection?: boolean, skipOutput?: boolean): Promise<void> {
     focus = focus ?? true;
     speechProps = speechProps ?? new TtsSpeechProperties();
     skipSettingSelection = skipSettingSelection ?? false;
@@ -189,7 +189,7 @@ export class ChromeVoxRange {
     // Specialization for math output.
     if (MathHandler.init(range)) {
       // TODO(b/314203187): Not null asserted, check that this is correct.
-      skipOutput ||= MathHandler.instance!.speak();
+      skipOutput ||= await MathHandler.instance!.speak();
       focus = false;
     }
 

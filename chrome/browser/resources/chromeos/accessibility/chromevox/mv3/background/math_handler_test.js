@@ -11,7 +11,8 @@ ChromeVoxMV3MathHandlerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    globalThis.MathHandler = TestImportManager().getImports().MathHandler;
+    const imports = TestImportManager.getImports();
+    globalThis.MathHandler = imports.MathHandler;
   }
 
   createMockNode(properties) {

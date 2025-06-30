@@ -25,6 +25,8 @@ export enum OffscreenCommandType {
   RECORD_EARCONS_FOR_TEST = 'recordEarconsForTest',
   REPORT_EARCONS_FOR_TEST = 'reportEarconsForTest',
   SHOULD_SET_DEFAULT_VOICE = 'shouldSetDefaultVoice',
+  SRE_MOVE = 'sreMove',
+  SRE_WALK = 'sreWalk',
 }
 
 TestImportManager.exportForTesting(

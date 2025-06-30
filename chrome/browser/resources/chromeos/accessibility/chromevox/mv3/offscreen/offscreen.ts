@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SRE} from '/chromevox/mv3/third_party/sre/sre_browser.js';
+
 import {EarconEngine} from '../background/earcon_engine.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {InternalKeyEvent} from '../common/internal_key_event.js';
@@ -53,6 +55,12 @@ class OffscreenMessageHandler {
         break;
       case OffscreenCommandType.LEARN_MODE_REMOVE_LISTENERS:
         OffscreenLearnModeKeyboardHandler.instance!.removeListeners();
+        break;
+      case OffscreenCommandType.SRE_MOVE:
+        OffscreenMathHandler.instance!.sreMove(sendResponse, message.keyCode);
+        break;
+      case OffscreenCommandType.SRE_WALK:
+        OffscreenMathHandler.instance!.sreWalk(sendResponse, message.mathml);
         break;
       case OffscreenCommandType.ON_CLIPBOARD_DATA_CHANGED:
         const forceRead = message.forceRead as boolean;
@@ -302,11 +310,32 @@ class OffscreenBrailleDisplayManager {
   }
 }
 
+class OffscreenMathHandler {
+  static instance?: OffscreenMathHandler;
+
+  static init(): void {
+    if (OffscreenMathHandler.instance) {
+      throw 'Error: trying to create two instances of singleton ' +
+          'OffscreenMathHandler.';
+    }
+    OffscreenMathHandler.instance = new OffscreenMathHandler();
+  }
+
+  sreMove(sendResponse: SendResponse, keyCode: number): void {
+    sendResponse(SRE.move(keyCode));
+  }
+
+  sreWalk(sendResponse: SendResponse, mathml: string): void {
+    sendResponse(SRE.walk(mathml));
+  }
+}
+
 OffscreenBackgroundKeyboardHandler.init();
 OffscreenLearnModeKeyboardHandler.init();
 OffscreenClipboardHandler.init();
 OffscreenSpeechSynthesis.init();
 OffscreenBrailleDisplayManager.init();
+OffscreenMathHandler.init();
 EarconEngine.init();
 LibLouisWorker.init();
 
