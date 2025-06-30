@@ -275,9 +275,8 @@ jboolean EventForwarder::OnKeyUp(JNIEnv* env,
 
 jboolean EventForwarder::DispatchKeyEvent(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& key_event) {
-  return view_->DispatchKeyEvent(KeyEventAndroid(env, key_event, 0));
+    const ui::KeyEventAndroid& key_event) {
+  return view_->DispatchKeyEvent(key_event);
 }
 
 void EventForwarder::ScrollBy(JNIEnv* env,

@@ -16,9 +16,7 @@ namespace ui {
 // This is used mainly as a conveyor of Java event object.
 class EVENTS_EXPORT KeyEventAndroid {
  public:
-  KeyEventAndroid(JNIEnv* env, jobject event);
-  // DEPRECATED. Use the constructor that only takes the event.
-  KeyEventAndroid(JNIEnv* env, jobject event, int key_code);
+  explicit KeyEventAndroid(const jni_zero::JavaRef<jobject>& obj);
   // Synthesize android key event from given android action, key code, etc.
   KeyEventAndroid(int action, int key_code, int meta_state);
 
@@ -48,7 +46,7 @@ template <>
 inline ui::KeyEventAndroid FromJniType<ui::KeyEventAndroid>(
     JNIEnv* env,
     const JavaRef<jobject>& j_obj) {
-  return ui::KeyEventAndroid(env, j_obj.obj());
+  return ui::KeyEventAndroid(j_obj);
 }
 template <>
 inline ScopedJavaLocalRef<jobject> ToJniType<ui::KeyEventAndroid>(

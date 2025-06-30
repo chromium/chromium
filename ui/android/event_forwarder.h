@@ -126,10 +126,7 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   jboolean OnKeyUp(JNIEnv* env, const ui::KeyEventAndroid& key_event);
 
-  jboolean DispatchKeyEvent(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& motion_event);
+  jboolean DispatchKeyEvent(JNIEnv* env, const ui::KeyEventAndroid& key_event);
 
   void ScrollBy(JNIEnv* env,
                 const base::android::JavaParamRef<jobject>& jobj,

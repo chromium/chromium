@@ -795,8 +795,7 @@ public class EventForwarder {
      */
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (mNativeEventForwarder == 0) return false;
-        return EventForwarderJni.get()
-                .dispatchKeyEvent(mNativeEventForwarder, EventForwarder.this, event);
+        return EventForwarderJni.get().dispatchKeyEvent(mNativeEventForwarder, event);
     }
 
     /**
@@ -952,7 +951,8 @@ public class EventForwarder {
 
         boolean onKeyUp(long nativeEventForwarder, @JniType("ui::KeyEventAndroid") KeyEvent event);
 
-        boolean dispatchKeyEvent(long nativeEventForwarder, EventForwarder caller, KeyEvent event);
+        boolean dispatchKeyEvent(
+                long nativeEventForwarder, @JniType("ui::KeyEventAndroid") KeyEvent event);
 
         void scrollBy(long nativeEventForwarder, EventForwarder caller, float deltaX, float deltaY);
 

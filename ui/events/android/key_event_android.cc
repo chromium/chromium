@@ -16,14 +16,11 @@ using base::android::AttachCurrentThread;
 
 namespace ui {
 
-KeyEventAndroid::KeyEventAndroid(JNIEnv* env, jobject event) {
-  event_.Reset(env, event);
-  key_code_ = JNI_KeyEvent::Java_KeyEvent_getKeyCode(env, event_);
-}
+KeyEventAndroid::KeyEventAndroid(const jni_zero::JavaRef<jobject>& key_event) {
+  event_.Reset(key_event);
 
-KeyEventAndroid::KeyEventAndroid(JNIEnv* env, jobject event, int key_code)
-    : key_code_(key_code) {
-  event_.Reset(env, event);
+  JNIEnv* env = AttachCurrentThread();
+  key_code_ = JNI_KeyEvent::Java_KeyEvent_getKeyCode(env, event_);
 }
 
 KeyEventAndroid::KeyEventAndroid(int action, int key_code, int meta_state)
@@ -38,7 +35,7 @@ KeyEventAndroid::KeyEventAndroid(int action, int key_code, int meta_state)
       JNI_KeyEvent::Java_KeyEvent_Constructor(
           env, down_time, event_time, action, key_code, repeat, meta_state);
 
-  event_.Reset(env, event.obj());
+  event_.Reset(event);
 }
 
 KeyEventAndroid::KeyEventAndroid(const KeyEventAndroid& other) = default;
