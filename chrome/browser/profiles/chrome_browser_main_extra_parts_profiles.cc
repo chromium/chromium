@@ -388,7 +388,6 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/ash/scanner/scanner_keyed_service_factory.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/chromeos/cros_apps/cros_apps_key_event_handler_factory.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_download_observer_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -822,12 +821,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   CookieControlsServiceFactory::GetInstance();
   CookieSettingsFactory::GetInstance();
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrosAppsBackgroundEventHandling)) {
-    CrosAppsKeyEventHandlerFactory::GetInstance();
-  }
-#endif
   DataTypeStoreServiceFactory::GetInstance();
 
 // TODO(b/352728209): Add back this service when reporting is supported on

@@ -8027,11 +8027,6 @@ const char kAddPrinterViaPrintscanmgrName[] =
 const char kAddPrinterViaPrintscanmgrDescription[] =
     "Changes the daemon used to add printers from debugd to printscanmgr.";
 
-const char kCrosAppsBackgroundEventHandlingName[] =
-    "Experimental Background Events for CrOS Apps";
-const char kCrosAppsBackgroundEventHandlingDescription[] =
-    "Enable key events for CrOS Apps running in background.";
-
 const char kRunOnOsLoginName[] = "Run on OS login";
 const char kRunOnOsLoginDescription[] =
     "When enabled, allows PWAs to be automatically run on OS login.";

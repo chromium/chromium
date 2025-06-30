@@ -1828,15 +1828,6 @@
     "expiry_milestone": 143
   },
   {
-    "name": "cros-apps-background-event-handling",
-    "owners": [
-      "clamclamyan@chromium.org",
-      "cros-apps-platform-core@google.com",
-      "//chrome/browser/chromeos/cros_apps/OWNERS"
-    ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "cros-block-warnings",
     "owners": [ "janlanik@google.com", "kisliaks@google.com" ],
     "expiry_milestone": 136
