@@ -248,7 +248,7 @@ That allows automatically verifying policy values for a given permission.
     * Create a new policy in
     [components/content_settings/core/common/pref_names.(h/cc)](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/pref_names.h)
     * In
-    [content_settings_policy_provider.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/pref_names.cc)
+    [content_settings_policy_provider.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_policy_provider.cc)
 update
         * [PrefsForManagedContentSettingsMapEntry](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_policy_provider.cc;l=35;drc=0c2e6d2e27af976e1b28eebd7dacc7a0296bb1cc)
         * [kManagedPrefs](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_policy_provider.cc;l=112;drc=0c2e6d2e27af976e1b28eebd7dacc7a0296bb1cc)
