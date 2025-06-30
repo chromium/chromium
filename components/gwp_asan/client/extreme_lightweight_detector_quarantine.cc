@@ -9,6 +9,16 @@
 
 namespace gwp_asan::internal {
 
+// Making this non-trivial dtor to allow use of `base::NoDestructor`.
+// This explicit dtor is not needed in most build configurations because
+// `raw_ptr<T>` has a non-trivial dtor. However, `raw_ptr<T>` does not guarantee
+// it and we want to avoid the code here getting affected by `raw_ptr<T>`'s
+// internal implementation.
+// TODO(yukishiino): Make this trivially destructible.
+// NOLINTNEXTLINE(modernize-use-equals-default)
+ExtremeLightweightDetectorQuarantineRoot::
+    ~ExtremeLightweightDetectorQuarantineRoot() {}
+
 ExtremeLightweightDetectorQuarantineBranch
 ExtremeLightweightDetectorQuarantineRoot::CreateBranch(
     const ExtremeLightweightDetectorQuarantineBranchConfig& config) {

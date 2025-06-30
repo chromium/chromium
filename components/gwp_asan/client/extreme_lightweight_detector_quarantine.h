@@ -68,6 +68,7 @@ class GWP_ASAN_EXPORT ExtremeLightweightDetectorQuarantineRoot {
   explicit ExtremeLightweightDetectorQuarantineRoot(
       partition_alloc::PartitionRoot& allocator_root)
       : allocator_root_(allocator_root) {}
+  ~ExtremeLightweightDetectorQuarantineRoot();
 
   ExtremeLightweightDetectorQuarantineBranch CreateBranch(
       const ExtremeLightweightDetectorQuarantineBranchConfig& config);
