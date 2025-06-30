@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_strip_api/node_id_traits.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.h"
 
 MojoNodeIdType mojo::EnumTraits<MojoNodeIdType, NativeNodeType>::ToMojom(
     NativeNodeType input) {
@@ -47,7 +47,7 @@ NativeNodeType mojo::StructTraits<MojoNodeIdView, NativeNodeId>::type(
 }
 
 bool mojo::StructTraits<MojoNodeIdView, NativeNodeId>::Read(MojoNodeIdView view,
-                                                          NativeNodeId* out) {
+                                                            NativeNodeId* out) {
   std::string id;
   if (!view.ReadId(&id)) {
     return false;

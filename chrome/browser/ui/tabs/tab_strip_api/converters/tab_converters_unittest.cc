@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
 
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/node_id.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"

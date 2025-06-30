@@ -35,17 +35,17 @@ mojom("mojom") {
         },
       ]
       traits_headers = [
-        "//chrome/browser/ui/tabs/tab_strip_api/node_id.h",
-        "//chrome/browser/ui/tabs/tab_strip_api/node_id_traits.h",
-        "//chrome/browser/ui/tabs/tab_strip_api/position.h",
-        "//chrome/browser/ui/tabs/tab_strip_api/position_traits.h",
+        "//chrome/browser/ui/tabs/tab_strip_api/types/node_id.h",
+        "//chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.h",
+        "//chrome/browser/ui/tabs/tab_strip_api/types/position.h",
+        "//chrome/browser/ui/tabs/tab_strip_api/types/position_traits.h",
       ]
       traits_sources = [
-        "//chrome/browser/ui/tabs/tab_strip_api/node_id_traits.cc",
-        "//chrome/browser/ui/tabs/tab_strip_api/position_traits.cc",
+        "//chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.cc",
+        "//chrome/browser/ui/tabs/tab_strip_api/types/position_traits.cc",
       ]
       traits_public_deps = [
-        ":types",
+        "types:types",
         "//base",
         "//chrome/browser/ui/tabs",
       ]
@@ -79,40 +79,20 @@ source_set("impl") {
 
   deps = [
     ":tab_strip_api",
-    ":types",
     "adapters:impl",
     "converters",
     "events",
+    "types:types",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
   ]
 }
 
-source_set("types") {
-  sources = [
-    "node_id.cc",
-    "node_id.h",
-    "position.cc",
-    "position.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//components/tab_groups",
-    "//components/tabs:public",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "node_id_unittest.cc",
-    "position_unittest.cc",
-    "tab_strip_service_impl_unittest.cc",
-    "tab_strip_service_traits_unittest.cc",
-  ]
+  sources = [ "tab_strip_service_impl_unittest.cc" ]
 
   deps = [
     ":impl",
@@ -120,6 +100,7 @@ source_set("unit_tests") {
     "converters:unit_tests",
     "events:unit_tests",
     "testing",
+    "types:unit_tests",
     "//base/test:test_support",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",

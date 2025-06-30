@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/node_id.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"

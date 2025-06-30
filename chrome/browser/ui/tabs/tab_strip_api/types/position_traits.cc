@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_strip_api/position_traits.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/position_traits.h"
 
 const std::optional<tabs_api::NodeId>&
 mojo::StructTraits<MojoPositionView, NativePosition>::parent_id(

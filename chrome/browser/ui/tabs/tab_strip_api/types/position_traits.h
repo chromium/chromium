@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_POSITION_TRAITS_H_
-#define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_POSITION_TRAITS_H_
+#ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TYPES_POSITION_TRAITS_H_
+#define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TYPES_POSITION_TRAITS_H_
 
-#include "chrome/browser/ui/tabs/tab_strip_api/position.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/position.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
@@ -31,4 +31,4 @@ struct mojo::StructTraits<MojoPositionView, NativePosition> {
   static bool Read(MojoPositionView view, NativePosition* out);
 };
 
-#endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_POSITION_TRAITS_H_
+#endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TYPES_POSITION_TRAITS_H_

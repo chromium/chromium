@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_strip_api/node_id_traits.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/position_traits.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/position_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tabs_api {

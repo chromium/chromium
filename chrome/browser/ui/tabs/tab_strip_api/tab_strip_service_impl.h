@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/tab_strip_event_recorder.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/node_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
