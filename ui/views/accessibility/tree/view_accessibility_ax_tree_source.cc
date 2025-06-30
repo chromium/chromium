@@ -154,7 +154,10 @@ std::string ViewAccessibilityAXTreeSource::GetDebugString(
 void ViewAccessibilityAXTreeSource::SerializeNode(
     ViewAccessibility* node,
     ui::AXNodeData* out_data) const {
-  // TODO(accessibility): Implement.
+  if (!node || !out_data) {
+    return;
+  }
+  node->GetAccessibleNodeData(out_data);
 }
 
 std::string ViewAccessibilityAXTreeSource::ToString(ViewAccessibility* root,

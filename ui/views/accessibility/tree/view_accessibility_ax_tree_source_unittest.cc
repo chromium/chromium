@@ -366,4 +366,39 @@ TEST_F(ViewAccessibilityAXTreeSourceTest, ToString_TwoLevelTree) {
   EXPECT_EQ(source()->ToString(&p_ax, prefix), want);
 }
 
+TEST_F(ViewAccessibilityAXTreeSourceTest, SerializeNode_NullInputs) {
+  ui::AXNodeData data;
+  // Null node should not crash.
+  source()->SerializeNode(nullptr, &data);
+
+  // Null out_data should not crash.
+  auto v = std::make_unique<View>();
+  EXPECT_NO_FATAL_FAILURE(
+      source()->SerializeNode(&v->GetViewAccessibility(), nullptr));
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, SerializeNode_View) {
+  auto v = std::make_unique<View>();
+  std::u16string name = u"My button";
+  v->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  v->GetViewAccessibility().SetName(name);
+
+  ui::AXNodeData data;
+  source()->SerializeNode(&v->GetViewAccessibility(), &data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), name);
+}
+
+TEST_F(ViewAccessibilityAXTreeSourceTest, SerializeNode_AXVirtualView) {
+  auto v = std::make_unique<AXVirtualView>();
+  std::u16string name = u"My button";
+  v->SetRole(ax::mojom::Role::kButton);
+  v->SetName(name);
+
+  ui::AXNodeData data;
+  source()->SerializeNode(v.get(), &data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), name);
+}
+
 }  // namespace views::test
