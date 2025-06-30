@@ -45,6 +45,7 @@
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -60,6 +61,8 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -312,6 +315,17 @@ class OverflowMenuMediatorTest : public PlatformTest {
           return reading_list_model_->loaded();
         }));
     mediator_.readingListModel = reading_list_model_.get();
+  }
+
+  void SetUpReadingMode(bool active) {
+    ReaderModeTabHelper* tab_helper =
+        ReaderModeTabHelper::FromWebState(web_state_);
+    if (!tab_helper) {
+      ReaderModeTabHelper::CreateForWebState(
+          web_state_, DistillerServiceFactory::GetForProfile(profile_.get()));
+      tab_helper = ReaderModeTabHelper::FromWebState(web_state_);
+    }
+    tab_helper->SetActive(active);
   }
 
   void InsertNewWebState(int index) {
@@ -1152,4 +1166,38 @@ TEST_F(OverflowMenuMediatorTest, OpenPasswordsMetricLogged) {
   histogram_tester.ExpectBucketCount(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kChromeMenuItem, 1);
+}
+
+// Tests that items are disabled in RM
+TEST_F(OverflowMenuMediatorTest, TestReadingModeMenu) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableReaderMode);
+  const GURL kUrl("https://chromium.test");
+  web_state_->SetCurrentURL(kUrl);
+  // Enable FontSize entry
+  web_state_->SetWebFramesManager(
+      FontSizeJavaScriptFeature::GetInstance()->GetSupportedContentWorld(),
+      std::make_unique<web::FakeWebFramesManager>());
+  FontSizeTabHelper::CreateForWebState(
+      browser_->GetWebStateList()->GetWebStateAt(0));
+
+  CreateMediator(/*incognito=*/NO);
+  SetUpActiveWebState();
+  SetUpReadingMode(/*active*/ true);
+  mediator_.webStateList = browser_->GetWebStateList();
+  mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
+      browser_.get(), OverlayModality::kWebContentArea);
+
+  // Force model update.
+  mediator_.model = model_;
+  ASSERT_TRUE(HasItem(kToolsMenuReadLater, /*enabled=*/NO));
+  ASSERT_TRUE(HasItem(kToolsMenuTextZoom, /*enabled=*/NO));
+
+  // Fake a navigationFinished to force the popup menu items to update.
+  // This will clear RM and reenable the item.
+  web::FakeNavigationContext context;
+  web_state_->OnNavigationFinished(&context);
+  web_state_->SetCurrentURL(kUrl);
+  ASSERT_TRUE(HasItem(kToolsMenuReadLater, /*enabled=*/YES));
+  ASSERT_TRUE(HasItem(kToolsMenuTextZoom, /*enabled=*/YES));
 }

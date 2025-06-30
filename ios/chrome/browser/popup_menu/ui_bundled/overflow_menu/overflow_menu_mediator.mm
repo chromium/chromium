@@ -1441,6 +1441,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   bool canFetchUserPolicies =
       _authenticationService && _profilePrefs &&
       CanFetchUserPolicy(_authenticationService, _profilePrefs);
+  bool isReaderModeActive = false;
+  if (IsReaderModeAvailable()) {
+    ReaderModeTabHelper* readerModeTabHelper =
+        ReaderModeTabHelper::FromWebState(self.webState);
+    isReaderModeActive = readerModeTabHelper && readerModeTabHelper->IsActive();
+  }
   // Set footer (on last section), if any.
   web::BrowserState* browserState =
       self.webState ? self.webState->GetBrowserState() : nullptr;
@@ -1466,20 +1472,24 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   // The "Add to Reading List" functionality requires JavaScript execution,
   // which is paused while overlays are displayed over the web content area.
-  self.readLaterAction.enabled =
-      !self.webContentAreaShowingOverlay && [self isCurrentURLWebURL];
+  self.readLaterAction.enabled = !self.webContentAreaShowingOverlay &&
+                                 [self isCurrentURLWebURL] &&
+                                 !isReaderModeActive;
 
   BOOL bookmarkEnabled =
       [self isCurrentURLWebURL] && [self isEditBookmarksEnabled];
-  self.addBookmarkAction.enabled = bookmarkEnabled;
-  self.editBookmarkAction.enabled = bookmarkEnabled;
-  self.translateAction.enabled = [self isTranslateEnabled];
-  self.findInPageAction.enabled = [self isFindInPageEnabled];
-  self.textZoomAction.enabled = [self isTextZoomEnabled];
+  self.addBookmarkAction.enabled = bookmarkEnabled && !isReaderModeActive;
+  self.editBookmarkAction.enabled = bookmarkEnabled && !isReaderModeActive;
+  self.translateAction.enabled =
+      [self isTranslateEnabled] && !isReaderModeActive;
+  self.findInPageAction.enabled =
+      [self isFindInPageEnabled] && !isReaderModeActive;
+  self.textZoomAction.enabled = [self isTextZoomEnabled] && !isReaderModeActive;
   self.requestDesktopAction.enabled =
-      [self userAgentType] == web::UserAgentType::MOBILE;
+      [self userAgentType] == web::UserAgentType::MOBILE && !isReaderModeActive;
   self.requestMobileAction.enabled =
-      [self userAgentType] == web::UserAgentType::DESKTOP;
+      [self userAgentType] == web::UserAgentType::DESKTOP &&
+      !isReaderModeActive;
 
   // Enable/disable items based on enterprise policies.
   self.openTabAction.enterpriseDisabled =

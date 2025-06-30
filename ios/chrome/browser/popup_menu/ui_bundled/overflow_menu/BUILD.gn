@@ -220,6 +220,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/popup_menu/ui_bundled/overflow_menu:feature_flags",
     "//ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/destination_usage_history",
     "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/reading_list/model:test_support",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
