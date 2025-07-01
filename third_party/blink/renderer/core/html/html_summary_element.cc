@@ -116,22 +116,9 @@ class SummaryDescendantsObserver : public MutationObserver::Delegate {
           &document, element.GetDomNodeId(),
           ElementAccessibilityIssueReason::kInteractiveContentSummaryDescendant,
           has_disallowed_attributes);
-      // In the future we may want to drop the console message below in
-      // favor of the issue above.  If we do so, we should probably do
-      // it for both <select> and <summary> (here) at the same time.
-      element.AddConsoleMessage(
-          mojom::blink::ConsoleMessageSource::kRecommendation,
-          mojom::blink::ConsoleMessageLevel::kError,
-          GetInteractiveElementMessage());
       UseCounter::Count(summary_->GetDocument(),
                         WebFeature::kInteractiveContentSummaryDescendant);
     }
-  }
-
-  String GetInteractiveElementMessage() {
-    return "An interactive element was found within a <summary> element. "
-           "These elements will not consistently be accessible to people "
-           "navigating by keyboard or using assistive technology.";
   }
 
   bool IsInteractiveElement(const Element& element) {

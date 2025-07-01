@@ -31,13 +31,6 @@ class SelectMutationObserver : public MutationObserver::Delegate {
   void MaybeAddDescendantTextInput(Node* node);
   void MaybeRemoveDescendantTextInput(Node* node);
   void AddDescendantDisallowedErrorToNode(Node& node);
-  String GetMessageForReason(ElementAccessibilityIssueReason issue_reason);
-  String FormatElementMessage(const String& element,
-                              const String& article,
-                              const String& example);
-  String FormatInteractiveElementMessage(const String& element,
-                                         const String& article,
-                                         const String& context);
   bool IsAllowedInteractiveElement(Node& node);
   bool IsInteractiveElement(const Node& node);
   void RecordIssueByType(ElementAccessibilityIssueReason issue_reason);
