@@ -67,7 +67,7 @@ class MockTouchToFillPaymentMethodController
   MOCK_METHOD(void, ServerIbanSuggestionSelected, (JNIEnv*, long), (override));
   MOCK_METHOD(void,
               LoyaltyCardSuggestionSelected,
-              (JNIEnv*, const std::string&),
+              (JNIEnv*, const LoyaltyCard&),
               (override));
   MOCK_METHOD(int, GetJavaResourceId, (int), (override));
   MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,

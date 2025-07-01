@@ -388,13 +388,18 @@ void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(
 }
 
 void TouchToFillDelegateAndroidImpl::LoyaltyCardSuggestionSelected(
-    const std::string& loyalty_card_number) {
+    const LoyaltyCard& loyalty_card) {
   HideTouchToFill();
 
   manager_->FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      query_form_, query_field_, base::UTF8ToUTF16(loyalty_card_number),
+      query_form_, query_field_,
+      base::UTF8ToUTF16(loyalty_card.loyalty_card_number()),
       SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
+  ValuablesDataManager* vdm = manager_->client().GetValuablesDataManager();
+  CHECK(vdm);
+  manager_->LogAndRecordLoyaltyCardFill(loyalty_card, query_form_.global_id(),
+                                        query_field_.global_id());
 }
 
 void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {

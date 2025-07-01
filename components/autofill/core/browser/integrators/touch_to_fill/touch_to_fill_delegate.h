@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -56,7 +57,7 @@ class TouchToFillDelegate {
   // Called when the user taps on a loyalty card in the payments TTF bottom
   // sheet.
   virtual void LoyaltyCardSuggestionSelected(
-      const std::string& loyalty_card_number) = 0;
+      const LoyaltyCard& loyalty_card) = 0;
   virtual void OnDismissed(bool dismissed_by_user) = 0;
 
   virtual void LogMetricsAfterSubmission(

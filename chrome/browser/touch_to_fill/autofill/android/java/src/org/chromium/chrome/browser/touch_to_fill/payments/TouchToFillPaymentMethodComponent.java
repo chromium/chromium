@@ -64,9 +64,9 @@ interface TouchToFillPaymentMethodComponent {
         /**
          * Called when the user selects a loyalty card.
          *
-         * @param loyaltyCardNumber of the selected loyalty card.
+         * @param loyaltyCard the selected loyalty card.
          */
-        void loyaltyCardSuggestionSelected(String loyaltyCardNumber);
+        void loyaltyCardSuggestionSelected(LoyaltyCard loyaltyCard);
 
         /** Called when the user clicks the "Manage loyalty cards" button. */
         void openPassesManagementUi();

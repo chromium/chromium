@@ -1061,7 +1061,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
         loyaltyCardModel1.get(ON_LOYALTY_CARD_CLICK_ACTION).run();
-        verify(mDelegateMock).loyaltyCardSuggestionSelected(LOYALTY_CARD_1.getLoyaltyCardNumber());
+        verify(mDelegateMock).loyaltyCardSuggestionSelected(LOYALTY_CARD_1);
     }
 
     @Test
@@ -1116,7 +1116,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         PropertyModel loyaltyCardModel = itemList.get(1).model;
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
         loyaltyCardModel.get(ON_LOYALTY_CARD_CLICK_ACTION).run();
-        verify(mDelegateMock).loyaltyCardSuggestionSelected(LOYALTY_CARD_1.getLoyaltyCardNumber());
+        verify(mDelegateMock).loyaltyCardSuggestionSelected(LOYALTY_CARD_1);
         histogramWatcher.assertExpected();
     }
 

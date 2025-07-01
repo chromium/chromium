@@ -14,6 +14,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 
 namespace autofill {
@@ -78,9 +79,8 @@ class TouchToFillPaymentMethodControllerImpl
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& guid) override;
   void ServerIbanSuggestionSelected(JNIEnv* env, long instrument_id) override;
-  void LoyaltyCardSuggestionSelected(
-      JNIEnv* env,
-      const std::string& loyalty_card_number) override;
+  void LoyaltyCardSuggestionSelected(JNIEnv* env,
+                                     const LoyaltyCard& loyalty_card) override;
   int GetJavaResourceId(int native_resource_id) override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
   void ResetJavaObject();

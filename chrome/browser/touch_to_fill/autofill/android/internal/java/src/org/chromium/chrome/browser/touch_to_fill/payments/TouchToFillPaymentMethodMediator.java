@@ -469,7 +469,7 @@ class TouchToFillPaymentMethodMediator {
 
     private void onSelectedLoyaltyCard(LoyaltyCard loyaltyCard) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
-        mDelegate.loyaltyCardSuggestionSelected(loyaltyCard.getLoyaltyCardNumber());
+        mDelegate.loyaltyCardSuggestionSelected(loyaltyCard);
         recordTouchToFillLoyaltyCardOutcomeHistogram(TouchToFillLoyaltyCardOutcome.LOYALTY_CARD);
         RecordHistogram.recordCount100Histogram(
                 TOUCH_TO_FILL_LOYALTY_CARD_INDEX_SELECTED,

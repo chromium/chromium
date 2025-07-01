@@ -769,6 +769,7 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
+      "data_model/valuables/android/loyalty_card_android.h",
       "payments/autofill_save_iban_ui_info.cc",
       "payments/autofill_save_iban_ui_info.h",
       "ui/addresses/android/autofill_address_editor_ui_info_android.cc",

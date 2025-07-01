@@ -7,11 +7,12 @@
 
 #include <jni.h>
 
-#include <string>
-
 #include "base/android/scoped_java_ref.h"
 
 namespace autofill {
+
+class LoyaltyCard;
+
 // An interface for interaction between the view and the corresponding UI
 // controller on Android. Acts as the native counterpart for the Java
 // TouchToFillPaymentMethodComponent.Delegate.
@@ -38,7 +39,7 @@ class TouchToFillPaymentMethodViewController {
   // sheet.
   virtual void LoyaltyCardSuggestionSelected(
       JNIEnv* env,
-      const std::string& loyalty_card_number) = 0;
+      const LoyaltyCard& loyalty_card) = 0;
   virtual int GetJavaResourceId(int native_resource_id) = 0;
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 };

@@ -14,6 +14,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/data_model/valuables/android/loyalty_card_android.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -226,9 +227,9 @@ void TouchToFillPaymentMethodControllerImpl::ServerIbanSuggestionSelected(
 
 void TouchToFillPaymentMethodControllerImpl::LoyaltyCardSuggestionSelected(
     JNIEnv* env,
-    const std::string& loyalty_card_number) {
+    const LoyaltyCard& loyalty_card) {
   if (delegate_) {
-    delegate_->LoyaltyCardSuggestionSelected(loyalty_card_number);
+    delegate_->LoyaltyCardSuggestionSelected(loyalty_card);
   }
 }
 

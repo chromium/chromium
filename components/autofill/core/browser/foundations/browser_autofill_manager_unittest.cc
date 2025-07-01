@@ -56,6 +56,7 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
@@ -888,7 +889,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               (override));
   MOCK_METHOD(void,
               LoyaltyCardSuggestionSelected,
-              (const std::string& loyalty_card_number),
+              (const LoyaltyCard& loyalty_card),
               (override));
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
   MOCK_METHOD(void,

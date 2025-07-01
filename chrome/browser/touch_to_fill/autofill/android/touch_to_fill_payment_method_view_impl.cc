@@ -4,6 +4,7 @@
 
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 
+#include <algorithm>
 #include <variant>
 
 #include "base/android/jni_android.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
+#include "components/autofill/core/browser/data_model/valuables/android/loyalty_card_android.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
@@ -29,23 +31,6 @@
 #include "components/autofill/android/main_autofill_jni_headers/LoyaltyCard_jni.h"
 
 namespace autofill {
-namespace {
-
-// Creates a java array from a list of loyalty cards.
-std::vector<base::android::ScopedJavaLocalRef<jobject>>
-GetJavaArrayFromLoyaltyCards(JNIEnv* env,
-                             base::span<const LoyaltyCard> loyalty_cards) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> loyalty_cards_array;
-  loyalty_cards_array.reserve(loyalty_cards.size());
-  for (const LoyaltyCard& loyalty_card : loyalty_cards) {
-    loyalty_cards_array.push_back(Java_LoyaltyCard_Constructor(
-        env, *loyalty_card.id(), loyalty_card.merchant_name(),
-        loyalty_card.program_name(), loyalty_card.program_logo(),
-        loyalty_card.loyalty_card_number(), loyalty_card.merchant_domains()));
-  }
-  return loyalty_cards_array;
-}
-}  // namespace
 
 TouchToFillPaymentMethodViewImpl::TouchToFillPaymentMethodViewImpl(
     content::WebContents* web_contents)
@@ -165,9 +150,8 @@ bool TouchToFillPaymentMethodViewImpl::ShowLoyaltyCards(
   // TODO: crbug.com/421839554 - Pass a boolean indicating whether the user has
   // seen the feature promotion UI or not.
   Java_TouchToFillPaymentMethodViewBridge_showLoyaltyCards(
-      env, java_object_,
-      GetJavaArrayFromLoyaltyCards(env, affiliated_loyalty_cards),
-      GetJavaArrayFromLoyaltyCards(env, all_loyalty_cards), first_time_usage);
+      env, java_object_, affiliated_loyalty_cards, all_loyalty_cards,
+      first_time_usage);
 
   return true;
 }

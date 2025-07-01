@@ -257,9 +257,9 @@ class BrowserAutofillManager : public AutofillManager {
   bool ShouldUploadForm(const FormStructure& form);
 
   // Handles the loyalty card specific logic after a field is filled.
-  void LogAndRecordLoyaltyCardFill(const LoyaltyCard& loyalty_card,
-                                   const FormGlobalId& form_id,
-                                   const FieldGlobalId& field_id);
+  virtual void LogAndRecordLoyaltyCardFill(const LoyaltyCard& loyalty_card,
+                                           const FormGlobalId& form_id,
+                                           const FieldGlobalId& field_id);
 
   // Returns the last form the autofill manager considered in this frame.
   virtual const FormData& last_query_form() const;

@@ -133,8 +133,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
                                     bool is_virtual) override;
   void IbanSuggestionSelected(
       std::variant<Iban::Guid, Iban::InstrumentId> backend_id) override;
-  void LoyaltyCardSuggestionSelected(
-      const std::string& loyalty_card_number) override;
+  void LoyaltyCardSuggestionSelected(const LoyaltyCard& loyalty_card) override;
   void OnDismissed(bool dismissed_by_user) override;
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) override;
