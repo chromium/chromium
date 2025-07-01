@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_observer_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 #import "net/base/backoff_entry.h"
@@ -198,7 +199,9 @@ class AccountProfileMapper::Assigner
   std::string GetPersonalProfileName();
 
   bool IsProfileForGaiaIDFullyInitialized(const GaiaId& gaia_id);
-  void MakePersonalProfileManagedWithGaiaID(const GaiaId& managed_gaia_id);
+  void MakePersonalProfileManagedWithGaiaID(
+      const GaiaId& managed_gaia_id,
+      bool migrating_primary_managed_account = false);
   void MoveManagedAccountToPersonalProfileForTesting(  // IN-TEST
       const GaiaId& managed_gaia_id);
 
@@ -262,10 +265,9 @@ class AccountProfileMapper::Assigner
   // assignment may happen asynchronously in some cases.
   void AssignIdentityToProfile(id<SystemIdentity> identity,
                                bool is_managed_account);
-  // Handles recording prefs used to force-migrate pre-multi-profile managed
-  // accounts.
-  void MaybeRecordForceMigrationPref(bool is_personal_profile,
-                                     bool is_managed_account);
+  // Handles migrating pre-multi-profile managed accounts when it is ready for
+  // migration, otherwise updates the migration prefs.
+  void MaybeMigratePrimaryManagedAccount(const GaiaId gaia_id);
 
   // Re-fetches the account<->profile mappings from ProfileAttributesStorageIOS,
   // and if anything changed, notifies AccountProfileMapper via the callback.
@@ -399,8 +401,8 @@ bool AccountProfileMapper::Assigner::IsProfileForGaiaIDFullyInitialized(
 }
 
 void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
-    const GaiaId& managed_gaia_id) {
-  CHECK(!IsProfileForGaiaIDFullyInitialized(managed_gaia_id));
+    const GaiaId& managed_gaia_id,
+    bool migrating_primary_managed_account) {
   CHECK(profile_manager_);
 
   {
@@ -408,8 +410,6 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
         &is_updating_profile_attributes_storage_, true);
 
     const std::string previous_personal_profile_name = GetPersonalProfileName();
-    const std::optional<std::string> abandoned_managed_profile_name =
-        FindProfileNameForGaiaID(managed_gaia_id);
 
     const std::set<GaiaId, std::less<>> personal_gaia_ids =
         profile_to_gaia_ids_[previous_personal_profile_name];
@@ -422,16 +422,21 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
     ProfileAttributesStorageIOS* storage = GetProfileAttributesStorage();
     CHECK(storage);
 
-    // Delete the old managed profile (if it exists).
-    if (abandoned_managed_profile_name) {
-      // The old managed profile must not have been initialized, so that no
-      // actual user data gets deleted here.
-      CHECK(!storage
-                 ->GetAttributesForProfileWithName(
-                     *abandoned_managed_profile_name)
-                 .IsFullyInitialized());
+    if (!migrating_primary_managed_account) {
+      CHECK(!IsProfileForGaiaIDFullyInitialized(managed_gaia_id));
+      const std::optional<std::string> abandoned_managed_profile_name =
+          FindProfileNameForGaiaID(managed_gaia_id);
+      // Delete the old managed profile (if it exists).
+      if (abandoned_managed_profile_name) {
+        // The old managed profile must not have been initialized, so that no
+        // actual user data gets deleted here.
+        CHECK(!storage
+                   ->GetAttributesForProfileWithName(
+                       *abandoned_managed_profile_name)
+                   .IsFullyInitialized());
 
-      DeleteProfileNamed(*abandoned_managed_profile_name);
+        DeleteProfileNamed(*abandoned_managed_profile_name);
+      }
     }
 
     // Register a new personal profile.
@@ -448,6 +453,12 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
       AttachGaiaIdToProfile(new_personal_profile_name, gaia_id);
     }
     AttachGaiaIdToProfile(new_managed_profile_name, managed_gaia_id);
+  }
+
+  if (migrating_primary_managed_account) {
+    // At this point, the migration is done.
+    local_pref_service_->ClearPref(
+        prefs::kWaitingForMultiProfileForcedMigrationTimestamp);
   }
 
   // Let observers know about the changes.
@@ -798,11 +809,7 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     bool is_managed_account) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
-  base::AutoReset<bool> updating_attributes(
-      &is_updating_profile_attributes_storage_, true);
-
   const GaiaId gaia_id(identity.gaiaID);
-
   const std::optional<std::string> profile_name =
       FindProfileNameForGaiaID(gaia_id);
 
@@ -828,27 +835,38 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     }
     // The account is assigned to the "wrong" profile (managed account in the
     // personal profile, or vice versa). This can happen in two cases:
-    // 1. A managed account was already the primary account before
-    //    multi-profile was supported.
-    // 2. (Very rarely) The account's managed-ness status changed.
-    // In both cases, leave the account where it is iff it's currently the
-    // primary account in its profile.
+    // 1. A managed account was already the primary account before multi-profile
+    // was supported. In this case, leave the account where it is; after a grace
+    // period, the profile will be force-migrated to a managed one.
+    // 2. (Very rarely) The account's managed-ness status changed. In this
+    // cases, leave the account where it is iff it's currently the primary
+    // account in its profile.
     if (is_primary_account) {
-      MaybeRecordForceMigrationPref(is_personal_profile, is_managed_account);
-      // TODO(crbug.com/408131474): Trigger forced-migration.
-      //  It's the primary account - leave the current assignment in place.
+      if (is_personal_profile && is_managed_account) {
+        // Handles case 1.
+        MaybeMigratePrimaryManagedAccount(gaia_id);
+      }
       return;
     }
-    // It's not the primary account, so allow re-assignment.
-    DetachGaiaIdFromProfile(*profile_name, gaia_id);
   }
+
+  base::AutoReset<bool> updating_attributes(
+      &is_updating_profile_attributes_storage_, true);
 
   // The account needs to be assigned (or re-assigned) to a profile.
 
+  if (profile_name) {
+    // Allow re-assignment for secondary accounts, as the primary case was
+    // handled above.
+    DetachGaiaIdFromProfile(*profile_name, gaia_id);
+  }
+
   std::string assigned_profile_name = GetPersonalProfileName();
   if (is_managed_account && profile_manager_) {
-    // Managed account: Assign to a new dedicated profile, unless it's currently
-    // the primary account in the personal profile.
+    // Managed account: Assign to a new dedicated profile, unless it's
+    // currently the primary account in the personal profile.
+    // TODO(crbug.com/408131474): Simplify this code, since the
+    // already-assigned-primary-account case was handled above.
     ProfileAttributesIOS attr =
         GetProfileAttributesStorage()->GetAttributesForProfileWithName(
             GetPersonalProfileName());
@@ -858,29 +876,35 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     }
     // Else: This managed account is the primary account in the personal
     // profile. That can happen if it was signed in before multi-profile was
-    // supported. In that case, leave the account in the personal profile.
+    // supported. In that case, leave the account in the personal profile if
+    // not ready for force migration yet.
   }
-
   AttachGaiaIdToProfile(assigned_profile_name, gaia_id);
 }
 
-void AccountProfileMapper::Assigner::MaybeRecordForceMigrationPref(
-    bool is_personal_profile,
-    bool is_managed_account) {
-  if (!is_personal_profile || !is_managed_account) {
+void AccountProfileMapper::Assigner::MaybeMigratePrimaryManagedAccount(
+    const GaiaId gaia_id) {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+
+  base::Time recorded_at = local_pref_service_->GetTime(
+      prefs::kWaitingForMultiProfileForcedMigrationTimestamp);
+  if (recorded_at == base::Time()) {
+    // Record force migration pref for managed accounts in personal profile if
+    // not recoreded yet.
+    local_pref_service_->SetTime(
+        prefs::kWaitingForMultiProfileForcedMigrationTimestamp,
+        base::Time::Now());
     return;
   }
-  // Record force migration pref for managed accounts in personal profile if not
-  // recorded yet.
-  if (local_pref_service_->GetTime(
-          prefs::kWaitingForMultiProfileForcedMigrationTimestamp) !=
-      base::Time()) {
-    // Time pref was recorded already.
+
+  if (!base::FeatureList::IsEnabled(
+          kSeparateProfilesForManagedAccountsForceMigration) ||
+      base::Time::Now() - recorded_at <
+          kMultiProfileMigrationGracePeriod.Get()) {
     return;
   }
-  local_pref_service_->SetTime(
-      prefs::kWaitingForMultiProfileForcedMigrationTimestamp,
-      base::Time::Now());
+
+  MakePersonalProfileManagedWithGaiaID(gaia_id, true);
 }
 
 void AccountProfileMapper::Assigner::MaybeUpdateCachedMappingAndNotify() {

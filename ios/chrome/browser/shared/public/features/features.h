@@ -779,6 +779,16 @@ bool IsBlueDotOnToolsMenuButtoneEnabled();
 // DO NOT CHECK DIRECTLY, use AreSeparateProfilesForManagedAccountsEnabled()!
 BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);
 
+// Feature param for kSeparateProfilesForManagedAccountsForceMigration to
+// specify how much time to wait before force-migrating the primary managed
+// account to its own separate profile.
+extern const base::FeatureParam<base::TimeDelta>
+    kMultiProfileMigrationGracePeriod;
+
+// Feature flag to control force-migrating the primary managed account to its
+// own separate profile.
+BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccountsForceMigration);
+
 // Kill switch to turn off `kSeparateProfilesForManagedAccounts`, even if
 // multiple profiles already exist.
 // DO NOT CHECK DIRECTLY, use AreSeparateProfilesForManagedAccountsEnabled()!
