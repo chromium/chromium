@@ -280596,6 +280596,19 @@
        {}
       ]
      ],
+     "filter-with-mix-blend-mode.html": [
+      "bd3710eca89324c338a0b42df602c2226e57c0b5",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/filter-with-mix-blend-mode-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "filtered-block-is-container.html": [
       "6f99f364e638028098ae10319290e8bf2a9a9457",
       [
@@ -382436,6 +382449,10 @@
       ],
       "filter-url-to-non-existent-filter-001-ref.html": [
        "c1aeed8c441e6f72c6faa893d64ae30bdacbec06",
+       []
+      ],
+      "filter-with-mix-blend-mode-ref.html": [
+       "1059b396b393f6bb5482b1290c0323b1d74efb72",
        []
       ],
       "filters-drop-shadow-001-ref.html": [
@@ -508186,6 +508203,13 @@
      ],
      "flex-shorthand-flex-basis-middle.html": [
       "284aac275b87b59a2703e3aaaf78e2369d77a95a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "flexbox-ignores-first-letter.html": [
+      "fca625e4645c6cdaf3460b9fd3deddca87411b3d",
       [
        null,
        {}
