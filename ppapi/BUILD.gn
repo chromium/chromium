@@ -14,26 +14,3 @@ if (is_mac) {
 }
 
 assert(enable_ppapi)
-
-# PPAPI is not supported (e.g. there is no effective sandbox) and must not be
-# shipped for Chrome on Windows.
-assert(!(is_win && is_official_build))
-
-executable("pepper_hash_for_uma") {
-  sources = [ "tools/pepper_hash_for_uma.cc" ]
-
-  deps = [
-    "//base",
-    "//build/win:default_exe_manifest",
-  ]
-}
-
-source_set("ppapi_gles2_lib") {
-  include_dirs = [ "lib/gl/include" ]
-  sources = [
-    "lib/gl/gles2/gl2ext_ppapi.c",
-    "lib/gl/gles2/gl2ext_ppapi.h",
-    "lib/gl/gles2/gles2.c",
-  ]
-  deps = [ "//ppapi/cpp" ]
-}
