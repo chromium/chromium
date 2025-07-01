@@ -36,13 +36,10 @@ TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
       LayoutProvider::Get()->GetInsetsMetric(INSETS_VECTOR_IMAGE_BUTTON)));
   InstallCircleHighlightPathGenerator(this);
 
-  // The tooltip icon, despite visually being an icon with no text, actually
-  // opens a bubble whenever the user mouses over it or focuses it, so it's
-  // essentially a text control that hides itself when not in view without
-  // altering the bubble's layout when shown. As such, have it behave like
-  // static text for screenreader users, since that's the role it serves here
-  // anyway.
-  GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  // Setting the accessible role to kTooltip allows the tooltip icon to be
+  // announced by screen readers when it receives focus although it essentially
+  // acts as a static text label.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);
   GetViewAccessibility().SetName(tooltip_);
 }
 
