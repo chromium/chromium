@@ -99,6 +99,9 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
 
   // The button for confirming the modal dialog.
   raw_ptr<views::MdTextButton> confirm_button_ = nullptr;
+
+  // The button for canceling the modal dialog.
+  raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
 };
 
 }  // namespace plus_addresses
