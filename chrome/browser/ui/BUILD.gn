@@ -4179,6 +4179,8 @@ static_library("ui") {
       "views/overlay/hang_up_button.h",
       "views/overlay/minimize_button.cc",
       "views/overlay/minimize_button.h",
+      "views/overlay/overlay_controls_fade_animation.cc",
+      "views/overlay/overlay_controls_fade_animation.h",
       "views/overlay/overlay_window_image_button.cc",
       "views/overlay/overlay_window_image_button.h",
       "views/overlay/overlay_window_live_caption_dialog.cc",
