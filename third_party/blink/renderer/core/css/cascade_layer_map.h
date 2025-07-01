@@ -23,7 +23,14 @@ class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
   CascadeLayerMap(const ActiveStyleSheetVector& sheets);
 
   uint16_t GetLayerOrder(const CascadeLayer& layer) const {
-    return layer_order_map_.at(&layer);
+    auto it = layer_order_map_.find(&layer);
+    if (it != layer_order_map_.end()) {
+      return it->value;
+    }
+    // We should not be doing lookup of layers that don't exist here,
+    // but apparently that's possible (crbug.com/428664521).
+    DCHECK(false);
+    return kImplicitOuterLayerOrder;
   }
 
   // Compare the layer orders of two CascadeLayer objects, possibly from
