@@ -229,8 +229,8 @@ class FeatureEngagementTest : public PlatformTest {
     params["trigger"] =
         "name:homepage_new_badges_group_trigger;comparator:<1;window:1;storage:"
         "365";
-    params["event_1"] =
-        "name:ios_first_run_complete;comparator:==0;window:1;storage:3650";
+    params["event_1"] = "name:ios_fre_badge_holdback_period_elapsed;comparator:"
+                        ">=1;window:3650;storage:3650";
     return params;
   }
 
@@ -1212,6 +1212,13 @@ TEST_F(FeatureEngagementTest, TestHomepageLensNewBadge_ShouldTrigger) {
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
 
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSHomepageLensNewBadge));
   tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
@@ -1233,6 +1240,10 @@ TEST_F(FeatureEngagementTest,
 
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
 
   // Assume it would trigger initially.
   ASSERT_TRUE(tracker->ShouldTriggerHelpUI(
@@ -1259,6 +1270,10 @@ TEST_F(FeatureEngagementTest, TestHomepageCustomizationNewBadge_ShouldTrigger) {
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
 
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSHomepageCustomizationNewBadge));
   tracker->Dismissed(feature_engagement::kIPHiOSHomepageCustomizationNewBadge);
@@ -1283,6 +1298,10 @@ TEST_F(FeatureEngagementTest, TestHomepageNewBadgesGroup_LensTakesPriority) {
 
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
+
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
 
   // Lens should trigger due to priority/order.
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
@@ -1314,6 +1333,10 @@ TEST_F(FeatureEngagementTest, TestHomepageNewBadgesGroup_OneBadgePerSession) {
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
 
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSHomepageLensNewBadge));
   tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
@@ -1342,38 +1365,35 @@ TEST_F(FeatureEngagementTest, TestHomepageNewBadgesGroup_NoBadgeAfterFRE) {
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
 
-  tracker->NotifyEvent(feature_engagement::events::kIOSFirstRunComplete);
-
   // Assuming FRE completion prevents immediate triggering.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSHomepageLensNewBadge));
 }
 
-// Verifies that a badge can be shown one day after the First Run Experience.
+// Verifies that a badge can be shown after the holdback period has elapsed.
 TEST_F(FeatureEngagementTest,
-       TestHomepageNewBadgesGroup_BadgeShownOneDayAfterFRE) {
-  base::ScopedMockClockOverride scoped_clock;
-  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
-
+       TestHomepageNewBadgesGroup_BadgeShownAfterHoldbackElapsed) {
   feature_engagement::test::ScopedIphFeatureList list;
   list.InitAndEnableFeaturesWithParameters(
-      /*features=*/{
-          {feature_engagement::kIPHiOSHomepageLensNewBadge,
-           IPHiOSHomepageLensNewBadgeParams()},  // Assumes FRE condition/delay.
-          {feature_engagement::kiOSHomepageNewBadgesGroup,
-           HomepageNewBadgesGroupParams()}});
+      /*features=*/{{feature_engagement::kIPHiOSHomepageLensNewBadge,
+                     IPHiOSHomepageLensNewBadgeParams()},
+                    {feature_engagement::kiOSHomepageNewBadgesGroup,
+                     HomepageNewBadgesGroupParams()}});
 
   std::unique_ptr<feature_engagement::Tracker> tracker =
       feature_engagement::CreateTestTracker();
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
 
-  tracker->NotifyEvent(feature_engagement::events::kIOSFirstRunComplete);
+  // The badge shouldn't be shown initially.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSHomepageLensNewBadge));
 
-  // Advance time by one day.
-  scoped_clock.Advance(base::Days(1));
+  // Notify that the holdback period has elapsed.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
 
-  // Assuming the FRE restriction has expired after 1 day.
+  // Now the badge should be shown.
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSHomepageLensNewBadge));
   tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);

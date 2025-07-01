@@ -106,11 +106,12 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     // Group Rule: Only allow 1 badge from this group per day.
     config.trigger = EventConfig("homepage_new_badges_group_trigger",
                                  Comparator(LESS_THAN, 1), 1, 365);
-    // Group Rule: Don't show immediately after FRE. (Requires
-    // `kIOSFirstRunComplete` event to have occurred 0 times in the last day.)
+    // Group Rule: Don't show until the holdback period has elapsed.
     config.event_configs.insert(EventConfig(
-        feature_engagement::events::kIOSFirstRunComplete, Comparator(EQUAL, 0),
-        1, feature_engagement::kMaxStoragePeriod));
+        feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed,
+        Comparator(GREATER_THAN_OR_EQUAL, 1),
+        feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
     return config;
   }
 #endif  // BUILDFLAG(IS_IOS)
