@@ -159,6 +159,8 @@ class CONTENT_EXPORT ClipboardHostImpl
   void CommitWrite() override;
 #if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
+  void GetPlatformPermissionState(
+      GetPlatformPermissionStateCallback callback) override;
 #endif
 
   // Checks if the renderer allows pasting.  This check is skipped if called

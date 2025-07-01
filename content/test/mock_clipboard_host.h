@@ -74,6 +74,8 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
       mojo::PendingRemote<blink::mojom::ClipboardListener> listener) override;
 #if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
+  void GetPlatformPermissionState(
+      GetPlatformPermissionStateCallback callback) override;
 #endif
  private:
   std::vector<std::u16string> ReadStandardFormatNames();

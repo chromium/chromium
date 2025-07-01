@@ -28,6 +28,24 @@ enum ClipboardBuffer {
   kSelection,
 };
 
+// Represents the clipboard access permission state on macOS as configured
+// in System Settings > Privacy & Security > Clipboard.
+// NOTE: These settings only affect programmatic clipboard access that lacks
+// an associated user action. Direct user actions like ⌘V will always be
+// allowed regardless of these settings.
+[EnableIf=is_mac]
+enum PlatformClipboardPermissionState {
+  // The system will automatically allow programmatic clipboard access without
+  // prompting.
+  kAllow,
+  // The system will prompt the user before granting programmatic clipboard
+  // access.
+  kAsk,
+  // The system will automatically deny programmatic clipboard access without
+  // prompting.
+  kDeny,
+};
+
 struct ClipboardFiles {
   // Files on the system clipboard.
   array<DataTransferFile> files;
@@ -184,6 +202,14 @@ interface ClipboardHost {
 
   [EnableIf=is_mac]
   WriteStringToFindPboard(mojo_base.mojom.String16 text);
+
+  // Returns the current clipboard access permission state as configured
+  // in macOS System Settings. Only available on macOS 15.4+.
+  // NOTE: This only affects programmatic access that lacks an associated user
+  // action. User-initiated actions like ⌘V will always work regardless of this
+  // setting.
+  [EnableIf=is_mac]
+  GetPlatformPermissionState() => (PlatformClipboardPermissionState state);
 
   // Registers a clipboard listener to be notified when the clipboard contents change.
   // Previously registered listener would be disconnected upon registering a new one.

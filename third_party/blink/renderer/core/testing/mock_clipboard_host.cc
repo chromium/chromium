@@ -243,6 +243,11 @@ void MockClipboardHost::OnClipboardDataChanged() {
 
 #if BUILDFLAG(IS_MAC)
 void MockClipboardHost::WriteStringToFindPboard(const String& text) {}
+
+void MockClipboardHost::GetPlatformPermissionState(
+    GetPlatformPermissionStateCallback callback) {
+  std::move(callback).Run(platform_permission_state_);
+}
 #endif
 
 }  // namespace blink

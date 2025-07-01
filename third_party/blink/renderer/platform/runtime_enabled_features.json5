@@ -2933,6 +2933,14 @@
       base_feature: "none",
     },
     {
+      // Enables macOS system-level clipboard permission checking using
+      // NSPasteboard.accessBehavior API (available on macOS 15.4+).
+      // This allows web applications to respect user's clipboard privacy
+      // settings in System Settings > Privacy & Security > Clipboard.
+      name: "MacSystemClipboardPermissionCheck",
+      status: {"Mac": "stable", "default": ""},
+    },
+    {
       name: "ManagedConfiguration",
       status: "stable",
     },

@@ -652,4 +652,28 @@ TEST_F(SystemClipboardTest, ScopedSnapshotReadWriteBehavior) {
   EXPECT_EQ(system_clipboard().ReadPlainText(), "mocked");
 }
 
+#if BUILDFLAG(IS_MAC)
+TEST_F(SystemClipboardTest, GetPlatformPermissionStateCallback) {
+  // Test callback is called with the permission state
+  bool callback_called = false;
+  mojom::blink::PlatformClipboardPermissionState received_state;
+
+  mock_clipboard_host()->SetPlatformPermissionState(
+      mojom::blink::PlatformClipboardPermissionState::kAllow);
+  system_clipboard().GetPlatformPermissionState(WTF::BindOnce(
+      [](bool* called, mojom::blink::PlatformClipboardPermissionState* state,
+         mojom::blink::PlatformClipboardPermissionState result) {
+        *called = true;
+        *state = result;
+      },
+      WTF::Unretained(&callback_called), WTF::Unretained(&received_state)));
+
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_EQ(received_state,
+            mojom::blink::PlatformClipboardPermissionState::kAllow);
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace blink

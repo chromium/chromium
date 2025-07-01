@@ -9,6 +9,8 @@
 
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
+#include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -128,6 +130,16 @@ class MODULES_EXPORT ClipboardPromise final
   void HandleReadTextWithPermission(mojom::blink::PermissionStatus permission);
   void HandleWriteWithPermission(mojom::blink::PermissionStatus permission);
   void HandleWriteTextWithPermission(mojom::blink::PermissionStatus permission);
+
+#if BUILDFLAG(IS_MAC)
+  // Callback for macOS platform permission check for readText()
+  void OnPlatformPermissionResultForReadText(
+      mojom::blink::PlatformClipboardPermissionState state);
+
+  // Callback for macOS platform permission check for read()
+  void OnPlatformPermissionResultForRead(
+      mojom::blink::PlatformClipboardPermissionState state);
+#endif
 
   // Callback function called when the available format names for reading are
   // received from the clipboard.

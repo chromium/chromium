@@ -35,6 +35,13 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   // Method to simulate clipboard data change only for testing.
   void OnClipboardDataChanged();
 
+#if BUILDFLAG(IS_MAC)
+  // Test helper to configure the permission state returned by the mock
+  void SetPlatformPermissionState(
+      mojom::blink::PlatformClipboardPermissionState state) {
+    platform_permission_state_ = state;
+  }
+#endif
  private:
   // mojom::ClipboardHost
   void GetSequenceNumber(mojom::ClipboardBuffer clipboard_buffer,
@@ -80,6 +87,8 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
       mojo::PendingRemote<mojom::blink::ClipboardListener> listener) override;
 #if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const String& text) override;
+  void GetPlatformPermissionState(
+      GetPlatformPermissionStateCallback callback) override;
 #endif
   Vector<String> ReadStandardFormatNames();
 
@@ -99,6 +108,10 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   bool write_smart_paste_ = false;
   bool needs_reset_ = false;
   HashMap<String, Vector<uint8_t>> unsanitized_custom_data_map_;
+#if BUILDFLAG(IS_MAC)
+  mojom::blink::PlatformClipboardPermissionState platform_permission_state_ =
+      mojom::blink::PlatformClipboardPermissionState::kAsk;
+#endif
 };
 
 }  // namespace blink

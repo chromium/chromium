@@ -441,6 +441,18 @@ void SystemClipboard::CopyToFindPboard(const String& text) {
 #endif
 }
 
+#if BUILDFLAG(IS_MAC)
+void SystemClipboard::GetPlatformPermissionState(
+    mojom::blink::ClipboardHost::GetPlatformPermissionStateCallback callback) {
+  if (!clipboard_.is_bound()) {
+    std::move(callback).Run(
+        mojom::blink::PlatformClipboardPermissionState::kDeny);
+    return;
+  }
+  clipboard_->GetPlatformPermissionState(std::move(callback));
+}
+#endif
+
 void SystemClipboard::ReadAvailableCustomAndStandardFormats(
     mojom::blink::ClipboardHost::ReadAvailableCustomAndStandardFormatsCallback
         callback) {
