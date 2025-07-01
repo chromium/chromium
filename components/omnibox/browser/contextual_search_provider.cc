@@ -147,6 +147,11 @@ struct EligibleMatchesAndActions {
             toolbelt_config.show_tabs_action_on_ntp,
             template_url_starter_pack_data::StarterPackId::kTabs);
 
+    // Hide toolbelt if it would be empty.
+    toolbelt =
+        toolbelt && (toolbelt_lens || toolbelt_ai_mode || toolbelt_history ||
+                     toolbelt_bookmarks || toolbelt_tabs);
+
     // - Check feature/params.
     // - Restricted to DSE google, which is already checked in
     //   `client->IsLensEnabled()`.
@@ -234,7 +239,6 @@ struct EligibleMatchesAndActions {
   // Return the toolbelt actions that are eligible.
   std::vector<scoped_refptr<OmniboxAction>> GetToolbeltActions() const {
     CHECK(toolbelt);
-
     std::vector<scoped_refptr<OmniboxAction>> actions = {};
 
     if (toolbelt_lens) {
@@ -253,6 +257,8 @@ struct EligibleMatchesAndActions {
       actions.push_back(base::MakeRefCounted<StarterPackTabsAction>());
     }
 
+    // `toolbelt` should be set false if it would be empty.
+    CHECK(!actions.empty());
     return actions;
   }
 
