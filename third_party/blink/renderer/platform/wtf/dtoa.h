@@ -21,6 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DTOA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DTOA_H_
 
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
@@ -42,11 +43,9 @@ WTF_EXPORT const char* NumberToFixedWidthString(double,
                                                 unsigned decimal_places,
                                                 NumberToStringBuffer);
 
-WTF_EXPORT double ParseDouble(const LChar* string,
-                              size_t length,
+WTF_EXPORT double ParseDouble(base::span<const LChar> string,
                               size_t& parsed_length);
-WTF_EXPORT double ParseDouble(const UChar* string,
-                              size_t length,
+WTF_EXPORT double ParseDouble(base::span<const UChar> string,
                               size_t& parsed_length);
 
 namespace internal {

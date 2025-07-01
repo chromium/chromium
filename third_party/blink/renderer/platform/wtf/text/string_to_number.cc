@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 #include <type_traits>
@@ -47,40 +42,43 @@ static inline IntegralType ToIntegralType(base::span<const CharType> chars,
       std::numeric_limits<IntegralType>::is_signed;
   DCHECK(parsing_result);
 
-  const CharType* data = chars.data();
-  size_t length = chars.size();
+  auto data = chars;
+  size_t index = 0;
+  size_t length = data.size();
   IntegralType value = 0;
   NumberParsingResult result = NumberParsingResult::kError;
   bool is_negative = false;
   bool overflow = false;
   const bool accept_minus = kIsSigned || options.AcceptMinusZeroForUnsigned();
 
-  if (!data)
+  if (!data.data()) {
     goto bye;
+  }
 
   if (options.AcceptWhitespace()) {
-    while (length && blink::unicode::IsSpaceOrNewline(*data)) {
+    while (length && blink::unicode::IsSpaceOrNewline(data[index])) {
       --length;
-      ++data;
+      ++index;
     }
   }
 
-  if (accept_minus && length && *data == '-') {
+  if (accept_minus && length && data[index] == '-') {
     --length;
-    ++data;
+    ++index;
     is_negative = true;
-  } else if (length && options.AcceptLeadingPlus() && *data == '+') {
+  } else if (length && options.AcceptLeadingPlus() && data[index] == '+') {
     --length;
-    ++data;
+    ++index;
   }
 
-  if (!length || !IsCharacterAllowedInBase<base>(*data))
+  if (!length || !IsCharacterAllowedInBase<base>(data[index])) {
     goto bye;
+  }
 
-  while (length && IsCharacterAllowedInBase<base>(*data)) {
+  while (length && IsCharacterAllowedInBase<base>(data[index])) {
     --length;
     IntegralType digit_value;
-    CharType c = *data;
+    CharType c = data[index];
     if (IsASCIIDigit(c))
       digit_value = c - '0';
     else if (c >= 'a')
@@ -122,13 +120,13 @@ static inline IntegralType ToIntegralType(base::span<const CharType> chars,
       else
         value = base * value + digit_value;
     }
-    ++data;
+    ++index;
   }
 
   if (options.AcceptWhitespace()) {
-    while (length && blink::unicode::IsSpaceOrNewline(*data)) {
+    while (length && blink::unicode::IsSpaceOrNewline(data[index])) {
       --length;
-      ++data;
+      ++index;
     }
   }
 
@@ -259,8 +257,8 @@ static inline double ToDoubleType(base::span<const CharType> data,
          IsASCIISpace(data[leading_spaces_length]))
     ++leading_spaces_length;
 
-  double number = ParseDouble(data.data() + leading_spaces_length,
-                              length - leading_spaces_length, parsed_length);
+  double number =
+      ParseDouble(data.subspan(leading_spaces_length), parsed_length);
   if (!parsed_length) {
     if (ok)
       *ok = false;

@@ -42,6 +42,8 @@
 
 #include <string.h>
 
+#include <array>
+
 #include "base/numerics/safe_conversions.h"
 #include "base/third_party/double_conversion/double-conversion/double-conversion.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -58,7 +60,8 @@ double ParseDoubleFromLongString(const UChar* string,
   for (wtf_size_t i = 0; i < conversion_length; ++i) {
     conversion_buffer[i] = IsASCII(string[i]) ? string[i] : 0;
   }
-  return ParseDouble(conversion_buffer.get(), length, parsed_length);
+  return ParseDouble(base::span(conversion_buffer.get(), length),
+                     parsed_length);
 }
 
 const double_conversion::StringToDoubleConverter& GetDoubleConverter() {
@@ -162,26 +165,28 @@ const char* NumberToFixedWidthString(double d,
   return builder.Finalize();
 }
 
-double ParseDouble(const LChar* string, size_t length, size_t& parsed_length) {
+double ParseDouble(base::span<const LChar> string, size_t& parsed_length) {
   int int_parsed_length = 0;
   double d = GetDoubleConverter().StringToDouble(
-      reinterpret_cast<const char*>(string), base::saturated_cast<int>(length),
-      &int_parsed_length);
+      reinterpret_cast<const char*>(string.data()),
+      base::saturated_cast<int>(string.size()), &int_parsed_length);
   parsed_length = int_parsed_length;
   return d;
 }
 
-double ParseDouble(const UChar* string, size_t length, size_t& parsed_length) {
+double ParseDouble(base::span<const UChar> string, size_t& parsed_length) {
   const size_t kConversionBufferSize = 64;
+  const size_t length = string.size();
   if (length > kConversionBufferSize) {
-    return ParseDoubleFromLongString(string, length, parsed_length);
+    return ParseDoubleFromLongString(string.data(), length, parsed_length);
   }
-  LChar conversion_buffer[kConversionBufferSize];
+  std::array<LChar, kConversionBufferSize> conversion_buffer;
   for (size_t i = 0; i < length; ++i) {
     conversion_buffer[i] =
         IsASCII(string[i]) ? static_cast<LChar>(string[i]) : 0;
   }
-  return ParseDouble(conversion_buffer, length, parsed_length);
+  return ParseDouble(base::span(conversion_buffer).first(length),
+                     parsed_length);
 }
 
 namespace internal {
