@@ -101,17 +101,7 @@ def _find_regex_in_test_failure_output(test_output, regex):
     return False
 
   failure_message = test_output[failed_index:]
-  if regex.find('\n') >= 0:
-    return re.search(regex, failure_message)
-  return _search_regex_in_list(failure_message.split('\n'), regex)
-
-
-def _search_regex_in_list(value, regex):
-  for line in value:
-    if re.search(regex, line):
-      return True
-  return False
-
+  return re.search(regex, failure_message)
 
 def _do_build_get_failure_output(gn_path, gn_cmd, options):
   # Extract directory from test target. As all of the test targets are declared
@@ -177,8 +167,7 @@ def main():
     test_output = _do_build_get_failure_output(gn_path, None, options)
 
     # 'gn gen' takes > 1s to run. Only run 'gn gen' if it is needed for compile.
-    if (test_output
-        and _search_regex_in_list(test_output.split('\n'), _GN_GEN_REGEX)):
+    if (test_output and _GN_GEN_REGEX.search(test_output)):
       assert not ran_gn_gen
       ran_gn_gen = True
       test_output = _do_build_get_failure_output(gn_path, 'gen', options)
