@@ -27,45 +27,6 @@ namespace chrome_pdf {
 
 namespace {
 
-// Performs an inverse operation of `EventPositionToCanonicalPosition()`, to
-// convert from canonical coordinates to screen coordinates.
-// TODO(crbug.com/379003898): Change EventPositionToCanonicalPosition() to
-// return gfx::AxisTransform2d, so that callers can just use the inverse of
-// the transform instead of this helper.
-gfx::PointF CanonicalPositionToScreenPosition(
-    const gfx::PointF& canonical_position,
-    PageOrientation orientation,
-    const gfx::Rect& page_content_rect,
-    float scale_factor) {
-  CHECK_GT(scale_factor, 0.0f);
-  CHECK(!page_content_rect.IsEmpty());
-  gfx::PointF screen_position = canonical_position;
-  screen_position.Scale(scale_factor);
-  switch (orientation) {
-    case PageOrientation::kOriginal:
-      // No further modification needed.
-      break;
-    case PageOrientation::kClockwise90:
-      screen_position.SetPoint(
-          page_content_rect.width() - screen_position.y() - 1,
-          screen_position.x());
-      break;
-    case PageOrientation::kClockwise180:
-      screen_position.SetPoint(
-          page_content_rect.width() - screen_position.x() - 1,
-          page_content_rect.height() - screen_position.y() - 1);
-      break;
-    case PageOrientation::kClockwise270:
-      screen_position.SetPoint(
-          screen_position.y(),
-          page_content_rect.height() - screen_position.x() - 1);
-      break;
-  }
-  // Account for scrolling, which is in the page content's origin.
-  screen_position += page_content_rect.origin().OffsetFromOrigin();
-  return screen_position;
-}
-
 gfx::Size GetOriginalUnrotatedSize(PageOrientation orientation,
                                    const gfx::Size& size) {
   switch (orientation) {
@@ -81,36 +42,45 @@ gfx::Size GetOriginalUnrotatedSize(PageOrientation orientation,
   NOTREACHED();
 }
 
+gfx::Transform GetEventToCanonicalTransform(PageOrientation orientation,
+                                            const gfx::Rect& page_content_rect,
+                                            float scale_factor) {
+  CHECK_GT(scale_factor, 0.0f);
+  CHECK(!page_content_rect.IsEmpty());
+
+  gfx::Transform transform;
+  transform.PostTranslate(-page_content_rect.OffsetFromOrigin());
+  switch (orientation) {
+    case PageOrientation::kOriginal:
+      // No further modification needed.
+      break;
+    case PageOrientation::kClockwise90:
+      transform.PostConcat(gfx::Transform::Make270degRotation());
+      transform.PostTranslate(0, page_content_rect.width() - 1);
+      break;
+    case PageOrientation::kClockwise180:
+      transform.PostConcat(gfx::Transform::Make180degRotation());
+      transform.PostTranslate(page_content_rect.width() - 1,
+                              page_content_rect.height() - 1);
+      break;
+    case PageOrientation::kClockwise270:
+      transform.PostConcat(gfx::Transform::Make90degRotation());
+      transform.PostTranslate(page_content_rect.height() - 1, 0);
+      break;
+  }
+  transform.PostScale(1 / scale_factor);
+  return transform;
+}
+
 }  // namespace
 
 gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
                                              PageOrientation orientation,
                                              const gfx::Rect& page_content_rect,
                                              float scale_factor) {
-  CHECK_GT(scale_factor, 0.0f);
-  CHECK(!page_content_rect.IsEmpty());
-  gfx::PointF page_position =
-      event_position - page_content_rect.OffsetFromOrigin();
-  switch (orientation) {
-    case PageOrientation::kOriginal:
-      // No further modification needed.
-      break;
-    case PageOrientation::kClockwise90:
-      page_position.SetPoint(page_position.y(),
-                             page_content_rect.width() - page_position.x() - 1);
-      break;
-    case PageOrientation::kClockwise180:
-      page_position.SetPoint(
-          page_content_rect.width() - page_position.x() - 1,
-          page_content_rect.height() - page_position.y() - 1);
-      break;
-    case PageOrientation::kClockwise270:
-      page_position.SetPoint(page_content_rect.height() - page_position.y() - 1,
-                             page_position.x());
-      break;
-  }
-  page_position.InvScale(scale_factor);
-  return page_position;
+  gfx::Transform transform = GetEventToCanonicalTransform(
+      orientation, page_content_rect, scale_factor);
+  return transform.MapPoint(event_position);
 }
 
 ink::AffineTransform GetInkRenderTransform(
@@ -186,12 +156,13 @@ gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
   const std::optional<ink::Rect>& ink_rect = envelope.AsRect();
   CHECK(ink_rect.has_value());
 
-  gfx::PointF p1 = CanonicalPositionToScreenPosition(
-      gfx::PointF(ink_rect->XMin(), ink_rect->YMin()), orientation,
-      page_content_rect, scale_factor);
-  gfx::PointF p2 = CanonicalPositionToScreenPosition(
-      gfx::PointF(ink_rect->XMax(), ink_rect->YMax()), orientation,
-      page_content_rect, scale_factor);
+  gfx::Transform transform =
+      GetEventToCanonicalTransform(orientation, page_content_rect, scale_factor)
+          .GetCheckedInverse();
+  gfx::PointF p1 =
+      transform.MapPoint(gfx::PointF(ink_rect->XMin(), ink_rect->YMin()));
+  gfx::PointF p2 =
+      transform.MapPoint(gfx::PointF(ink_rect->XMax(), ink_rect->YMax()));
 
   // Width and height get +1 since both of the points are to be included in the
   // area; otherwise it would be an open rectangle on two edges.
