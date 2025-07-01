@@ -42,6 +42,8 @@ gfx::Size GetOriginalUnrotatedSize(PageOrientation orientation,
   NOTREACHED();
 }
 
+}  // namespace
+
 gfx::Transform GetEventToCanonicalTransform(PageOrientation orientation,
                                             const gfx::Rect& page_content_rect,
                                             float scale_factor) {
@@ -70,17 +72,6 @@ gfx::Transform GetEventToCanonicalTransform(PageOrientation orientation,
   }
   transform.PostScale(1 / scale_factor);
   return transform;
-}
-
-}  // namespace
-
-gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
-                                             PageOrientation orientation,
-                                             const gfx::Rect& page_content_rect,
-                                             float scale_factor) {
-  gfx::Transform transform = GetEventToCanonicalTransform(
-      orientation, page_content_rect, scale_factor);
-  return transform.MapPoint(event_position);
 }
 
 ink::AffineTransform GetInkRenderTransform(

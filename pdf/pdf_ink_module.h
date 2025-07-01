@@ -35,6 +35,7 @@
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
@@ -467,11 +468,9 @@ class PdfInkModule {
   std::vector<ink::InProgressStroke> CreateInProgressStrokeSegmentsFromInputs()
       const;
 
-  // Wrapper around EventPositionToCanonicalPosition(). `page_index` is the page
-  // that `position` is on. The page must be visible.
-  gfx::PointF ConvertEventPositionToCanonicalPosition(
-      const gfx::PointF& position,
-      int page_index);
+  // Wrapper around GetEventToCanonicalTransform(). `page_index` is the page
+  // that the to-be-transformed position is on. The page must be visible.
+  gfx::Transform GetEventToCanonicalTransformForPage(int page_index);
 
   // Helper to convert `position` to a canonical position and record it into
   // `current_tool_state_` for the indicated `timestamp` and `tool_type`.

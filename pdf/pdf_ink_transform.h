@@ -28,27 +28,29 @@ namespace chrome_pdf {
 
 enum class PageRotation;
 
-// Converts a screen-based event input position into a page-based CSS pixels
-// position.  This canonical format is relative to the upper-left corner of a
-// page for its original orientation at a scale factor of 100%.
-// - `event_position`:
-//     The input position, in screen-based coordinates.  Must already have had
-//     any offset from a viewport origin to the page origin applied to it.
+// Generates the transform for converting a screen-based event input position
+// into a page-based CSS pixels position. The CSS pixels position serves as a
+// canonical format, where it is relative to the upper-left corner of a page for
+// its original orientation at a scale factor of 100%.
+//
 // - `orientation`:
 //     Current orientation of the page.
 // - `page_content_rect`:
 //     Scaled and rotated CSS coordinates of the page content area.  The amount
 //     of scale and rotation match that of `orientation` and `scale_factor`.
-//     The area's origin has the same offset from a viewport origin as
-//     `event_position`.  Must not be empty.
+//     The area's origin has the same offset from a viewport origin as the event
+//     positions the transform will operate on.  Must not be empty.
 // - `scale_factor`:
 //     The current zoom factor, with 1.0 representing identity.  Must be greater
 //     than zero.  This is used to ensure the resulting point is relative to a
 //     scale factor of 100%.
-gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
-                                             PageOrientation orientation,
-                                             const gfx::Rect& page_content_rect,
-                                             float scale_factor);
+//
+// The returned transform should be used with event positions from Blink, which
+// are screen-based coordinates that already have had any offset from a viewport
+// origin to the page origin applied to it.
+gfx::Transform GetEventToCanonicalTransform(PageOrientation orientation,
+                                            const gfx::Rect& page_content_rect,
+                                            float scale_factor);
 
 // Generates the affine transformation for rendering a page's strokes to the
 // screen, based on the page and its position within the viewport.
@@ -97,9 +99,9 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
 //                       +-------------+ +------------+
 //
 // - `orientation`:
-//     Same as for `EventPositionToCanonicalPosition()`.
+//     Same as for `GetEventToCanonicalTransform()`.
 // - `page_content_rect`:
-//     Same as for `EventPositionToCanonicalPosition()`.
+//     Same as for `GetEventToCanonicalTransform()`.
 // - `page_size_in_points`:
 //     The size of the page in points for the PDF document.  I.e., no scaling
 //     or orientation changes are applied to this size.
@@ -123,7 +125,7 @@ ink::AffineTransform GetInkThumbnailTransform(
 
 // Converts `ink::Envelope` to screen coordinates as needed for invalidation.
 // Uses the same `orientation`, `page_content_rect`, and `scale_factor`
-// parameters as used in `EventPositionToCanonicalPosition()`.  This function
+// parameters as used in `GetEventToCanonicalTransform()`.  This function
 // uses them in reverse, to convert canonical coordinates back to screen
 // coordinates.  The caller must provide a non-empty `envelope`.
 gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(

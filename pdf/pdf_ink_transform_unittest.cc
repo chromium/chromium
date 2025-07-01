@@ -96,22 +96,23 @@ struct TransformTestCase {
 
 }  // namespace
 
-TEST(PdfInkTransformTest, EventPositionToCanonicalPositionIdentity) {
+TEST(PdfInkTransformTest, EventToCanonicalTransformIdentity) {
   constexpr auto kTestCases = std::to_array<TransformTestCase>({
       {kInputPositionTopLeft, kCanonicalPositionTopLeft},
       {kInputPositionPortraitBottomRight, kCanonicalPositionBottomRight},
       {kInputPositionInterior, gfx::PointF(40.0f, 16.0f)},
   });
 
+  gfx::Transform transform = GetEventToCanonicalTransform(
+      PageOrientation::kOriginal, kPageContentAreaPortraitNoOffset,
+      kScaleFactor1x);
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.expected_css_pixel,
-              EventPositionToCanonicalPosition(
-                  test_case.input_event_position, PageOrientation::kOriginal,
-                  kPageContentAreaPortraitNoOffset, kScaleFactor1x));
+              transform.MapPoint(test_case.input_event_position));
   }
 }
 
-TEST(PdfInkTransformTest, EventPositionToCanonicalPositionZoom) {
+TEST(PdfInkTransformTest, EventToCanonicalTransformZoom) {
   constexpr auto kTestCases = std::to_array<TransformTestCase>({
       {kInputPositionTopLeft, kCanonicalPositionTopLeft},
       {kInputPositionPortraitBottomRight2x,
@@ -119,62 +120,64 @@ TEST(PdfInkTransformTest, EventPositionToCanonicalPositionZoom) {
       {kInputPositionInterior2x, gfx::PointF(40.0f, 16.0f)},
   });
 
+  gfx::Transform transform = GetEventToCanonicalTransform(
+      PageOrientation::kOriginal, kPageContentAreaPortraitNoOffset2x,
+      kScaleFactor2x);
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.expected_css_pixel,
-              EventPositionToCanonicalPosition(
-                  test_case.input_event_position, PageOrientation::kOriginal,
-                  kPageContentAreaPortraitNoOffset2x, kScaleFactor2x));
+              transform.MapPoint(test_case.input_event_position));
   }
 }
 
-TEST(PdfInkTransformTest, EventPositionToCanonicalPositionRotateClockwise90) {
+TEST(PdfInkTransformTest, EventToCanonicalTransformRotateClockwise90) {
   constexpr auto kTestCases = std::to_array<TransformTestCase>({
       {kInputPositionTopLeft, kCanonicalPositionBottomLeft},
       {kInputPositionLandscapeBottomRight, kCanonicalPositionTopRight},
       {kInputPositionInterior, gfx::PointF(16.0f, 19.0f)},
   });
 
+  gfx::Transform transform = GetEventToCanonicalTransform(
+      PageOrientation::kClockwise90, kPageContentAreaLandscapeNoOffset,
+      kScaleFactor1x);
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.expected_css_pixel,
-              EventPositionToCanonicalPosition(
-                  test_case.input_event_position, PageOrientation::kClockwise90,
-                  kPageContentAreaLandscapeNoOffset, kScaleFactor1x));
+              transform.MapPoint(test_case.input_event_position));
   }
 }
 
-TEST(PdfInkTransformTest, EventPositionToCanonicalPositionRotateClockwise180) {
+TEST(PdfInkTransformTest, EventToCanonicalTransformRotateClockwise180) {
   constexpr auto kTestCases = std::to_array<TransformTestCase>({
       {kInputPositionTopLeft, kCanonicalPositionBottomRight},
       {kInputPositionPortraitBottomRight, kCanonicalPositionTopLeft},
       {kInputPositionInterior, gfx::PointF(9.0f, 43.0f)},
   });
 
+  gfx::Transform transform = GetEventToCanonicalTransform(
+      PageOrientation::kClockwise180, kPageContentAreaPortraitNoOffset,
+      kScaleFactor1x);
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.expected_css_pixel,
-              EventPositionToCanonicalPosition(test_case.input_event_position,
-                                               PageOrientation::kClockwise180,
-                                               kPageContentAreaPortraitNoOffset,
-                                               kScaleFactor1x));
+              transform.MapPoint(test_case.input_event_position));
   }
 }
 
-TEST(PdfInkTransformTest, EventPositionToCanonicalPositionRotateClockwise270) {
+TEST(PdfInkTransformTest, EventToCanonicalTransformRotateClockwise270) {
   constexpr auto kTestCases = std::to_array<TransformTestCase>({
       {kInputPositionTopLeft, kCanonicalPositionTopRight},
       {kInputPositionLandscapeBottomRight, kCanonicalPositionBottomLeft},
       {kInputPositionInterior, gfx::PointF(33.0f, 40.0f)},
   });
 
+  gfx::Transform transform = GetEventToCanonicalTransform(
+      PageOrientation::kClockwise270, kPageContentAreaLandscapeNoOffset,
+      kScaleFactor1x);
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(
-        test_case.expected_css_pixel,
-        EventPositionToCanonicalPosition(
-            test_case.input_event_position, PageOrientation::kClockwise270,
-            kPageContentAreaLandscapeNoOffset, kScaleFactor1x));
+    EXPECT_EQ(test_case.expected_css_pixel,
+              transform.MapPoint(test_case.input_event_position));
   }
 }
 
-TEST(PdfInkTransformTest, EventPositionToCanonicalPositionScrolled) {
+TEST(PdfInkTransformTest, EventToCanonicalTransformScrolled) {
   constexpr gfx::Point kPageContentRectOrigin(-8, -14);
   const auto kTestCases = std::to_array<TransformTestCase>({
       {kInputPositionTopLeft + kPageContentRectOrigin.OffsetFromOrigin(),
@@ -185,18 +188,16 @@ TEST(PdfInkTransformTest, EventPositionToCanonicalPositionScrolled) {
       {kInputPositionInterior, gfx::PointF(48.0f, 30.0f)},
   });
 
+  gfx::Transform transform = GetEventToCanonicalTransform(
+      PageOrientation::kOriginal,
+      gfx::Rect(kPageContentRectOrigin, kPageSizePortrait), kScaleFactor1x);
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.expected_css_pixel,
-              EventPositionToCanonicalPosition(
-                  test_case.input_event_position, PageOrientation::kOriginal,
-                  /*page_content_rect=*/
-                  gfx::Rect(kPageContentRectOrigin, kPageSizePortrait),
-                  kScaleFactor1x));
+              transform.MapPoint(test_case.input_event_position));
   }
 }
 
-TEST(PdfInkTransformTest,
-     EventPositionToCanonicalPositionZoomScrolledClockwise90) {
+TEST(PdfInkTransformTest, EventToCanonicalTransformZoomScrolledClockwise90) {
   constexpr gfx::Point kPageContentRectOrigin(-16, -28);
   const auto kTestCases = std::to_array<TransformTestCase>({
       {kInputPositionTopLeft + kPageContentRectOrigin.OffsetFromOrigin(),
@@ -207,13 +208,12 @@ TEST(PdfInkTransformTest,
       {kInputPositionInterior2x, gfx::PointF(30.0f, 11.5f)},
   });
 
+  gfx::Transform transform = GetEventToCanonicalTransform(
+      PageOrientation::kClockwise90,
+      gfx::Rect(kPageContentRectOrigin, kPageSizeLandscape2x), kScaleFactor2x);
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.expected_css_pixel,
-              EventPositionToCanonicalPosition(
-                  test_case.input_event_position, PageOrientation::kClockwise90,
-                  /*page_content_rect=*/
-                  gfx::Rect(kPageContentRectOrigin, kPageSizeLandscape2x),
-                  kScaleFactor2x));
+              transform.MapPoint(test_case.input_event_position));
   }
 }
 

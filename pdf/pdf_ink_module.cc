@@ -639,7 +639,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   DrawingStrokeState& state = drawing_stroke_state();
 
   gfx::PointF page_position =
-      ConvertEventPositionToCanonicalPosition(position, page_index);
+      GetEventToCanonicalTransformForPage(page_index).MapPoint(position);
 
   CHECK(!state.start_time.has_value());
   state.start_time = timestamp;
@@ -913,7 +913,7 @@ void PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
   CHECK_GE(page_index, 0);
 
   const gfx::PointF canonical_position =
-      ConvertEventPositionToCanonicalPosition(position, page_index);
+      GetEventToCanonicalTransformForPage(page_index).MapPoint(position);
   const ink::Rect eraser_rect = GetEraserRect(canonical_position);
   ink::Envelope invalidate_envelope;
 
@@ -1166,10 +1166,9 @@ PdfInkModule::GetPointsForTextSelectionHighlightStroke(
   int page_index =
       client_->PageIndexFromPoint(gfx::PointF(selection_rect.origin()));
   CHECK_GE(page_index, 0);
-  gfx::PointF start_f =
-      ConvertEventPositionToCanonicalPosition(gfx::PointF(start), page_index);
-  gfx::PointF end_f =
-      ConvertEventPositionToCanonicalPosition(gfx::PointF(end), page_index);
+  gfx::Transform transform = GetEventToCanonicalTransformForPage(page_index);
+  gfx::PointF start_f = transform.MapPoint(gfx::PointF(start));
+  gfx::PointF end_f = transform.MapPoint(gfx::PointF(end));
 
   // These points need to be offset to account for brush size. Depending on the
   // direction of the stroke, the points will need to be offset in either the x
@@ -1474,16 +1473,13 @@ PdfInkModule::CreateInProgressStrokeSegmentsFromInputs() const {
   return stroke_segments;
 }
 
-gfx::PointF PdfInkModule::ConvertEventPositionToCanonicalPosition(
-    const gfx::PointF& position,
+gfx::Transform PdfInkModule::GetEventToCanonicalTransformForPage(
     int page_index) {
-  // If the page is visible at `position`, then its rect must not be empty.
+  // If the page is visible, then its screen rect must not be empty.
+  // GetEventToCanonicalTransform() will check this.
   auto page_contents_rect = client_->GetPageContentsRect(page_index);
-  CHECK(!page_contents_rect.IsEmpty());
-
-  return EventPositionToCanonicalPosition(position, client_->GetOrientation(),
-                                          page_contents_rect,
-                                          client_->GetZoom());
+  return GetEventToCanonicalTransform(client_->GetOrientation(),
+                                      page_contents_rect, client_->GetZoom());
 }
 
 bool PdfInkModule::RecordStrokePosition(const gfx::PointF& position,
@@ -1492,7 +1488,7 @@ bool PdfInkModule::RecordStrokePosition(const gfx::PointF& position,
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
   gfx::PointF canonical_position =
-      ConvertEventPositionToCanonicalPosition(position, state.page_index);
+      GetEventToCanonicalTransformForPage(state.page_index).MapPoint(position);
   base::TimeDelta time_diff = timestamp - state.start_time.value();
   auto result = state.inputs.back().Append(
       CreateInkStrokeInput(tool_type, canonical_position, time_diff));
