@@ -10,31 +10,28 @@
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/views/controls/button/checkbox.h"
-#include "ui/views/view.h"
 
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCheckboxId);
 
-// Views implementation of the uninstall dialog.
-class ExtensionUninstallDialogViews
+// The implementation of the uninstall dialog.
+class ExtensionUninstallDialogImpl
     : public extensions::ExtensionUninstallDialog {
  public:
-  ExtensionUninstallDialogViews(
+  ExtensionUninstallDialogImpl(
       Profile* profile,
       gfx::NativeWindow parent,
       extensions::ExtensionUninstallDialog::Delegate* delegate);
-  ExtensionUninstallDialogViews(const ExtensionUninstallDialogViews&) = delete;
-  ExtensionUninstallDialogViews& operator=(
-      const ExtensionUninstallDialogViews&) = delete;
-  ~ExtensionUninstallDialogViews() override;
+  ExtensionUninstallDialogImpl(const ExtensionUninstallDialogImpl&) = delete;
+  ExtensionUninstallDialogImpl& operator=(const ExtensionUninstallDialogImpl&) =
+      delete;
+  ~ExtensionUninstallDialogImpl() override;
 
   // Forwards that the dialog has been accepted to the delegate.
   void DialogAccepted();
@@ -53,24 +50,23 @@ class ExtensionUninstallDialogViews
 
   // WeakPtrs because the associated dialog may outlive |this|, which is owned
   // by the caller of extensions::ExtensionsUninstallDialog::Create().
-  base::WeakPtrFactory<ExtensionUninstallDialogViews> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ExtensionUninstallDialogImpl> weak_ptr_factory_{this};
 };
 
-ExtensionUninstallDialogViews::ExtensionUninstallDialogViews(
+ExtensionUninstallDialogImpl::ExtensionUninstallDialogImpl(
     Profile* profile,
     gfx::NativeWindow parent,
     extensions::ExtensionUninstallDialog::Delegate* delegate)
     : extensions::ExtensionUninstallDialog(profile, parent, delegate) {}
 
-ExtensionUninstallDialogViews::~ExtensionUninstallDialogViews() {
+ExtensionUninstallDialogImpl::~ExtensionUninstallDialogImpl() {
   if (dialog_model_) {
     dialog_model_->host()->Close();
   }
   DCHECK(!dialog_model_);
 }
 
-void ExtensionUninstallDialogViews::Show() {
-  // TODO(pbos): Consider separating dialog model from views code.
+void ExtensionUninstallDialogImpl::Show() {
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetInternalName("ExtensionUninstallDialog")
       .SetTitle(l10n_util::GetStringFUTF16(
@@ -79,20 +75,19 @@ void ExtensionUninstallDialogViews::Show() {
               extension()->name())))
       .OverrideShowCloseButton(false)
       .SetDialogDestroyingCallback(
-          base::BindOnce(&ExtensionUninstallDialogViews::DialogClosing,
+          base::BindOnce(&ExtensionUninstallDialogImpl::DialogClosing,
                          weak_ptr_factory_.GetWeakPtr()))
       .SetIcon(ui::ImageModel::FromImageSkia(
           gfx::ImageSkiaOperations::CreateResizedImage(
               icon(), skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
               gfx::Size(extension_misc::EXTENSION_ICON_SMALL,
                         extension_misc::EXTENSION_ICON_SMALL))))
-      .AddOkButton(
-          base::BindOnce(&ExtensionUninstallDialogViews::DialogAccepted,
-                         weak_ptr_factory_.GetWeakPtr()),
-          ui::DialogModel::Button::Params()
-              .SetLabel(l10n_util::GetStringUTF16(
-                  IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON))
-              .SetId(kOkButtonElementId))
+      .AddOkButton(base::BindOnce(&ExtensionUninstallDialogImpl::DialogAccepted,
+                                  weak_ptr_factory_.GetWeakPtr()),
+                   ui::DialogModel::Button::Params()
+                       .SetLabel(l10n_util::GetStringUTF16(
+                           IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON))
+                       .SetId(kOkButtonElementId))
       .AddCancelButton(
           base::DoNothing() /* Cancel is covered by WindowClosingCallback */,
           ui::DialogModel::Button::Params().SetId(kCancelButtonElementId));
@@ -128,12 +123,12 @@ void ExtensionUninstallDialogViews::Show() {
   ShowDialog(parent(), extension()->id(), std::move(dialog_model));
 }
 
-void ExtensionUninstallDialogViews::Close() {
+void ExtensionUninstallDialogImpl::Close() {
   DCHECK(dialog_model_);
   dialog_model_->host()->Close();
 }
 
-void ExtensionUninstallDialogViews::DialogAccepted() {
+void ExtensionUninstallDialogImpl::DialogAccepted() {
   DCHECK(dialog_model_);
   const bool checkbox_is_checked =
       ShouldShowCheckbox() &&
@@ -144,7 +139,7 @@ void ExtensionUninstallDialogViews::DialogAccepted() {
                      : CLOSE_ACTION_UNINSTALL);
 }
 
-void ExtensionUninstallDialogViews::DialogClosing() {
+void ExtensionUninstallDialogImpl::DialogClosing() {
   if (!dialog_model_) {
     return;
   }
@@ -164,6 +159,6 @@ std::unique_ptr<extensions::ExtensionUninstallDialog>
 extensions::ExtensionUninstallDialog::Create(Profile* profile,
                                              gfx::NativeWindow parent,
                                              Delegate* delegate) {
-  return std::make_unique<ExtensionUninstallDialogViews>(profile, parent,
-                                                         delegate);
+  return std::make_unique<ExtensionUninstallDialogImpl>(profile, parent,
+                                                        delegate);
 }

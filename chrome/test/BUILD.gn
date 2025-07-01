@@ -4714,6 +4714,7 @@ if (!is_android) {
         "../browser/extensions/api/automation/automation_apitest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc",
         "../browser/extensions/api/proxy/proxy_apitest.cc",
+        "../browser/ui/extensions/extension_uninstall_dialog_impl_browsertest.cc",
       ]
 
       if (is_chromeos) {
@@ -4912,7 +4913,6 @@ if (!is_android) {
         "../browser/ui/views/extensions/extension_install_dialog_view_browsertest.cc",
         "../browser/ui/views/extensions/extension_install_friction_dialog_view_browsertest.cc",
         "../browser/ui/views/extensions/extension_installed_bubble_view_browsertest.cc",
-        "../browser/ui/views/extensions/extension_uninstall_dialog_view_browsertest.cc",
         "../browser/ui/views/extensions/extensions_dialogs_browsertest.cc",
         "../browser/ui/views/extensions/extensions_dialogs_browsertest.h",
         "../browser/ui/views/extensions/extensions_request_access_hover_card_coordinator_browsertest.cc",

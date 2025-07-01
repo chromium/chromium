@@ -111,12 +111,12 @@ class TestExtensionUninstallDialogDelegate
 
 }  // namespace
 
-using ExtensionUninstallDialogViewBrowserTest = InProcessBrowserTest;
+using ExtensionUninstallDialogImplBrowserTest = InProcessBrowserTest;
 
 // Test that ExtensionUninstallDialog cancels the uninstall if the Window which
 // is passed to ExtensionUninstallDialog::Create() is destroyed before
 // ExtensionUninstallDialogDelegateView is created.
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
                        TrackParentWindowDestruction) {
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
   extensions::ExtensionRegistrar::Get(browser()->profile())
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
 // Test that ExtensionUninstallDialog cancels the uninstall if the Window which
 // is passed to ExtensionUninstallDialog::Create() is destroyed after
 // ExtensionUninstallDialogDelegateView is created.
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
                        TrackParentWindowDestructionAfterViewCreation) {
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
   extensions::ExtensionRegistrar::Get(browser()->profile())
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
 
 // Tests uninstalling the extension while the dialog is active.
 // Regression test for https://1200679.
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
                        ExtensionUninstalledWhileDialogIsActive) {
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
   extensions::ExtensionRegistrar::Get(browser()->profile())
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
 // Test that we don't crash when uninstalling an extension from a web app
 // window in Ash. Context: crbug.com/825554
 // TODO(crbug.com/415937950): Fix and re-enable flaky test.
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
                        DISABLED_WebAppWindowAshCrash) {
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
   extensions::ExtensionRegistrar::Get(browser()->profile())
@@ -255,14 +255,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
   }
 }
 
-class ParameterizedExtensionUninstallDialogViewBrowserTest
+class ParameterizedExtensionUninstallDialogImplBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<extensions::UninstallReason> {};
 
 // Test that when the user clicks Uninstall on the ExtensionUninstallDialog the
 // extension's uninstall url (when it is specified) should open and be the
 // active tab.
-IN_PROC_BROWSER_TEST_P(ParameterizedExtensionUninstallDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(ParameterizedExtensionUninstallDialogImplBrowserTest,
                        EnsureExtensionUninstallURLIsActiveTabAfterUninstall) {
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
   extensions::ExtensionRegistrar::Get(browser()->profile())
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(ParameterizedExtensionUninstallDialogViewBrowserTest,
 // on the ExtensionUninstallDialog, the extension's uninstall url (when it is
 // specified) and the CWS Report Abuse survey are opened in the browser, also
 // testing that the CWS survey is the active tab.
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
                        EnsureCWSReportAbusePageIsActiveTabAfterUninstall) {
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
   extensions::ExtensionRegistrar::Get(browser()->profile())
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
 // Tests the dialog is anchored in the correct place based on whether the
 // extensions container is visible.
 // Regression test for crbug.com/133249.
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
                        DialogAnchoredInCorrectPlace) {
   extensions::ExtensionRegistrar* extension_registrar =
       extensions::ExtensionRegistrar::Get(browser()->profile());
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
   }
 }
 
-class ExtensionUninstallDialogViewInteractiveBrowserTest
+class ExtensionUninstallDialogImplInteractiveBrowserTest
     : public DialogBrowserTest {
  public:
   enum UninstallMethod {
@@ -551,7 +551,7 @@ class ExtensionUninstallDialogViewInteractiveBrowserTest
 #else
 #define MAYBE_InvokeUi_ManualUninstall InvokeUi_ManualUninstall
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplInteractiveBrowserTest,
                        MAYBE_InvokeUi_ManualUninstall) {
   RunTest(MANUAL_UNINSTALL, EXTENSION_LOCAL_SOURCE);
 }
@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
 #define MAYBE_InvokeUi_ManualUninstallShowReportAbuse \
   InvokeUi_ManualUninstallShowReportAbuse
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplInteractiveBrowserTest,
                        MAYBE_InvokeUi_ManualUninstallShowReportAbuse) {
   RunTest(MANUAL_UNINSTALL, EXTENSION_FROM_WEBSTORE);
 }
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
 #else
 #define MAYBE_InvokeUi_UninstallByExtension InvokeUi_UninstallByExtension
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplInteractiveBrowserTest,
                        MAYBE_InvokeUi_UninstallByExtension) {
   RunTest(UNINSTALL_BY_EXTENSION, EXTENSION_LOCAL_SOURCE);
 }
@@ -589,13 +589,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
 #define MAYBE_InvokeUi_UninstallByExtensionShowReportAbuse \
   InvokeUi_UninstallByExtensionShowReportAbuse
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplInteractiveBrowserTest,
                        MAYBE_InvokeUi_UninstallByExtensionShowReportAbuse) {
   RunTest(UNINSTALL_BY_EXTENSION, EXTENSION_FROM_WEBSTORE);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ParameterizedExtensionUninstallDialogViewBrowserTest,
+    ParameterizedExtensionUninstallDialogImplBrowserTest,
     testing::Values(extensions::UNINSTALL_REASON_USER_INITIATED,
                     extensions::UNINSTALL_REASON_CHROME_WEBSTORE));

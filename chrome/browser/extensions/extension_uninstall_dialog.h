@@ -61,7 +61,7 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
     virtual ~Delegate() = default;
   };
 
-  // Creates the Views implementation of ExtensionUninstallDialog. The dialog
+  // Creates the implementation of `ExtensionUninstallDialog`. The dialog
   // will be modal to `parent`, or a non-modal dialog if `parent` is NULL.
   static std::unique_ptr<ExtensionUninstallDialog>
   Create(Profile* profile, gfx::NativeWindow parent, Delegate* delegate);
