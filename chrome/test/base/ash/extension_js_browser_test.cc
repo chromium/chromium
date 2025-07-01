@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -98,6 +99,16 @@ void ExtensionJSBrowserTest::WaitForExtension(const char* extension_id,
   if (observer.WaitForManifestVersion() == 3) {
     observer.WaitForServiceWorkerStart();
     extension_host_browser_context_ = GetProfile();
+
+    // Wait until the extension is registered by the ProcessManager (this
+    // happens asynchronously) - otherwise, we won't be able to run a script
+    // in the service worker context.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      std::vector<extensions::WorkerId> worker_ids =
+          extensions::ProcessManager::Get(GetProfile())
+              ->GetServiceWorkersForExtension(extension_id);
+      return !worker_ids.empty();
+    }));
     return;
   }
 

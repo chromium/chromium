@@ -30,7 +30,12 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
   }
 
   get featureList() {
-    return {enabled: ['features::kAccessibilityManifestV3SelectToSpeak']};
+    return {
+      enabled: [
+        'features::kAccessibilityManifestV3SelectToSpeak',
+        'features::kAccessibilityManifestV3EnhancedNetworkTts',
+      ]
+    };
   }
 
   async setUpDeferred() {
