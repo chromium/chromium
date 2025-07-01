@@ -1,7 +1,7 @@
 Name: AndroidX Test Library
 Short Name: core
 URL: https://developer.android.com/testing
-Version: 1.7.0-alpha03
+Version: 1.7.0-beta01
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

@@ -1281,7 +1281,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_core_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_core/core-1.7.0-alpha03.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_core/core-1.7.0-beta01.aar"
     info_path =
         "../androidx/committed/libs/androidx_test_core/androidx_test_core.info"
     enable_bytecode_checks = false
@@ -1320,7 +1320,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_espresso_espresso_core_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_core/espresso-core-3.7.0-alpha04.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_core/espresso-core-3.7.0-beta01.aar"
     info_path = "../androidx/committed/libs/androidx_test_espresso_espresso_core/androidx_test_espresso_espresso_core.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1376,7 +1376,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_ext_junit_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_ext_junit/junit-1.3.0-alpha03.aar"
+        "../androidx/cipd/libs/androidx_test_ext_junit/junit-1.3.0-beta01.aar"
     info_path = "../androidx/committed/libs/androidx_test_ext_junit/androidx_test_ext_junit.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1393,7 +1393,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_monitor_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_monitor/monitor-1.8.0-alpha03.aar"
+        "../androidx/cipd/libs/androidx_test_monitor/monitor-1.8.0-beta01.aar"
     info_path = "../androidx/committed/libs/androidx_test_monitor/androidx_test_monitor.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1407,7 +1407,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_rules_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_rules/rules-1.7.0-alpha03.aar"
+        "../androidx/cipd/libs/androidx_test_rules/rules-1.7.0-beta01.aar"
     info_path = "../androidx/committed/libs/androidx_test_rules/androidx_test_rules.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1421,7 +1421,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_runner_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_runner/runner-1.7.0-alpha03.aar"
+        "../androidx/cipd/libs/androidx_test_runner/runner-1.7.0-beta01.aar"
     info_path = "../androidx/committed/libs/androidx_test_runner/androidx_test_runner.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1436,7 +1436,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_services_storage_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_services_storage/storage-1.6.0-alpha04.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_services_storage/storage-1.6.0-beta01.aar"
     info_path = "../androidx/committed/libs/androidx_test_services_storage/androidx_test_services_storage.info"
     enable_bytecode_checks = false
     testonly = true
@@ -3444,7 +3444,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_test_espresso_espresso_idling_resource_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_idling_resource/espresso-idling-resource-3.7.0-alpha04.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_idling_resource/espresso-idling-resource-3.7.0-beta01.aar"
     info_path = "../androidx/committed/libs/androidx_test_espresso_espresso_idling_resource/androidx_test_espresso_espresso_idling_resource.info"
     enable_bytecode_checks = false
 
