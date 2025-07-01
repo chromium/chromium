@@ -1300,34 +1300,6 @@ base::trace_event::MemoryAllocatorDump* IOSurfaceImageBacking::OnMemoryDump(
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   static_cast<uint64_t>(size_bytes));
 
-  // The client tracing id is to identify the GpuMemoryBuffer client that
-  // created the allocation. For CVPixelBufferRefs, there is no corresponding
-  // GpuMemoryBuffer, so use an invalid client id.
-  if (usage().Has(SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)) {
-    client_tracing_id =
-        base::trace_event::MemoryDumpManager::kInvalidTracingProcessId;
-  }
-
-  // Create an edge using the GMB GenericSharedMemoryId if the image is not
-  // anonymous. Otherwise, add another nested node to account for the anonymous
-  // IOSurface.
-  if (io_surface_id_.is_valid()) {
-    auto guid = GetGenericSharedGpuMemoryGUIDForTracing(client_tracing_id,
-                                                        io_surface_id_);
-    pmd->CreateSharedGlobalAllocatorDump(guid);
-    pmd->AddOwnershipEdge(dump->guid(), guid);
-  } else {
-    std::string anonymous_dump_name = dump_name + "/anonymous-iosurface";
-    base::trace_event::MemoryAllocatorDump* anonymous_dump =
-        pmd->CreateAllocatorDump(anonymous_dump_name);
-    anonymous_dump->AddScalar(
-        base::trace_event::MemoryAllocatorDump::kNameSize,
-        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-        static_cast<uint64_t>(size_bytes));
-    anonymous_dump->AddScalar("width", "pixels", size().width());
-    anonymous_dump->AddScalar("height", "pixels", size().height());
-  }
-
   return dump;
 }
 
