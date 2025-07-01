@@ -24,5 +24,5 @@ public class BaseFeatureList {
                     false);
 
     public static final MutableIntParamWithSafeDefault sMaxDeferredSharedRebindServiceConnection =
-            sUseSharedRebindServiceConnection.newIntParam("max-deferred-bindings", 0);
+            sUseSharedRebindServiceConnection.newIntParam("max-deferred-bindings", 10);
 }
