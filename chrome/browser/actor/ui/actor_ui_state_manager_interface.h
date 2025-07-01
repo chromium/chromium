@@ -22,6 +22,11 @@ class ActorUiStateManagerInterface {
                                       ActorTask::State task_state) = 0;
 
   virtual void OnUiEvent(UiEvent event, UiCompleteCallback callback) = 0;
+
+  // Shows toast that notifies user the agent is working in the background.
+  // Shows a maximum of kToastShownMax per profile.
+  // TODO(crbug.com/428014205): Define kToastShownMax.
+  virtual void MaybeShowToast() = 0;
 };
 
 }  // namespace actor::ui

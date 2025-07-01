@@ -25,6 +25,7 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               OnUiEvent,
               (UiEvent event, UiCompleteCallback callback),
               (override));
+  MOCK_METHOD(void, MaybeShowToast, (), (override));
 };
 
 }  // namespace actor::ui

@@ -20,6 +20,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   void OnActorTaskStateChange(TaskId task_id,
                               ActorTask::State task_state) override;
   void OnUiEvent(UiEvent event, UiCompleteCallback callback) override;
+  void MaybeShowToast() override;
 };
 
 }  // namespace actor::ui

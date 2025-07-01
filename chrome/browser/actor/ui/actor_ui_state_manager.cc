@@ -22,4 +22,8 @@ void ActorUiStateManager::OnUiEvent(UiEvent event,
   std::move(callback).Run(MakeOkResult());
 }
 
+void ActorUiStateManager::MaybeShowToast() {
+  // TODO(crbug.com/428014205): Implement this function.
+}
+
 }  // namespace actor::ui
