@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -77,8 +76,7 @@ std::optional<std::string> GetInstanceAppIdForWebContents(
       DCHECK(web_app);
       if (web_app->user_display_mode() ==
               web_app::mojom::UserDisplayMode::kBrowser &&
-          !web_app->is_uninstalling() &&
-          !web_app::IsAppServiceShortcut(web_app->app_id(), *provider)) {
+          !web_app->is_uninstalling()) {
         return app_id;
       }
     }

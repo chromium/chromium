@@ -58,7 +58,6 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
-#include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -662,12 +661,8 @@ void ExtensionAppsChromeOs::OnIsCapturingVideoChanged(
   const webapps::AppId* web_app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
   if (web_app_id) {
-    if (web_app::WebAppProvider::GetForWebApps(profile()) &&
-        !web_app::IsAppServiceShortcut(
-            *web_app_id, *web_app::WebAppProvider::GetForWebApps(profile()))) {
-      // This media access is coming from a web app.
-      return;
-    }
+    // This media access is coming from a web app.
+    return;
   }
 
   std::string app_id = app_constants::kChromeAppId;
@@ -693,12 +688,8 @@ void ExtensionAppsChromeOs::OnIsCapturingAudioChanged(
   const webapps::AppId* web_app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
   if (web_app_id) {
-    if (web_app::WebAppProvider::GetForWebApps(profile()) &&
-        !web_app::IsAppServiceShortcut(
-            *web_app_id, *web_app::WebAppProvider::GetForWebApps(profile()))) {
-      // This media access is coming from a web app.
-      return;
-    }
+    // This media access is coming from a web app.
+    return;
   }
 
   std::string app_id = app_constants::kChromeAppId;

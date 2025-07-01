@@ -33,11 +33,6 @@ webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
   }
 }
 
-bool IsAppServiceShortcut(const webapps::AppId& web_app_id,
-                          const WebAppProvider& provider) {
-  return false;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 std::vector<std::string> GetWebAppIdsForProtocolUrl(Profile* profile,
                                                     const GURL& protocol_url) {
