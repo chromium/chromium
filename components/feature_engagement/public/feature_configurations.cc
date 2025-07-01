@@ -2382,7 +2382,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.availability = Comparator(ANY, 0);  // Available immediately
     config.session_rate = Comparator(LESS_THAN, 1);
     config.used =
-        EventConfig("ios_homepage_customization_badge_used", Comparator(ANY, 0),
+        EventConfig(events::kHomeCustomizationMenuUsed, Comparator(EQUAL, 0),
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
     config.trigger = EventConfig("ios_homepage_customization_badge_trigger",
