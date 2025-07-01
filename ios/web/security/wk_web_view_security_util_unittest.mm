@@ -58,10 +58,10 @@ NSDictionary* MakeTestSSLCertErrorUserInfo() {
 // Returns SecTrustRef object for testing.
 base::apple::ScopedCFTypeRef<SecTrustRef> CreateTestTrust(NSArray* cert_chain) {
   base::apple::ScopedCFTypeRef<SecPolicyRef> policy(SecPolicyCreateBasicX509());
-  SecTrustRef trust = nullptr;
+  base::apple::ScopedCFTypeRef<SecTrustRef> trust;
   SecTrustCreateWithCertificates(base::apple::NSToCFPtrCast(cert_chain),
-                                 policy.get(), &trust);
-  return base::apple::ScopedCFTypeRef<SecTrustRef>(trust);
+                                 policy.get(), trust.InitializeInto());
+  return trust;
 }
 
 }  // namespace
