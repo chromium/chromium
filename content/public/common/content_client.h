@@ -220,6 +220,13 @@ class CONTENT_EXPORT ContentClient {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::BinderMap* binders);
 
+  // Whether the embedder wants to allow default SiteInstanceGroups to be used
+  // in cases where full site isolation is not available.
+  // TODO(crbug.com/419595581): This method is here so we can disable default
+  // SiteInstanceGroups on Android WebView while still enabling the feature by
+  // default. Remove this carveout once remaining WebView issues are resolved.
+  virtual bool ShouldAllowDefaultSiteInstanceGroup();
+
  private:
   // For SetBrowserClientAlwaysAllowForTesting().
   friend class BrowserTestBase;

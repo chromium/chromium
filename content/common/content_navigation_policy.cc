@@ -11,6 +11,7 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "content/common/features.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/features.h"
@@ -178,7 +179,8 @@ bool ShouldCreateSiteInstanceForDataUrls() {
 }
 
 bool ShouldUseDefaultSiteInstanceGroup() {
-  return base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups);
+  return GetContentClient()->ShouldAllowDefaultSiteInstanceGroup() &&
+         base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups);
 }
 
 }  // namespace content

@@ -131,6 +131,12 @@ blink::OriginTrialPolicy* AwContentClient::GetOriginTrialPolicy() {
   return origin_trial_policy_.get();
 }
 
+bool AwContentClient::ShouldAllowDefaultSiteInstanceGroup() {
+  // TODO(crbug.com/419595581): Remove this function once default
+  // SiteInstanceGroups are supported on Android WebView.
+  return false;
+}
+
 bool IsDisableOriginTrialsSafeModeActionOn() {
   // TODO(crbug.com/393461816) - fix origin trial safemode for renderers.
   if (base::android::IsJavaAvailable()) {

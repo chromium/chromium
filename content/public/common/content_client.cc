@@ -156,6 +156,10 @@ void ContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     mojo::BinderMap* binders) {}
 
+bool ContentClient::ShouldAllowDefaultSiteInstanceGroup() {
+  return true;
+}
+
 bool ContentClient::IsFilePickerAllowedForCrossOriginSubframe(
     const url::Origin& origin) {
   return false;
