@@ -157,6 +157,9 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   String globalCompositeOperation() const;
   void setGlobalCompositeOperation(const String&);
 
+  double globalHDRHeadroom() const;
+  void setGlobalHDRHeadroom(double);
+
   const V8UnionCanvasFilterOrString* filter() const;
   void setFilter(ScriptState*, const V8UnionCanvasFilterOrString* input);
 

@@ -160,7 +160,6 @@ TextRenderingMode CanvasTextRenderingToTextRenderingMode(
 CanvasRenderingContext2DState::CanvasRenderingContext2DState()
     : shadow_blur_(0.0),
       shadow_color_(Color::kTransparent),
-      global_alpha_(1.0),
       line_dash_offset_(0.0),
       unparsed_font_(defaultFont),
       font_(MakeGarbageCollected<Font>()),
@@ -212,6 +211,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
       shadow_and_foreground_image_filter_(
           other.shadow_and_foreground_image_filter_),
       global_alpha_(other.global_alpha_),
+      global_hdr_headroom_(other.global_hdr_headroom_),
       transform_(other.transform_),
       line_dash_(other.line_dash_),
       line_dash_offset_(other.line_dash_offset_),
@@ -341,6 +341,11 @@ void CanvasRenderingContext2DState::SetGlobalAlpha(double alpha) {
   stroke_style_.ApplyToFlags(stroke_flags_, global_alpha_);
   fill_style_.ApplyToFlags(fill_flags_, global_alpha_);
   image_flags_.setColor(ScaleAlpha(SK_ColorBLACK, alpha));
+}
+
+void CanvasRenderingContext2DState::SetGlobalHDRHeadroom(double h) {
+  CHECK_GE(h, 0.f);
+  global_hdr_headroom_ = h;
 }
 
 void CanvasRenderingContext2DState::ClipPath(

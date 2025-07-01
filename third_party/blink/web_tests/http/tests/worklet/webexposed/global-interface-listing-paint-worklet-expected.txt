@@ -260,6 +260,7 @@ CONSOLE MESSAGE:     getter fillStyle
 CONSOLE MESSAGE:     getter filter
 CONSOLE MESSAGE:     getter globalAlpha
 CONSOLE MESSAGE:     getter globalCompositeOperation
+CONSOLE MESSAGE:     getter globalHDRHeadroom
 CONSOLE MESSAGE:     getter imageSmoothingEnabled
 CONSOLE MESSAGE:     getter imageSmoothingQuality
 CONSOLE MESSAGE:     getter lineCap
@@ -319,6 +320,7 @@ CONSOLE MESSAGE:     setter fillStyle
 CONSOLE MESSAGE:     setter filter
 CONSOLE MESSAGE:     setter globalAlpha
 CONSOLE MESSAGE:     setter globalCompositeOperation
+CONSOLE MESSAGE:     setter globalHDRHeadroom
 CONSOLE MESSAGE:     setter imageSmoothingEnabled
 CONSOLE MESSAGE:     setter imageSmoothingQuality
 CONSOLE MESSAGE:     setter lineCap
@@ -750,6 +752,7 @@ CONSOLE MESSAGE:     getter fillStyle
 CONSOLE MESSAGE:     getter filter
 CONSOLE MESSAGE:     getter globalAlpha
 CONSOLE MESSAGE:     getter globalCompositeOperation
+CONSOLE MESSAGE:     getter globalHDRHeadroom
 CONSOLE MESSAGE:     getter imageSmoothingEnabled
 CONSOLE MESSAGE:     getter imageSmoothingQuality
 CONSOLE MESSAGE:     getter lineCap
@@ -809,6 +812,7 @@ CONSOLE MESSAGE:     setter fillStyle
 CONSOLE MESSAGE:     setter filter
 CONSOLE MESSAGE:     setter globalAlpha
 CONSOLE MESSAGE:     setter globalCompositeOperation
+CONSOLE MESSAGE:     setter globalHDRHeadroom
 CONSOLE MESSAGE:     setter imageSmoothingEnabled
 CONSOLE MESSAGE:     setter imageSmoothingQuality
 CONSOLE MESSAGE:     setter lineCap

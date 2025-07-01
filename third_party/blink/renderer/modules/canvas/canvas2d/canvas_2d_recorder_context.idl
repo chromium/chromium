@@ -33,6 +33,7 @@ interface mixin Canvas2DRecorderContext {
     [NoAllocDirectCall=Setter] attribute unrestricted double globalAlpha; // (default 1.0)
     [HighEntropy] attribute DOMString globalCompositeOperation; // (default source-over)
     [MeasureAs=Canvas2DFilter, SetterCallWith=ScriptState] attribute (DOMString or CanvasFilter)? filter; // (default 'none')
+    [RuntimeEnabled=CanvasGlobalHDRHeadroom] attribute unrestricted double globalHDRHeadroom; // (default 0.0)
 
     // image smoothing
     [NoAllocDirectCall=Setter] attribute boolean imageSmoothingEnabled; // (default True)

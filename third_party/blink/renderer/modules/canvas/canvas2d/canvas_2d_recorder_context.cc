@@ -1401,6 +1401,17 @@ void Canvas2DRecorderContext::setGlobalAlpha(double alpha) {
   state.SetGlobalAlpha(alpha);
 }
 
+double Canvas2DRecorderContext::globalHDRHeadroom() const {
+  return GetState().GlobalHDRHeadroom();
+}
+
+void Canvas2DRecorderContext::setGlobalHDRHeadroom(double h) {
+  if (h < 0.f) {
+    return;
+  }
+  GetState().SetGlobalHDRHeadroom(h);
+}
+
 String Canvas2DRecorderContext::globalCompositeOperation() const {
   auto [composite_op, blend_mode] =
       CompositeAndBlendOpsFromSkBlendMode(GetState().GlobalComposite());

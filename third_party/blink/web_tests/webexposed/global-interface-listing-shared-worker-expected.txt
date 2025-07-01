@@ -1306,6 +1306,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter fontVariantCaps
 [Worker]     getter globalAlpha
 [Worker]     getter globalCompositeOperation
+[Worker]     getter globalHDRHeadroom
 [Worker]     getter imageSmoothingEnabled
 [Worker]     getter imageSmoothingQuality
 [Worker]     getter lang
@@ -1389,6 +1390,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter fontVariantCaps
 [Worker]     setter globalAlpha
 [Worker]     setter globalCompositeOperation
+[Worker]     setter globalHDRHeadroom
 [Worker]     setter imageSmoothingEnabled
 [Worker]     setter imageSmoothingQuality
 [Worker]     setter lang

@@ -1374,6 +1374,7 @@ interface OffscreenCanvasRenderingContext2D
     getter fontVariantCaps
     getter globalAlpha
     getter globalCompositeOperation
+    getter globalHDRHeadroom
     getter imageSmoothingEnabled
     getter imageSmoothingQuality
     getter lang
@@ -1457,6 +1458,7 @@ interface OffscreenCanvasRenderingContext2D
     setter fontVariantCaps
     setter globalAlpha
     setter globalCompositeOperation
+    setter globalHDRHeadroom
     setter imageSmoothingEnabled
     setter imageSmoothingQuality
     setter lang

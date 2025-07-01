@@ -787,6 +787,12 @@
       status: "stable",
     },
     {
+      // Canvas2D API for specifying HDR headroom for drawing operations.
+      // https:/crbug.com/428575083, https://github.com/whatwg/html/issues/11165
+      name: "CanvasGlobalHDRHeadroom",
+      status: "experimental",
+    },
+    {
       // https://crbug.com/394052224
       name: "CanvasGradientCSSColor4",
       status: "experimental",

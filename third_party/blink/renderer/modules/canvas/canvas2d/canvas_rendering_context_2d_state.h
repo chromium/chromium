@@ -300,6 +300,9 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void SetGlobalAlpha(double);
   double GlobalAlpha() const { return global_alpha_; }
 
+  void SetGlobalHDRHeadroom(double);
+  double GlobalHDRHeadroom() const { return global_hdr_headroom_; }
+
   void SetGlobalComposite(SkBlendMode);
   SkBlendMode GlobalComposite() const;
 
@@ -386,7 +389,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   mutable sk_sp<PaintFilter> shadow_only_image_filter_;
   mutable sk_sp<PaintFilter> shadow_and_foreground_image_filter_;
 
-  double global_alpha_;
+  double global_alpha_ = 1.f;
+  double global_hdr_headroom_ = 0.f;
   AffineTransform transform_;
   Vector<double> line_dash_;
   double line_dash_offset_;
