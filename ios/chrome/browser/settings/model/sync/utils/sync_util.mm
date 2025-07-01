@@ -158,7 +158,8 @@ NSString* GetIdentityErrorInfoBarButtonLabel(
     syncer::SyncService::UserActionableError error) {
   switch (error) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      return l10n_util::GetNSString(IDS_IOS_SYNC_UPDATE_CREDENTIALS_BUTTON);
+      return l10n_util::GetNSString(
+          IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL);
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       return l10n_util::GetNSString(
           IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL);
