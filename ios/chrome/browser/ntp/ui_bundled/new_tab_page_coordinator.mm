@@ -937,19 +937,8 @@
     return;
   }
 
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  if (localState->GetInteger(
-          prefs::kNTPHomeCustomizationNewBadgeImpressionCount) <=
-      kCustomizationNewBadgeMaxImpressionCount) {
-    base::RecordAction(
-        base::UserMetricsAction(kNTPCustomizationNewBadgeTappedAction));
-    // Set the new badge impression count to `INT_MAX` to ensure it isn't shown
-    // again, even if we increase the max impression count.
-    localState->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
-                           INT_MAX);
-
-    [self.headerViewController hideBadgeOnCustomizationMenu];
-  }
+  // Hide the 'new' badge for the current session after being tapped.
+  [self.headerViewController hideBadgeOnCustomizationMenu];
 
   [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
                                HomeCustomizationEntrypoint::kMain];

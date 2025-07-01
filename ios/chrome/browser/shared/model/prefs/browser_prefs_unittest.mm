@@ -156,6 +156,9 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
       4);
   local_state()->SetInteger(
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 6);
+  local_state()->SetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount, 3);
+  local_state()->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
+                            99);
 
   // Verify initial state before migration
 
@@ -221,6 +224,12 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetInteger(
                 prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount),
             6);
+  EXPECT_EQ(
+      local_state()->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount),
+      3);
+  EXPECT_EQ(local_state()->GetInteger(
+                prefs::kNTPHomeCustomizationNewBadgeImpressionCount),
+            99);
 
   // Perform migration
   MigrateObsoleteLocalStatePrefs(local_state());
@@ -289,6 +298,12 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
       -1);
   EXPECT_EQ(local_state()->GetInteger(
                 prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount),
+            0);
+  EXPECT_EQ(
+      local_state()->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount),
+      0);
+  EXPECT_EQ(local_state()->GetInteger(
+                prefs::kNTPHomeCustomizationNewBadgeImpressionCount),
             0);
 }
 

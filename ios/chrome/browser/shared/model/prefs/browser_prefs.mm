@@ -600,7 +600,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
                                 0);
-  registry->RegisterIntegerPref(prefs::kNTPLensEntryPointNewBadgeShownCount, 0);
 
   registry->RegisterIntegerPref(
       prefs::kProminenceNotificationAlertImpressionCount, 0);
@@ -608,9 +607,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
   registry->RegisterBooleanPref(prefs::kYoutubeIncognitoHasBeenShown, false);
-
-  registry->RegisterIntegerPref(
-      prefs::kNTPHomeCustomizationNewBadgeImpressionCount, 0);
 
   registry->RegisterBooleanPref(prefs::kHasSwitchedAccountsViaWebFlow, false);
 
@@ -690,6 +686,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Deprecated 06/2025.
   registry->RegisterBooleanPref(
       prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager, false);
+
+  // Deprecated 06/2025.
+  registry->RegisterIntegerPref(prefs::kNTPLensEntryPointNewBadgeShownCount, 0);
+  registry->RegisterIntegerPref(
+      prefs::kNTPHomeCustomizationNewBadgeImpressionCount, 0);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1152,6 +1153,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 06/2025.
   prefs->ClearPref(
       prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager);
+
+  // Added 06/2025.
+  prefs->ClearPref(prefs::kNTPLensEntryPointNewBadgeShownCount);
+  prefs->ClearPref(prefs::kNTPHomeCustomizationNewBadgeImpressionCount);
 }
 
 // This method should be periodically pruned of year+ old migrations.
