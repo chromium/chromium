@@ -111,6 +111,7 @@ source_set("toolbar") {
     "//chrome/browser:primitives",
     "//chrome/browser/feedback",
     "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/performance_manager/public/user_tuning",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",

@@ -1071,7 +1071,6 @@ static_library("browser") {
     "performance_manager/policies/working_set_trimmer_policy.h",
     "performance_manager/public/chrome_browser_main_extra_parts_performance_manager.h",
     "performance_manager/public/chrome_content_browser_client_performance_manager_part.h",
-    "performance_manager/public/user_tuning/user_tuning_utils.h",
     "performance_manager/user_tuning/profile_discard_opt_out_list_helper.cc",
     "performance_manager/user_tuning/profile_discard_opt_out_list_helper.h",
     "performance_manager/user_tuning/user_tuning_utils.cc",
@@ -6770,7 +6769,6 @@ static_library("browser") {
       "enterprise/signals/user_permission_service_factory.h",
 
       # These policies are only supported on desktop
-      "performance_manager/public/user_tuning/memory_saver_policy_handler.h",
       "performance_manager/user_tuning/memory_saver_policy_handler.cc",
       "policy/battery_saver_policy_handler.cc",
       "policy/battery_saver_policy_handler.h",
