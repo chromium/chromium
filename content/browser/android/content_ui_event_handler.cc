@@ -61,8 +61,7 @@ bool ContentUiEventHandler::DispatchKeyEvent(const ui::KeyEventAndroid& event) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
   if (!j_obj.is_null()) {
-    return Java_ContentUiEventHandler_dispatchKeyEvent(env, j_obj,
-                                                       event.GetJavaObject());
+    return Java_ContentUiEventHandler_dispatchKeyEvent(env, j_obj, event);
   }
   return false;
 }

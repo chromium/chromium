@@ -152,7 +152,7 @@ public class ContentUiEventHandler implements UserData {
     }
 
     @CalledByNative
-    private boolean dispatchKeyEvent(KeyEvent event) {
+    private boolean dispatchKeyEvent(@JniType("ui::KeyEventAndroid") KeyEvent event) {
         if (Gamepad.from(mWebContents).dispatchKeyEvent(event)) return true;
         if (!shouldPropagateKeyEvent(event)) {
             return mEventDelegate.super_dispatchKeyEvent(event);
