@@ -36,9 +36,6 @@ using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAreArray;
 
-static const char kPrefName[] =
-    "privacy_sandbox.topics_consent.last_update_time";
-
 // Helper to aid in waiting for mojo callbacks to happen.
 class CallbackWaiter {
  public:
@@ -91,11 +88,6 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
     waiter_.Notify();
   }
 
-  void ValueCallback(base::Value v) {
-    value_cb_data_ = std::move(v);
-    waiter_.Notify();
-  }
-
   void ContentSettingsPatternCallback(const ContentSettingsPattern& pattern) {
     content_settings_pattern_cb_data_ = pattern;
     waiter_.Notify();
@@ -105,35 +97,16 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
   mojo::Remote<PageHandler> remote_;
   std::unique_ptr<PrivacySandboxInternalsHandler> handler_;
 
+  // TODO(crbug.com/422166572): Rewrite tests to use TestFuture or
+  // FlushForTesting.
+  //
   // Notified when _any_ callback from the mojo interface is made.
   CallbackWaiter waiter_;
 
   std::vector<ContentSettingPatternSource> content_settings_cb_data_;
   std::string string_cb_data_;
-  base::Value value_cb_data_;
   ContentSettingsPattern content_settings_pattern_cb_data_;
 };
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, ReadPref) {
-  browser()->profile()->GetPrefs()->SetString(kPrefName,
-                                              "this is a test pref string!");
-  remote_->ReadPref(
-      kPrefName, base::BindOnce(&PrivacySandboxInternalsMojoTest::ValueCallback,
-                                base::Unretained(this)));
-  waiter_.Wait();
-  waiter_.Reset();
-  EXPECT_THAT(value_cb_data_, Property(&base::Value::GetString,
-                                       StrEq("this is a test pref string!")));
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, ReadPref_NonExistant) {
-  remote_->ReadPref(
-      "foo", base::BindOnce(&PrivacySandboxInternalsMojoTest::ValueCallback,
-                            base::Unretained(this)));
-  waiter_.Wait();
-  waiter_.Reset();
-  EXPECT_THAT(value_cb_data_, Property(&base::Value::is_none, Eq(true)));
-}
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetCookieSettings) {
   content_settings::CookieSettings* settings =

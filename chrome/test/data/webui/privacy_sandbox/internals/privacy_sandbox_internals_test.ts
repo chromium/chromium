@@ -96,6 +96,7 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
 
   test('navigatingToSpecificUrl', async () => {
     const targetPage = Page.TPCD_METADATA_GRANTS;
+    await page.whenLoaded;
     Router.getInstance().navigateTo(targetPage);
 
     const tpcdmetadatagrantsTab = await waitForElement(
@@ -138,6 +139,7 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
   });
 
   test('updatesTabWhenBackButtonIsUsed', async () => {
+    await page.whenLoaded;
     Router.getInstance().navigateTo(Page.ADVERTISING);
     await waitForCondition(
         () => new URLSearchParams(window.location.search).get('page') ===
@@ -162,6 +164,7 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
   });
 
   test('updatesTabWhenForwardButtonIsUsed', async () => {
+    await page.whenLoaded;
     Router.getInstance().navigateTo(Page.ADVERTISING);
     await waitForCondition(
         () => new URLSearchParams(window.location.search).get('page') ===
@@ -273,6 +276,7 @@ suite('PSInternalsPageTpcdTabLoadingTest', function() {
 
   test('hidesTpcdMetadataGrantsTab', async () => {
     setShouldShowTpcdMetadataGrants(false);
+    await internalsPage.whenLoaded;
     const tpcdTab = await findTpcdTab();
     assertFalse(
         !!tpcdTab, 'The TPCD tab should not exist when its flag is disabled.');
@@ -280,6 +284,7 @@ suite('PSInternalsPageTpcdTabLoadingTest', function() {
 
   test('rendersTpcdMetadataGrantsTab', async () => {
     setShouldShowTpcdMetadataGrants(true);
+    await internalsPage.whenLoaded;
     const tpcdTab = await findTpcdTab();
     assertTrue(
         !!tpcdTab, 'The TPCD tab should exist when its flag is enabled.');

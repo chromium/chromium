@@ -30,8 +30,8 @@ class PrivacySandboxInternalsHandler
   PrivacySandboxInternalsHandler& operator=(
       const PrivacySandboxInternalsHandler&) = delete;
 
-  void ReadPref(const std::string& pref_name,
-                ReadPrefCallback callback) override;
+  void ReadPrefsWithPrefixes(const std::vector<std::string>& pref_prefixes,
+                             ReadPrefsWithPrefixesCallback callback) override;
   void ReadContentSettings(const ContentSettingsType type,
                            ReadContentSettingsCallback callback) override;
 

@@ -52,14 +52,21 @@ if (!is_android) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "base_dialog_handler_unittest.cc" ]
+    sources = [
+      "base_dialog_handler_unittest.cc",
+      "privacy_sandbox_internals_handler_unittest.cc",
+    ]
 
     deps = [
       ":mojo_bindings",
       ":privacy_sandbox",
       "//base/test:test_support",
+      "//chrome/browser/prefs:prefs",
       "//chrome/browser/privacy_sandbox/notice:test_support",
       "//chrome/test:test_support",
+      "//components/prefs",
+      "//components/sync_preferences:test_support",
+      "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
     ]
