@@ -168,8 +168,8 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
         kAutofillDynamicallyLoadsFieldsForAddressInput);
   }
   if ([self isRunningTest:@selector
-            (testSwipeToDeleteBlockedForHomeWorkProfile)] ||
-      [self isRunningTest:@selector(testHomeWorkProfileEditPage)]) {
+            (testSwipeToDeleteBlockedForHomeAndWorkProfile)] ||
+      [self isRunningTest:@selector(testHomeAndWorkProfileEditPage)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillEnableSupportForHomeAndWork);
   }
@@ -314,9 +314,9 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
 }
 
 // Test that the edit mode for Home and Work profiles is not accessible.
-- (void)testHomeWorkProfileEditPage {
+- (void)testHomeAndWorkProfileEditPage {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [AutofillAppInterface saveExampleHomeWorkAccountProfile];
+  [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
   [self openEditProfile:kHomeProfileLabel];
 
   // Switch on edit mode.
@@ -519,8 +519,8 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
 
 // Checks that no action is possible when a Home and Work account profile
 // is swiped to be deleted.
-- (void)testSwipeToDeleteBlockedForHomeWorkProfile {
-  [AutofillAppInterface saveExampleHomeWorkAccountProfile];
+- (void)testSwipeToDeleteBlockedForHomeAndWorkProfile {
+  [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
   [self openAutofillProfilesSettings];
 
   // Swipe until the "Delete" button is revealed.

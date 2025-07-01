@@ -693,7 +693,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                &feature_engagement::
                    kIPHAutofillHomeWorkProfileSuggestionFeature) {
       suggestion.featureForIPH =
-          SuggestionFeatureForIPH::kHomeWorkAddressSuggestion;
+          SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion;
     }
 
     // Put "clear form" entry at the front of the suggestions.

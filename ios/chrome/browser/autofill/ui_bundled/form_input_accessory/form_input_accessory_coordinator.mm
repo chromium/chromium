@@ -107,7 +107,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
           kIPHAutofillExternalAccountProfileSuggestionFeature;
     case SuggestionFeatureForIPH::kPlusAddressCreation:
       return &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
-    case SuggestionFeatureForIPH::kHomeWorkAddressSuggestion:
+    case SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion:
       return &feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature;
     case SuggestionFeatureForIPH::kUnknown:
       NOTREACHED();
@@ -439,7 +439,7 @@ bool CanReloadInputViews() {
       case SuggestionFeatureForIPH::kPlusAddressCreation:
         tracker->NotifyEvent("plus_address_create_suggestion_feature_used");
         break;
-      case SuggestionFeatureForIPH::kHomeWorkAddressSuggestion:
+      case SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion:
         tracker->NotifyEvent(
             "home_work_address_create_suggestion_feature_used");
         break;
@@ -923,7 +923,7 @@ bool CanReloadInputViews() {
       voiceOverText = l10n_util::GetNSString(
           IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER_IOS);
       break;
-    case SuggestionFeatureForIPH::kHomeWorkAddressSuggestion:
+    case SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion:
       text = l10n_util::GetNSString(
           IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION);
       voiceOverText = l10n_util::GetNSString(

@@ -433,7 +433,7 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
                      autofill::AutofillProfile::RecordType::kAccount);
 }
 
-+ (void)saveExampleHomeWorkAccountProfile {
++ (void)saveExampleHomeAndWorkAccountProfile {
   AddAutofillProfile([self personalDataManager],
                      autofill::AutofillProfile::RecordType::kAccountHome);
 }

@@ -244,7 +244,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
     config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   }
   if ([self isRunningTest:@selector
-            (testDoNotEditHomeWorkAddressFromOverflowMenu)]) {
+            (testDoNotEditHomeAndWorkAddressFromOverflowMenu)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillEnableSupportForHomeAndWork);
   }
@@ -623,13 +623,13 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
 // Tests the "Edit" action of the overflow menu button does not display the
 // address's details for Home and Work profiles.
-- (void)testDoNotEditHomeWorkAddressFromOverflowMenu {
+- (void)testDoNotEditHomeAndWorkAddressFromOverflowMenu {
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
                             @"Accessory Upgrade feature is disabled.")
   }
   [AutofillAppInterface clearProfilesStore];
-  [AutofillAppInterface saveExampleHomeWorkAccountProfile];
+  [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
 
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]

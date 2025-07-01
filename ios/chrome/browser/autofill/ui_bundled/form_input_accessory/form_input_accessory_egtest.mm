@@ -939,7 +939,7 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   // Delete the profile that is added on `-setUp`.
   [AutofillAppInterface clearProfilesStore];
   // Store one address.
-  [AutofillAppInterface saveExampleHomeWorkAccountProfile];
+  [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
 
   [self loadAddressPage];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]

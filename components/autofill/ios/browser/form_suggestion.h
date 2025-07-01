@@ -35,7 +35,7 @@ enum class SuggestionFeatureForIPH {
   // Denoting IPH for the plus address create suggestion.
   kPlusAddressCreation = 2,
   // Denoting IPH for the home and work address suggestion.
-  kHomeWorkAddressSuggestion = 3
+  kHomeAndWorkAddressSuggestion = 3
 };
 
 // Enum class used to determine the icon for the suggestion.

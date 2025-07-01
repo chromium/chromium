@@ -87,7 +87,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   // YES, if the profile's record type is
   // autofill::AutofillProfile::RecordType::kAccountHome/kAccountWork.
-  BOOL _isHomeWorkProfile;
+  BOOL _isHomeAndWorkProfile;
 }
 
 #pragma mark - Initialization
@@ -111,7 +111,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     _hasUpdateButton = NO;
     _dynamicallyLoadInputFieldsEnabled = base::FeatureList::IsEnabled(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
-    _isHomeWorkProfile = NO;
+    _isHomeAndWorkProfile = NO;
   }
 
   return self;
@@ -163,7 +163,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)loadModel {
   TableViewModel* model = _controller.tableViewModel;
 
-  if (!_isHomeWorkProfile) {
+  if (!_isHomeAndWorkProfile) {
     AutofillProfileDetailsSectionIdentifier nameSection =
         _dynamicallyLoadInputFieldsEnabled
             ? AutofillProfileDetailsSectionIdentifierName
@@ -196,7 +196,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
   [model addItem:[self countryItem] toSectionWithIdentifier:addressSection];
 
-  if (!_isHomeWorkProfile) {
+  if (!_isHomeAndWorkProfile) {
     AutofillProfileDetailsSectionIdentifier phoneEmailSection =
         _dynamicallyLoadInputFieldsEnabled
             ? AutofillProfileDetailsSectionIdentifierPhoneEmail
@@ -296,7 +296,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
 
   if (_dynamicallyLoadInputFieldsEnabled) {
-    if (_isHomeWorkProfile) {
+    if (_isHomeAndWorkProfile) {
       return sectionIdentifier ==
              AutofillProfileDetailsSectionIdentifierAddress;
     }
@@ -438,8 +438,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Notifies the class that conforms this delegate to set whether the profile is
 // a Home/Work profile.
-- (void)setIsHomeWorkProfile:(BOOL)isHomeWorkProfile {
-  _isHomeWorkProfile = isHomeWorkProfile;
+- (void)setIsHomeAndWorkProfile:(BOOL)isHomeAndWorkProfile {
+  _isHomeAndWorkProfile = isHomeAndWorkProfile;
 }
 
 - (void)updateErrorStatus:(BOOL)shouldShowError {

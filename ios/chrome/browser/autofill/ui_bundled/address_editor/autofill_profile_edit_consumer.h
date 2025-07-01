@@ -19,7 +19,7 @@
 
 // Notifies the class that conforms this delegate to set whether the profile is
 // a Home/Work profile.
-- (void)setIsHomeWorkProfile:(BOOL)isHomeWorkProfile;
+- (void)setIsHomeAndWorkProfile:(BOOL)isHomeAndWorkProfile;
 
 // Notifies the consumer to present/remove the error state based on
 // `shouldShowError`.
