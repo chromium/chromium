@@ -219,18 +219,9 @@ TEST_P(MediaStreamAudioProcessingLayoutTest,
 
   int expected_effects = available_platform_effects;
 
-  if (properties.echo_cancellation_type !=
-      AudioProcessingProperties::EchoCancellationType::
-          kEchoCancellationSystem) {
-    // No platform processing if platform AEC is not requested.
-    expected_effects &= ~media::AudioParameters::ECHO_CANCELLER;
-    expected_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
-    if (!MediaStreamAudioProcessingLayout::
-            IsIndependentSystemNsAllowedForTests()) {
-      // Special case for NS.
-      expected_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
-    }
-  } else {  // kEchoCancellationSystem
+  EchoCanceller echo_canceller = EchoCanceller::From(properties);
+
+  if (echo_canceller.IsPlatformProvided()) {
 #if (!BUILDFLAG(IS_WIN))
     // Disable AGC and NS if not requested.
     if (!properties.auto_gain_control) {
@@ -245,6 +236,15 @@ TEST_P(MediaStreamAudioProcessingLayoutTest,
       expected_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
     }
 #endif
+  } else {
+    // No platform processing if platform AEC is not requested.
+    expected_effects &= ~media::AudioParameters::ECHO_CANCELLER;
+    expected_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
+    if (!MediaStreamAudioProcessingLayout::
+            IsIndependentSystemNsAllowedForTests()) {
+      // Special case for NS.
+      expected_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
+    }
   }
 
   EXPECT_EQ(expected_effects,
@@ -252,7 +252,8 @@ TEST_P(MediaStreamAudioProcessingLayoutTest,
                 (media::AudioParameters::ECHO_CANCELLER |
                  media::AudioParameters::NOISE_SUPPRESSION |
                  media::AudioParameters::AUTOMATIC_GAIN_CONTROL))
-      << "\nexpected: "
+      << "\nproperties: " << properties.ToString()
+      << "\necho_canceller: " << echo_canceller.ToString() << "\nexpected: "
       << media::AudioParameters::EffectsMaskToString(expected_effects)
       << "\n  result: "
       << media::AudioParameters::EffectsMaskToString(
@@ -272,5 +273,47 @@ INSTANTIATE_TEST_SUITE_P(
         // ACG and NS on/off.
         ::testing::Bool(),
         ::testing::Bool()));
+
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+class MediaStreamAudioProcessingLayoutLoopbackTest
+    : public testing::TestWithParam<testing::tuple<bool, bool>> {};
+
+TEST_P(MediaStreamAudioProcessingLayoutLoopbackTest, LoopbackAec) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  bool loopback_aec_enforced = std::get<0>(GetParam());
+  bool aec_enabled = std::get<1>(GetParam());
+  if (loopback_aec_enforced) {
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        media::kSystemLoopbackAsAecReference, {{"forced_on", "true"}});
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        media::kSystemLoopbackAsAecReference);
+  }
+
+  AudioProcessingProperties properties;
+  properties.echo_cancellation_type =
+      aec_enabled ? AudioProcessingProperties::EchoCancellationType::
+                        kEchoCancellationAec3
+                  : AudioProcessingProperties::EchoCancellationType::
+                        kEchoCancellationDisabled;
+
+  MediaStreamAudioProcessingLayout processing_layout(
+      properties, /*available_platform_effects=*/0, /*channels=*/1);
+
+  EXPECT_TRUE(processing_layout.NeedApmInAudioService());
+  EXPECT_EQ(
+      processing_layout.webrtc_processing_settings().use_loopback_aec_reference,
+      aec_enabled && loopback_aec_enforced);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MediaStreamAudioProcessingLayoutLoopbackTest,
+                         ::testing::Combine(
+                             // AEC on/off.
+                             ::testing::Bool(),
+                             // Lopoback AEC enforced on/off.
+                             ::testing::Bool()));
+
+#endif
 
 }  // namespace blink

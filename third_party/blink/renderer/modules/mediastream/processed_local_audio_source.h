@@ -73,10 +73,6 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
     allow_invalid_render_frame_id_for_testing_ = allowed;
   }
 
-  const blink::AudioProcessingProperties& audio_processing_properties() const {
-    return processing_layout_.properties();
-  }
-
   std::optional<blink::AudioProcessingProperties> GetAudioProcessingProperties()
       const final;
 

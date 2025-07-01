@@ -550,6 +550,17 @@ TEST_P(ProcessedLocalAudioSourcePlatformEffectsTest,
                          media::AudioParameters::NOISE_SUPPRESSION |
                          media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
 
+  EchoCanceller echo_canceller = EchoCanceller::From(properties);
+
+  if (!properties.noise_suppression && !properties.auto_gain_control &&
+      !echo_canceller.IsEnabled()) {
+    // ProcessedLocalAudioSource is never created under such conditions.
+    CHECK(!MediaStreamAudioProcessingLayout(properties, platform_effects,
+                                            /*channels=*/1)
+               .NeedWebrtcAudioProcessing());
+    return;
+  }
+
   CreateProcessedLocalAudioSource(MediaStreamAudioProcessingLayout(
       properties, platform_effects, /*channels=*/1));
 
@@ -561,24 +572,8 @@ TEST_P(ProcessedLocalAudioSourcePlatformEffectsTest,
   media::AudioParameters expected_params = modified_device.input;
   int expected_effects = expected_params.effects();
 
-  if (media::IsChromeWideEchoCancellationEnabled()) {
-    // As of now, when Chrome-wide echo cancellation is enabled, all effects are
-    // cleared out. While it's inconsistent, it works, because as of now in
-    // production we never have Chrome-wide echo cancellation and platform AEC
-    // available at the same time.
-    expected_effects = 0;
-  } else if (properties.echo_cancellation_type !=
-             AudioProcessingProperties::EchoCancellationType::
-                 kEchoCancellationSystem) {
-    // No platform processing if platform AEC is not requested.
-    expected_effects &= ~media::AudioParameters::ECHO_CANCELLER;
-    expected_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
-    if (!MediaStreamAudioProcessingLayout::
-            IsIndependentSystemNsAllowedForTests()) {
-      // Special case for NS.
-      expected_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
-    }
-  } else {  // kEchoCancellationSystem
+  if (echo_canceller.IsPlatformProvided()) {
+#if (!BUILDFLAG(IS_WIN))
     // Disable AGC and NS if not requested.
     if (!properties.auto_gain_control) {
       expected_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
@@ -589,6 +584,21 @@ TEST_P(ProcessedLocalAudioSourcePlatformEffectsTest,
       // TODO(crbug.com/417413190): It's weird that we keep NS enabled in this
       // case if IsIndependentSystemNsAllowed() returns true, but this is how
       // the code works now.
+      expected_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
+    }
+#endif
+  } else if (echo_canceller.GetApmLocation() ==
+             EchoCanceller::ApmLocation::kAudioService) {
+    // As of now, when processing runs in the audio service, all effects are
+    // cleared out.
+    expected_effects = 0;
+  } else {
+    // No platform processing if platform AEC is not requested.
+    expected_effects &= ~media::AudioParameters::ECHO_CANCELLER;
+    expected_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
+    if (!MediaStreamAudioProcessingLayout::
+            IsIndependentSystemNsAllowedForTests()) {
+      // Special case for NS.
       expected_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
     }
   }

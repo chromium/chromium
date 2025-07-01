@@ -109,7 +109,7 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
   SendLogMessage(StringPrintf(
       "%s({audio_processing_properties=[%s]}, {APM=%s})[session_id=%s]",
       __func__, processing_layout.properties().ToString(),
-      processing_layout_.run_apm_in_audio_service() ? "remote" : "local",
+      processing_layout_.NeedApmInAudioService() ? "remote" : "local",
       device.session_id().ToString()));
 }
 
@@ -204,7 +204,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
 
   media::AudioSourceParameters source_config(device().session_id());
 
-  if (processing_layout_.run_apm_in_audio_service()) {
+  if (processing_layout_.NeedApmInAudioService()) {
     // Since audio processing will be applied in the audio service, we request
     // audio here in the audio processing output format to avoid forced
     // resampling.

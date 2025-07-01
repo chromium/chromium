@@ -205,14 +205,15 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
   // If the source is a processed source, get the properties from it.
   if (auto* processed_source =
           blink::ProcessedLocalAudioSource::From(source_impl)) {
-    blink::AudioProcessingProperties properties =
-        processed_source->audio_processing_properties();
+    std::optional<blink::AudioProcessingProperties> properties =
+        processed_source->GetAudioProcessingProperties();
+    CHECK(properties);
 
     source->SetAudioProcessingProperties(
-        properties.echo_cancellation_type !=
+        properties->echo_cancellation_type !=
             EchoCancellationType::kEchoCancellationDisabled,
-        properties.auto_gain_control, properties.noise_suppression,
-        properties.voice_isolation ==
+        properties->auto_gain_control, properties->noise_suppression,
+        properties->voice_isolation ==
             AudioProcessingProperties::VoiceIsolationType::
                 kVoiceIsolationEnabled);
   } else {
@@ -1876,17 +1877,16 @@ UserMediaProcessor::CreateAudioSource(
         *processing_layout, std::move(source_ready), task_runner_);
   }
 
-  bool system_aec = processing_layout &&
-                    processing_layout->properties().echo_cancellation_type ==
-                        EchoCancellationType::kEchoCancellationSystem;
   SendLogMessage(
       base::StringPrintf("%s => (no audiprocessing is used)", __func__));
   return std::make_unique<blink::LocalMediaStreamAudioSource>(
       frame_, device,
       base::OptionalToPtr(current_request_info_->audio_capture_settings()
                               .requested_buffer_size()),
-      stream_controls->disable_local_echo, system_aec, std::move(source_ready),
-      task_runner_);
+      stream_controls->disable_local_echo,
+      /*enable_system_echo_cancellation=*/processing_layout &&
+          processing_layout->AecIsPlatformProvided(),
+      std::move(source_ready), task_runner_);
 }
 
 std::unique_ptr<blink::MediaStreamVideoSource>

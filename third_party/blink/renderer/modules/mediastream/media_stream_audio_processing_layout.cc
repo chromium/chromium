@@ -28,11 +28,11 @@ constexpr bool IsIndependentSystemNsAllowed() {
 
 // Returns `enabled_platform_effects` adjusted based on the requested
 // processing.
-int ConfigureEchoCancellationEffects(bool use_platform_aec,
+int ConfigureEchoCancellationEffects(const EchoCanceller& echo_canceller,
                                      bool ns_requested,
                                      bool agc_requested,
                                      int enabled_platform_effects) {
-  if (!use_platform_aec) {
+  if (!echo_canceller.IsPlatformProvided()) {
     // No platform processing if platform AEC is not requested.
     enabled_platform_effects &= ~media::AudioParameters::ECHO_CANCELLER;
     enabled_platform_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
@@ -108,20 +108,17 @@ int UpdateVoiceIsolationEffects(
 }
 #endif
 
-int ApplyPropertiesToEffects(const AudioProcessingProperties& properties,
+int ApplyPropertiesToEffects(const EchoCanceller& echo_canceller,
+                             const AudioProcessingProperties& properties,
                              int enabled_platform_effects) {
   enabled_platform_effects = ConfigureEchoCancellationEffects(
-      /*use_platform_aec=*/properties.echo_cancellation_type ==
-          AudioProcessingProperties::EchoCancellationType::
-              kEchoCancellationSystem,
+      echo_canceller,
       /*ns_requested=*/properties.noise_suppression,
       /*agc_requested=*/properties.auto_gain_control, enabled_platform_effects);
 
 #if BUILDFLAG(IS_CHROMEOS)
   enabled_platform_effects = UpdateVoiceIsolationEffects(
-      /*use_chrome_aec=*/properties.echo_cancellation_type ==
-          AudioProcessingProperties::EchoCancellationType::
-              kEchoCancellationAec3,
+      /*use_chrome_aec=*/echo_canceller.IsChromeProvided(),
       properties.voice_isolation, enabled_platform_effects);
   if (base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
     // Ignore UI Gains if AGC is running in either browser or system
@@ -135,14 +132,13 @@ int ApplyPropertiesToEffects(const AudioProcessingProperties& properties,
 }
 
 media::AudioProcessingSettings ComputeWebrtcProcessingSettings(
+    const EchoCanceller& echo_canceller,
     const AudioProcessingProperties& properties,
     int enabled_platform_effects,
     bool multichannel_processing) {
   media::AudioProcessingSettings out;
 
-  out.echo_cancellation =
-      properties.echo_cancellation_type ==
-      AudioProcessingProperties::EchoCancellationType::kEchoCancellationAec3;
+  out.echo_cancellation = echo_canceller.IsChromeProvided();
 
   out.noise_suppression =
       properties.noise_suppression &&
@@ -157,8 +153,7 @@ media::AudioProcessingSettings ComputeWebrtcProcessingSettings(
 
   out.multi_channel_capture_processing = multichannel_processing;
 
-  out.use_loopback_aec_reference =
-      out.echo_cancellation && media::IsSystemLoopbackAsAecReferenceForcedOn();
+  out.use_loopback_aec_reference = echo_canceller.NeedSystemLoopback();
   return out;
 }
 
@@ -175,51 +170,57 @@ MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
     const AudioProcessingProperties& properties,
     int enabled_platform_effects,
     bool multichannel_processing) {
-  return ComputeWebrtcProcessingSettings(properties, enabled_platform_effects,
+  return ComputeWebrtcProcessingSettings(EchoCanceller::From(properties),
+                                         properties, enabled_platform_effects,
                                          multichannel_processing);
 }
 
 // static
+// TODO(crbug.com://40247860, crbug.com://415952276): retire this
+// logic when restrictOwnAudio is launched.
 std::optional<MediaStreamAudioProcessingLayout>
 MediaStreamAudioProcessingLayout::MakeForDisplayCapture(
     const AudioProcessingProperties& properties,
     int channels) {
-  if (properties.echo_cancellation_type ==
-      AudioProcessingProperties::EchoCancellationType::
-          kEchoCancellationDisabled) {
+  if (!EchoCanceller::From(properties).IsEnabled()) {
     return std::nullopt;
   }
 
   // Run APM locally to only remove PeerConnection playout.
   return MediaStreamAudioProcessingLayout(
-      properties, /*available_platform_effects=*/0, channels,
-      /*run_apm_in_audio_service =*/false);
+      properties, EchoCanceller(EchoCanceller::Type::kPeerConnection),
+      /*available_platform_effects=*/0, channels);
 }
 
 MediaStreamAudioProcessingLayout::MediaStreamAudioProcessingLayout(
     const AudioProcessingProperties& properties,
     int available_platform_effects,
     int channels)
-    : MediaStreamAudioProcessingLayout(
-          properties,
-          available_platform_effects,
-          channels,
-          /*run_apm_in_audio_service =*/
-          media::IsChromeWideEchoCancellationEnabled()) {}
+    : MediaStreamAudioProcessingLayout(properties,
+                                       EchoCanceller::From(properties),
+                                       available_platform_effects,
+                                       channels) {}
 
 MediaStreamAudioProcessingLayout::MediaStreamAudioProcessingLayout(
     const AudioProcessingProperties& properties,
+    const EchoCanceller& echo_canceller,
     int available_platform_effects,
-    int channels,
-    bool run_apm_in_audio_service)
+    int channels)
     : properties_(properties),
-      platform_effects_(
-          ApplyPropertiesToEffects(properties_, available_platform_effects)),
+      echo_canceller_(echo_canceller),
+      platform_effects_(ApplyPropertiesToEffects(echo_canceller_,
+                                                 properties_,
+                                                 available_platform_effects)),
       webrtc_processing_settings_(
-          ComputeWebrtcProcessingSettings(properties_,
+          ComputeWebrtcProcessingSettings(echo_canceller_,
+                                          properties_,
                                           platform_effects_,
-                                          channels > 1)),
-      run_apm_in_audio_service_(run_apm_in_audio_service) {}
+                                          channels > 1)) {}
+
+bool MediaStreamAudioProcessingLayout::NeedApmInAudioService() const {
+  return echo_canceller_.GetApmLocation() ==
+         EchoCanceller::ApmLocation::kAudioService;
+}
 
 bool MediaStreamAudioProcessingLayout::NeedWebrtcAudioProcessing() const {
   if (webrtc_processing_settings_.NeedWebrtcAudioProcessing()) {

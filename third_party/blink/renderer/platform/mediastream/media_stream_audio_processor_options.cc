@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "media/base/media_switches.h"
 
 namespace blink {
 
@@ -47,6 +48,56 @@ std::string AudioProcessingProperties::ToString() const {
       base::ToString(auto_gain_control).c_str(),
       base::ToString(noise_suppression).c_str());
   return str;
+}
+
+// static
+EchoCanceller EchoCanceller::From(const AudioProcessingProperties& properties) {
+  using EchoCancellationType = AudioProcessingProperties::EchoCancellationType;
+  auto to_echo_canceller_type = [](EchoCancellationType type) {
+    switch (type) {
+      case EchoCancellationType::kEchoCancellationDisabled:
+        return Type::kNone;
+      case EchoCancellationType::kEchoCancellationSystem:
+        return Type::kPlatformProvided;
+      case EchoCancellationType::kEchoCancellationAec3:
+        return media::IsSystemLoopbackAsAecReferenceForcedOn()
+                   ? Type::kLoopbackBased
+               : media::IsChromeWideEchoCancellationEnabled()
+                   ? Type::kChromeWide
+                   : Type::kPeerConnection;
+    }
+  };
+
+  return EchoCanceller(
+      to_echo_canceller_type(properties.echo_cancellation_type));
+}
+
+EchoCanceller::ApmLocation EchoCanceller::GetApmLocation() const {
+  if (type_ == Type::kPeerConnection || type_ == Type::kPlatformProvided) {
+    return ApmLocation::kRenderer;
+  }
+  if (type_ == Type::kChromeWide || type_ == Type::kLoopbackBased) {
+    return ApmLocation::kAudioService;
+  }
+  if (media::IsChromeWideEchoCancellationEnabled()) {
+    return ApmLocation::kAudioService;
+  }
+  return ApmLocation::kRenderer;
+}
+
+const char* EchoCanceller::ToString() const {
+  switch (type_) {
+    case Type::kNone:
+      return "None";
+    case Type::kPlatformProvided:
+      return "PlatformProvided";
+    case Type::kChromeWide:
+      return "ChromeWide";
+    case Type::kLoopbackBased:
+      return "LoopbackBased";
+    case Type::kPeerConnection:
+      return "PeerConnection";
+  };
 }
 
 }  // namespace blink
