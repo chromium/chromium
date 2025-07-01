@@ -35,8 +35,9 @@ test(() => {
 
 test(() => {
     const host = document.body.appendChild(document.createElement('div'));
-    assert_throws_js(TypeError, () => host.attachShadow({mode: 'closed', customElementRegistry: null}))
-}, 'attachShadow() should throw for a null customElementRegistry value');
+    const shadowRoot = host.attachShadow({mode: 'closed', customElementRegistry: null});
+    assert_equals(shadowRoot.customElementRegistry, window.customElements);
+}, 'attachShadow() should use the global registry when customElementRegistry is null');
 
 </script>
 </body>

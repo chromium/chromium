@@ -1,13 +1,8 @@
 import pytest
-import sys
 
 import webdriver.bidi.error as error
 
-pytestmark = [
-    pytest.mark.asyncio,
-    pytest.mark.skipif(sys.platform.startswith("linux"),
-                       reason="Fails consistently on Linux, http://crbug.com/428692508")
-]
+pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize("value", [False, 42, "foo", {}])
