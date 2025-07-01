@@ -6,7 +6,7 @@ package org.chromium.android_browsertests_apk;
 
 import android.content.Intent;
 
-import org.chromium.base.test.util.UrlUtils;
+import org.chromium.base.PathUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.native_test.NativeBrowserTest;
@@ -37,9 +37,12 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
         mTest.appendCommandLineFlags(
                 "--remote-debugging-socket-name android_browsertests_devtools_remote");
 
-        // TODO(crbug.com/40200835): Enable PRE_ tests in android_browsertests
-        // Note that android_browsertests does not use this data directory. It
-        // uses a temp dir created by c++ code since https://crrev.com/c/1677591
+        // Explicitly set the "--user-data-dir" switch to a private data dir
+        // so that c++ test won't create the temp dir.
+        // This is to keep the private data dir when needed, e.g. PRE tests.
+        String userDataDirFlag = "--user-data-dir=" + getPrivateDataDirectory();
+        mTest.appendCommandLineFlags(userDataDirFlag);
+
         if (!mTest.shouldKeepUserDataDir()) {
             NativeBrowserTest.deletePrivateDataDirectory(getPrivateDataDirectory());
         }
@@ -83,10 +86,8 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     }
 
     private File getPrivateDataDirectory() {
-        // TODO(agrieve): We should not be touching the side-loaded test data directory.
-        //     https://crbug.com/617734
         return new File(
-                UrlUtils.getIsolatedTestRoot(),
+                PathUtils.getDataDirectory(),
                 ChromeBrowserTestsApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
     }
 

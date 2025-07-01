@@ -110,6 +110,8 @@ bool OverrideUserDataDir(const base::FilePath& user_data_dir) {
   // base::PathService::Override() is the best way to change the user data
   // directory. This matches what is done in ChromeMain().
   success = base::PathService::Override(chrome::DIR_USER_DATA, user_data_dir);
+  LOG(INFO) << "chrome::DIR_USER_DATA is overriden to: "
+            << user_data_dir.value();
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Make sure the cache directory is inside our clear profile. Otherwise
