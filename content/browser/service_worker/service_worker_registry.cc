@@ -350,6 +350,20 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
       TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
       TRACE_EVENT_FLAG_FLOW_OUT, "URL", client_url.spec());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  bool is_mojo_called = false;
+  base::ScopedClosureRunner run_at_return(
+      purpose == Purpose::kNavigation
+          ? base::BindOnce(
+                [](bool* is_mojo_called) {
+                  base::UmaHistogramBoolean(
+                      "ServiceWorker.FindRegistrationForClientUrl."
+                      "SkippedMojoCall.OnNavigation2",
+                      !(*is_mojo_called));
+                },
+                base::Unretained(&is_mojo_called))
+          : base::DoNothing());
+
   // The following code implements a performance optimization: it retrieves the
   // registration scopes from the `ServiceWorkerStorage` in the thread pool
   // without waiting for `DidFindRegistrationForClientUrl()` to be called.
@@ -388,12 +402,6 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
       }
     }
     no_registration = !matched_scope;
-  }
-  if (purpose == Purpose::kNavigation) {
-    base::UmaHistogramBoolean(
-        "ServiceWorker.FindRegistrationForClientUrl.SkippedMojoCall."
-        "OnNavigation",
-        no_registration);
   }
   base::UmaHistogramBoolean(
       "ServiceWorker.FindRegistrationForClientUrl.IsCalledForNavigation",
@@ -455,6 +463,7 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
       // If `client_url` is eligible for SyntheticResponse, create a fake
       // ServiceWorker registration so that the navigation is handled by
       // ServiceWorker main resource loader.
+      is_mojo_called = true;
       CreateInvokerAndStartRemoteCall(
           &storage::mojom::ServiceWorkerStorageControl::
               GetFakeRegistrationForClientUrl,
@@ -465,6 +474,7 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
           client_url, key);
       return;
     }
+    is_mojo_called = true;
     CreateInvokerAndStartRemoteCall(
         &storage::mojom::ServiceWorkerStorageControl::
             FindRegistrationForClientUrl,
@@ -492,6 +502,7 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
       // If `client_url` is eligible for SyntheticResponse, create a fake
       // ServiceWorker registration so that the navigation is handled by
       // ServiceWorker main resource loader.
+      is_mojo_called = true;
       CreateInvokerAndStartRemoteCall(
           &storage::mojom::ServiceWorkerStorageControl::
               GetFakeRegistrationForClientUrl,
@@ -502,6 +513,7 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
           client_url, key);
       return;
     }
+    is_mojo_called = true;
     CreateInvokerAndStartRemoteCall(
         &storage::mojom::ServiceWorkerStorageControl::
             FindRegistrationForClientUrl,

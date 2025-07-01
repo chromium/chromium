@@ -575,14 +575,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ServiceWorker.FindRegistrationForClientUrl.SkippedMojoCall.OnNavigation"
+    name="ServiceWorker.FindRegistrationForClientUrl.SkippedMojoCall.OnNavigation2"
     enum="BooleanSkipped" expires_after="2026-05-20">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
-    Whether FindRegistrationForClientUrl() could skip calling mojo API by using
-    scope cache. This is recorded only when FindRegistrationForClientUrl() is
-    used for navigation.
+    Whether FindRegistrationForClientUrl() could skip calling mojo API. This is
+    recorded only when FindRegistrationForClientUrl() is used for navigation.
   </summary>
 </histogram>
 
