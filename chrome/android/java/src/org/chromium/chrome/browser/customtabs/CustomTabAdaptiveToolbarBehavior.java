@@ -181,9 +181,18 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     @Override
     public boolean canShowManualOverride(@AdaptiveToolbarButtonVariant int manualOverride) {
         // Manual override should not be shown if the developer specified the same type
-        // in the custom action buttons or Chrome Actions is set to off.
-        return !(isButtonDuplicated(manualOverride)
-                || (manualOverride == SHARE && !isShareButtonEnabled()));
+        // in the custom action buttons or Chrome Actions is set to off. Also, for the
+        // configuration CPA+OpenInBrowserDefault, the default should show over the manual
+        // override.
+        if (isButtonDuplicated(manualOverride)) return false;
+        if (manualOverride == SHARE && !isShareButtonEnabled()) return false;
+        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.CCT_ADAPTIVE_BUTTON, "contextual_only", false)
+                && ChromeFeatureList.sCctAdaptiveButtonDefaultVariant.getValue()
+                        == OPEN_IN_BROWSER) {
+            return false;
+        }
+        return true;
     }
 
     @Override
