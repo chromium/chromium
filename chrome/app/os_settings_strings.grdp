@@ -5941,6 +5941,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_POWER_BATTERY_CHARGE_LIMIT_LABEL" desc="In Device Settings > Power > Optimized Charging > Change, the title of the battery charge limit feature, which explicitly limits the battery charging to 80%." translateable="false">
     Charge limit
   </message>
+  <message name="IDS_SETTINGS_POWER_BATTERY_CHARGE_LIMIT_SUBTEXT" desc="In Device Settings > Power > Optimized Charging > Change, description of the behavior of the battery charge limit feature." translateable="false">
+    Limits maximum battery charge to 80% to extend battery lifespan.
+  </message>
   <message name="IDS_SETTINGS_POWER_IDLE_DISPLAY_OFF_SLEEP" desc="In Device Settings > Power, menu item for idle behavior that turns the screen off and later puts the device to sleep. String must be short enough to fit in a drop-down menu.">
     Sleep
   </message>

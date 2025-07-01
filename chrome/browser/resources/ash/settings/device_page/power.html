@@ -54,6 +54,7 @@
       </div>
     </div>
     <cr-button id="optimizedChargingChangeButton"
+        on-click="makeOptimizedChargingDialogVisible_"
         deep-link-focus-id$="[[Setting.kAdaptiveCharging]]
             [[Setting.kChargeLimit]]">
       $i18n{powerOptimizedChargingChangeLabel}
@@ -179,3 +180,9 @@
   on-settings-boolean-control-change="onLidClosedToggleChange_" no-set-pref
   deep-link-focus-id$="[[Setting.kSleepWhenLaptopLidClosed]]">
 </settings-toggle-button>
+
+<template is="dom-if" if="[[optimizedChargingDialogVisible_]]" restamp>
+  <power-optimized-charging-dialog
+      on-close="onOptimizedChargingDialogClose_">
+  </power-optimized-charging-dialog>
+</template>

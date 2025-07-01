@@ -13,11 +13,14 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
+import './power_optimized_charging_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -44,6 +47,7 @@ interface IdleOption {
 
 export interface SettingsPowerElement {
   $: {
+    optimizedChargingChangeButton: CrButtonElement,
     batterySaverToggle: SettingsToggleButtonElement,
     lidClosedToggle: SettingsToggleButtonElement,
     powerSource: HTMLSelectElement,
@@ -181,6 +185,11 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
         },
       },
 
+      optimizedChargingDialogVisible_: {
+        type: Boolean,
+        value: false,
+      },
+
       batterySaverFeatureEnabled_: Boolean,
 
       batterySaverHidden_: {
@@ -223,6 +232,7 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
   private readonly batteryChargeLimitAvailable_: boolean;
   private optimizedChargingSublabel_: string;
   private optimizedChargingHidden_: boolean;
+  private optimizedChargingDialogVisible_: boolean;
   private batteryIdleManaged_: boolean;
   private batteryIdleOptions_: IdleOption[];
   private batterySaverHidden_: boolean;
@@ -406,6 +416,20 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
     // TODO(mwoj): Retrieve pref (adaptive charging or battery charge limit) and
     // use the browser proxy to set the appropriate one.
     recordSettingChange(Setting.kOptimizedCharging, {boolValue: enabled});
+  }
+
+  private makeOptimizedChargingDialogVisible_(e: Event): void {
+    e.preventDefault();
+    this.optimizedChargingDialogVisible_ = true;
+  }
+
+  private onOptimizedChargingDialogClose_(): void {
+    this.optimizedChargingDialogVisible_ = false;
+    const optimizedChargingChangeButton =
+        this.shadowRoot!.querySelector<CrButtonElement>(
+            '#optimizedChargingChangeButton');
+    assertExists(optimizedChargingChangeButton);
+    focusWithoutInk(optimizedChargingChangeButton);
   }
 
   /**

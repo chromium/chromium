@@ -165,6 +165,7 @@ export {SettingsPerDeviceTouchpadElement} from './device_page/per_device_touchpa
 export {SettingsPerDeviceTouchpadSubsectionElement} from './device_page/per_device_touchpad_subsection.js';
 export {SettingsPointersElement} from './device_page/pointers.js';
 export {SettingsPowerElement} from './device_page/power.js';
+export {PowerOptimizedChargingDialogElement} from './device_page/power_optimized_charging_dialog.js';
 export {setShortcutInputProviderForTesting} from './device_page/shortcut_input_mojo_interface_provider.js';
 export {SettingsStorageElement} from './device_page/storage.js';
 export {SettingsStylusElement} from './device_page/stylus.js';
