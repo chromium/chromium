@@ -288,7 +288,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
   std::unique_ptr<TestProxyDelegate> proxy_delegate_;
   std::unique_ptr<ScopedMockNetworkChangeNotifier>
       scoped_mock_network_change_notifier_;
-  std::unique_ptr<QuicSessionPool> factory_;
+  std::unique_ptr<QuicSessionPool> pool_;
 
   NetLogWithSource net_log_;
   TestCompletionCallback callback_;

@@ -436,7 +436,7 @@ TEST_P(QuicSessionPoolProxyJobTest, PoolDeletedDuringSessionCreation) {
 
   // Drop the QuicSessionPool, destroying all pending requests. This should not
   // crash (see crbug.com/374777473).
-  factory_.reset();
+  pool_.reset();
 }
 
 TEST_P(QuicSessionPoolProxyJobTest, CreateProxySessionFails) {
@@ -525,8 +525,8 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateSessionFails) {
 
   // Oops, the session went away. This generates an error
   // from `QuicSessionPool::CreateSessionOnProxyStream`.
-  factory_->CloseAllSessions(ERR_QUIC_HANDSHAKE_FAILED,
-                             quic::QuicErrorCode::QUIC_INTERNAL_ERROR);
+  pool_->CloseAllSessions(ERR_QUIC_HANDSHAKE_FAILED,
+                          quic::QuicErrorCode::QUIC_INTERNAL_ERROR);
 
   ASSERT_EQ(ERR_QUIC_HANDSHAKE_FAILED, callback_.WaitForResult());
 

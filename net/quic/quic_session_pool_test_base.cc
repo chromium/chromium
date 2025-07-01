@@ -129,7 +129,7 @@ QuicSessionPoolTestBase::RequestBuilder::RequestBuilder(
       request(pool) {}
 QuicSessionPoolTestBase::RequestBuilder::RequestBuilder(
     QuicSessionPoolTestBase* test)
-    : RequestBuilder(test, test->factory_.get()) {}
+    : RequestBuilder(test, test->pool_.get()) {}
 QuicSessionPoolTestBase::RequestBuilder::~RequestBuilder() = default;
 
 int QuicSessionPoolTestBase::RequestBuilder::CallRequest() {
@@ -189,8 +189,8 @@ QuicSessionPoolTestBase::QuicSessionPoolTestBase(
 
 QuicSessionPoolTestBase::~QuicSessionPoolTestBase() = default;
 void QuicSessionPoolTestBase::Initialize() {
-  DCHECK(!factory_);
-  factory_ = std::make_unique<QuicSessionPool>(
+  DCHECK(!pool_);
+  pool_ = std::make_unique<QuicSessionPool>(
       net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
       socket_factory_.get(), http_server_properties_.get(),
       cert_verifier_.get(), &transport_security_state_, proxy_delegate_.get(),
@@ -236,7 +236,7 @@ bool QuicSessionPoolTestBase::HasActiveSession(
   quic::QuicServerId server_id(scheme_host_port.host(),
                                scheme_host_port.port());
   return QuicSessionPoolPeer::HasActiveSession(
-      factory_.get(), server_id, privacy_mode, network_anonymization_key,
+      pool_.get(), server_id, privacy_mode, network_anonymization_key,
       proxy_chain, session_usage, require_dns_https_alpn);
 }
 
@@ -246,8 +246,8 @@ bool QuicSessionPoolTestBase::HasActiveJob(
     bool require_dns_https_alpn) {
   quic::QuicServerId server_id(scheme_host_port.host(),
                                scheme_host_port.port());
-  return QuicSessionPoolPeer::HasActiveJob(
-      factory_.get(), server_id, privacy_mode, require_dns_https_alpn);
+  return QuicSessionPoolPeer::HasActiveJob(pool_.get(), server_id, privacy_mode,
+                                           require_dns_https_alpn);
 }
 
 // Get the pending, not activated session, if there is only one session alive.
@@ -256,7 +256,7 @@ QuicChromiumClientSession* QuicSessionPoolTestBase::GetPendingSession(
   quic::QuicServerId server_id(scheme_host_port.host(),
                                scheme_host_port.port());
   return QuicSessionPoolPeer::GetPendingSession(
-      factory_.get(), server_id, PRIVACY_MODE_DISABLED, scheme_host_port);
+      pool_.get(), server_id, PRIVACY_MODE_DISABLED, scheme_host_port);
 }
 
 QuicChromiumClientSession* QuicSessionPoolTestBase::GetActiveSession(
@@ -269,7 +269,7 @@ QuicChromiumClientSession* QuicSessionPoolTestBase::GetActiveSession(
   quic::QuicServerId server_id(scheme_host_port.host(),
                                scheme_host_port.port());
   return QuicSessionPoolPeer::GetActiveSession(
-      factory_.get(), server_id, privacy_mode, network_anonymization_key,
+      pool_.get(), server_id, privacy_mode, network_anonymization_key,
       proxy_chain, session_usage, require_dns_https_alpn);
 }
 
@@ -313,7 +313,7 @@ int QuicSessionPoolTestBase::GetSourcePortForNewSessionInner(
     session->connection()->OnGoAwayFrame(goaway);
   }
 
-  factory_->OnSessionClosed(session);
+  pool_->OnSessionClosed(session);
   EXPECT_FALSE(HasActiveSession(destination));
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
