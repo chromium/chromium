@@ -209,7 +209,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*split_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
        /*tanh_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*tile_input=*/{},
+       /*tile_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*transpose_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*triangular_input=*/{},
        /*where_condition=*/{},

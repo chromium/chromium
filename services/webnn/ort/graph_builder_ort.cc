@@ -83,6 +83,7 @@ constexpr base::cstring_view kOpTypeSoftmax = "Softmax";
 constexpr base::cstring_view kOpTypeSoftsign = "Softsign";
 constexpr base::cstring_view kOpTypeSplit = "Split";
 constexpr base::cstring_view kOpTypeTanh = "Tanh";
+constexpr base::cstring_view kOpTypeTile = "Tile";
 constexpr base::cstring_view kOpTypeTranspose = "Transpose";
 
 // Pooling operations
@@ -256,12 +257,12 @@ std::string GraphBuilderOrt::CreateScalarInitializer(const DataType& value) {
       /*shape=*/{}, base::span_from_ref(value));
 }
 
-std::string GraphBuilderOrt::CreateInitializerForShape(
-    base::span<const uint32_t> shape) {
-  std::array<int64_t, 1> new_shape_dims = {
-      base::checked_cast<int64_t>(shape.size())};
-  std::vector<int64_t> new_shape_value(shape.begin(), shape.end());
-  return CreateInitializer<int64_t>(new_shape_dims, new_shape_value);
+std::string GraphBuilderOrt::CreateInt64InitializerForUint32Array(
+    base::span<const uint32_t> array) {
+  std::array<int64_t, 1> array_dims = {
+      base::checked_cast<int64_t>(array.size())};
+  base::FixedArray<int64_t> array_value(array.begin(), array.end());
+  return CreateInitializer<int64_t>(array_dims, array_value);
 }
 
 void GraphBuilderOrt::AddCastNode(base::cstring_view node_name,
@@ -300,7 +301,7 @@ void GraphBuilderOrt::AddExpandNode(base::cstring_view node_name,
                                     base::span<const uint32_t> shape) {
   // `new_shape` should be the name of an int64 tensor that specifies the
   // output's shape.
-  const std::string new_shape = CreateInitializerForShape(shape);
+  const std::string new_shape = CreateInt64InitializerForUint32Array(shape);
 
   std::array<const char*, 2> inputs = {input.c_str(), new_shape.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
@@ -1180,7 +1181,8 @@ void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
       GetOperand(reshape.output_operand_id).descriptor.shape();
   // `new_shape` should be the name of an int64 tensor that specifies the
   // output's shape.
-  const std::string new_shape = CreateInitializerForShape(output_shape);
+  const std::string new_shape =
+      CreateInt64InitializerForUint32Array(output_shape);
 
   std::array<const char*, 2> inputs = {input.c_str(), new_shape.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
@@ -1326,15 +1328,15 @@ void GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
   // 'split' is a 1-D tensor which specifies the length of each output. The sum
   // of the values must be equal to the input size along 'axis'.
   // https://onnx.ai/onnx/operators/onnx__Split.html#inputs
-  base::FixedArray<int64_t> split_sizes(output_count);
+  base::FixedArray<uint32_t> split_sizes(output_count);
   for (size_t i = 0; i < output_count; i++) {
     const std::vector<uint32_t>& output_shape =
         GetOperand(split.output_operand_ids[i]).descriptor.shape();
     CHECK_LT(split.axis, output_shape.size());
-    split_sizes[i] = base::checked_cast<int64_t>(output_shape[split.axis]);
+    split_sizes[i] = output_shape[split.axis];
   }
-  const std::string split_input = CreateInitializer<int64_t>(
-      {base::checked_cast<uint32_t>(split_sizes.size())}, split_sizes);
+  const std::string split_input =
+      CreateInt64InitializerForUint32Array(split_sizes);
   std::array<const char*, 2> inputs = {input.c_str(), split_input.c_str()};
 
   base::FixedArray<std::string> output_names(output_count);
@@ -1349,6 +1351,23 @@ void GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
       kAttrAxis, base::checked_cast<int64_t>(split.axis))};
 
   model_editor_.AddNode(kOpTypeSplit, node_name, inputs, outputs, attributes);
+}
+
+void GraphBuilderOrt::AddTileOperation(const mojom::Tile& tile) {
+  const std::string node_name = GenerateNodeName(tile.label);
+  const std::string input = GetOperandNameById(tile.input_operand_id);
+  const std::string output = GetOperandNameById(tile.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.tile_input.Supports(
+      GetOperand(tile.input_operand_id).descriptor));
+
+  const std::string repeats =
+      CreateInt64InitializerForUint32Array(tile.repetitions);
+
+  std::array<const char*, 2> inputs = {input.data(), repeats.data()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeTile, node_name, inputs, outputs);
 }
 
 void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
@@ -1515,6 +1534,10 @@ GraphBuilderOrt::BuildModel() {
         AddUnaryOperation(*operation->get_tanh(), kOpTypeTanh);
         break;
       }
+      case mojom::Operation::Tag::kTile: {
+        AddTileOperation(*operation->get_tile());
+        break;
+      }
       case mojom::Operation::Tag::kTranspose: {
         AddTransposeOperation(*operation->get_transpose());
         break;
@@ -1539,7 +1562,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kReverse:
       case mojom::Operation::Tag::kSlice:
       case mojom::Operation::Tag::kSoftplus:
-      case mojom::Operation::Tag::kTile:
       case mojom::Operation::Tag::kTriangular:
       case mojom::Operation::Tag::kWhere:
         NOTREACHED() << "[WebNN] Unsupported operation.";

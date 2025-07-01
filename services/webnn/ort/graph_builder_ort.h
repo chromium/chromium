@@ -107,10 +107,11 @@ class GraphBuilderOrt {
     requires internal::IsSupportedTensorType<DataType>
   std::string CreateScalarInitializer(const DataType& value);
 
-  // A helper method creating an int64 tensor with the given shape value.
-  // It can be used by `reshape` and `expand` to create an initializer that
-  // specifies the output's shape.
-  std::string CreateInitializerForShape(base::span<const uint32_t> shape);
+  // A helper method wrapping the `CreateInitializer` above. It creates a 1D
+  // int64 initializer with the given uint32 array (shape is [array.size()]) to
+  // the graph, returning the name of the initializer.
+  std::string CreateInt64InitializerForUint32Array(
+      base::span<const uint32_t> array);
 
   void AddCastNode(base::cstring_view node_name,
                    base::cstring_view input,
@@ -174,6 +175,7 @@ class GraphBuilderOrt {
   void AddScatterNDOperation(const mojom::ScatterND& scatter_nd);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
   void AddSplitOperation(const mojom::Split& split);
+  void AddTileOperation(const mojom::Tile& tile);
   void AddTransposeOperation(const mojom::Transpose& transpose);
 
   [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
