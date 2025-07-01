@@ -1690,7 +1690,7 @@ const base::FeatureParam<base::TimeDelta>
 // Safety features, using HaTS.
 BASE_FEATURE(kTrustSafetySentimentSurveyV2,
              "TrustSafetySentimentSurveyV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // The minimum and maximum time after a user has interacted with a Trust and
 // Safety feature that they are eligible to be surveyed.
 const base::FeatureParam<base::TimeDelta>
@@ -1717,23 +1717,24 @@ const base::FeatureParam<base::TimeDelta>
 // TODO(crbug.com/40245476): Calculate initial probabilities and remove 0.0
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2BrowsingDataProbability{
-        &kTrustSafetySentimentSurveyV2, "browsing-data-probability", 0.0};
+        &kTrustSafetySentimentSurveyV2, "browsing-data-probability", 0.006};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2ControlGroupProbability{
-        &kTrustSafetySentimentSurveyV2, "control-group-probability", 0.0};
+        &kTrustSafetySentimentSurveyV2, "control-group-probability", 0.000025};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2DownloadWarningUIProbability{
-        &kTrustSafetySentimentSurveyV2, "download-warning-ui-probability", 0.0};
+        &kTrustSafetySentimentSurveyV2, "download-warning-ui-probability",
+        0.05213384};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2PasswordCheckProbability{
-        &kTrustSafetySentimentSurveyV2, "password-check-probability", 0.0};
+        &kTrustSafetySentimentSurveyV2, "password-check-probability", 0.195};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2PasswordProtectionUIProbability{
         &kTrustSafetySentimentSurveyV2, "password-protection-ui-probability",
-        0.0};
+        0.5};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2SafetyCheckProbability{
-        &kTrustSafetySentimentSurveyV2, "safety-check-probability", 0.0};
+        &kTrustSafetySentimentSurveyV2, "safety-check-probability", 0.12121};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2SafetyHubNotificationProbability{
         &kTrustSafetySentimentSurveyV2, "safety-hub-notification-probability",
@@ -1744,35 +1745,41 @@ const base::FeatureParam<double>
         0.0};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2TrustedSurfaceProbability{
-        &kTrustSafetySentimentSurveyV2, "trusted-surface-probability", 0.0};
+        &kTrustSafetySentimentSurveyV2, "trusted-surface-probability",
+        0.012685};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2PrivacyGuideProbability{
-        &kTrustSafetySentimentSurveyV2, "privacy-guide-probability", 0.0};
+        &kTrustSafetySentimentSurveyV2, "privacy-guide-probability", 0.5};
 const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2SafeBrowsingInterstitialProbability{
         &kTrustSafetySentimentSurveyV2,
-        "safe-browsing-interstitial-probability", 0.0};
+        "safe-browsing-interstitial-probability", 0.18932671};
 // The HaTS trigger IDs, which determine which survey is delivered from the HaTS
 // backend.
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2BrowsingDataTriggerId{
-        &kTrustSafetySentimentSurveyV2, "browsing-data-trigger-id", ""};
+        &kTrustSafetySentimentSurveyV2, "browsing-data-trigger-id",
+        "1iSgej9Tq0ugnJ3q1cK0QwXZ12oo"};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2ControlGroupTriggerId{
-        &kTrustSafetySentimentSurveyV2, "control-group-trigger-id", ""};
+        &kTrustSafetySentimentSurveyV2, "control-group-trigger-id",
+        "CXMbsBddw0ugnJ3q1cK0QJM1Hu8m"};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2DownloadWarningUITriggerId{
-        &kTrustSafetySentimentSurveyV2, "download-warning-ui-trigger-id", ""};
+        &kTrustSafetySentimentSurveyV2, "download-warning-ui-trigger-id",
+        "7SS4sg4oR0ugnJ3q1cK0TNvCvd8U"};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2PasswordCheckTriggerId{
-        &kTrustSafetySentimentSurveyV2, "password-check-trigger-id", ""};
+        &kTrustSafetySentimentSurveyV2, "password-check-trigger-id",
+        "Xd54YDVNJ0ugnJ3q1cK0UYBRruNH"};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2PasswordProtectionUITriggerId{
         &kTrustSafetySentimentSurveyV2, "password-protection-ui-trigger-id",
-        ""};
+        "bQBRghu5w0ugnJ3q1cK0RrqdqVRP"};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2SafetyCheckTriggerId{
-        &kTrustSafetySentimentSurveyV2, "safety-check-trigger-id", ""};
+        &kTrustSafetySentimentSurveyV2, "safety-check-trigger-id",
+        "YSDfPVMnX0ugnJ3q1cK0RxEhwkay"};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2SafetyHubInteractionTriggerId{
         &kTrustSafetySentimentSurveyV2, "safety-hub-interaction-trigger-id",
@@ -1783,14 +1790,16 @@ const base::FeatureParam<std::string>
         ""};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2TrustedSurfaceTriggerId{
-        &kTrustSafetySentimentSurveyV2, "trusted-surface-trigger-id", ""};
+        &kTrustSafetySentimentSurveyV2, "trusted-surface-trigger-id",
+        "CMniDmzgE0ugnJ3q1cK0U6PaEn1f"};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2PrivacyGuideTriggerId{
-        &kTrustSafetySentimentSurveyV2, "privacy-guide-trigger-id", ""};
+        &kTrustSafetySentimentSurveyV2, "privacy-guide-trigger-id",
+        "tqR1rjeDu0ugnJ3q1cK0P9yJEq7Z"};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2SafeBrowsingInterstitialTriggerId{
         &kTrustSafetySentimentSurveyV2, "safe-browsing-interstitial-trigger-id",
-        ""};
+        "Z9pSWP53n0ugnJ3q1cK0Y6YkGRpU"};
 // The time the user must have the Trusted Surface bubble open to be considered.
 // Alternatively the user can interact with the bubble, in which case this time
 // is irrelevant.
