@@ -52,6 +52,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
@@ -165,7 +166,7 @@ GREYElementInteraction* GetPasswordDetailTextFieldWithID(int detail_id) {
 GREYElementInteraction* SaveInAccountConfirmationDialogButton() {
   return [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+          grey_allOf(chrome_test_util::AlertItemWithAccessibilityLabelId(
                          IDS_IOS_BULK_UPLOAD_BUTTON_TITLE),
                      grey_interactable(), nil)]
       inRoot:grey_accessibilityID(
@@ -1733,15 +1734,23 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // aiming at `kRemoteIndex`.
   constexpr int kJump = kRemoteIndex * 30 + 150;
 
-  // Check that the detail view loaded correctly by verifying the site content.
-  [[[EarlGrey
-      selectElementWithMatcher:
-          [self matcherForPasswordDetailCellWithWebsites:
+  {
+    // Disable EarlGrey synchronization in this scope to avoid infinite spinner
+    // loop.
+    ScopedSynchronizationDisabler disabler;
+
+    // Check that the detail view loaded correctly by verifying the site
+    // content.
+    [[[EarlGrey
+        selectElementWithMatcher:
+            [self
+                matcherForPasswordDetailCellWithWebsites:
                     [NSString stringWithFormat:@"https://www%02d.example.com/",
                                                kRemoteIndex]]]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, kJump)
-      onElementWithMatcher:PasswordDetailsTableViewMatcher()]
-      assertWithMatcher:grey_notNil()];
+           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, kJump)
+        onElementWithMatcher:PasswordDetailsTableViewMatcher()]
+        assertWithMatcher:grey_notNil()];
+  }
 
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
@@ -1800,7 +1809,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   CheckVisibilityOfElement(pinErrorTitleMatcher, /*is_visible=*/true);
 
   [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
                      IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_BUTTON)]
       performAction:grey_tap()];
   CheckVisibilityOfElement(pinErrorTitleMatcher, /*is_visible=*/false);
@@ -1836,17 +1845,17 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:ToolbarSettingsSubmenuButton()]
       performAction:grey_tap()];
 
-  [[[EarlGrey selectElementWithMatcher:
-                  grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                                 IDS_IOS_EXPORT_PASSWORDS),
-                             grey_sufficientlyVisible(), nil)]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(ButtonWithAccessibilityLabelId(
+                                              IDS_IOS_EXPORT_PASSWORDS),
+                                          grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
       onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       performAction:grey_tap()];
 
   [GetInteractionForPasswordsExportConfirmAlert(
-      chrome_test_util::ButtonWithAccessibilityLabelId(
+      chrome_test_util::AlertItemWithAccessibilityLabelId(
           IDS_IOS_EXPORT_PASSWORDS)) performAction:grey_tap()];
 
   // Wait until the alerts are dismissed.
@@ -1855,9 +1864,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   id<GREYMatcher> exportButtonStatusMatcher =
       grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_EXPORT_PASSWORDS)]
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_EXPORT_PASSWORDS)]
       assertWithMatcher:exportButtonStatusMatcher];
 
   [ChromeEarlGrey verifyActivitySheetVisible];
@@ -1867,9 +1875,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Check that export button is re-enabled.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_EXPORT_PASSWORDS)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_EXPORT_PASSWORDS)]
       assertWithMatcher:grey_not(grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled))];
   [[EarlGrey
