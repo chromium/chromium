@@ -192,6 +192,10 @@ class TestSignChrome(unittest.TestCase):
                 'codesign', '--display', '--requirements', '-', '--verbose=5',
                 '/$W/App Product.app'
             ]),
+            mock.call.run_command([
+                'codesign', '--verify', '--verbose=6', '--deep', '--strict',
+                '/$W/App Product.app'
+            ]),
             mock.call.run_command(
                 ['spctl', '--assess', '-vv', '/$W/App Product.app']),
         ])
@@ -213,6 +217,10 @@ class TestSignChrome(unittest.TestCase):
         self.assertEqual(kwargs['run_command'].mock_calls, [
             mock.call.run_command([
                 'codesign', '--display', '--requirements', '-', '--verbose=5',
+                '/$W/App Product.app'
+            ]),
+            mock.call.run_command([
+                'codesign', '--verify', '--verbose=6', '--deep', '--strict',
                 '/$W/App Product.app'
             ]),
         ])
@@ -265,6 +273,10 @@ class TestSignChrome(unittest.TestCase):
         self.assertEqual(kwargs['run_command'].mock_calls, [
             mock.call.run_command([
                 'codesign', '--display', '--requirements', '-', '--verbose=5',
+                '/$W/App Product.app'
+            ]),
+            mock.call.run_command([
+                'codesign', '--verify', '--verbose=6', '--deep', '--strict',
                 '/$W/App Product.app'
             ]),
             mock.call.run_command(

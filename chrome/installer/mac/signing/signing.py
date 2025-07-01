@@ -129,9 +129,12 @@ def validate_app(paths, config, part):
         part: The |model.CodeSignedProduct| for the outer application bundle.
     """
     app_path = os.path.join(paths.work, part.path)
+    verify_opts = part.verify_options.to_list() if part.verify_options else []
     commands.run_command([
         'codesign', '--display', '--requirements', '-', '--verbose=5', app_path
     ])
+    commands.run_command(['codesign', '--verify', '--verbose=6'] + verify_opts +
+                         [app_path])
     if config.run_spctl_assess:
         commands.run_command(['spctl', '--assess', '-vv', app_path])
 
