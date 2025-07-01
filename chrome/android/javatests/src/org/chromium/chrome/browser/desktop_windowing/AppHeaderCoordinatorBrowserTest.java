@@ -443,6 +443,70 @@ public class AppHeaderCoordinatorBrowserTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_TABLET})
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @DisabledTest(message = "Flaky, crbug.com/427778958")
+    public void testKeyboardInDesktopWindow_RootViewNotPadded() throws TimeoutException {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        triggerDesktopWindowingModeChange(activity, true);
+        var insetObserver = activity.getWindowAndroid().getInsetObserver();
+
+        // Navigate to a URL with an input field. Clicking on it should trigger the OSK.
+        mActivityTestRule.loadUrl(
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/page_with_editable.html"));
+        DOMUtils.clickNode(activity.getActivityTab().getWebContents(), TEXTFIELD_DOM_ID);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean isKeyboardShowing =
+                            mActivityTestRule
+                                    .getKeyboardDelegate()
+                                    .isKeyboardShowing(activity, activity.getTabsView());
+                    Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
+                },
+                KEYBOARD_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        // Verify that the root view is not padded by keyboard insets because it has been handled
+        // by E2E controller.
+        var rootView = activity.getWindow().getDecorView().getRootView();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(0));
+                });
+
+        // Remove input field focus to hide the keyboard.
+        JavaScriptUtils.executeJavaScript(
+                activity.getActivityTab().getWebContents(),
+                "document.querySelector('input').blur()");
+
+        // Verify that the root view is not padded by any inset because it has been handled
+        // by E2E controller.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(0));
+                });
+
+        // Dispatch window insets to simulate no overlap of the app window with the nav bar.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    insetObserver.onApplyWindowInsets(
+                            rootView,
+                            new WindowInsetsCompat.Builder()
+                                    .setInsets(
+                                            WindowInsetsCompat.Type.navigationBars(),
+                                            Insets.of(0, 0, 0, 0))
+                                    .build());
+                });
+
+        // Verify that the root view bottom padding is reset.
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(0)));
+    }
+
+    @Test
+    @MediumTest
     public void testKeyboardInDesktopWindow_RootViewNotPaddedOnOmniboxFocus() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         triggerDesktopWindowingModeChange(activity, true);
