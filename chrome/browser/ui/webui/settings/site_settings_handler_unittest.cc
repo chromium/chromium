@@ -796,7 +796,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
         web_ui()->call_data(),
         [](const std::unique_ptr<content::TestWebUI::CallData>& call_data_ptr) {
           return call_data_ptr && call_data_ptr->arg1() &&
-                 *call_data_ptr->arg1() == "onZoomLevelsChanged";
+                 call_data_ptr->arg1()->is_string() &&
+                 call_data_ptr->arg1()->GetString() == std::string_view("onZoomLevelsChanged");
         });
     EXPECT_EQ(expected_total_calls, zoom_changed_count);
 

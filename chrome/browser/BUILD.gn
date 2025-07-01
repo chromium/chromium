@@ -4359,19 +4359,6 @@ static_library("browser") {
       "webauthn/unexportable_key_utils.h",
     ]
 
-    if (use_aura) {
-      sources += [
-        "web_applications/isolated_web_apps/window_management/multiple_web_contents_opened_notification_delegate.cc",
-        "web_applications/isolated_web_apps/window_management/multiple_web_contents_opened_notification_delegate.h",
-        "web_applications/isolated_web_apps/window_management/multiple_web_contents_opened_service.cc",
-        "web_applications/isolated_web_apps/window_management/multiple_web_contents_opened_service.h",
-        "web_applications/isolated_web_apps/window_management/multiple_web_contents_opened_service_factory.cc",
-        "web_applications/isolated_web_apps/window_management/multiple_web_contents_opened_service_factory.h",
-      ]
-
-      deps += [ "//ui/aura" ]
-    }
-
     #!is_android
     public_deps += [ "//ui/base/mojom:ui_base_types" ]
 

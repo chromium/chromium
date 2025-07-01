@@ -18888,19 +18888,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
     </if>
 
-<!-- Isolated Web Apps Window Management notification. -->
-    <message name="IDS_MULTIPLE_WEB_CONTENTS_OPENED_NOTIFICATION_TITLE" desc="Title for the notification displayed when an Isolated Web App opens multiple wtabs/windows.">
-            <ph name="APP_NAME">$1<ex>Example App</ex></ph> has opened multiple windows.
-          </message>
-
-    <message name="IDS_MULTIPLE_WEB_CONTENTS_OPENED_NOTIFICATION_MESSAGE" desc="Message for the notification displaying the count of open windows/tabs for an Isolated Web App.">
-      <ph name="OPENINGS_COUNT">$1</ph> new Chrome windows or tabs have been opened by this app. You can manage this behavior under "Pop-ups and Redirects" permission.
-    </message>
-
-    <message name="IDS_MULTIPLE_WEB_CONTENTS_OPENED_NOTIFICATION_BUTTON_SETTINGS" desc="Text for the button on the multiple web contents opened notification that opens the app's content settings.">
-      Change permissions
-    </message>
-
     <!-- Common WebUI elements. -->
     <message name="IDS_THUMBS_DOWN" desc="Accessibility label for a thumbs down icon that a user can click to provide negative feedback about a feature.">
       Thumbs down submits feedback that you dislike this.
