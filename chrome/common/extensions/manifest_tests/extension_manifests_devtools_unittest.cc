@@ -14,31 +14,30 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace extensions {
+
+namespace {
+
 using DevToolsPageManifestTest = ChromeManifestTest;
 
 TEST_F(DevToolsPageManifestTest, DevToolsExtensions) {
   LoadAndExpectError("devtools_extension_url_invalid_type.json",
-                     extensions::manifest_errors::kInvalidDevToolsPage);
+                     manifest_errors::kInvalidDevToolsPage);
 
   LoadAndExpectError("devtools_extension_invalid_page_url.json",
-                     extensions::manifest_errors::kInvalidDevToolsPage);
+                     manifest_errors::kInvalidDevToolsPage);
 
   LoadAndExpectError("devtools_extension_page_url_https.json",
-                     extensions::manifest_errors::kInvalidDevToolsPage);
+                     manifest_errors::kInvalidDevToolsPage);
 
-  scoped_refptr<extensions::Extension> extension =
+  scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("devtools_extension.json");
   EXPECT_EQ(extension->url().spec() + "devtools.html",
-            extensions::chrome_manifest_urls::GetDevToolsPage(extension.get())
-                .spec());
+            chrome_manifest_urls::GetDevToolsPage(extension.get()).spec());
   EXPECT_TRUE(extension->permissions_data()
                   ->active_permissions()
                   .HasEffectiveAccessToAllHosts());
 }
-
-namespace extensions {
-
-namespace {
 
 class ManifestDevToolsPageHandlerTest : public ManifestTest {
  public:
@@ -66,8 +65,7 @@ class ManifestDevToolsPageHandlerTest : public ManifestTest {
     ASSERT_TRUE(extension.get());
     EXPECT_TRUE(error.empty());
     ASSERT_EQ(parsed_devtools_page,
-              extensions::chrome_manifest_urls::GetDevToolsPage(extension.get())
-                  .spec());
+              chrome_manifest_urls::GetDevToolsPage(extension.get()).spec());
   }
 
   void LoadAndExpectSuccess(const std::string& id,

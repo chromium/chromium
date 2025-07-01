@@ -11,7 +11,8 @@
 #include "extensions/common/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace errors = extensions::manifest_errors;
+namespace extensions {
+namespace {
 
 TEST_F(ChromeManifestTest, ExperimentalPermission) {
   LoadAndExpectWarning(
@@ -19,11 +20,13 @@ TEST_F(ChromeManifestTest, ExperimentalPermission) {
       "'experimental' requires the 'experimental-extension-apis' "
       "command line switch to be enabled.");
   LoadAndExpectSuccess("experimental.json",
-                       extensions::mojom::ManifestLocation::kComponent);
-  LoadAndExpectSuccess("experimental.json",
-                       extensions::mojom::ManifestLocation::kInternal,
-                       extensions::Extension::FROM_WEBSTORE);
+                       mojom::ManifestLocation::kComponent);
+  LoadAndExpectSuccess("experimental.json", mojom::ManifestLocation::kInternal,
+                       Extension::FROM_WEBSTORE);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      extensions::switches::kEnableExperimentalExtensionApis);
+      switches::kEnableExperimentalExtensionApis);
   LoadAndExpectSuccess("experimental.json");
 }
+
+}  // namespace
+}  // namespace extensions

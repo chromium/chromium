@@ -17,13 +17,10 @@
 
 namespace errors = extensions::manifest_errors;
 
-using extensions::Extension;
-using extensions::ExtensionBuilder;
-
+namespace extensions {
 namespace {
 
-class StreamsPrivateManifestTest : public ChromeManifestTest {
-};
+using StreamsPrivateManifestTest = ChromeManifestTest;
 
 TEST_F(StreamsPrivateManifestTest, ValidMimeTypesHandlerMIMETypes) {
   scoped_refptr<const Extension> extension =
@@ -63,3 +60,4 @@ TEST_F(StreamsPrivateManifestTest, MimeTypesHandlerMIMETypesNotAllowlisted) {
 }
 
 }  // namespace
+}  // namespace extensions

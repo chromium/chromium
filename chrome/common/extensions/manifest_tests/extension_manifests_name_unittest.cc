@@ -8,7 +8,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::Extension;
+namespace extensions {
 
 class NameManifestTest : public ChromeManifestTest {
  protected:
@@ -54,3 +54,5 @@ TEST_F(NameManifestTest, EmptyName) {
         "Required value 'name' is missing or invalid.");
   }
 }
+
+}  // namespace extensions

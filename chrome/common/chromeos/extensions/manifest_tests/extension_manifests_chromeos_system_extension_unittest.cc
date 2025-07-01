@@ -16,7 +16,8 @@
 namespace chromeos {
 namespace {
 
-using ExtensionManifestChromeOSSystemExtensionTest = ChromeManifestTest;
+using ExtensionManifestChromeOSSystemExtensionTest =
+    extensions::ChromeManifestTest;
 
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
        InvalidChromeOSSystemExtension) {

@@ -6,8 +6,11 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace extensions {
+namespace {
+
 TEST_F(ChromeManifestTest, DefaultPathForExtent) {
-  scoped_refptr<extensions::Extension> extension(
+  scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("default_path_for_extent.json"));
 
   ASSERT_EQ(1u, extension->web_extent().patterns().size());
@@ -15,3 +18,6 @@ TEST_F(ChromeManifestTest, DefaultPathForExtent) {
   EXPECT_TRUE(extension->web_extent().MatchesURL(
       GURL("http://www.google.com/monkey")));
 }
+
+}  // namespace
+}  // namespace extensions

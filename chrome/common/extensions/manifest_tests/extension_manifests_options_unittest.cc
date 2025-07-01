@@ -13,6 +13,7 @@
 using extensions::FeatureSwitch;
 using extensions::OptionsPageInfo;
 
+namespace extensions {
 namespace {
 
 class OptionsPageManifestTest : public ChromeManifestTest {
@@ -148,3 +149,4 @@ TEST_F(OptionsPageManifestTest, OptionsPageChromeStyleManifestV3) {
 }
 
 }  // namespace
+}  // namespace extensions

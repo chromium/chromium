@@ -17,13 +17,10 @@
 
 namespace errors = extensions::manifest_errors;
 
-using extensions::Extension;
-using extensions::ExtensionBuilder;
-
+namespace extensions {
 namespace {
 
-class FileBrowserHandlerManifestTest : public ChromeManifestTest {
-};
+using FileBrowserHandlerManifestTest = ChromeManifestTest;
 
 TEST_F(FileBrowserHandlerManifestTest, PermissionAllowed) {
   RunTestcase(Testcase("filebrowser_valid.json"), EXPECT_TYPE_SUCCESS);
@@ -49,23 +46,22 @@ TEST_F(FileBrowserHandlerManifestTest, GetHandlersRequiresPermission) {
   good_manifest.Set("permissions",
                     base::Value::List().Append("fileBrowserHandler"));
 
-  extensions::ExtensionBuilder bad_app_builder;
+  ExtensionBuilder bad_app_builder;
   bad_app_builder.SetManifest(std::move(bad_manifest));
-  scoped_refptr<const extensions::Extension> bad_app = bad_app_builder.Build();
+  scoped_refptr<const Extension> bad_app = bad_app_builder.Build();
   EXPECT_FALSE(FileBrowserHandler::GetHandlers(bad_app.get()));
 
-  extensions::ExtensionBuilder good_app_builder;
+  ExtensionBuilder good_app_builder;
   good_app_builder.SetManifest(std::move(good_manifest));
-  scoped_refptr<const extensions::Extension> good_app =
-      good_app_builder.Build();
+  scoped_refptr<const Extension> good_app = good_app_builder.Build();
   EXPECT_TRUE(FileBrowserHandler::GetHandlers(good_app.get()));
 }
 
 TEST_F(FileBrowserHandlerManifestTest, InvalidFileBrowserHandlers) {
   const Testcase testcases[] = {
       Testcase("filebrowser_invalid_access_permission.json",
-               extensions::ErrorUtils::FormatErrorMessage(
-                   errors::kInvalidFileAccessValue, base::NumberToString(1))),
+               ErrorUtils::FormatErrorMessage(errors::kInvalidFileAccessValue,
+                                              base::NumberToString(1))),
       Testcase("filebrowser_invalid_access_permission_list.json",
                errors::kInvalidFileAccessList),
       Testcase("filebrowser_invalid_empty_access_permission_list.json",
@@ -83,11 +79,11 @@ TEST_F(FileBrowserHandlerManifestTest, InvalidFileBrowserHandlers) {
       Testcase("filebrowser_invalid_file_filters_1.json",
                errors::kInvalidFileFiltersList),
       Testcase("filebrowser_invalid_file_filters_2.json",
-               extensions::ErrorUtils::FormatErrorMessage(
-                   errors::kInvalidFileFilterValue, base::NumberToString(0))),
+               ErrorUtils::FormatErrorMessage(errors::kInvalidFileFilterValue,
+                                              base::NumberToString(0))),
       Testcase("filebrowser_invalid_file_filters_url.json",
-               extensions::ErrorUtils::FormatErrorMessage(
-                   errors::kInvalidURLPatternError, "http:*.html"))};
+               ErrorUtils::FormatErrorMessage(errors::kInvalidURLPatternError,
+                                              "http:*.html"))};
   RunTestcases(testcases, EXPECT_TYPE_ERROR);
   RunTestcase(Testcase("filebrowser_missing_permission.json",
                        errors::kInvalidFileBrowserHandlerMissingPermission),
@@ -124,7 +120,7 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandler) {
   EXPECT_EQ("ExtremelyCoolAction", action->id());
   EXPECT_EQ("Be Amazed", action->title());
   EXPECT_EQ("icon.png", action->icon_path());
-  const extensions::URLPatternSet& patterns = action->file_url_patterns();
+  const URLPatternSet& patterns = action->file_url_patterns();
   ASSERT_EQ(1U, patterns.patterns().size());
   EXPECT_TRUE(action->MatchesURL(
       GURL("filesystem:chrome-extension://foo/local/test.txt")));
@@ -166,7 +162,7 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerMIMETypes) {
   ASSERT_EQ(1U, handlers->size());
   const FileBrowserHandler* action = handlers->at(0).get();
 
-  const extensions::URLPatternSet& patterns = action->file_url_patterns();
+  const URLPatternSet& patterns = action->file_url_patterns();
   ASSERT_EQ(1U, patterns.patterns().size());
   EXPECT_TRUE(action->MatchesURL(
       GURL("filesystem:chrome-extension://foo/local/test.txt")));
@@ -204,7 +200,7 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerWithCreate) {
   ASSERT_TRUE(handlers != nullptr);
   ASSERT_EQ(1U, handlers->size());
   const FileBrowserHandler* action = handlers->at(0).get();
-  const extensions::URLPatternSet& patterns = action->file_url_patterns();
+  const URLPatternSet& patterns = action->file_url_patterns();
 
   EXPECT_EQ(0U, patterns.patterns().size());
   EXPECT_TRUE(action->HasCreateAccessPermission());
@@ -217,3 +213,4 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerWithCreate) {
 }
 
 }  // namespace
+}  // namespace extensions

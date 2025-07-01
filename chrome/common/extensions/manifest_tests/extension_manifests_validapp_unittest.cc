@@ -11,19 +11,21 @@
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace extensions {
+namespace {
+
 using ValidAppManifestTest = ChromeManifestTest;
 
 TEST_F(ValidAppManifestTest, ValidApp) {
-  scoped_refptr<extensions::Extension> extension(
-      LoadAndExpectSuccess("valid_app.json"));
-  extensions::URLPatternSet expected_patterns;
+  scoped_refptr<Extension> extension(LoadAndExpectSuccess("valid_app.json"));
+  URLPatternSet expected_patterns;
   AddPattern(&expected_patterns, "http://www.google.com/mail/*");
   AddPattern(&expected_patterns, "http://www.google.com/foobar/*");
   EXPECT_EQ(expected_patterns, extension->web_extent());
   EXPECT_EQ(apps::LaunchContainer::kLaunchContainerTab,
-            extensions::AppLaunchInfo::GetLaunchContainer(extension.get()));
+            AppLaunchInfo::GetLaunchContainer(extension.get()));
   EXPECT_EQ(GURL("http://www.google.com/mail/"),
-            extensions::AppLaunchInfo::GetLaunchWebURL(extension.get()));
+            AppLaunchInfo::GetLaunchWebURL(extension.get()));
 }
 
 TEST_F(ValidAppManifestTest, AllowUnrecognizedPermissions) {
@@ -36,3 +38,6 @@ TEST_F(ValidAppManifestTest, AllowUnrecognizedPermissions) {
   permissions->Append("not-a-valid-permission");
   LoadAndExpectSuccess(ManifestData(std::move(*manifest), ""));
 }
+
+}  // namespace
+}  // namespace extensions

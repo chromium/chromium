@@ -8,10 +8,10 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_test.h"
 
+namespace extensions {
+
 // Base class for unit tests that load manifest data from Chrome TEST_DATA_DIR.
-// TODO(jamescook): Move this class and all subclasses into the extensions
-// namespace.
-class ChromeManifestTest : public extensions::ManifestTest {
+class ChromeManifestTest : public ManifestTest {
  public:
   ChromeManifestTest();
 
@@ -30,7 +30,9 @@ class ChromeManifestTest : public extensions::ManifestTest {
   //
   // These objects nest, so if a test wants to explicitly test the behaviour
   // on stable or beta, declare it inside that test.
-  extensions::ScopedCurrentChannel current_channel_;
+  ScopedCurrentChannel current_channel_;
 };
+
+}  // namespace extensions
 
 #endif  // CHROME_COMMON_EXTENSIONS_MANIFEST_TESTS_CHROME_MANIFEST_TEST_H_

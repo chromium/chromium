@@ -14,7 +14,7 @@ namespace extensions {
 using IconsManifestTest = ChromeManifestTest;
 
 TEST_F(IconsManifestTest, NormalizeIconPaths) {
-  scoped_refptr<extensions::Extension> extension(
+  scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("normalize_icon_paths.json"));
   const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
 
@@ -25,7 +25,7 @@ TEST_F(IconsManifestTest, NormalizeIconPaths) {
 }
 
 TEST_F(IconsManifestTest, IconSizes) {
-  scoped_refptr<extensions::Extension> extension(
+  scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("init_icon_size.json"));
   const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
 

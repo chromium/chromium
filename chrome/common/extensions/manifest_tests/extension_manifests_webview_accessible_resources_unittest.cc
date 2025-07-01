@@ -8,10 +8,10 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/webview_info.h"
 
-using extensions::ErrorUtils;
-using extensions::Extension;
-using extensions::WebviewInfo;
-namespace errors = extensions::manifest_errors;
+namespace extensions {
+namespace {
+
+namespace errors = manifest_errors;
 
 using WebviewAccessibleResourcesManifestTest = ChromeManifestTest;
 
@@ -96,3 +96,6 @@ TEST_F(WebviewAccessibleResourcesManifestTest, InvalidManifest) {
         extension.get(), "nonrelative", "a.html"));
   }
 }
+
+}  // namespace
+}  // namespace extensions

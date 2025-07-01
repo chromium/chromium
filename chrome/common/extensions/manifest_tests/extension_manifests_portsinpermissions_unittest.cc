@@ -6,7 +6,13 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace extensions {
+namespace {
+
 TEST_F(ChromeManifestTest, PortsInPermissions) {
   // Loading as a user would shoud not trigger an error.
   LoadAndExpectSuccess("ports_in_permissions.json");
 }
+
+}  // namespace
+}  // namespace extensions

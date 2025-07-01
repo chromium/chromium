@@ -9,8 +9,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::Extension;
-using extensions::WebAccessibleResourcesInfo;
+namespace extensions {
+namespace {
 
 class WebAccessibleResourcesManifestTest : public ChromeManifestTest {
  protected:
@@ -482,3 +482,6 @@ TEST_F(WebAccessibleResourcesManifestTest, ShouldUseDynamicUrl) {
   EXPECT_EQ(false, WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
                        extension.get(), "resource.html"));
 }
+
+}  // namespace
+}  // namespace extensions

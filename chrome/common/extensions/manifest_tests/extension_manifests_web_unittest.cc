@@ -9,10 +9,10 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::ErrorUtils;
-using extensions::Extension;
+namespace extensions {
+namespace {
 
-namespace errors = extensions::manifest_errors;
+namespace errors = manifest_errors;
 
 TEST_F(ChromeManifestTest, AppWebUrls) {
   const Testcase testcases[] = {
@@ -48,3 +48,6 @@ TEST_F(ChromeManifestTest, AppWebUrls) {
   EXPECT_EQ("*://www.google.com/*",
             extension->web_extent().patterns().begin()->GetAsString());
 }
+
+}  // namespace
+}  // namespace extensions

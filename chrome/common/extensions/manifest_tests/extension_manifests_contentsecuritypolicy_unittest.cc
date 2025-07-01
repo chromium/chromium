@@ -9,7 +9,8 @@
 
 namespace errors = extensions::manifest_errors;
 namespace keys = extensions::manifest_keys;
-using extensions::ErrorUtils;
+
+namespace extensions {
 
 using ContentSecurityPolicyManifestTest = ChromeManifestTest;
 
@@ -31,3 +32,5 @@ TEST_F(ContentSecurityPolicyManifestTest, InsecureContentSecurityPolicy) {
                    keys::kContentSecurityPolicy, "object-src"))};
   RunTestcases(testcases, EXPECT_TYPE_WARNING);
 }
+
+}  // namespace extensions
