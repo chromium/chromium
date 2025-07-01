@@ -79,7 +79,7 @@ const float kProbabilityForSendingSampleRequest = 0.000001;
 // Probability value used to accept the high confidence allowlist match for
 // trigger and force request types. More information on why this value was
 // chosen can be found at go/crca-cspp-expand-allowlist.
-const float kProbabilityForAcceptingHCAllowlistTrigger = 0.95;
+const float kProbabilityForAcceptingHCAllowlistTrigger = 0.9999;
 // Threshold value used to skip the on-device model inquiry.
 const int kInnerTextMinThresholdBytes = 5;
 
@@ -636,10 +636,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
 
     switch (phishing_detection_request_type_) {
       case ClientSideDetectionType::TRIGGER_MODELS:
-        return base::FeatureList::IsEnabled(
-                   kClientSideDetectionAcceptHCAllowlist) &&
-               base::RandDouble() <=
-                   probability_for_accepting_hc_allowlist_trigger_;
+        return base::RandDouble() <=
+               probability_for_accepting_hc_allowlist_trigger_;
       default:
         return false;
     }

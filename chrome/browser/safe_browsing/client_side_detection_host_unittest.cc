@@ -1055,10 +1055,6 @@ TEST_F(ClientSideDetectionHostTest,
     GTEST_SKIP();
   }
 
-  std::vector<base::test::FeatureRef> enabled_features = {};
-  enabled_features.push_back(kClientSideDetectionAcceptHCAllowlist);
-  SetFeatures(enabled_features, {});
-
   csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
   base::HistogramTester histogram_tester;
 
@@ -1082,41 +1078,7 @@ TEST_F(ClientSideDetectionHostTest,
     GTEST_SKIP();
   }
 
-  std::vector<base::test::FeatureRef> enabled_features = {};
-  enabled_features.push_back(kClientSideDetectionAcceptHCAllowlist);
-  SetFeatures(enabled_features, {});
-
   csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(0.0f);
-  base::HistogramTester histogram_tester;
-
-  GURL url("http://host.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
-                                nullptr);
-  NavigateAndKeepLoading(web_contents(), url);
-  WaitAndCheckPreClassificationChecks();
-
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel", 1);
-  histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.PreClassificationCheckResult",
-      PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST, 0);
-}
-
-TEST_F(
-    ClientSideDetectionHostTest,
-    TestPreClassificationCheckDoesNotMatchHighConfidenceAllowlistDueToDisabledFeature) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
-  std::vector<base::test::FeatureRef> disabled_features = {};
-  disabled_features.push_back(kClientSideDetectionAcceptHCAllowlist);
-  SetFeatures({}, disabled_features);
-
-  // We will set the acceptance rate to 100%, but it won't be accepted because
-  // the feature is disabled.
-  csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
   base::HistogramTester histogram_tester;
 
   GURL url("http://host.com/");
@@ -1846,10 +1808,6 @@ TEST_F(
     GTEST_SKIP();
   }
 
-  std::vector<base::test::FeatureRef> enabled_features = {};
-  enabled_features.push_back(kClientSideDetectionAcceptHCAllowlist);
-  SetFeatures(enabled_features, {});
-
   csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
   base::HistogramTester histogram_tester;
 
@@ -2123,7 +2081,6 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
   void SetUp() override {
     ClientSideDetectionHostTest::SetUp();
     SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-    SetFeatures({kClientSideDetectionAcceptHCAllowlist}, {});
     database_manager_->SetAllowlistLookupDetailsForUrl(example_url_, false);
     ON_CALL(*raw_token_fetcher_, Start(_))
         .WillByDefault(

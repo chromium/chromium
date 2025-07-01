@@ -31,10 +31,6 @@ BASE_DECLARE_FEATURE(kBundledSecuritySettings);
 // Enables adding warning shown timestamp to client safe browsing report.
 BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 
-// Expand allowlist usage beyond CSPP allowlist by using the high confidence
-// allowlist as well.
-BASE_DECLARE_FEATURE(kClientSideDetectionAcceptHCAllowlist);
-
 // Create a response containing the brand and the intent of the page using the
 // on-device model LLM.
 BASE_DECLARE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection);
