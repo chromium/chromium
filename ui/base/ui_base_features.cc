@@ -238,7 +238,7 @@ BASE_FEATURE(kExperimentalFlingAnimation,
 #endif
 );
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_APPLE)
 // Cached in Java as well, make sure defaults are updated together.
 BASE_FEATURE(kElasticOverscroll,
              "ElasticOverscroll",
@@ -248,7 +248,7 @@ BASE_FEATURE(kElasticOverscroll,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#endif
 
 // Enables focus follow follow cursor (sloppyfocus).
 BASE_FEATURE(kFocusFollowsCursor,

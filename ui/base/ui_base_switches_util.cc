@@ -20,8 +20,6 @@ bool IsElasticOverscrollEnabled() {
 // but the system default is true.
 #if BUILDFLAG(IS_APPLE)
   return true;
-#elif BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(features::kElasticOverscroll);
 #elif BUILDFLAG(IS_ANDROID)
   return base::android::BuildInfo::GetInstance()->sdk_int() >=
              base::android::SDK_VERSION_S &&
@@ -29,7 +27,7 @@ bool IsElasticOverscrollEnabled() {
              switches::kDisableOverscrollEdgeEffect) &&
          base::FeatureList::IsEnabled(features::kElasticOverscroll);
 #else
-  return false;
+  return base::FeatureList::IsEnabled(features::kElasticOverscroll);
 #endif
 }
 
