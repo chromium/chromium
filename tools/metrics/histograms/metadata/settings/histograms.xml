@@ -1283,7 +1283,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.VersionCard.StatusOnClick"
-    enum="SafetyHubCardState" expires_after="2025-07-06">
+    enum="SafetyHubCardState" expires_after="2026-02-06">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
