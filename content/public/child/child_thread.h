@@ -27,21 +27,13 @@ namespace content {
 
 // An abstract base class that contains logic shared between most child
 // processes of the embedder.
-class CONTENT_EXPORT ChildThread
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-    : public IPC::Sender
-#endif
-{
+class CONTENT_EXPORT ChildThread {
  public:
   // Returns the one child thread for this process.  Note that this can only be
   // accessed when running on the child thread itself.
   static ChildThread* Get();
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  ~ChildThread() override = default;
-#else
   virtual ~ChildThread() = default;
-#endif
 
   // Sends over a base::UserMetricsAction to be recorded by user metrics as
   // an action. Once a new user metric is added, run

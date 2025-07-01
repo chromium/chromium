@@ -152,9 +152,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   BrowserContext* GetBrowserContext() override;
   bool InSameStoragePartition(StoragePartition* partition) override;
   IPC::ChannelProxy* GetChannel() override;
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  void AddFilter(BrowserMessageFilter* filter) override;
-#endif
   base::TimeDelta GetChildProcessIdleTime() override;
   FilterURLResult FilterURL(bool empty_allowed, GURL* url) override;
   void EnableAudioDebugRecordings(const base::FilePath& file) override;

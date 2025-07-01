@@ -38,12 +38,7 @@ class RenderProcessHost;
 }
 
 namespace IPC {
-class Listener;
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-class MessageFilter;
-#endif
 class SyncChannel;
-class SyncMessageFilter;
 }  // namespace IPC
 
 namespace content {
@@ -63,26 +58,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
 
   virtual IPC::SyncChannel* GetChannel() = 0;
   virtual std::string GetLocale() = 0;
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  virtual IPC::SyncMessageFilter* GetSyncMessageFilter() = 0;
-
-  // Called to add or remove a listener for a particular message routing ID.
-  // These methods normally get delegated to a MessageRouter.
-  virtual void AddRoute(int32_t routing_id, IPC::Listener* listener) = 0;
-  // Attach a task runner to run received IPC tasks on for the given routing ID.
-  // This must be called after the route has already been added via AddRoute(),
-  // but it is optional. The default main thread task runner would be used if
-  // this method is not called.
-  virtual void AttachTaskRunnerToRoute(
-      int32_t routing_id,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
-  virtual void RemoveRoute(int32_t routing_id) = 0;
-
-  // These map to IPC::ChannelProxy methods.
-  virtual void AddFilter(IPC::MessageFilter* filter) = 0;
-  virtual void RemoveFilter(IPC::MessageFilter* filter) = 0;
-#endif
 
   virtual bool GenerateFrameRoutingID(
       int32_t& routing_id,

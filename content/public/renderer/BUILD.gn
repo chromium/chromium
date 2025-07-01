@@ -40,7 +40,6 @@ target(link_target_type, "renderer_sources") {
     "render_frame_visitor.h",
     "render_thread.cc",
     "render_thread.h",
-    "render_thread_observer.cc",
     "render_thread_observer.h",
     "v8_value_converter.h",
     "window_features_converter.cc",

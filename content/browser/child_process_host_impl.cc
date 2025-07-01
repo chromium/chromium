@@ -138,31 +138,7 @@ ChildProcessHostImpl::ChildProcessHostImpl(ChildProcessHostDelegate* delegate,
   }
 }
 
-ChildProcessHostImpl::~ChildProcessHostImpl() {
-  // If a channel was never created than it wasn't registered and the filters
-  // weren't notified. For the sake of symmetry don't call the matching teardown
-  // functions. This is analogous to how RenderProcessHostImpl handles things.
-  if (!channel_) {
-    return;
-  }
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  for (auto& filter : filters_) {
-    filter->OnChannelClosing();
-    filter->OnFilterRemoved();
-  }
-#endif
-}
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-void ChildProcessHostImpl::AddFilter(IPC::MessageFilter* filter) {
-  filters_.push_back(filter);
-
-  if (channel_) {
-    filter->OnFilterAdded(channel_.get());
-  }
-}
-#endif
+ChildProcessHostImpl::~ChildProcessHostImpl() = default;
 
 void ChildProcessHostImpl::BindReceiver(mojo::GenericPendingReceiver receiver) {
   child_process_->BindReceiver(std::move(receiver));
@@ -237,12 +213,6 @@ bool ChildProcessHostImpl::InitChannel() {
     return false;
   }
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  for (auto& filter : filters_) {
-    filter->OnFilterAdded(channel_.get());
-  }
-#endif
-
   delegate_->OnChannelInitialized(channel_.get());
 
   // Make sure these messages get sent first.
@@ -260,11 +230,6 @@ void ChildProcessHostImpl::OnDisconnectedFromChildProcess() {
   if (channel_) {
     opening_channel_ = false;
     delegate_->OnChannelError();
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-    for (auto& filter : filters_) {
-      filter->OnChannelError();
-    }
-#endif
   }
 
   // This will delete host_, which will also destroy this!
@@ -327,40 +292,7 @@ void ChildProcessHostImpl::BindHostReceiver(
 }
 
 bool ChildProcessHostImpl::OnMessageReceived(const IPC::Message& msg) {
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  IPC::Logging* logger = IPC::Logging::GetInstance();
-  if (msg.type() == IPC_LOGGING_ID) {
-    logger->OnReceivedLoggingMessage(msg);
-    return true;
-  }
-
-  if (logger->Enabled()) {
-    logger->OnPreDispatchMessage(msg);
-  }
-#endif  // IPC_MESSAGE_LOG_ENABLED
-
-  bool handled = false;
-  for (auto& filter : filters_) {
-    if (filter->OnMessageReceived(msg)) {
-      handled = true;
-      break;
-    }
-  }
-
-  if (!handled) {
-    handled = delegate_->OnMessageReceived(msg);
-  }
-
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  if (logger->Enabled()) {
-    logger->OnPostDispatchMessage(msg);
-  }
-#endif  // IPC_MESSAGE_LOG_ENABLED
-  return handled;
-#else
   return false;
-#endif  // CONTENT_ENABLE_LEGACY_IPC
 }
 
 void ChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
@@ -390,11 +322,6 @@ void ChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
       peer_process.IsValid() ? peer_process.Pid() : base::GetCurrentProcId();
   opening_channel_ = false;
   delegate_->OnChannelConnected(pid);
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  for (auto& filter : filters_) {
-    filter->OnChannelConnected(pid);
-  }
-#endif
 }
 
 void ChildProcessHostImpl::OnChannelError() {

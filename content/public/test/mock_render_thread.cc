@@ -41,77 +41,7 @@ static const blink::UserAgentMetadata kUserAgentMetadata;
 MockRenderThread::MockRenderThread()
     : next_routing_id_(kFirstGeneratedRoutingId) {}
 
-MockRenderThread::~MockRenderThread() {
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  while (!filters_.empty()) {
-    scoped_refptr<IPC::MessageFilter> filter = filters_.back();
-    filters_.pop_back();
-    filter->OnFilterRemoved();
-  }
-#endif
-}
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-// Called by the Widget. Used to send messages to the browser.
-// We short-circuit the mechanism and handle the messages right here on this
-// class.
-bool MockRenderThread::Send(IPC::Message* msg) {
-  // We need to simulate a synchronous channel, thus we are going to receive
-  // through this function messages, messages with reply and reply messages.
-  // We can only handle one synchronous message at a time.
-  if (msg->is_reply()) {
-    if (reply_deserializer_) {
-      reply_deserializer_->SerializeOutputParameters(*msg);
-      reply_deserializer_.reset();
-    }
-  } else {
-    if (msg->is_sync()) {
-      // We actually need to handle deleting the reply deserializer for sync
-      // messages.
-      reply_deserializer_ =
-          static_cast<IPC::SyncMessage*>(msg)->TakeReplyDeserializer();
-    }
-    if (msg->routing_id() == MSG_ROUTING_CONTROL)
-      OnControlMessageReceived(*msg);
-    else
-      OnMessageReceived(*msg);
-  }
-  delete msg;
-  return true;
-}
-
-IPC::SyncMessageFilter* MockRenderThread::GetSyncMessageFilter() {
-  return nullptr;
-}
-
-void MockRenderThread::AddRoute(int32_t routing_id, IPC::Listener* listener) {}
-
-void MockRenderThread::AttachTaskRunnerToRoute(
-    int32_t routing_id,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {}
-
-void MockRenderThread::RemoveRoute(int32_t routing_id) {}
-
-void MockRenderThread::AddFilter(IPC::MessageFilter* filter) {
-  filter->OnFilterAdded(&sink());
-  // Add this filter to a vector so the MockRenderThread::RemoveFilter function
-  // can check if this filter is added.
-  filters_.push_back(base::WrapRefCounted(filter));
-}
-
-void MockRenderThread::RemoveFilter(IPC::MessageFilter* filter) {
-  // Emulate the IPC::ChannelProxy::OnRemoveFilter function.
-  for (size_t i = 0; i < filters_.size(); ++i) {
-    if (filters_[i].get() == filter) {
-      filter->OnFilterRemoved();
-      filters_.erase(filters_.begin() + i);
-      return;
-    }
-  }
-  NOTREACHED() << "filter to be removed not found";
-}
-
-#endif
+MockRenderThread::~MockRenderThread() = default;
 
 IPC::SyncChannel* MockRenderThread::GetChannel() {
   return nullptr;
@@ -217,22 +147,6 @@ void MockRenderThread::OnCreateChildFrame(
   frame_token_to_initial_browser_brokers_.emplace(
       child_frame_token, std::move(browser_interface_broker));
 }
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-bool MockRenderThread::OnControlMessageReceived(const IPC::Message& msg) {
-  for (auto& observer : observers_) {
-    if (observer.OnControlMessageReceived(msg))
-      return true;
-  }
-  return OnMessageReceived(msg);
-}
-
-bool MockRenderThread::OnMessageReceived(const IPC::Message& msg) {
-  // Save the message in the sink.
-  sink_.OnMessageReceived(msg);
-  return false;
-}
-#endif
 
 // The View expects to be returned a valid route_id different from its own.
 void MockRenderThread::OnCreateWindow(mojom::CreateNewWindowParams& params,

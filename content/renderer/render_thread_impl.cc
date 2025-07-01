@@ -758,36 +758,6 @@ void RenderThreadImpl::OnTraceLogEnabled() {
 
 void RenderThreadImpl::OnTraceLogDisabled() {}
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-IPC::SyncMessageFilter* RenderThreadImpl::GetSyncMessageFilter() {
-  return sync_message_filter();
-}
-
-void RenderThreadImpl::AddRoute(int32_t routing_id, IPC::Listener* listener) {
-  ChildThreadImpl::GetRouter()->AddRoute(routing_id, listener);
-}
-
-void RenderThreadImpl::AttachTaskRunnerToRoute(
-    int32_t routing_id,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  GetChannel()->AddListenerTaskRunner(routing_id, std::move(task_runner));
-}
-
-void RenderThreadImpl::RemoveRoute(int32_t routing_id) {
-  ChildThreadImpl::GetRouter()->RemoveRoute(routing_id);
-  GetChannel()->RemoveListenerTaskRunner(routing_id);
-}
-
-void RenderThreadImpl::AddFilter(IPC::MessageFilter* filter) {
-  channel()->AddFilter(filter);
-}
-
-void RenderThreadImpl::RemoveFilter(IPC::MessageFilter* filter) {
-  channel()->RemoveFilter(filter);
-}
-
-#endif
-
 mojom::RendererHost* RenderThreadImpl::GetRendererHost() {
   if (!renderer_host_) {
     DCHECK(GetChannel());
@@ -1349,17 +1319,6 @@ void RenderThreadImpl::OnProcessFinalRelease() {
   // See https://crbug.com/535246 or https://crbug.com/873541/#c8.
   NOTREACHED();
 }
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-bool RenderThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
-  for (auto& observer : observers_) {
-    if (observer.OnControlMessageReceived(msg))
-      return true;
-  }
-
-  return false;
-}
-#endif
 
 void RenderThreadImpl::SetProcessState(
     base::Process::Priority process_priority,

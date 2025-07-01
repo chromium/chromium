@@ -72,13 +72,6 @@ void ReceivedBadMessage(ChildProcessId render_process_id,
   ReceivedBadMessageOnUIThread(render_process_id, reason);
 }
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-void ReceivedBadMessage(BrowserMessageFilter* filter, BadMessageReason reason) {
-  LogBadMessage(reason);
-  filter->ShutdownForBadMessage();
-}
-#endif
-
 base::debug::CrashKeyString* GetRequestedSiteInfoKey() {
   static auto* const crash_key = base::debug::AllocateCrashKeyString(
       "requested_site_info", base::debug::CrashKeySize::Size256);

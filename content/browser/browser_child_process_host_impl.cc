@@ -284,12 +284,6 @@ void BrowserChildProcessHostImpl::ForceShutdown() {
   child_process_host_->ForceShutdown();
 }
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-void BrowserChildProcessHostImpl::AddFilter(BrowserMessageFilter* filter) {
-  child_process_host_->AddFilter(filter->GetFilter());
-}
-#endif
-
 void BrowserChildProcessHostImpl::LaunchWithFileData(
     std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
     std::unique_ptr<base::CommandLine> cmd_line,

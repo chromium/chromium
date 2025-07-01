@@ -27,12 +27,6 @@ class File;
 class FilePath;
 }  // namespace base
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-namespace IPC {
-class MessageFilter;
-}
-#endif
-
 namespace mojo {
 class OutgoingInvitation;
 }
@@ -172,11 +166,6 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // CreateChannelMojo() has been called, but OnChannelConnected() has not yet
   // been invoked.
   virtual bool IsChannelOpening() = 0;
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  // Adds an IPC message filter.  A reference will be kept to the filter.
-  virtual void AddFilter(IPC::MessageFilter* filter) = 0;
-#endif
 
   // Bind an interface exposed by the child process. Whether or not the
   // interface in |receiver| can be bound depends on the process type and

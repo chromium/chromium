@@ -10,7 +10,6 @@
 #include "content/public/browser/child_process_id.h"
 
 namespace content {
-class BrowserMessageFilter;
 class RenderProcessHost;
 
 namespace bad_message {
@@ -372,13 +371,6 @@ void ReceivedBadMessage(ChildProcessId render_process_id,
 // TODO(crbug.com/379869738): Deprecated, please use ReceivedBadMessage with
 // ChildProcessId above.
 void ReceivedBadMessage(int render_process_id, BadMessageReason reason);
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-// Called when a browser message filter receives a bad IPC message from a
-// renderer or other child process. Logs the event, records a histogram metric
-// for the |reason|, and terminates the process for |filter|.
-void ReceivedBadMessage(BrowserMessageFilter* filter, BadMessageReason reason);
-#endif
 
 // Site isolation. These keys help debug renderer kills such as
 // https://crbug.com/773140.

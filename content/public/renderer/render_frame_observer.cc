@@ -15,10 +15,6 @@ RenderFrameObserver::RenderFrameObserver(RenderFrame* render_frame)
   // |render_frame| can be NULL on unit testing.
   if (render_frame) {
     RenderFrameImpl* impl = static_cast<RenderFrameImpl*>(render_frame);
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-    routing_id_ = impl->GetRoutingID();
-    DCHECK_NE(routing_id_, MSG_ROUTING_NONE);
-#endif
     impl->AddObserver(this);
   }
 }
@@ -35,20 +31,6 @@ bool RenderFrameObserver::OnAssociatedInterfaceRequestForFrame(
     mojo::ScopedInterfaceEndpointHandle* handle) {
   return false;
 }
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-bool RenderFrameObserver::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
-bool RenderFrameObserver::Send(IPC::Message* message) {
-  if (render_frame_)
-    return render_frame_->Send(message);
-
-  delete message;
-  return false;
-}
-#endif
 
 RenderFrame* RenderFrameObserver::render_frame() const {
   return render_frame_;

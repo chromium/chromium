@@ -21,7 +21,6 @@
 #include "services/network/public/cpp/p2p_param_traits.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-using content::BrowserMessageFilter;
 using content::BrowserThread;
 
 namespace content {

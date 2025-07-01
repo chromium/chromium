@@ -237,20 +237,6 @@ void AgentSchedulingGroupHost::OnAssociatedInterfaceRequest(
       &*process_, bad_message::ASGH_ASSOCIATED_INTERFACE_REQUEST);
 }
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-void AgentSchedulingGroupHost::AddFilter(BrowserMessageFilter* filter) {
-  DCHECK(filter);
-  // When MBI mode is disabled, we forward these kinds of requests straight to
-  // the underlying `RenderProcessHost`.
-  if (GetMBIMode() == features::MBIMode::kLegacy) {
-    process_->AddFilter(filter);
-    return;
-  }
-
-  channel_->AddFilter(filter->GetFilter());
-}
-#endif
-
 RenderProcessHost* AgentSchedulingGroupHost::GetProcess() {
   // `process_` can still be accessed here even if `state_` has been set to
   // `kRenderProcessHostDestroyed`. This is because a `RenderProcessHostImpl` is

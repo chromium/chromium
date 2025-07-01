@@ -38,7 +38,6 @@ class Message;
 namespace content {
 
 class AgentSchedulingGroupHostFactory;
-class BrowserMessageFilter;
 class RenderProcessHost;
 class SiteInstanceGroup;
 
@@ -75,10 +74,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // Should not be called explicitly. Use `GetOrCreate()` instead.
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
   ~AgentSchedulingGroupHost() override;
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  void AddFilter(BrowserMessageFilter* filter);
-#endif
 
   RenderProcessHost* GetProcess();
   // Ensure that the process this AgentSchedulingGroupHost belongs to is alive.

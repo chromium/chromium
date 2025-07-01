@@ -413,10 +413,6 @@ IPC::ChannelProxy* MockRenderProcessHost::GetChannel() {
   return nullptr;
 }
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-void MockRenderProcessHost::AddFilter(BrowserMessageFilter* filter) {}
-#endif
-
 base::TimeDelta MockRenderProcessHost::GetChildProcessIdleTime() {
   return base::Milliseconds(0);
 }

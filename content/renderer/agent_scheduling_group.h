@@ -65,21 +65,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
   AgentSchedulingGroup(const AgentSchedulingGroup&) = delete;
   AgentSchedulingGroup& operator=(const AgentSchedulingGroup&) = delete;
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  bool Send(IPC::Message* message);
-#endif
   void AddFrameRoute(const blink::LocalFrameToken& frame_token,
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-                     int routing_id,
-#endif
                      RenderFrameImpl* render_frame,
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  void RemoveFrameRoute(const blink::LocalFrameToken& frame_token
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-                        ,
-                        int routing_id
-#endif
-  );
+  void RemoveFrameRoute(const blink::LocalFrameToken& frame_token);
   void DidUnloadRenderFrame(const blink::LocalFrameToken& frame_token);
 
   mojom::RouteProvider* GetRemoteRouteProvider();
@@ -131,19 +120,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
   RenderFrameImpl* GetListener(const blink::LocalFrameToken& frame_token);
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  RenderFrameImpl* GetListener(int32_t routing_id);
-#endif
-
   // Map of registered RenderFrames.
   absl::flat_hash_map<blink::LocalFrameToken,
                       raw_ptr<RenderFrameImpl, CtnExperimental>>
       listener_map_;
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  absl::flat_hash_map<int32_t, raw_ptr<RenderFrameImpl, CtnExperimental>>
-      routing_id_map_;
-#endif
 
   // A dedicated scheduler for this AgentSchedulingGroup.
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>

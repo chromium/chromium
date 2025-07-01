@@ -52,7 +52,6 @@ namespace content {
 
 class BrowserChildProcessHostIterator;
 class BrowserChildProcessObserver;
-class BrowserMessageFilter;
 
 // Plugins/workers and other child processes that live on the IO thread use this
 // class. RenderProcessHostImpl is the main exception that doesn't use this
@@ -113,11 +112,6 @@ class BrowserChildProcessHostImpl
 
   // Removes this host from the host list. Calls ChildProcessHost::ForceShutdown
   void ForceShutdown();
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  // Adds an IPC message filter.
-  void AddFilter(BrowserMessageFilter* filter);
-#endif
 
   // Same as Launch(), but the process is launched with preloaded files and file
   // descriptors containing in `file_data`.

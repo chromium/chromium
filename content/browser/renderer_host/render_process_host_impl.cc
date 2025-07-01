@@ -4344,12 +4344,6 @@ IPC::ChannelProxy* RenderProcessHostImpl::GetChannel() {
   return channel_.get();
 }
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-void RenderProcessHostImpl::AddFilter(BrowserMessageFilter* filter) {
-  channel_->AddFilter(filter->GetFilter());
-}
-#endif
-
 bool RenderProcessHostImpl::FastShutdownStarted() {
   return fast_shutdown_started_;
 }
