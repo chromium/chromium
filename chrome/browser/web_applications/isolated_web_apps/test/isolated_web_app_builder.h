@@ -78,6 +78,8 @@ class ManifestBuilder {
   // Mime type to vector of file extensions.
   using FileHandlerAccept = std::map<std::string, std::vector<std::string>>;
 
+  using ClientMode = blink::Manifest::LaunchHandler::ClientMode;
+
   // Creates the following default manifest:
   // {
   //   name: "Test App",
@@ -98,6 +100,8 @@ class ManifestBuilder {
   ManifestBuilder& SetVersion(std::string_view version);
   ManifestBuilder& SetStartUrl(std::string_view start_url);
   ManifestBuilder& SetDisplayMode(blink::mojom::DisplayMode display_mode);
+  ManifestBuilder& SetLaunchHandlerClientMode(
+      ClientMode launch_handler_client_mode);
 
   // Sets the display mode fallback chain. If overridden display modes are
   // blocked, it falls back to the mode set through SetDisplayMode; see:
@@ -135,6 +139,7 @@ class ManifestBuilder {
   blink::mojom::DisplayMode display_mode_ =
       blink::mojom::DisplayMode::kStandalone;
   std::vector<blink::mojom::DisplayMode> display_mode_override_;
+  std::optional<ClientMode> launch_handler_client_mode_;
   std::vector<IconMetadata> icons_;
   std::map<network::mojom::PermissionsPolicyFeature, PermissionsPolicy>
       permissions_policy_;

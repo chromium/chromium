@@ -658,6 +658,10 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   }
 
   const webapps::AppId& iwa_id = *first_navigation_app_id_;
+  const DisplayMode& app_display_mode = *first_navigation_app_display_mode_;
+
+  CHECK(app_display_mode == DisplayMode::kStandalone ||
+        app_display_mode == DisplayMode::kBorderless);
 
   // Prefer `params.browser` if it's a compatible IWA browser.
   bool iwa_browser =
@@ -679,13 +683,15 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
       case WindowOpenDisposition::CURRENT_TAB:
         return iwa_browser;
       case WindowOpenDisposition::NEW_WINDOW:
+        return false;
       case WindowOpenDisposition::UNKNOWN:
       case WindowOpenDisposition::SINGLETON_TAB:
       case WindowOpenDisposition::SAVE_TO_DISK:
       case WindowOpenDisposition::OFF_THE_RECORD:
       case WindowOpenDisposition::IGNORE_ACTION:
       case WindowOpenDisposition::SWITCH_TO_TAB:
-        return false;
+        // These are not supposed to be reachable with IWA URLs.
+        return true;
     }
   }();
 
@@ -693,9 +699,65 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
     return CapturingDisabled();
   }
 
-  Browser* host_window = CreateWebAppWindowFromNavigationParams(
-      iwa_id, params, /*trusted_source_override=*/true);
-  return NoCapturingOverrideBrowser(host_window);
+  if (ui::PageTransitionCoreTypeIs(params.transition,
+                                   ui::PAGE_TRANSITION_LINK)) {
+    // Any links: same-IWA or cross-IWA window.open(), same-IWA or cross-IWA
+    // anchor link, cross-IWA meta tag redirect.
+    if (source_browser_app_id_ != iwa_id) {
+      // TODO(crbug.com/424422466): Support cross-IWA navigations to start_url.
+      return CancelInitialNavigation(
+          NavigationCapturingInitialResult::kNavigationCanceled);
+    }
+
+    if (IsAuxiliaryBrowsingContext(params)) {
+      debug_data_.Set("is_auxiliary_browsing_context", true);
+      Browser* aux_window = CreateWebAppWindowFromNavigationParams(
+          iwa_id, params, /*trusted_source_override=*/true);
+      return AuxiliaryContextInAppWindow(aux_window);
+    }
+  }
+
+  // Auxiliary browsing contexts should only be openable via link transitions.
+  CHECK(!IsAuxiliaryBrowsingContext(params));
+  debug_data_.Set("is_auxiliary_browsing_context", false);
+
+  // As per https://bit.ly/pwa-navigation-capturing, user modified clicks (AKA
+  // the intention to open the link in a new browsing context) should be
+  // respected over the launch_handler configuration.
+  if (is_user_modified_click()) {
+    return ForcedNewAppContext(
+        app_display_mode,
+        CreateWebAppWindowFromNavigationParams(
+            iwa_id, params, /*trusted_source_override=*/true));
+  }
+
+  ClientModeAndBrowser client_mode_and_browser =
+      GetEffectiveClientModeAndBrowser(iwa_id, params.url);
+  LaunchHandler::ClientMode client_mode =
+      client_mode_and_browser.effective_client_mode;
+
+  switch (client_mode) {
+    case LaunchHandler::ClientMode::kAuto:
+      NOTREACHED();
+    case LaunchHandler::ClientMode::kFocusExisting:
+    case LaunchHandler::ClientMode::kNavigateExisting: {
+      // TODO(crbug.com/424173119): support navigate-existing for link
+      // transitions / service worker windows / omnibox in IWAs.
+      debug_data_.Set(
+          "client_mode",
+          base::ToString(LaunchHandler::ClientMode::kFocusExisting));
+      return CapturedFocusExisting(client_mode_and_browser.browser,
+                                   *client_mode_and_browser.tab_index,
+                                   params.url);
+    }
+    case LaunchHandler::ClientMode::kNavigateNew: {
+      debug_data_.Set("client_mode",
+                      base::ToString(LaunchHandler::ClientMode::kNavigateNew));
+      Browser* host_window = CreateWebAppWindowFromNavigationParams(
+          iwa_id, params, /*trusted_source_override=*/true);
+      return CapturedNewClient(app_display_mode, host_window);
+    }
+  }
 }
 
 // static
@@ -731,6 +793,8 @@ NavigationCapturingProcess::HandleRedirect() {
     redirection_result_ = NavigationCapturingRedirectionResult::kNotHandled;
     return content::NavigationThrottle::PROCEED;
   }
+  CHECK(!isolated_web_app_navigation_)
+      << "Isolated Web Apps do not support redirects.";
   const GURL& final_url = navigation_handle()->GetURL();
   debug_data_.Set("!redirection_final_url", final_url.possibly_invalid_spec());
   if (!final_url.is_valid()) {
@@ -1076,7 +1140,8 @@ void NavigationCapturingProcess::OnAttachedToNavigationHandle() {
   }
 
   web_app::WebAppLaunchNavigationHandleUserData::CreateForNavigationHandle(
-      *navigation_handle(), *launched_app_id_, force_iph_off_,
+      *navigation_handle(), *launched_app_id_,
+      /*force_iph_off=*/force_iph_off_ || isolated_web_app_navigation_,
       time_navigation_started_);
 }
 
@@ -1424,11 +1489,19 @@ BrowserAndTabOverride NavigationCapturingProcess::CapturedNewClient(
       app_display_mode));
   CHECK((app_display_mode != blink::mojom::DisplayMode::kBrowser) ==
         (!!host_browser->app_controller()));
-  CHECK(disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  initial_nav_handling_result_ =
-      app_display_mode == DisplayMode::kBrowser
-          ? NavigationCapturingInitialResult::kNewAppBrowserTab
-          : NavigationCapturingInitialResult::kNewAppWindow;
+
+  if (isolated_web_app_navigation_) {
+    CHECK(disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+          disposition_ == WindowOpenDisposition::CURRENT_TAB);
+    initial_nav_handling_result_ =
+        NavigationCapturingInitialResult::kNewAppWindow;
+  } else {
+    CHECK_EQ(disposition_, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    initial_nav_handling_result_ =
+        app_display_mode == DisplayMode::kBrowser
+            ? NavigationCapturingInitialResult::kNewAppBrowserTab
+            : NavigationCapturingInitialResult::kNewAppWindow;
+  }
   // Do not show iph when opening browser-tab-apps in a new browser tab, as
   // this matches what is 'normal' - clicking on a link opens a new browser
   // tab.
@@ -1443,13 +1516,22 @@ BrowserAndTabOverride NavigationCapturingProcess::CapturedNavigateExisting(
     Browser* app_browser,
     int browser_tab) {
   CHECK(first_navigation_app_id_.has_value());
-  CHECK(disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  CHECK(browser_tab != -1);
 
-  initial_nav_handling_result_ =
-      WebAppBrowserController::IsWebApp(app_browser)
-          ? NavigationCapturingInitialResult::kNavigateExistingAppWindow
-          : NavigationCapturingInitialResult::kNavigateExistingAppBrowserTab;
+  CHECK(browser_tab != -1);
+  if (isolated_web_app_navigation_) {
+    CHECK(disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+          disposition_ == WindowOpenDisposition::CURRENT_TAB);
+
+    CHECK(WebAppBrowserController::IsWebApp(app_browser));
+    initial_nav_handling_result_ =
+        NavigationCapturingInitialResult::kNavigateExistingAppWindow;
+  } else {
+    CHECK_EQ(disposition_, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    initial_nav_handling_result_ =
+        WebAppBrowserController::IsWebApp(app_browser)
+            ? NavigationCapturingInitialResult::kNavigateExistingAppWindow
+            : NavigationCapturingInitialResult::kNavigateExistingAppBrowserTab;
+  }
   SetLaunchedAppId(*first_navigation_app_id_);
   debug_data_.Set("!result", "captured navigate existing");
   CHECK_EQ(state_, PipelineState::kCreated);

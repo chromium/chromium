@@ -45,6 +45,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -148,6 +149,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
 
   NavigateParams params1 = MakeNavigateParams(browser());
   params1.url = url_info1_->origin().GetURL().Resolve("/first-page.html");
+  params1.transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   params1.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params1);
 
@@ -172,6 +174,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
 
   NavigateParams params2 = MakeNavigateParams(iwa_browser);
   params2.url = url_info1_->origin().GetURL().Resolve("/other-page.html");
+  params2.transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   params2.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params2);
 
@@ -187,6 +190,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   NavigateParams params3 = MakeNavigateParams(iwa_browser);
   params3.url =
       url_info2_->origin().GetURL().Resolve("/page-in-another-iwa.html");
+  params3.transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   params3.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params3);
 
@@ -216,6 +220,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
 
   NavigateParams params4 = MakeNavigateParams(iwa_browser);
   params4.url = GetGoogleURL();
+  params4.transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   params4.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params4);
 

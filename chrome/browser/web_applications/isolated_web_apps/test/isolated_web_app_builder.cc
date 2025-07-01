@@ -229,6 +229,12 @@ ManifestBuilder& ManifestBuilder::SetDisplayMode(
   return *this;
 }
 
+ManifestBuilder& ManifestBuilder::SetLaunchHandlerClientMode(
+    ClientMode launch_handler_client_mode) {
+  launch_handler_client_mode_ = launch_handler_client_mode;
+  return *this;
+}
+
 ManifestBuilder& ManifestBuilder::SetDisplayModeOverride(
     std::vector<blink::mojom::DisplayMode> display_mode_override) {
   display_mode_override_ = std::move(display_mode_override);
@@ -302,6 +308,21 @@ std::string ManifestBuilder::ToJson() const {
                        base::ToValueList(display_mode_override_,
                                          &blink::DisplayModeToString));
 
+  if (launch_handler_client_mode_) {
+    json.SetByDottedPath("launch_handler.client_mode", [&] {
+      switch (*launch_handler_client_mode_) {
+        case ClientMode::kAuto:
+          return "auto";
+        case ClientMode::kNavigateNew:
+          return "navigate-new";
+        case ClientMode::kNavigateExisting:
+          return "navigate-existing";
+        case ClientMode::kFocusExisting:
+          return "focus-existing";
+      }
+    }());
+  }
+
   base::Value::Dict policies;
   for (const auto& policy : permissions_policy_) {
     base::Value::List values;
@@ -371,6 +392,10 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   manifest->start_url = base_url.Resolve(start_url_);
   manifest->display = display_mode_;
   manifest->display_override = display_mode_override_;
+  if (launch_handler_client_mode_) {
+    manifest->launch_handler =
+        blink::Manifest::LaunchHandler(*launch_handler_client_mode_);
+  }
 
   for (const auto& icon : icons_) {
     blink::Manifest::ImageResource blink_icon;
