@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "UNIX Socket Test Extension",
+  "version": "1.0",
+  "description": "Test the readServerUds.readData API over UNIX socket.",
+  "permissions": ["scripting", "readServer", "readServerUds"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

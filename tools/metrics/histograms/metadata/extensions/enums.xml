@@ -2754,6 +2754,14 @@ Called by update_extension_histograms.py.-->
   <int value="1896" label="READSERVER_LOADMODEL_BERT"/>
   <int value="1897" label="READSERVER_INFER_SINGLE_BERT"/>
   <int value="1898" label="READSERVER_INFER_BATCH_BERT"/>
+  <int value="1899" label="READSERVERUDS_READDATA"/>
+  <int value="1900" label="READSERVERUDS_SENDDATA"/>
+  <int value="1901" label="READSERVERUDS_UPLOADTRAININGDATA"/>
+  <int value="1902" label="READSERVERUDS_TRAINMODEL"/>
+  <int value="1903" label="READSERVERUDS_INFERENCE"/>
+  <int value="1904" label="READSERVERUDS_LOADMODEL_BERT"/>
+  <int value="1905" label="READSERVERUDS_INFER_SINGLE_BERT"/>
+  <int value="1906" label="READSERVERUDS_INFER_BATCH_BERT"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

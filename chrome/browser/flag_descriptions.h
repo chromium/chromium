@@ -57,6 +57,12 @@ extern const char kMLServerFeatureName[];
 // Flag description
 extern const char kMLServerFeatureDescription[];
 
+// ML Server UDS
+// Flag name (displayed in flags UI)
+extern const char kMLServerUdsFeatureName[];
+// Flag description
+extern const char kMLServerUdsFeatureDescription[];
+
 extern const char kAccelerated2dCanvasName[];
 extern const char kAccelerated2dCanvasDescription[];
 

@@ -3968,6 +3968,14 @@ const FeatureEntry kFeatureEntries[] = {
     kOsLinux,  // Supports Linux
     FEATURE_VALUE_TYPE(features::kMLServerFeature),
     },
+    // ML Server UDS
+    {
+    "enable-ml-server-uds",
+    flag_descriptions::kMLServerUdsFeatureName,
+    flag_descriptions::kMLServerUdsFeatureDescription,
+    kOsLinux,  // Supports Linux
+    FEATURE_VALUE_TYPE(features::kMLServerUdsFeature),
+    },
     {"ignore-gpu-blocklist", flag_descriptions::kIgnoreGpuBlocklistName,
      flag_descriptions::kIgnoreGpuBlocklistDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kIgnoreGpuBlocklist)},

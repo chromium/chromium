@@ -512,6 +512,11 @@
     "extension_types": ["extension"],
     "dependencies": ["permission:readServer"]
   },
+  "readServerUds": {
+    "contexts": ["privileged_extension"],
+    "extension_types": ["extension"],
+    "dependencies": ["permission:readServerUds"]
+  },
   "runtime": {
     "channel": "stable",
     "extension_types": [

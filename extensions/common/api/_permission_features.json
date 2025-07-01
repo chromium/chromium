@@ -540,8 +540,12 @@
     "extension_types": ["extension", "platform_app" ]
   },
   "readServer": {
-  "channel": "stable",
-  "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
+  },
+  "readServerUds": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
   // Note: runtime is not actually a permission, but some systems check these
   // values to verify restrictions.

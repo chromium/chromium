@@ -22,6 +22,11 @@ BASE_FEATURE(kMLServerFeature,
              "MLServerFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// ML Server UDS Feature
+BASE_FEATURE(kMLServerUdsFeature,
+             "MLServerUdsFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // If enabled device status collector will add the type of session (Affiliated
 // User, Kiosks, Managed Guest Sessions) to the device status report.

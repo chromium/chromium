@@ -1,0 +1,44 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This IDL defines the `readServerUds` API for interacting with a server.
+
+namespace readServerUds {
+  callback ReadDataCallback = void(DOMString result);
+  callback SendDataCallback = void(DOMString response);
+  callback UploadTrainingDataCallback = void(DOMString response);
+  callback TrainModelCallback = void(DOMString response);
+  callback InferenceCallback = void(DOMString response);  
+
+  // Callbacks for MobileBERT QA.
+  callback LoadModelBERTCallback = void(DOMString response);
+  callback InferSingleBERTCallback = void(DOMString response);
+  callback InferBatchBERTCallback = void(DOMString response);
+
+  interface Functions {
+    // Fetches JSON data from the server.
+    static void readData(optional ReadDataCallback callback);
+
+    // Sends JSON data to the server.
+    static void sendData(DOMString data, optional SendDataCallback callback);
+
+    // Initiates training data upload.
+    static void uploadTrainingData(optional UploadTrainingDataCallback callback);
+
+    // Initiates model training on the server.
+    static void trainModel(optional TrainModelCallback callback); 
+
+    // Sends data for inference and gets a label prediction.
+    static void inference(DOMString data, optional InferenceCallback callback);
+
+    // Loads the BERT model using server 
+    static void loadModelBERT(optional LoadModelBERTCallback callback);
+
+    // Sends data for inference and gets a label prediction. (BERT)
+    static void inferSingleBERT(DOMString data, optional InferSingleBERTCallback callback);
+    
+    // Sends data for inference (array) and gets a label prediction. (BERT)
+    static void inferBatchBERT(DOMString data, optional InferBatchBERTCallback callback);
+  };
+};

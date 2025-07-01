@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  server:
+    build: .
+    volumes:
+      - ./shared-sockets:/sockets
+    container_name: unix_socket_server
