@@ -194,6 +194,17 @@ void GroupSuggestionsTracker::AddShownSuggestion(
     const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
         inputs,
     UserResponse user_response) {
+  if (last_cached_suggestions_and_inputs_.has_value()) {
+    // Try to remove the shown suggestion from the cached list.
+    std::erase_if(last_cached_suggestions_and_inputs_->first.suggestions,
+                  [&](const auto& cached_suggestion) {
+                    return cached_suggestion.suggestion_id ==
+                           suggestion.suggestion_id;
+                  });
+    if (last_cached_suggestions_and_inputs_->first.suggestions.empty()) {
+      InvalidateCache();
+    }
+  }
   ShownSuggestion item;
   item.time_shown = base::Time::Now();
   item.tab_ids = suggestion.tab_ids;
