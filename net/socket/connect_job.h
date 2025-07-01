@@ -229,10 +229,6 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // |delegate_| via OnConnectJobComplete.  In both asynchronous and synchronous
   // completion, ReleaseSocket() can be called to acquire the connected socket
   // if it succeeded.
-  //
-  // On completion, the ConnectJob must be destroyed synchronously, since it
-  // doesn't bother to stop its timer when complete.
-  // TODO(mmenke): Can that be fixed?
   int Connect();
 
   // Returns the current LoadState of the ConnectJob. Each ConnectJob class must
@@ -342,7 +338,7 @@ class NET_EXPORT_PRIVATE ConnectJob {
   virtual void ChangePriorityInternal(RequestPriority priority) = 0;
 
   void LogConnectStart();
-  void LogConnectCompletion(int net_error);
+  void StopTimerAndLogConnectCompletion(int net_error);
 
   // Alerts the delegate that the ConnectJob has timed out.
   void OnTimeout();
