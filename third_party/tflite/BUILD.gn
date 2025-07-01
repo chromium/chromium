@@ -1405,8 +1405,8 @@ executable("tflite_benchmark") {
     "src/tensorflow/lite/tools/utils.h",
   ]
   deps = [
-    ":tflite_builtin_op_resolver_standalone",
-    ":tflite_standalone",
+    ":tflite",
+    ":tflite_builtin_op_resolver",
     ":tflite_tools_proto",
     "//third_party/abseil-cpp:absl",
     "//third_party/ruy",

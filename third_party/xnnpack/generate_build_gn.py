@@ -59,6 +59,7 @@ _HEADER = '''
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import("//build/config/android/config.gni")
+import("//components/optimization_guide/features.gni")
 import("//third_party/xnnpack/build_defs.gni")
 
 config("xnnpack_public_config") {
@@ -115,31 +116,33 @@ source_set("xnnpack") {
 }
 
 # This is a target that cannot depend on //base.
-source_set("xnnpack_standalone") {
-  public = [ "src/include/xnnpack.h" ]
+if (build_with_internal_optimization_guide) {
+  source_set("xnnpack_standalone") {
+    public = [ "src/include/xnnpack.h" ]
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-  configs += [ ":xnnpack_private_config" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
 
-  sources = [
-  "src/include/xnnpack.h",
-  "build_identifier.c",
-%SRCS%
-  ]
+    sources = [
+    "src/include/xnnpack.h",
+    "build_identifier.c",
+  %SRCS%
+    ]
 
-  deps = xnnpack_standalone_deps + [
-    "//third_party/cpuinfo",
-    "//third_party/fp16",
-    "//third_party/fxdiv",
-    "//third_party/pthreadpool:pthreadpool_standalone",
-  ]
+    deps = xnnpack_standalone_deps + [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool:pthreadpool_standalone",
+    ]
 
-  public_configs = [ ":xnnpack_public_config" ]
+    public_configs = [ ":xnnpack_public_config" ]
 
-  if (!(is_android && use_order_profiling)) {
-    assert_no_deps = [ "//base" ]
+    if (!(is_android && use_order_profiling)) {
+      assert_no_deps = [ "//base" ]
+    }
   }
 }
 '''.strip()
@@ -171,32 +174,34 @@ source_set("%TARGET_NAME%") {
 }
 
 # This is a target that cannot depend on //base.
-source_set("%TARGET_NAME%_standalone") {
-  cflags = [
-%CFLAGS%
-  ]
-%ASMFLAGS%
-  sources = [
-    "src/include/xnnpack.h",
-%SRCS%
-  ]
+if (build_with_internal_optimization_guide) {
+  source_set("%TARGET_NAME%_standalone") {
+    cflags = [
+  %CFLAGS%
+    ]
+  %ASMFLAGS%
+    sources = [
+      "src/include/xnnpack.h",
+  %SRCS%
+    ]
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-  configs += [ ":xnnpack_private_config" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
 
-  deps = [
-    "//third_party/cpuinfo",
-    "//third_party/fp16",
-    "//third_party/fxdiv",
-    "//third_party/pthreadpool:pthreadpool_standalone",
-  ]
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool:pthreadpool_standalone",
+    ]
 
-  public_configs = [ ":xnnpack_public_config" ]
+    public_configs = [ ":xnnpack_public_config" ]
 
-  if (!(is_android && use_order_profiling)) {
-    assert_no_deps = [ "//base" ]
+    if (!(is_android && use_order_profiling)) {
+      assert_no_deps = [ "//base" ]
+    }
   }
 }
 '''.strip()
@@ -454,14 +459,18 @@ def _generate_per_platform_dep_lists(
 {xnnpack_deps}
   ]
 
-  xnnpack_standalone_deps = [
+  if (build_with_internal_optimization_guide) {
+    xnnpack_standalone_deps = [
 {xnnpack_standalone_deps}
-  ]
+    ]
+  }
 '''
     deps_list += '} else {\n'
     deps_list += '  xnnpack_deps = []\n'
-    deps_list += '  xnnpack_standalone_deps = []\n'
-    deps_list += '}'
+    deps_list += '  if (build_with_internal_optimization_guide) {\n'
+    deps_list += '    xnnpack_standalone_deps = []\n'
+    deps_list += '  }\n'
+    deps_list += '}\n'
 
     return deps_list
 

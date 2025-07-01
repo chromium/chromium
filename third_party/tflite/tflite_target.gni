@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 # There are two distinct variants of tflite:
-# . One that depends upon //base.
-# . One that does not depend upon //base.
+# - One that depends upon //base.
+# - One that does not depend upon //base.
+#   - Used only when `build_with_internal_optimization_guide` is true.
 # Dealing with this necessitates two distinct targets, one containing the
 # dependency on base and the other containing no dependency on base. The
 # templates in this file help ease this pain by generating the two targets.
@@ -36,6 +37,8 @@
 #   conditional_deps = [ ":tflite_internal" ]
 # }
 
+import("//components/optimization_guide/features.gni")
+
 # Set of variables that are forwarded to the actual target.
 minimal_vars_to_forward_to_target = [
   "cflags",
@@ -49,6 +52,13 @@ minimal_vars_to_forward_to_target = [
   "visibility",
 ]
 
+declare_args() {
+  tflite_target_types = [ "" ]
+  if (build_with_internal_optimization_guide) {
+    tflite_target_types += [ "_standalone" ]
+  }
+}
+
 # Shared template used by all other templates.
 template("tflite_target_gen") {
   assert(defined(invoker.target_type),
@@ -56,11 +66,7 @@ template("tflite_target_gen") {
 
   # Loop through twice, once for the target depending on base, and again for the
   # target that does not depend on base.
-  foreach(type,
-          [
-            "",
-            "_standalone",
-          ]) {
+  foreach(type, tflite_target_types) {
     target(invoker.target_type, target_name + type) {
       forward_variables_from(invoker, minimal_vars_to_forward_to_target)
       if (defined(invoker.conditional_deps)) {
