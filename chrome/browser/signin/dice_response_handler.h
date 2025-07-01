@@ -102,14 +102,15 @@ class DiceResponseHandler : public KeyedService {
   // numeric values should never be reused.
   // Public for testing.
   // LINT.IfChange(TokenBindingOutcome)
-  enum class TokenBindingOutcome{
-      kBound = 0,
-      kNotBoundUnknown = 1,
-      kNotBoundNotSupported = 2,
-      kNotBoundNotEligible = 3,
-      kNotBoundRegistrationTokenGenerationFailed = 4,
-      kNotBoundServerRejectedKey = 5,
-      kMaxValue = kNotBoundServerRejectedKey,
+  enum class TokenBindingOutcome {
+    kBound = 0,
+    kNotBoundUnknown = 1,
+    kNotBoundNotSupported = 2,
+    kNotBoundNotEligible = 3,
+    kNotBoundRegistrationTokenGenerationFailed = 4,
+    kNotBoundServerRejectedKey = 5,
+    kNotBoundRefreshTokensNotLoaded = 6,
+    kMaxValue = kNotBoundRefreshTokensNotLoaded,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:DiceTokenBindingOutcome)
 #else

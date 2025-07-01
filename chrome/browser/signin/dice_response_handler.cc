@@ -96,6 +96,7 @@ enum DiceTokenFetchResult {
 // generated.
 std::vector<uint8_t> GetWrappedBindingKeyToReuse(
     const signin::IdentityManager& identity_manager) {
+  CHECK(identity_manager.AreRefreshTokensLoaded());
   std::vector<CoreAccountInfo> accounts =
       identity_manager.GetAccountsWithRefreshTokens();
   for (const auto& account : accounts) {
@@ -576,6 +577,16 @@ DiceResponseHandler::MaybeGetBindingRegistrationTokenHelper(
 
   CHECK(
       switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
+
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    // We cannot determine the right binding key to reuse if tokens haven't been
+    // loaded yet. This is a very unlikely event, so prefer to not bind at all
+    // instead of binding to an incorrect key.
+    // TODO(crbug.com/428138073): properly wait for the tokens to be loaded if
+    // the number of affected users is high.
+    return base::unexpected(
+        TokenBindingOutcome::kNotBoundRefreshTokensNotLoaded);
+  }
 
   // If `registration_token_helper_` doesn't exist, create it.
   if (!registration_token_helper_) {

@@ -535,6 +535,39 @@ TEST_F(DiceResponseHandlerTest, SigninIneligibleForTokenBinding) {
       /*expected_bucket_count=*/1);
 }
 
+// Checks that token binding is skipped if refresh tokens are not loaded yet.
+TEST_F(DiceResponseHandlerTest, SigninWithUnloadedTokensDoesNotBind) {
+  EnableRegistrationTokenHelperFactory();
+  identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
+  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
+  const auto& account_info = dice_params.signin_info->account_info;
+  CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
+      account_info.gaia_id, account_info.email);
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
+
+  dice_response_handler_->ProcessDiceHeader(
+      dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  // Check that a GaiaAuthFetcher has been created immediately.
+  GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer, testing::NotNull());
+  // Simulate GaiaAuthFetcher success.
+  consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
+  // Check that the token has been inserted in the token service and it is
+  // unbound.
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
+  EXPECT_TRUE(identity_manager()
+                  ->GetWrappedBindingKeyOfRefreshTokenForAccount(account_id)
+                  .empty());
+  EXPECT_TRUE(auth_error_email_.empty());
+  EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
+  histogram_tester_.ExpectUniqueSample(
+      kTokenBindingOutcomeHistogram,
+      DiceResponseHandler::TokenBindingOutcome::kNotBoundRefreshTokensNotLoaded,
+      /*expected_bucket_count=*/1);
+}
+
 // Checks that Chrome will discard the binding key if the server didn't accept
 // the binding key.
 TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
