@@ -2042,4 +2042,32 @@ public class CustomTabIntentDataProviderTest {
                 "iCCT should NOT support optional button",
                 dataProvider.isOptionalButtonSupported());
     }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
+                    + ":open_in_browser/true/default_variant/15/contextual_only/true")
+    public void testCustomActionButtonsLimitUpTo2() {
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100), // SAVE
+                                createCustomActionButtonBundleWithId(101), // SHARE
+                                createCustomActionButtonBundleWithId(1)));
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(
+                                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_OFF)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertTrue(
+                "Custom/Chrome action button count should not exceed 2",
+                dataProvider.getCustomButtonsOnToolbar().size() <= 2);
+    }
 }
