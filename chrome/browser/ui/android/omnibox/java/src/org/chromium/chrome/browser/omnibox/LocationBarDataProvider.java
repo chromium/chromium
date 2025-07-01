@@ -46,7 +46,20 @@ public interface LocationBarDataProvider {
 
         default void onTitleChanged() {}
 
-        default void onUrlChanged() {}
+        /**
+         * Notifies when the tab changed. This is guaranteed to be called before onUrlChanged().
+         *
+         * @param previousTab The tab that was active before this change. May be null if there was
+         *     no previously selected tab.
+         */
+        default void onTabChanged(@Nullable Tab previousTab) {}
+
+        /**
+         * Notifies when the URL changed.
+         *
+         * @param isTabChanging whether this URL change event was caused by a tab change.
+         */
+        default void onUrlChanged(boolean isTabChanging) {}
 
         default void hintZeroSuggestRefresh() {}
 

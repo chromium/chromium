@@ -188,20 +188,33 @@ public class LocationBarModelUnitTest {
         mLocationBarModel.updateVisibleGurl();
 
         // The visible url should be cached and hasn't changed, so onUrlChanged shouldn't be called
-        mLocationBarModel.notifyUrlChanged();
-        verify(mLocationBarDataObserver, never()).onUrlChanged();
+        mLocationBarModel.notifyUrlChanged(false);
+        verify(mLocationBarDataObserver, never()).onUrlChanged(Mockito.anyBoolean());
 
         // Setting to a new tab with a different url
-        GURL mExampleGurl2 = new GURL("http://www.example2.com/");
-        doReturn(mExampleGurl2)
+        GURL exampleGurl2 = new GURL("http://www.example2.com/");
+        doReturn(exampleGurl2)
                 .when(mLocationBarModelJni)
                 .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
         mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
-        verify(mLocationBarDataObserver).onUrlChanged();
+        verify(mLocationBarDataObserver).onTabChanged(null);
+        verify(mLocationBarDataObserver, times(1)).onUrlChanged(true);
 
+        // Setting to another new tab with a different url
+        GURL exampleGurl3 = new GURL("http://www.example3.com/");
+        Tab regularTabMock2 = Mockito.mock(Tab.class);
+        when(regularTabMock2.getProfile()).thenReturn(mRegularProfileMock);
+        doReturn(exampleGurl3)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
+        mLocationBarModel.setTab(regularTabMock2, mRegularProfileMock);
+        verify(mLocationBarDataObserver).onTabChanged(mRegularTabMock);
+        verify(mLocationBarDataObserver, times(2)).onUrlChanged(true);
+
+        // onUrlChanged() won't be called after calling removeObserver().
         mLocationBarModel.removeObserver(mLocationBarDataObserver);
-        mLocationBarModel.notifyUrlChanged();
-        verify(mLocationBarDataObserver).onUrlChanged();
+        mLocationBarModel.notifyUrlChanged(false);
+        verify(mLocationBarDataObserver, never()).onUrlChanged(false);
     }
 
     @Test
@@ -223,7 +236,7 @@ public class LocationBarModelUnitTest {
         mLocationBarModel.updateVisibleGurl();
 
         verify(mLocationBarDataObserver, never()).onTitleChanged();
-        verify(mLocationBarDataObserver, never()).onUrlChanged();
+        verify(mLocationBarDataObserver, never()).onUrlChanged(Mockito.anyBoolean());
         verify(mLocationBarDataObserver, never()).onPrimaryColorChanged();
         verify(mLocationBarDataObserver, never()).onSecurityStateChanged();
 
@@ -231,7 +244,7 @@ public class LocationBarModelUnitTest {
 
         // The omnibox is not showing, and we have not switched to a new tab yet, so don't expect
         // notifications of a url change
-        verify(mLocationBarDataObserver, never()).onUrlChanged();
+        verify(mLocationBarDataObserver, never()).onUrlChanged(Mockito.anyBoolean());
         Assert.assertEquals(mLocationBarModel.getCurrentGurl(), mExampleGurl);
 
         verify(mLocationBarDataObserver).onTitleChanged();

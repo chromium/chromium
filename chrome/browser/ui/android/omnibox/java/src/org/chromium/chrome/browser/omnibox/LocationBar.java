@@ -124,6 +124,17 @@ public interface LocationBar {
         return 0;
     }
 
+    /**
+     * Called whenever the NTP could have been entered or exited (e.g. tab content changed, tab
+     * navigated to from the tab strip/tab switcher, etc.). If the user is on a tablet and indeed
+     * entered or exited from the NTP, we will check the following cases: 1. If a11y is enabled, we
+     * will request a11y focus on the omnibox (e.g. for TalkBack) on the NTP. 2. If a keyboard is
+     * plugged in, we will show the URL bar cursor (without focus animations) on entering the NTP.
+     * 3. If a keyboard is plugged in, we will clear focus established in #2 above on exiting from
+     * the NTP.
+     */
+    default void maybeShowOrClearCursorInLocationBar() {}
+
     /** Destroys the LocationBar. */
     void destroy();
 }
