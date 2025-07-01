@@ -558,6 +558,10 @@
     Chrome Tip link, press Enter to open <ph name="IPH_LINK_FOCUSED_LINK_TEXT">$1<ex>Learn more</ex></ph>
   </message>
 
+  <message name="IDS_ACC_OMNIBOX_TOOLBELT_NEXT_SUFFIX" desc="Additional text announcement when a match preceding the toolbelt is selected.">
+    <ph name="TOOLBELT_PRECEDING_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab for more search shortcuts available after this search suggestion
+  </message>
+
   <message name="IDS_OMNIBOX_HISTORY_SCOPE_PROMO_IPH" desc="The string displayed as the last row in the Omnibox as IPH encouraging users to try the @history scope.">
     Type @history to search your browsing history
   </message>
