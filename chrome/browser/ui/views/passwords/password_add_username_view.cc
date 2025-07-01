@@ -175,7 +175,7 @@ ui::ImageModel PasswordAddUsernameView::GetWindowIcon() {
 }
 
 void PasswordAddUsernameView::AddedToWidget() {
-  SetBubbleHeaderLottie(IDR_SAVE_PASSWORD_LOTTIE);
+  SetBubbleHeaderLottie(IDR_AUTOFILL_SAVE_PASSWORD_LOTTIE);
 }
 
 void PasswordAddUsernameView::UpdateUsernameInModel() {

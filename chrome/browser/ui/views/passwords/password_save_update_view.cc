@@ -288,7 +288,7 @@ ui::ImageModel PasswordSaveUpdateView::GetWindowIcon() {
 void PasswordSaveUpdateView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
-  SetBubbleHeaderLottie(IDR_SAVE_PASSWORD_LOTTIE);
+  SetBubbleHeaderLottie(IDR_AUTOFILL_SAVE_PASSWORD_LOTTIE);
 }
 
 void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {

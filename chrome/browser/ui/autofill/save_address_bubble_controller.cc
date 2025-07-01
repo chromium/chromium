@@ -148,8 +148,8 @@ SaveAddressBubbleController::GetHeaderImages() const {
   }
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  return HeaderImages{
-      .lottie = bundle.GetThemedLottieImageNamed(IDR_SAVE_ADDRESS_LOTTIE)};
+  return HeaderImages{.lottie = bundle.GetThemedLottieImageNamed(
+                          IDR_AUTOFILL_SAVE_ADDRESS_LOTTIE)};
 }
 
 std::u16string SaveAddressBubbleController::GetBodyText() const {

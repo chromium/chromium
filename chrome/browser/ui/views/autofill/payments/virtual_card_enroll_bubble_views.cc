@@ -110,8 +110,9 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
                                          .set_bottom(0));
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto image = std::make_unique<views::ImageView>(
-      bundle.GetThemedLottieImageNamed(IDR_VIRTUAL_CARD_ENROLL_DIALOG_LOTTIE));
+  auto image =
+      std::make_unique<views::ImageView>(bundle.GetThemedLottieImageNamed(
+          IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_LOTTIE));
   image->GetViewAccessibility().SetIsInvisible(true);
   header_view->AddChildView(std::move(image));
 

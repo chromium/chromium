@@ -48,7 +48,7 @@ void AddressSignInPromoView::AddedToWidget() {
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   GetBubbleFrameView()->SetHeaderView(std::make_unique<views::ImageView>(
-      bundle.GetThemedLottieImageNamed(IDR_SAVE_ADDRESS_LOTTIE)));
+      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_ADDRESS_LOTTIE)));
 }
 
 void AddressSignInPromoView::Hide() {
