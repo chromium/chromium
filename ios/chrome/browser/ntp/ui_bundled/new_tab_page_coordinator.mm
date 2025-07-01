@@ -661,6 +661,7 @@
   self.NTPMediator =
       [componentFactory NTPMediatorForBrowser:browser
                      identityDiscImageUpdater:self.headerViewController];
+  self.NTPViewController.mutator = self.NTPMediator;
   self.contentSuggestionsCoordinator =
       [componentFactory contentSuggestionsCoordinatorForBrowser:browser];
   self.feedMetricsRecorder =
@@ -812,7 +813,6 @@
   self.NTPViewController.feedMetricsRecorder = self.feedMetricsRecorder;
   self.NTPViewController.helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
-  self.NTPViewController.mutator = self.NTPMediator;
 }
 
 // Configures the `_tabGroupIndicatorCoordinator` and sets the
