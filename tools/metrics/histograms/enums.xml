@@ -9055,6 +9055,7 @@ from previous Chrome versions.
   <int value="-1846471618"
       label="enable-experimental-accessibility-switch-access-text"/>
   <int value="-1846070594" label="AllowWindowDragUsingSystemDragDrop:disabled"/>
+  <int value="-1845853407" label="FacilitatedPaymentsEnableA2APayment:enabled"/>
   <int value="-1845410561" label="EnableNtpBrowserPromos:disabled"/>
   <int value="-1844754731" label="Mash:disabled"/>
   <int value="-1844445413"
@@ -10716,8 +10717,6 @@ from previous Chrome versions.
   <int value="-1229882308" label="DesktopPWAsTabStripCustomizations:disabled"/>
   <int value="-1229114522"
       label="ClearCrossSiteCrossBrowsingContextGroupWindowName:disabled"/>
-  <int value="-1229101944"
-      label="kFacilitatedPaymentsEnableA2APayment:disabled"/>
   <int value="-1228782289" label="EventPath:disabled"/>
   <int value="-1228546373"
       label="UseLookalikesForNavigationSuggestions:enabled"/>
@@ -16510,7 +16509,6 @@ from previous Chrome versions.
   <int value="937305086" label="EnableBoundSessionCredentials:enabled"/>
   <int value="937557884" label="PostQuantumKyber:disabled"/>
   <int value="938191241" label="VrShell:enabled"/>
-  <int value="938459636" label="kFacilitatedPaymentsEnableA2APayment:enabled"/>
   <int value="939050961" label="OnTheFlyMhtmlHashComputation:disabled"/>
   <int value="939366135" label="DownloadsLocationChange:disabled"/>
   <int value="939554480" label="enable-credit-card-scan"/>
@@ -17733,6 +17731,7 @@ from previous Chrome versions.
   <int value="1383526461" label="QuickAnswersRichUi:enabled"/>
   <int value="1383591631" label="enable-gesture-typing"/>
   <int value="1384102751" label="AutofillParseIBANFields:enabled"/>
+  <int value="1384195698" label="FacilitatedPaymentsEnableA2APayment:disabled"/>
   <int value="1384614036" label="disable-unified-media-pipeline"/>
   <int value="1385652312" label="ThirdPartyProfileManagement:enabled"/>
   <int value="1385833812" label="WinrtGeolocationImplementation:disabled"/>

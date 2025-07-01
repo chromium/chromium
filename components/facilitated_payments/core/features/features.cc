@@ -43,7 +43,7 @@ BASE_FEATURE(kSupportMultipleServerRequestsForPixPayments,
 // detected. Users can choose the payment app they want to
 // use and be redirected to the chosen app to complete the payment flow.
 BASE_FEATURE(kFacilitatedPaymentsEnableA2APayment,
-             "kFacilitatedPaymentsEnableA2APayment",
+             "FacilitatedPaymentsEnableA2APayment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

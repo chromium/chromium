@@ -399,6 +399,8 @@ public abstract class ChromeFeatureList {
             "EnableClipboardDataControlsAndroid";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
     public static final String ENABLE_EXCLUSIVE_ACCESS_MANAGER = "EnableExclusiveAccessManager";
+    public static final String FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT =
+            "FacilitatedPaymentsEnableA2APayment";
     public static final String ENABLE_SAVE_PACKAGE_FOR_OFF_THE_RECORD =
             "EnableSavePackageForOffTheRecord";
     public static final String ENABLE_X_AXIS_ACTIVITY_TRANSITION = "EnableXAxisActivityTransition";
