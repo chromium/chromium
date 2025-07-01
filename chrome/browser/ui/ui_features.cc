@@ -70,6 +70,17 @@ BASE_FEATURE(kOfferPinToTaskbarInfoBar,
 // Shows an infobar on PDFs offering to become the default PDF viewer if Chrome
 // isn't the default already.
 BASE_FEATURE(kPdfInfoBar, "PdfInfoBar", base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<PdfInfoBarTrigger>::Option
+    kPdfInfoBarTriggerOptions[] = {{PdfInfoBarTrigger::kPdfLoad, "pdf-load"},
+                                   {PdfInfoBarTrigger::kStartup, "startup"}};
+
+BASE_FEATURE_ENUM_PARAM(PdfInfoBarTrigger,
+                        kPdfInfoBarTrigger,
+                        &kPdfInfoBar,
+                        "trigger",
+                        PdfInfoBarTrigger::kPdfLoad,
+                        &kPdfInfoBarTriggerOptions);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,
@@ -191,6 +202,36 @@ bool IsTabOrganization() {
   return base::FeatureList::IsEnabled(features::kTabOrganization);
 }
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTabOrganizationTriggerPeriod,
+                   &kTabOrganization,
+                   "trigger_period",
+                   base::Hours(6));
+
+BASE_FEATURE_PARAM(double,
+                   kTabOrganizationTriggerBackoffBase,
+                   &kTabOrganization,
+                   "backoff_base",
+                   2.0);
+
+BASE_FEATURE_PARAM(double,
+                   kTabOrganizationTriggerThreshold,
+                   &kTabOrganization,
+                   "trigger_threshold",
+                   7.0);
+
+BASE_FEATURE_PARAM(double,
+                   kTabOrganizationTriggerSensitivityThreshold,
+                   &kTabOrganization,
+                   "trigger_sensitivity_threshold",
+                   0.5);
+
+BASE_FEATURE_PARAM(bool,
+                   KTabOrganizationTriggerDemoMode,
+                   &kTabOrganization,
+                   "trigger_demo_mode",
+                   false);
+
 BASE_FEATURE(kTabstripDeclutter,
              "TabstripDeclutter",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -198,6 +239,24 @@ BASE_FEATURE(kTabstripDeclutter,
 bool IsTabstripDeclutterEnabled() {
   return base::FeatureList::IsEnabled(features::kTabstripDeclutter);
 }
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTabstripDeclutterStaleThresholdDuration,
+                   &kTabstripDeclutter,
+                   "stale_threshold_duration",
+                   base::Days(7));
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTabstripDeclutterTimerInterval,
+                   &kTabstripDeclutter,
+                   "declutter_timer_interval",
+                   base::Minutes(10));
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTabstripDeclutterNudgeTimerInterval,
+                   &kTabstripDeclutter,
+                   "nudge_timer_interval",
+                   base::Minutes(6 * 60));
 
 BASE_FEATURE(kTabstripDedupe,
              "TabstripDedupe",
@@ -355,6 +414,90 @@ BASE_FEATURE(kPageActionsMigration,
              "PageActionsMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationEnableAll,
+                   &kPageActionsMigration,
+                   "enable_all",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationLensOverlay,
+                   &kPageActionsMigration,
+                   "lens_overlay",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationMemorySaver,
+                   &kPageActionsMigration,
+                   "memory_saver",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationTranslate,
+                   &kPageActionsMigration,
+                   "translate",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationIntentPicker,
+                   &kPageActionsMigration,
+                   "intent_picker",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationZoom,
+                   &kPageActionsMigration,
+                   "zoom",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationOfferNotification,
+                   &kPageActionsMigration,
+                   "offer_notification",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationFileSystemAccess,
+                   &kPageActionsMigration,
+                   "file_system_access",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationPwaInstall,
+                   &kPageActionsMigration,
+                   "pwa_install",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationPriceInsights,
+                   &kPageActionsMigration,
+                   "price_insights",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationDiscounts,
+                   &kPageActionsMigration,
+                   "discounts",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationManagePasswords,
+                   &kPageActionsMigration,
+                   "manage_passwords",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationCookieControls,
+                   &kPageActionsMigration,
+                   "cookie_controls",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationAutofillAddress,
+                   &kPageActionsMigration,
+                   "autofill_address",
+                   false);
+
 BASE_FEATURE(kSavePasswordsContextualUi,
              "SavePasswordsContextualUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -383,6 +526,24 @@ BASE_FEATURE(kLaunchedTabSearchToolbarButton,
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
+
+BASE_FEATURE_PARAM(bool,
+                   kTabstripComboButtonHasBackground,
+                   &kTabstripComboButton,
+                   "has_background",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kTabstripComboButtonHasReverseButtonOrder,
+                   &kTabstripComboButton,
+                   "reverse_button_order",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kTabSearchToolbarButton,
+                   &kTabstripComboButton,
+                   "tab_search_toolbar_button",
+                   false);
 
 static std::string GetCountryCode() {
   if (!g_browser_process || !g_browser_process->variations_service()) {
