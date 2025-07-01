@@ -5483,7 +5483,7 @@
   {
     "name": "help-app-onboarding-revamp",
     "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 145
   },
   {
     "name": "help-app-opens-instead-of-release-notes-notification",
