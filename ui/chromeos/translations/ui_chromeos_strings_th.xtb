@@ -329,7 +329,7 @@
 <translation id="3619115746895587757">คาปูชิโน</translation>
 <translation id="3619593063686672873">ไม่มีวิดีโอล่าสุด</translation>
 <translation id="3634507049637220048">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>
-<translation id="36451918667380448">ผู้ให้บริการเครือข่ายมือถือล็อกอยู่ โปรดติดต่อผู้ให้บริการเพื่อขอรับการสนับสนุน</translation>
+<translation id="36451918667380448">ผู้ให้บริการมือถือล็อกอยู่ โปรดติดต่อผู้ให้บริการเพื่อขอรับการสนับสนุน</translation>
 <translation id="3645233063072417428">ย้าย <ph name="NUMBER_OF_ITEMS" /> รายการแล้ว</translation>
 <translation id="3658269352872031728">เลือกไว้ <ph name="SELECTED_FILE_COUNT" /> ไฟล์</translation>
 <translation id="3685122418104378273">เมื่อใช้ข้อมูลมือถือ การซิงค์ Google ไดรฟ์จะปิดใช้อยู่เป็นค่าเริ่มต้น</translation>
@@ -849,7 +849,7 @@
 <translation id="7589661784326793847">รอสักครู่</translation>
 <translation id="7600126690270271294">เซอร์เบีย</translation>
 <translation id="7603724359189955920">ตารางกริด</translation>
-<translation id="7624010287655004652">ล็อกโดยผู้ให้บริการเครือข่ายมือถือรายอื่น</translation>
+<translation id="7624010287655004652">ล็อกโดยผู้ให้บริการมือถือรายอื่น</translation>
 <translation id="7627790789328695202">อ๊ะ มี <ph name="FILE_NAME" /> อยู่แล้ว เปลี่ยนชื่อแล้วลองอีกครั้ง</translation>
 <translation id="7628656427739290098">เสร็จแล้ว <ph name="PERCENT" />%</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
