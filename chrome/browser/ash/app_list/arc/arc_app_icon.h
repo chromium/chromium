@@ -244,7 +244,8 @@ class ArcAppIcon {
       gfx::ImageSkia& image_skia,
       std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors);
   void UpdateCompressed(ui::ResourceScaleFactor scale_factor, std::string data);
-  void DiscardDecodeRequest(DecodeRequest* request, bool is_decode_success);
+
+  void OnImageDecoded(DecodeRequest* request, const SkBitmap& bitmap);
 
   const raw_ptr<content::BrowserContext> context_;
   const std::string app_id_;

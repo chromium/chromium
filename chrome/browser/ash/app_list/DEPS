@@ -54,7 +54,6 @@ include_rules = [
   "+chrome/browser/favicon",
   "+chrome/browser/feature_engagement",
   "+chrome/browser/history",
-  "+chrome/browser/image_decoder",
   "+chrome/browser/metrics",
   "+chrome/browser/notifications",
   "+chrome/browser/platform_util.h",

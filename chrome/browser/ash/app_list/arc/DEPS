@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_service_test_base.h",
-  "+chrome/browser/image_decoder",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
