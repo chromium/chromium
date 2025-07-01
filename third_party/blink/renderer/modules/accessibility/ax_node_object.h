@@ -231,7 +231,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // AX name calculation.
   String GetName(ax::mojom::blink::NameFrom&,
-                 AXObjectVector* name_objects) const override;
+                 AXObjectVector* name_objects,
+                 NameSources* name_sources) const override;
   String TextAlternative(bool recursive,
                          const AXObject* aria_label_or_description_root,
                          AXObjectSet& visited,

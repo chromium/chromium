@@ -55,7 +55,8 @@ class AXInlineTextBox final : public AXObject {
   // AXObject overrides.
   RGBA32 GetColor() const override { return Color::kTransparent.Rgb(); }
   String GetName(ax::mojom::blink::NameFrom&,
-                 AXObject::AXObjectVector* name_objects) const override;
+                 AXObject::AXObjectVector* name_objects,
+                 NameSources* name_sources) const override;
   void TextCharacterOffsets(Vector<int>&) const override;
   void GetWordBoundaries(Vector<int>& word_starts,
                          Vector<int>& word_ends) const override;

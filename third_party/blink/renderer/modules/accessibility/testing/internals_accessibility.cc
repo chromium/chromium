@@ -35,7 +35,7 @@ WTF::String InternalsAccessibility::getComputedLabel(Internals&,
 
   ax::mojom::NameFrom name_from;
   AXObject::AXObjectVector name_objects;
-  return ax_object->GetName(name_from, &name_objects);
+  return ax_object->GetName(name_from, &name_objects, nullptr);
 }
 
 // static

@@ -3,7 +3,7 @@ Tests accessibility values of display locked nodes
 RootWebArea
   generic
     StaticText "spacer"
-      InlineTextBox
+      InlineTextBox "spacer"
   generic
     StaticText "
       locked
@@ -31,5 +31,5 @@ RootWebArea
   generic
   generic
     StaticText "normal text"
-      InlineTextBox
+      InlineTextBox "normal text"
 

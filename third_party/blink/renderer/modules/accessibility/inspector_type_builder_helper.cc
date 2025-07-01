@@ -797,7 +797,7 @@ void FillSparseAttributes(AXObject& ax_object,
 void FillCoreProperties(AXObject& ax_object, AXNode* node_object) {
   ax::mojom::blink::NameFrom name_from;
   AXObject::AXObjectVector name_objects;
-  ax_object.GetName(name_from, &name_objects);
+  ax_object.GetName(name_from, &name_objects, /*name_sources=*/nullptr);
 
   ax::mojom::blink::DescriptionFrom description_from;
   AXObject::AXObjectVector description_objects;
@@ -892,8 +892,10 @@ std::unique_ptr<AXNode> BuildProtocolAXNodeForIgnoredAXObject(
 
   if (force_name_and_role) {
     // Compute accessible name and sources and attach to protocol node:
+    ax::mojom::blink::NameFrom name_from;
     AXObject::NameSources name_sources;
-    String computed_name = ax_object.GetName(&name_sources);
+    String computed_name =
+        ax_object.GetName(name_from, /*name_objects=*/nullptr, &name_sources);
     std::unique_ptr<AXValue> name =
         CreateValue(computed_name, AXValueTypeEnum::ComputedString);
     ignored_node_object->setName(std::move(name));
@@ -934,31 +936,29 @@ std::unique_ptr<AXNode> BuildProtocolAXNodeForUnignoredAXObject(
   FillRelationships(ax_object, *(properties.get()));
   FillSparseAttributes(ax_object, node_data, *(properties.get()));
 
+  ax::mojom::blink::NameFrom name_from;
   AXObject::NameSources name_sources;
-  String computed_name = ax_object.GetName(&name_sources);
+  String computed_name =
+      ax_object.GetName(name_from, /*name_objects=*/nullptr, &name_sources);
+  std::unique_ptr<AXValue> name =
+      CreateValue(computed_name, AXValueTypeEnum::ComputedString);
   if (!name_sources.empty()) {
-    std::unique_ptr<AXValue> name =
-        CreateValue(computed_name, AXValueTypeEnum::ComputedString);
-    if (!name_sources.empty()) {
-      auto name_source_properties =
-          std::make_unique<protocol::Array<AXValueSource>>();
-      for (NameSource& name_source : name_sources) {
-        name_source_properties->emplace_back(CreateValueSource(name_source));
-        if (name_source.text.IsNull() || name_source.superseded) {
-          continue;
-        }
-        if (!name_source.related_objects.empty()) {
-          properties->emplace_back(CreateRelatedNodeListProperty(
-              AXPropertyNameEnum::Labelledby, name_source.related_objects));
-        }
+    auto name_source_properties =
+        std::make_unique<protocol::Array<AXValueSource>>();
+    for (NameSource& name_source : name_sources) {
+      name_source_properties->emplace_back(CreateValueSource(name_source));
+      if (name_source.text.IsNull() || name_source.superseded) {
+        continue;
       }
-      name->setSources(std::move(name_source_properties));
+      if (!name_source.related_objects.empty()) {
+        properties->emplace_back(CreateRelatedNodeListProperty(
+            AXPropertyNameEnum::Labelledby, name_source.related_objects));
+      }
     }
-    node_object->setProperties(std::move(properties));
-    node_object->setName(std::move(name));
-  } else {
-    node_object->setProperties(std::move(properties));
+    name->setSources(std::move(name_source_properties));
   }
+  node_object->setProperties(std::move(properties));
+  node_object->setName(std::move(name));
 
   FillCoreProperties(ax_object, node_object.get());
   return node_object;

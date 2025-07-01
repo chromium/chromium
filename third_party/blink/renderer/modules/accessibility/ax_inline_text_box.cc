@@ -141,7 +141,7 @@ void AXInlineTextBox::TextCharacterOffsets(Vector<int>& offsets) const {
 void AXInlineTextBox::GetWordBoundaries(Vector<int>& word_starts,
                                         Vector<int>& word_ends) const {
   ax::mojom::blink::NameFrom name_not_used;
-  if (GetName(name_not_used, /*name_objects=*/nullptr)
+  if (GetName(name_not_used, /*name_objects=*/nullptr, /*name_sources=*/nullptr)
           .ContainsOnlyWhitespaceOrEmpty()) {
     return;
   }
@@ -210,7 +210,8 @@ int AXInlineTextBox::TextOffsetInContainer(int offset) const {
 }
 
 String AXInlineTextBox::GetName(ax::mojom::blink::NameFrom& name_from,
-                                AXObject::AXObjectVector* name_objects) const {
+                                AXObject::AXObjectVector* name_objects,
+                                NameSources* name_sources) const {
   if (IsDetached())
     return String();
 
