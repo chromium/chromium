@@ -65,9 +65,6 @@ class MockContainer {
   }
 
   // We don't test on this property.
-  bool HasPrefetchBeenConsideredToServe() const { return false; }
-
-  // We don't test on this property.
   bool IsDecoy() const { return false; }
 
   void SetServingPageMetrics(base::WeakPtr<PrefetchServingPageMetricsContainer>

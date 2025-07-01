@@ -330,11 +330,6 @@ void PrefetchMatchResolver::OnDeterminedHead(
     return;
   }
 
-  if (prefetch_container.HasPrefetchBeenConsideredToServe()) {
-    MaybeUnblockForUnmatch(prefetch_container.key());
-    return;
-  }
-
   // Got matching and servable.
   UnblockForMatch(prefetch_container.key());
 }

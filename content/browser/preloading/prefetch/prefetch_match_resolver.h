@@ -175,7 +175,6 @@ concept MatchCandidate =
       t.ShouldWaitForNoVarySearchHeader(url);
       t.HasPrefetchStatus();
       t.GetPrefetchStatus();
-      t.HasPrefetchBeenConsideredToServe();
       t.IsDecoy();
       t.SetServingPageMetrics(serving_page_metrics_container);
       t.UpdateServingPageMetrics();
@@ -235,13 +234,6 @@ template <class T>
 bool IsCandidateAvailable(const T& candidate,
                           PrefetchContainer::ServableState servable_state,
                           bool is_nav_prerender) {
-  if (candidate.HasPrefetchBeenConsideredToServe()) {
-    DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because already "
-                "considered to serve: candidate = "
-             << candidate;
-    return false;
-  }
-
   switch (servable_state) {
     case PrefetchContainer::ServableState::kNotServable:
       DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because not "

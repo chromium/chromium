@@ -2059,9 +2059,7 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
         case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
           break;
         case PrefetchContainer::ServableState::kServable:
-          if (!prefetch_iter.second->HasPrefetchBeenConsideredToServe()) {
-            num_matching_servable_prefetch++;
-          }
+          num_matching_servable_prefetch++;
           break;
       }
 

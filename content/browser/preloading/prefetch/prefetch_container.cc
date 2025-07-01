@@ -1440,11 +1440,6 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
         completion_status->completion_time - head->load_timing.request_start;
 }
 
-bool PrefetchContainer::HasPrefetchBeenConsideredToServe() const {
-  // TODO(397882995): Remove the callers.
-  return false;
-}
-
 PrefetchContainer::ServableState PrefetchContainer::GetServableState(
     base::TimeDelta cacheable_duration) const {
   // Servable if the non-redirect response (either fully or partially
