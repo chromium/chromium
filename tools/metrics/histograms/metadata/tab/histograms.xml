@@ -3510,7 +3510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabState.FlatBufferDeserializeResult"
-    enum="TabStateFlatBufferDeserializeResult" expires_after="2025-08-10">
+    enum="TabStateFlatBufferDeserializeResult" expires_after="2026-12-28">
   <owner>davidjm@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
