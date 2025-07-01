@@ -57,6 +57,7 @@ class FakeCompositorDelegateForInput : public CompositorDelegateForInput {
   std::unique_ptr<EventsMetricsManager::ScopedMonitor>
   GetScopedEventMetricsMonitor(
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) override;
+  void DidScrollForMetrics() override {}
   void NotifyInputEvent(bool is_fling) override {}
   std::unique_ptr<LatencyInfoSwapPromiseMonitor>
   CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) override;
