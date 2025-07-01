@@ -569,7 +569,7 @@ def main():
         subprocess.call(['strip', '-x', dest])
       elif (sys.platform.startswith('linux') and
             os.path.splitext(f)[1] in ['.so', '.a']):
-        subprocess.call([llvm_strip, '-g', dest])
+        subprocess.call([llvm_strip, '--keep-file-symbols', '-g', dest])
       # If this is an reclient input, add it to the inputs file(s).
       for tool, inputs in reclient_inputs.items():
         if any(fnmatch.fnmatch(f, i) for i in inputs):
