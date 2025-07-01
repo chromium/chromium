@@ -197,6 +197,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Fre.WidgetClosedReason" enum="WidgetClosedReason"
+    expires_after="2026-07-01">
+  <owner>birnie@google.com</owner>
+  <owner>cuianthony@google.com</owner>
+  <summary>
+    The FRE widget is configured to synchronously close the widget in response
+    to a few specific browser actions. This histogram records the reason why the
+    FRE widget was closed by the browser in such scenarios. This is logged by
+    GlicFreController::CloseWithReason().
+  </summary>
+</histogram>
+
+<histogram name="Glic.FreErrorStateReason" enum="FreErrorStateReason"
+    expires_after="2026-01-15">
+  <owner>birnie@google.com</owner>
+  <owner>cuianthony@google.com</owner>
+  <summary>
+    Records the reason the error panel was shown. This is recorded either before
+    the FRE is shown if its an issue during auth, or after loading times out.
+  </summary>
+</histogram>
+
 <histogram name="Glic.FreModalWebUiState.FinishState2" enum="FreWebUiState"
     expires_after="2026-01-15">
   <owner>cuianthony@google.com</owner>
@@ -211,6 +233,30 @@ chromium-metrics-reviews@google.com.
   <owner>baranerf@google.com</owner>
   <summary>
     Records the time taken for content to load after the FRE window appears.
+  </summary>
+</histogram>
+
+<histogram name="Glic.FreToFirstQueryTime" units="ms"
+    expires_after="2026-07-01">
+  <owner>birnie@google.com</owner>
+  <owner>cuianthony@google.com</owner>
+  <summary>
+    Records the time elapsed between the successful completion of the FRE and
+    the first submitted query. This is logged only once per profile that
+    accepted the FRE, when the user submits their first glic request (without
+    restarting Chrome in between).
+  </summary>
+</histogram>
+
+<histogram name="Glic.FreToFirstQueryTimeMax24H" units="ms"
+    expires_after="2026-07-01">
+  <owner>birnie@google.com</owner>
+  <owner>cuianthony@google.com</owner>
+  <summary>
+    Records the time elapsed between the successful completion of the FRE and
+    the first submitted query. This records the same information as
+    Glic.FreToFirstQueryTime but here we have a max time bucket of 24 hours
+    instead of 1 hour.
   </summary>
 </histogram>
 

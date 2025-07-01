@@ -18,8 +18,12 @@ interface FrePageHandler {
   // glic WebUI.
   AcceptFre();
 
-  // Closes the glic FRE modal dialog.
-  DismissFre();
+  // Closes the glic FRE modal dialog. The `panel` identifies which panel was
+  // closed.
+  DismissFre(FreWebUiState panel);
+
+  // Called when the user clicks 'Try Again'.
+  FreReloaded();
 
   // Prepare the webview for loading the client. Sync Google account sign-in
   // cookies to the webview, if necessary, so that it can sign-in automatically.
@@ -32,6 +36,10 @@ interface FrePageHandler {
 
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(FreWebUiState new_state);
+
+  // Notifies the PageHandler that the FRE exceeded the loading timeout and
+  // entered the error state.
+  ExceededTimeoutError();
 };
 
 // LINT.IfChange(FreWebUiState)

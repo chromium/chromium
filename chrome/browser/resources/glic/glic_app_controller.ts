@@ -371,7 +371,7 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     switch (result) {
       case PrepareForClientResult.kSuccess:
         break;
-      case PrepareForClientResult.kUnknownError:
+      case PrepareForClientResult.kErrorResyncingCookies:
         console.warn('prepareForClient in beginLoad() failed.');
         this.setState(WebUiState.kError);
         return;

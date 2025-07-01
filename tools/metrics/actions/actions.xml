@@ -12494,11 +12494,44 @@ should be able to be added at any place in this file.
   <description>Logged if the FRE is accepted.</description>
 </action>
 
+<action name="Glic.Fre.ErrorPanelClosed">
+  <owner>birnie@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    User closed the error panel in the FRE by clicking the 'X' button.
+  </description>
+</action>
+
+<action name="Glic.Fre.ErrorPanelTryAgainClicked">
+  <owner>birnie@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    User clicked the 'Try Again' button on the error panel in the FRE.
+  </description>
+</action>
+
 <action name="Glic.Fre.HelpCenterLinkOpened">
   <owner>dullweber@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
     Logged if a help center link is opened from the FRE.
+  </description>
+</action>
+
+<action name="Glic.Fre.LoadingPanelClosed">
+  <owner>birnie@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    User closed the loading state panel in the FRE by clicking the 'X' button
+  </description>
+</action>
+
+<action name="Glic.Fre.LoadSuccess">
+  <owner>birnie@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    The FRE has successfully loaded all its resources and is ready to be
+    displayed.
   </description>
 </action>
 
@@ -12512,6 +12545,15 @@ should be able to be added at any place in this file.
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <description>Logged if the user clicked on No Thanks in the FRE.</description>
+</action>
+
+<action name="Glic.Fre.OfflinePanelClosed">
+  <owner>birnie@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    User closed the offline panel in the FRE by clicking the 'X' button on that
+    panel.
+  </description>
 </action>
 
 <action name="Glic.Fre.PolicyLinkOpened">
@@ -12531,7 +12573,18 @@ should be able to be added at any place in this file.
 <action name="Glic.Fre.Shown">
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
-  <description>Logged if the glic FRE is shown.</description>
+  <description>
+    Logged if the glic FRE is shown. Logged as soon as the widget is visible.
+    This occurs before the UI is fully loaded.
+  </description>
+</action>
+
+<action name="Glic.Fre.UninitializedPanelClosed">
+  <owner>birnie@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    The Fre panel was closed while in the uninitialized state.
+  </description>
 </action>
 
 <action name="Glic.Pinned">

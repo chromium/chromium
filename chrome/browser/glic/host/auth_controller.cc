@@ -198,9 +198,10 @@ void AuthController::CookieSyncBeforeLoadDone(
     std::move(callback).Run(mojom::PrepareForClientResult::kSuccess);
     return;
   }
-  std::move(callback).Run(GetTokenState() == TokenState::kRequiresSignIn
-                              ? mojom::PrepareForClientResult::kRequiresSignIn
-                              : mojom::PrepareForClientResult::kUnknownError);
+  std::move(callback).Run(
+      GetTokenState() == TokenState::kRequiresSignIn
+          ? mojom::PrepareForClientResult::kRequiresSignIn
+          : mojom::PrepareForClientResult::kErrorResyncingCookies);
 }
 
 void AuthController::SetCookieSynchronizerForTesting(

@@ -7,9 +7,14 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "content/public/browser/web_contents.h"
 
@@ -33,11 +38,18 @@ GlicKeyedService* GlicFrePageHandler::GetGlicService() {
 }
 
 void GlicFrePageHandler::AcceptFre() {
+  GetGlicService()->metrics()->OnFreAccepted();
   GetGlicService()->window_controller().fre_controller()->AcceptFre();
 }
 
-void GlicFrePageHandler::DismissFre() {
-  GetGlicService()->window_controller().fre_controller()->OnNoThanksClicked();
+void GlicFrePageHandler::DismissFre(mojom::FreWebUiState panel_state) {
+  GetGlicService()->window_controller().fre_controller()->DismissFre(
+      panel_state);
+}
+
+void GlicFrePageHandler::FreReloaded() {
+  base::RecordAction(
+      base::UserMetricsAction("Glic.Fre.ErrorPanelTryAgainClicked"));
 }
 
 void GlicFrePageHandler::PrepareForClient(
@@ -57,6 +69,13 @@ void GlicFrePageHandler::ValidateAndOpenLinkInNewTab(const GURL& url) {
 void GlicFrePageHandler::WebUiStateChanged(mojom::FreWebUiState new_state) {
   GetGlicService()->window_controller().fre_controller()->WebUiStateChanged(
       new_state);
+}
+
+void GlicFrePageHandler::ExceededTimeoutError() {
+  GetGlicService()
+      ->window_controller()
+      .fre_controller()
+      ->ExceededTimeoutError();
 }
 
 }  // namespace glic
