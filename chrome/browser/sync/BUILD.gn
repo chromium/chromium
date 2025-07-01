@@ -108,6 +108,7 @@ source_set("sync") {
     "//components/language/core/common",
     "//components/live_caption:constants",
     "//components/metrics/demographics",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/browser/sharing",

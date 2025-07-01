@@ -21,6 +21,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/browser_sync/sync_engine_factory_impl.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/sync/base/pref_names.h"
@@ -161,9 +162,11 @@ bool ChromeSyncClient::IsPasswordSyncAllowed() {
 #if BUILDFLAG(IS_ANDROID)
   return pref_service_->GetInteger(
              password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores) !=
-         static_cast<int>(
-             password_manager::prefs::UseUpmLocalAndSeparateStoresState::
-                 kOffAndMigrationPending);
+             static_cast<int>(
+                 password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+                     kOffAndMigrationPending) ||
+         base::FeatureList::IsEnabled(
+             password_manager::features::kLoginDbDeprecationAndroid);
 #else
   return true;
 #endif  // BUILDFLAG(IS_ANDROID)
