@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -226,6 +227,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
         std::make_unique<pdf::infobar::PdfInfoBarController>(browser);
   }
 #endif
+
+  data_sharing_bubble_controller_ =
+      std::make_unique<DataSharingBubbleController>(browser);
 
   tab_list_bridge_ = std::make_unique<TabListBridge>(
       *tab_strip_model_, browser->GetUnownedUserDataHost());

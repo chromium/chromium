@@ -28,6 +28,7 @@ class BrowserWindowInterface;
 class ChromeLabsCoordinator;
 class ColorProviderBrowserHelper;
 class CookieControlsBubbleCoordinator;
+class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
 class DownloadToolbarUIController;
 class ExclusiveAccessManager;
@@ -326,6 +327,10 @@ class BrowserWindowFeatures {
   // Returns true if a FindBarController exists for this browser window.
   bool HasFindBarController() const;
 
+  DataSharingBubbleController* data_sharing_bubble_controller() {
+    return data_sharing_bubble_controller_.get();
+  }
+
   ExclusiveAccessManager* exclusive_access_manager() {
     return exclusive_access_manager_.get();
   }
@@ -465,6 +470,8 @@ class BrowserWindowFeatures {
   // The Find Bar. This may be NULL if there is no Find Bar, and if it is
   // non-NULL, it may or may not be visible.
   std::unique_ptr<FindBarController> find_bar_controller_;
+
+  std::unique_ptr<DataSharingBubbleController> data_sharing_bubble_controller_;
 
   std::unique_ptr<TabListBridge> tab_list_bridge_;
 

@@ -5,6 +5,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
@@ -130,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
         delegate.ShowJoinDialog(token, preview_data, callback.Get());
       }),
       WaitForShow(kDataSharingBubbleElementId), Do([&]() {
-        DataSharingBubbleController::GetOrCreateForBrowser(browser())->Close();
+        browser()->GetFeatures().data_sharing_bubble_controller()->Close();
       }));
 }
 
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
       WaitForShow(kDataSharingBubbleElementId), Do([&]() {
         // Close join dialog and show the error dialog.
         auto* controller =
-            DataSharingBubbleController::GetOrCreateForBrowser(browser());
+            browser()->GetFeatures().data_sharing_bubble_controller();
         controller->Close();
         controller->ShowErrorDialog(
             static_cast<int>(absl::StatusCode::kUnknown));
@@ -173,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
       WaitForShow(kDataSharingBubbleElementId), Do([&]() {
         // Close the dialog before the callback runs out of scope.
         auto* controller =
-            DataSharingBubbleController::GetOrCreateForBrowser(browser());
+            browser()->GetFeatures().data_sharing_bubble_controller();
         controller->Close();
       }));
 }

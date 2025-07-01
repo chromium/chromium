@@ -8,6 +8,7 @@
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -181,7 +182,9 @@ class DataSharingLiveTest : public signin::test::LiveTest {
 
   void WaitForSDKToLoad() {
     content::WebContents* web_contents =
-        DataSharingBubbleController::GetOrCreateForBrowser(browser())
+        browser()
+            ->GetFeatures()
+            .data_sharing_bubble_controller()
             ->BubbleViewForTesting()
             ->get_contents_wrapper_for_testing()
             ->web_contents();
@@ -210,8 +213,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ShareUnsharedTabGroup) {
 
   data_sharing::RequestInfo request_info(tab_group_id.value(),
                                          data_sharing::FlowType::kShare);
-  DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
-      request_info);
+  browser()->GetFeatures().data_sharing_bubble_controller()->Show(request_info);
 
   WaitForSDKToLoad();
 }
@@ -230,13 +232,12 @@ IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ManageSharedTabGroup) {
   // Share the group.
   data_sharing::RequestInfo request_info(tab_group_id.value(),
                                          data_sharing::FlowType::kShare);
-  DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
-      request_info);
+  auto* controller = browser()->GetFeatures().data_sharing_bubble_controller();
+  controller->Show(request_info);
 
   // Manage the group.
   request_info.type = data_sharing::FlowType::kManage;
-  DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
-      request_info);
+  controller->Show(request_info);
 
   WaitForSDKToLoad();
 }

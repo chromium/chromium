@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
@@ -134,7 +135,7 @@ void CollaborationControllerDelegateDesktop::ShowError(const ErrorInfo& error,
     return;
   }
 
-  DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Close();
+  browser_->GetFeatures().data_sharing_bubble_controller()->Close();
 
   ShowErrorDialog(error);
   error_ui_callback_ = std::move(result);
@@ -142,7 +143,7 @@ void CollaborationControllerDelegateDesktop::ShowError(const ErrorInfo& error,
 
 void CollaborationControllerDelegateDesktop::Cancel(ResultCallback result) {
   if (browser_) {
-    DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Close();
+    browser_->GetFeatures().data_sharing_bubble_controller()->Close();
   }
   MaybeCloseDialogs();
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
@@ -166,8 +167,7 @@ void CollaborationControllerDelegateDesktop::ShowJoinDialog(
   if (!browser_) {
     return;
   }
-  auto* controller =
-      DataSharingBubbleController::GetOrCreateForBrowser(browser_);
+  auto* controller = browser_->GetFeatures().data_sharing_bubble_controller();
   controller->SetJoinCallback(std::move(result));
   controller->SetShowErrorDialogCallback(base::BindOnce(
       &CollaborationControllerDelegateDesktop::ShowErrorDialog,
@@ -187,8 +187,7 @@ void CollaborationControllerDelegateDesktop::ShowShareDialog(
   data_sharing::RequestInfo request_info(
       std::get<tab_groups::LocalTabGroupID>(either_id),
       data_sharing::FlowType::kShare);
-  auto* controller =
-      DataSharingBubbleController::GetOrCreateForBrowser(browser_);
+  auto* controller = browser_->GetFeatures().data_sharing_bubble_controller();
   controller->SetOnShareLinkRequestedCallback(std::move(result));
   controller->Show(request_info);
 }
@@ -197,8 +196,7 @@ void CollaborationControllerDelegateDesktop::OnUrlReadyToShare(
     const data_sharing::GroupId& group_id,
     const GURL& url,
     ResultCallback result) {
-  auto* controller =
-      DataSharingBubbleController::GetOrCreateForBrowser(browser_);
+  auto* controller = browser_->GetFeatures().data_sharing_bubble_controller();
   controller->OnUrlReadyToShare(url);
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
 }
@@ -243,8 +241,7 @@ void CollaborationControllerDelegateDesktop::ShowManageDialog(
     return;
   }
 
-  auto* controller =
-      DataSharingBubbleController::GetOrCreateForBrowser(browser_);
+  auto* controller = browser_->GetFeatures().data_sharing_bubble_controller();
   controller->SetOnCloseCallback(base::BindOnce(
       &CollaborationControllerDelegateDesktop::OnManageDialogClosing,
       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
@@ -270,7 +267,7 @@ void CollaborationControllerDelegateDesktop::PromoteTabGroup(
     return;
   }
 
-  DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Close();
+  browser_->GetFeatures().data_sharing_bubble_controller()->Close();
 
   // Open tab group by group id.
   tab_groups::TabGroupSyncService* tab_group_sync_service =
