@@ -931,9 +931,13 @@ IN_PROC_BROWSER_TEST_F(IwaKioskCacheTest,
   ASSERT_TRUE(WaitKioskLaunched());
 }
 
+// This test times out on ASan / LSan:
+// https://ci.chromium.org/ui/p/chromium/builders/ci/Linux%20Chromium%20OS%20ASan%20LSan%20Tests%20(1)/65295/overview
+// and on a (less exotic) Linux CQ bot:
+// https://ci.chromium.org/ui/p/chromium/builders/ci/linux-chromeos-dbg/41086/overview
 // Cache is not available, the network dialog should be shown.
 IN_PROC_BROWSER_TEST_F(IwaKioskCacheTest,
-                       ShowNetworkDialogWhenLaunchFromCacheFailed) {
+                       DISABLED_ShowNetworkDialogWhenLaunchFromCacheFailed) {
   CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kBaseVersion));
   network_state_.SimulateOffline();
   RemoveBundleFromUpdateServer();
