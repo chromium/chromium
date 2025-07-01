@@ -118,7 +118,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
  public:
   IOSurfaceImageBacking(
       gfx::ScopedIOSurface io_surface,
-      gfx::GenericSharedMemoryId io_surface_id,
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
       const gfx::Size& size,
@@ -235,7 +234,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   const gfx::Size io_surface_size_;
   const uint32_t io_surface_format_;
-  const gfx::GenericSharedMemoryId io_surface_id_;
 
   // DawnSharedTextureCache that keeps an internal cache of per-device
   // SharedTextureData that vends WebGPU textures for the underlying IOSurface.
