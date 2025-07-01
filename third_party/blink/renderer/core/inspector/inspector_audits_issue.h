@@ -18,11 +18,8 @@
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
-
-namespace WTF {
-class String;
-}
 
 namespace blink {
 

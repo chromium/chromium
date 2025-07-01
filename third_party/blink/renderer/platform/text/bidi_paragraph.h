@@ -13,12 +13,9 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 

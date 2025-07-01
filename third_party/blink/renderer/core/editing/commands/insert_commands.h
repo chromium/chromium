@@ -33,10 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_INSERT_COMMANDS_H_
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 

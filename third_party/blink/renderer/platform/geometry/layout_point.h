@@ -38,10 +38,6 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/point_f.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 // This class is deprecated. PhysicalOffset or LogicalOffset should be used.

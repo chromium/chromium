@@ -8,11 +8,8 @@
 #include <stdint.h>
 
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
-
-namespace WTF {
-class String;
-}
 
 namespace blink {
 

@@ -17,10 +17,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-
-namespace WTF {
-class String;
-}
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 

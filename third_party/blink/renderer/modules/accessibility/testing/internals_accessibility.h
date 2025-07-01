@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_TESTING_INTERNALS_ACCESSIBILITY_H_
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 // InternalsAccessibility implements several accessibility-related methods that
 // are exposed on the Internals object. These methods are used by various WPTs
@@ -26,10 +27,6 @@
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/resources/testdriver-vendor.js
 // [3]
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/external/wpt/accname/basic.html
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 

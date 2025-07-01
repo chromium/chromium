@@ -12,10 +12,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 struct PhysicalBoxStrut;

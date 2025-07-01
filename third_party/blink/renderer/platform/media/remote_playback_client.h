@@ -7,14 +7,12 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/platform/wtf/forward.h"
+
 namespace media {
 enum class VideoCodec;
 enum class AudioCodec;
 }  // namespace media
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 

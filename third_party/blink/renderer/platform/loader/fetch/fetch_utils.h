@@ -10,15 +10,11 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace network {
 struct ResourceRequest;
 }  // namespace network
-
-namespace WTF {
-class AtomicString;
-class String;
-}  // namespace WTF
 
 namespace blink {
 class PLATFORM_EXPORT FetchUtils {

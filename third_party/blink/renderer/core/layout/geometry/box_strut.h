@@ -15,11 +15,8 @@
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/outsets_f.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 

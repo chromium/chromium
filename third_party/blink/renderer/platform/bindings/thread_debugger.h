@@ -13,10 +13,6 @@
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-inspector.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class SourceLocation;

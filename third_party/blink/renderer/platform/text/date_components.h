@@ -32,12 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_DATE_COMPONENTS_H_
 
 #include <limits>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 

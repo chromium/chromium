@@ -9,10 +9,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 

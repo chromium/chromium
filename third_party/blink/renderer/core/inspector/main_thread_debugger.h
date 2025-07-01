@@ -32,15 +32,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_MAIN_THREAD_DEBUGGER_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
 #include "v8/include/v8-inspector.h"
 #include "v8/include/v8.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 

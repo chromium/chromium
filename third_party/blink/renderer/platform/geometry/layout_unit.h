@@ -49,10 +49,6 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 #if DCHECK_IS_ON()

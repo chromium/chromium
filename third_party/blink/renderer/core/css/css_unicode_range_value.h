@@ -30,10 +30,6 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 namespace cssvalue {
 

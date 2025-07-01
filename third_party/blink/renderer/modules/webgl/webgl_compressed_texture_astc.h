@@ -8,10 +8,7 @@
 #include <array>
 
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 

@@ -11,10 +11,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8-isolate.h"
 
-namespace WTF {
-class String;
-}
-
 namespace blink {
 
 class ExecutionContext;

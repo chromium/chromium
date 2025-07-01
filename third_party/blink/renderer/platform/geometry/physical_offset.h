@@ -13,10 +13,6 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 // PhysicalOffset is the position of a rect (typically a fragment) relative to

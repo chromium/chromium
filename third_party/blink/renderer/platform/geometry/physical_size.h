@@ -10,10 +10,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 enum AspectRatioFit { kAspectRatioFitShrink, kAspectRatioFitGrow };

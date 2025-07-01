@@ -30,10 +30,6 @@
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 namespace cssvalue {
 

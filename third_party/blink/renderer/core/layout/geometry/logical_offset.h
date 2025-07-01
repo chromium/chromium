@@ -12,10 +12,6 @@
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 struct LogicalDelta;

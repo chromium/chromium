@@ -7,10 +7,7 @@
 
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-
-namespace WTF {
-class String;
-}
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 

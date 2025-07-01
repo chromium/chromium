@@ -175,7 +175,7 @@ struct HashTraits<blink::ContainerSelector>
     return selector.GetHash();
   }
   static constexpr bool kSafeToCompareToEmptyOrDeleted =
-      HashTraits<AtomicString>::kSafeToCompareToEmptyOrDeleted;
+      HashTraits<blink::AtomicString>::kSafeToCompareToEmptyOrDeleted;
   static const bool kEmptyValueIsZero = false;
 };
 

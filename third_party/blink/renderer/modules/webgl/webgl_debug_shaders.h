@@ -27,10 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_DEBUG_SHADERS_H_
 
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 

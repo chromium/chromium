@@ -13,10 +13,6 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class TracedValue;

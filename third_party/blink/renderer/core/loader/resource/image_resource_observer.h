@@ -29,10 +29,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_priority.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class ImageResourceContent;

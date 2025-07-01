@@ -25,10 +25,6 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/point.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 namespace cssvalue {

@@ -7,11 +7,8 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 

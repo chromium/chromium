@@ -5,9 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_GOODS_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_GOODS_UTIL_H_
 
-namespace WTF {
-class String;
-}
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 class ScriptState;

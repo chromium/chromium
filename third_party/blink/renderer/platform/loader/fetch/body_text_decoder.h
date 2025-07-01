@@ -9,10 +9,6 @@
 #include "third_party/blink/public/platform/web_encoding_data.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class BodyTextDecoder {

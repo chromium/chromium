@@ -36,10 +36,6 @@
 #include "third_party/blink/renderer/core/svg/svg_point.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class SVGPointListTearOff;

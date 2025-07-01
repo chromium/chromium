@@ -33,11 +33,8 @@
 
 #include "third_party/blink/renderer/core/svg/properties/svg_listable_property.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/point_f.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 

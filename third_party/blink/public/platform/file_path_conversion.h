@@ -7,15 +7,13 @@
 
 #include "third_party/blink/public/platform/web_common.h"
 
+#if INSIDE_BLINK
+#include "third_party/blink/renderer/platform/wtf/forward.h"
+#endif
+
 namespace base {
 class FilePath;
 }
-
-#if INSIDE_BLINK
-namespace WTF {
-class String;
-}  // namespace WTF
-#endif
 
 namespace blink {
 

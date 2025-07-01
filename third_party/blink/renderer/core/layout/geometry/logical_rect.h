@@ -10,10 +10,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 // LogicalRect is the position and size of a rect (typically a fragment)

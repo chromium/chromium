@@ -41,10 +41,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 typedef unsigned RGBA32;  // RGBA quadruplet

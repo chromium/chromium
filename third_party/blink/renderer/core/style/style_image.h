@@ -34,10 +34,6 @@ namespace gfx {
 class SizeF;
 }  // namespace gfx
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class CSSValue;

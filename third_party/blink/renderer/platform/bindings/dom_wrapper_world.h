@@ -39,16 +39,13 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "v8/include/v8.h"
 
 namespace base {
 class UnguessableToken;
 }  // namespace base
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 
