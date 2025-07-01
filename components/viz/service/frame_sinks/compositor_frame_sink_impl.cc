@@ -154,30 +154,17 @@ void CompositorFrameSinkImpl::SubmitCompositorFrame(
   // Non-root surface frames should not have display transform hint.
   DCHECK_EQ(gfx::OVERLAY_TRANSFORM_NONE, frame.metadata.display_transform_hint);
   SubmitCompositorFrameInternal(local_surface_id, std::move(frame),
-                                std::move(hit_test_region_list), submit_time,
-                                SubmitCompositorFrameSyncCallback());
-}
-
-void CompositorFrameSinkImpl::SubmitCompositorFrameSync(
-    const LocalSurfaceId& local_surface_id,
-    CompositorFrame frame,
-    std::optional<HitTestRegionList> hit_test_region_list,
-    uint64_t submit_time,
-    SubmitCompositorFrameSyncCallback callback) {
-  SubmitCompositorFrameInternal(local_surface_id, std::move(frame),
-                                std::move(hit_test_region_list), submit_time,
-                                std::move(callback));
+                                std::move(hit_test_region_list), submit_time);
 }
 
 void CompositorFrameSinkImpl::SubmitCompositorFrameInternal(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
     std::optional<HitTestRegionList> hit_test_region_list,
-    uint64_t submit_time,
-    mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
+    uint64_t submit_time) {
   const auto result = support_->MaybeSubmitCompositorFrame(
       local_surface_id, std::move(frame), std::move(hit_test_region_list),
-      submit_time, std::move(callback));
+      submit_time);
   if (result == SubmitResult::ACCEPTED)
     return;
 

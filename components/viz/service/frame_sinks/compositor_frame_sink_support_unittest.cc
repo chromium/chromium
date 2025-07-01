@@ -190,8 +190,7 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
       std::unique_ptr<CopyOutputRequest> request) {
     frame.render_pass_list.back()->copy_requests.push_back(std::move(request));
     const auto result = support_->MaybeSubmitCompositorFrame(
-        local_surface_id_, std::move(frame), std::nullopt, 0,
-        mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+        local_surface_id_, std::move(frame), std::nullopt, 0);
     switch (result) {
       case SubmitResult::ACCEPTED:
         return true;
@@ -764,37 +763,37 @@ TEST_P(CompositorFrameSinkSupportTest, MonotonicallyIncreasingLocalSurfaceIds) {
   // LocalSurfaceId1(6, 1)
   auto result = support->MaybeSubmitCompositorFrame(
       local_surface_id1, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0, mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // LocalSurfaceId(6, 2): Child-initiated synchronization.
   result = support->MaybeSubmitCompositorFrame(
       local_surface_id2, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0, mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // LocalSurfaceId(7, 2): Parent-initiated synchronization.
   result = support->MaybeSubmitCompositorFrame(
       local_surface_id3, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0, mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // LocalSurfaceId(5, 3): Submit rejected because not monotonically increasing.
   result = support->MaybeSubmitCompositorFrame(
       local_surface_id4, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0, mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      0);
   EXPECT_EQ(SubmitResult::SURFACE_ID_DECREASED, result);
 
   // LocalSurfaceId(8, 1): Submit rejected because not monotonically increasing.
   result = support->MaybeSubmitCompositorFrame(
       local_surface_id5, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0, mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      0);
   EXPECT_EQ(SubmitResult::SURFACE_ID_DECREASED, result);
 
   // LocalSurfaceId(9, 3): Parent AND child-initiated synchronization.
   result = support->MaybeSubmitCompositorFrame(
       local_surface_id6, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0, mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId);
@@ -1132,8 +1131,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, FrameSizeMismatch) {
                    .SetIsHandlingInteraction(true)
                    .Build();
   auto result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, std::move(frame), std::nullopt, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      local_surface_id_, std::move(frame), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
   EXPECT_TRUE(GetSurfaceForId(id));
 
@@ -1149,8 +1147,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, FrameSizeMismatch) {
                       std::size(frame_resource_ids));
 
   result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, std::move(frame), std::nullopt, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      local_surface_id_, std::move(frame), std::nullopt, 0);
 
   EXPECT_EQ(SubmitResult::SIZE_MISMATCH, result);
 
@@ -1172,8 +1169,7 @@ TEST_P(CompositorFrameSinkSupportTest, DeviceScaleFactorMismatch) {
                    .SetIsHandlingInteraction(true)
                    .Build();
   auto result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, std::move(frame), std::nullopt, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      local_surface_id_, std::move(frame), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
   EXPECT_TRUE(GetSurfaceForId(id));
 
@@ -1185,8 +1181,7 @@ TEST_P(CompositorFrameSinkSupportTest, DeviceScaleFactorMismatch) {
               .SetIsHandlingInteraction(true)
               .Build();
   result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, std::move(frame), std::nullopt, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      local_surface_id_, std::move(frame), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::SIZE_MISMATCH, result);
 }
 
@@ -1580,7 +1575,7 @@ TEST_P(CompositorFrameSinkSupportTest,
        DisallowEmbedTokenReuseAcrossFrameSinks) {
   auto result = support_->MaybeSubmitCompositorFrame(
       local_surface_id_, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0, mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // Create another sink and reuse the same embed token to submit a frame. The
@@ -1592,7 +1587,7 @@ TEST_P(CompositorFrameSinkSupportTest,
   LocalSurfaceId local_surface_id(31232, local_surface_id_.embed_token());
   result = support->MaybeSubmitCompositorFrame(
       local_surface_id, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0, mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      0);
   EXPECT_EQ(SubmitResult::SURFACE_OWNED_BY_ANOTHER_CLIENT, result);
 }
 
@@ -1609,8 +1604,7 @@ TEST_P(CompositorFrameSinkSupportTest, SubmitAfterReparenting) {
                               .SetIsHandlingInteraction(true)
                               .Build();
   SubmitResult result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id1, std::move(frame), std::nullopt, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      local_surface_id1, std::move(frame), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   frame = CompositorFrameBuilder()
@@ -1618,8 +1612,7 @@ TEST_P(CompositorFrameSinkSupportTest, SubmitAfterReparenting) {
               .SetIsHandlingInteraction(true)
               .Build();
   result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id2, std::move(frame), std::nullopt, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      local_surface_id2, std::move(frame), std::nullopt, 0);
 
   // Even though |local_surface_id2| has a smaller parent sequence number than
   // |local_surface_id1|, the submit should still succeed because it has a
@@ -1671,10 +1664,9 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
 
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             0u);
-  support->MaybeSubmitCompositorFrame(
-      local_surface_id, MakeDefaultInteractiveCompositorFrame(),
-      hit_test_region_list, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+  support->MaybeSubmitCompositorFrame(local_surface_id,
+                                      MakeDefaultInteractiveCompositorFrame(),
+                                      hit_test_region_list, 0);
   // hit_test_region_1 is valid. Submitted region count increases.
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
@@ -1689,10 +1681,9 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
   hit_test_region_list.regions.push_back(std::move(hit_test_region_2));
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
-  support->MaybeSubmitCompositorFrame(
-      local_surface_id, MakeDefaultInteractiveCompositorFrame(),
-      hit_test_region_list, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+  support->MaybeSubmitCompositorFrame(local_surface_id,
+                                      MakeDefaultInteractiveCompositorFrame(),
+                                      hit_test_region_list, 0);
   // hit_test_region_2 is invalid. Submitted region count does not change.
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
@@ -1708,10 +1699,9 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
   hit_test_region_list.regions.push_back(std::move(hit_test_region_3));
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
-  support->MaybeSubmitCompositorFrame(
-      local_surface_id, MakeDefaultInteractiveCompositorFrame(),
-      hit_test_region_list, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+  support->MaybeSubmitCompositorFrame(local_surface_id,
+                                      MakeDefaultInteractiveCompositorFrame(),
+                                      hit_test_region_list, 0);
   // hit_test_region_3 is invalid. Submitted region count does not change.
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
@@ -1728,10 +1718,9 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
   hit_test_region_list.regions.push_back(std::move(hit_test_region_4));
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             1u);
-  support->MaybeSubmitCompositorFrame(
-      local_surface_id, MakeDefaultInteractiveCompositorFrame(),
-      hit_test_region_list, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+  support->MaybeSubmitCompositorFrame(local_surface_id,
+                                      MakeDefaultInteractiveCompositorFrame(),
+                                      hit_test_region_list, 0);
   // hit_test_region_4 is valid. Submitted region count increases.
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
             2u);
@@ -2064,7 +2053,7 @@ TEST_P(CompositorFrameSinkSupportTest,
        ReleaseTransitionDirectiveClearsFrameSinkManagerEntry) {
   auto result = support_->MaybeSubmitCompositorFrame(
       local_surface_id_, MakeDefaultInteractiveCompositorFrame(), std::nullopt,
-      0, mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   blink::ViewTransitionToken transition_token;
@@ -2145,8 +2134,7 @@ TEST_P(CompositorFrameSinkSupportTest, ViewTransitionBlitRequestTextureQuad) {
 
   // Submit the frame.
   auto result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, std::move(frame), std::nullopt, 0,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+      local_surface_id_, std::move(frame), std::nullopt, 0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   Surface* surface = support_->GetLastCreatedSurfaceForTesting();

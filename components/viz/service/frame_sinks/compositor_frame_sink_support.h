@@ -217,8 +217,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
       std::optional<HitTestRegionList> hit_test_region_list,
-      uint64_t submit_time,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback);
+      uint64_t submit_time);
 
   // CapturableFrameSink implementation.
   const FrameSinkId& GetFrameSinkId() const override;
@@ -439,8 +438,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // next surface will take it regardless of its LocalSurfaceId.
   std::vector<PendingCopyOutputRequest> copy_output_requests_;
 
-  mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback
-      compositor_frame_callback_;
   bool callback_received_begin_frame_ = true;
   bool callback_received_receive_ack_ = true;
   uint32_t trace_sequence_ = 0;

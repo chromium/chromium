@@ -106,15 +106,6 @@ class VideoMockCompositorFrameSink
     last_submitted_compositor_frame_ = std::move(frame);
     DoSubmitCompositorFrame(id, &last_submitted_compositor_frame_);
   }
-  void SubmitCompositorFrameSync(
-      const viz::LocalSurfaceId& id,
-      viz::CompositorFrame frame,
-      std::optional<viz::HitTestRegionList> hit_test_region_list,
-      uint64_t submit_time,
-      const SubmitCompositorFrameSyncCallback callback) override {
-    last_submitted_compositor_frame_ = std::move(frame);
-    DoSubmitCompositorFrame(id, &last_submitted_compositor_frame_);
-  }
 
   MOCK_METHOD1(DidNotProduceFrame, void(const viz::BeginFrameAck&));
   MOCK_METHOD2(BindLayerContext,

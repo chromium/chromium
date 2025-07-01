@@ -664,10 +664,9 @@ void CompositorFrameSinkSupport::SubmitCompositorFrame(
     CompositorFrame frame,
     std::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
-  const auto result = MaybeSubmitCompositorFrame(
-      local_surface_id, std::move(frame), std::move(hit_test_region_list),
-      submit_time,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+  const auto result =
+      MaybeSubmitCompositorFrame(local_surface_id, std::move(frame),
+                                 std::move(hit_test_region_list), submit_time);
   DCHECK_EQ(result, SubmitResult::ACCEPTED);
 }
 
@@ -675,8 +674,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
     std::optional<HitTestRegionList> hit_test_region_list,
-    uint64_t submit_time,
-    mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
+    uint64_t submit_time) {
   if (!client_needs_begin_frame_ && auto_needs_begin_frame_) {
     // SetNeedsBeginFrame(true) below may cause `last_begin_frame_args_` to be
     // updated.
@@ -722,13 +720,6 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
 
   begin_frame_tracker_.ReceivedAck(frame.metadata.begin_frame_ack);
   pending_frames_.push_back(FrameData{.local_frame = false});
-
-  compositor_frame_callback_ = std::move(callback);
-  if (compositor_frame_callback_) {
-    callback_received_begin_frame_ = false;
-    callback_received_receive_ack_ = false;
-    UpdateNeedsBeginFramesInternal();
-  }
 
   base::TimeTicks now_time = base::TimeTicks::Now();
   pending_received_frame_times_.emplace(
@@ -970,14 +961,6 @@ SurfaceReference CompositorFrameSinkSupport::MakeTopLevelRootReference(
 }
 
 void CompositorFrameSinkSupport::HandleCallback() {
-  if (!compositor_frame_callback_ || !callback_received_begin_frame_ ||
-      !callback_received_receive_ack_) {
-    return;
-  }
-
-  std::move(compositor_frame_callback_)
-      .Run(std::move(surface_returned_resources_));
-  surface_returned_resources_.clear();
 }
 
 void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
@@ -995,14 +978,6 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
   if (was_local_frame) {
     client_->ReclaimResources(std::move(surface_returned_resources_));
     surface_returned_resources_.clear();
-    return;
-  }
-
-  // If we have a callback, we only return the resource on onBeginFrame.
-  if (compositor_frame_callback_) {
-    callback_received_receive_ack_ = true;
-    UpdateNeedsBeginFramesInternal();
-    HandleCallback();
     return;
   }
 
@@ -1121,12 +1096,6 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
         }
       });
 
-  if (compositor_frame_callback_) {
-    callback_received_begin_frame_ = true;
-    UpdateNeedsBeginFramesInternal();
-    HandleCallback();
-  }
-
   CheckPendingSurfaces();
 
   BeginFrameArgs adjusted_args = args;
@@ -1213,8 +1182,7 @@ void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
   // return.
   needs_begin_frame_ =
       (client_needs_begin_frame_ || !frame_timing_details_.empty() ||
-       !pending_surfaces_.empty() || layer_context_wants_begin_frames_ ||
-       (compositor_frame_callback_ && !callback_received_begin_frame_));
+       !pending_surfaces_.empty() || layer_context_wants_begin_frames_);
 
   if (bundle_id_.has_value()) {
     // When bundled with other sinks, observation of BeginFrame notifications is

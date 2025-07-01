@@ -52,12 +52,6 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
       CompositorFrame frame,
       std::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override;
-  void SubmitCompositorFrameSync(
-      const LocalSurfaceId& local_surface_id,
-      CompositorFrame frame,
-      std::optional<HitTestRegionList> hit_test_region_list,
-      uint64_t submit_time,
-      SubmitCompositorFrameSyncCallback callback) override;
   void DidNotProduceFrame(const BeginFrameAck& begin_frame_ack) override;
   void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
   void BindLayerContext(mojom::PendingLayerContextPtr context,
@@ -71,8 +65,7 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
       std::optional<HitTestRegionList> hit_test_region_list,
-      uint64_t submit_time,
-      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback);
+      uint64_t submit_time);
 
   void OnClientConnectionLost();
 

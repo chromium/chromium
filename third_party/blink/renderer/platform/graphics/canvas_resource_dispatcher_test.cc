@@ -357,9 +357,10 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
   ::testing::InSequence s;
 
-  // To intercept SubmitCompositorFrame/SubmitCompositorFrameSync messages sent
-  // by theCanvasResourceDispatcher, we have to override the Mojo
-  // EmbeddedFrameSinkProvider interface impl and its CompositorFrameSinkClient.
+  // To intercept SubmitCompositorFrame messages sent by
+  // theCanvasResourceDispatcher, we have to override the Mojo
+  // EmbeddedFrameSinkProvider interface impl and its
+  // CompositorFrameSinkClient.
   MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
   mojo::Receiver<mojom::blink::EmbeddedFrameSinkProvider>
       embedded_frame_sink_provider_receiver(&mock_embedded_frame_sink_provider);

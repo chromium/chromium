@@ -64,15 +64,6 @@ interface CompositorFrameSink {
                         CompositorFrame frame,
                         HitTestRegionList? hit_test_region_list,
                         uint64 submit_time);
-  // Same as above, submits a CompositorFrame to the display compositor. The
-  // implementation only returns when it's ready to receive another frame.
-  // We also return the list of resources that would be returned by
-  // DidReceiveCompositorFrameAck.
-  [Sync] SubmitCompositorFrameSync(LocalSurfaceId local_surface_id,
-                        CompositorFrame frame,
-                        HitTestRegionList? hit_test_region_list,
-                        uint64 submit_time)
-                        => (array<ReturnedResource> resources);
 
   // Notifies the frame sink that a BeginFrame was completed, but that no
   // CompositorFrame was produced as a result of it.
