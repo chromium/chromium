@@ -37,7 +37,8 @@ namespace sharesheet {
 class SharesheetService;
 
 // The SharesheetServiceDelegator is the interface through which the business
-// logic in SharesheetService communicates with the UI.
+// logic in SharesheetService communicates with the UI. This is deleted when UI
+// is closed, and must not be reused after that.
 class SharesheetServiceDelegator {
  public:
   SharesheetServiceDelegator(gfx::NativeWindow native_window,
