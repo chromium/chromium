@@ -418,6 +418,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kNavigatorUAData_toJSON, WebDXFeature::kUaClientHints},
           {WebFeature::kSelectElementAppearanceBaseSelect,
            WebDXFeature::kCustomizableSelect},
+          {WebFeature::kCSSSelectorPseudoNot, WebDXFeature::kNot},
           // Add new features above this line.
       }};
 

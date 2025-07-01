@@ -2498,6 +2498,9 @@ static void RecordUsageAndDeprecationsOneSelector(
     case CSSSelector::kPseudoOpen:
       feature = WebFeature::kCSSPseudoOpen;
       break;
+    case CSSSelector::kPseudoNot:
+      feature = WebFeature::kCSSSelectorPseudoNot;
+      break;
     default:
       break;
   }

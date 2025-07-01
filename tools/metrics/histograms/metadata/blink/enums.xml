@@ -6229,6 +6229,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5596" label="OverscrollBehaviorOnNonScrollableScrollContainer"/>
   <int value="5597" label="InteractiveContentSummaryDescendant"/>
   <int value="5598" label="SpeculationRulesEagernessEager"/>
+  <int value="5599" label="CSSSelectorPseudoNot"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -8299,6 +8300,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="340" label="LinkRelExpect"/>
   <int value="341" label="UaClientHints"/>
   <int value="342" label="CustomizableSelect"/>
+  <int value="343" label="Not"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

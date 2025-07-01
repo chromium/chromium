@@ -4906,6 +4906,7 @@ enum WebFeature {
   kOverscrollBehaviorOnNonScrollableScrollContainer = 5596,
   kInteractiveContentSummaryDescendant = 5597,
   kSpeculationRulesEagernessEager = 5598,
+  kCSSSelectorPseudoNot = 5599,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
