@@ -1552,7 +1552,8 @@ CSSPrimitiveValue* ConsumeResolution(CSSParserTokenStream& stream,
   }
 
   MathFunctionParser math_parser(stream, context,
-                                 CSSPrimitiveValue::ValueRange::kNonNegative);
+                                 CSSPrimitiveValue::ValueRange::kNonNegative,
+                                 CSSMathExpressionNode::Flags());
   const CSSMathFunctionValue* math_value = math_parser.Value();
   if (math_value && math_value->IsResolution()) {
     return math_parser.ConsumeValue();
