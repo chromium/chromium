@@ -7,8 +7,18 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class TOSCoordinator;
+
+@protocol TOSCoordinatorDelegate
+
+- (void)TOSCoordinatorWantsToBeStopped:(TOSCoordinator*)coordinator;
+
+@end
+
 // Coordinator to present Terms of Service (ToS) screen.
 @interface TOSCoordinator : ChromeCoordinator
+
+@property(nonatomic, weak) id<TOSCoordinatorDelegate> delegate;
 
 @end
 

@@ -14,9 +14,6 @@
 // Shows the ToS page.
 - (void)showTOSPage;
 
-// Closes the ToS page.
-- (void)closeTOSPage;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TOS_COMMANDS_H_

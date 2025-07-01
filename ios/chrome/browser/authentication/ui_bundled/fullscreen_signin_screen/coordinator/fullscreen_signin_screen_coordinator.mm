@@ -41,6 +41,7 @@
     IdentityChooserCoordinatorDelegate,
     TOSCommands,
     UIAdaptivePresentationControllerDelegate,
+    TOSCoordinatorDelegate,
     UMACoordinatorDelegate>
 
 // First run screen delegate.
@@ -348,12 +349,16 @@
   self.TOSCoordinator =
       [[TOSCoordinator alloc] initWithBaseViewController:self.viewController
                                                  browser:self.browser];
+  self.TOSCoordinator.delegate = self;
   [self.TOSCoordinator start];
 }
 
-- (void)closeTOSPage {
-  DCHECK(self.TOSCoordinator);
+#pragma mark - TOSCoordinatorDelegate
+
+- (void)TOSCoordinatorWantsToBeStopped:(TOSCoordinator*)coordinator {
+  CHECK_EQ(self.TOSCoordinator, coordinator, base::NotFatalUntil::M144);
   [self.TOSCoordinator stop];
+  self.TOSCoordinator.delegate = nil;
   self.TOSCoordinator = nil;
 }
 

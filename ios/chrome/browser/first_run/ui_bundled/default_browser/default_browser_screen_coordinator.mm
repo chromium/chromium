@@ -34,6 +34,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @interface DefaultBrowserScreenCoordinator () <TOSCommands,
+                                               TOSCoordinatorDelegate,
                                                UMACoordinatorDelegate>
 @end
 
@@ -98,6 +99,7 @@
   [_mediator disconnect];
   _mediator = nil;
   _instructionsHalfSheetCoordinator = nil;
+  [self stopTOSCoordinator];
 
   [super stop];
 }
@@ -173,13 +175,15 @@
   _TOSCoordinator =
       [[TOSCoordinator alloc] initWithBaseViewController:_staticViewController
                                                  browser:self.browser];
+  _TOSCoordinator.delegate = self;
   [_TOSCoordinator start];
 }
 
-- (void)closeTOSPage {
-  DCHECK(_TOSCoordinator);
-  [_TOSCoordinator stop];
-  _TOSCoordinator = nil;
+#pragma mark - TOSCoordinatorDelegate
+
+- (void)TOSCoordinatorWantsToBeStopped:(TOSCoordinator*)coordinator {
+  CHECK_EQ(_TOSCoordinator, coordinator, base::NotFatalUntil::M144);
+  [self stopTOSCoordinator];
 }
 
 #pragma mark - UMACoordinatorDelegate
@@ -194,6 +198,12 @@
 }
 
 #pragma mark - Private
+
+- (void)stopTOSCoordinator {
+  [_TOSCoordinator stop];
+  _TOSCoordinator.delegate = nil;
+  _TOSCoordinator = nil;
+}
 
 - (void)displayStaticPromo {
   _staticViewController = [[DefaultBrowserScreenViewController alloc] init];

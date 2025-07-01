@@ -21,36 +21,38 @@
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface TOSCoordinator () <UIAdaptivePresentationControllerDelegate,
+@interface TOSCoordinator () <TOSViewControllerPresentationDelegate,
+                              UIAdaptivePresentationControllerDelegate,
                               WKNavigationDelegate>
-
-@property(nonatomic, strong) TOSViewController* viewController;
 
 @end
 
 @implementation TOSCoordinator {
   AlertCoordinator* _alertCoordinator;
+  TOSViewController* _viewController;
+  UINavigationController* _navigationController;
 }
 
 - (void)start {
-  id<TOSCommands> handler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), TOSCommands);
-  self.viewController = [[TOSViewController alloc]
-      initWithContentView:[self newWebViewDisplayingTOS]
-                  handler:handler];
-  UINavigationController* navigationController = [[UINavigationController alloc]
-      initWithRootViewController:self.viewController];
-  navigationController.presentationController.delegate = self;
+  _viewController = [[TOSViewController alloc]
+      initWithContentView:[self newWebViewDisplayingTOS]];
+  _viewController.delegate = self;
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+  _navigationController.presentationController.delegate = self;
 
-  [self.baseViewController presentViewController:navigationController
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
-  [self.viewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
+  _viewController.delegate = nil;
+  _viewController = nil;
+  _navigationController.presentationController.delegate = nil;
+  _navigationController = nil;
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
 }
 
 #pragma mark - Private
@@ -63,7 +65,7 @@
 
   // Create web view.
   WKWebView* webView =
-      web::BuildWKWebView(self.viewController.view.bounds, self.profile);
+      web::BuildWKWebView(_viewController.view.bounds, self.profile);
   webView.navigationDelegate = self;
 
   // Loads terms of service into the web view.
@@ -114,7 +116,7 @@
   NSString* alertMessage =
       l10n_util::GetNSString(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED);
   _alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
+      [[AlertCoordinator alloc] initWithBaseViewController:_viewController
                                                    browser:self.browser
                                                      title:alertMessage
                                                    message:nil];
@@ -136,9 +138,14 @@
 }
 
 - (void)closeTOSPage {
-  id<TOSCommands> handler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), TOSCommands);
-  [handler closeTOSPage];
+  [self.delegate TOSCoordinatorWantsToBeStopped:self];
+}
+
+#pragma mark - TOSViewControllerPresentationDelegate
+
+- (void)TOSViewControllerWantsToBeClosed:(TOSViewController*)viewController {
+  CHECK_EQ(viewController, _viewController, base::NotFatalUntil::M144);
+  [self.delegate TOSCoordinatorWantsToBeStopped:self];
 }
 
 @end
