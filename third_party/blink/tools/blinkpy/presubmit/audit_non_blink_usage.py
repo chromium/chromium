@@ -781,10 +781,10 @@ _CONFIG = [
             'net::features::kPrefixCookieHttp',
             'net::features::kPrefixCookieHostHttp',
 
-            # Net error codes
+            # HTTP status codes
             'net::OK',
 
-            # HTTP status codes
+            # Net error codes
             'net::ERR_.*',
 
             # HTTP status codes
