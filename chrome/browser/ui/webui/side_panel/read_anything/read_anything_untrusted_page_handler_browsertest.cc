@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       page_.BindAndGetRemote(), test_web_ui_.get());
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
-      kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
+      GetProfile(), kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
 
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
       .WillOnce(testing::WithArg<0>(
@@ -951,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       page_.BindAndGetRemote(), test_web_ui_.get());
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
-      kLang, content::LanguageInstallStatus::INSTALLING, "");
+      GetProfile(), kLang, content::LanguageInstallStatus::INSTALLING, "");
 
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
       .WillOnce(testing::WithArg<0>(
@@ -971,7 +971,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       page_.BindAndGetRemote(), test_web_ui_.get());
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
-      kLang, content::LanguageInstallStatus::INSTALLED, "");
+      GetProfile(), kLang, content::LanguageInstallStatus::INSTALLED, "");
 
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
       .WillOnce(testing::WithArg<0>(
@@ -991,7 +991,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       page_.BindAndGetRemote(), test_web_ui_.get());
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
-      kLang, content::LanguageInstallStatus::FAILED, "");
+      GetProfile(), kLang, content::LanguageInstallStatus::FAILED, "");
 
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
       .WillOnce(testing::WithArg<0>(
@@ -1011,12 +1011,38 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       page_.BindAndGetRemote(), test_web_ui_.get());
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
-      kLang, content::LanguageInstallStatus::UNKNOWN, "");
+      GetProfile(), kLang, content::LanguageInstallStatus::UNKNOWN, "");
 
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
       .WillOnce(testing::WithArg<0>(
           testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kUnknown,
+                      info->pack_state->get_installation_state());
+            EXPECT_EQ(kLang, info->language);
+          })));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnUpdateLanguageStatus_DifferentProfiles) {
+  const char kLang[] = "it-it";
+  Profile* profile1 = GetProfile();
+  Profile* profile2 =
+      InProcessBrowserTest::CreateIncognitoBrowser()->GetProfile();
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      profile1, kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      profile2, kLang, content::LanguageInstallStatus::INSTALLED, "");
+
+  // Only forward the language status received for this profile.
+  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
+      .WillOnce(testing::WithArg<0>(
+          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+            EXPECT_EQ(read_anything::mojom::InstallationState::kNotInstalled,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
           })));

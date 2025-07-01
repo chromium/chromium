@@ -169,7 +169,8 @@ class ReadAnythingUntrustedPageHandler :
  private:
 #if !BUILDFLAG(IS_CHROMEOS)
   // content::UpdateLanguageStatusDelegate:
-  void OnUpdateLanguageStatus(const std::string& lang,
+  void OnUpdateLanguageStatus(content::BrowserContext* browser_context,
+                              const std::string& lang,
                               content::LanguageInstallStatus install_status,
                               const std::string& error) override;
   // extensions::ExtensionRegistryObserver implementation.

@@ -423,6 +423,7 @@ bool TtsControllerImpl::IsSpeaking() {
 }
 
 void TtsControllerImpl::UpdateLanguageStatus(
+    BrowserContext* browser_context,
     const std::string& lang,
     LanguageInstallStatus install_status,
     const std::string& error) {
@@ -431,7 +432,8 @@ void TtsControllerImpl::UpdateLanguageStatus(
   }
 
   for (auto& delegate : update_language_status_delegates_) {
-    delegate.OnUpdateLanguageStatus(lang, install_status, error);
+    delegate.OnUpdateLanguageStatus(browser_context, lang, install_status,
+                                    error);
   }
 }
 

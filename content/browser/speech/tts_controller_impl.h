@@ -58,7 +58,8 @@ class CONTENT_EXPORT TtsControllerImpl
   void Stop(const GURL& source_url) override;
   void Pause() override;
   void Resume() override;
-  void UpdateLanguageStatus(const std::string& lang,
+  void UpdateLanguageStatus(BrowserContext* browser_context,
+                            const std::string& lang,
                             LanguageInstallStatus install_status,
                             const std::string& error) override;
   void AddUpdateLanguageStatusDelegate(

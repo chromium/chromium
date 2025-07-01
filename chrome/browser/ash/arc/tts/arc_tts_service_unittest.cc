@@ -51,7 +51,8 @@ class TestableTtsController : public content::TtsController {
   void Stop(const GURL& source_url) override {}
   void Pause() override {}
   void Resume() override {}
-  void UpdateLanguageStatus(const std::string& lang,
+  void UpdateLanguageStatus(content::BrowserContext* browser_context,
+                            const std::string& lang,
                             content::LanguageInstallStatus install_status,
                             const std::string& error) override {}
   void AddUpdateLanguageStatusDelegate(

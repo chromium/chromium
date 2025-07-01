@@ -563,7 +563,8 @@ ExtensionTtsEngineUpdateLanguageFunction::Run() {
 
   // Notify that status of a language for a voice has changed.
   content::TtsController::GetInstance()->UpdateLanguageStatus(
-      *lang, VoicePackInstallStatusFromString(*install_status), error_message);
+      browser_context(), *lang,
+      VoicePackInstallStatusFromString(*install_status), error_message);
 
   return RespondNow(NoArguments());
 }

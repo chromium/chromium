@@ -107,7 +107,8 @@ class CONTENT_EXPORT VoicesChangedDelegate : public base::CheckedObserver {
 class CONTENT_EXPORT UpdateLanguageStatusDelegate
     : public base::CheckedObserver {
  public:
-  virtual void OnUpdateLanguageStatus(const std::string& lang,
+  virtual void OnUpdateLanguageStatus(BrowserContext* browser_context,
+                                      const std::string& lang,
                                       LanguageInstallStatus install_status,
                                       const std::string& error) = 0;
 };
@@ -148,7 +149,8 @@ class CONTENT_EXPORT TtsController {
 
   // Called by the content embedder when the status of a voice for a language
   // has changed.
-  virtual void UpdateLanguageStatus(const std::string& lang,
+  virtual void UpdateLanguageStatus(BrowserContext* browser_context,
+                                    const std::string& lang,
                                     LanguageInstallStatus install_status,
                                     const std::string& error) = 0;
 
