@@ -1117,13 +1117,6 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/fragmentation/* [ 
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/masonry-grid-template-columns-computed-withcontent.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/parsing/* [ Failure Skip ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/subgrid/* [ Failure Skip ]
-# Masonry item placement failures
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-001.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-002.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-004.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-005.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-006.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-007.html [ Failure ]
 # Masonry sizing test failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/gap/masonry-gap-002.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/* [ Crash Failure Skip ]
@@ -1145,6 +1138,11 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/alignment/masonry-
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/alignment/masonry-justify-content-001.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/alignment/masonry-justify-content-003.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/alignment/masonry-justify-content-004.html [ Failure ]
+# Masonry container alignment failures
+crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-004.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-005.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-006.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/item-placement/masonry-item-placement-007.html [ Failure ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/1211460 external/wpt/css/css-fonts/alternates-order.html [ Failure ]
