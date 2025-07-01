@@ -74,17 +74,12 @@ def main():
 
   local_import_basenames = {os.path.basename(p) for p in input_paths}
 
-  print(f"Processing {len(input_paths)} file(s)...")
-
   for input_path in input_paths:
     output_basename = os.path.basename(input_path).replace(
         ".proto", "_full_proto.proto"
     )
     output_path = os.path.join(output_dir, output_basename)
-    print(f"  - Processing '{input_path}' -> '{output_path}'")
     process_proto_file(input_path, output_path, local_import_basenames)
-
-  print("Processing complete.")
 
 
 if __name__ == "__main__":
