@@ -29,10 +29,8 @@ def __step_config(ctx, step_config):
         {
             "name": "mojo/mojom_parser",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/mojom/mojom_parser.py",
-            # TODO: b/285078792 - Win cross compile on Linux worker doesn't work with input_root_absolute_path=true.
             "remote": runtime.os != "windows",
             "canonicalize_dir": True,
-            "input_root_absolute_path": True,
             "timeout": "2m",
             "output_local": True,
             "platform_ref": platform_ref,
