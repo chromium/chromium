@@ -831,9 +831,13 @@ class VideoTextureBacking : public cc::TextureBacking {
 
   explicit VideoTextureBacking(
       scoped_refptr<gpu::ClientSharedImage> shared_image,
-      const SkImageInfo& info,
       scoped_refptr<viz::RasterContextProvider> raster_context_provider)
-      : sk_image_info_(info), shared_image_(std::move(shared_image)) {
+      : sk_image_info_(
+            SkImageInfo::Make(gfx::SizeToSkISize(shared_image->size()),
+                              kRGBA_8888_SkColorType,
+                              kPremul_SkAlphaType,
+                              shared_image->color_space().ToSkColorSpace())),
+        shared_image_(std::move(shared_image)) {
     CHECK(shared_image_);
     raster_context_provider_ = std::move(raster_context_provider);
   }
@@ -1833,6 +1837,9 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
           gpu::kNullSurfaceHandle);
       CHECK(client_shared_image);
       ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
+      cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
+          client_shared_image, raster_context_provider);
     }
 
     // Copy into the shared image backing of the cached copy.
@@ -1857,21 +1864,6 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 
     // In OOPR mode, we can keep the entire TextureBacking. In non-OOPR,
     // we can recycle the mailbox/texture, but have to replace the SkImage.
-    if (!gpu_rasterization) {
-      if (!cache_->texture_backing) {
-        cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
-            std::move(client_shared_image), SkImageInfo(),
-            raster_context_provider);
-      }
-    } else if (!cache_->texture_backing) {
-      SkImageInfo sk_image_info = SkImageInfo::Make(
-          gfx::SizeToSkISize(cache_->coded_size), kRGBA_8888_SkColorType,
-          kPremul_SkAlphaType,
-          video_frame->CompatRGBColorSpace().ToSkColorSpace());
-      cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
-          std::move(client_shared_image), sk_image_info,
-          raster_context_provider);
-    }
     paint_image_builder.set_texture_backing(cache_->texture_backing,
                                             cc::PaintImage::GetNextContentId());
 
