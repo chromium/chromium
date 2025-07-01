@@ -381,16 +381,6 @@ class BrowserView : public BrowserWindow,
   // page.
   bool GetTopControlsSlideBehaviorEnabled() const;
 
-#if BUILDFLAG(IS_WIN)
-  // Returns whether the browser can ever display a titlebar. Used in Windows
-  // touch mode. Possibly expand to ChromeOS if we add a titlebar back there in
-  // touch mode.
-  bool GetSupportsTitle() const;
-
-  // Returns whether the browser can ever display a window icon.
-  bool GetSupportsIcon() const;
-#endif
-
   // Returns the current shown ratio of the top browser controls.
   float GetTopControlsSlideBehaviorShownRatio() const;
 
