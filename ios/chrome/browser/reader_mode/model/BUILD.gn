@@ -36,6 +36,7 @@ source_set("model") {
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

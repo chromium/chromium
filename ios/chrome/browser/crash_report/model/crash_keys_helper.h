@@ -107,6 +107,9 @@ void MediaStreamPlaybackDidStop();
 // Sets whether VoiceOver is currently running or not.
 void SetVoiceOverRunning(bool running);
 
+// Sets whether the Reading Mode web state is active on the visible tab.
+void SetCurrentlyInReaderMode(bool is_reader_mode_active);
+
 }  // namespace crash_keys
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_KEYS_HELPER_H_

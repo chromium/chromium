@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 
 #import "base/task/single_thread_task_runner.h"
+#import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 
@@ -121,6 +122,7 @@ void ReaderModeBrowserAgent::ReaderModeWebStateDidBecomeAvailable(
   // If Reader mode becomes active in the active WebState, show the Reader mode
   // UI.
   ShowReaderModeUI(/* animated= */ true);
+  crash_keys::SetCurrentlyInReaderMode(true);
 }
 
 void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
@@ -128,6 +130,7 @@ void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
   // If Reader mode becomes inactive in the active WebState, hide the Reader
   // mode UI.
   HideReaderModeUI();
+  crash_keys::SetCurrentlyInReaderMode(false);
 }
 
 void ReaderModeBrowserAgent::ReaderModeTabHelperDestroyed(

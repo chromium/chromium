@@ -43,6 +43,7 @@ char const kForegroundScenes[] = "fgScenes";
 char const kDestroyingAndRebuildingIncognitoBrowserState[] =
     "destroyingAndRebuildingOTR";
 char const kVoiceOverRunning[] = "voiceOver";
+char const kIsReaderModeActive[] = "readerMode";
 
 }  // namespace
 
@@ -251,6 +252,22 @@ void SetVoiceOverRunning(bool running) {
   } else {
     [[CrashReportUserApplicationState sharedInstance]
         removeValue:kVoiceOverRunning];
+  }
+}
+
+void SetCurrentlyInReaderMode(bool is_reader_mode_active) {
+  static crash_reporter::CrashKeyString<4> key(kIsReaderModeActive);
+  if (is_reader_mode_active) {
+    key.Set("yes");
+    [[PreviousSessionInfo sharedInstance]
+        setReportParameterValue:@"yes"
+                         forKey:base::SysUTF8ToNSString(kIsReaderModeActive)];
+
+  } else {
+    key.Clear();
+    [[PreviousSessionInfo sharedInstance]
+        removeReportParameterForKey:base::SysUTF8ToNSString(
+                                        kIsReaderModeActive)];
   }
 }
 
