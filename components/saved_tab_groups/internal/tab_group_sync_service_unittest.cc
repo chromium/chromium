@@ -316,6 +316,7 @@ class TabGroupSyncServiceTest : public testing::Test {
     SavedTabGroupTab group_1_tab_1 = test::CreateSavedTabGroupTab(
         "A_Link", u"Only Tab", id_1, /*position=*/0);
     group_1_tab_1.SetLocalTabID(local_tab_id_1_);
+    group_1_tab_1.SetNavigationTime(base::Time::Now() + base::Days(1));
     std::vector<SavedTabGroupTab> group_1_tabs = {group_1_tab_1};
     std::vector<SavedTabGroupTab> group_2_tabs = {
         test::CreateSavedTabGroupTab("One_Link", u"One Of Two", id_2,
@@ -950,6 +951,7 @@ TEST_F(TabGroupSyncServiceTest, NavigateTab) {
   EXPECT_TRUE(tab);
   VerifyCacheGuids(*group, tab, kTestCacheGuid, kTestCacheGuid, kTestCacheGuid,
                    std::nullopt);
+  EXPECT_EQ(base::Time(), tab->navigation_time());
 
   // Update tab and verify observers.
   std::u16string new_title = u"tab title 2";
@@ -975,6 +977,8 @@ TEST_F(TabGroupSyncServiceTest, NavigateTab) {
                    kTestCacheGuid);
   histogram_tester.ExpectTotalCount(
       "TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin", 1u);
+  base::Time nav_time = tab->navigation_time();
+  EXPECT_NE(base::Time(), nav_time);
 
   // Update redirect chain. This should not notify observers.
   SavedTabGroupTabBuilder tab_builder2;
@@ -986,6 +990,8 @@ TEST_F(TabGroupSyncServiceTest, NavigateTab) {
       .Times(0);
   tab_group_sync_service_->UpdateTabProperties(local_group_id_1_,
                                                local_tab_id_2, tab_builder2);
+  base::Time nav_time2 = tab->navigation_time();
+  EXPECT_EQ(nav_time, nav_time2);
   WaitForPostedTasks();
 }
 
@@ -1357,18 +1363,14 @@ TEST_F(TabGroupSyncServiceTest, MoveTab) {
 TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
   MakeTabGroupShared(local_group_id_1_, kCollaborationId);
   base::HistogramTester histogram_tester;
-  base::Time test_start_time = base::Time::Now();
 
   // Advance the clock, so when a tab is selected, it will get a more
   // recent time than `test_start_time`.
-  task_environment_.AdvanceClock(base::Seconds(5));
+  task_environment_.AdvanceClock(base::Days(50000));
 
   // Add a new tab.
-  auto local_tab_id_2 = test::GenerateRandomTabID();
-  std::u16string tab_title_2 = u"random tab title";
-  tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2,
-                                  tab_title_2, GURL("www.google.com"),
-                                  std::nullopt);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       GURL("https://foo.com"), u"title2");
 
   {
     std::optional<SavedTabGroup> group =
@@ -1376,26 +1378,27 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
     CHECK(group);
 
     // Local Tab 2 should start with no last_seen time.
-    EXPECT_FALSE(group->GetTab(local_tab_id_2)->last_seen_time().has_value());
+    EXPECT_FALSE(group->GetTab(local_tab_id_1_)->last_seen_time().has_value());
+    EXPECT_NE(base::Time(), group->GetTab(local_tab_id_1_)->navigation_time());
   }
 
   EXPECT_CALL(*observer_,
-              OnTabSelected(Eq(std::set<LocalTabID>({local_tab_id_2}))));
+              OnTabSelected(Eq(std::set<LocalTabID>({local_tab_id_1_}))));
 
   // Select tab.
   EXPECT_CALL(*coordinator_, GetSelectedTabs())
-      .WillRepeatedly(Return(std::set<LocalTabID>({local_tab_id_2})));
-  tab_group_sync_service_->OnTabSelected(local_group_id_1_, local_tab_id_2,
-                                         tab_title_2);
+      .WillRepeatedly(Return(std::set<LocalTabID>({local_tab_id_1_})));
+  tab_group_sync_service_->OnTabSelected(local_group_id_1_, local_tab_id_1_,
+                                         u"title 2");
 
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   CHECK(group);
 
   // Local Tab 2 should get a last_seen time.
-  const SavedTabGroupTab* tab = group->GetTab(local_tab_id_2);
+  const SavedTabGroupTab* tab = group->GetTab(local_tab_id_1_);
   EXPECT_TRUE(tab->last_seen_time().has_value());
-  EXPECT_GT(tab->last_seen_time().value(), test_start_time);
+  EXPECT_EQ(tab->last_seen_time().value(), tab->navigation_time());
 
   histogram_tester.ExpectTotalCount(
       "TabGroups.Sync.TabGroup.TabSelected.GroupCreateOrigin", 1u);

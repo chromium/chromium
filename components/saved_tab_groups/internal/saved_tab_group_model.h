@@ -201,11 +201,12 @@ class SavedTabGroupModel {
   void UpdateLastUserInteractionTimeLocally(
       const LocalTabGroupID& local_group_id);
 
-  // Update the last time a tab was seen.
-  void UpdateTabLastSeenTime(const base::Uuid& group_id,
-                             const base::Uuid& tab_id,
-                             base::Time time,
-                             TriggerSource source);
+  // Update the last seen time for a tab.
+  void UpdateTabLastSeenTimeFromLocal(const base::Uuid& group_id,
+                                      const base::Uuid& tab_id);
+  void UpdateTabLastSeenTimeFromSync(const base::Uuid& group_id,
+                                     const base::Uuid& tab_id,
+                                     base::Time time);
 
   // Update the position for a share group from sync. If the position is
   // nullopt, the group will be moved to the end of the list.

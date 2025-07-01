@@ -753,14 +753,12 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
 
   // Update the last seen timestamp for tab1 locally. The updated timestamp
   // should be sent to sync.
-  base::Time last_seen_time3 = base::Time::Now() + base::Seconds(55);
   base::Time last_seen_time4 = base::Time::Now() + base::Seconds(99);
 
   syncer::EntityData entity_data;
   EXPECT_CALL(mock_processor(), Put(Eq(storage_key1), _, _))
       .WillOnce(SaveArgPointeeMove<1>(&entity_data));
-  model().UpdateTabLastSeenTime(group_id, tab_id1, last_seen_time3,
-                                TriggerSource::LOCAL);
+  model().UpdateTabLastSeenTimeFromLocal(group_id, tab_id1);
 
   // Verify the written specifics.
   const sync_pb::SharedTabGroupAccountDataSpecifics& specifics =
@@ -771,21 +769,20 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   EXPECT_TRUE(specifics.has_shared_tab_details());
   EXPECT_EQ(group_id.AsLowercaseString(),
             specifics.shared_tab_details().shared_tab_group_guid());
-  EXPECT_EQ(last_seen_time3.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+  EXPECT_EQ(tab1->navigation_time().ToDeltaSinceWindowsEpoch().InMicroseconds(),
             specifics.shared_tab_details().last_seen_timestamp_windows_epoch());
 
   // Update the last seen timestamp for tab2 from sync. The updated timestamp
   // should not be sent back to sync.
   EXPECT_CALL(mock_processor(), Put(Eq(storage_key2), _, _)).Times(0);
-  model().UpdateTabLastSeenTime(group_id, tab_id2, last_seen_time4,
-                                TriggerSource::REMOTE);
+  model().UpdateTabLastSeenTimeFromSync(group_id, tab_id2, last_seen_time4);
 
-  ASSERT_EQ(tab1->last_seen_time(), last_seen_time3);
+  ASSERT_EQ(tab1->last_seen_time(), tab1->navigation_time());
   EXPECT_EQ(GetNumTabDetailsInStore(), 2u);
   auto specifics1 = bridge().GetSpecificsForStorageKey(storage_key1);
   EXPECT_TRUE(specifics1.has_value());
   EXPECT_EQ(
-      last_seen_time3.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+      tab1->last_seen_time()->ToDeltaSinceWindowsEpoch().InMicroseconds(),
       specifics1->shared_tab_details().last_seen_timestamp_windows_epoch());
 
   ASSERT_EQ(tab2->last_seen_time(), last_seen_time4);
@@ -859,13 +856,10 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
 
   // Update the last seen timestamp for tab1 locally. The updated timestamp
   // should be sent to sync.
-  base::Time last_seen_time3 = base::Time::Now() + base::Seconds(55);
-
   syncer::EntityData entity_data;
   EXPECT_CALL(mock_processor(), Put(Eq(storage_key1), _, _))
       .WillOnce(SaveArgPointeeMove<1>(&entity_data));
-  model().UpdateTabLastSeenTime(group_id, tab_id1, last_seen_time3,
-                                TriggerSource::LOCAL);
+  model().UpdateTabLastSeenTimeFromLocal(group_id, tab_id1);
 
   // Verify the written specifics.
   const sync_pb::SharedTabGroupAccountDataSpecifics& specifics =
@@ -918,10 +912,8 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   // should be sent to sync.
   EXPECT_CALL(mock_processor(), Put(Eq(storage_key1), _, _)).Times(1);
   EXPECT_CALL(mock_processor(), Put(Eq(storage_key2), _, _)).Times(1);
-  model().UpdateTabLastSeenTime(group_id, tab_id1, base::Time::Now(),
-                                TriggerSource::LOCAL);
-  model().UpdateTabLastSeenTime(group_id, tab_id2, base::Time::Now(),
-                                TriggerSource::LOCAL);
+  model().UpdateTabLastSeenTimeFromLocal(group_id, tab_id1);
+  model().UpdateTabLastSeenTimeFromLocal(group_id, tab_id2);
   EXPECT_EQ(GetNumTabDetailsInStore(), 2u);
 
   // Delete the tab group locally. The corresponding sync entries for both tabs
@@ -963,10 +955,8 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   // should be sent to sync.
   EXPECT_CALL(mock_processor(), Put(Eq(storage_key1), _, _)).Times(1);
   EXPECT_CALL(mock_processor(), Put(Eq(storage_key2), _, _)).Times(1);
-  model().UpdateTabLastSeenTime(group_id, tab_id1, base::Time::Now(),
-                                TriggerSource::LOCAL);
-  model().UpdateTabLastSeenTime(group_id, tab_id2, base::Time::Now(),
-                                TriggerSource::LOCAL);
+  model().UpdateTabLastSeenTimeFromLocal(group_id, tab_id1);
+  model().UpdateTabLastSeenTimeFromLocal(group_id, tab_id2);
   EXPECT_EQ(GetNumTabDetailsInStore(), 2u);
 
   // Delete the tab group from sync. The corresponding sync entries for both

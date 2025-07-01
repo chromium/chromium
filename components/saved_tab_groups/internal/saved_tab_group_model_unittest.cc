@@ -13,6 +13,7 @@
 #include "base/rand_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -140,7 +141,10 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
 class SavedTabGroupModelTest : public ::testing::Test {
  protected:
   SavedTabGroupModelTest()
-      : id_1_(base::Uuid::GenerateRandomV4()),
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME),
+        id_1_(base::Uuid::GenerateRandomV4()),
         id_2_(base::Uuid::GenerateRandomV4()),
         id_3_(base::Uuid::GenerateRandomV4()) {}
 
@@ -210,6 +214,11 @@ class SavedTabGroupModelTest : public ::testing::Test {
     return saved_tab_group_ids;
   }
 
+  const SavedTabGroupTab& GetTab(const base::Uuid& group_id, int index) {
+    return saved_tab_group_model_->Get(group_id)->saved_tabs()[index];
+  }
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
   std::string base_path_ = "file:///c:/tmp/";
   base::Uuid id_1_;
@@ -971,61 +980,54 @@ TEST_F(SavedTabGroupModelTest, GroupsWithNoPositionInsertedAtEnd) {
   }
 }
 
-TEST_F(SavedTabGroupModelTest, SetsLastSeenTime) {
+TEST_F(SavedTabGroupModelTest, UpdateTabLastSeenTimeFromLocal) {
+  // Start test with no navigation time and no seen time set.
   SavedTabGroup saved_group = test::CreateTestSavedTabGroup();
   saved_group.SetCollaborationId(tab_groups::CollaborationId("collab_id"));
   saved_tab_group_model_->AddedLocally(saved_group);
   const base::Uuid group_id = saved_group.saved_guid();
 
-  EXPECT_FALSE(saved_tab_group_model_->Get(group_id)
-                   ->saved_tabs()
-                   .front()
-                   .last_seen_time()
-                   .has_value());
+  ASSERT_FALSE(GetTab(group_id, 0).last_seen_time().has_value());
 
-  base::Time last_seen_time = base::Time::Now();
-  saved_tab_group_model_->UpdateTabLastSeenTime(
-      saved_group.saved_guid(),
-      saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time,
-      TriggerSource::LOCAL);
+  base::Time nav_time1 = GetTab(group_id, 0).navigation_time();
+  ASSERT_EQ(base::Time(), nav_time1);
 
-  EXPECT_TRUE(saved_tab_group_model_->Get(group_id)
-                  ->saved_tabs()
-                  .front()
-                  .last_seen_time()
-                  .has_value());
-  EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
-                                ->saved_tabs()
-                                .front()
-                                .last_seen_time());
-
-  // Update the last seen time again. But since it's already greater than
-  // navigaion time, the redundant update will be ignored.
-  base::Time last_seen_time2 = base::Time::Now() + base::Seconds(10);
-  saved_tab_group_model_->UpdateTabLastSeenTime(
-      saved_group.saved_guid(),
-      saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time2,
-      TriggerSource::LOCAL);
-  EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
-                                ->saved_tabs()
-                                .front()
-                                .last_seen_time());
+  // Navigate the tab, thereby updating navigation time. Try updating last seen
+  // time after that (e.g. focusing the tab). It should succeed and update the
+  // last seen time.
   SavedTabGroupTab tab =
       saved_tab_group_model_->Get(group_id)->saved_tabs().front();
+  saved_tab_group_model_->UpdateTabInGroup(group_id, tab,
+                                           /*notify_observers=*/true);
+  base::Time nav_time2 = GetTab(group_id, 0).navigation_time();
+  ASSERT_NE(nav_time1, nav_time2);
+
+  saved_tab_group_model_->UpdateTabLastSeenTimeFromLocal(
+      saved_group.saved_guid(),
+      saved_group.saved_tabs().front().saved_tab_guid());
+
+  EXPECT_TRUE(GetTab(group_id, 0).last_seen_time().has_value());
+  EXPECT_EQ(nav_time2, GetTab(group_id, 0).last_seen_time());
+
+  // Update the last seen time from local again (e.g. focusing the tab). But
+  // since the navigation time didn't change, the redundant update will be
+  // ignored.
+  saved_tab_group_model_->UpdateTabLastSeenTimeFromLocal(
+      saved_group.saved_guid(),
+      saved_group.saved_tabs().front().saved_tab_guid());
+  EXPECT_EQ(nav_time2, GetTab(group_id, 0).last_seen_time());
 
   // Update navigation time and try updating last seen time again. It should
   // succeed.
-  tab.SetNavigationTime(base::Time::Now() + base::Seconds(5));
   saved_tab_group_model_->UpdateTabInGroup(group_id, tab,
                                            /*notify_observers=*/true);
-  saved_tab_group_model_->UpdateTabLastSeenTime(
+  base::Time nav_time3 = GetTab(group_id, 0).navigation_time();
+  ASSERT_NE(nav_time2, nav_time3);
+  saved_tab_group_model_->UpdateTabLastSeenTimeFromLocal(
       saved_group.saved_guid(),
-      saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time2,
-      TriggerSource::LOCAL);
-  EXPECT_EQ(last_seen_time2, saved_tab_group_model_->Get(group_id)
-                                 ->saved_tabs()
-                                 .front()
-                                 .last_seen_time());
+      saved_group.saved_tabs().front().saved_tab_guid());
+
+  EXPECT_EQ(nav_time3, GetTab(group_id, 0).last_seen_time());
 }
 
 // Tests that SavedTabGroupModelObserver::Added passes the correct element from
@@ -1375,8 +1377,7 @@ TEST_F(SavedTabGroupModelObserverTest,
               UnorderedElementsAre(HasGroupId(shared_group.saved_guid())));
 }
 
-TEST_F(SavedTabGroupModelObserverTest,
-       TriggersObserverWhenSettingTabLastSeenTime) {
+TEST_F(SavedTabGroupModelObserverTest, UpdateTabLastSeenTimeFromSync) {
   SavedTabGroup saved_group = test::CreateTestSavedTabGroup();
   saved_group.SetCollaborationId(tab_groups::CollaborationId("collab_id"));
   saved_tab_group_model_->AddedLocally(saved_group);
@@ -1389,10 +1390,9 @@ TEST_F(SavedTabGroupModelObserverTest,
                    .has_value());
 
   base::Time last_seen_time = base::Time::Now();
-  saved_tab_group_model_->UpdateTabLastSeenTime(
+  saved_tab_group_model_->UpdateTabLastSeenTimeFromSync(
       saved_group.saved_guid(),
-      saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time,
-      TriggerSource::LOCAL);
+      saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time);
 
   // Observer method was called.
   EXPECT_EQ(last_seen_tab_id_, saved_tab_group_model_->Get(group_id)
@@ -1404,6 +1404,17 @@ TEST_F(SavedTabGroupModelObserverTest,
                   .front()
                   .last_seen_time()
                   .has_value());
+  EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
+                                ->saved_tabs()
+                                .front()
+                                .last_seen_time());
+
+  // Mimic receiving a seen time from sync older than what the tab currently
+  // has. It should be ignored.
+  base::Time last_seen_time2 = last_seen_time - base::Seconds(5);
+  saved_tab_group_model_->UpdateTabLastSeenTimeFromSync(
+      saved_group.saved_guid(),
+      saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time2);
   EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
                                 ->saved_tabs()
                                 .front()

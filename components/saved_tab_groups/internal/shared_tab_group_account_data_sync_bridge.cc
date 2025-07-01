@@ -643,11 +643,10 @@ void SharedTabGroupAccountDataSyncBridge::UpdateTabDetailsModel(
     return;
   }
 
-  model_->UpdateTabLastSeenTime(
+  model_->UpdateTabLastSeenTimeFromSync(
       group_id, tab_id,
       DeserializeTime(
-          specifics.shared_tab_details().last_seen_timestamp_windows_epoch()),
-      TriggerSource::REMOTE);
+          specifics.shared_tab_details().last_seen_timestamp_windows_epoch()));
 
   storage_keys_for_missing_tabs_.erase(storage_key);
 }

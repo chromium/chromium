@@ -661,8 +661,8 @@ void TabGroupSyncServiceImpl::OnTabSelected(
   UpdateAttributions(*group_id);
   model_->UpdateLastUserInteractionTimeLocally(*group_id);
   if (group->is_shared_tab_group()) {
-    model_->UpdateTabLastSeenTime(group->saved_guid(), tab->saved_tab_guid(),
-                                  base::Time::Now(), TriggerSource::LOCAL);
+    model_->UpdateTabLastSeenTimeFromLocal(group->saved_guid(),
+                                           tab->saved_tab_guid());
   }
   LogEvent(TabGroupEvent::kTabSelected, *group_id, tab_id);
 }
@@ -1150,7 +1150,7 @@ void TabGroupSyncServiceImpl::UpdateTabLastSeenTime(const base::Uuid& group_id,
     return;
   }
 
-  model_->UpdateTabLastSeenTime(group_id, tab_id, base::Time::Now(), source);
+  model_->UpdateTabLastSeenTimeFromLocal(group_id, tab_id);
 }
 
 TabGroupSyncMetricsLogger*
@@ -1359,8 +1359,8 @@ void TabGroupSyncServiceImpl::
   for (const LocalTabID& local_tab_id : GetSelectedTabs()) {
     const SavedTabGroupTab* tab = group->GetTab(local_tab_id);
     if (tab) {
-      model_->UpdateTabLastSeenTime(group->saved_guid(), tab->saved_tab_guid(),
-                                    base::Time::Now(), TriggerSource::LOCAL);
+      model_->UpdateTabLastSeenTimeFromLocal(group->saved_guid(),
+                                             tab->saved_tab_guid());
     }
   }
 }
