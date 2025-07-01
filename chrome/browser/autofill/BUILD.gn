@@ -126,6 +126,8 @@ static_library("autofill") {
     sources += [
       "autofill_field_classification_model_service_factory.cc",
       "autofill_field_classification_model_service_factory.h",
+      "ml_log_router_factory.cc",
+      "ml_log_router_factory.h",
     ]
   }
 }

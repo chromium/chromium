@@ -26,3 +26,14 @@ source_set("autofill_ml_internals") {
     "//chrome/common",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "autofill_ml_internals_page_handler_browsertest.cc" ]
+  deps = [
+    ":autofill_ml_internals",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

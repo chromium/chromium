@@ -5,17 +5,20 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_AUTOFILL_ML_INTERNALS_AUTOFILL_ML_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_AUTOFILL_ML_INTERNALS_AUTOFILL_ML_INTERNALS_PAGE_HANDLER_H_
 
+#include "base/scoped_observation.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
+#include "components/autofill/core/browser/ml_model/logging/ml_log_router.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class AutofillMlInternalsPageHandlerImpl
-    : public autofill_ml_internals::mojom::PageHandler {
+    : public autofill_ml_internals::mojom::PageHandler,
+      public autofill::MLLogReceiver {
  public:
-  explicit AutofillMlInternalsPageHandlerImpl(
-      mojo::PendingReceiver<autofill_ml_internals::mojom::PageHandler>
-          receiver);
+  AutofillMlInternalsPageHandlerImpl(
+      mojo::PendingReceiver<autofill_ml_internals::mojom::PageHandler> receiver,
+      autofill::MLLogRouter* log_router);
   AutofillMlInternalsPageHandlerImpl(
       const AutofillMlInternalsPageHandlerImpl&) = delete;
   AutofillMlInternalsPageHandlerImpl& operator=(
@@ -26,9 +29,14 @@ class AutofillMlInternalsPageHandlerImpl
   void SetPage(
       mojo::PendingRemote<autofill_ml_internals::mojom::Page> page) override;
 
+  void ProcessLog(
+      const autofill_ml_internals::mojom::MLPredictionLog& log) override;
+
  private:
   mojo::Receiver<autofill_ml_internals::mojom::PageHandler> receiver_;
   mojo::Remote<autofill_ml_internals::mojom::Page> page_;
+  base::ScopedObservation<autofill::MLLogRouter, autofill::MLLogReceiver>
+      log_router_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_AUTOFILL_ML_INTERNALS_AUTOFILL_ML_INTERNALS_PAGE_HANDLER_H_

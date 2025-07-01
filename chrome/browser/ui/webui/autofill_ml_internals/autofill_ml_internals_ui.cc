@@ -1,8 +1,10 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/ui/webui/autofill_ml_internals/autofill_ml_internals_ui.h"
 
+#include "chrome/browser/autofill/ml_log_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/autofill_ml_internals/autofill_ml_internals_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -23,15 +25,18 @@ AutofillMlInternalsUI::AutofillMlInternalsUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, kAutofillMlInternalsResources,
       IDR_AUTOFILL_ML_INTERNALS_AUTOFILL_ML_INTERNALS_HTML);
+
   // Pass the message string to the frontend. This generates strings.m.js.
   source->AddString("message", "Hello from the C++ backend!");
 }
 
 void AutofillMlInternalsUI::BindInterface(
     mojo::PendingReceiver<autofill_ml_internals::mojom::PageHandler> receiver) {
-  page_handler_ =
-      std::make_unique<AutofillMlInternalsPageHandlerImpl>(std::move(receiver));
+  page_handler_ = std::make_unique<AutofillMlInternalsPageHandlerImpl>(
+      std::move(receiver), autofill::MLLogRouterFactory::GetForProfile(
+                               Profile::FromWebUI(web_ui())));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AutofillMlInternalsUI)
+
 AutofillMlInternalsUI::~AutofillMlInternalsUI() = default;

@@ -828,6 +828,8 @@ static_library("browser") {
       "ml_model/field_classification_model_executor.h",
       "ml_model/field_classification_model_handler.cc",
       "ml_model/field_classification_model_handler.h",
+      "ml_model/logging/ml_log_router.cc",
+      "ml_model/logging/ml_log_router.h",
     ]
   }
 
@@ -861,6 +863,7 @@ static_library("browser") {
 
   if (build_with_tflite_lib) {
     public_deps += [
+      "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
       "//third_party/tflite_support",
