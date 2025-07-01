@@ -53,8 +53,10 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
       form_manager->GetParsedObservedForm();
   CHECK(parsed_form);
 
-  // Change password form shouldn't contain username field.
-  if (parsed_form->username_element_renderer_id) {
+  // Change password form shouldn't contain username field. This doesn't apply
+  // to <form>-less forms.
+  if (parsed_form->form_data.renderer_id() &&
+      parsed_form->username_element_renderer_id) {
     return;
   }
 
