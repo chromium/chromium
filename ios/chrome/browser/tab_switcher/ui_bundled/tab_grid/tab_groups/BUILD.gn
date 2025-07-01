@@ -368,6 +368,7 @@ source_set("eg2_tests") {
     "shared_tab_groups_panel_egtest.mm",
     "shared_tab_groups_policy_egtest.mm",
     "shared_tab_groups_signin_egtest.mm",
+    "shared_tab_groups_versioning_egtest.mm",
     "tab_group_sync_egtest.mm",
     "tab_group_sync_signin_egtest.mm",
     "tab_groups_egtest.mm",
