@@ -3151,6 +3151,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-devtools-deep-link-via-extensibility-api",
+    "owners": [ "finnur@chromium.org", "//components/ui_devtools/OWNERS" ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "enable-disco-feed-endpoint",
     "owners": [
       "tinazwang@chromium.org",

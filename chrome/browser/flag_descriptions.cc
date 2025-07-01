@@ -1886,6 +1886,14 @@ const char kMirrorBackForwardGesturesInRTLDescription[] =
     "directions are flipped so that the left edge is considered forward and "
     "right is considered back.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kEnableDevtoolsDeepLinkViaExtensibilityApiName[] =
+    "Extensibility API support for deep-links within DevTools";
+const char kEnableDevtoolsDeepLinkViaExtensibilityApiDescription[] =
+    "Extends console.timestamp to support adding deep-links into the DevTools "
+    "Performance Panel, which (when clicked) call into a DevTools extension";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 const char kEnableLazyLoadImageForInvisiblePageName[] =
     "Enable lazy load image for invisible page";
 const char kEnableLazyLoadImageForInvisiblePageDescription[] =

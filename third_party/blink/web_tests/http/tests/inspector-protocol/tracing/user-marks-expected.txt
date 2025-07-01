@@ -24,6 +24,49 @@ Object: {
 	tid: number
 	ts: number
 }
+Got a TimeStamp event with optional data:
+Object: {
+	args: {
+		data: {
+			color: string
+			devtools: string
+			end: string
+			frame: string
+			message: string
+			name: string
+			sampleTraceId: number
+			start: string
+			track: string
+			trackGroup: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got a TimeStamp event with unexpected object param:
+Object: {
+	args: {
+		data: {
+			frame: string
+			message: string
+			name: string
+			sampleTraceId: number
+			start: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
 Got a TimeStamp event with numeric start and end:
 Object: {
 	args: {

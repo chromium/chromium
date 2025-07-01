@@ -694,6 +694,12 @@ BASE_FEATURE(kDropInputEventsWhilePaintHolding,
              "DropInputEventsWhilePaintHolding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Extends console.timestamp to support adding deep-links into the DevTools
+// Performance Panel, which (when clicked) call into a DevTools extension.
+BASE_FEATURE(kEnableDevtoolsDeepLinkViaExtensibilityApi,
+             "EnableDevtoolsDeepLinkViaExtensibilityApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEstablishGpuChannelAsync,
              "EstablishGpuChannelAsync",
 #if BUILDFLAG(IS_ANDROID)

@@ -12734,6 +12734,15 @@ const FeatureEntry kFeatureEntries[] = {
          chromeos::features::kMultiCaptureReworkedUsageIndicators)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-devtools-deep-link-via-extensibility-api",
+     flag_descriptions::kEnableDevtoolsDeepLinkViaExtensibilityApiName,
+     flag_descriptions::kEnableDevtoolsDeepLinkViaExtensibilityApiDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         blink::features::kEnableDevtoolsDeepLinkViaExtensibilityApi)},
+#endif
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     {"offer-migration-to-dice-users",
      flag_descriptions::kOfferMigrationToDiceUsersName,

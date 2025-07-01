@@ -332,6 +332,11 @@ extern const char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[];
 extern const char kEnableBookmarksSelectedTypeOnSigninForTestingName[];
 extern const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kEnableDevtoolsDeepLinkViaExtensibilityApiName[];
+extern const char kEnableDevtoolsDeepLinkViaExtensibilityApiDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 extern const char kEnableLazyLoadImageForInvisiblePageName[];
 extern const char kEnableLazyLoadImageForInvisiblePageDescription[];
 

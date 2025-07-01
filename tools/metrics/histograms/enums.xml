@@ -13582,6 +13582,8 @@ from previous Chrome versions.
   <int value="-158549277" label="enable-embeddedsearch-api"/>
   <int value="-158161384" label="SafeModeForCachedFlags:disabled"/>
   <int value="-157983843" label="CrostiniUseLxd5:disabled"/>
+  <int value="-157958447"
+      label="EnableDevtoolsDeepLinkViaExtensibilityApi:enabled"/>
   <int value="-157036790" label="CrosPrivacyHubAppPermissions:disabled"/>
   <int value="-156983642" label="ByDateHistoryInSidePanel:disabled"/>
   <int value="-155494963" label="ToolbarPhoneAnimationRefactor:enabled"/>
@@ -14304,6 +14306,8 @@ from previous Chrome versions.
   <int value="114748684" label="AlmanacGameMigration:disabled"/>
   <int value="114948617" label="SurfacePolish:enabled"/>
   <int value="115449720" label="AndroidTabDeclutterAutoDelete:disabled"/>
+  <int value="115640250"
+      label="EnableDevtoolsDeepLinkViaExtensibilityApi:disabled"/>
   <int value="115834091" label="TrackByDefaultOnMobile:enabled"/>
   <int value="115852043"
       label="PageInfoAboutThisSiteKeepSidePanelOnSameTabNavs:enabled"/>
@@ -17374,6 +17378,8 @@ from previous Chrome versions.
   <int value="1257482622" label="PageAlmostIdle:enabled"/>
   <int value="1257533754" label="UseDownloadOfflineContentProvider:disabled"/>
   <int value="1257663962" label="CommercePriceTracking:disabled"/>
+  <int value="1257704747"
+      label="kEnableDevtoolsDeepLinkViaExtensibilityApi:enabled"/>
   <int value="1257980502" label="disable-accelerated-video-decode"/>
   <int value="1258043820" label="AudioFocusEnforcement:enabled"/>
   <int value="1258747457"
@@ -18053,6 +18059,8 @@ from previous Chrome versions.
   <int value="1497284913" label="WASAPIRawAudioCapture:enabled"/>
   <int value="1497609106" label="ContextualNudges:enabled"/>
   <int value="1497924954" label="js-flags"/>
+  <int value="1498042125"
+      label="kEnableDevtoolsDeepLinkViaExtensibilityApi:disabled"/>
   <int value="1498398756" label="TemporaryHoldingSpace:disabled"/>
   <int value="1498464764" label="WebIdentityMDocs:disabled"/>
   <int value="1499009324" label="ZeroSuggestPrefetchingOnSRP:disabled"/>

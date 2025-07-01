@@ -18,6 +18,8 @@
   await session.evaluateAsync('dispatchIdleCallback();');
   await session.evaluateAsync('dispatchConsoleTimings();');
   await session.evaluateAsync('dispatchConsoleTimeStamps();');
+  await session.evaluateAsync('dispatchConsoleTimeStampsWithOptionalData();');
+  await session.evaluateAsync('dispatchConsoleTimeStampsWithUnexpectedObjectParam();');
   await session.evaluateAsync('dispatchUserTimings();');
   await session.evaluateAsync('dispatchAnimationFrame();');
   await session.evaluateAsync('dispatchTimer();');
@@ -27,6 +29,8 @@
       /devtools\.timeline|blink\.console|blink\.user_timing/);
 
   const timeStampWithLabels = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp with labels");
+  const timeStampWithOptionalData = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp with optional data");
+  const timeStampsWithUnexpectedObjectParam = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp with unexpected object");
   const markReference = tracingHelper.findEvent('Timestamp reference', Phase.INSTANT);
   const timeStampWithNumbers = allEvents.find(event => event.name === 'TimeStamp' && event.args?.data?.name === "Timestamp with numeric values");
   const consoleTimeEvents =
@@ -68,6 +72,12 @@
 
   testRunner.log('Got a TimeStamp event with labeled start and end:');
   tracingHelper.logEventShape(timeStampWithLabels);
+
+  testRunner.log('Got a TimeStamp event with optional data:');
+  tracingHelper.logEventShape(timeStampWithOptionalData);
+
+  testRunner.log('Got a TimeStamp event with unexpected object param:');
+  tracingHelper.logEventShape(timeStampsWithUnexpectedObjectParam);
 
   testRunner.log('Got a TimeStamp event with numeric start and end:');
   tracingHelper.logEventShape(timeStampWithNumbers);

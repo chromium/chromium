@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "cc/layers/picture_layer.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
@@ -1506,8 +1507,8 @@ void inspector_time_stamp_event::Data(perfetto::TracedValue trace_context,
   v8::CpuProfiler::CpuProfiler::CollectSample(isolate, sample_trace_id);
   dict.Add("sampleTraceId", sample_trace_id);
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
-  static constexpr std::array<const char*, 6> kNames = {
-      "name", "start", "end", "track", "trackGroup", "color"};
+  static constexpr std::array<const char*, 7> kNames = {
+      "name", "start", "end", "track", "trackGroup", "color", "devtools"};
   for (size_t i = 0; i < args.size() && i < std::size(kNames); ++i) {
     auto name = kNames[i];
     auto value = args[i];
@@ -1525,8 +1526,19 @@ void inspector_time_stamp_event::Data(perfetto::TracedValue trace_context,
     } else if (value->IsString()) {
       dict.Add(perfetto::StaticString(name),
                ToCoreString(isolate, value.As<v8::String>()).Utf8());
-    } else {
-      dict.Add(perfetto::StaticString(name), "");
+    } else if (!value->IsNullOrUndefined()) {
+      if (i == 6 && base::FeatureList::IsEnabled(
+                        features::kEnableDevtoolsDeepLinkViaExtensibilityApi)) {
+        String dev_tools = "";
+        v8::Local<v8::String> v8_string;
+        if (v8::JSON::Stringify(isolate->GetCurrentContext(), value)
+                .ToLocal(&v8_string)) {
+          dev_tools = ToCoreString(isolate, v8_string);
+          dict.Add(perfetto::StaticString(name), dev_tools);
+        }
+      } else {
+        dict.Add(perfetto::StaticString(name), "");
+      }
     }
   }
 }

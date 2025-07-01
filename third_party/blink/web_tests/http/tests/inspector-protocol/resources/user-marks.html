@@ -10,8 +10,15 @@
             console.timeStamp("Timestamp with labels", "start", "end", "track", "trackGroup", "color");
             const then = performance.now();
             performance.mark("Timestamp reference", {startTime: then});
-            console.timeStamp("Timestamp with numeric values", then, then + 100, "track", "trackGroup", "color")
-
+            console.timeStamp("Timestamp with numeric values", then, then + 100, "track", "trackGroup", "color");
+        }
+        function dispatchConsoleTimeStampsWithOptionalData() {
+            console.timeStamp("Timestamp with optional data", "start", "end", "track", "trackGroup", "color",
+                { url: 'foo-extension://node/1', description: 'Node'}
+            );
+        }
+        function dispatchConsoleTimeStampsWithUnexpectedObjectParam() {
+            console.timeStamp("Timestamp with unexpected object", {foo: 'bar'});
         }
         async function dispatchUserTimings() {
             let userTimingCallback;
