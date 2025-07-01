@@ -16,7 +16,7 @@
                 "try_builder": "android-x64-rel"
             },
             "components_browsertests": {
-                "shards": 4,
+                "shards": 6,
                 "try_builder": "android-x64-rel"
             }
         },
