@@ -121,6 +121,13 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
   [[EarlGrey
       selectElementWithMatcher:IdentityButtonMatcher(primaryIdentity.userEmail)]
       performAction:grey_tap()];
+
+  // TODO(crbug.com/428928323): Investigate why the keyboard appears and remove
+  // this workaround when it's not needed anymore.
+  // On iOS 26, the keyboard appears when the identity button is tapped and it
+  // hides the elements behind. Close the keyboard by typing a return key.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
+
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ContextMenuItemWithAccessibilityLabel(
                      secondaryIdentity.userEmail)] performAction:grey_tap()];
@@ -152,6 +159,13 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
   [[EarlGrey
       selectElementWithMatcher:IdentityButtonMatcher(primaryIdentity.userEmail)]
       performAction:grey_tap()];
+
+  // TODO(crbug.com/428928323): Investigate why the keyboard appears and remove
+  // this workaround when it's not needed anymore.
+  // On iOS 26, the keyboard appears when the identity button is tapped and it
+  // hides the elements behind. Close the keyboard by typing a return key.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
+
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ContextMenuItemWithAccessibilityLabel(
                      secondaryIdentity.userEmail)] performAction:grey_tap()];
