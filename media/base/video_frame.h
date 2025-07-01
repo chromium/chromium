@@ -675,7 +675,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     return const_cast<uint8_t*>(data(plane));
   }
 
-  bool is_mappable_si_enabled() const { return is_mappable_si_enabled_; }
+  bool is_mappable_si_enabled() const {
+    return wrapped_frame_ ? wrapped_frame_->is_mappable_si_enabled()
+                          : is_mappable_si_enabled_;
+  }
 
   const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const {
     return wrapped_frame_ ? wrapped_frame_->ycbcr_info() : ycbcr_info_;
