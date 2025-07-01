@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/test_accelerator_target.h"
@@ -1206,17 +1207,17 @@ TEST_F(DesktopWidgetFocusManagerTest, AnchoredDialogInDesktopNativeWidgetAura) {
 
   widget->Activate();
   parent1->RequestFocus();
-  base::RunLoop().RunUntilIdle();
 
   // Initially the outer widget's window is focused.
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(widget->GetNativeView());
-  ASSERT_EQ(widget->GetNativeView(), focus_client->GetFocusedWindow());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return widget->GetNativeView() == focus_client->GetFocusedWindow();
+  }));
 
   // Navigate forwards
   widget->GetFocusManager()->AdvanceFocus(false);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(parent2->HasFocus());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return parent2->HasFocus(); }));
   widget->GetFocusManager()->AdvanceFocus(false);
   EXPECT_TRUE(child->HasFocus());
 
