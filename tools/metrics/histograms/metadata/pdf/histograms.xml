@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded every time the PDF infobar is shown.</summary>
 </histogram>
 
-<histogram name="PDF.InfoBar.UserInteraction" units="PDFInfoBarUserInteraction"
+<histogram name="PDF.InfoBar.UserInteraction" enum="PDFInfoBarUserInteraction"
     expires_after="2026-04-25">
   <owner>jessemckenna@google.com</owner>
   <owner>davidbienvenu@chromium.org</owner>
