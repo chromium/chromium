@@ -6,11 +6,13 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 // <if expr="is_ios">
 // TODO(crbug.com/41173939): Remove this once injected by web. -->
 import 'chrome://resources/js/ios/web_ui.js';
+
 // </if>
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -157,6 +159,16 @@ export class ChromeUrlsAppElement extends CrLitElement {
     await BrowserProxyImpl.getInstance().handler.setDebugPagesEnabled(enabled);
     this.internalUisEnabled_ = enabled;
     this.debugPagesButtonDisabled_ = false;
+    const params = new URLSearchParams(window.location.search);
+    const host = params.get('host');
+    // If a host was provided, redirects to it when debug pages are enabled.
+    if (enabled && host) {
+      const hostUrl = new URL(host);
+      if (this.internalUrlInfos_.some(
+              info => info.url.url === hostUrl.origin)) {
+        OpenWindowProxyImpl.getInstance().openUrl(host);
+      }
+    }
   }
 
   protected isInternalUiEnabled_(info: WebuiUrlInfo): boolean {

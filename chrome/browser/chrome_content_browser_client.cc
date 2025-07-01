@@ -6844,7 +6844,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
   if (IsDisabledInternalWebUI(*url)) {
     GURL::Replacements replacements;
-    std::string query("host=" + url->host());
+    std::string query("host=" + url->spec());
     replacements.SetQueryStr(query);
     *url = GURL(chrome::kChromeUIInternalDebugPagesDisabledURL)
                .ReplaceComponents(replacements);

@@ -18,6 +18,7 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//components/webui/chrome_urls/resources:build_ts",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 }

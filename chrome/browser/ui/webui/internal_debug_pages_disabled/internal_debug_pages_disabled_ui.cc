@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/internal_debug_pages_disabled/internal_debug_pages_disabled_ui.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/grit/internal_debug_pages_disabled_resources.h"
@@ -16,20 +17,21 @@
 #include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
 
-void CreateAndAddHTMLSource(Profile* profile, const std::string& host_name) {
+void CreateAndAddHTMLSource(Profile* profile, std::string_view host_name) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIInternalDebugPagesDisabledHost);
   source->AddLocalizedString("pageHeading",
                              IDS_INTERNAL_DEBUG_PAGES_DISABLED_HEADING);
-  std::u16string body =
-      l10n_util::GetStringFUTF16(IDS_INTERNAL_DEBUG_PAGES_DISABLED_BODY,
-                                 base::StrCat({chrome::kChromeUIChromeURLsURL16,
-                                               u"#internal-debug-pages"}));
+  std::u16string body = l10n_util::GetStringFUTF16(
+      IDS_INTERNAL_DEBUG_PAGES_DISABLED_BODY,
+      base::StrCat({chrome::kChromeUIChromeURLsURL16, u"?host=",
+                    base::UTF8ToUTF16(host_name), u"#internal-debug-pages"}));
   source->AddString("pageBody", body);
 
   // All debug UIs have the chrome:// scheme, so just replace the host for
@@ -62,8 +64,13 @@ InternalDebugPagesDisabledUI::InternalDebugPagesDisabledUI(
     content::WebUI* web_ui,
     const GURL& url)
     : WebUIController(web_ui) {
-  // Since we set the query to host=host_name, grab substr(5).
-  std::string query = url.query();
-  CreateAndAddHTMLSource(Profile::FromWebUI(web_ui),
-                         query.length() > 5 ? query.substr(5) : "");
+  // Grab host_name in `host=host_name`.
+  std::string_view host_name;
+  for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
+    if (it.GetKey() != "host") {
+      continue;
+    }
+    host_name = it.GetValue();
+  }
+  CreateAndAddHTMLSource(Profile::FromWebUI(web_ui), host_name);
 }
