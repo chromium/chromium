@@ -227,9 +227,10 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         updateSecurityIcon();
     }
 
-    // LocationBarDataProvider.Observer implementation.
+    // LocationBarData.Observer implementation.
     // Using the default empty onPrimaryColorChanged.
     // Using the default empty onTitleChanged.
+    // Using the default empty onUrlChanged.
 
     @Override
     public void onNtpStartedLoading() {
@@ -248,8 +249,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     @Override
-    public void onUrlChanged(boolean isTabChanging) {
-        mMediator.onUrlChanged(isTabChanging);
+    public void onUrlChanged() {
+        mMediator.onUrlChanged();
     }
 
     @Override

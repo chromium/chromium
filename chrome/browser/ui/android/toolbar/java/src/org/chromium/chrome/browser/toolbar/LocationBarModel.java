@@ -248,8 +248,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         assert tab == null || tab.getProfile() == profile;
         assert profile != null;
 
-        boolean isTabChanging = mTab != tab;
-        Tab previousTab = mTab;
         mTab = tab;
         mProfile = profile;
         performProfileDependentInitializationIfRequired();
@@ -265,10 +263,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         updateUsingBrandColor();
         notifyTitleChanged();
-        if (isTabChanging) {
-            notifyTabChanged(previousTab);
-        }
-        notifyUrlChanged(isTabChanging);
+        notifyUrlChanged();
         notifyPrimaryColorChanged();
         notifySecurityStateChanged();
     }
@@ -337,21 +332,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return false;
     }
 
-    public void notifyTabChanged(@Nullable Tab previousTab) {
-        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
-            observer.onTabChanged(previousTab);
-        }
-    }
-
-    public void notifyUrlChanged(boolean isTabChanging) {
-        if (((mIsInSameDocNav && mAlreadyUpdatedUrlBarForSameDocNav) || !updateVisibleGurl())
-                && !isTabChanging) {
+    public void notifyUrlChanged() {
+        if ((mIsInSameDocNav && mAlreadyUpdatedUrlBarForSameDocNav) || !updateVisibleGurl()) {
             return;
         }
 
-        // Url or tab has changed, propagate it.
+        // Url has changed, propagate it.
         for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
-            observer.onUrlChanged(isTabChanging);
+            observer.onUrlChanged();
         }
 
         mAlreadyUpdatedUrlBarForSameDocNav = mIsInSameDocNav;
@@ -836,7 +824,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     /** Notify changes for non static layout. */
     public void updateForNonStaticLayout() {
         notifyTitleChanged();
-        notifyUrlChanged(false);
+        notifyUrlChanged();
         notifyPrimaryColorChanged();
         notifySecurityStateChanged();
     }

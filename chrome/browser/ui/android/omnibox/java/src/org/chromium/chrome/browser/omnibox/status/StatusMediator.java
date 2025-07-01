@@ -879,7 +879,7 @@ public class StatusMediator
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
     }
 
-    public void onUrlChanged(boolean isTabChanging) {
+    public void onUrlChanged() {
         var currentTab = mLocationBarDataProvider.getTab();
         if (mProfileSupplier.hasValue() && currentTab != null) {
             WebContents webContents = currentTab.getWebContents();

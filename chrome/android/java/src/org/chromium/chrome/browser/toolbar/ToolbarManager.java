@@ -179,6 +179,7 @@ import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
@@ -1219,7 +1220,7 @@ public class ToolbarManager
                         onBackForwardTransitionAnimationChange();
                         mBackGestureInProgress = false;
                         if (tab == null) {
-                            mLocationBarModel.notifyUrlChanged(false);
+                            mLocationBarModel.notifyUrlChanged();
                             return;
                         }
                         // Switching tabs.
@@ -1251,7 +1252,7 @@ public class ToolbarManager
 
                         assert tab == mLocationBarModel.getTab();
                         mLocationBarModel.notifySecurityStateChanged();
-                        mLocationBarModel.notifyUrlChanged(false);
+                        mLocationBarModel.notifyUrlChanged();
                     }
 
                     @Override
@@ -1308,7 +1309,7 @@ public class ToolbarManager
                         mLocationBarModel.notifyContentChanged();
                         checkIfNtpLoaded();
                         mToolbar.onTabContentViewChanged();
-                        mLocationBar.maybeShowOrClearCursorInLocationBar();
+                        maybeShowOrClearCursorInLocationBar();
                         // Paint preview status might have been changed. Update the omnibox chip.
                         mLocationBarModel.notifySecurityStateChanged();
                         onBackPressStateChanged();
@@ -1320,7 +1321,7 @@ public class ToolbarManager
                         onBackPressStateChanged();
                         if (!didStartLoad) return;
                         mLocationBarModel.notifyWebContentsSwapped();
-                        mLocationBarModel.notifyUrlChanged(false);
+                        mLocationBarModel.notifyUrlChanged();
                         mLocationBarModel.notifySecurityStateChanged();
                     }
 
@@ -1589,7 +1590,7 @@ public class ToolbarManager
 
                             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
                                 checkIfNtpLoaded();
-                                mLocationBar.maybeShowOrClearCursorInLocationBar();
+                                maybeShowOrClearCursorInLocationBar();
                             }
                         }
                     }
@@ -2947,6 +2948,15 @@ public class ToolbarManager
             if (tab != null) {
                 mToolbar.onNavigatedToDifferentPage();
             }
+
+            // Ensure the URL bar loses focus if the tab it was interacting with is changed from
+            // underneath it.
+            setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+
+            // Place the cursor in the Omnibox if applicable.  We always clear the focus above to
+            // ensure the shield placed over the content is dismissed when switching tabs.  But if
+            // needed, we will refocus the omnibox and make the cursor visible here.
+            maybeShowOrClearCursorInLocationBar();
         }
 
         updateButtonStatus();
@@ -3039,7 +3049,7 @@ public class ToolbarManager
 
         mLocationBarModel.notifySecurityStateChanged();
         if (updateUrl) {
-            mLocationBarModel.notifyUrlChanged(false);
+            mLocationBarModel.notifyUrlChanged();
             updateButtonStatus();
             checkIfNtpShowingWithNoPendingLoad();
         }
@@ -3060,6 +3070,41 @@ public class ToolbarManager
     /** Returns the app menu coordinator. */
     public @Nullable MenuButtonCoordinator getOverviewModeMenuButtonCoordinator() {
         return mOverviewModeMenuButtonCoordinator;
+    }
+
+    /**
+     * Called whenever the NTP could have been entered or exited (e.g. tab content changed, tab
+     * navigated to from the tab strip/tab switcher, etc.). If the user is on a tablet and indeed
+     * entered or exited from the NTP, we will check the following cases:
+     *   1. If a11y is enabled, we will request a11y focus on the omnibox (e.g. for TalkBack) on the
+     * NTP.
+     *   2. If a keyboard is plugged in, we will show the URL bar cursor (without focus animations)
+     * on entering the NTP.
+     *   3. If a keyboard is plugged in, we will clear focus established in #2 above on exiting
+     * from the NTP.
+     */
+    private void maybeShowOrClearCursorInLocationBar() {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) return;
+        Tab tab = mLocationBarModel.getTab();
+        if (tab == null) return;
+        NativePage nativePage = tab.getNativePage();
+        boolean onNtp = UrlUtilities.isNtpUrl(tab.getUrl());
+
+        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                && nativePage instanceof NewTabPage) {
+            mLocationBar.requestUrlBarAccessibilityFocus();
+        }
+
+        // While a hardware keyboard is connected, loading the NTP should cause the URL bar to gain
+        // focus with a blinking cursor and without focus animations. Loading a non-NTP URL should
+        // clear such focus if it exists.
+        if (mActivity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+            if (onNtp) {
+                mLocationBar.showUrlBarCursorWithoutFocusAnimations();
+            } else {
+                mLocationBar.clearUrlBarCursorWithoutFocusAnimations();
+            }
+        }
     }
 
     private void maybeShowUrlBarCursorIfHardwareKeyboardAvailable() {

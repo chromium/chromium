@@ -217,7 +217,7 @@ public class LocationBarTest {
                     mediator.onPrimaryColorChanged();
                     mediator.onSecurityStateChanged();
                     mediator.onTemplateURLServiceChanged();
-                    mediator.onUrlChanged(false);
+                    mediator.onUrlChanged();
                 });
     }
 
@@ -611,8 +611,8 @@ public class LocationBarTest {
         doReturn(true).when(mLensController).isLensEnabled(any());
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
-        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         updateLocationBar();
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.requestFocus();

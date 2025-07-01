@@ -31,7 +31,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
@@ -89,7 +88,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.KeyboardUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
@@ -460,29 +458,6 @@ class LocationBarMediator
 
     /*package */ void setShowTitle(boolean showTitle) {
         // This method is only used in CustomTabToolbar.
-    }
-
-    public void maybeShowOrClearCursorInLocationBar() {
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) return;
-        Tab tab = mLocationBarDataProvider.getTab();
-        if (tab == null) return;
-        boolean onNtp = UrlUtilities.isNtpUrl(tab.getUrl());
-
-        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
-            mUrlCoordinator.requestAccessibilityFocus();
-        }
-
-        // While a hardware keyboard is connected, loading the NTP should cause the URL bar to gain
-        // focus with a blinking cursor and without focus animations. Loading a non-NTP URL should
-        // clear such focus if it exists.
-        if (mContext.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
-            if (onNtp) {
-                showUrlBarCursorWithoutFocusAnimations();
-            } else {
-                clearUrlBarCursorWithoutFocusAnimations();
-            }
-        }
     }
 
     /*package */ void showUrlBarCursorWithoutFocusAnimations() {
@@ -1461,72 +1436,9 @@ class LocationBarMediator
         updateButtonTints();
     }
 
-    @VisibleForTesting
-    /* package */ static class LocationBarState implements UserData {
-        public String userText = "";
-        public boolean isUrlBarFocused;
-
-        static @Nullable LocationBarState from(@Nullable Tab tab) {
-            if (tab == null || tab.isDestroyed()) {
-                return null;
-            }
-            LocationBarState state = tab.getUserDataHost().getUserData(LocationBarState.class);
-            if (state == null) {
-                state = new LocationBarState();
-                tab.getUserDataHost().setUserData(LocationBarState.class, state);
-            }
-            return state;
-        }
-    }
-
-    private boolean isLocationBarStateValid(@Nullable LocationBarState state) {
-        return mIsTablet && state != null && state.isUrlBarFocused && !state.userText.isEmpty();
-    }
-
     @Override
-    public void onTabChanged(@Nullable Tab previousTab) {
-        // Save the previous tab state.
-        if (previousTab != null) {
-            LocationBarState previousState = LocationBarState.from(previousTab);
-            if (previousState != null) {
-                previousState.userText = mUrlCoordinator.getTextWithoutAutocomplete();
-                previousState.isUrlBarFocused = isUrlBarFocused();
-            }
-        }
-
-        // Restore the saved tab state.
-        Tab currentTab = mLocationBarDataProvider.getTab();
-        LocationBarState currentState = LocationBarState.from(currentTab);
-        if (isLocationBarStateValid(currentState)) {
-            assert currentState != null;
-            clearOmniboxFocus();
-            setUrlBarFocus(
-                    true, currentState.userText, OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
-        }
-    }
-
-    @Override
-    public void onUrlChanged(boolean isTabChanging) {
-        if (isTabChanging) {
-            Tab currentTab = mLocationBarDataProvider.getTab();
-            LocationBarState currentState = LocationBarState.from(currentTab);
-            // No need to update URL if the location bar state was already restored in
-            // onTabChanged().
-            if (!isLocationBarStateValid(currentState)) {
-                updateUrl();
-
-                // Ensure the URL bar loses focus if the tab it was interacting with is changed from
-                // underneath it.
-                clearOmniboxFocus();
-
-                // Place the cursor in the Omnibox if applicable.  We always clear the focus above
-                // to ensure the shield placed over the content is dismissed when switching tabs.
-                // But if needed, we will refocus the omnibox and make the cursor visible here.
-                maybeShowOrClearCursorInLocationBar();
-            }
-        } else {
-            updateUrl();
-        }
+    public void onUrlChanged() {
+        updateUrl();
         updateOmniboxPrerender();
         updateButtonVisibility();
     }

@@ -561,11 +561,6 @@ public class LocationBarCoordinator
         mStatusCoordinator.setHideStatusIconForSecureOrigins(hideStatusIconForSecureOrigins);
     }
 
-    @Override
-    public void maybeShowOrClearCursorInLocationBar() {
-        mLocationBarMediator.maybeShowOrClearCursorInLocationBar();
-    }
-
     // AutocompleteDelegate implementation.
     @Override
     public void onUrlTextChanged() {
@@ -863,7 +858,7 @@ public class LocationBarCoordinator
     }
 
     public void onUrlChangedForTesting() {
-        mLocationBarMediator.onUrlChanged(false);
+        mLocationBarMediator.onUrlChanged();
     }
 
     public void setLensControllerForTesting(LensController lensController) {

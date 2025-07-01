@@ -1190,7 +1190,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         super.onConfigurationChanged(newConfig);
         mLocationBar.addButtonsVisibilityUpdater();
         mLocationBarModel.notifyTitleChanged();
-        mLocationBarModel.notifyUrlChanged(false);
+        mLocationBarModel.notifyUrlChanged();
         mLocationBarModel.notifyPrimaryColorChanged();
     }
 
@@ -2114,7 +2114,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
-        public void onUrlChanged(boolean isTabChanging) {
+        public void onUrlChanged() {
             updateUrlBar();
         }
 
