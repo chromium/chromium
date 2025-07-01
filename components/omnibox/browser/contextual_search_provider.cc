@@ -292,7 +292,7 @@ void ContextualSearchProvider::Start(const AutocompleteInput& input,
                                               starter_pack_engine, client());
 
   if (eligibility.toolbelt) {
-    AddToolbeltMatch(eligibility.GetToolbeltActions());
+    AddToolbeltMatch(input, eligibility.GetToolbeltActions());
   }
 
   if (eligibility.lens_entry_match) {
@@ -570,12 +570,14 @@ void ContextualSearchProvider::AddDefaultVerbatimMatch(
 }
 
 void ContextualSearchProvider::AddToolbeltMatch(
+    const AutocompleteInput& input,
     std::vector<scoped_refptr<OmniboxAction>> actions) {
   AutocompleteMatch match(this, omnibox::kToolbeltRelevance, false,
                           AutocompleteMatchType::NULL_RESULT_MESSAGE);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
   match.suggestion_group_id = omnibox::GroupId::GROUP_SEARCH_TOOLBELT;
+  match.fill_into_edit = input.text();
 
   match.description = l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLBELT_LABEL);
   if (!match.description.empty()) {

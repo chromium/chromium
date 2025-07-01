@@ -89,8 +89,10 @@ class ContextualSearchProvider : public BaseSearchProvider {
   // when no other matches are available yet.
   void AddDefaultVerbatimMatch(const AutocompleteInput& input);
 
-  // Appends the toolbelt match with specified `actions`.
-  void AddToolbeltMatch(std::vector<scoped_refptr<OmniboxAction>> actions);
+  // Appends the toolbelt match with specified `actions`. The `input` is used
+  // to avoid clearing user edit text when toolbelt match is selected.
+  void AddToolbeltMatch(const AutocompleteInput& input,
+                        std::vector<scoped_refptr<OmniboxAction>> actions);
 
   // Gets the '@page' starter pack engine using `input_keyword_`.
   const TemplateURL* GetKeywordTemplateURL() const;
