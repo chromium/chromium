@@ -305633,6 +305633,19 @@
          {}
         ]
        ],
+       "dialog-popover-overlay.html": [
+        "7fa820e76ff0920562dafa09741ab1b418c15d18",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/dialog-popover-overlay-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "dialogs-with-no-backdrop.html": [
         "fec4ba85874e898bd5f4ffc698b5881513346217",
         [
@@ -306528,6 +306541,19 @@
         [
          [
           "/html/semantics/popovers/popover-dialog-appearance-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "popover-hidden-appearance.html": [
+       "5cfa8a703540ea4e29c45899f07ac7f1307c3a1a",
+       [
+        null,
+        [
+         [
+          "/compat/green-ref.html",
           "=="
          ]
         ],
@@ -347143,7 +347169,7 @@
        []
       ],
       "font-style-valid-expected.txt": [
-       "49f323734cc57b25a1c82443138492de358742d3",
+       "e7cb35d7e3a29673a478b5771b8dd64c6cd3b855",
        []
       ],
       "font-synthesis-computed-expected.txt": [
@@ -409303,6 +409329,10 @@
         "97141e6c517d62d9c598bed2303696da2cda91ee",
         []
        ],
+       "dialog-popover-overlay-ref.html": [
+        "46581691ffc2e9b69f4902ca9de57b373cc88fc3",
+        []
+       ],
        "dialogs-with-no-backdrop-ref.html": [
         "4b31dc7062e697496f4edfaf98a70c0e794c6245",
         []
@@ -421964,6 +421994,12 @@
      "0cc01909796fcce22401ef0ed2ffda3582f56634",
      []
     ],
+    "bugs": {
+     "events_after_lostpointercapture_remove_setcapture_node-expected.txt": [
+      "965db67959caab5abc322ff45d0133f8203493ec",
+      []
+     ]
+    },
     "compat": {
      "pointerevent_mouse_target_after_pointer_target_root_element_in_shadow_removed-expected.txt": [
       "76c4fa0b8284093090ec570b174f91b39ffae708",
@@ -422012,10 +422048,6 @@
     ],
     "pointerevent_fractional_coordinates_untrusted-expected.txt": [
      "356dfec5190c6b36a4d90ff5095a1dd6b88e0c89",
-     []
-    ],
-    "pointerevent_lostpointercapture_remove_setcapture_node-expected.txt": [
-     "2d3c1af839d52c9176d85201b92de9c970fffe15",
      []
     ],
     "pointerevent_multiple_pointerover_no_pointer_movement-expected.txt": [
@@ -510253,7 +510285,7 @@
        ]
       ],
       "font-style-valid.html": [
-       "95c5af3c41649c0935259178d20bcbd90a537153",
+       "274ee2aca1bf6b74279f91f329934c931c1d0969",
        [
         null,
         {}
@@ -690739,6 +690771,17 @@
     ]
    },
    "pointerevents": {
+    "bugs": {
+     "events_after_lostpointercapture_remove_setcapture_node.html": [
+      "ec478a68006fa4e806cf6896d85e5a089690fecd",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ]
+    },
     "capturing_boundary_event_handler_at_ua_shadowdom.html": [
      "7500277f2251fa300f9af99d52e1f73a943f237c",
      [
@@ -691689,7 +691732,7 @@
      ]
     ],
     "pointerevent_lostpointercapture_remove_setcapture_node.html": [
-     "8da1b7d28c45e49f31ba55e05eac3fe6e5a01283",
+     "c20f62174bd402ecb5e0701f94725ee857c26de4",
      [
       null,
       {
@@ -760819,7 +760862,7 @@
        ]
       ],
       "k-rate-audiobuffersource-connections.html": [
-       "0b94bd70f9f7c5da26654845ec784d6805f4117e",
+       "5fa43d7e90372ea0a9b568f94f4882183420d4f2",
        [
         null,
         {}
