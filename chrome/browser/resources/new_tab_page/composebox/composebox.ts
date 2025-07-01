@@ -85,7 +85,7 @@ export class ComposeboxElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.eventTracker_.add(this.$.input, 'input', () => {
-      this.submitEnabled_ = this.$.input.value.length > 0;
+      this.submitEnabled_ = this.$.input.value.trim().length > 0;
     });
     // Make the element focusable to receive keyboard events.
     this.$.composebox.focus();
@@ -162,7 +162,7 @@ export class ComposeboxElement extends CrLitElement {
   }
 
   protected onCancelClick_() {
-    if (this.$.input.value.length > 0) {
+    if (this.$.input.value.trim().length > 0) {
       this.$.input.value = '';
       // TODO(rtatum@): Send request to handler to clear file cache.
       this.files_ = [];
@@ -184,12 +184,10 @@ export class ComposeboxElement extends CrLitElement {
   }
 
   protected onSubmitClick_(e: KeyboardEvent|MouseEvent) {
-    if (this.$.input.value.trim()) {
-      this.submitting_ = true;
-      this.pageHandler_.submitQuery(
-          this.$.input.value.trim(), (e as MouseEvent).button || 0, e.altKey,
-          e.ctrlKey, e.metaKey, e.shiftKey);
-    }
+    this.pageHandler_.submitQuery(
+        this.$.input.value.trim(), (e as MouseEvent).button || 0, e.altKey,
+        e.ctrlKey, e.metaKey, e.shiftKey);
+    this.submitting_ = true;
   }
 }
 

@@ -46,7 +46,8 @@ export function getHtml(this: ComposeboxElement) {
       class="action-icon icon-arrow-upward"
       id="submitIcon"
       title="$i18n{composeboxSubmitButtonTitle}"
-      @click="${this.onSubmitClick_}">
+      @click="${this.onSubmitClick_}"
+      ?disabled="${!this.submitEnabled_}">
     </cr-icon-button>
   </div>
   <ntp-composebox-file-carousel
