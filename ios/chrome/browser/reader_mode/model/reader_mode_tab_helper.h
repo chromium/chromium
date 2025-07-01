@@ -113,6 +113,11 @@ class ReaderModeTabHelper : public web::WebStateObserver,
  private:
   friend class web::WebStateUserData<ReaderModeTabHelper>;
 
+  // Handles the result from the Readability JavaScript heuristic triggering
+  // logic.
+  void HandleReadabilityHeuristicResult(const GURL& url,
+                                        const base::Value* result);
+
   // Trigger the heuristic to determine reader mode eligibility.
   void TriggerReaderModeHeuristic(const GURL& url);
 

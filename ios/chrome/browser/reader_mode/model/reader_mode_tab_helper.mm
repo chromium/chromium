@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "components/dom_distiller/core/extraction_utils.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -114,6 +116,23 @@ NSString* GenerateSnackbarMessage(base::TimeDelta heuristic_latency,
 bool CurrentPageSupportsReaderModeHeuristic(web::WebState* web_state) {
   return web_state && !web_state->IsBeingDestroyed() &&
          !IsUrlNtp(web_state->GetVisibleURL()) && web_state->ContentIsHTML();
+}
+
+// Returns the Readability heuristic result if it is available otherwise returns
+// `kMalformedResponse`.
+ReaderModeHeuristicResult GetReaderModeHeuristicResult(
+    const base::Value* result) {
+  if (!result) {
+    return ReaderModeHeuristicResult::kMalformedResponse;
+  }
+  std::optional<bool> result_conversion = result->GetIfBool();
+  if (result_conversion.has_value()) {
+    return result_conversion.value()
+               ? ReaderModeHeuristicResult::kReaderModeEligible
+               : ReaderModeHeuristicResult::
+                     kReaderModeNotEligibleContentAndLength;
+  }
+  return ReaderModeHeuristicResult::kMalformedResponse;
 }
 
 }  // namespace
@@ -286,6 +305,12 @@ void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
   web_state_->GetNavigationManager()->LoadURLWithParams(params);
 }
 
+void ReaderModeTabHelper::HandleReadabilityHeuristicResult(
+    const GURL& url,
+    const base::Value* result) {
+  HandleReaderModeHeuristicResult(url, GetReaderModeHeuristicResult(result));
+}
+
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
     const GURL& url,
     ReaderModeHeuristicResult result) {
@@ -338,18 +363,27 @@ void ReaderModeTabHelper::TriggerReaderModeHeuristic(const GURL& url) {
     CallLastCommittedUrlEligibilityCallbacks(false);
     return;
   }
+
   web::WebFramesManager* web_frames_manager =
       ReaderModeJavaScriptFeature::GetInstance()->GetWebFramesManager(
           web_state_);
   if (!web_frames_manager) {
     return;
   }
-  web::WebFrame* web_frame = web_frames_manager->GetMainWebFrame();
-  if (!web_frame) {
+  web::WebFrame* main_frame = web_frames_manager->GetMainWebFrame();
+  if (!main_frame) {
     return;
   }
-  ReaderModeJavaScriptFeature::GetInstance()->TriggerReaderModeHeuristic(
-      web_frame);
+
+  if (base::FeatureList::IsEnabled(kEnableReadabilityHeuristic)) {
+    main_frame->ExecuteJavaScript(
+        base::UTF8ToUTF16(dom_distiller::GetReadabilityTriggeringScript()),
+        base::BindOnce(&ReaderModeTabHelper::HandleReadabilityHeuristicResult,
+                       weak_ptr_factory_.GetWeakPtr(), url));
+  } else {
+    ReaderModeJavaScriptFeature::GetInstance()->TriggerReaderModeHeuristic(
+        main_frame);
+  }
 }
 
 void ReaderModeTabHelper::PageDistillationCompleted(

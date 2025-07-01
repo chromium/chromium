@@ -18,6 +18,9 @@ BASE_DECLARE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu);
 // Feature to enable debugging information for Reader Mode UI.
 BASE_DECLARE_FEATURE(kEnableReaderModeDebugInfo);
 
+// Feature to enable Readability heuristic for page triggering eligibility.
+BASE_DECLARE_FEATURE(kEnableReadabilityHeuristic);
+
 // Name to configure the duration string for page load delay. See
 // `base::TimeDeltaFromString` for valid duration string configurations.
 extern const char kReaderModeDistillerPageLoadDelayDurationStringName[];

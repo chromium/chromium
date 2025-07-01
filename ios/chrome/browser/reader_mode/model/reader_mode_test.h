@@ -49,6 +49,11 @@ class ReaderModeTest : public PlatformTest {
   TestProfileIOS* profile() { return profile_.get(); }
 
  private:
+  // Adds the given heuristic result to the Readability heuristic JavasScript
+  // callback for the specified frame.
+  void AddReadabilityHeuristicResultToFrame(ReaderModeHeuristicResult result,
+                                            web::FakeWebFrame* web_frame);
+
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -56,6 +61,7 @@ class ReaderModeTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
 
   std::vector<std::unique_ptr<base::Value>> distiller_result_values_;
+  std::unique_ptr<base::Value> readability_heuristic_value_;
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_TEST_H_

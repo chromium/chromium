@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/dom_distiller/core/extraction_utils.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
@@ -80,6 +81,10 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
                                  std::move(frames_manager));
   web_frames_manager->AddWebFrame(std::move(main_frame));
 
+  if (base::FeatureList::IsEnabled(kEnableReadabilityHeuristic)) {
+    AddReadabilityHeuristicResultToFrame(result, web_frame);
+  }
+
   // Set up the fake web frame to return a custom result after executing
   // the DOM distiller Javascript.
   dom_distiller::proto::DomDistillerOptions options;
@@ -110,4 +115,27 @@ void ReaderModeTest::WaitForReaderModeContentReady() {
   // `kReaderModeDistillerPageLoadDelay` after the page is loaded.
   task_environment_.AdvanceClock(base::Seconds(1));
   task_environment_.RunUntilIdle();
+}
+
+void ReaderModeTest::AddReadabilityHeuristicResultToFrame(
+    ReaderModeHeuristicResult result,
+    web::FakeWebFrame* web_frame) {
+  std::u16string readability_heuristic_script =
+      base::UTF8ToUTF16(dom_distiller::GetReadabilityTriggeringScript());
+  switch (result) {
+    case ReaderModeHeuristicResult::kReaderModeEligible:
+      readability_heuristic_value_ = std::make_unique<base::Value>(true);
+      break;
+    case ReaderModeHeuristicResult::kMalformedResponse:
+      readability_heuristic_value_ = std::make_unique<base::Value>();
+      break;
+    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength:
+      readability_heuristic_value_ = std::make_unique<base::Value>(false);
+      break;
+    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly:
+    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength:
+      NOTREACHED();
+  }
+  web_frame->AddResultForExecutedJs(readability_heuristic_value_.get(),
+                                    readability_heuristic_script);
 }

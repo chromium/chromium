@@ -8,6 +8,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -259,6 +260,44 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerHeuristicOnPageLoad) {
   ASSERT_EQ(0u, GetHeuristicResultEntries().size());
 
   ReaderModeHeuristicResult eligibility = GetEligibility();
+  GURL test_url("https://test.url/");
+  SetReaderModeState(web_state(), test_url, eligibility, "");
+
+  LoadWebpage(web_state(), test_url);
+  WaitForReaderModeContentReady();
+
+  ASSERT_EQ(eligibility == ReaderModeHeuristicResult::kReaderModeEligible,
+            reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
+
+  ASSERT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
+      BucketsAre(base::Bucket(eligibility, 1)));
+  auto heuristic_entries = GetHeuristicResultEntries();
+  ASSERT_EQ(1u, heuristic_entries.size());
+  const auto* entry = heuristic_entries[0].get();
+  test_ukm_recorder_.ExpectEntryMetric(
+      entry, IOS_ReaderMode_Heuristic_Result::kResultName,
+      static_cast<int64_t>(eligibility));
+}
+
+// Tests that metrics are recorded correctly when the Readability trigger
+// heuristic runs on page load and returns a result.
+TEST_P(ReaderModeTabHelperWithEligibilityTest,
+       TriggerReadabilityHeuristicOnPageLoad) {
+  ReaderModeHeuristicResult eligibility = GetEligibility();
+  if (eligibility ==
+          ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly ||
+      eligibility ==
+          ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength) {
+    GTEST_SKIP() << "Does not provide content and length heuristics.";
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableReadabilityHeuristic);
+
+  histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
+  ASSERT_EQ(0u, GetHeuristicResultEntries().size());
+
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url, eligibility, "");
 

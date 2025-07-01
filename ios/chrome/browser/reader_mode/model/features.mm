@@ -13,6 +13,10 @@ BASE_FEATURE(kEnableReaderMode,
              "EnableReaderMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableReadabilityHeuristic,
+             "EnableReadabilityHeuristic",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu,
              "EnableReaderModePageEligibilityForToolsMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
