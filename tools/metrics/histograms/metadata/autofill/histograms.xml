@@ -5513,7 +5513,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.ProfileTokenQuality.ObservationCountBeforeSubmission.{Type}"
-    units="Observations" expires_after="2025-07-06">
+    units="Observations" expires_after="2025-12-06">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
