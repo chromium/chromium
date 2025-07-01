@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
@@ -42,6 +41,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/mgs/managed_guest_session_test_utils.h"
@@ -1768,7 +1768,7 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
   void SetUp() override {
     PreSetUp();
     AppPlatformMetricsServiceTest::SetUp();
-    widget_ = ash::AshTestBase::CreateTestWidget(
+    widget_ = ChromeAshTestBase::CreateTestWidget(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   }
 

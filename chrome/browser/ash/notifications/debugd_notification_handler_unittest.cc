@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/test/ash_test_base.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
@@ -20,7 +20,7 @@ namespace ash {
 
 constexpr char kPacketCaptureNotificationId[] = "debugd-packetcapture";
 
-class DebugdNotificationHandlerTest : public AshTestBase {
+class DebugdNotificationHandlerTest : public ChromeAshTestBase {
  public:
   DebugdNotificationHandlerTest() = default;
   DebugdNotificationHandlerTest(const DebugdNotificationHandlerTest&) = delete;
@@ -28,7 +28,7 @@ class DebugdNotificationHandlerTest : public AshTestBase {
       const DebugdNotificationHandlerTest&) = delete;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
     debug_daemon_client_ = std::make_unique<FakeDebugDaemonClient>();
     handler_ =
         std::make_unique<DebugdNotificationHandler>(debug_daemon_client_.get());

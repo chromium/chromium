@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/geolocation/system_geolocation_source.h"
+
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -9,23 +11,21 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
-#include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/geolocation/system_geolocation_source.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 
 namespace ash {
 
-class SystemGeolocationSourceTests : public AshTestBase {
+class SystemGeolocationSourceTests : public ChromeAshTestBase {
  protected:
   SystemGeolocationSourceTests()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  // AshTestBase:
-  void SetUp() override { AshTestBase::SetUp(); }
+      : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
   // Bind the `source` to subscribe to the active user's pref service.
   // NOTE: In production the singleton `SystemGeolocationSource` automatically

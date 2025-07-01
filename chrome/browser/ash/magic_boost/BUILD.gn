@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support_unit",
     "//chromeos/components/magic_boost/public/cpp",
     "//components/sync_preferences:test_support",
     "//testing/gmock",

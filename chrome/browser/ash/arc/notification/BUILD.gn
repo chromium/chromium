@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ui/ash/login:test_support",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/prefs",

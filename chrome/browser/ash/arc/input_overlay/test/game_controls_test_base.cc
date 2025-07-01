@@ -20,9 +20,8 @@
 namespace arc::input_overlay {
 
 GameControlsTestBase::GameControlsTestBase()
-    : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-          std::make_unique<content::BrowserTaskEnvironment>(
-              base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
+    : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
 GameControlsTestBase::~GameControlsTestBase() = default;
 
@@ -49,7 +48,7 @@ void GameControlsTestBase::EnableDisplayMode(DisplayMode mode) {
 }
 
 void GameControlsTestBase::SetUp() {
-  ash::AshTestBase::SetUp();
+  ChromeAshTestBase::SetUp();
 
   profile_ = std::make_unique<TestingProfile>();
   arc_app_test_.set_wait_compatibility_mode(true);
@@ -79,7 +78,7 @@ void GameControlsTestBase::TearDown() {
   arc_test_input_overlay_manager_.reset();
   arc_app_test_.TearDown();
   profile_.reset();
-  ash::AshTestBase::TearDown();
+  ChromeAshTestBase::TearDown();
 }
 
 }  // namespace arc::input_overlay

@@ -149,7 +149,7 @@ class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
   EcheAppManagerFactoryWithBackgroundTest& operator=(
       const EcheAppManagerFactoryWithBackgroundTest&) = delete;
 
-  // AshTestBase::Test:
+  // ChromeAshTestBase:
   void SetUp() override {
     DCHECK(profile_);
     DCHECK(test_web_view_factory_.get());

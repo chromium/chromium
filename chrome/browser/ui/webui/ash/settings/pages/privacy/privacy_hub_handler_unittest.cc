@@ -7,12 +7,12 @@
 #include <algorithm>
 
 #include "ash/constants/ash_features.h"
-#include "ash/test/ash_test_base.h"
 #include "base/containers/adapters.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +29,7 @@ class TestPrivacyHubHandler : public PrivacyHubHandler {
 };
 }  // namespace
 
-class PrivacyHubHandlerTest : public AshTestBase {
+class PrivacyHubHandlerTest : public ChromeAshTestBase {
  public:
   PrivacyHubHandlerTest()
       : this_test_name_(
@@ -37,9 +37,9 @@ class PrivacyHubHandlerTest : public AshTestBase {
     feature_list_.InitWithFeatures({features::kCrosPrivacyHub}, {});
   }
 
-  // AshTestBase:
+  // ChromeAshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
 
     privacy_hub_handler_ = std::make_unique<TestPrivacyHubHandler>();
     privacy_hub_handler_->set_web_ui(&web_ui_);
@@ -48,7 +48,7 @@ class PrivacyHubHandlerTest : public AshTestBase {
 
   void TearDown() override {
     privacy_hub_handler_.reset();
-    AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
   [[nodiscard]] base::Value GetLastWebUIListenerData(

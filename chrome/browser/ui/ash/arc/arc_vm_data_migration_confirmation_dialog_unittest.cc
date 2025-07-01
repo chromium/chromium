@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/ash/arc/arc_vm_data_migration_confirmation_dialog.h"
 
-#include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/prefs/testing_pref_service.h"
@@ -20,7 +20,7 @@ namespace arc {
 
 namespace {
 
-class ArcVmDataMigrationConfirmationDialogTest : public ash::AshTestBase {
+class ArcVmDataMigrationConfirmationDialogTest : public ChromeAshTestBase {
  public:
   ArcVmDataMigrationConfirmationDialogTest() = default;
   ArcVmDataMigrationConfirmationDialogTest(
@@ -30,7 +30,7 @@ class ArcVmDataMigrationConfirmationDialogTest : public ash::AshTestBase {
   ~ArcVmDataMigrationConfirmationDialogTest() override = default;
 
   void SetUp() override {
-    ash::AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
 
     prefs::RegisterProfilePrefs(profile_prefs_.registry());
     profile_prefs()->SetTime(

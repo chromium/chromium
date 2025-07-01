@@ -13,7 +13,6 @@
 #include "ash/curtain/security_curtain_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
@@ -28,7 +27,7 @@
 #include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
@@ -238,23 +237,14 @@ class Response {
   std::optional<std::string> error_message_;
 };
 
-// Wrapper to return the `BrowserTaskEnvironment` as its base class
-// `TaskEnvironment`. Without this the compiler takes the wrong constructor
-// of `AshTestBase` and compilation fails.
-std::unique_ptr<base::test::TaskEnvironment> CreateTaskEnvironment(
-    base::test::TaskEnvironment::TimeSource time_source) {
-  return std::make_unique<content::BrowserTaskEnvironment>(time_source);
-}
-
 }  // namespace
 
 // A test class used for testing the `CrdAdminSessionController` class.
-class CrdAdminSessionControllerTest : public ash::AshTestBase {
+class CrdAdminSessionControllerTest : public ChromeAshTestBase {
  public:
   CrdAdminSessionControllerTest()
-      : ash::AshTestBase(CreateTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME)),
-        local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
   CrdAdminSessionControllerTest(const CrdAdminSessionControllerTest&) = delete;
   CrdAdminSessionControllerTest& operator=(
       const CrdAdminSessionControllerTest&) = delete;
@@ -392,7 +382,10 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
 
   void DismissNotification() { SetPref(prefs::kRemoteAdminWasPresent, false); }
 
-  TestingPrefServiceSimple& local_state() { return *local_state_.Get(); }
+  TestingPrefServiceSimple& local_state() {
+    return CHECK_DEREF(
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
+  }
 
   session_manager::SessionManager& session_manager() {
     return CHECK_DEREF(session_manager::SessionManager::Get());
@@ -443,7 +436,7 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
   void SetUp() override {
     ash::UserDataAuthClient::InitializeFake();
 
-    AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
     RecreateSessionController();
     session_controller().SetOAuthTokenForTesting("test-oauth-token");
   }
@@ -452,11 +445,10 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
     ash::UserDataAuthClient::Shutdown();
 
     session_controller_->Shutdown();
-    AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
  private:
-  ScopedTestingLocalState local_state_;
   testing::NiceMock<ash::MockLoginDisplayHost> mock_login_display_host_;
   TestFuture<Response> result_;
   TestFuture<base::TimeDelta> session_finish_result_;

@@ -10,7 +10,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wallpaper/test_sea_pen_wallpaper_manager_session_delegate.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
@@ -21,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,14 +47,14 @@ ash::personalization_app::mojom::SeaPenQueryPtr MakeTemplateQuery() {
               "test template query", "test template title")));
 }
 
-class WallpaperMetricsProviderTest : public ash::AshTestBase {
+class WallpaperMetricsProviderTest : public ChromeAshTestBase {
  public:
   WallpaperMetricsProvider& wallpaper_metrics_provider() {
     return wallpaper_metrics_provider_;
   }
 
   void SetUp() override {
-    ash::AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
     ash::SeaPenWallpaperManager::GetInstance()->SetSessionDelegateForTesting(
         std::make_unique<ash::TestSeaPenWallpaperManagerSessionDelegate>());
   }

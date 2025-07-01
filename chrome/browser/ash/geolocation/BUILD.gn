@@ -39,7 +39,9 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/constants",
     "//base/test:test_support",
+    "//chrome/test:test_support_unit",
     "//components/prefs",
+    "//content/test:test_support",
     "//services/device/public/cpp/geolocation",
   ]
 }

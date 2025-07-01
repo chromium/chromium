@@ -108,6 +108,7 @@ source_set("unit_tests") {
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/policy/device_policy:test_support",

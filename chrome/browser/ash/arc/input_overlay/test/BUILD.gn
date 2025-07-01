@@ -25,6 +25,7 @@ static_library("test_support") {
   public_deps = [
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/input_overlay/db/proto",
+    "//chrome/test:test_support_unit",
   ]
 
   deps = [

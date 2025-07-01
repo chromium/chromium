@@ -78,6 +78,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
     "//content/public/browser",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",

@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/accessibility/arc_serialization_delegate.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/shell_surface_builder.h"
@@ -67,7 +67,7 @@ class TestTreeSource : public ax::android::AXTreeSourceAndroid {
   raw_ptr<ax::android::AccessibilityInfoDataWrapper> root_;
 };
 
-class ArcSerializationDelegateTest : public ash::AshTestBase {
+class ArcSerializationDelegateTest : public ChromeAshTestBase {
  public:
   ArcSerializationDelegateTest() = default;
 

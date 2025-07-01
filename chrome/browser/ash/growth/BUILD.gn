@@ -98,6 +98,7 @@ source_set("unit_tests") {
     "//chrome/browser/prefs",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
     "//chromeos/ash/components/growth",
     "//chromeos/ash/resources:resources_grit",
     "//components/component_updater/ash",

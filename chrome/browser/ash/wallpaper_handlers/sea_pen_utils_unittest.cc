@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 
-#include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/size.h"
@@ -14,7 +14,7 @@
 namespace wallpaper_handlers {
 namespace {
 
-using SeaPenUtilsTest = ash::AshTestBase;
+using SeaPenUtilsTest = ChromeAshTestBase;
 using SeaPenTemplateChip = ash::personalization_app::mojom::SeaPenTemplateChip;
 using SeaPenTemplateOption =
     ash::personalization_app::mojom::SeaPenTemplateOption;

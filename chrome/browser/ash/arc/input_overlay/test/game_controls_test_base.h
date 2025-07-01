@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 
 class TestingProfile;
 
@@ -22,7 +22,7 @@ class DisplayOverlayController;
 class TouchInjector;
 
 // UI test base for beta+ version.
-class GameControlsTestBase : public ash::AshTestBase {
+class GameControlsTestBase : public ChromeAshTestBase {
  public:
   GameControlsTestBase();
   ~GameControlsTestBase() override;
@@ -32,7 +32,7 @@ class GameControlsTestBase : public ash::AshTestBase {
   DisplayOverlayController* GetDisplayOverlayController();
   void EnableDisplayMode(DisplayMode mode);
 
-  // ash::AshTestBase:
+  // ChromeAshTestBase:
   void SetUp() override;
   void TearDown() override;
 

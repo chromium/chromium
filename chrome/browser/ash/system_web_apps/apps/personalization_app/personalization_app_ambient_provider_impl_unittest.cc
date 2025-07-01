@@ -23,7 +23,6 @@
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
@@ -36,6 +35,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/ambient_video_albums.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -201,12 +201,11 @@ class TestAmbientObserver
 
 }  // namespace
 
-class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
+class PersonalizationAppAmbientProviderImplTest : public ChromeAshTestBase {
  public:
   PersonalizationAppAmbientProviderImplTest()
-      : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-            std::make_unique<content::BrowserTaskEnvironment>(
-                base::test::TaskEnvironment::TimeSource::MOCK_TIME))),
+      : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
         personalization_app::GetTimeOfDayFeatures(), {});
@@ -220,7 +219,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
  protected:
   // testing::Test:
   void SetUp() override {
-    ash::AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
 
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
@@ -253,9 +252,9 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   void TearDown() override {
     // The PersonalizationAppAmbientProviderImpl holds a pointer to the
     // AmbientController the Shell owns (which is destructed in
-    // AshTestBase::Teardown), so reset it first.
+    // ChromeAshTestBase::Teardown), so reset it first.
     ambient_provider_.reset();
-    ash::AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
   TestingProfile* profile() { return profile_; }

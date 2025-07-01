@@ -9,13 +9,14 @@
 #include "ash/shell.h"
 #include "ash/system/mahi/test/mock_mahi_media_app_content_manager.h"
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -43,10 +44,11 @@ class MockMahiUntrustedPage
               (override));
 };
 
-class MahiMediaAppClientTest : public AshTestBase {
+class MahiMediaAppClientTest : public ChromeAshTestBase {
  public:
   MahiMediaAppClientTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
   MahiMediaAppClientTest(const MahiMediaAppClientTest&) = delete;
   MahiMediaAppClientTest& operator=(const MahiMediaAppClientTest&) = delete;
@@ -56,7 +58,7 @@ class MahiMediaAppClientTest : public AshTestBase {
   void SetUp() override {
     // On MahiMediaAppClient destruction, it notifies an `OnPdfClosed` event.
     EXPECT_CALL(mock_mahi_media_app_events_proxy_, OnPdfClosed(_)).Times(1);
-    AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
   }
 
  protected:

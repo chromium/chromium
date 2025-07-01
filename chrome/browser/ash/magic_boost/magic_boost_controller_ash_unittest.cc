@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 
-#include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
@@ -12,6 +11,7 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -26,7 +26,7 @@ constexpr char kTestUrl[] = "https://www.google.com";
 
 }  // namespace
 
-class MagicBoostControllerAshTest : public AshTestBase {
+class MagicBoostControllerAshTest : public ChromeAshTestBase {
  public:
   MagicBoostControllerAshTest() = default;
   MagicBoostControllerAshTest(const MagicBoostControllerAshTest&) = delete;
@@ -34,9 +34,9 @@ class MagicBoostControllerAshTest : public AshTestBase {
       delete;
   ~MagicBoostControllerAshTest() override = default;
 
-  // AshTestBase:
+  // ChromeAshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
 
     mock_magic_boost_state_ = std::make_unique<MockMagicBoostState>();
     mock_magic_boost_state_->set_editor_panel_manager_for_test(
@@ -45,7 +45,7 @@ class MagicBoostControllerAshTest : public AshTestBase {
 
   void TearDown() override {
     mock_magic_boost_state_.reset();
-    AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
   void OnDisclaimerAcceptButtonPressed(

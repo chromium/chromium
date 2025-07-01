@@ -15,14 +15,13 @@
 namespace arc {
 
 OverviewTracingTestBase::OverviewTracingTestBase()
-    : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-          std::make_unique<content::BrowserTaskEnvironment>(
-              base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
+    : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
 OverviewTracingTestBase::~OverviewTracingTestBase() = default;
 
 void OverviewTracingTestBase::SetUp() {
-  ash::AshTestBase::SetUp();
+  ChromeAshTestBase::SetUp();
   profile_ = std::make_unique<TestingProfile>();
   arc_app_test_.SetUp(profile_.get());
 
@@ -52,7 +51,7 @@ void OverviewTracingTestBase::TearDown() {
 
   profile_.reset();
 
-  ash::AshTestBase::TearDown();
+  ChromeAshTestBase::TearDown();
 }
 
 void OverviewTracingTestBase::CommitAndPresentFrames(

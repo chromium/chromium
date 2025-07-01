@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
 #include "base/strings/string_util.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/test/fake_compatibility_mode_instance.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -115,12 +115,11 @@ class TestArcInputOverlayManager : public ArcInputOverlayManager {
 
 // ArcInputOverlayManagerTest needs to run on MainThread when involving with
 // profile and mojo connection.
-class ArcInputOverlayManagerTest : public ash::AshTestBase {
+class ArcInputOverlayManagerTest : public ChromeAshTestBase {
  public:
   ArcInputOverlayManagerTest()
-      : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-            std::make_unique<content::BrowserTaskEnvironment>(
-                base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
+      : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
   bool IsInputOverlayEnabled(const aura::Window* window) const {
     return arc_test_input_overlay_manager_->input_overlay_enabled_windows_
@@ -169,9 +168,9 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
   }
 
  protected:
-  // ash::AshTestBase:
+  // ChromeAshTestBase:
   void SetUp() override {
-    ash::AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
     arc_test_input_overlay_manager_ =
         base::WrapUnique(new TestArcInputOverlayManager());
 
@@ -194,7 +193,7 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
     profile_.reset();
     arc_test_input_overlay_manager_->Shutdown();
     arc_test_input_overlay_manager_.reset();
-    ash::AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
   std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
