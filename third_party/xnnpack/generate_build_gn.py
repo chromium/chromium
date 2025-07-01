@@ -459,11 +459,11 @@ def _generate_per_platform_dep_lists(
 {xnnpack_deps}
   ]
 
-  if (build_with_internal_optimization_guide) {
+  if (build_with_internal_optimization_guide) {{
     xnnpack_standalone_deps = [
 {xnnpack_standalone_deps}
     ]
-  }
+  }}
 '''
     deps_list += '} else {\n'
     deps_list += '  xnnpack_deps = []\n'
