@@ -30,7 +30,8 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxFocusReason.FOLD_TRANSITION_RESTORATION,
     OmniboxFocusReason.DRAG_DROP_TO_OMNIBOX,
     OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD,
-    OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION
+    OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION,
+    OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION,
 })
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
@@ -57,5 +58,6 @@ public @interface OmniboxFocusReason {
     // Emitted on tap after focus from #8.
     int TAP_AFTER_FOCUS_FROM_KEYBOARD = 16;
     int ACTIVITY_RECREATION_RESTORATION = 17;
-    int NUM_ENTRIES = 18;
+    int LOCATION_BAR_STATE_RESTORATION = 18;
+    int NUM_ENTRIES = 19;
 }

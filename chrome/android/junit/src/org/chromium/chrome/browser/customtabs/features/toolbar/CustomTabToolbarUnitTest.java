@@ -267,7 +267,7 @@ public class CustomTabToolbarUnitTest {
 
         // Attempt to update title and URL, should noop since location bar is still in empty state.
         mLocationBar.onTitleChanged();
-        mLocationBar.onUrlChanged();
+        mLocationBar.onUrlChanged(false);
         verify(mLocationBarModel, never()).notifySecurityStateChanged();
 
         mLocationBar.showRegularToolbar();
@@ -335,7 +335,7 @@ public class CustomTabToolbarUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.RED_1);
         UrlBarData urlBarData = UrlBarData.forUrl(JUnitTestGURLs.RED_1);
         when(mLocationBarModel.getUrlBarData()).thenReturn(urlBarData);
-        mLocationBar.onUrlChanged();
+        mLocationBar.onUrlChanged(false);
         result = mToolbar.isReadyForTextureCapture();
         assertTrue(result.isReady);
         assertEquals(ToolbarSnapshotDifference.URL_TEXT, result.snapshotDifference);
@@ -375,7 +375,7 @@ public class CustomTabToolbarUnitTest {
     public void testAboutBlankUrlIsShown() {
         setUpForAboutBlank();
         ShadowLooper.idleMainLooper();
-        mLocationBar.onUrlChanged();
+        mLocationBar.onUrlChanged(false);
         assertEquals("The url bar should be visible.", View.VISIBLE, mUrlBar.getVisibility());
         assertEquals(
                 "The url bar should show about:blank",
@@ -388,7 +388,7 @@ public class CustomTabToolbarUnitTest {
         setUpForAboutBlank();
         mLocationBar.setShowTitle(true);
         ShadowLooper.idleMainLooper();
-        mLocationBar.onUrlChanged();
+        mLocationBar.onUrlChanged(false);
         assertEquals("The title should be gone.", View.GONE, mTitleBar.getVisibility());
     }
 
@@ -397,7 +397,7 @@ public class CustomTabToolbarUnitTest {
         setUpForAboutBlank();
         mLocationBar.setUrlBarHidden(true);
         ShadowLooper.idleMainLooper();
-        mLocationBar.onUrlChanged();
+        mLocationBar.onUrlChanged(false);
         assertEquals("The url bar should be visible.", View.VISIBLE, mUrlBar.getVisibility());
         assertEquals(
                 "The url bar should show about:blank",

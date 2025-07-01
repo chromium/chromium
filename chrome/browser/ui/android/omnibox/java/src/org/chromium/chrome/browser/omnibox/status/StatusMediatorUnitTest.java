@@ -775,14 +775,14 @@ public final class StatusMediatorUnitTest {
 
         doReturn(CURRENT_TAB_ID).when(mTab).getId();
 
-        mMediator.onUrlChanged();
+        mMediator.onUrlChanged(false);
         verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any(), anyBoolean());
 
-        mMediator.onUrlChanged();
+        mMediator.onUrlChanged(false);
         verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any(), anyBoolean());
 
         doReturn(NEW_TAB_ID).when(mTab).getId();
-        mMediator.onUrlChanged();
+        mMediator.onUrlChanged(false);
         verify(mCookieControlsBridge, times(2)).updateWebContents(any(), any(), anyBoolean());
     }
 
@@ -795,10 +795,10 @@ public final class StatusMediatorUnitTest {
 
         doReturn(CURRENT_TAB_ID).when(mTab).getId();
 
-        mMediator.onUrlChanged();
+        mMediator.onUrlChanged(false);
         verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any(), anyBoolean());
 
-        mMediator.onUrlChanged();
+        mMediator.onUrlChanged(false);
         verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any(), anyBoolean());
     }
 
@@ -811,16 +811,16 @@ public final class StatusMediatorUnitTest {
 
         doReturn(CURRENT_TAB_ID).when(mTab).getId();
 
-        mMediator.onUrlChanged();
+        mMediator.onUrlChanged(false);
         verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any(), anyBoolean());
 
         // Tab crashed, need to update the web contents at next url change.
         mMediator.onTabCrashed();
-        mMediator.onUrlChanged();
+        mMediator.onUrlChanged(false);
         verify(mCookieControlsBridge, times(2)).updateWebContents(any(), any(), anyBoolean());
 
         // Subsequent url changes on the same tab should not trigger any web contents update.
-        mMediator.onUrlChanged();
+        mMediator.onUrlChanged(false);
         verify(mCookieControlsBridge, times(2)).updateWebContents(any(), any(), anyBoolean());
     }
 
@@ -832,7 +832,7 @@ public final class StatusMediatorUnitTest {
 
         Assert.assertEquals(mMediator.getCookieControlsBridge(), null);
 
-        mMediator.onUrlChanged();
+        mMediator.onUrlChanged(false);
 
         Assert.assertNotEquals(mMediator.getCookieControlsBridge(), null);
     }
@@ -846,7 +846,7 @@ public final class StatusMediatorUnitTest {
         doReturn(true).when(mProfile).isIncognitoBranded();
         doReturn(CURRENT_TAB_ID).when(mTab).getId();
 
-        mMediator.onUrlChanged();
+        mMediator.onUrlChanged(false);
         verify(mCookieControlsBridge, times(1))
                 .updateWebContents(any(), any(), /* isIncognitoBranded= */ eq(true));
     }
