@@ -610,6 +610,9 @@ crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shade
 ## Metal Common ##
 # Common to all GPU types (both AMD and Intel, at least)
 
+crbug.com/428022626 [ mac angle-metal passthrough graphite-enabled ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/428022626 [ mac angle-metal passthrough graphite-enabled ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+
 ## Metal AMD ##
 
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] conformance2/textures/misc/tex-srgb-mipmap.html [ Failure ]
