@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
+#include <memory>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
@@ -125,14 +127,16 @@ class PageInfoBubbleViewTestApi {
       bubble_delegate_->GetWidget()->CloseNow();
     }
 
-    views::View* anchor_view = nullptr;
-    auto* bubble = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleView::CreatePageInfoBubble(
-            anchor_view, gfx::Rect(), parent_, web_contents_, GURL(kUrl),
-            base::DoNothing(),
-            base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
-                           base::Unretained(this), run_loop_.QuitClosure()),
-            /*allow_extended_site_info=*/true));
+    std::unique_ptr<PageInfoBubbleSpecification> specification =
+        PageInfoBubbleSpecification::Builder(nullptr, parent_, web_contents_,
+                                             GURL(kUrl))
+            .AddPageInfoClosingCallback(base::BindOnce(
+                &PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
+                base::Unretained(this), run_loop_.QuitClosure()))
+            .Build();
+
+    auto* const bubble = static_cast<PageInfoBubbleView*>(
+        PageInfoBubbleView::CreatePageInfoBubble(std::move(specification)));
     presenter_ = bubble->presenter_for_testing();
     navigation_handler_ = bubble;
     bubble_delegate_ = bubble;

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_VIEW_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
@@ -16,6 +18,7 @@
 
 class ChromePageInfoUiDelegate;
 class PageSwitcherView;
+class PageInfoBubbleSpecification;
 class PageInfoViewFactory;
 class PageInfoMerchantTrustCoordinator;
 
@@ -35,16 +38,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   // |anchor_rect| will be used instead.  |parent_window| will become the
   // parent of the widget hosting the bubble view.
   static views::BubbleDialogDelegateView* CreatePageInfoBubble(
-      views::View* anchor_view,
-      const gfx::Rect& anchor_rect,
-      gfx::NativeWindow parent_window,
-      content::WebContents* web_contents,
-      const GURL& url,
-      base::OnceClosure initialized_callback,
-      PageInfoClosingCallback closing_callback,
-      bool allow_extended_site_info,
-      std::optional<ContentSettingsType> type = std::nullopt,
-      bool open_merchant_trust_page = false);
+      std::unique_ptr<PageInfoBubbleSpecification> specification);
 
   // PageInfoNavigationHandler:
   void OpenMainPage(base::OnceClosure initialized_callback) override;

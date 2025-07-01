@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/merchant_trust_chip_button_controller.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/bind.h"
@@ -12,10 +13,11 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/page_info/core/merchant_trust_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -160,21 +162,22 @@ void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
     return;
   }
 
-  auto initialized_callback =
-      GetPageInfoDialogCreatedCallbackForTesting()
-          ? std::move(GetPageInfoDialogCreatedCallbackForTesting())
-          : base::DoNothing();
+  std::unique_ptr<PageInfoBubbleSpecification> specification =
+      PageInfoBubbleSpecification::Builder(
+          location_icon_view_, chip_button_->GetWidget()->GetNativeWindow(),
+          web_contents(), entry->GetVirtualURL())
+          .AddInitializedCallback(
+              GetPageInfoDialogCreatedCallbackForTesting()
+                  ? std::move(GetPageInfoDialogCreatedCallbackForTesting())
+                  : base::DoNothing())
+          .ShowMerchantTrustPage()
+          .Build();
 
   // TODO(crbug.com/378854462): Prevent bubble from reopening when clicking on
   // the button while the bubble is open. Anchor by the main location bar icon
   // and set chip_button_ as highlighted button.
-  views::BubbleDialogDelegateView* bubble =
-      PageInfoBubbleView::CreatePageInfoBubble(
-          location_icon_view_, gfx::Rect(),
-          chip_button_->GetWidget()->GetNativeWindow(), web_contents(),
-          entry->GetVirtualURL(), std::move(initialized_callback),
-          base::DoNothing(),
-          /*allow_extended_site_info=*/true, std::nullopt, true);
+  views::BubbleDialogDelegateView* const bubble =
+      PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
   bubble->SetHighlightedButton(chip_button_);
   bubble->GetWidget()->Show();
 }

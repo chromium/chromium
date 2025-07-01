@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 
+#include <algorithm>
+#include <memory>
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
@@ -18,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_bounds_change_animation.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_tucker.h"
@@ -1034,13 +1038,15 @@ bool PictureInPictureBrowserFrameView::ShowPageInfoDialog() {
     return false;
   }
 
-  views::BubbleDialogDelegateView* bubble =
-      PageInfoBubbleView::CreatePageInfoBubble(
-          location_icon_view_, gfx::Rect(), GetWidget()->GetNativeWindow(),
-          contents, contents->GetLastCommittedURL(),
-          /*initialized_callback=*/base::DoNothing(),
-          /*closing_callback=*/base::DoNothing(),
-          /*allow_extended_site_info=*/false);
+  std::unique_ptr<PageInfoBubbleSpecification> specification =
+      PageInfoBubbleSpecification::Builder(
+          location_icon_view_, GetWidget()->GetNativeWindow(), contents,
+          contents->GetLastCommittedURL())
+          .HideExtendedSiteInfo()
+          .Build();
+
+  views::BubbleDialogDelegateView* const bubble =
+      PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
   bubble->SetHighlightedButton(location_icon_view_);
   bubble->GetWidget()->Show();
 

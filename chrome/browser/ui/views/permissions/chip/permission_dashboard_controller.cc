@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 
+#include <memory>
 #include <string>
 
 #include "base/check.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -457,16 +459,18 @@ void PermissionDashboardController::ShowPageInfoDialog() {
     return;
   }
 
-  auto initialized_callback = base::DoNothing();
-
-  views::BubbleDialogDelegateView* bubble =
-      PageInfoBubbleView::CreatePageInfoBubble(
-          permission_dashboard_view_, gfx::Rect(),
+  std::unique_ptr<PageInfoBubbleSpecification> specification =
+      PageInfoBubbleSpecification::Builder(
+          permission_dashboard_view_,
           permission_dashboard_view_->GetWidget()->GetNativeWindow(), contents,
-          entry->GetVirtualURL(), std::move(initialized_callback),
-          base::BindOnce(&PermissionDashboardController::OnPageInfoBubbleClosed,
-                         weak_factory_.GetWeakPtr()),
-          /*allow_about_this_site=*/true);
+          entry->GetVirtualURL())
+          .AddPageInfoClosingCallback(base::BindOnce(
+              &PermissionDashboardController::OnPageInfoBubbleClosed,
+              weak_factory_.GetWeakPtr()))
+          .Build();
+
+  views::BubbleDialogDelegateView* const bubble =
+      PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
   bubble->GetWidget()->Show();
   page_info_bubble_tracker_.SetView(bubble);
 }
