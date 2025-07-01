@@ -117,7 +117,7 @@ int SpdyHttpStream::ReadResponseBody(IOBuffer* buf,
 
   // If we have data buffered, complete the IO immediately.
   if (!response_body_queue_.IsEmpty()) {
-    return response_body_queue_.Dequeue(buf->data(), buf_len);
+    return response_body_queue_.Dequeue(buf->first(buf_len));
   } else if (stream_closed_) {
     return closed_stream_status_;
   }
@@ -528,7 +528,7 @@ void SpdyHttpStream::DoBufferedReadCallback() {
 
   if (!response_body_queue_.IsEmpty()) {
     int rv =
-        response_body_queue_.Dequeue(user_buffer_->data(), user_buffer_len_);
+        response_body_queue_.Dequeue(user_buffer_->first(user_buffer_len_));
     user_buffer_ = nullptr;
     user_buffer_len_ = 0;
     DoResponseCallback(rv);

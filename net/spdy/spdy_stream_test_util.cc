@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "net/spdy/spdy_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -107,7 +108,9 @@ std::string StreamDelegateBase::TakeReceivedData() {
   size_t len = received_data_queue_.GetTotalSize();
   std::string received_data(len, '\0');
   if (len > 0) {
-    EXPECT_EQ(len, received_data_queue_.Dequeue(std::data(received_data), len));
+    EXPECT_EQ(received_data_queue_.Dequeue(
+                  base::as_writable_byte_span(received_data)),
+              len);
   }
   return received_data;
 }

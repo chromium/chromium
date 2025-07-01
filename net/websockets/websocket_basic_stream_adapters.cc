@@ -224,7 +224,7 @@ NetLogSource WebSocketSpdyStreamAdapter::source_dependency() const {
 int WebSocketSpdyStreamAdapter::CopySavedReadDataIntoBuffer() {
   DCHECK(read_buffer_);
   DCHECK(read_length_);
-  int rv = read_data_.Dequeue(read_buffer_->data(), read_length_);
+  int rv = read_data_.Dequeue(read_buffer_->first(read_length_));
   read_buffer_ = nullptr;
   read_length_ = 0u;
 

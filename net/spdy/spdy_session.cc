@@ -2898,7 +2898,8 @@ void SpdySession::OnStreamFrameData(spdy::SpdyStreamId stream_id,
   if (data) {
     DCHECK_GT(len, 0u);
     CHECK_LE(len, static_cast<size_t>(kReadBufferSize));
-    buffer = std::make_unique<SpdyBuffer>(data, len);
+    buffer = std::make_unique<SpdyBuffer>(
+        base::as_byte_span(UNSAFE_TODO(base::span(data, len))));
 
     DecreaseRecvWindowSize(static_cast<int32_t>(len));
     buffer->AddConsumeCallback(base::BindRepeating(

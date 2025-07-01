@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -134,9 +135,9 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   int DoSendRequestComplete(int result);
   int DoReadReplyComplete(int result);
 
-  // Populates |user_buffer_| with as much read data as possible
+  // Populates `data` with as much read data as possible
   // and returns the number of bytes read.
-  size_t PopulateUserReadBuffer(char* out, size_t len);
+  size_t PopulateUserReadBuffer(base::span<uint8_t> data);
 
   // Called when the peer sent END_STREAM.
   void MaybeSendEndStream();

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/spdy_buffer.h"
 
 #include <cstring>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "net/base/io_buffer.h"
@@ -28,16 +24,16 @@ const size_t kMaxSpdyFrameSize = 0x00ffffff;
 // Makes a spdy::SpdySerializedFrame with |size| bytes of data copied from
 // |data|. |data| must be non-NULL and |size| must be positive.
 std::unique_ptr<spdy::SpdySerializedFrame> MakeSpdySerializedFrame(
-    const char* data,
-    size_t size) {
-  DCHECK(data);
-  CHECK_GT(size, 0u);
-  CHECK_LE(size, kMaxSpdyFrameSize);
+    base::span<const uint8_t> data) {
+  CHECK(!data.empty());
+  CHECK_LE(data.size(), kMaxSpdyFrameSize);
 
-  auto frame_data = std::make_unique<char[]>(size);
-  std::memcpy(frame_data.get(), data, size);
+  auto frame_data = std::make_unique<char[]>(data.size());
+  // SAFETY: `frame_data` has size `data.size()`, and so does `data`. The type
+  // is needed to transfer ownership over to Quiche.
+  UNSAFE_BUFFERS(std::memcpy(frame_data.get(), data.data(), data.size()));
   return std::make_unique<spdy::SpdySerializedFrame>(std::move(frame_data),
-                                                     size);
+                                                     data.size());
 }
 
 }  // namespace
@@ -70,11 +66,11 @@ SpdyBuffer::SpdyBuffer(std::unique_ptr<spdy::SpdySerializedFrame> frame)
 
 // The given data may not be strictly a SPDY frame; we (ab)use
 // |frame_| just as a container.
-SpdyBuffer::SpdyBuffer(const char* data, size_t size)
+SpdyBuffer::SpdyBuffer(base::span<const uint8_t> data)
     : shared_frame_(base::MakeRefCounted<SharedFrame>()) {
-  CHECK_GT(size, 0u);
-  CHECK_LE(size, kMaxSpdyFrameSize);
-  shared_frame_->data = MakeSpdySerializedFrame(data, size);
+  CHECK_GT(data.size(), 0u);
+  CHECK_LE(data.size(), kMaxSpdyFrameSize);
+  shared_frame_->data = MakeSpdySerializedFrame(data);
 }
 
 SpdyBuffer::~SpdyBuffer() {
@@ -82,8 +78,9 @@ SpdyBuffer::~SpdyBuffer() {
     ConsumeHelper(GetRemainingSize(), DISCARD);
 }
 
-const char* SpdyBuffer::GetRemainingData() const {
-  return shared_frame_->data->data() + offset_;
+base::span<const uint8_t> SpdyBuffer::GetRemaining() const {
+  std::string_view frame_view(*shared_frame_->data);
+  return base::as_byte_span(frame_view).subspan(offset_);
 }
 
 size_t SpdyBuffer::GetRemainingSize() const {

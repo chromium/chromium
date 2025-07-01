@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/spdy_read_queue.h"
 
 #include <algorithm>
@@ -38,14 +33,14 @@ void SpdyReadQueue::Enqueue(std::unique_ptr<SpdyBuffer> buffer) {
   queue_.push_back(std::move(buffer));
 }
 
-size_t SpdyReadQueue::Dequeue(char* out, size_t len) {
-  DCHECK_GT(len, 0u);
+size_t SpdyReadQueue::Dequeue(base::span<uint8_t> out) {
+  DCHECK_GT(out.size(), 0u);
   size_t bytes_copied = 0;
-  while (!queue_.empty() && bytes_copied < len) {
+  while (!queue_.empty() && !out.empty()) {
     SpdyBuffer* buffer = queue_.front().get();
-    size_t bytes_to_copy =
-        std::min(len - bytes_copied, buffer->GetRemainingSize());
-    memcpy(out + bytes_copied, buffer->GetRemainingData(), bytes_to_copy);
+    size_t bytes_to_copy = std::min(out.size(), buffer->GetRemainingSize());
+    out.take_first(bytes_to_copy)
+        .copy_from(buffer->GetRemaining().first(bytes_to_copy));
     bytes_copied += bytes_to_copy;
     if (bytes_to_copy == buffer->GetRemainingSize())
       queue_.pop_front();

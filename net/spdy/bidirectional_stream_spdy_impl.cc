@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/bidirectional_stream_spdy_impl.h"
 
 #include <utility>
@@ -93,7 +88,7 @@ int BidirectionalStreamSpdyImpl::ReadData(IOBuffer* buf, int buf_len) {
 
   // If there is data buffered, complete the IO immediately.
   if (!read_data_queue_.IsEmpty()) {
-    return read_data_queue_.Dequeue(buf->data(), buf_len);
+    return read_data_queue_.Dequeue(buf->first(buf_len));
   } else if (stream_closed_) {
     return closed_stream_status_;
   }
@@ -135,12 +130,11 @@ void BidirectionalStreamSpdyImpl::SendvData(
   } else {
     pending_combined_buffer_ =
         base::MakeRefCounted<net::IOBufferWithSize>(total_len);
-    int len = 0;
+    auto out_span = pending_combined_buffer_->span();
     // TODO(xunjieli): Get rid of extra copy. Coalesce headers and data frames.
     for (size_t i = 0; i < buffers.size(); ++i) {
-      memcpy(pending_combined_buffer_->data() + len, buffers[i]->data(),
-             lengths[i]);
-      len += lengths[i];
+      size_t sz_len = lengths[i];
+      out_span.take_first(sz_len).copy_from(buffers[i]->first(sz_len));
     }
   }
   stream_->SendData(pending_combined_buffer_.get(), total_len,
