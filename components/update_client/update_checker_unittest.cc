@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -196,7 +197,7 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
   crx_component.lang = lang;
   crx_component.install_data_index = install_data_index;
   crx_component.name = "test_jebg";
-  crx_component.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
+  crx_component.pk_hash = base::ToVector(jebg_hash);
   crx_component.installer = nullptr;
   crx_component.version = base::Version("0.9");
   crx_component.allow_updates_on_metered_connection =

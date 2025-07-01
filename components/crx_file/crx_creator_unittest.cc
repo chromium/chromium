@@ -87,9 +87,9 @@ TEST_F(CrxCreatorTest, VerifyCrxWithVerifiedContents) {
             Verify(temp_file, VerifierFormat::CRX3, keys, hash,
                    &public_key_in_crx, nullptr, &compressed_verified_contents));
   EXPECT_EQ(expected_public_key, public_key_in_crx);
-  std::vector<uint8_t> expected_verified_contents;
-  expected_verified_contents.assign(test_compressed_verified_contents.begin(),
-                                    test_compressed_verified_contents.end());
+  const std::vector<uint8_t> expected_verified_contents(
+      test_compressed_verified_contents.begin(),
+      test_compressed_verified_contents.end());
   EXPECT_EQ(compressed_verified_contents, expected_verified_contents);
 
   // Delete the file.

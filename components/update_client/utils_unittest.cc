@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -81,7 +82,7 @@ TEST(UpdateClientUtils, GetCrxComponentId) {
       0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
   };
   CrxComponent component;
-  component.pk_hash.assign(std::begin(kHash), std::end(kHash));
+  component.pk_hash = base::ToVector(kHash);
 
   EXPECT_EQ(std::string("abcdefghijklmnopabcdefghijklmnop"),
             GetCrxComponentID(component));
@@ -152,32 +153,27 @@ TEST(UpdateClientUtils, IsValidInstallerAttributeValue) {
 }
 
 TEST(UpdateClientUtils, RemoveUnsecureUrls) {
-  const GURL test1[] = {GURL("http://foo"), GURL("https://foo")};
-  std::vector<GURL> urls(std::begin(test1), std::end(test1));
+  std::vector<GURL> urls = {GURL("http://foo"), GURL("https://foo")};
   RemoveUnsecureUrls(&urls);
   EXPECT_EQ(1u, urls.size());
   EXPECT_EQ(urls[0], GURL("https://foo"));
 
-  const GURL test2[] = {GURL("https://foo"), GURL("http://foo")};
-  urls.assign(std::begin(test2), std::end(test2));
+  urls = {GURL("https://foo"), GURL("http://foo")};
   RemoveUnsecureUrls(&urls);
   EXPECT_EQ(1u, urls.size());
   EXPECT_EQ(urls[0], GURL("https://foo"));
 
-  const GURL test3[] = {GURL("https://foo"), GURL("https://bar")};
-  urls.assign(std::begin(test3), std::end(test3));
+  urls = {GURL("https://foo"), GURL("https://bar")};
   RemoveUnsecureUrls(&urls);
   EXPECT_EQ(2u, urls.size());
   EXPECT_EQ(urls[0], GURL("https://foo"));
   EXPECT_EQ(urls[1], GURL("https://bar"));
 
-  const GURL test4[] = {GURL("http://foo")};
-  urls.assign(std::begin(test4), std::end(test4));
+  urls = {GURL("http://foo")};
   RemoveUnsecureUrls(&urls);
   EXPECT_EQ(0u, urls.size());
 
-  const GURL test5[] = {GURL("http://foo"), GURL("http://bar")};
-  urls.assign(std::begin(test5), std::end(test5));
+  urls = {GURL("http://foo"), GURL("http://bar")};
   RemoveUnsecureUrls(&urls);
   EXPECT_EQ(0u, urls.size());
 }

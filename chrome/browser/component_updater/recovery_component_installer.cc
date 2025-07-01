@@ -14,6 +14,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -280,9 +281,8 @@ void RecoveryRegisterHelper(ComponentUpdateService* cus, PrefService* prefs) {
   if (!version.IsValid()) {
     VLOG(2) << "Recovery component version is not valid.";
   }
-  std::vector<uint8_t> public_key_hash;
-  public_key_hash.assign(std::begin(kRecoverySha2Hash),
-                         std::end(kRecoverySha2Hash));
+  const std::vector<uint8_t> public_key_hash =
+      base::ToVector(kRecoverySha2Hash);
   if (!cus->RegisterComponent(ComponentRegistration(
           update_client::GetCrxIdFromPublicKeyHash(public_key_hash), "recovery",
           public_key_hash, version, /*fingerprint=*/{},
