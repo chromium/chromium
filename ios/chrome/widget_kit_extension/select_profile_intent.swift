@@ -20,7 +20,7 @@ struct AccountQuery: EntityQuery {
     let noAccountName = String(
       localized: "IDS_IOS_WIDGET_KIT_EXTENSION_NO_ACCOUNT_LABEL")
 
-    let noAccount = AccountDetail(id: noAccountName, gaia: "Default")
+    let noAccount = AccountDetail(id: "Default", email: noAccountName)
 
     guard let accounts = try? await suggestedEntities()
     else { return noAccount }
@@ -31,8 +31,8 @@ struct AccountQuery: EntityQuery {
     guard let primaryAccount = sharedDefaults.object(forKey: "ios.primary_account") as? String
     else { return noAccount }
     for account in accounts {
-      if account.gaia == primaryAccount {
-        return AccountDetail(id: account.id, gaia: account.gaia)
+      if account.id == primaryAccount {
+        return AccountDetail(id: account.id, email: account.email)
       }
     }
     return noAccount
@@ -40,14 +40,15 @@ struct AccountQuery: EntityQuery {
 }
 
 struct AccountDetail: AppEntity {
+  // Id contains the gaia id of the account or "Default" for the "No account" case.
   let id: String
-  let gaia: String
+  let email: String
 
   static let typeDisplayRepresentation: TypeDisplayRepresentation = "Account"
   static let defaultQuery = AccountQuery()
 
   var displayRepresentation: DisplayRepresentation {
-    DisplayRepresentation(title: "\(id)")
+    DisplayRepresentation(title: "\(email)")
   }
 
   static func allAccounts() -> [AccountDetail] {
@@ -62,11 +63,11 @@ struct AccountDetail: AppEntity {
 
     let noAccountName = String(
       localized: "IDS_IOS_WIDGET_KIT_EXTENSION_NO_ACCOUNT_LABEL")
-    accountsDetail.append(AccountDetail(id: noAccountName, gaia: "Default"))
+    accountsDetail.append(AccountDetail(id: "Default", email: noAccountName))
 
     for (key, value) in accounts {
       if let email = value["email"] as? String {
-        accountsDetail.append(AccountDetail(id: email, gaia: key))
+        accountsDetail.append(AccountDetail(id: key, email: email))
       }
     }
     return accountsDetail
@@ -84,7 +85,7 @@ struct SelectAccountIntent: WidgetConfigurationIntent {
 
   // Returns the avatar linked to the account.
   func avatar() -> Image? {
-    guard let gaia = account?.gaia
+    guard let gaia = account?.id
     else { return nil }
 
     let avatarFilePath =
@@ -98,7 +99,7 @@ struct SelectAccountIntent: WidgetConfigurationIntent {
 
   // Returns the gaiaID linked to the account.
   func gaia() -> String? {
-    guard let gaia = account?.gaia
+    guard let gaia = account?.id
     else { return nil }
 
     return gaia
@@ -106,6 +107,6 @@ struct SelectAccountIntent: WidgetConfigurationIntent {
 
   // Returns a boolean used to check if the account was deleted from device.
   func deleted() -> Bool {
-    return account?.gaia == nil
+    return account?.id == nil
   }
 }
