@@ -2936,11 +2936,18 @@ void Node::WillMoveToNewDocument(Document& new_document) {
     old_document.SetFocusedElement(nullptr, params);
   }
 
+  const LocalFrame* old_frame = old_document.GetFrame();
+  const LocalFrame* new_frame = new_document.GetFrame();
+  const bool moving_from_connected_local_root_to_different_local_root =
+      old_frame && (!new_frame || &old_frame->LocalFrameRoot() !=
+                                      &new_frame->LocalFrameRoot());
+  if (moving_from_connected_local_root_to_different_local_root) {
+    old_frame->GetEventHandlerRegistry().DidMoveOutOfLocalRoot(*this);
+  }
+
   if (!old_document.GetPage() ||
       old_document.GetPage() == new_document.GetPage())
     return;
-
-  old_document.GetFrame()->GetEventHandlerRegistry().DidMoveOutOfPage(*this);
 
   if (auto* this_element = DynamicTo<Element>(this)) {
     StylePropertyMapReadOnly* computed_style_map_item =
@@ -3043,9 +3050,13 @@ void Node::MoveEventListenersToNewDocument(Document& old_document,
     }
   }
 
-  if (new_document.GetPage() &&
-      new_document.GetPage() != old_document.GetPage()) {
-    new_document.GetFrame()->GetEventHandlerRegistry().DidMoveIntoPage(*this);
+  const LocalFrame* old_frame = old_document.GetFrame();
+  const LocalFrame* new_frame = new_document.GetFrame();
+  const bool moving_into_different_connected_local_root =
+      new_frame && (!old_frame || &new_frame->LocalFrameRoot() !=
+                                      &old_frame->LocalFrameRoot());
+  if (moving_into_different_connected_local_root) {
+    new_frame->GetEventHandlerRegistry().DidMoveIntoLocalRoot(*this);
   }
 }
 

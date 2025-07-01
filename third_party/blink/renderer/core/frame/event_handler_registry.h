@@ -76,8 +76,8 @@ class CORE_EXPORT EventHandlerRegistry final
   void DidRemoveEventHandler(EventTarget&, EventHandlerClass);
   void DidRemoveAllEventHandlers(EventTarget&);
 
-  void DidMoveIntoPage(EventTarget&);
-  void DidMoveOutOfPage(EventTarget&);
+  void DidMoveIntoLocalRoot(EventTarget&);
+  void DidMoveOutOfLocalRoot(EventTarget&);
 
   // Either |documentDetached| or |didMove{Into,OutOf,Between}Pages| must
   // be called whenever the Page that is associated with a registered event
