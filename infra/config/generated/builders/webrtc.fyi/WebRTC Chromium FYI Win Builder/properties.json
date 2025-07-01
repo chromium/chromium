@@ -23,7 +23,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 32,
+                "target_bits": 64,
                 "target_platform": "win"
               },
               "legacy_gclient_config": {
@@ -51,7 +51,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 32,
+                "target_bits": 64,
                 "target_platform": "win"
               },
               "legacy_gclient_config": {
