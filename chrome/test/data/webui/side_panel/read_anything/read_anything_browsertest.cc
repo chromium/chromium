@@ -300,6 +300,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechModel) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ConnectedCallback) {
+  RunSidePanelTest("side_panel/read_anything/connected_callback_test.js",
+                   "mocha.run()");
+}
+
 class ReadAnythingReadAloudPhraseHighlightingMochaTest
     : public ReadAnythingMochaBrowserTest {
  protected:

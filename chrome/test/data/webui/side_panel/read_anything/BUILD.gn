@@ -13,6 +13,7 @@ build_webui_tests("build") {
     "app_style_updater_test.ts",
     "checkmark_visible_on_selected_test.ts",
     "color_menu_test.ts",
+    "connected_callback_test.ts",
     "common.ts",
     "common_test.ts",
     "download_notification_test.ts",
