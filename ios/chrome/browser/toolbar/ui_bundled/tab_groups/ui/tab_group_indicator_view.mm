@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
@@ -46,6 +47,8 @@ using tab_groups::SharingState;
   BOOL _shareAvailable;
   // Sharing state of the saved tab group.
   SharingState _sharingState;
+  // Face pile provider.
+  id<FacePileProviding> _facePileProvider;
 }
 
 - (instancetype)init {
@@ -97,16 +100,18 @@ using tab_groups::SharingState;
   [self configureMenuButton];
 }
 
-- (void)setFacePileView:(UIView*)facePileView {
-  if (_facePileView == facePileView) {
+- (void)setFacePileProvider:(id<FacePileProviding>)facePileProvider {
+  if (_facePileProvider == facePileProvider) {
     return;
   }
 
-  if (_stackView == _facePileView.superview) {
+  _facePileProvider = facePileProvider;
+
+  if ([_facePileView isDescendantOfView:self]) {
     [_facePileView removeFromSuperview];
   }
 
-  _facePileView = facePileView;
+  _facePileView = _facePileProvider.facePileView;
 
   if (_facePileView) {
     _facePileView.translatesAutoresizingMaskIntoConstraints = NO;

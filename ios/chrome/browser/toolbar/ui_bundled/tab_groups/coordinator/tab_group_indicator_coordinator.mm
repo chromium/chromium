@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/coordinator/face_pile_configuration.h"
+#import "ios/chrome/browser/saved_tab_groups/coordinator/face_pile_coordinator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -48,6 +50,11 @@ using ResultCallback =
 using collaboration::CollaborationControllerDelegate;
 using collaboration::FlowType;
 using collaboration::IOSCollaborationControllerDelegate;
+
+namespace {
+// The preferred size in points for the avatar icons.
+constexpr CGFloat kFacePileAvatarSize = 20;
+}  // namespace
 
 @interface TabGroupIndicatorCoordinator () <
     CreateOrEditTabGroupCoordinatorDelegate,
@@ -321,6 +328,21 @@ using collaboration::IOSCollaborationControllerDelegate;
               self.profile, self.baseViewController, FlowType::kShareOrManage));
   collaborationService->StartShareOrManageFlow(
       std::move(delegate), tabGroup->tab_group_id(), entryPoint);
+}
+
+- (id<FacePileProviding>)facePileProviderForGroupID:
+    (const std::string&)groupID {
+  // Configure the face pile.
+  FacePileConfiguration* config = [[FacePileConfiguration alloc] init];
+  config.groupID = data_sharing::GroupId(groupID);
+  config.avatarSize = kFacePileAvatarSize;
+
+  FacePileCoordinator* facePileCoordinator =
+      [[FacePileCoordinator alloc] initWithFacePileConfiguration:config
+                                                         browser:self.browser];
+  [facePileCoordinator start];
+
+  return facePileCoordinator;
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

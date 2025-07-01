@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
 
+@protocol FacePileProviding;
+
 // TabGroupIndicator Consumer interface.
 @protocol TabGroupIndicatorConsumer <NSObject>
 
@@ -21,8 +23,8 @@
 // Sets the sharing state of a group.
 - (void)setSharingState:(tab_groups::SharingState)state;
 
-// Sets the face pile view to display the share button or the face pile.
-- (void)setFacePileView:(UIView*)facePileView;
+// Sets the face pile provider to display the share button or the face pile.
+- (void)setFacePileProvider:(id<FacePileProviding>)facePileProvider;
 
 @end
 
