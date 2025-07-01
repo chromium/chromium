@@ -1857,9 +1857,6 @@ class DiceWebSigninInterceptorTestSupervisionMetrics
   WebSigninInterceptor::SigninInterceptionType GetInterceptionType() {
     return std::get<1>(GetParam());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // helper

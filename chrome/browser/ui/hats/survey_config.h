@@ -24,6 +24,8 @@ extern const char kHatsSurveyTriggerAutofillCreditCardUserPerception[];
 extern const char kHatsSurveyTriggerAutofillPasswordUserPerception[];
 extern const char kHatsSurveyTriggerAutofillCard[];
 extern const char kHatsSurveyTriggerAutofillPassword[];
+extern const char kHatsSurveyTriggerDiceWebSigninAccepted[];
+extern const char kHatsSurveyTriggerDiceWebSigninDeclined[];
 extern const char kHatsSurveyTriggerDownloadWarningBubbleBypass[];
 extern const char kHatsSurveyTriggerDownloadWarningBubbleHeed[];
 extern const char kHatsSurveyTriggerDownloadWarningBubbleIgnore[];

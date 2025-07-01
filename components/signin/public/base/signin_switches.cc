@@ -256,6 +256,13 @@ BASE_FEATURE(kDeferWebSigninTrackerCreation,
 BASE_FEATURE(kSignInPromoMaterialNextUI,
              "SignInPromoMaterialNextUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables surveys to measure the effectiveness of the identity model.
+// These surveys would be displayed after interactions such as signin, profile
+// switching, etc.
+BASE_FEATURE(kChromeIdentitySurvey,
+             "ChromeIdentitySurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace switches

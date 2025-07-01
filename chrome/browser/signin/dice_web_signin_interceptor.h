@@ -370,6 +370,9 @@ class DiceWebSigninInterceptor : public KeyedService,
   void RecordSigninInterceptionHeuristicOutcome(
       SigninInterceptionHeuristicOutcome outcome) const;
 
+  // Shows HaTS survey to eligible users.
+  void LaunchHatsSurvey(const std::string& trigger_id);
+
   // Returns true if we have all the extended account information which might
   // factor in to the intercept heuristic. If we don't have 'Full' information,
   // but do have the 'Required' information above, we will make a best-effort

@@ -38,6 +38,9 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -82,6 +85,8 @@
 #include "url/gurl.h"
 
 using signin::constants::kNoHostedDomainFound;
+using testing::_;
+using testing::IsEmpty;
 
 namespace {
 
@@ -287,7 +292,6 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
     return account_info;
   }
 
- private:
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     SigninBrowserTestBase::SetUpOnMainThread();
@@ -297,6 +301,7 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
             policy::ProfileSeparationPolicies(""));
   }
 
+ private:
   void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) override {
     SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
@@ -603,6 +608,68 @@ class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
   }
 };
 
+class DiceWebSigninInterceptorWithHatsSurveyBrowserTest
+    : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    DiceWebSigninInterceptorBrowserTest::SetUpOnMainThread();
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+    EXPECT_CALL(*mock_hats_service_, CanShowAnySurvey(_))
+        .WillRepeatedly(testing::Return(true));
+  }
+
+  void TearDownOnMainThread() override {
+    SigninBrowserTestBase::TearDownOnMainThread();
+    mock_hats_service_ = nullptr;
+  }
+
+  MockHatsService* mock_hats_service() { return mock_hats_service_; }
+
+ private:
+  raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
+  base::test::ScopedFeatureList feature_list{switches::kChromeIdentitySurvey};
+};
+
+// Tests that a HaTS survey is launched when users accept the intercept signin
+// promo.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithHatsSurveyBrowserTest,
+                       ShowHatsSurveyOnChromeSigninInterceptAccepted) {
+  // Setup account for interception.
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", kNoHostedDomainFound);
+
+  // Makes sure Chrome is not signed in to trigger the intercept bubble.
+  ASSERT_FALSE(IsChromeSignedIn());
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerDiceWebSigninAccepted, _, _,
+                           IsEmpty(), IsEmpty(), _, _));
+  ShowAndCompleteSigninBubbleWithResult(account_info,
+                                        SigninInterceptionResult::kAccepted);
+  EXPECT_TRUE(IsChromeSignedIn());
+}
+
+// Tests that a HaTS survey is launched when users decline the intercept signin
+// promo.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithHatsSurveyBrowserTest,
+                       ShowHatsSurveyOnChromeSigninInterceptDeclined) {
+  // Setup account for interception.
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "alice@example.com", kNoHostedDomainFound);
+
+  // Makes sure Chrome is not signed in to trigger the bubble.
+  ASSERT_FALSE(IsChromeSignedIn());
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerDiceWebSigninDeclined, _, _,
+                           IsEmpty(), IsEmpty(), _, _));
+  ShowAndCompleteSigninBubbleWithResult(account_info,
+                                        SigninInterceptionResult::kDeclined);
+  EXPECT_FALSE(IsChromeSignedIn());
+}
+
 // Test to sign in to Chrome from the Chrome Signin Bubble Intercept.
 class DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
@@ -649,10 +716,10 @@ IN_PROC_BROWSER_TEST_F(
   base::UserActionTester user_action_tester;
 
   // Setup account for interception.
-  const std::string account_email("alice@example.com");
+  const std::string account_email = "alice@example.com";
   AccountInfo account_info =
       MakeAccountInfoAvailableAndUpdate(account_email, kNoHostedDomainFound);
-  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // Makes sure Chrome is not signed in to trigger the Chrome Signin intercept
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
@@ -703,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(
   // Setup account for interception.
   AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
       "alice@example.com", kNoHostedDomainFound);
-  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // Makes sure Chrome is not signed in to trigger the Chrome Signin intercept
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
@@ -761,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(
   // Setup account for interception.
   AccountInfo info = MakeAccountInfoAvailableAndUpdate("alice@example.com",
                                                        kNoHostedDomainFound);
-  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // Makes sure Chrome is not signed in to trigger the Chrome Signin intercept
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
@@ -885,7 +952,7 @@ IN_PROC_BROWSER_TEST_F(
   // Setup account for interception.
   AccountInfo info = MakeAccountInfoAvailableAndUpdate("alice@example.com",
                                                        kNoHostedDomainFound);
-  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // Makes sure Chrome is not signed in to trigger the Chrome Signin intercept
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
@@ -928,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(
   // Setup account for interception.
   AccountInfo info = MakeAccountInfoAvailableAndUpdate("alice@example.com",
                                                        kNoHostedDomainFound);
-  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // Makes sure Chrome is not signed in to trigger the Chrome Signin intercept
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
@@ -965,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(
   // Setup account for interception.
   AccountInfo info = MakeAccountInfoAvailableAndUpdate("alice@example.com",
                                                        kNoHostedDomainFound);
-  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // Makes sure Chrome is not signed in to trigger the Chrome Signin intercept
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
@@ -1025,7 +1092,7 @@ IN_PROC_BROWSER_TEST_F(
   // Setup account for interception.
   AccountInfo info = MakeAccountInfoAvailableAndUpdate("alice@example.com",
                                                        kNoHostedDomainFound);
-  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // Makes sure Chrome is not signed in to trigger the Chrome Signin intercept
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
@@ -1204,7 +1271,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(GetChromeSigninUserChoicePref(info1),
             ChromeSigninUserChoice::kNoChoice);
 
-  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // Makes sure Chrome is not signed in to trigger the Chrome Signin intercept
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
@@ -1296,7 +1363,7 @@ IN_PROC_BROWSER_TEST_F(
   AccountInfo info =
       MakeAccountInfoAvailableAndUpdate(email, kNoHostedDomainFound);
 
-  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // Makes sure Chrome is not signed in to trigger the Chrome Signin intercept
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 
@@ -1332,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(
   AccountInfo info =
       MakeAccountInfoAvailableAndUpdate(email, kNoHostedDomainFound);
 
-  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // Makes sure Chrome is not signed in to trigger the Chrome Signin intercept
   // bubble.
   ASSERT_FALSE(IsChromeSignedIn());
 

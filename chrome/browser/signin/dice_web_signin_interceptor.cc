@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/i18n/case_conversion.h"
@@ -47,6 +48,9 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
@@ -1229,6 +1233,7 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
     case SigninInterceptionResult::kDeclined:
       RecordChromeSigninNumberOfDismissesForAccount(account_info.gaia,
                                                     processed_result);
+      LaunchHatsSurvey(kHatsSurveyTriggerDiceWebSigninDeclined);
       break;
     case SigninInterceptionResult::kAcceptedWithExistingProfile:
       NOTREACHED()
@@ -1242,10 +1247,26 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
       signin_metrics::LogSignInStarted(access_point);
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_info.account_id, signin::ConsentLevel::kSignin, access_point);
+
+      LaunchHatsSurvey(kHatsSurveyTriggerDiceWebSigninAccepted);
   }
 
   // In all cases we want to close the bubble after the choice is taken.
   Reset();
+}
+
+void DiceWebSigninInterceptor::LaunchHatsSurvey(const std::string& trigger_id) {
+  if (!base::FeatureList::IsEnabled(switches::kChromeIdentitySurvey)) {
+    return;
+  }
+
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_,
+                                        /*create_if_necessary=*/true);
+  // TODO(crbug.com/427971911): add product-specific data.
+  if (hats_service) {
+    hats_service->LaunchSurvey(trigger_id);
+  }
 }
 
 void DiceWebSigninInterceptor::OnProfileSwitchChoice(
