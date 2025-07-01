@@ -18238,29 +18238,6 @@
             ]
         }
     ],
-    "PrefetchReusable": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250129",
-                    "params": {
-                        "prefetch_reusable_body_size_limit": "4194304"
-                    },
-                    "enable_features": [
-                        "PrefetchReusable"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrefetchScheduler": [
         {
             "platforms": [

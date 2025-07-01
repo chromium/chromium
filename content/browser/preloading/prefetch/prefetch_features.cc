@@ -10,17 +10,17 @@
 
 namespace features {
 
-BASE_FEATURE(kPrefetchUseContentRefactor,
-             "PrefetchUseContentRefactor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrefetchReusable,
-             "PrefetchReusable",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrefetchTesting,
+             "PrefetchTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // 4MiB, 2**20 * 4.
 const base::FeatureParam<int> kPrefetchReusableBodySizeLimit{
-    &kPrefetchReusable, "prefetch_reusable_body_size_limit", 4194304};
+    &kPrefetchTesting, "kPrefetchReusableBodySizeLimit", 4194304};
+
+BASE_FEATURE(kPrefetchUseContentRefactor,
+             "PrefetchUseContentRefactor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchNIKScope,
              "PrefetchNIKScope",

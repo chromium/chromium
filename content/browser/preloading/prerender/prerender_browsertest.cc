@@ -2573,7 +2573,7 @@ class PrerenderAndPrefetchBrowserTest
   void SetUp() override {
     sub_feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kPrefetchReusable,
+            {features::kPrefetchTesting,
              {
                  {features::kPrefetchReusableBodySizeLimit.name, "102118"},
              }},

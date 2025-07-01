@@ -15,22 +15,19 @@ class BrowserContext;
 
 namespace features {
 
+// Controls params for tests of prefetch.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchTesting);
+
+// The size limit of body size in bytes that can be reused in
+// `PrefetchDataPipeTee`.
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kPrefetchReusableBodySizeLimit;
+
 // This feature was used to launch the prefetch migration from embedder layer to
 // content/, and this work has finished and the old implemnetation was deleted.
 // Now this flag is just for injecting parameters through field trials as an
 // umberella feature.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUseContentRefactor);
-
-// If enabled, PrefetchContainer can be used for more than one navigation.
-// https://crbug.com/1449360
-//
-// TODO(crbug.com/397882995): Remove this.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchReusable);
-
-// The size limit of body size in bytes that can be reused in
-// `kPrefetchReusable`.
-CONTENT_EXPORT extern const base::FeatureParam<int>
-    kPrefetchReusableBodySizeLimit;
 
 // If enabled, navigational prefetch is scoped to the referring document's
 // network isolation key instead of the old behavior of the referring document
