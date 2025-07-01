@@ -1,25 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSS Mixins: Basic test</title>
+    <title>CSS Mixins: Declarations directly in mixin</title>
+    <link rel="help" href="https://drafts.csswg.org/css-mixins-1/#defining-mixins">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <style>
       @mixin --m1 {
-        .cls {
-          color: green;
-        }
+        color: green;
       }
-      @mixin invalid-name {
-        .cls {
-          color: red;
-        }
-      }
-      @mixin --empty {}
       div {
+        color: red;
         @apply --m1;
-        @apply invalid-name;
-        @apply --empty;
       }
     </style>
   </head>
