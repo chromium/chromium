@@ -23,6 +23,19 @@
 
 using tab_groups::SharingState;
 
+namespace {
+
+// Menu identifiers.
+// Try to address a crash related to UIMenu and UIAction handling by UIKit
+// (see http://crbug.com/424069384). The fix ensures UIMenu objects have
+// non-empty titles and unique identifiers.
+NSString* kSharedActionsMenuIdentifier = @"kSharedActionsMenuIdentifier";
+NSString* kEditActionsMenuIdentifier = @"kEditActionsMenuIdentifier";
+NSString* kDestructiveActionsMenuIdentifier =
+    @"kDestructiveActionsMenuIdentifier";
+
+}  // namespace
+
 @implementation TabGroupIndicatorView {
   // Stores the tab group informations.
   NSString* _groupTitle;
@@ -225,7 +238,7 @@ using tab_groups::SharingState;
   if ([sharedActions count] > 0) {
     [menuElements addObject:[UIMenu menuWithTitle:@""
                                             image:nil
-                                       identifier:nil
+                                       identifier:kSharedActionsMenuIdentifier
                                           options:UIMenuOptionsDisplayInline
                                          children:[sharedActions copy]]];
   }
@@ -245,7 +258,7 @@ using tab_groups::SharingState;
   }
   [menuElements addObject:[UIMenu menuWithTitle:@""
                                           image:nil
-                                     identifier:nil
+                                     identifier:kEditActionsMenuIdentifier
                                         options:UIMenuOptionsDisplayInline
                                        children:[editActions copy]]];
 
@@ -287,11 +300,12 @@ using tab_groups::SharingState;
           [weakSelf.mutator deleteGroupWithConfirmation:NO];
         }]];
   }
-  [menuElements addObject:[UIMenu menuWithTitle:@""
-                                          image:nil
-                                     identifier:nil
-                                        options:UIMenuOptionsDisplayInline
-                                       children:[destructiveActions copy]]];
+  [menuElements
+      addObject:[UIMenu menuWithTitle:@""
+                                image:nil
+                           identifier:kDestructiveActionsMenuIdentifier
+                              options:UIMenuOptionsDisplayInline
+                             children:[destructiveActions copy]]];
 
   _menuButton.menu = [UIMenu menuWithChildren:[menuElements copy]];
 }
