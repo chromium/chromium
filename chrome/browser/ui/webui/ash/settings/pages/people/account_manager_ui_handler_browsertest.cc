@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -144,6 +145,10 @@ class AccountManagerUIHandlerTest
   AccountManagerUIHandlerTest(const AccountManagerUIHandlerTest&) = delete;
   AccountManagerUIHandlerTest& operator=(const AccountManagerUIHandlerTest&) =
       delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kLoginManager);
+  }
 
   void SetUpOnMainThread() override {
     ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);

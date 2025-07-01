@@ -79,6 +79,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support_ui",
     "//components/account_id",
+    "//components/account_id:test_support",
     "//components/prefs",
     "//components/user_manager",
     "//content/test:test_support",

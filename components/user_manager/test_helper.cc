@@ -111,6 +111,13 @@ User* TestHelper::AddGuestUser() {
 
 User* TestHelper::AddUserInternal(const AccountId& account_id,
                                   UserType user_type) {
+  // In production, only when there's no logged in users, a user
+  // can be added to UserManager. Tests should follow the production
+  // manner for setting up testing environment.
+  if (!user_manager_->GetLoggedInUsers().empty()) {
+    LOG(ERROR) << "There already is logged in user(s).";
+    return nullptr;
+  }
   if (user_manager_->FindUser(account_id)) {
     LOG(ERROR) << "User for " << account_id << " already exists";
     return nullptr;
