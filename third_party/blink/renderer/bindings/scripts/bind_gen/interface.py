@@ -6512,6 +6512,10 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute.");"""
     if class_like.is_interface:
         wrapper_type_info_def.append(F(pattern, blink_class=blink_class))
+        wrapper_type_info_def.accumulate(
+            CodeGenAccumulator.require_include_headers([
+                "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
+            ]))
 
     return public_defs, member_var_def, wrapper_type_info_def
 
