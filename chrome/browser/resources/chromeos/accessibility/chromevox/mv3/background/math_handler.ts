@@ -11,7 +11,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import type {InternalKeyEvent} from '../common/internal_key_event.js'
 import {Msgs} from '../common/msgs.js';
-import {OffscreenCommandType} from '../common/offscreen_command_type.js';
+import {OffscreenBridge} from '../common/offscreen_bridge.js';
 import {QueueMode} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
@@ -47,10 +47,7 @@ export class MathHandler {
       mathml = '<math>' + mathml + '</math>';
     }
 
-    const text = await chrome.runtime.sendMessage(
-        /*extensionId=*/ undefined,
-        /*message=*/ {command: OffscreenCommandType.SRE_WALK, mathml});
-
+    const text = await OffscreenBridge.sreWalk(mathml);
     if (!text) {
       return false;
     }
@@ -122,13 +119,7 @@ export class MathHandler {
       return true;
     }
 
-    const output = await chrome.runtime.sendMessage(
-        /*extensionId=*/ undefined,
-        /*message=*/ {
-          command: OffscreenCommandType.SRE_MOVE,
-          keyCode: evt.keyCode
-        });
-
+    const output = await OffscreenBridge.sreMove(evt.keyCode);
     if (output) {
       ChromeVox.tts.speak(output, QueueMode.FLUSH);
     }

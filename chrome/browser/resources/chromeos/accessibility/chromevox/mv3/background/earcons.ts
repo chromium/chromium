@@ -10,7 +10,7 @@
 import {EarconId} from '../common/earcon_id.js';
 import {LogType} from '../common/log_types.js';
 import {Msgs} from '../common/msgs.js';
-import {OffscreenCommandType} from '../common/offscreen_command_type.js';
+import {OffscreenBridge} from '../common/offscreen_bridge.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {Personality, QueueMode} from '../common/tts_types.js';
 
@@ -72,28 +72,19 @@ export class Earcons extends AbstractEarcons {
       const rect = opt_location ?? node.location;
       const container = node.root?.location;
       if (this.shouldPan_ && container) {
-        chrome.runtime.sendMessage(undefined, {
-          command: OffscreenCommandType.EARCON_SET_POSITION_FOR_RECT,
-          rect,
-          container
-        });
+        OffscreenBridge.earconSetPositionForRect(rect, container);
       } else {
-        chrome.runtime.sendMessage(undefined, {
-          command: OffscreenCommandType.EARCON_RESET_PAN,
-        });
+        OffscreenBridge.earconCancelProgress();
       }
     }
 
-    chrome.runtime.sendMessage(
-        undefined,
-        {command: OffscreenCommandType.PLAY_EARCON, earconid: earcon});
+    OffscreenBridge.playEarcon(earcon);
   }
 
   override cancelEarcon(earcon: EarconId): void {
     switch (earcon) {
       case EarconId.PAGE_START_LOADING:
-        chrome.runtime.sendMessage(
-            undefined, {command: OffscreenCommandType.EARCON_CANCEL_PROGRESS});
+        OffscreenBridge.earconCancelProgress();
         break;
     }
   }

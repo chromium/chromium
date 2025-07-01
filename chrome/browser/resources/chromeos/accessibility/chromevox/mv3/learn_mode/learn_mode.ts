@@ -19,7 +19,7 @@ import {InternalKeyEvent} from '../common/internal_key_event.js'
 import {KeyUtil} from '../common/key_util.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {Msgs} from '../common/msgs.js';
-import {OffscreenCommandType} from '../common/offscreen_command_type.js';
+import {OffscreenBridge} from '../common/offscreen_bridge.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 import Gesture = chrome.accessibilityPrivate.Gesture;
@@ -47,10 +47,7 @@ export class LearnMode {
   /** Initialize keyboard explorer. */
   static init(): void {
     // Listen to all key events on the offscreen document.
-    const message = {
-      command: OffscreenCommandType.LEARN_MODE_REGISTER_LISTENERS
-    };
-    chrome.runtime.sendMessage(undefined, message);
+    OffscreenBridge.learnModeRegisterListeners();
 
     chrome.brailleDisplayPrivate.onKeyEvent.addListener(
         LearnMode.onBrailleKeyEvent);
@@ -317,8 +314,8 @@ export class LearnMode {
   }
 
   private static resetListeners_(): void {
-    const message = {command: OffscreenCommandType.LEARN_MODE_REMOVE_LISTENERS};
-    chrome.runtime.sendMessage(undefined, message);
+    // Stop listening to key events on the offscreen document.
+    OffscreenBridge.learnModeRemoveListeners();
 
     chrome.brailleDisplayPrivate.onKeyEvent.removeListener(
         LearnMode.onBrailleKeyEvent);

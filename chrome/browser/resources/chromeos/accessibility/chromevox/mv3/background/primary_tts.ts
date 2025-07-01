@@ -12,7 +12,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {Msgs} from '../common/msgs.js';
-import {OffscreenCommandType} from '../common/offscreen_command_type.js';
+import {OffscreenBridge} from '../common/offscreen_bridge.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {CharacterDictionary, Personality, PunctuationEcho, PunctuationEchoes, QueueMode, TtsAudioProperty, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
@@ -145,15 +145,10 @@ export class PrimaryTts extends AbstractTts {
    * of window.speechSynthesis.
    * SpeechSynthesis is not available on chromecast.
    */
-  private setDefaultVoiceIfChromecast_() {
-    const setDefault = (value: any) => {
-      if (value) {
-        this.updateVoice('');
-      }
-    };
-    chrome.runtime.sendMessage(
-        undefined, {command: OffscreenCommandType.SHOULD_SET_DEFAULT_VOICE},
-        undefined, setDefault);
+  private async setDefaultVoiceIfChromecast_(): Promise<void> {
+    if (await OffscreenBridge.shouldSetDefaultVoice()) {
+      this.updateVoice('');
+    }
   }
 
   /**

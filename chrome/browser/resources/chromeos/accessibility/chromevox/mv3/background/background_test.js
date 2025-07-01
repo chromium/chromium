@@ -194,19 +194,11 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
   }
 
   recordEarconsPlayedFromOffscreenDocument() {
-    chrome.runtime.sendMessage(undefined, {
-      command: OffscreenCommandType.RECORD_EARCONS_FOR_TEST,
-    });
+    OffscreenBridge.recordEarconsForTest();
   }
 
   async reportEarconsPlayedFromOffscreenDocument() {
-    return new Promise(resolve => {
-      chrome.runtime.sendMessage(
-          undefined, {
-            command: OffscreenCommandType.REPORT_EARCONS_FOR_TEST,
-          },
-          undefined, (response) => {resolve(response)});
-    });
+    return OffscreenBridge.reportEarconsForTest();
   }
 
   /**

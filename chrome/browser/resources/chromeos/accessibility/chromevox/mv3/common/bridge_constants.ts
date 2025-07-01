@@ -149,6 +149,33 @@ export const BridgeConstants = {
     },
   },
 
+  Offscreen: {
+    TARGET: 'Offscreen',
+    Action: {
+      EARCON_CANCEL_PROGRESS: 'earconCancelProgress',
+      EARCON_RESET_PAN: 'earconSesetPan',
+      EARCON_SET_POSITION_FOR_RECT: 'earconSetPositionForRect',
+      IMAGE_DATA_FROM_URL: 'imageDataFromUrl',
+      LEARN_MODE_REGISTER_LISTENERS: 'learnModeRegisterListeners',
+      LEARN_MODE_REMOVE_LISTENERS: 'learnModeRemoveListeners',
+      LIBLOUIS_START_WORKER: 'libLouisStartWorker',
+      LIBLOUIS_RPC: 'libLouisRPC',
+      ON_CLIPBOARD_DATA_CHANGED: 'onClipboardDataChanged',
+      PLAY_EARCON: 'playEarcon',
+      SHOULD_SET_DEFAULT_VOICE: 'shouldSetDefaultVoice',
+      SRE_MOVE: 'sreMove',
+      SRE_WALK: 'sreWalk',
+    },
+  },
+
+  OffscreenTest: {
+    TARGET: 'OffscreenTest',
+    Action: {
+      RECORD_EARCONS: 'recordEarcons',
+      REPORT_EARCONS: 'reportEarcons',
+    },
+  },
+
   Panel: {
     TARGET: 'Panel',
     Action: {

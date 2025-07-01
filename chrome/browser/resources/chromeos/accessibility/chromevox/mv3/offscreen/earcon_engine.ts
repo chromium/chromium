@@ -8,10 +8,15 @@
  * rest of the code.
  */
 
-import {EarconId} from '../common/earcon_id.js';
-import {OffscreenCommandType} from '../common/offscreen_command_type.js';
+import {BridgeHelper} from '/common/bridge_helper.js';
 
-type SendResponse = (value: any) => void;
+import {BridgeConstants} from '../common/bridge_constants.js';
+import {EarconId} from '../common/earcon_id.js';
+
+const OffscreenTarget = BridgeConstants.Offscreen.TARGET;
+const OffscreenAction = BridgeConstants.Offscreen.Action;
+const OffscreenTestTarget = BridgeConstants.OffscreenTest.TARGET;
+const OffscreenTestAction = BridgeConstants.OffscreenTest.Action;
 
 interface PlayProperties {
   pitch?: number;
@@ -160,10 +165,25 @@ export class EarconEngine {
     Object.values(OggSoundFile)
       .forEach(sound => this.loadSound(sound, `${BASE_URL}${sound}.ogg`));
 
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: chrome.runtime.MessageSender,
-         sendResponse: SendResponse) =>
-            this.handleMessageFromOffscreen_(message, sendResponse));
+
+    BridgeHelper.registerHandler(
+        OffscreenTarget, OffscreenAction.EARCON_RESET_PAN,
+        () => this.resetPan());
+    BridgeHelper.registerHandler(
+        OffscreenTarget, OffscreenAction.EARCON_SET_POSITION_FOR_RECT,
+        (rect: chrome.automation.Rect, container: chrome.automation.Rect) =>
+          this.setPositionForRect(rect, container));
+    BridgeHelper.registerHandler(
+        OffscreenTarget, OffscreenAction.PLAY_EARCON,
+        (earconId: EarconId) => this.playEarcon(earconId));
+
+    // Test functionality.
+    BridgeHelper.registerHandler(
+        OffscreenTestTarget, OffscreenTestAction.RECORD_EARCONS,
+        () => this.recordEarconsForTest_());
+    BridgeHelper.registerHandler(
+        OffscreenTestTarget, OffscreenTestAction.REPORT_EARCONS,
+        () => this.reportEarconsForTest_());
   }
 
 
@@ -174,41 +194,15 @@ export class EarconEngine {
     EarconEngine.instance = new EarconEngine();
   }
 
-  private handleMessageFromOffscreen_(
-      message: any|undefined, sendResponse: SendResponse): boolean {
-    switch (message['command']) {
-      case OffscreenCommandType.PLAY_EARCON:
-        this.playEarcon(message['earconid']);
-        break;
-      case OffscreenCommandType.EARCON_CANCEL_PROGRESS:
-        this.cancelProgress();
-        break;
-      case OffscreenCommandType.EARCON_RESET_PAN:
-        this.resetPan();
-        break;
-      case OffscreenCommandType.EARCON_SET_POSITION_FOR_RECT:
-        this.setPositionForRect(message['rect'], message['container']);
-        break;
-      case OffscreenCommandType.RECORD_EARCONS_FOR_TEST:
-        this.recordEarconsForTest_();
-        break;
-      case OffscreenCommandType.REPORT_EARCONS_FOR_TEST:
-        this.reportEarconsForTest_(sendResponse);
-        break;
-    }
-    // Returns false as the response is not asynchronous and the callback does
-    // not need to be kept alive.
-    return false;
-  }
-
   private recordEarconsForTest_(): void {
     this.recordForTest_ = true;
   }
 
-  private reportEarconsForTest_(sendResponse: SendResponse): void {
-    sendResponse(this.recordedEarcons_);
+  private reportEarconsForTest_(): EarconId[] {
+    const earcons = [...this.recordedEarcons_];
     this.recordForTest_ = false;
     this.recordedEarcons_ = [];
+    return earcons;
   }
 
   /**

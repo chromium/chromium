@@ -6,7 +6,8 @@
  * @fileoverview Class to handle access to the clipboard data.
  */
 import {Msgs} from '../../common/msgs.js';
-import {OffscreenCommandType} from '../../common/offscreen_command_type.js';
+import {OffscreenBridge} from '../../common/offscreen_bridge.js';
+import type {ClipboardData} from '../../common/offscreen_bridge_constants.js';
 import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
@@ -27,21 +28,17 @@ export class ClipboardHandler {
         () => ClipboardHandler.instance.onClipboardDataChanged_());
   }
 
-  private onClipboardDataChanged_(): void {
-    chrome.runtime.sendMessage(
-        undefined, {
-          command: OffscreenCommandType.ON_CLIPBOARD_DATA_CHANGED,
-          forceRead: this.forceReadNextClipboardEvent_
-        },
-        undefined, this.readClipboardContent_);
-    this.forceReadNextClipboardEvent_ = false;
-  }
-
-  private readClipboardContent_(value: any): void {
+  private async onClipboardDataChanged_(): Promise<void> {
+    const data: ClipboardData = await OffscreenBridge.onClipboardDataChanged(
+        this.forceReadNextClipboardEvent_);
+    if (data.eventType === undefined) {
+      return;
+    }
     ChromeVox.tts.speak(
-        Msgs.getMsg(value.eventType, [value.clipboardContent]),
+        Msgs.getMsg(data.eventType, [data.clipboardContent || '']),
         QueueMode.FLUSH);
     ChromeVoxRange.clearSelection();
+    this.forceReadNextClipboardEvent_ = false;
   }
 
   readNextClipboardDataChange(): void {

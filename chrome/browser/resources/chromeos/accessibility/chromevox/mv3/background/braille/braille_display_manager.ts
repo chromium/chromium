@@ -10,7 +10,8 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {BrailleDisplayState, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {BrailleKeyCommand} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
-import {OffscreenCommandType} from '../../common/offscreen_command_type.js';
+import {OffscreenBridge} from '../../common/offscreen_bridge.js';
+import type {StateWithMaxCellHeight} from '../../common/offscreen_bridge_constants.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {CaptionsHandler} from '../captions_handler.js';
 
@@ -19,14 +20,6 @@ import {BrailleCaptionsBackground} from './braille_captions_background.js';
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {PanStrategy} from './pan_strategy.js';
-
-interface StateWithMaxCellHeight {
-  rows: number;
-  columns: number;
-  cellWidth: number;
-  cellHeight: number;
-  maxCellHeight: number;
-}
 
 type CommandListener = (event: BrailleKeyEvent, content: NavBraille) => void;
 
@@ -123,27 +116,16 @@ export class BrailleDisplayManager implements BrailleCaptionsListener {
       maxCellHeight
     };
 
-    return new Promise<ArrayBuffer>((resolve: (buf: ArrayBuffer) => void) => {
-      chrome.runtime.sendMessage(
-          undefined, {
-            command: OffscreenCommandType.IMAGE_DATA_FROM_URL,
-            imageDataUrl,
-            imageState
-          },
-          undefined,
-          (image: any) => BrailleDisplayManager.onImageData(
-              image.data, imageState, resolve));
-    });
-  }
-
-  static onImageData(
-      imageDataSerialized: string, imageState: StateWithMaxCellHeight,
-      resolve: (array: ArrayBuffer) => void): void {
-    const clampedArray =
-        BrailleDisplayManager.deserializedImageData(imageDataSerialized);
-    const brailleBuf = BrailleDisplayManager.convertImageDataToBraille(
-        clampedArray, imageState);
-    resolve(brailleBuf);
+    return new Promise<ArrayBuffer>(
+        async (resolve: (buf: ArrayBuffer) => void) => {
+          const imageDataSerialized =
+              await OffscreenBridge.imageDataFromUrl(imageDataUrl, imageState);
+          const clampedArray =
+              BrailleDisplayManager.deserializedImageData(imageDataSerialized);
+          const brailleBuf = BrailleDisplayManager.convertImageDataToBraille(
+              clampedArray, imageState);
+          resolve(brailleBuf);
+        });
   }
 
   static deserializedImageData(imageDataString: string): Uint8ClampedArray {

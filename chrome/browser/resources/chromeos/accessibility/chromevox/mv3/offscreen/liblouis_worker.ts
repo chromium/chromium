@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundBridge} from '../common/background_bridge.js';
-import {OffscreenCommandType} from '../common/offscreen_command_type.js';
+import {BridgeHelper} from '/common/bridge_helper.js';
 
-type MessageSender = chrome.runtime.MessageSender;
-type SendResponse = (value: any) => void;
+import {BackgroundBridge} from '../common/background_bridge.js';
+import {BridgeConstants} from '../common/bridge_constants.js';
+
+const TARGET = BridgeConstants.Offscreen.TARGET;
+const Action = BridgeConstants.Offscreen.Action;
 
 export class LibLouisWorker {
   private worker_: Worker|null = null;
@@ -14,30 +16,20 @@ export class LibLouisWorker {
   static instance?: LibLouisWorker;
 
   constructor() {
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: MessageSender,
-         sendResponse: SendResponse) =>
-            this.handleMessageFromServiceWorker_(message, sendResponse));
+    BridgeHelper.registerHandler(
+        TARGET, Action.LIBLOUIS_START_WORKER,
+        (wasmPath: string) => this.startWorker_(wasmPath));
+    BridgeHelper.registerHandler(
+        TARGET, Action.LIBLOUIS_RPC,
+        (messageJson: string) => this.postMessage_(messageJson));
   }
 
-  private handleMessageFromServiceWorker_(
-      message: any|undefined, sendResponse: SendResponse): boolean {
-    switch (message['command']) {
-      case OffscreenCommandType.LIBLOUIS_START_WORKER:
-        this.startWorker_(message['wasmPath']);
-        break;
-      case OffscreenCommandType.LIBLOUIS_RPC:
-        if (!this.worker_) {
-          sendResponse(
-              {message: 'Cannot send RPC: liblouis worker not started.'});
-        } else {
-          this.worker_.postMessage(message['messageJson']);
-          // No error.
-          sendResponse({});
-        }
-        break;
+  private postMessage_(messageJson: string): {message?: string} {
+    if (!this.worker_) {
+      return {message: 'Cannot send RPC: liblouis worker not started.'};
     }
-    return false;
+    this.worker_.postMessage(messageJson);
+    return {};
   }
 
   static init(): void {

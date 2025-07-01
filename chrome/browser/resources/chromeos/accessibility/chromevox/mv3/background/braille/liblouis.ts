@@ -9,7 +9,7 @@ import {BridgeHelper} from '/common/bridge_helper.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../../common/bridge_constants.js';
-import {OffscreenCommandType} from '../../common/offscreen_command_type.js';
+import {OffscreenBridge} from '../../common/offscreen_bridge.js';
 
 type LoadCallback = (instance: LibLouis) => void;
 type MessageCallback = (message: Object) => void;
@@ -90,7 +90,8 @@ export class LibLouis {
    * @param message JSONable message to be sent.
    * @param callback Callback to receive the reply.
    */
-  rpc(command: string, message: Dictionary, callback: MessageCallback): void {
+  async rpc(command: string, message: Dictionary, callback: MessageCallback):
+      Promise<void> {
     const messageId = '' + this.nextMessageId_++;
     message['message_id'] = messageId;
     message['command'] = command;
@@ -100,14 +101,10 @@ export class LibLouis {
     }
     this.pendingRpcCallbacks_[messageId] = callback;
 
-    chrome.runtime.sendMessage(
-        undefined,
-        {command: OffscreenCommandType.LIBLOUIS_RPC, messageJson: json},
-        undefined, (error: any) => {
-          if (error && error.message) {
-            throw Error(error.message);
-          }
-        });
+    const error = await OffscreenBridge.libLouisRPC(json);
+    if (error.message) {
+      throw Error(error.message);
+    }
   }
 
   /** Invoked when the Web Assembly instance successfully loads. */
@@ -142,10 +139,7 @@ export class LibLouis {
   }
 
   private loadOrReload_(loadCallback?: LoadCallback): void {
-    chrome.runtime.sendMessage(undefined, {
-      command: OffscreenCommandType.LIBLOUIS_START_WORKER,
-      wasmPath: this.wasmPath_
-    });
+    OffscreenBridge.libLouisStartWorker(this.wasmPath_);
 
     this.rpc('load', {}, () => {
       this.isLoaded_ = true;
