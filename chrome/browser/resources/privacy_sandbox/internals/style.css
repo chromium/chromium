@@ -14,30 +14,8 @@ header {
   border-bottom: 1px solid var(--tabs-border-color);
 }
 
-h1, h2, h3, h4 {
-  color: var(--header-text-color);
-}
-
 h1 {
+  color: var(--header-text-color);
   font-size: 1.5rem;
   margin-bottom: 0px;
-}
-
-#ps-page {
-  width: 100%;
-}
-
-div.content-settings {
-  display: grid;
-  grid-template-columns: auto auto auto;
-}
-
-content-setting-pattern-source:nth-of-type(odd) {
-  background: rgb(239, 243, 255);
-}
-
-content-setting-pattern-source {
-  display: grid;
-  border: 1px solid lightgray;
-  margin: 5px;
 }
