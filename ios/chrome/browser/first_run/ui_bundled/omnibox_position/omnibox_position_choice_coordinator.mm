@@ -7,7 +7,6 @@
 #import "base/time/time.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_mediator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_view_controller.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
@@ -54,7 +53,6 @@
                                         animated:YES
                                       completion:nil];
 
-  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kScreenDisplayed);
   _startTime = base::ElapsedTimer();
 
   if (IsSegmentationTipsManagerEnabled()) {
@@ -79,12 +77,10 @@
 }
 
 - (void)didTapSecondaryActionButton {
-  [_mediator discardSelectedPosition];
   [self dismissScreen];
 }
 
 - (void)didDismissViewController {
-  [_mediator discardSelectedPosition];
   [self dismissScreen];
 }
 
@@ -111,8 +107,6 @@
   id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [handler dismissOmniboxPositionChoice];
-
-  RecordTimeOpen(_startTime.Elapsed());
 }
 
 @end

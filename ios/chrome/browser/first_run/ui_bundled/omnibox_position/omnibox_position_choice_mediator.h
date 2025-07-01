@@ -28,8 +28,6 @@ class DeviceSwitcherResultDispatcher;
 
 /// Saves the selected omnibox position.
 - (void)saveSelectedPosition;
-/// Discards the selected omnibox position.
-- (void)discardSelectedPosition;
 
 @end
 

@@ -1397,27 +1397,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Not a new user (user is new for 30 days after FRE)"/>
 </enum>
 
-<enum name="OmniboxPositionChoiceScreenEvents">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Screen Was Displayed"/>
-  <int value="2" label="Top Selected"/>
-  <int value="3" label="Bottom Selected"/>
-  <int value="4" label="Position Validated"/>
-  <int value="5" label="Position Discarded"/>
-  <int value="6" label="Screen Skipped"/>
-  <int value="7" label="Promo Registered"/>
-</enum>
-
 <enum name="OmniboxPositionType">
   <int value="0" label="Top"/>
   <int value="1" label="Bottom"/>
-</enum>
-
-<enum name="OmniboxPromoSelectedPositions">
-  <int value="0" label="Top default"/>
-  <int value="1" label="Bottom default"/>
-  <int value="2" label="Top not default"/>
-  <int value="3" label="Bottom not default"/>
 </enum>
 
 <enum name="PageLoadedSnapshotResult">

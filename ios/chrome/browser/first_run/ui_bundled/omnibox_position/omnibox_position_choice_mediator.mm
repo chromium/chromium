@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_mediator.h"
 
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -30,14 +29,6 @@
 - (void)saveSelectedPosition {
   GetApplicationContext()->GetLocalState()->SetBoolean(
       prefs::kBottomOmnibox, self.selectedPosition == ToolbarType::kSecondary);
-  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kPositionValidated);
-  RecordSelectedPosition(self.selectedPosition,
-                         self.selectedPosition == ToolbarType::kPrimary,
-                         self.deviceSwitcherResultDispatcher);
-}
-
-- (void)discardSelectedPosition {
-  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kPositionDiscarded);
 }
 
 #pragma mark - Setters
@@ -56,12 +47,10 @@
 
 - (void)selectTopOmnibox {
   self.selectedPosition = ToolbarType::kPrimary;
-  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kTopOptionSelected);
 }
 
 - (void)selectBottomOmnibox {
   self.selectedPosition = ToolbarType::kSecondary;
-  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kBottomOptionSelected);
 }
 
 @end
