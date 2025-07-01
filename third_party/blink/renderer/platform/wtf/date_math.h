@@ -52,7 +52,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // Not really math related, but this is currently the only shared place to put
 // these.
@@ -89,21 +89,6 @@ WTF_EXPORT int DayInMonthFromDayInYear(int day_in_year, bool leap_year);
 // "1970-01-01 00:00 PDT".
 WTF_EXPORT base::TimeDelta ConvertToLocalTime(base::Time time);
 
-}  // namespace WTF
-
-using WTF::IsLeapYear;
-using WTF::DateToDaysFrom1970;
-using WTF::DayInMonthFromDayInYear;
-using WTF::DayInYear;
-using WTF::kMinutesPerHour;
-using WTF::MonthFromDayInYear;
-using WTF::kMsPerDay;
-using WTF::kMsPerHour;
-using WTF::kMsPerMinute;
-using WTF::kMsPerSecond;
-using WTF::MsToYear;
-using WTF::kSecondsPerMinute;
-using WTF::ParseDateFromNullTerminatedCharacters;
-using WTF::ConvertToLocalTime;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DATE_MATH_H_

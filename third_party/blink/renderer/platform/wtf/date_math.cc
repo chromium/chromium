@@ -99,7 +99,7 @@
 #include <sys/time.h>
 #endif
 
-namespace WTF {
+namespace blink {
 
 /* Constants */
 
@@ -686,4 +686,4 @@ base::TimeDelta ConvertToLocalTime(base::Time time) {
   return base::Milliseconds(ms + static_cast<double>(raw_offset + dst_offset));
 }
 
-}  // namespace WTF
+}  // namespace blink
