@@ -175,7 +175,25 @@ function navigateToJavascriptURL(reportOnly) {
     const navigationElement = getAndPreparareNavigationElement(`javascript:${target_script}`);
     document.addEventListener("DOMContentLoaded", async _ => {
       let {violations, exception} =
-        await trusted_type_violations_and_exception_for(_ => navigationElement.click());
+        await trusted_type_violations_and_exception_for(async _ => {
+          navigationElement.click();
+          // The timing is tricky here: we must wait for the navigation
+          // to be attempted before reporting the observed violations
+          // (otherwise we could miss the corresponding pre-navigation
+          // check CSP violation) but we must also not wait for too
+          // long, otherwise we already navigated away from the page
+          // and cannot report the observed violations anymore.
+          if (window.requestIdleCallback) {
+            await new Promise(resolve => {
+              requestIdleCallback(resolve);
+              window.addEventListener("beforeunload", resolve);
+            });
+          }
+        });
+      if (exception) {
+        window.opener.postMessage(`Unexpected exception: ${exception.message}`, "*");
+        return;
+      }
       violations.forEach(violationEvent => bounceEventToOpener(violationEvent));
       if (violations.length == 0 &&
           [null, "throw", "make-invalid"].includes(params.get("defaultpolicy"))) {
