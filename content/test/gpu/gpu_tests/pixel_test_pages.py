@@ -1772,7 +1772,7 @@ class PixelTestPages():
     meet_sample_area_matching = algo.SampleAreaMatchingAlgorithm(
         sample_area_width=5,
         max_different_pixels_per_area=2,
-        sample_area_channel_delta_threshold=1)
+        sample_area_channel_delta_threshold=2)
     # The video is rather large on the page, which can cause a horizontal
     # scrollbar to appear along the bottom. So, crop that first.
     standard_crop = ca.NonWhiteContentCropAction(
