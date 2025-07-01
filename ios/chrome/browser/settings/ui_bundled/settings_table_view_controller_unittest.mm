@@ -9,9 +9,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/plus_addresses/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
@@ -50,6 +52,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/voice/model/voice_search_prefs.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -425,7 +428,7 @@ TEST_F(SettingsTableViewControllerTest,
 
 // Tests that updating search engines does not cause a crash.
 // See crbug.com/408017580 for more details.
-TEST_F(SettingsTableViewControllerTest, SearchEngineChnagedDoesntCrash) {
+TEST_F(SettingsTableViewControllerTest, SearchEngineChangedDoesntCrash) {
   // Make sure the controller is initialized without creating the view/model.
   CreateControllerWithoutView();
 
@@ -436,4 +439,18 @@ TEST_F(SettingsTableViewControllerTest, SearchEngineChnagedDoesntCrash) {
   // table view controller). This should not crash, even though the view
   // controller has not loaded its model yet.
   template_url_service->Load();
+}
+
+// Tests that updating observed preferences before the model is loaded
+// does not cause a crash. See crbug.com/419661932 for more details.
+TEST_F(SettingsTableViewControllerTest, ObservedPreferencesChangedDoesntCrash) {
+  CreateControllerWithoutView();
+  profile_->GetPrefs()->SetString(prefs::kVoiceSearchLocale, "en-US");
+  profile_->GetPrefs()->SetBoolean(
+      password_manager::prefs::kCredentialsEnableService, NO);
+  profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
+                                   NO);
+  profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillCreditCardEnabled,
+                                   NO);
+  CheckController();
 }

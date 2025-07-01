@@ -37,15 +37,16 @@ using sync_encryption_passphrase::SectionIdentifierPassphrase;
         l10n_util::GetNSString(IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO);
     self.processingMessage =
         l10n_util::GetNSString(IDS_IOS_SYNC_PASSPHRASE_ENCRYPTING);
-
-    // TODO(crbug.com/41344225): -loadModel should not be called from
-    // initializer. A possible fix is to move this call to -viewDidLoad.
-    [self loadModel];
   }
   return self;
 }
 
 #pragma mark - UIViewController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  [self loadModel];
+}
 
 - (void)didReceiveMemoryWarning {
   [super didReceiveMemoryWarning];
