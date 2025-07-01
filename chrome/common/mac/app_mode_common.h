@@ -24,7 +24,7 @@
 // struct ever changes, be sure to update the APP_SHIM_VERSION_NUMBER here and
 // the corresponding lines in //chrome/app/framework.order and
 // //chrome/app/framework.exports .
-#define APP_SHIM_VERSION_NUMBER 7
+#define APP_SHIM_VERSION_NUMBER 8
 
 // All the other macro magic to make APP_SHIM_VERSION_NUMBER usable.
 #define APP_SHIM_ENTRY_POINT_NAME \

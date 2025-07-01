@@ -24,7 +24,7 @@ ___asan_default_options
 ___llvm_write_custom_profile
 
 # Entry point from the app mode loader.
-_ChromeAppModeStart_v7
+_ChromeAppModeStart_v8
 
 # Entry point for the web app shortcut copier.
 _ChromeWebAppShortcutCopierMain
