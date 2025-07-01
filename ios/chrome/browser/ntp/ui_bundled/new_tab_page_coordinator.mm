@@ -459,9 +459,9 @@
 - (void)stopIfNeeded {
   WebStateList* webStateList = self.browser->GetWebStateList();
   for (int i = 0; i < webStateList->count(); i++) {
-    NewTabPageTabHelper* iterNtpHelper =
+    NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(webStateList->GetWebStateAt(i));
-    if (iterNtpHelper->IsActive()) {
+    if (NTPHelper && NTPHelper->IsActive()) {
       return;
     }
   }

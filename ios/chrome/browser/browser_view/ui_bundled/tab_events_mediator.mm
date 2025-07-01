@@ -160,7 +160,7 @@
                              isInserted:NO];
           isActivationHandled = YES;
         }
-        if (NTPTabHelper->IsActive()) {
+        if (NTPTabHelper && NTPTabHelper->IsActive()) {
           [self stopNTPIfNeeded];
         }
       }
@@ -174,7 +174,7 @@
           change.As<WebStateListChangeReplace>();
       NewTabPageTabHelper* NTPTabHelper =
           NewTabPageTabHelper::FromWebState(replaceChange.replaced_web_state());
-      if (NTPTabHelper->IsActive()) {
+      if (NTPTabHelper && NTPTabHelper->IsActive()) {
         [self stopNTPIfNeeded];
       }
 
@@ -275,9 +275,9 @@
 
 - (void)stopNTPIfNeeded {
   for (int i = 0; i < _webStateList->count(); i++) {
-    NewTabPageTabHelper* iterNtpHelper =
+    NewTabPageTabHelper* NTPHelper =
         NewTabPageTabHelper::FromWebState(_webStateList->GetWebStateAt(i));
-    if (iterNtpHelper->IsActive()) {
+    if (NTPHelper && NTPHelper->IsActive()) {
       return;
     }
   }
