@@ -38,6 +38,7 @@ source_set("tabs_internal") {
     "//components/autofill/ios/form_util",
     "//components/breadcrumbs/core:status",
     "//components/commerce/ios/browser",
+    "//components/data_sharing/public:features",
     "//components/favicon/core",
     "//components/favicon/ios",
     "//components/history/core/browser",

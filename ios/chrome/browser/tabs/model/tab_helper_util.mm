@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/commerce/ios/browser/commerce_tab_helper.h"
+#import "components/data_sharing/public/features.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/history/core/browser/top_sites.h"
@@ -373,7 +374,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   if (!is_off_the_record && !for_prerender) {
     auto* collaboration_service =
         collaboration::CollaborationServiceFactory::GetForProfile(profile);
-    if (IsSharedTabGroupsJoinEnabled(collaboration_service)) {
+    if (IsSharedTabGroupsJoinEnabled(collaboration_service) &&
+        data_sharing::features::ShouldInterceptUrlForVersioning()) {
       DataSharingTabHelper::CreateForWebState(web_state);
     }
   }
