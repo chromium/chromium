@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
@@ -37,6 +38,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
@@ -72,12 +74,34 @@
 
 namespace {
 
+// Histogram name for logging when the 'new' badge on the Lens button is shown
+// on the homepage.
+constexpr char kNTPLensButtonNewBadgeShownHistogram[] =
+    "IOS.NTP.LensButtonNewBadgeShown";
+
+// These values are persisted to `IOS.NTP.LensButtonNewBadgeShown` histograms.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IOSNTPNewBadgeShownResult {
+  kShown = 0,
+  // kNotShownLimitReached = 1,  // Obsolete in M140
+  // kNotShownButtonPressed = 2,  // Obsolete in M140
+  kMaxValue = kShown,
+};
+
 // The point size of the entry point's symbol.
 const CGFloat kIconPointSize = 18.0;
 
 // The holdback period to wait after FRE completion before showing new badges
 // on the homepage.
 constexpr base::TimeDelta kFREBadgeHoldbackPeriod = base::Hours(1);
+
+// Logs when the 'new' badge on the homepage Lens button is shown.
+//
+// TODO(crbug.com/428691449): Remove once the FET migration for 'new' badges is
+// fully validated.
+void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
+  base::UmaHistogramEnumeration(kNTPLensButtonNewBadgeShownHistogram, result);
+}
 
 }  // namespace
 
@@ -222,10 +246,17 @@ constexpr base::TimeDelta kFREBadgeHoldbackPeriod = base::Hours(1);
 }
 
 - (void)notifyLensBadgeDisplayed {
+  LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult::kShown);
+
   _tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
 }
 
 - (void)notifyCustomizationBadgeDisplayed {
+  // TODO(crbug.com/428691449): Remove once the FET migration for 'new' badges
+  // is fully validated.
+  base::RecordAction(
+      base::UserMetricsAction(kNTPCustomizationNewBadgeShownAction));
+
   _tracker->Dismissed(feature_engagement::kIPHiOSHomepageCustomizationNewBadge);
 }
 

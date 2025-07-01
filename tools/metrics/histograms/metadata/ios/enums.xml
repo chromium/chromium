@@ -759,9 +759,10 @@ chromium-metrics-reviews@google.com.
 
 <enum name="IOSNTPNewBadgeShownResult">
   <int value="0" label="Shown"/>
-  <int value="1" label="Not shown due to limit reached"/>
+  <int value="1" label="Obsolete in M140 - Not shown due to limit reached"/>
   <int value="2"
-      label="Not shown due to the button already having been pressed"/>
+      label="Obsolete in M140 - Not shown due to the button already having
+             been pressed"/>
 </enum>
 
 <enum name="IOSNTPOverscrollAction">
