@@ -298,12 +298,15 @@ export function sameSiteBiDiToCdp(
   sameSite: Network.SameSite,
 ): Protocol.Network.CookieSameSite {
   switch (sameSite) {
-    case Network.SameSite.Strict:
-      return 'Strict';
-    case Network.SameSite.Lax:
-      return 'Lax';
     case Network.SameSite.None:
       return 'None';
+    case Network.SameSite.Strict:
+      return 'Strict';
+    // Defaults to `Lax`:
+    // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
+    case Network.SameSite.Default:
+    case Network.SameSite.Lax:
+      return 'Lax';
   }
   throw new InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
 }

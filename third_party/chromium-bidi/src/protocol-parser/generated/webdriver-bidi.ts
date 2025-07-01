@@ -1425,7 +1425,9 @@ export namespace Network {
   export const CollectorTypeSchema = z.literal('blob');
 }
 export namespace Network {
-  export const SameSiteSchema = z.lazy(() => z.enum(['strict', 'lax', 'none']));
+  export const SameSiteSchema = z.lazy(() =>
+    z.enum(['strict', 'lax', 'none', 'default']),
+  );
 }
 export namespace Network {
   export const CookieSchema = z.lazy(() =>
