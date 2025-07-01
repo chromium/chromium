@@ -11,6 +11,7 @@
 
 #include "base/allocator/partition_alloc_support.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -1330,6 +1331,13 @@ gpu::SharedImageManager* GpuServiceImpl::CreateSharedImageManager(
   // corresponding to a mailbox.
   const bool display_context_on_another_thread =
       features::IsDrDcEnabled() && !gpu_driver_bug_workarounds_.disable_drdc;
+
+  // Record the crash key for DrDC.
+  if (display_context_on_another_thread) {
+    static auto* drdc_crash_key = base::debug::AllocateCrashKeyString(
+        "is-drdc-enabled", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(drdc_crash_key, "1");
+  }
 
   // |display_context_on_another_thread|, features::IsUsingRawDraw(),
   // kAlwaysUseRealBufferTestingOnOzone, and kSharedBitmapToSharedImage
