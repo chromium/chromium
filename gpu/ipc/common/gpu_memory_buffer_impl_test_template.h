@@ -60,6 +60,17 @@ class GpuMemoryBufferImplTest : public testing::Test {
                           base::Unretained(destroyed));
   }
 
+  std::unique_ptr<GpuMemoryBufferImpl> CreateGpuMemoryBufferImplFromHandle(
+      gfx::GpuMemoryBufferHandle handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      GpuMemoryBufferImpl::DestructionCallback callback) {
+    return gpu_memory_buffer_support_
+        .CreateGpuMemoryBufferImplFromHandleForTesting(
+            std::move(handle), size, format, usage, std::move(callback));
+  }
+
   GpuMemoryBufferSupport* gpu_memory_buffer_support() {
     return &gpu_memory_buffer_support_;
   }
@@ -188,10 +199,9 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
       }
 
       std::unique_ptr<GpuMemoryBufferImpl> buffer(
-          TestFixture::gpu_memory_buffer_support()
-              ->CreateGpuMemoryBufferImplFromHandleForTesting(
-                  std::move(handle), kBufferSize, format, usage,
-                  std::move(destroy_callback)));
+          TestFixture::CreateGpuMemoryBufferImplFromHandle(
+              std::move(handle), kBufferSize, format, usage,
+              std::move(destroy_callback)));
       ASSERT_TRUE(buffer);
       EXPECT_EQ(buffer->GetFormat(), format);
 
@@ -241,10 +251,9 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandleSmallBuffer) {
 
       // Handle import should fail when the size is bigger than expected.
       std::unique_ptr<GpuMemoryBufferImpl> buffer(
-          TestFixture::gpu_memory_buffer_support()
-              ->CreateGpuMemoryBufferImplFromHandleForTesting(
-                  std::move(handle), bogus_size, format, usage,
-                  std::move(destroy_callback)));
+          TestFixture::CreateGpuMemoryBufferImplFromHandle(
+              std::move(handle), bogus_size, format, usage,
+              std::move(destroy_callback)));
 
       // Only non-mappable GMB implementations can be imported with invalid
       // size. In other words all GMP implementations that allow memory mapping
@@ -279,11 +288,10 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, Map) {
     }
 
     std::unique_ptr<GpuMemoryBufferImpl> buffer(
-        TestFixture::gpu_memory_buffer_support()
-            ->CreateGpuMemoryBufferImplFromHandleForTesting(
-                std::move(handle), kBufferSize, format,
-                gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                std::move(destroy_callback)));
+        TestFixture::CreateGpuMemoryBufferImplFromHandle(
+            std::move(handle), kBufferSize, format,
+            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+            std::move(destroy_callback)));
     ASSERT_TRUE(buffer);
 
     const size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
@@ -345,11 +353,10 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, PersistentMap) {
     }
 
     std::unique_ptr<GpuMemoryBufferImpl> buffer(
-        TestFixture::gpu_memory_buffer_support()
-            ->CreateGpuMemoryBufferImplFromHandleForTesting(
-                std::move(handle), kBufferSize, format,
-                gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                std::move(destroy_callback)));
+        TestFixture::CreateGpuMemoryBufferImplFromHandle(
+            std::move(handle), kBufferSize, format,
+            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+            std::move(destroy_callback)));
     ASSERT_TRUE(buffer);
 
     // Map buffer into user space.
@@ -443,10 +450,9 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
       EXPECT_EQ(output_handle.type, kBufferType);
 
       std::unique_ptr<GpuMemoryBufferImpl> buffer(
-          TestFixture::gpu_memory_buffer_support()
-              ->CreateGpuMemoryBufferImplFromHandleForTesting(
-                  std::move(output_handle), kBufferSize, format, usage,
-                  std::move(destroy_callback)));
+          TestFixture::CreateGpuMemoryBufferImplFromHandle(
+              std::move(output_handle), kBufferSize, format, usage,
+              std::move(destroy_callback)));
       ASSERT_TRUE(buffer);
       EXPECT_EQ(buffer->GetFormat(), format);
 
