@@ -68,7 +68,7 @@ TEST_F(CSSScrollTimelineTest, SharedTimelines) {
 
   Element* main = GetDocument().getElementById(AtomicString("main"));
   ASSERT_TRUE(main);
-  main->setInnerHTML(R"HTML(
+  main->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #element1, #element2 {
         animation-name: anim1, anim2, anim3;

@@ -1421,7 +1421,7 @@ TEST_F(LayoutObjectTest, NeedsScrollableOverflowRecalc) {
   EXPECT_FALSE(other->NeedsScrollableOverflowRecalc());
 
   auto* target_element = GetElementById("target");
-  target_element->setInnerHTML("baz");
+  target_element->SetInnerHTMLWithoutTrustedTypes("baz");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(wrapper->NeedsScrollableOverflowRecalc());

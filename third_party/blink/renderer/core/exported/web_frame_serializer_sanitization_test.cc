@@ -108,8 +108,8 @@ class WebFrameSerializerSanitizationTest : public testing::Test {
         /*reference_target*/ g_null_atom);
     shadow_root->SetDelegatesFocus(focus_delegation ==
                                    FocusDelegation::kDelegateFocus);
-    shadow_root->setInnerHTML(String::FromUTF8(shadow_content),
-                              ASSERT_NO_EXCEPTION);
+    shadow_root->SetInnerHTMLWithoutTrustedTypes(
+        String::FromUTF8(shadow_content));
     scope.GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     return shadow_root;
   }

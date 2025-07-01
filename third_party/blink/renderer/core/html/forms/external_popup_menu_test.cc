@@ -42,7 +42,7 @@ class ExternalPopupMenuDisplayNoneItemsTest : public PageTestBase {
     PageTestBase::SetUp();
     auto* element = MakeGarbageCollected<HTMLSelectElement>(GetDocument());
     // Set the 4th an 5th items to have "display: none" property
-    element->setInnerHTML(
+    element->SetInnerHTMLWithoutTrustedTypes(
         "<option><option><option><option style='display:none;'><option "
         "style='display:none;'><option><option>");
     GetDocument().body()->AppendChild(element, ASSERT_NO_EXCEPTION);
@@ -86,7 +86,7 @@ class ExternalPopupMenuHrElementItemsTest : public PageTestBase {
   void SetUp() override {
     PageTestBase::SetUp();
     auto* element = MakeGarbageCollected<HTMLSelectElement>(GetDocument());
-    element->setInnerHTML(R"HTML(
+    element->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <option>zero</option>
       <option>one</option>
       <hr>
@@ -530,7 +530,8 @@ TEST_F(ExternalPopupMenuTest, ShowPopupThenNavigate) {
   WaitUntilShowedPopup();
 
   // Now we navigate to another pager.
-  document->documentElement()->setInnerHTML("<blink>Awesome page!</blink>");
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<blink>Awesome page!</blink>");
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   base::RunLoop().RunUntilIdle();
 

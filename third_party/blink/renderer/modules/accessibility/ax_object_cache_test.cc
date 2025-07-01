@@ -374,7 +374,7 @@ class AXViewTransitionTest : public testing::Test {
   }
 
   void SetHtmlInnerHTML(const String& content) {
-    GetDocument().body()->setInnerHTML(content);
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(content);
     UpdateAllLifecyclePhasesForTest();
   }
 

@@ -130,7 +130,7 @@ void OffscreenCanvasTest::SetUp() {
   accelerated_compositing_scope_ = std::make_unique<
       ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
 
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       String::FromUTF8("<body><canvas id='c'></canvas></body>"));
 
   canvas_element_ =

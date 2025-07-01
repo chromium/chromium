@@ -46,7 +46,8 @@ TEST(HTMLDocumentParserFastpathTest, SanityCheck) {
       "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMaskV2", 0);
 }
 
-TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathSuccess) {
+TEST(HTMLDocumentParserFastpathTest,
+     SetInnerHTMLWithoutTrustedTypesUsesFastPathSuccess) {
   test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
@@ -55,7 +56,7 @@ TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathSuccess) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
 
   base::HistogramTester histogram_tester;
-  div->setInnerHTML("<div>test</div>");
+  div->SetInnerHTMLWithoutTrustedTypes("<div>test</div>");
   // This was html the fast path handled, so there should be one histogram with
   // success.
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
@@ -63,7 +64,8 @@ TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathSuccess) {
                                       HtmlFastPathResult::kSucceeded, 1);
 }
 
-TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathFailure) {
+TEST(HTMLDocumentParserFastpathTest,
+     SetInnerHTMLWithoutTrustedTypesUsesFastPathFailure) {
   test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
@@ -72,7 +74,7 @@ TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathFailure) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
 
   base::HistogramTester histogram_tester;
-  div->setInnerHTML("<div");
+  div->SetInnerHTMLWithoutTrustedTypes("<div");
   // The fast path should not have handled this, so there should be one
   // histogram with a value other then success.
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
@@ -88,7 +90,7 @@ TEST(HTMLDocumentParserFastpathTest, LongTextIsSplit) {
   document->write("<body></body>");
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
   std::vector<LChar> chars(Text::kDefaultLengthLimit + 1, 'a');
-  div->setInnerHTML(String(base::span(chars)));
+  div->SetInnerHTMLWithoutTrustedTypes(String(base::span(chars)));
   Text* text_node = To<Text>(div->firstChild());
   ASSERT_TRUE(text_node);
   // Text is split at 64k for performance. See
@@ -115,7 +117,7 @@ TEST(HTMLDocumentParserFastpathTest, MaximumHTMLParserDOMTreeDepth) {
   for (unsigned i = 0; i < depth - 1; ++i) {
     string_builder.Append("</div>");
   }
-  div->setInnerHTML(string_builder.ToString());
+  div->SetInnerHTMLWithoutTrustedTypes(string_builder.ToString());
 
   // Because kMaximumHTMLParserDOMTreeDepth was encountered, the deepest
   // node should have siblings.
@@ -132,7 +134,7 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedTags) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
 
   base::HistogramTester histogram_tester;
-  div->setInnerHTML("<table></table>");
+  div->SetInnerHTMLWithoutTrustedTypes("<table></table>");
   histogram_tester.ExpectTotalCount(
       "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2", 1);
   histogram_tester.ExpectBucketCount(
@@ -153,7 +155,7 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedTagsWithValidTag) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
 
   base::HistogramTester histogram_tester;
-  div->setInnerHTML("<div><table></table></div>");
+  div->SetInnerHTMLWithoutTrustedTypes("<div><table></table></div>");
   histogram_tester.ExpectTotalCount(
       "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2", 1);
   // Table is in the second chunk of values, so 2 should be set.
@@ -175,7 +177,7 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedContextTag) {
   auto* dl = MakeGarbageCollected<HTMLTextAreaElement>(*document);
 
   base::HistogramTester histogram_tester;
-  dl->setInnerHTML("some text");
+  dl->SetInnerHTMLWithoutTrustedTypes("some text");
   histogram_tester.ExpectTotalCount(
       "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMaskV2", 1);
   // Textarea is in the third chunk of values, so 3 should be set.
@@ -197,7 +199,7 @@ TEST(HTMLDocumentParserFastpathTest, LogSvg) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
 
   base::HistogramTester histogram_tester;
-  div->setInnerHTML("<svg></svg>");
+  div->SetInnerHTMLWithoutTrustedTypes("<svg></svg>");
   histogram_tester.ExpectTotalCount(
       "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2", 1);
   // Svg is in the third chunk of values, so 4 should be set.
@@ -224,13 +226,13 @@ TEST(HTMLDocumentParserFastpathTest, HTMLInputElementCheckedState) {
 
   // Set the state for new controls, which triggers a different code path in
   // HTMLInputElement::ParseAttribute.
-  div1->setInnerHTML("<select form='ff'></select>");
+  div1->SetInnerHTMLWithoutTrustedTypes("<select form='ff'></select>");
   DocumentState* document_state = document->GetFormController().ControlStates();
   Vector<String> state1 = document_state->ToStateVector();
   document->GetFormController().SetStateForNewControls(state1);
   EXPECT_TRUE(document->GetFormController().HasControlStates());
 
-  div2->setInnerHTML("<input checked='true'>");
+  div2->SetInnerHTMLWithoutTrustedTypes("<input checked='true'>");
   HTMLInputElement* input_element = To<HTMLInputElement>(div2->firstChild());
   ASSERT_TRUE(input_element);
   EXPECT_TRUE(input_element->Checked());
@@ -246,10 +248,11 @@ TEST(HTMLDocumentParserFastpathTest, CharacterReferenceCases) {
   // Various subtle cases of character references that have caused problems.
   // The assertions are handled by DCHECKs in the code, specifically in
   // serialization.cc.
-  div->setInnerHTML("Genius Nicer Dicer Plus | 18&nbsp&hellip;");
-  div->setInnerHTML("&nbsp&a");
-  div->setInnerHTML("&nbsp&");
-  div->setInnerHTML("&nbsp-");
+  div->SetInnerHTMLWithoutTrustedTypes(
+      "Genius Nicer Dicer Plus | 18&nbsp&hellip;");
+  div->SetInnerHTMLWithoutTrustedTypes("&nbsp&a");
+  div->SetInnerHTMLWithoutTrustedTypes("&nbsp&");
+  div->SetInnerHTMLWithoutTrustedTypes("&nbsp-");
 }
 
 TEST(HTMLDocumentParserFastpathTest, HandlesCompleteCharacterReference) {
@@ -261,7 +264,7 @@ TEST(HTMLDocumentParserFastpathTest, HandlesCompleteCharacterReference) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
 
   base::HistogramTester histogram_tester;
-  div->setInnerHTML("&cent;");
+  div->SetInnerHTMLWithoutTrustedTypes("&cent;");
   Text* text_node = To<Text>(div->firstChild());
   ASSERT_TRUE(text_node);
   EXPECT_EQ(text_node->data(), String(u"\u00A2"));
@@ -279,7 +282,7 @@ TEST(HTMLDocumentParserFastpathTest, FailsWithNestedLis) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
 
   base::HistogramTester histogram_tester;
-  div->setInnerHTML("<li><li></li></li>");
+  div->SetInnerHTMLWithoutTrustedTypes("<li><li></li></li>");
   // The html results in two children (nested <li>s implicitly close the open
   // <li>, resulting in two sibling <li>s, not one). The fast path parser does
   // not handle this case.
@@ -298,7 +301,7 @@ TEST(HTMLDocumentParserFastpathTest, HandlesLi) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
 
   base::HistogramTester histogram_tester;
-  div->setInnerHTML("<div><li></li></div>");
+  div->SetInnerHTMLWithoutTrustedTypes("<div><li></li></div>");
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   histogram_tester.ExpectUniqueSample("Blink.HTMLFastPathParser.ParseResult",
                                       HtmlFastPathResult::kSucceeded, 1);
@@ -314,7 +317,7 @@ TEST(HTMLDocumentParserFastpathTest, NullMappedToReplacementChar) {
 
   base::HistogramTester histogram_tester;
   // Constructor that takes a base::span is needed because of \0 in string.
-  div->setInnerHTML(
+  div->SetInnerHTMLWithoutTrustedTypes(
       String(base::span_from_cstring("<div id='x' name='x\0y'></div>")));
   Element* new_div = div->getElementById(AtomicString("x"));
   ASSERT_TRUE(new_div);
@@ -382,7 +385,7 @@ TEST(HTMLDocumentParserFastpathTest, MixedEncoding) {
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   document->write("<body></body>");
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
-  div->setInnerHTML(u"Hello");
+  div->SetInnerHTMLWithoutTrustedTypes(u"Hello");
   Text* text_node = To<Text>(div->firstChild());
   ASSERT_TRUE(text_node);
   // Even though the supplied string was utf16, it only contained 8-bit chars,
@@ -398,7 +401,7 @@ TEST(HTMLDocumentParserFastpathTest, Escaped8BitText) {
   document->write("<body></body>");
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
 
-  div->setInnerHTML("&amp;");
+  div->SetInnerHTMLWithoutTrustedTypes("&amp;");
   Text* text_node = To<Text>(div->firstChild());
   ASSERT_TRUE(text_node);
   // "&amp;" should be represented as 8-bit.

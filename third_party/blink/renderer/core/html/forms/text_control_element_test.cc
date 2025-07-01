@@ -64,7 +64,7 @@ void TextControlElementTest::SetUp() {
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600), nullptr);
 
   document_ = &dummy_page_holder_->GetDocument();
-  document_->documentElement()->setInnerHTML(
+  document_->documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<body><textarea id=textarea></textarea><input id=input /></body>");
   UpdateAllLifecyclePhases();
   text_control_ =
@@ -157,7 +157,7 @@ TEST_F(TextControlElementTest, PlaceholderElement) {
 }
 
 TEST_F(TextControlElementTest, PlaceholderElementNewlineBehavior) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<input id='p0' placeholder='first line &#13;&#10;second line'>"
       "<input id='p1' placeholder='&#13;'>");
   UpdateAllLifecyclePhases();
@@ -166,7 +166,7 @@ TEST_F(TextControlElementTest, PlaceholderElementNewlineBehavior) {
 }
 
 TEST_F(TextControlElementTest, TextAreaPlaceholderElementNewlineBehavior) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<textarea id='p0' placeholder='first line &#13;&#10;second line'>"
       "</textarea><textarea id='p1' placeholder='&#10;'></textarea>"
       "<textarea id='p2' placeholder='&#13;'></textarea>");

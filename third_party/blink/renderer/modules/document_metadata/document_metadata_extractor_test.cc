@@ -62,7 +62,8 @@ class DocumentMetadataExtractorTest : public PageTestBase {
 
 void DocumentMetadataExtractorTest::SetHTMLInnerHTML(
     const String& html_content) {
-  GetDocument().documentElement()->setInnerHTML((html_content));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      html_content);
 }
 
 void DocumentMetadataExtractorTest::SetURL(const String& url) {

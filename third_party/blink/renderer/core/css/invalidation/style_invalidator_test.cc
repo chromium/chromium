@@ -29,7 +29,7 @@ class StyleInvalidatorTest : public testing::Test {
 };
 
 TEST_F(StyleInvalidatorTest, SkipDisplayNone) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="root">
       <div style="display:none">
         <div class="a"></div>
@@ -57,7 +57,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNone) {
 }
 
 TEST_F(StyleInvalidatorTest, SkipDisplayNoneClearPendingNth) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="none" style="display:none">
       <div class="a"></div>
       <div class="a"></div>
@@ -100,7 +100,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNoneClearPendingNth) {
 }
 
 TEST_F(StyleInvalidatorTest, SiblingIndexAndNthChildInvalidation) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #nth:nth-child(1) { z-index: 7; }
       #sibling { z-index: sibling-index(); }

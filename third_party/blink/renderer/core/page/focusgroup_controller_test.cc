@@ -558,7 +558,7 @@ TEST_F(FocusgroupControllerTest, LastElementWithin) {
 }
 
 TEST_F(FocusgroupControllerTest, IsFocusgroupItem) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup>
       <span id=item1 tabindex=0></span>
       <span id=item2></span>
@@ -596,7 +596,7 @@ TEST_F(FocusgroupControllerTest, IsFocusgroupItem) {
 }
 
 TEST_F(FocusgroupControllerTest, CellAtIndexInRowBehaviorOnNoCellFound) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <table id=table focusgroup=grid>
       <tr>
         <td id=r1c1></td>
@@ -658,7 +658,7 @@ TEST_F(FocusgroupControllerTest, CellAtIndexInRowBehaviorOnNoCellFound) {
 }
 
 TEST_F(FocusgroupControllerTest, DontMoveFocusWhenNoFocusedElement) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div focusgroup>
       <span id=item1 tabindex=0></span>
       <span id=item2 tabindex=0></span>
@@ -676,7 +676,7 @@ TEST_F(FocusgroupControllerTest, DontMoveFocusWhenNoFocusedElement) {
 }
 
 TEST_F(FocusgroupControllerTest, DontMoveFocusWhenModifierKeyIsSet) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div focusgroup>
       <span id=item1 tabindex=0></span>
       <span id=item2 tabindex=0></span>
@@ -698,7 +698,7 @@ TEST_F(FocusgroupControllerTest, DontMoveFocusWhenModifierKeyIsSet) {
 }
 
 TEST_F(FocusgroupControllerTest, DontMoveFocusWhenItAlreadyMoved) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div focusgroup>
       <span id=item1 tabindex=0></span>
       <span id=item2 tabindex=0></span>

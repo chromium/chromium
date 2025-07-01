@@ -335,7 +335,7 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeRotatedChild) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   target->setAttribute(html_names::kStyleAttr,
                        AtomicString("transform: rotate(45deg); width: 200px"));
-  target->setInnerHTML(
+  target->SetInnerHTMLWithoutTrustedTypes(
       "<div id=child style='width: 50px; height: 50px; background: "
       "red'></div>");
   UpdateAllLifecyclePhasesForTest();
@@ -363,7 +363,8 @@ TEST_P(PaintAndRasterInvalidationTest, CompositedLayoutViewResize) {
   target->setAttribute(html_names::kStyleAttr, AtomicString("height: 2000px"));
   // Make the scrolling contents layer not solid color so that we can track
   // raster invalidations.
-  target->setInnerHTML("<div style='height: 20px'>Text</div>");
+  target->SetInnerHTMLWithoutTrustedTypes(
+      "<div style='height: 20px'>Text</div>");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
             GetLayoutView().GetBackgroundPaintLocation());
@@ -561,7 +562,7 @@ TEST_P(PaintAndRasterInvalidationTest,
       html_names::kClassAttr,
       AtomicString("solid composited scroll local-attachment border"));
   UpdateAllLifecyclePhasesForTest();
-  target->setInnerHTML(
+  target->SetInnerHTMLWithoutTrustedTypes(
       "<div id=child style='width: 500px; height: 500px'></div>",
       ASSERT_NO_EXCEPTION);
   Element* child = GetDocument().getElementById(AtomicString("child"));
@@ -617,7 +618,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   target->setAttribute(
       html_names::kClassAttr,
       AtomicString("gradient composited scroll local-attachment border"));
-  target->setInnerHTML(
+  target->SetInnerHTMLWithoutTrustedTypes(
       "<div id='child' style='width: 500px; height: 500px'></div>",
       ASSERT_NO_EXCEPTION);
   Element* child = GetDocument().getElementById(AtomicString("child"));
@@ -674,7 +675,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   auto* object = target->GetLayoutBox();
   target->setAttribute(html_names::kClassAttr,
                        AtomicString("translucent local-attachment scroll"));
-  target->setInnerHTML(
+  target->SetInnerHTMLWithoutTrustedTypes(
       "<div id=child style='width: 500px; height: 500px'></div>",
       ASSERT_NO_EXCEPTION);
   Element* child = GetDocument().getElementById(AtomicString("child"));
@@ -711,7 +712,7 @@ TEST_P(PaintAndRasterInvalidationTest, CompositedSolidBackgroundResize) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   target->setAttribute(html_names::kClassAttr,
                        AtomicString("solid composited scroll"));
-  target->setInnerHTML(
+  target->SetInnerHTMLWithoutTrustedTypes(
       "<div style='width: 50px; height: 500px; background: yellow'></div>");
   UpdateAllLifecyclePhasesForTest();
 

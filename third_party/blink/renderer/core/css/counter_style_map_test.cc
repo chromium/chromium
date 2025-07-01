@@ -54,7 +54,7 @@ TEST_F(CounterStyleMapTest, ExtendsParentScopeStyle) {
     <div id=host></div>
   )HTML");
   ShadowRoot& shadow = AttachShadowTo("host");
-  shadow.setInnerHTML(
+  shadow.SetInnerHTMLWithoutTrustedTypes(
       "<style>@counter-style bar { system: extends foo; }</style>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -176,7 +176,7 @@ TEST_F(CounterStyleMapTest, UpdateReferencesInChildScope) {
     <div id=host></div>
   )HTML");
   ShadowRoot& shadow = AttachShadowTo("host");
-  shadow.setInnerHTML(
+  shadow.SetInnerHTMLWithoutTrustedTypes(
       "<style>@counter-style bar { system: extends foo; }</style>");
   UpdateAllLifecyclePhasesForTest();
 

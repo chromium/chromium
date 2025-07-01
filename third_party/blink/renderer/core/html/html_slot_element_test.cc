@@ -150,7 +150,7 @@ class HTMLSlotElementInDocumentTest : public testing::Test {
 };
 
 TEST_F(HTMLSlotElementInDocumentTest, RecalcAssignedNodeStyleForReattach) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id='host'><span id='span'></span></div>
   )HTML");
 
@@ -160,7 +160,8 @@ TEST_F(HTMLSlotElementInDocumentTest, RecalcAssignedNodeStyleForReattach) {
   ShadowRoot& shadow_root =
       host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
-  shadow_root.setInnerHTML(R"HTML(<span><slot /></span>)HTML");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      R"HTML(<span><slot /></span>)HTML");
 
   auto* shadow_span = To<Element>(shadow_root.firstChild());
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -176,7 +177,7 @@ TEST_F(HTMLSlotElementInDocumentTest, RecalcAssignedNodeStyleForReattach) {
 }
 
 TEST_F(HTMLSlotElementInDocumentTest, SlotableFallback) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id='host'></div>
   )HTML");
 
@@ -184,7 +185,8 @@ TEST_F(HTMLSlotElementInDocumentTest, SlotableFallback) {
   ShadowRoot& shadow_root =
       host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
-  shadow_root.setInnerHTML(R"HTML(<slot><span></span><!-- -->text</slot>)HTML");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      R"HTML(<slot><span></span><!-- -->text</slot>)HTML");
 
   auto* slot = To<HTMLSlotElement>(shadow_root.firstChild());
 

@@ -600,7 +600,7 @@ TEST_F(DragControllerTest, DragAndDropUrlFromTextareaToRichlyEditableDiv) {
   PerformDragAndDropFromTextareaToTargetElement(drag_text_area, data_object,
                                                 drop_div_rich);
   EXPECT_EQ("<a href=\"https://www.example.com/index.html\">index.html</a>",
-            drop_div_rich->innerHTML());
+            drop_div_rich->GetInnerHTMLString());
   EXPECT_EQ("", drag_text_area->Value());
 }
 
@@ -640,7 +640,8 @@ TEST_F(DragControllerTest,
 
   PerformDragAndDropFromTextareaToTargetElement(drag_text_area, data_object,
                                                 drop_div_plain);
-  EXPECT_EQ("https://www.example.com/index.html", drop_div_plain->innerHTML());
+  EXPECT_EQ("https://www.example.com/index.html",
+            drop_div_plain->GetInnerHTMLString());
   EXPECT_EQ("", drag_text_area->Value());
 }
 
@@ -680,7 +681,7 @@ TEST_F(DragControllerTest,
   PerformDragAndDropFromTextareaToTargetElement(drag_text_area, data_object,
                                                 drop_paragraph_rich);
   EXPECT_EQ("<a href=\"https://www.example.com/index.html\">index.html</a>",
-            drop_paragraph_rich->innerHTML());
+            drop_paragraph_rich->GetInnerHTMLString());
   EXPECT_EQ("", drag_text_area->Value());
 }
 
@@ -720,7 +721,7 @@ TEST_F(DragControllerTest,
   PerformDragAndDropFromTextareaToTargetElement(drag_text_area, data_object,
                                                 drop_paragraph_plain);
   EXPECT_EQ("https://www.example.com/index.html",
-            drop_paragraph_plain->innerHTML());
+            drop_paragraph_plain->GetInnerHTMLString());
   EXPECT_EQ("", drag_text_area->Value());
 }
 

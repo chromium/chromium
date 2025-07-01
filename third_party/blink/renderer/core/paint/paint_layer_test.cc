@@ -2612,7 +2612,7 @@ TEST_P(PaintLayerTest, ScrollContainerLayerTransformScroller) {
 }
 
 TEST_P(PaintLayerTest, HitTestScrollMarkerPseudoElement) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<style>"
       "#scroller { overflow: scroll; scroll-marker-group: before; width: "
       "100px; height: 100px; }"

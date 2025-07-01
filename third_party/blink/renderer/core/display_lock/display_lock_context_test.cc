@@ -131,7 +131,8 @@ class DisplayLockContextTest : public testing::Test {
   }
 
   void SetHtmlInnerHTML(const char* content) {
-    GetDocument().documentElement()->setInnerHTML(String::FromUTF8(content));
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+        String::FromUTF8(content));
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -542,7 +543,7 @@ TEST_F(DisplayLockContextTest,
   EXPECT_TRUE(container->GetDisplayLockContext()->IsLocked());
 
   // Change the inner text, this should not DCHECK.
-  container->setInnerHTML("please don't DCHECK");
+  container->SetInnerHTMLWithoutTrustedTypes("please don't DCHECK");
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -563,7 +564,7 @@ TEST_F(DisplayLockContextTest, FindInPageWithChangedContent) {
   auto* container = GetDocument().getElementById(AtomicString("container"));
   LockElement(*container, true /* activatable */);
   EXPECT_TRUE(container->GetDisplayLockContext()->IsLocked());
-  container->setInnerHTML(
+  container->SetInnerHTMLWithoutTrustedTypes(
       "testing"
       "<div>testing</div>"
       "tes<div style='display:none;'>x</div>ting");
@@ -738,7 +739,7 @@ TEST_F(DisplayLockContextTest, CallUpdateStyleAndLayoutAfterChange) {
   EXPECT_FALSE(element->ChildNeedsReattachLayoutTree());
 
   // Testing whitespace reattachment + dirty style.
-  element->setInnerHTML("<div>something</div>");
+  element->SetInnerHTMLWithoutTrustedTypes("<div>something</div>");
 
   EXPECT_FALSE(element->NeedsStyleRecalc());
   EXPECT_TRUE(element->ChildNeedsStyleRecalc());
@@ -939,7 +940,7 @@ TEST_F(DisplayLockContextTest, DisplayLockPreventsActivation) {
 
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML(
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
       "<div id='container' style='contain:style layout "
       "paint;'><slot></slot></div>");
   UpdateAllLifecyclePhasesForTest();
@@ -1042,7 +1043,7 @@ TEST_F(DisplayLockContextTest,
   auto* text_field = GetDocument().getElementById(AtomicString("textfield"));
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML(
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
       "<div id='container' style='contain:style layout "
       "paint;'><slot></slot></div>");
 
@@ -3423,7 +3424,7 @@ TEST_F(DisplayLockContextTest, BlockedReattachOfShadowTree) {
 }
 
 TEST_F(DisplayLockContextTest, BlockedReattachOfPseudoElements) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #locked::before { content: "X"; }
       .locked { content-visibility: hidden; }
@@ -3448,7 +3449,7 @@ TEST_F(DisplayLockContextTest, BlockedReattachOfPseudoElements) {
 }
 
 TEST_F(DisplayLockContextTest, BlockedReattachWhitespaceSibling) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #locked { display: inline-block; }
       .locked { content-visibility: hidden; }
@@ -3477,7 +3478,7 @@ TEST_F(DisplayLockContextTest, BlockedReattachWhitespaceSibling) {
 }
 
 TEST_F(DisplayLockContextTest, ReattachPropagationBlockedByDisplayLock) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #locked { content-visibility: hidden; }
     </style>
@@ -3528,7 +3529,7 @@ TEST_F(DisplayLockContextTest, ReattachPropagationBlockedByDisplayLock) {
 }
 
 TEST_F(DisplayLockContextTest, NoUpdatesInDisplayNone) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=displaynone style="display:none">
       <div id=displaylocked style="content-visibility:hidden">
         <div id=child>hello</div>

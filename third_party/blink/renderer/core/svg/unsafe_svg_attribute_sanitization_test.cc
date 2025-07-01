@@ -93,7 +93,7 @@ void PasteAndVerifySanitization(const char* html_to_paste,
 
   // Verify that sanitization during pasting strips JavaScript, but keeps at
   // least |expected_partial_contents|.
-  String sanitized_content = body->innerHTML();
+  String sanitized_content = body->GetInnerHTMLString();
   EXPECT_TRUE(sanitized_content.Contains(expected_partial_contents))
       << "We should have pasted *something*; the document is: "
       << sanitized_content.Utf8();

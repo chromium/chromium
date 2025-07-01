@@ -2006,6 +2006,8 @@ generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddoublesequence.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedhtml.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedhtml.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_taskpriority_tasksignal.cc",

@@ -44,7 +44,7 @@ TrustedHTML* TrustedHTML::fromLiteral(ScriptState* script_state,
   template_element->content()->ParseHTML(
       literal, template_element, ParserContentPolicy::kAllowScriptingContent);
 
-  return MakeGarbageCollected<TrustedHTML>(template_element->innerHTML());
+  return MakeGarbageCollected<TrustedHTML>(template_element->GetInnerHTMLString());
 }
 
 }  // namespace blink

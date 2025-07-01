@@ -2167,7 +2167,7 @@ class PaintLayerScrollableAreaWithWebFrameTest : public ::testing::Test {
 // because threaded scrolling is not possible without a WebLocalFrame.
 TEST_F(PaintLayerScrollableAreaWithWebFrameTest,
        UpdateShouldAnimateScrollOnMainThread) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="scroller"
          style="width: 100px; height: 100px; background: red; overflow: hidden">
       <div style="height: 2000px"></div>

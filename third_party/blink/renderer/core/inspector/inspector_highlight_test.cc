@@ -55,7 +55,7 @@ void InspectorHighlightTest::SetUp() {
 }
 
 TEST_F(InspectorHighlightTest, BuildSnapContainerInfoNoSnapAreas) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="target">test</div>
   )HTML");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -64,7 +64,7 @@ TEST_F(InspectorHighlightTest, BuildSnapContainerInfoNoSnapAreas) {
 }
 
 TEST_F(InspectorHighlightTest, BuildSnapContainerInfoSnapAreas) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #snap {
         background-color: white;
@@ -115,7 +115,7 @@ TEST_F(InspectorHighlightTest, BuildSnapContainerInfoSnapAreas) {
 }
 
 TEST_F(InspectorHighlightTest, BuildSnapContainerInfoTopLevelSnapAreas) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       :root {
         scroll-snap-type: y mandatory;
@@ -159,7 +159,7 @@ TEST_F(InspectorHighlightTest, BuildSnapContainerInfoTopLevelSnapAreas) {
 
 TEST_F(InspectorHighlightTest,
        BuildContainerQueryContainerInfoWithoutDescendants) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #container {
         width: 400px;
@@ -189,7 +189,7 @@ TEST_F(InspectorHighlightTest,
 
 TEST_F(InspectorHighlightTest,
        BuildContainerQueryContainerInfoWithDescendants) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #container {
         width: 400px;
@@ -238,7 +238,7 @@ TEST_F(InspectorHighlightTest,
 }
 
 TEST_F(InspectorHighlightTest, BuildIsolatedElementInfo) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #element {
         width: 400px;
@@ -304,7 +304,7 @@ static std::string GetBackgroundColorFromElementInfo(Element* element) {
 }
 
 TEST_F(InspectorHighlightTest, BuildElementInfo_Colors) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       div {
         width: 400px;
@@ -354,7 +354,7 @@ TEST_F(InspectorHighlightTest, BuildElementInfo_Colors) {
 }
 
 TEST_F(InspectorHighlightTest, GridLineNames) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
     #grid {
       display: grid;
@@ -410,7 +410,7 @@ TEST_F(InspectorHighlightTest, GridLineNames) {
 }
 
 TEST_F(InspectorHighlightTest, GridAreaNames) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
     #grid {
       display: grid;

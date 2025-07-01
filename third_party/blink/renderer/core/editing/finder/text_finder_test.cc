@@ -102,7 +102,8 @@ gfx::RectF TextFinderTest::FindInPageRect(Node* start_container,
 }
 
 TEST_F(TextFinderTest, FindTextSimple) {
-  GetDocument().body()->setInnerHTML("XXXXFindMeYYYYfindmeZZZZ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "XXXXFindMeYYYYfindmeZZZZ");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Node* text_node = GetDocument().body()->firstChild();
 
@@ -177,7 +178,8 @@ TEST_F(TextFinderTest, FindTextSimple) {
 }
 
 TEST_F(TextFinderTest, FindTextAutosizing) {
-  GetDocument().body()->setInnerHTML("XXXXFindMeYYYYfindmeZZZZ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "XXXXFindMeYYYYfindmeZZZZ");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
@@ -219,7 +221,8 @@ TEST_F(TextFinderTest, FindTextAutosizing) {
 }
 
 TEST_F(TextFinderTest, FindTextNotFound) {
-  GetDocument().body()->setInnerHTML("XXXXFindMeYYYYfindmeZZZZ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "XXXXFindMeYYYYfindmeZZZZ");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
@@ -234,10 +237,12 @@ TEST_F(TextFinderTest, FindTextNotFound) {
 }
 
 TEST_F(TextFinderTest, FindTextInShadowDOM) {
-  GetDocument().body()->setInnerHTML("<b>FOO</b><i slot='bar'>foo</i>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<b>FOO</b><i slot='bar'>foo</i>");
   ShadowRoot& shadow_root =
       GetDocument().body()->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML("<slot name='bar'></slot><u>Foo</u><slot></slot>");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      "<slot name='bar'></slot><u>Foo</u><slot></slot>");
   Node* text_in_b_element = GetDocument().body()->firstChild()->firstChild();
   Node* text_in_i_element = GetDocument().body()->lastChild()->firstChild();
   Node* text_in_u_element = shadow_root.childNodes()->item(1)->firstChild();
@@ -336,7 +341,8 @@ TEST_F(TextFinderTest, FindTextInShadowDOM) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(TextFinderTest, ScopeTextMatchesSimple) {
-  GetDocument().body()->setInnerHTML("XXXXFindMeYYYYfindmeZZZZ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "XXXXFindMeYYYYfindmeZZZZ");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   Node* text_node = GetDocument().body()->firstChild();
@@ -370,7 +376,8 @@ TEST_F(TextFinderTest, ScopeTextMatchesSimple) {
 }
 
 TEST_F(TextFinderTest, ScopeTextMatchesRepeated) {
-  GetDocument().body()->setInnerHTML("XXXXFindMeYYYYfindmeZZZZ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "XXXXFindMeYYYYfindmeZZZZ");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   Node* text_node = GetDocument().body()->firstChild();
@@ -397,10 +404,12 @@ TEST_F(TextFinderTest, ScopeTextMatchesRepeated) {
 }
 
 TEST_F(TextFinderTest, ScopeTextMatchesWithShadowDOM) {
-  GetDocument().body()->setInnerHTML("<b>FOO</b><i slot='bar'>foo</i>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<b>FOO</b><i slot='bar'>foo</i>");
   ShadowRoot& shadow_root =
       GetDocument().body()->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML("<slot name='bar'></slot><u>Foo</u><slot></slot>");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      "<slot name='bar'></slot><u>Foo</u><slot></slot>");
   Node* text_in_b_element = GetDocument().body()->firstChild()->firstChild();
   Node* text_in_i_element = GetDocument().body()->lastChild()->firstChild();
   Node* text_in_u_element = shadow_root.childNodes()->item(1)->firstChild();
@@ -431,7 +440,7 @@ TEST_F(TextFinderTest, ScopeTextMatchesWithShadowDOM) {
 }
 
 TEST_F(TextFinderTest, ScopeRepeatPatternTextMatches) {
-  GetDocument().body()->setInnerHTML("ab ab ab ab ab");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("ab ab ab ab ab");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   Node* text_node = GetDocument().body()->firstChild();
@@ -454,7 +463,7 @@ TEST_F(TextFinderTest, ScopeRepeatPatternTextMatches) {
 }
 
 TEST_F(TextFinderTest, OverlappingMatches) {
-  GetDocument().body()->setInnerHTML("aababaa");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("aababaa");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   Node* text_node = GetDocument().body()->firstChild();
@@ -477,7 +486,7 @@ TEST_F(TextFinderTest, OverlappingMatches) {
 }
 
 TEST_F(TextFinderTest, SequentialMatches) {
-  GetDocument().body()->setInnerHTML("ababab");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("ababab");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   Node* text_node = GetDocument().body()->firstChild();
@@ -501,7 +510,8 @@ TEST_F(TextFinderTest, SequentialMatches) {
 }
 
 TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOM) {
-  GetDocument().body()->setInnerHTML("<b>XXXXFindMeYYYY</b><i></i>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<b>XXXXFindMeYYYY</b><i></i>");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
@@ -527,7 +537,7 @@ TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOM) {
   // Add new text to DOM and try FindNext.
   auto* i_element = To<Element>(GetDocument().body()->lastChild());
   ASSERT_TRUE(i_element);
-  i_element->setInnerHTML("ZZFindMe");
+  i_element->SetInnerHTMLWithoutTrustedTypes("ZZFindMe");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   ASSERT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
@@ -558,7 +568,8 @@ TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOM) {
 }
 
 TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOMAfterNoMatches) {
-  GetDocument().body()->setInnerHTML("<b>XXXXYYYY</b><i></i>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<b>XXXXYYYY</b><i></i>");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
@@ -581,7 +592,7 @@ TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOMAfterNoMatches) {
   // Add new text to DOM and try FindNext.
   auto* i_element = To<Element>(GetDocument().body()->lastChild());
   ASSERT_TRUE(i_element);
-  i_element->setInnerHTML("ZZFindMe");
+  i_element->SetInnerHTMLWithoutTrustedTypes("ZZFindMe");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   ASSERT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
@@ -622,7 +633,7 @@ TEST_F(TextFinderTest, ScopeWithTimeouts) {
     }
   }
 
-  GetDocument().body()->setInnerHTML(text.ToString());
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(text.ToString());
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
@@ -830,7 +841,7 @@ TEST_F(TextFinderSimTest,
 }
 
 TEST_F(TextFinderTest, FindTextAcrossCommentNode) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<span>abc</span><!--comment--><span>def</span>");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
@@ -847,7 +858,7 @@ TEST_F(TextFinderTest, FindTextAcrossCommentNode) {
 
 // http://crbug.com/1192487
 TEST_F(TextFinderTest, CommentAfterDoucmentElement) {
-  GetDocument().body()->setInnerHTML("abc");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("abc");
   GetDocument().appendChild(Comment::Create(GetDocument(), "xyz"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 

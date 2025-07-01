@@ -305,7 +305,7 @@ INSTANTIATE_TEST_SUITE_P(SelectorChecker,
 TEST_P(MatchFlagsTest, All) {
   MatchFlagsTestData param = GetParam();
 
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=target>
       <div></div>
     </div>
@@ -341,7 +341,7 @@ class ImpactTest : public PageTestBase {
   void SetUp() override {
     PageTestBase::SetUp();
 
-    GetDocument().body()->setInnerHTML(R"HTML(
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <div id=outer>
         <div id=middle>
           <div id=inner>
@@ -711,7 +711,7 @@ class MatchFlagsScopeTest : public PageTestBase {
  public:
   void SetUp() override {
     PageTestBase::SetUp();
-    GetDocument().body()->setInnerHTML(R"HTML(
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <style id=style>
       </style>
       <div id=outer>
@@ -910,7 +910,7 @@ TEST_F(EasySelectorCheckerTest, SmokeTest) {
 class SelectorCheckerTest : public PageTestBase {};
 
 TEST_F(SelectorCheckerTest, PseudoScopeWithoutScope) {
-  GetDocument().body()->setInnerHTML("<div id=foo></div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<div id=foo></div>");
   UpdateAllLifecyclePhasesForTest();
 
   CSSSelectorList* selector_list =

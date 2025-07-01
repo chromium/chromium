@@ -25,16 +25,16 @@ void HTMLPermissionIconElement::SetIcon(PermissionName permission_type,
   }
   switch (permission_type) {
     case PermissionName::GEOLOCATION:
-      setInnerHTML(UncompressResourceAsASCIIString(
+      SetInnerHTMLWithoutTrustedTypes(UncompressResourceAsASCIIString(
           is_precise_location ? IDR_PERMISSION_ICON_LOCATION_PRECISE_SVG
                               : IDR_PERMISSION_ICON_LOCATION_SVG));
       break;
     case PermissionName::VIDEO_CAPTURE:
-      setInnerHTML(String(
+      SetInnerHTMLWithoutTrustedTypes(String(
           UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_CAMERA_SVG)));
       break;
     case PermissionName::AUDIO_CAPTURE:
-      setInnerHTML(
+      SetInnerHTMLWithoutTrustedTypes(
           UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_MICROPHONE_SVG));
       break;
     default:

@@ -648,7 +648,8 @@ class PanActionPointerEventTest : public PointerEventManagerTest {
  protected:
   // Sets inner HTML and runs document lifecycle.
   void SetBodyInnerHTML(const String& body_content) {
-    GetDocument().body()->setInnerHTML(body_content, ASSERT_NO_EXCEPTION);
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(body_content,
+                                                          ASSERT_NO_EXCEPTION);
     WebView().MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kAll,
                                                  DocumentUpdateReason::kTest);
   }

@@ -161,7 +161,7 @@ void RenderingTest::TearDown() {
 
 void RenderingTest::SetChildFrameHTML(const String& html) {
   ChildDocument().SetBaseURLOverride(KURL("http://test.com"));
-  ChildDocument().body()->setInnerHTML(html, ASSERT_NO_EXCEPTION);
+  ChildDocument().body()->SetInnerHTMLWithoutTrustedTypes(html);
 
   // Setting HTML implies the frame loads contents, so we need to advance the
   // state machine to leave the initial empty document state.

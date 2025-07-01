@@ -480,7 +480,7 @@ TEST_F(AttributionSrcLoaderTest, DefaultReferrer_ContextMenu) {
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<head><meta name=referrer content=no-referrer>");
 
   auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());

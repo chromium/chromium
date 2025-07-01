@@ -60,7 +60,8 @@ class AffectedByPseudoTest : public PageTestBase {
 };
 
 void AffectedByPseudoTest::SetHtmlInnerHTML(const char* html_content) {
-  GetDocument().documentElement()->setInnerHTML(String::FromUTF8(html_content));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -2839,7 +2840,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion1) {
   start_count = GetStyleEngine().StyleForElementCount();
   auto* subtree_root = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   subtree_root->setAttribute(html_names::kIdAttr, AtomicString("div12"));
-  subtree_root->setInnerHTML(
+  subtree_root->SetInnerHTMLWithoutTrustedTypes(
       String::FromUTF8(R"HTML(<div id=div121></div>)HTML"));
   GetDocument().getElementById(AtomicString("div1"))->AppendChild(subtree_root);
   UpdateAllLifecyclePhasesForTest();
@@ -2857,7 +2858,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion1) {
                  {kSiblingsAffectedByHas, false}});
 
   start_count = GetStyleEngine().StyleForElementCount();
-  GetElementById("div11")->setInnerHTML(String::FromUTF8(
+  GetElementById("div11")->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(
       R"HTML(
         <div id=div111>
           <div id=div1111></div>
@@ -2884,7 +2885,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion1) {
                               {kSiblingsAffectedByHas, false}});
 
   start_count = GetStyleEngine().StyleForElementCount();
-  GetElementById("div1112")->setInnerHTML(String::FromUTF8(
+  GetElementById("div1112")->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(
       R"HTML(
         <div id=div11121>
           <div id=div111211></div>
@@ -2918,7 +2919,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion1) {
                               {kSiblingsAffectedByHas, false}});
 
   start_count = GetStyleEngine().StyleForElementCount();
-  GetElementById("div2111")->setInnerHTML(String::FromUTF8(
+  GetElementById("div2111")->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(
       R"HTML(
         <div id=div21111>
           <div id=div211111></div>
@@ -2939,7 +2940,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion1) {
                     {kSiblingsAffectedByHas, false}});
 
   start_count = GetStyleEngine().StyleForElementCount();
-  GetElementById("div2121")->setInnerHTML(String::FromUTF8(
+  GetElementById("div2121")->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(
       R"HTML(
         <div id=div21211>
           <div id=div212111></div>
@@ -3081,7 +3082,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion2) {
                 {kSiblingsAffectedByHas, false}});
 
   start_count = GetStyleEngine().StyleForElementCount();
-  GetElementById("div11")->setInnerHTML(String::FromUTF8(
+  GetElementById("div11")->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(
       R"HTML(
         <div id=div111 class='b'>
           <div id=div1111>
@@ -3125,7 +3126,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion2) {
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div21111")
-      ->setInnerHTML(String::FromUTF8(
+      ->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(
           R"HTML(
         <div id=div211111>
           <div id=div2111111></div>
@@ -3146,7 +3147,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion2) {
                      {kSiblingsAffectedByHas, false}});
 
   start_count = GetStyleEngine().StyleForElementCount();
-  GetElementById("div212")->setInnerHTML(String::FromUTF8(
+  GetElementById("div212")->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(
       R"HTML(
         <div id=div2121>
           <div id=div21211>
@@ -3305,7 +3306,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion3) {
        {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
 
   start_count = GetStyleEngine().StyleForElementCount();
-  GetElementById("div111")->setInnerHTML(String::FromUTF8(
+  GetElementById("div111")->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(
       R"HTML(
         <div id=div1111>
           <div id=div11112 class='b'></div>
@@ -3328,7 +3329,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion3) {
   start_count = GetStyleEngine().StyleForElementCount();
   auto* subtree_root = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   subtree_root->setAttribute(html_names::kIdAttr, AtomicString("div12"));
-  subtree_root->setInnerHTML(String::FromUTF8(R"HTML(
+  subtree_root->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(R"HTML(
       <div id=div121>
         <div id=div1211></div>
         <div id=div1212 class='a'>
@@ -3860,7 +3861,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion5) {
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   auto* subtree_root = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   subtree_root->setAttribute(html_names::kIdAttr, AtomicString("div12"));
-  subtree_root->setInnerHTML(String::FromUTF8(R"HTML(
+  subtree_root->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(R"HTML(
       <div id=div121>
         <div id=div1211></div>
         <div id=div1212></div>
@@ -3907,7 +3908,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion5) {
   subtree_root = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   subtree_root->setAttribute(html_names::kIdAttr, AtomicString("div13"));
   subtree_root->setAttribute(html_names::kClassAttr, AtomicString("b"));
-  subtree_root->setInnerHTML(String::FromUTF8(R"HTML(
+  subtree_root->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(R"HTML(
       <div id=div131>
         <div id=div1311 class='c'></div>
         <div id=div1312></div>
@@ -3982,7 +3983,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion5) {
   subtree_root = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   subtree_root->setAttribute(html_names::kIdAttr, AtomicString("div2222"));
   subtree_root->setAttribute(html_names::kClassAttr, AtomicString("a"));
-  subtree_root->setInnerHTML(
+  subtree_root->SetInnerHTMLWithoutTrustedTypes(
       String::FromUTF8(R"HTML(<div id=div22221></div>)HTML"));
   GetDocument()
       .getElementById(AtomicString("div222"))
@@ -4109,7 +4110,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   auto* subtree_root = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   subtree_root->setAttribute(html_names::kIdAttr, AtomicString("div12"));
-  subtree_root->setInnerHTML(String::FromUTF8(R"HTML(
+  subtree_root->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(R"HTML(
       <div id=div121></div>
   )HTML"));
   GetDocument().getElementById(AtomicString("div1"))->AppendChild(subtree_root);
@@ -4134,7 +4135,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
   start_count = GetStyleEngine().StyleForElementCount();
   subtree_root = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   subtree_root->setAttribute(html_names::kIdAttr, AtomicString("div13"));
-  subtree_root->setInnerHTML(String::FromUTF8(R"HTML(
+  subtree_root->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(R"HTML(
       <div id=div131></div>
   )HTML"));
   GetDocument().getElementById(AtomicString("div1"))->AppendChild(subtree_root);
@@ -4164,7 +4165,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
   start_count = GetStyleEngine().StyleForElementCount();
   subtree_root = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   subtree_root->setAttribute(html_names::kIdAttr, AtomicString("div14"));
-  subtree_root->setInnerHTML(String::FromUTF8(R"HTML(
+  subtree_root->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(R"HTML(
       <div id=div141 class='d'></div>
   )HTML"));
   GetDocument().getElementById(AtomicString("div1"))->AppendChild(subtree_root);
@@ -4239,7 +4240,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
 
   // There can be some inefficiency for fixed adjacent distance :has() argument
   start_count = GetStyleEngine().StyleForElementCount();
-  GetElementById("div23")->setInnerHTML(String::FromUTF8(
+  GetElementById("div23")->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(
       R"HTML(
         <div id=div231 class='d'></div>
       )HTML"));
@@ -4266,7 +4267,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion6) {
                 GetCSSPropertyColor()));
 
   start_count = GetStyleEngine().StyleForElementCount();
-  GetElementById("div24")->setInnerHTML(String::FromUTF8(
+  GetElementById("div24")->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(
       R"HTML(
         <div id=div241>
           <div id=div2411 class='d'></div>
@@ -4346,7 +4347,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterWiping) {
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("div11"))
-      ->setInnerHTML(String::FromUTF8(R"HTML(div11)HTML"));
+      ->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(R"HTML(div11)HTML"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0U, GetStyleEngine().StyleForElementCount() - start_count);
 
@@ -4372,7 +4373,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterWiping) {
   start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("div12"))
-      ->setInnerHTML(String::FromUTF8(R"HTML(div12)HTML"));
+      ->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(R"HTML(div12)HTML"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(1U, GetStyleEngine().StyleForElementCount() - start_count);
 
@@ -4395,7 +4396,7 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterWiping) {
   start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("div2"))
-      ->setInnerHTML(String::FromUTF8(R"HTML(div2)HTML"));
+      ->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(R"HTML(div2)HTML"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0U, GetStyleEngine().StyleForElementCount() - start_count);
 

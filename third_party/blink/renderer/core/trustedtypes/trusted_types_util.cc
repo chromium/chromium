@@ -11,7 +11,9 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedhtml.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedhtml_trustedscript_trustedscripturl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
@@ -508,6 +510,30 @@ String TrustedTypesCheckFor(SpecificTrustedType type,
   // In all other cases: run the full check against the string value.
   return TrustedTypesCheckFor(type, std::move(value), execution_context,
                               interface_name, property_name, exception_state);
+}
+
+String TrustedTypesCheckForHTML(
+    const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* value,
+    const ExecutionContext* execution_context,
+    const char* interface_name,
+    const char* property_name,
+    ExceptionState& exception_state) {
+  if (!value) {
+    return TrustedTypesCheckForHTML(g_empty_string, execution_context,
+                                    interface_name, property_name,
+                                    exception_state);
+  }
+  switch (value->GetContentType()) {
+    case V8UnionStringLegacyNullToEmptyStringOrTrustedHTML::ContentType::
+        kStringLegacyNullToEmptyString:
+      return TrustedTypesCheckForHTML(
+          value->GetAsStringLegacyNullToEmptyString(), execution_context,
+          interface_name, property_name, exception_state);
+    case V8UnionStringLegacyNullToEmptyStringOrTrustedHTML::ContentType::
+        kTrustedHTML:
+      return value->GetAsTrustedHTML()->toString();
+  }
+  NOTREACHED();
 }
 
 String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,

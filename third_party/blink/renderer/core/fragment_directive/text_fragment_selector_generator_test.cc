@@ -1834,7 +1834,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ShadowRoot& shadow1 = GetDocument()
                             .getElementById(AtomicString("host1"))
                             ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow1.setInnerHTML(R"HTML(
+  shadow1.SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <p id='p'>Right click the link below to experience a crash:</p>
     <style>
           :host {display: contents;}

@@ -226,7 +226,8 @@ void EventHandlerTest::SetUp() {
 }
 
 void EventHandlerTest::SetHtmlInnerHTML(const char* html_content) {
-  GetDocument().documentElement()->setInnerHTML(String::FromUTF8(html_content));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -839,7 +840,7 @@ TEST_F(EventHandlerTest, sendContextMenuEventWithHover) {
       "<div>foo</div>");
   GetDocument().GetSettings()->SetScriptEnabled(true);
   Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
-  script->setInnerHTML(
+  script->SetInnerHTMLWithoutTrustedTypes(
       "document.addEventListener('contextmenu', event => "
       "event.preventDefault());");
   GetDocument().body()->AppendChild(script);
@@ -966,7 +967,7 @@ TEST_F(EventHandlerTest, SelectionOnDoublePressPreventDefaultMousePress) {
         </div>
       )HTML");
   Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
-  script->setInnerHTML(
+  script->SetInnerHTMLWithoutTrustedTypes(
       R"HTML(
         let targetDiv = document.getElementById('targetdiv');
         targetDiv.addEventListener('mousedown', (e) => {
@@ -1462,7 +1463,7 @@ TEST_F(EventHandlerTooltipTest,
         <button id='b2'>button 2</button>
       )HTML");
   Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
-  script->setInnerHTML(
+  script->SetInnerHTMLWithoutTrustedTypes(
       R"HTML(
         document.addEventListener('keydown', (e) => {
           if (e.keyCode == 37) {
@@ -1629,7 +1630,7 @@ class EventHandlerLatencyTest : public PageTestBase {
   }
 
   void SetHtmlInnerHTML(const char* html_content) {
-    GetDocument().documentElement()->setInnerHTML(
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         String::FromUTF8(html_content));
     UpdateAllLifecyclePhasesForTest();
   }
@@ -3083,48 +3084,48 @@ TEST_F(EventHandlerSimTest, TestWheelEventsWithDifferentPhases) {
   wheel_event.delta_y = 0;
   wheel_event.phase = WebMouseWheelEvent::kPhaseMayBegin;
   GetDocument().GetFrame()->GetEventHandler().HandleWheelEvent(wheel_event);
-  EXPECT_EQ("no wheel event", element->innerHTML().Utf8());
+  EXPECT_EQ("no wheel event", element->GetInnerHTMLString().Utf8());
 
   wheel_event.delta_y = -1;
   wheel_event.phase = WebMouseWheelEvent::kPhaseBegan;
-  element->setInnerHTML("no wheel event");
+  element->SetInnerHTMLWithoutTrustedTypes("no wheel event");
   GetDocument().GetFrame()->GetEventHandler().HandleWheelEvent(wheel_event);
   EXPECT_EQ("received wheel event, deltaX: 0 deltaY: 1",
-            element->innerHTML().Utf8());
+            element->GetInnerHTMLString().Utf8());
 
   wheel_event.delta_y = -2;
   wheel_event.phase = WebMouseWheelEvent::kPhaseChanged;
-  element->setInnerHTML("no wheel event");
+  element->SetInnerHTMLWithoutTrustedTypes("no wheel event");
   GetDocument().GetFrame()->GetEventHandler().HandleWheelEvent(wheel_event);
   EXPECT_EQ("received wheel event, deltaX: 0 deltaY: 2",
-            element->innerHTML().Utf8());
+            element->GetInnerHTMLString().Utf8());
 
   wheel_event.delta_y = -3;
   wheel_event.phase = WebMouseWheelEvent::kPhaseChanged;
-  element->setInnerHTML("no wheel event");
+  element->SetInnerHTMLWithoutTrustedTypes("no wheel event");
   GetDocument().GetFrame()->GetEventHandler().HandleWheelEvent(wheel_event);
   EXPECT_EQ("received wheel event, deltaX: 0 deltaY: 3",
-            element->innerHTML().Utf8());
+            element->GetInnerHTMLString().Utf8());
 
   wheel_event.delta_y = -4;
   wheel_event.phase = WebMouseWheelEvent::kPhaseStationary;
-  element->setInnerHTML("no wheel event");
+  element->SetInnerHTMLWithoutTrustedTypes("no wheel event");
   GetDocument().GetFrame()->GetEventHandler().HandleWheelEvent(wheel_event);
   EXPECT_EQ("received wheel event, deltaX: 0 deltaY: 4",
-            element->innerHTML().Utf8());
+            element->GetInnerHTMLString().Utf8());
 
   wheel_event.delta_y = -5;
   wheel_event.phase = WebMouseWheelEvent::kPhaseChanged;
-  element->setInnerHTML("no wheel event");
+  element->SetInnerHTMLWithoutTrustedTypes("no wheel event");
   GetDocument().GetFrame()->GetEventHandler().HandleWheelEvent(wheel_event);
   EXPECT_EQ("received wheel event, deltaX: 0 deltaY: 5",
-            element->innerHTML().Utf8());
+            element->GetInnerHTMLString().Utf8());
 
   wheel_event.delta_y = 0;
   wheel_event.phase = WebMouseWheelEvent::kPhaseEnded;
-  element->setInnerHTML("no wheel event");
+  element->SetInnerHTMLWithoutTrustedTypes("no wheel event");
   GetDocument().GetFrame()->GetEventHandler().HandleWheelEvent(wheel_event);
-  EXPECT_EQ("no wheel event", element->innerHTML().Utf8());
+  EXPECT_EQ("no wheel event", element->GetInnerHTMLString().Utf8());
 }
 
 TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScroll) {
@@ -3185,18 +3186,22 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScroll) {
   Compositor().BeginFrame(0.15 * num_keydowns);
 
   // Verify that we have not yet fired scrollend.
-  EXPECT_EQ(
-      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
-      "");
+  EXPECT_EQ(GetDocument()
+                .getElementById(AtomicString("log"))
+                ->GetInnerHTMLString()
+                .Utf8(),
+            "");
 
   // Fire keyUp, which should tigger a scrollend event.
   e.SetType(WebInputEvent::Type::kKeyUp);
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
   Compositor().BeginFrame();
-  EXPECT_EQ(
-      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
-      "scrollend");
+  EXPECT_EQ(GetDocument()
+                .getElementById(AtomicString("log"))
+                ->GetInnerHTMLString()
+                .Utf8(),
+            "scrollend");
 }
 
 TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
@@ -3253,9 +3258,11 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
   Compositor().BeginFrame();
 
   // Verify that we have not yet fired scrollend.
-  EXPECT_EQ(
-      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
-      "");
+  EXPECT_EQ(GetDocument()
+                .getElementById(AtomicString("log"))
+                ->GetInnerHTMLString()
+                .Utf8(),
+            "");
 
   // Fire keyUp, which should not tigger a scrollend event since another scroll
   // is in progress.
@@ -3265,9 +3272,11 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
   // Tick second scroll to completion which should fire scrollend.
   Compositor().BeginFrame(0.30);
 
-  EXPECT_EQ(
-      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
-      "scrollend");
+  EXPECT_EQ(GetDocument()
+                .getElementById(AtomicString("log"))
+                ->GetInnerHTMLString()
+                .Utf8(),
+            "scrollend");
 }
 
 TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScrollInstant) {
@@ -3324,18 +3333,22 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScrollInstant) {
   }
 
   // Verify that we have not yet fired scrollend.
-  EXPECT_EQ(
-      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
-      "");
+  EXPECT_EQ(GetDocument()
+                .getElementById(AtomicString("log"))
+                ->GetInnerHTMLString()
+                .Utf8(),
+            "");
 
   // Fire keyUp, which should trigger a scrollend event.
   e.SetType(WebInputEvent::Type::kKeyUp);
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
   Compositor().BeginFrame();
-  EXPECT_EQ(
-      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
-      "scrollend");
+  EXPECT_EQ(GetDocument()
+                .getElementById(AtomicString("log"))
+                ->GetInnerHTMLString()
+                .Utf8(),
+            "scrollend");
 }
 
 TEST_F(EventHandlerSimTest, DiscardEventsToRecentlyMovedIframe) {

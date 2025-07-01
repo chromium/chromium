@@ -18,7 +18,7 @@ namespace blink {
 class SVGElementTest : public PageTestBase {};
 
 TEST_F(SVGElementTest, BaseComputedStyleForSMILWithContainerQueries) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #rect2 { display: none }
       @container (max-width: 200px) {

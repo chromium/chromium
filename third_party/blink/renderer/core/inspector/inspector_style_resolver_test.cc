@@ -34,7 +34,7 @@ void InspectorStyleResolverTest::SetUp() {
 }
 
 TEST_F(InspectorStyleResolverTest, DirectlyMatchedRules) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #grid {
         display: grid;
@@ -58,7 +58,7 @@ TEST_F(InspectorStyleResolverTest, DirectlyMatchedRules) {
 }
 
 TEST_F(InspectorStyleResolverTest, ParentRules) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #grid-container {
         display: inline-grid;
@@ -94,7 +94,7 @@ TEST_F(InspectorStyleResolverTest, ParentRules) {
 }
 
 TEST_F(InspectorStyleResolverTest, HighlightPseudoInheritance) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #outer::selection {
         color: limegreen;

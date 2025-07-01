@@ -44,10 +44,10 @@
 namespace blink {
 
 // The HTML left by the dumper script will contain any <style> tags that were
-// in the DOM, which will be interpreted by setInnerHTML() and converted to
-// style sheets. However, we already have our own canonical list of sheets
-// (from the JSON) that we want to use. Keeping both will make for duplicated
-// rules, enabling rules and sheets that have since been deleted
+// in the DOM, which will be interpreted by SetInnerHTMLWithoutTrustedTypes()
+// and converted to style sheets. However, we already have our own canonical
+// list of sheets (from the JSON) that we want to use. Keeping both will make
+// for duplicated rules, enabling rules and sheets that have since been deleted
 // (occasionally even things like “display: none !important”) and so on.
 // Thus, as a kludge, we strip all <style> tags from the HTML here before
 // parsing.
@@ -104,7 +104,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
 
   Document& document = page->GetDocument();
   StyleEngine& engine = document.GetStyleEngine();
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       StripStyleTags(WTF::String(*dict.FindString("html"))),
       ASSERT_NO_EXCEPTION);
 

@@ -116,7 +116,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnregisteredCustomProperty) {
   Vector<CSSPropertyID> native_properties;
   Vector<AtomicString> custom_properties({AtomicString("--x")});
 
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='target' style='--x:50'></div>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -165,7 +165,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, SupportedCrossThreadData) {
   css_test_helpers::RegisterProperty(GetDocument(), "--gar", "<color>",
                                      "rgb(0, 255, 0)", false);
 
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='target' style='--foo:10px; --bar:15; --gar:rgb(255, 0, "
       "0)'></div>");
   UpdateAllLifecyclePhasesForTest();
@@ -212,7 +212,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnsupportedCrossThreadData) {
   css_test_helpers::RegisterProperty(GetDocument(), "--loo", "test", "test",
                                      false);
 
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='target' style='--foo:url(https://crbug.com/); "
       "--bar:15;'></div>");
   UpdateAllLifecyclePhasesForTest();

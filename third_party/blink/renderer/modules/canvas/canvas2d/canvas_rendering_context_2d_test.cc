@@ -456,8 +456,9 @@ void CanvasRenderingContext2DTestBase::SetUp() {
   web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
   web_view_helper_->Initialize();
 
-  GetDocument().documentElement()->setInnerHTML(String::FromUTF8(
-      "<body><canvas id='c'></canvas><canvas id='d'></canvas></body>"));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8(
+          "<body><canvas id='c'></canvas><canvas id='d'></canvas></body>"));
   UpdateAllLifecyclePhasesForTest();
 
   // Simulate that we allow scripts, so that HTMLCanvasElement uses

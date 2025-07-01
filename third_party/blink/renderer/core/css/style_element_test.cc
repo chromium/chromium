@@ -22,7 +22,7 @@ TEST(StyleElementTest, CreateSheetUsesCache) {
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
 
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<style id=style>a { top: 0; }</style>");
 
   auto& style_element =

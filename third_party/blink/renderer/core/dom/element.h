@@ -134,6 +134,7 @@ class StyleRecalcContext;
 class StyleScopeData;
 class TextVisitor;
 class V8UnionBooleanOrScrollIntoViewOptions;
+class V8UnionStringLegacyNullToEmptyStringOrTrustedHTML;
 class ComputedStyleBuilder;
 class StyleAdjuster;
 
@@ -1253,10 +1254,19 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                           const String& html,
                           ExceptionState&);
 
-  String innerHTML() const;
-  String outerHTML() const;
-  void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
-  void setOuterHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
+  String GetInnerHTMLString() const;
+  String GetOuterHTMLString() const;
+  void SetInnerHTMLWithoutTrustedTypes(const String&,
+                                       ExceptionState& = ASSERT_NO_EXCEPTION);
+  void SetOuterHTMLWithoutTrustedTypes(const String&,
+                                       ExceptionState& = ASSERT_NO_EXCEPTION);
+
+  V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* innerHTML() const;
+  V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* outerHTML() const;
+  void setInnerHTML(const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML*,
+                    ExceptionState&);
+  void setOuterHTML(const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML*,
+                    ExceptionState&);
 
   // The setHTMLUnsafe method is like `setInnerHTML()` except that a) it parses
   // declarative shadow DOM by default, and b) will eventually have a second

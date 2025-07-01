@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_mode.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_slot_assignment_mode.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedhtml.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -128,18 +129,36 @@ Node* ShadowRoot::Clone(Document&,
   NOTREACHED() << "ShadowRoot nodes are not clonable.";
 }
 
-String ShadowRoot::innerHTML() const {
+String ShadowRoot::GetInnerHTMLString() const {
   return CreateMarkup(this, kChildrenOnly);
 }
 
-void ShadowRoot::setInnerHTML(const String& html,
-                              ExceptionState& exception_state) {
+V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* ShadowRoot::innerHTML()
+    const {
+  return MakeGarbageCollected<
+      V8UnionStringLegacyNullToEmptyStringOrTrustedHTML>(GetInnerHTMLString());
+}
+
+void ShadowRoot::SetInnerHTMLWithoutTrustedTypes(
+    const String& html,
+    ExceptionState& exception_state) {
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
           html, &host(), kAllowScriptingContent,
           Element::ParseDeclarativeShadowRoots::kDontParse,
           Element::ForceHtml::kDontForce, exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
   }
+}
+
+void ShadowRoot::setInnerHTML(
+    const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* html,
+    ExceptionState& exception_state) {
+  String compliant_html = TrustedTypesCheckForHTML(
+      html, GetExecutionContext(), "ShadowRoot", "innerHTML", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  SetInnerHTMLWithoutTrustedTypes(compliant_html, exception_state);
 }
 
 void ShadowRoot::setHTMLUnsafe(const String& html,

@@ -31,13 +31,13 @@ class WebElementTest : public PageTestBase {
 };
 
 void WebElementTest::InsertHTML(String html) {
-  GetDocument().documentElement()->setInnerHTML(html);
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(html);
 }
 
 void WebElementTest::AddScript(String js) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
-  script->setInnerHTML(js);
+  script->SetInnerHTMLWithoutTrustedTypes(js);
   GetDocument().body()->AppendChild(script);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 }
@@ -218,14 +218,14 @@ TEST_F(WebElementTest, PasteTextIntoContentEditable) {
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
   // Paste and replace selection.
   TestElement().PasteText("fancy text", /*replace_all=*/false);
-  EXPECT_EQ(element->innerHTML(), "Some <b>fancy text</b>&nbsp;here.");
+  EXPECT_EQ(element->GetInnerHTMLString(), "Some <b>fancy text</b>&nbsp;here.");
   // Paste and replace all.
   TestElement().PasteText("Hello", /*replace_all=*/true);
-  EXPECT_EQ(element->innerHTML(), "Hello");
+  EXPECT_EQ(element->GetInnerHTMLString(), "Hello");
   // Paste into an unfocused element.
   element->nextElementSibling()->Focus();
   TestElement().PasteText("world", /*replace_all=*/false);
-  EXPECT_EQ(element->innerHTML(), "Hello&nbsp;world");
+  EXPECT_EQ(element->GetInnerHTMLString(), "Hello&nbsp;world");
 }
 
 TEST_F(WebElementTest, PasteTextIntoTextArea) {
@@ -270,7 +270,7 @@ TEST_F(WebElementTest, PasteTextIsNoOpWhenPasteIsCancelled) {
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
   // Paste and replace selection.
   TestElement().PasteText("fancy text", /*replace_all=*/false);
-  EXPECT_EQ(element->innerHTML(), "Some <b>UPPERCASE TEXT</b> here.");
+  EXPECT_EQ(element->GetInnerHTMLString(), "Some <b>UPPERCASE TEXT</b> here.");
 }
 
 // Tests that PasteText() aborts when the JavaScript handler of the
@@ -290,7 +290,7 @@ TEST_F(WebElementTest, PasteTextIsNoOpWhenBeforeInputIsCancelled) {
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
   // Paste and replace selection.
   TestElement().PasteText("fancy text", /*replace_all=*/false);
-  EXPECT_EQ(element->innerHTML(), "Some <b>UPPERCASE TEXT</b> here.");
+  EXPECT_EQ(element->GetInnerHTMLString(), "Some <b>UPPERCASE TEXT</b> here.");
 }
 
 TEST_F(WebElementTest, ShadowRoot) {

@@ -66,7 +66,7 @@ class HTMLMetaElementTest : public PageTestBase,
 
  private:
   void LoadTestPageWithViewportFitValue(const String& value) {
-    GetDocument().documentElement()->setInnerHTML(
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         "<head>"
         "<meta name='viewport' content='viewport-fit=" +
         value +
@@ -129,7 +129,7 @@ TEST_F(HTMLMetaElementTest, ViewportFit_Cover_IsUseCounted) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_FirstWins) {
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta name="color-scheme" content="dark">
     <meta name="color-scheme" content="light">
   )HTML");
@@ -138,7 +138,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_FirstWins) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_Remove) {
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta id="first-meta" name="color-scheme" content="dark">
     <meta name="color-scheme" content="light">
   )HTML");
@@ -152,7 +152,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_Remove) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_InsertBefore) {
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta name="color-scheme" content="dark">
   )HTML");
 
@@ -166,7 +166,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_InsertBefore) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_AppendChild) {
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta name="color-scheme" content="dark">
   )HTML");
 
@@ -178,7 +178,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_AppendChild) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_SetAttribute) {
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta id="meta" name="color-scheme" content="dark">
   )HTML");
 
@@ -193,7 +193,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_SetAttribute) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveContentAttribute) {
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta id="meta" name="color-scheme" content="dark">
   )HTML");
 
@@ -208,7 +208,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveContentAttribute) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveNameAttribute) {
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta id="meta" name="color-scheme" content="dark">
   )HTML");
 
@@ -301,7 +301,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeForcedDarkeningAndMQ) {
 }
 
 TEST_F(HTMLMetaElementTest, ReferrerPolicyWithoutContent) {
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta name="referrer" content="strict-origin">
     <meta name="referrer" >
   )HTML");
@@ -312,7 +312,7 @@ TEST_F(HTMLMetaElementTest, ReferrerPolicyWithoutContent) {
 }
 
 TEST_F(HTMLMetaElementTest, ReferrerPolicyUpdatesPolicyContainer) {
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta name="referrer" content="strict-origin">
   )HTML");
   EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOrigin,
@@ -325,7 +325,7 @@ TEST_F(HTMLMetaElementTest, ReferrerPolicyUpdatesPolicyContainer) {
 TEST_F(HTMLMetaElementTest, WebMonetizationCounter) {
   // <meta> elements that don't have name equal to "monetization" or that lack
   // a content attribute are not counted.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta name="color-scheme" content="dark">
     <meta name="monetization">
   )HTML");
@@ -333,7 +333,7 @@ TEST_F(HTMLMetaElementTest, WebMonetizationCounter) {
       GetDocument().IsUseCounted(WebFeature::kHTMLMetaElementMonetization));
 
   // A <link rel="monetization"> with a content attribute is counted.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <meta name="monetization" content="$payment.pointer.url">
   )HTML");
   EXPECT_TRUE(

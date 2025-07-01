@@ -132,7 +132,7 @@ WebString WebElement::TextContentAbridged(const unsigned int max_length) const {
 }
 
 WebString WebElement::InnerHTML() const {
-  return ConstUnwrap<Element>()->innerHTML();
+  return ConstUnwrap<Element>()->GetInnerHTMLString();
 }
 
 void WebElement::Focus() {

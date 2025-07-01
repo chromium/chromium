@@ -1972,7 +1972,7 @@ TEST_P(HTMLMediaElementTest,
   const auto* tracker_before_append = video->visibility_tracker_for_tests();
 
   // Create div and append video element to it.
-  video->GetDocument().body()->setInnerHTML(
+  video->GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='container' style='width:200px; height:200px;'></div>");
   video->GetDocument()
       .body()
@@ -2036,7 +2036,7 @@ TEST_P(HTMLMediaElementTest,
 
   auto* video = To<HTMLVideoElement>(Media());
 
-  video->GetDocument().body()->setInnerHTML(
+  video->GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='fullscreen-div' style='width:200px; height:200px;'></div>");
   Element* fullscreen_div = video->GetDocument().body()->getElementById(
       AtomicString("fullscreen-div"));
@@ -2168,7 +2168,7 @@ TEST_P(
                                          tracker_before_append));
 
   // Create a div and append the video element to it.
-  video->GetDocument().body()->setInnerHTML(
+  video->GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='container' style='width:200px; height:200px;'></div>");
   video->GetDocument()
       .body()

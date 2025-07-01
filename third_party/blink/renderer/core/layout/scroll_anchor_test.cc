@@ -50,7 +50,8 @@ class ScrollAnchorTest : public SimTest {
   void Update() { Compositor().BeginFrame(); }
 
   void SetBodyInnerHTML(const String& body_content) {
-    GetDocument().body()->setInnerHTML(body_content, ASSERT_NO_EXCEPTION);
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(body_content,
+                                                          ASSERT_NO_EXCEPTION);
     Update();
   }
 
@@ -808,7 +809,7 @@ TEST_F(ScrollAnchorTest, SerializeAnchorFailsForShadowDOMElement) {
       <div></div>)HTML");
   auto* host = GetDocument().getElementById(AtomicString("host"));
   auto& shadow_root = host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML(R"HTML(
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <style>
         div { height: 100px; }
       </style>
@@ -1090,7 +1091,8 @@ class ScrollAnchorFindInPageTest : public testing::Test {
   }
 
   void SetHtmlInnerHTML(const char* content) {
-    GetDocument().documentElement()->setInnerHTML(String::FromUTF8(content));
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+        String::FromUTF8(content));
     UpdateAllLifecyclePhasesForTest();
   }
 

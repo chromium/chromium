@@ -209,7 +209,8 @@ class HTMLMediaElementEventListenersTest : public PageTestBase {
 
 TEST_F(HTMLMediaElementEventListenersTest, RemovingFromDocumentCollectsAll) {
   EXPECT_EQ(Video(), nullptr);
-  GetDocument().body()->setInnerHTML("<video controls></video>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<video controls></video>");
   EXPECT_NE(Video(), nullptr);
   EXPECT_TRUE(Video()->HasEventListeners());
   EXPECT_NE(Controls(), nullptr);
@@ -219,7 +220,7 @@ TEST_F(HTMLMediaElementEventListenersTest, RemovingFromDocumentCollectsAll) {
   WeakPersistent<MediaControls> weak_persistent_controls = Controls();
   {
     Persistent<HTMLVideoElement> persistent_video = Video();
-    GetDocument().body()->setInnerHTML("");
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("");
 
     // When removed from the document, the event listeners should have been
     // dropped.
@@ -241,7 +242,8 @@ TEST_F(HTMLMediaElementEventListenersTest, RemovingFromDocumentCollectsAll) {
 TEST_F(HTMLMediaElementEventListenersTest,
        ReInsertingInDocumentCollectsControls) {
   EXPECT_EQ(Video(), nullptr);
-  GetDocument().body()->setInnerHTML("<video controls></video>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<video controls></video>");
   EXPECT_NE(Video(), nullptr);
   EXPECT_TRUE(Video()->HasEventListeners());
   EXPECT_NE(Controls(), nullptr);
@@ -270,7 +272,7 @@ TEST_F(HTMLMediaElementEventListenersTest,
 TEST_F(HTMLMediaElementEventListenersTest,
        FullscreenDetectorTimerCancelledOnContextDestroy) {
   EXPECT_EQ(Video(), nullptr);
-  GetDocument().body()->setInnerHTML("<video></video>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<video></video>");
   Video()->SetSrc(AtomicString("http://example.com"));
 
   test::RunPendingTasks();
@@ -353,7 +355,7 @@ class HTMLMediaElementWithMockSchedulerTest
 
 TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
   testing::InSequence dummy;
-  GetDocument().body()->setInnerHTML("<video></video>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<video></video>");
 
   // Set a src to trigger WebMediaPlayer creation.
   Video()->SetSrc(AtomicString("http://example.com"));
@@ -411,7 +413,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
 
 TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   testing::InSequence dummy;
-  GetDocument().body()->setInnerHTML("<video></video>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<video></video>");
 
   // Set a src to trigger WebMediaPlayer creation.
   Video()->SetSrc(AtomicString("http://example.com"));
@@ -485,7 +487,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, ShowPosterFlag_FalseAfterLoop) {
   SetMediaDuration(10.0);
 
   // Create a looping video with a source
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<video loop src=\"http://example.com\"></video>");
   platform()->RunUntilIdle();
   EXPECT_NE(WebMediaPlayer(), nullptr);
@@ -525,7 +527,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, ShowPosterFlag_FalseAfterEnded) {
   SetMediaDuration(10.0);
 
   // Create a video with a source
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<video src=\"http://example.com\"></video>");
   platform()->RunUntilIdle();
   EXPECT_NE(WebMediaPlayer(), nullptr);
@@ -647,7 +649,7 @@ class CueEventListener final : public NativeEventListener {
 
 TEST_F(HTMLMediaElementWithMockSchedulerTest, CueEnterExitEventLatency) {
   testing::InSequence dummy;
-  GetDocument().body()->setInnerHTML("<video></video>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<video></video>");
 
   // Set a src to trigger WebMediaPlayer creation.
   Video()->SetSrc(AtomicString("http://example.com"));

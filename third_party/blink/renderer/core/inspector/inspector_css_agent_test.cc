@@ -94,7 +94,7 @@ class InspectorCSSAgentTest : public PageTestBase {
 };
 
 TEST_F(InspectorCSSAgentTest, NoFunctions) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #e { width: 1px; }
     </style>
@@ -107,7 +107,7 @@ TEST_F(InspectorCSSAgentTest, NoFunctions) {
 }
 
 TEST_F(InspectorCSSAgentTest, UnreferencedFunction) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() { result: 1px; }
       #e { width: 1px; }
@@ -121,7 +121,7 @@ TEST_F(InspectorCSSAgentTest, UnreferencedFunction) {
 }
 
 TEST_F(InspectorCSSAgentTest, ElementSpecificFunctionReferences) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() { result: 1px; }
       #e1 { width: 1px; }
@@ -141,7 +141,7 @@ TEST_F(InspectorCSSAgentTest, ElementSpecificFunctionReferences) {
 }
 
 TEST_F(InspectorCSSAgentTest, MultipleFunctions_Declaration) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() { result: 1px; }
       @function --b() { result: 2px; }
@@ -160,7 +160,7 @@ TEST_F(InspectorCSSAgentTest, MultipleFunctions_Declaration) {
 }
 
 TEST_F(InspectorCSSAgentTest, KeyNameVsFunctionName) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() { result: 1px; }
       @function --b() { result: 2px; }
@@ -184,7 +184,7 @@ TEST_F(InspectorCSSAgentTest, KeyNameVsFunctionName) {
 }
 
 TEST_F(InspectorCSSAgentTest, MultipleFunctions_Rules) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() { result: 1px; }
       @function --b() { result: 2px; }
@@ -204,7 +204,7 @@ TEST_F(InspectorCSSAgentTest, MultipleFunctions_Rules) {
 }
 
 TEST_F(InspectorCSSAgentTest, FunctionsInShorthand) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() { result: 1px; }
       #e { padding: --a(); }
@@ -219,7 +219,7 @@ TEST_F(InspectorCSSAgentTest, FunctionsInShorthand) {
 }
 
 TEST_F(InspectorCSSAgentTest, DashedFunctionInMedia) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() { result: 1px; }
       @media (width) {
@@ -236,7 +236,7 @@ TEST_F(InspectorCSSAgentTest, DashedFunctionInMedia) {
 }
 
 TEST_F(InspectorCSSAgentTest, DashedFunctionNested) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() { result: 1px; }
       #e {
@@ -255,7 +255,7 @@ TEST_F(InspectorCSSAgentTest, DashedFunctionNested) {
 }
 
 TEST_F(InspectorCSSAgentTest, TransitiveFunction) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() {
         result: --b();
@@ -280,7 +280,7 @@ TEST_F(InspectorCSSAgentTest, TransitiveFunction) {
 }
 
 TEST_F(InspectorCSSAgentTest, TransitiveFunctionBranches) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() {
         @media (width > 0px) {
@@ -316,7 +316,7 @@ TEST_F(InspectorCSSAgentTest, TransitiveFunctionBranches) {
 }
 
 TEST_F(InspectorCSSAgentTest, DashedFunctionDedup) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() { result: 1px; }
       #e { left: --a(); }
@@ -333,7 +333,7 @@ TEST_F(InspectorCSSAgentTest, DashedFunctionDedup) {
 }
 
 TEST_F(InspectorCSSAgentTest, DashedFunctionUnknown) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       @function --a() { result: 1px; }
       #e { left: --unknown(); right: --a(); }
@@ -433,7 +433,7 @@ INSTANTIATE_TEST_SUITE_P(InspectorCSSAgentTest,
                          testing::ValuesIn(DirectionAwareConverterTestData));
 
 TEST_P(PercentageResolutionTest, ResolvePercentagesSimple) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #outer {
         width: 100px;
@@ -456,7 +456,8 @@ TEST_P(PercentageResolutionTest, ResolvePercentagesSimple) {
   html_string.Append(": ");
   html_string.Append(value);
   html_string.Append(";\"></div>");
-  GetElementById("outer")->setInnerHTML(html_string.ToString());
+  GetElementById("outer")->SetInnerHTMLWithoutTrustedTypes(
+      html_string.ToString());
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -467,7 +468,7 @@ TEST_P(PercentageResolutionTest, ResolvePercentagesSimple) {
 }
 
 TEST_F(InspectorCSSAgentTest, ResolvePercentagesSizingProperties) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #outer {
         width: 100px;
@@ -505,7 +506,7 @@ TEST_F(InspectorCSSAgentTest, ResolvePercentagesSizingProperties) {
 }
 
 TEST_F(InspectorCSSAgentTest, ResolvePercentagesAnchorPositioning) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #cb {
         width: 300px;
@@ -559,7 +560,7 @@ TEST_F(InspectorCSSAgentTest, ResolvePercentagesAnchorPositioning) {
 }
 
 TEST_F(InspectorCSSAgentTest, ResolvePercentagesDisplayTable) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .table {
         display: table;

@@ -257,7 +257,7 @@ void PageTestBase::LoadNoto(LocalFrame& frame) {
 
 // Both sets the inner html and runs the document lifecycle.
 void PageTestBase::SetBodyInnerHTML(const String& body_content) {
-  GetDocument().body()->setInnerHTML(body_content, ASSERT_NO_EXCEPTION);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(body_content);
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -266,7 +266,8 @@ void PageTestBase::SetBodyContent(const std::string& body_content) {
 }
 
 void PageTestBase::SetHtmlInnerHTML(const std::string& html_content) {
-  GetDocument().documentElement()->setInnerHTML(String::FromUTF8(html_content));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 

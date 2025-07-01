@@ -16,7 +16,7 @@ namespace blink {
 class HighlightTest : public PageTestBase {};
 
 TEST_F(HighlightTest, Creation) {
-  GetDocument().body()->setInnerHTML("1234");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* text = To<Text>(GetDocument().body()->firstChild());
 
   auto* range04 = MakeGarbageCollected<Range>(GetDocument(), text, 0, text, 4);
@@ -37,7 +37,7 @@ TEST_F(HighlightTest, Creation) {
 }
 
 TEST_F(HighlightTest, Properties) {
-  GetDocument().body()->setInnerHTML("1234");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* text = To<Text>(GetDocument().body()->firstChild());
 
   auto* range04 = MakeGarbageCollected<Range>(GetDocument(), text, 0, text, 4);

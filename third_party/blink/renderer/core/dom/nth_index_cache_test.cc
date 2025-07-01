@@ -15,7 +15,7 @@ namespace blink {
 class NthIndexCacheTest : public PageTestBase {};
 
 TEST_F(NthIndexCacheTest, NthIndex) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
     <span
     id=first></span><span></span><span></span><span></span><span></span>

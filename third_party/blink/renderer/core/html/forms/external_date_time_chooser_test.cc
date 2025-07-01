@@ -83,7 +83,7 @@ TEST_F(ExternalDateTimeChooserTest, EndChooserShouldNotCrash) {
 TEST_F(ExternalDateTimeChooserTest,
        OpenDateTimeChooserShouldNotCrashWhenLabelAndValueIsTheSame) {
   ScopedInputMultipleFieldsUIForTest input_multiple_fields_ui(false);
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <input id=test type="date" list="src" />
         <datalist id="src">
           <option value='2019-12-31'>Hint</option>
@@ -114,7 +114,8 @@ TEST_F(ExternalDateTimeChooserTest,
 
 TEST_F(ExternalDateTimeChooserTest, IsPickerVisible) {
   ScopedInputMultipleFieldsUIForTest input_multiple_fields_ui(false);
-  GetDocument().documentElement()->setInnerHTML("<input id=test type=date>");
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test type=date>");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   auto* input =

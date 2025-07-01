@@ -54,7 +54,8 @@ TEST_F(ReplaceSelectionCommandTest, pastingEmptySpan) {
       GetDocument(), fragment, options);
 
   EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
-  EXPECT_EQ("foo", GetDocument().body()->innerHTML()) << "no DOM tree mutation";
+  EXPECT_EQ("foo", GetDocument().body()->GetInnerHTMLString())
+      << "no DOM tree mutation";
 }
 
 // This is a regression test for https://crbug.com/668808
@@ -79,7 +80,7 @@ TEST_F(ReplaceSelectionCommandTest, pasteSpanInText) {
       GetDocument(), fragment, options);
 
   EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
-  EXPECT_EQ("<b>t</b>bar<b>ext</b>", GetDocument().body()->innerHTML())
+  EXPECT_EQ("<b>t</b>bar<b>ext</b>", GetDocument().body()->GetInnerHTMLString())
       << "'bar' should have been inserted";
 }
 

@@ -186,7 +186,7 @@ class VideoWakeLockTest : public testing::Test {
 
     fake_layer_ = cc::Layer::Create();
 
-    GetDocument().body()->setInnerHTML(
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
         "<body><div></div><video></video></body>");
     video_ = To<HTMLVideoElement>(
         GetDocument().QuerySelector(AtomicString("video")));

@@ -119,7 +119,7 @@ class ViewTransitionTest : public testing::Test,
   }
 
   void SetHtmlInnerHTML(const String& content) {
-    GetDocument().body()->setInnerHTML(content);
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(content);
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -1522,7 +1522,8 @@ TEST_P(ViewTransitionTest, SubframeSnapshotLayer) {
 
 TEST_P(ViewTransitionTest, ReplaceDocumentElement) {
   auto* document = &GetDocument();
-  document->documentElement()->setInnerHTML("<body>initial</body>");
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<body>initial</body>");
   UpdateAllLifecyclePhasesForTest();
 
   ScriptState* script_state = GetScriptState();
@@ -1531,7 +1532,7 @@ TEST_P(ViewTransitionTest, ReplaceDocumentElement) {
   auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
     auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value());
     auto* new_root = doc->CreateElementForBinding(AtomicString("html"));
-    new_root->setInnerHTML(R"HTML(
+    new_root->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <body>
         <style>
           ::view-transition-group(*) { animation-duration: 0s; }
@@ -1563,7 +1564,8 @@ TEST_P(ViewTransitionTest, ReplaceDocumentElement) {
 
 TEST_P(ViewTransitionTest, ReplaceBody) {
   auto* document = &GetDocument();
-  document->documentElement()->setInnerHTML("<body>initial</body>");
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<body>initial</body>");
   UpdateAllLifecyclePhasesForTest();
 
   ScriptState* script_state = GetScriptState();
@@ -1571,7 +1573,7 @@ TEST_P(ViewTransitionTest, ReplaceBody) {
 
   auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
     auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value());
-    doc->documentElement()->setInnerHTML(R"HTML(
+    doc->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <body>
         <style>
           ::view-transition-group(*) { animation-duration: 0s; }

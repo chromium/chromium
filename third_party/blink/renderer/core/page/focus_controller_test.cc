@@ -40,7 +40,7 @@ class FocusControllerTest : public PageTestBase {
 };
 
 TEST_F(FocusControllerTest, SetInitialFocus) {
-  GetDocument().body()->setInnerHTML("<input><textarea>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<input><textarea>");
   auto* input = To<Element>(GetDocument().body()->firstChild());
   // Set sequential focus navigation point before the initial focus.
   input->Focus();
@@ -52,7 +52,7 @@ TEST_F(FocusControllerTest, SetInitialFocus) {
 }
 
 TEST_F(FocusControllerTest, DoNotCrash1) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id='host'></div>This test is for crbug.com/609012<p id='target' "
       "tabindex='0'></p>");
   // <div> with shadow root
@@ -72,7 +72,7 @@ TEST_F(FocusControllerTest, DoNotCrash1) {
 }
 
 TEST_F(FocusControllerTest, DoNotCrash2) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<p id='target' tabindex='0'></p>This test is for crbug.com/609012<div "
       "id='host'></div>");
   // <p>
@@ -102,7 +102,7 @@ TEST_F(FocusControllerTest, SetActiveOnInactiveDocument) {
 
 // This test is for crbug.com/733218
 TEST_F(FocusControllerTest, SVGFocusableElementInForm) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<form>"
       "<input id='first'>"
       "<svg width='100px' height='100px' tabindex='0'>"
@@ -127,7 +127,7 @@ TEST_F(FocusControllerTest, SVGFocusableElementInForm) {
 }
 
 TEST_F(FocusControllerTest, FindFocusableAfterElement) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<input id='first'><div id='second'></div><input id='third'><div "
       "id='fourth' tabindex='0'></div>");
   Element* first = GetElementById("first");
@@ -157,7 +157,7 @@ TEST_F(FocusControllerTest, FindFocusableAfterElement) {
 }
 
 TEST_F(FocusControllerTest, NextFocusableElementForImeAndAutofill) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<form>"
       "  <input type='text' id='username'>"
       "  <input type='password' id='password'>"
@@ -182,7 +182,7 @@ TEST_F(FocusControllerTest, NextFocusableElementForImeAndAutofill) {
 }
 
 TEST_F(FocusControllerTest, NextFocusableElementForImeAndAutofill_NoFormTag) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "  <input type='text' id='username'>"
       "  <input type='password' id='password'>"
       "  <input type='submit' value='Login'>");
@@ -206,7 +206,7 @@ TEST_F(FocusControllerTest, NextFocusableElementForImeAndAutofill_NoFormTag) {
 
 // Ignore a checkbox to streamline form submission.
 TEST_F(FocusControllerTest, NextFocusableElementForImeAndAutofill_Checkbox) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<form>"
       "  <input type='text' id='username'>"
       "  <input type='password' id='password'>"
@@ -233,7 +233,7 @@ TEST_F(FocusControllerTest, NextFocusableElementForImeAndAutofill_Checkbox) {
 
 // A <select> element should block a form submission.
 TEST_F(FocusControllerTest, NextFocusableElementForImeAndAutofill_Select) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<form>"
       "  <input type='text' id='username'>"
       "  <input type='password' id='password'>"
@@ -269,7 +269,7 @@ TEST_F(FocusControllerTest, NextFocusableElementForImeAndAutofill_Select) {
 // signin and signup). See the HTML in the test for clarity.
 TEST_F(FocusControllerTest,
        NextFocusableElementForImeAndAutofill_SubmitButton) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<form>"
       "  <div>Login</div>"
       "    <input type='email' id='login_username'>"
@@ -317,11 +317,13 @@ TEST_F(FocusControllerTest, FindScopeOwnerSlotOrReadingFlowContainer) {
       "<div id='inner2'></div>"
       "</div>";
 
-  GetDocument().body()->setInnerHTML(String::FromUTF8(main_html));
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8(main_html));
   auto* host = To<Element>(GetDocument().body()->firstChild());
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML(String::FromUTF8("<slot></slot>"));
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8("<slot></slot>"));
 
   Element* inner1 = GetDocument().QuerySelector(AtomicString("#inner1"));
   Element* inner2 = GetDocument().QuerySelector(AtomicString("#inner2"));
@@ -349,7 +351,7 @@ TEST_F(FocusControllerTest, FocusHasChangedShouldInvalidateFocusStyle) {
   auto* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML("<div tabindex=0></div>");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<div tabindex=0></div>");
   To<Element>(shadow_root.firstChild())->Focus();
 
   controller.SetActive(true);
@@ -401,7 +403,7 @@ TEST_F(FocusControllerTestWithIframes,
 }
 
 TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 50px; height: 100px; }
       .before { scroll-marker-group: before; }
@@ -551,7 +553,7 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
 }
 
 TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 50px; height: 100px; }
       .scroller::scroll-button(block-start) { content: "u"; }
@@ -651,7 +653,7 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
 }
 
 TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrder) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
       .before { scroll-marker-group: before; }
@@ -714,7 +716,7 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrder) {
 
 TEST_F(FocusControllerTest,
        CarouselWithOnlyScrollMarkersAndChildrenFocusOrder) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
       .before { scroll-marker-group: before; }
@@ -767,7 +769,7 @@ TEST_F(FocusControllerTest,
 }
 
 TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkerGroupFocusOrder) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
       .before { scroll-marker-group: before; }
@@ -801,7 +803,7 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkerGroupFocusOrder) {
 }
 
 TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 50px; height: 100px; }
       .before { scroll-marker-group: before; }

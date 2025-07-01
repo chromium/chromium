@@ -64,7 +64,7 @@ class HighlightsFromPointTest : public HighlightRegistryTest {
 };
 
 TEST_F(HighlightRegistryTest, CompareStacking) {
-  GetDocument().body()->setInnerHTML("1234");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* dom_window = GetDocument().domWindow();
   HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
 
@@ -96,7 +96,7 @@ TEST_F(HighlightRegistryTest, CompareStacking) {
 }
 
 TEST_F(HighlightRegistryTest, ValidateMarkers) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<p>aaaaaaaaaa</p><p>bbbbbbbbbb</p><p>cccccccccc</p>");
   auto* dom_window = GetDocument().domWindow();
   HighlightRegistry* registry = HighlightRegistry::From(*dom_window);
@@ -293,7 +293,7 @@ TEST_F(HighlightRegistryTest, ValidateMarkers) {
 }
 
 TEST_F(HighlightsFromPointTest, HighlightsFromPoint) {
-  GetDocument().body()->setInnerHTML("1234");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
 
   auto* text = To<Text>(GetDocument().body()->firstChild());
   auto* highlight1 = CreateHighlight(text, 0, text, 4);
@@ -381,13 +381,13 @@ TEST_F(HighlightsFromPointTest, HighlightsFromPoint) {
 }
 
 TEST_F(HighlightsFromPointTest, HighlightsFromPointShadowRoot) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="host"></div>
   )HTML");
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML("<div>aaaa</div>");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<div>aaaa</div>");
 
   auto* text = To<Text>(shadow_root.firstChild()->firstChild());
   auto* highlight = CreateHighlight(text, 1, text, 3);

@@ -78,7 +78,7 @@ TEST_F(RangeTest, IntersectsNode) {
 TEST_F(RangeTest, SplitTextNodeRangeWithinText) {
   V8TestingScope scope;
 
-  GetDocument().body()->setInnerHTML("1234");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* old_text = To<Text>(GetDocument().body()->firstChild());
 
   auto* range04 =
@@ -123,7 +123,7 @@ TEST_F(RangeTest, SplitTextNodeRangeWithinText) {
 TEST_F(RangeTest, SplitTextNodeRangeOutsideText) {
   V8TestingScope scope;
 
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<span id=\"outer\">0<span id=\"inner-left\">1</span>SPLITME<span "
       "id=\"inner-right\">2</span>3</span>");
 
@@ -211,7 +211,7 @@ TEST_F(RangeTest, updateOwnerDocumentIfNeeded) {
 
 // Regression test for crbug.com/639184
 TEST_F(RangeTest, NotMarkedValidByIrrelevantTextInsert) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div><span id=span1>foo</span>bar<span id=span2>baz</span></div>");
 
   Element* div = GetDocument().QuerySelector(AtomicString("div"));
@@ -233,7 +233,7 @@ TEST_F(RangeTest, NotMarkedValidByIrrelevantTextInsert) {
 
 // Regression test for crbug.com/639184
 TEST_F(RangeTest, NotMarkedValidByIrrelevantTextRemove) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div><span id=span1>foofoo</span>bar<span id=span2>baz</span></div>");
 
   Element* div = GetDocument().QuerySelector(AtomicString("div"));
@@ -272,7 +272,7 @@ TEST_F(RangeTest, ToPosition) {
 
 TEST_F(RangeTest, BoundingRectMustIndependentFromSelection) {
   LoadAhem();
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div style='font: Ahem; width: 2em;letter-spacing: 5px;'>xx xx </div>");
   Node* const div = GetDocument().QuerySelector(AtomicString("div"));
   // "x^x
@@ -294,7 +294,8 @@ TEST_F(RangeTest, BoundingRectMustIndependentFromSelection) {
 
 // Regression test for crbug.com/681536
 TEST_F(RangeTest, BorderAndTextQuadsWithInputInBetween) {
-  GetDocument().body()->setInnerHTML("<div>foo <u><input> bar</u></div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div>foo <u><input> bar</u></div>");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   Node* foo = GetDocument().QuerySelector(AtomicString("div"))->firstChild();
@@ -352,7 +353,7 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithCombinedText) {
 }
 
 TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterOne) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       body { font-size: 20px; }
       #sample::first-letter { font-size: 500%; }
@@ -398,7 +399,7 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterOne) {
 }
 
 TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterThree) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       body { font-size: 20px; }
       #sample::first-letter { font-size: 500%; }
@@ -460,7 +461,7 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterThree) {
 }
 
 TEST_F(RangeTest, CollapsedRangeGetBorderAndTextQuadsWithFirstLetter) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       body { font-size: 20px; }
       #sample::first-letter { font-size: 500%; }
@@ -514,7 +515,8 @@ TEST_F(RangeTest, CollapsedRangeGetBorderAndTextQuadsWithFirstLetter) {
 }
 
 TEST_F(RangeTest, ContainerNodeRemoval) {
-  GetDocument().body()->setInnerHTML("<p>aaaa</p><p>bbbbbb</p>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<p>aaaa</p><p>bbbbbb</p>");
   auto* node_a = GetDocument().body()->firstChild();
   auto* node_b = node_a->nextSibling();
   auto* text_a = To<Text>(node_a->firstChild());

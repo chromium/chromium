@@ -341,7 +341,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
           << "Unexpected hit test result " << failure_context_pos
           << "  Got element: \""
           << result.InnerElement()
-                 ->outerHTML()
+                 ->GetOuterHTMLString()
                  .StripWhiteSpace()
                  .Left(80)
                  .Ascii()

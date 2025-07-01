@@ -1014,7 +1014,7 @@ TEST_F(TextIteratorTest, PositionInShadowTree) {
   Element& host = *GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML("A<slot name=c></slot>");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("A<slot name=c></slot>");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Element& body = *GetDocument().body();
   Node& text_a = *shadow_root.firstChild();

@@ -633,7 +633,7 @@ TEST_F(VisibleUnitsTest, nextPositionOfTable) {
   Element* table = GetDocument().getElementById(AtomicString("table"));
   // Couldn't include the <br> in the HTML above since the parser would have
   // messed up the structure in the DOM.
-  table->setInnerHTML("<br>", ASSERT_NO_EXCEPTION);
+  table->SetInnerHTMLWithoutTrustedTypes("<br>");
   UpdateAllLifecyclePhasesForTest();
 
   Position position(table, 0);

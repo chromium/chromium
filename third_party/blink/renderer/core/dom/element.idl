@@ -102,9 +102,9 @@ dictionary SetHTMLUnsafeOptions {
     [ImplementedAs=assignedSlotForBinding] readonly attribute HTMLSlotElement? assignedSlot;
 
     // DOM Parsing and Serialization
-    // https://w3c.github.io/DOM-Parsing/#extensions-to-the-element-interface
-    [CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [LegacyNullToEmptyString, StringContext=TrustedHTML] DOMString innerHTML;
-    [CEReactions, RaisesException=Setter] attribute [LegacyNullToEmptyString, StringContext=TrustedHTML] DOMString outerHTML;
+    // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#the-innerhtml-property
+    [CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute (TrustedHTML or [LegacyNullToEmptyString] DOMString) innerHTML;
+    [CEReactions, RaisesException=Setter] attribute (TrustedHTML or [LegacyNullToEmptyString] DOMString) outerHTML;
     [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
 
     // https://github.com/whatwg/html/pull/9538

@@ -3509,7 +3509,7 @@ void HTMLElement::OnRoleAttrChanged(const AttributeModificationParams& params) {
 void dumpInnerHTML(blink::HTMLElement*);
 
 void dumpInnerHTML(blink::HTMLElement* element) {
-  printf("%s\n", element->innerHTML().Ascii().c_str());
+  printf("%s\n", element->GetInnerHTMLString().Ascii().c_str());
 }
 
 #endif

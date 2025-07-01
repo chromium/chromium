@@ -42,7 +42,7 @@ CanvasRenderingContext* CanvasFontCacheTest::Context2D() const {
 
 void CanvasFontCacheTest::SetUp() {
   PageTestBase::SetUp();
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<body><canvas id='c'></canvas></body>");
   UpdateAllLifecyclePhasesForTest();
   canvas_element_ =

@@ -211,7 +211,8 @@ class ImagePaintTimingDetectorTest : public testing::Test,
 
   void SetChildBodyInnerHTML(const String& content) {
     GetChildDocument()->SetBaseURLOverride(KURL("http://test.com"));
-    GetChildDocument()->body()->setInnerHTML(content, ASSERT_NO_EXCEPTION);
+    GetChildDocument()->body()->SetInnerHTMLWithoutTrustedTypes(
+        content, ASSERT_NO_EXCEPTION);
     child_mock_callback_manager_ =
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
     GetChildPaintTimingDetector()
@@ -1293,7 +1294,8 @@ TEST_P(ImagePaintTimingDetectorTest, MAYBE_LargestImagePaint_Detached_Frame) {
   LocalFrame* child_frame = GetChildFrame();
   PaintTimingDetector* child_detector =
       &child_frame->View()->GetPaintTimingDetector();
-  GetDocument().body()->setInnerHTML("", ASSERT_NO_EXCEPTION);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("",
+                                                        ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(child_frame->IsDetached());
 
   // Start tracing, we only want to capture it during the ReportPaintTime.

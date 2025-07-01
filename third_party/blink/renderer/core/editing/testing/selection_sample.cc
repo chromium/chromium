@@ -63,7 +63,8 @@ class Parser final {
   // |SelectionInDOMTree| marked up within |selection_text|.
   SelectionInDOMTree SetSelectionText(HTMLElement* element,
                                       const std::string& selection_text) {
-    element->setInnerHTML(String::FromUTF8(selection_text.c_str()));
+    element->SetInnerHTMLWithoutTrustedTypes(
+        String::FromUTF8(selection_text.c_str()));
     element->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     ConvertTemplatesToShadowRoots(*element);
     Traverse(element);

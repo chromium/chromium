@@ -21,8 +21,8 @@ class PrepopulatedComputedStylePropertyMapTest : public PageTestBase {
   PrepopulatedComputedStylePropertyMapTest() = default;
 
   void SetElementWithStyle(const String& value) {
-    GetDocument().body()->setInnerHTML("<div id='target' style='" + value +
-                                       "'></div>");
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+        "<div id='target' style='" + value + "'></div>");
     UpdateAllLifecyclePhasesForTest();
   }
 

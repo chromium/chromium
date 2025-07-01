@@ -280,7 +280,7 @@ TEST_F(TextSuggestionControllerTest,
   EXPECT_EQ(0u, GetDocument().Markers().MarkersFor(*text).size());
   EXPECT_EQ(
       "<span style=\"color: rgb(255, 0, 0);\">this is a misspelled.</span>",
-      div->innerHTML());
+      div->GetInnerHTMLString());
 }
 
 TEST_F(TextSuggestionControllerTest, DeleteActiveSuggestionRange_DeleteAtEnd) {

@@ -27,8 +27,8 @@ namespace {
 class CustomPropertyTest : public PageTestBase {
  public:
   void SetElementWithStyle(const String& value) {
-    GetDocument().body()->setInnerHTML("<div id='target' style='" + value +
-                                       "'></div>");
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+        "<div id='target' style='" + value + "'></div>");
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -322,7 +322,7 @@ TEST_F(CustomPropertyTest, ValueMode) {
 TEST_F(CustomPropertyTest, SelectionPropertyUseCounted) {
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kSelectionCustomProperty));
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<style>div::selection { --x: black; background-color: var(--x); "
       "}</style> <div id='target'></div>");
   UpdateAllLifecyclePhasesForTest();

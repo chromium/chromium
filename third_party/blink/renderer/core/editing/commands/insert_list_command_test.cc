@@ -51,7 +51,7 @@ TEST_F(InsertListCommandTest, ShouldCleanlyRemoveSpuriousTextNode) {
   // This should not DCHECK.
   EXPECT_TRUE(command->Apply())
       << "The insert ordered list command should have succeeded";
-  EXPECT_EQ("<ol><li>\nd\n</li></ol>", GetDocument().body()->innerHTML());
+  EXPECT_EQ("<ol><li>\nd\n</li></ol>", GetDocument().body()->GetInnerHTMLString());
 }
 
 // Refer https://crbug.com/794356

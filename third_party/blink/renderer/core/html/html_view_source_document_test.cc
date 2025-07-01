@@ -37,7 +37,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource1) {
       </div>
   )HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -92,7 +92,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource2) {
       </textarea>
   )HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -146,7 +146,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource3) {
       </body>
   )HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -213,7 +213,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource4) {
       </BODY>
   )HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -283,7 +283,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource5) {
 
   )HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -329,14 +329,14 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource6) {
       "class=\"html-tag\">&lt;/b&gt;</span>  <span "
       "class=\"html-end-of-file\"></span></td></tr></tbody></table></body></"
       "html>");
-  EXPECT_EQ(GetDocument().documentElement()->outerHTML(),
+  EXPECT_EQ(GetDocument().documentElement()->GetOuterHTMLString(),
             (expected_beginning + many_spaces + expected_ending).c_str());
 }
 
 TEST_F(HTMLViewSourceDocumentTest, ViewSource7) {
   LoadMainResource("1234567");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -360,7 +360,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource8) {
       </html>
   )HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -429,7 +429,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource9) {
       "<!--  --!><script>";
   )HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -462,7 +462,7 @@ TEST_F(HTMLViewSourceDocumentTest, IncompleteToken) {
       But it should be in view-source.
   )HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -486,7 +486,7 @@ TEST_F(HTMLViewSourceDocumentTest, UnfinishedTextarea) {
   LoadMainResource(R"HTML(<textarea>foobar in textarea
   )HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -504,7 +504,7 @@ TEST_F(HTMLViewSourceDocumentTest, UnfinishedScript) {
   LoadMainResource(R"HTML(<script>foobar in script
   )HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -521,7 +521,7 @@ TEST_F(HTMLViewSourceDocumentTest, UnfinishedScript) {
 TEST_F(HTMLViewSourceDocumentTest, Linebreak) {
   LoadMainResource("<html>\nR\n\rN\n\nNR\n\n\rRN\n\r\n</html>");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light dark\"></head>"
       "<body><div class=\"line-gutter-backdrop\"></div>"
       "<form autocomplete=\"off\"><label class=\"line-wrap-control\">"
@@ -559,7 +559,7 @@ TEST_F(HTMLViewSourceDocumentTest, DOMParts) {
   LoadMainResource(
       R"HTML(<div parseparts>{{#}}foo{{/}}<span {{}}>bar</span></div>)HTML");
   EXPECT_EQ(
-      GetDocument().documentElement()->outerHTML(),
+      GetDocument().documentElement()->GetOuterHTMLString(),
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "

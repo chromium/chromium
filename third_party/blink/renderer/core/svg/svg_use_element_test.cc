@@ -18,7 +18,7 @@ using LifecycleUpdateReason = DocumentUpdateReason;
 class SVGUseElementTest : public PageTestBase {};
 
 TEST_F(SVGUseElementTest, InstanceInvalidatedWhenNonAttachedTargetRemoved) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style></style>
     <svg>
         <unknown>
@@ -49,7 +49,7 @@ TEST_F(SVGUseElementTest, InstanceInvalidatedWhenNonAttachedTargetRemoved) {
 
 TEST_F(SVGUseElementTest,
        InstanceInvalidatedWhenNonAttachedTargetMovedInDocument) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <svg>
       <use id="use" href="#path"/>
       <textPath id="path">
@@ -79,7 +79,7 @@ TEST_F(SVGUseElementTest,
 }
 
 TEST_F(SVGUseElementTest, NullInstanceRootWhenNotConnectedToDocument) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <svg>
       <defs>
         <rect id="r" width="100" height="100" fill="blue"/>
@@ -100,7 +100,7 @@ TEST_F(SVGUseElementTest, NullInstanceRootWhenNotConnectedToDocument) {
 }
 
 TEST_F(SVGUseElementTest, NullInstanceRootWhenConnectedToInactiveDocument) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <svg>
       <defs>
         <rect id="r" width="100" height="100" fill="blue"/>
@@ -123,7 +123,7 @@ TEST_F(SVGUseElementTest, NullInstanceRootWhenConnectedToInactiveDocument) {
 }
 
 TEST_F(SVGUseElementTest, NullInstanceRootWhenShadowTreePendingRebuild) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <svg>
       <defs>
         <g id="g"/>

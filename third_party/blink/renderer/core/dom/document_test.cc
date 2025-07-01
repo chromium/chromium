@@ -189,7 +189,8 @@ class DocumentTest : public PageTestBase {
 };
 
 void DocumentTest::SetHtmlInnerHTML(const char* html_content) {
-  GetDocument().documentElement()->setInnerHTML(String::FromUTF8(html_content));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -256,7 +257,8 @@ bool IsDOMException(ScriptState* script_state,
 }  // anonymous namespace
 
 TEST_F(DocumentTest, CreateRangeAdjustedToTreeScopeWithPositionInShadowTree) {
-  GetDocument().body()->setInnerHTML("<div><select><option>012</option></div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div><select><option>012</option></div>");
   Element* const select_element =
       GetDocument().QuerySelector(AtomicString("select"));
   const Position& position =
@@ -528,7 +530,7 @@ TEST_F(DocumentTest, ValidationMessageCleanup) {
 // as it is more expensive than just doing layout.
 TEST_F(DocumentTest,
        EnsurePaintLocationDataValidForNodeCompositingInputsOnlyWhenNecessary) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id='ancestor'>
       <div id='sticky' style='position:sticky;'>
         <div id='stickyChild'></div>
@@ -1376,7 +1378,8 @@ class ParameterizedViewportFitDocumentTest
       html.Append("'>");
     }
 
-    GetDocument().documentElement()->setInnerHTML(html.ReleaseString());
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+        html.ReleaseString());
     UpdateAllLifecyclePhasesForTest();
   }
 };

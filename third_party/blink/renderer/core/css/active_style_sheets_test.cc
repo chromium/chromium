@@ -436,7 +436,7 @@ TEST_F(ApplyRulesetsTest, AddUniversalRuleToDocument) {
 }
 
 TEST_F(ApplyRulesetsTest, AddUniversalRuleToShadowTree) {
-  GetDocument().body()->setInnerHTML("<div id=host></div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<div id=host></div>");
   Element* host = GetElementById("host");
   ASSERT_TRUE(host);
 
@@ -475,7 +475,7 @@ TEST_F(ApplyRulesetsTest, AddFontFaceRuleToDocument) {
 }
 
 TEST_F(ApplyRulesetsTest, AddFontFaceRuleToShadowTree) {
-  GetDocument().body()->setInnerHTML("<div id=host></div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<div id=host></div>");
   Element* host = GetElementById("host");
   ASSERT_TRUE(host);
 
@@ -500,13 +500,14 @@ TEST_F(ApplyRulesetsTest, AddFontFaceRuleToShadowTree) {
 }
 
 TEST_F(ApplyRulesetsTest, RemoveSheetFromShadowTree) {
-  GetDocument().body()->setInnerHTML("<div id=host></div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<div id=host></div>");
   Element* host = GetElementById("host");
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML("<style>::slotted(#dummy){color:pink}</style>");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      "<style>::slotted(#dummy){color:pink}</style>");
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_EQ(1u, shadow_root.StyleSheets().length());

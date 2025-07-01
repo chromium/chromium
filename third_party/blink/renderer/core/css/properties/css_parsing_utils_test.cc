@@ -43,7 +43,7 @@ TEST(CSSParsingUtilsTest, BasicShapeUseCount) {
   Document& document = dummy_page_holder->GetDocument();
   WebFeature feature = WebFeature::kCSSBasicShape;
   EXPECT_FALSE(document.IsUseCounted(feature));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<style>span { shape-outside: circle(); }</style>");
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
@@ -56,7 +56,7 @@ TEST(CSSParsingUtilsTest, OverflowClipUseCount) {
   Document& document = dummy_page_holder->GetDocument();
   WebDXFeature feature = WebDXFeature::kOverflowClip;
   EXPECT_FALSE(document.IsWebDXFeatureCounted(feature));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<style>span { overflow: clip; }</style>");
   EXPECT_TRUE(document.IsWebDXFeatureCounted(feature));
 }

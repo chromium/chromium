@@ -120,8 +120,12 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
 
   void DistributeIfNeeded();
 
-  String innerHTML() const;
-  void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
+  String GetInnerHTMLString() const;
+  void SetInnerHTMLWithoutTrustedTypes(const String&,
+                                       ExceptionState& = ASSERT_NO_EXCEPTION);
+  V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* innerHTML() const;
+  void setInnerHTML(const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML*,
+                    ExceptionState&);
   void setHTMLUnsafe(const String& html, ExceptionState&);
   void setHTMLUnsafe(const String& html,
                      SetHTMLUnsafeOptions*,

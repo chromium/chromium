@@ -270,11 +270,11 @@ TEST_F(ElementRuleCollectorTest, LinkMatchTypeHostContext) {
   ShadowRoot& unvisited_root =
       unvisited_host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
-  visited_root.setInnerHTML(R"HTML(
+  visited_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style id=style></style>
     <div id=div></div>
   )HTML");
-  unvisited_root.setInnerHTML(R"HTML(
+  unvisited_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style id=style></style>
     <div id=div></div>
   )HTML");

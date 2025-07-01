@@ -85,7 +85,7 @@ class FindInPageCallbackReceiver {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(FindInPageTest, FindMatchRectsReturnsCorrectRects) {
-  GetDocument().body()->setInnerHTML("aAaAbBaBbAaAaA");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("aAaAbBaBbAaAaA");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
@@ -115,7 +115,7 @@ TEST_F(FindInPageTest, FindAllAs) {
   for (int i = 0; i < 10'000; ++i)
     str << "a ";
 
-  GetDocument().body()->setInnerHTML(str.str().c_str());
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(str.str().c_str());
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;

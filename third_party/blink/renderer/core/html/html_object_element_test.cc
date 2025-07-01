@@ -28,7 +28,7 @@ class HTMLObjectElementTest : public testing::Test {
 };
 
 TEST_F(HTMLObjectElementTest, FallbackRecalcForReattach) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <object id='obj' data='dummy'></object>
   )HTML");
 

@@ -26,7 +26,8 @@ class WhitespaceAttacherTest : public PageTestBase {
 };
 
 TEST_F(WhitespaceAttacherTest, WhitespaceAfterReattachedBlock) {
-  GetDocument().body()->setInnerHTML("<div id=block></div> ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div id=block></div> ");
   UpdateAllLifecyclePhasesForTest();
 
   Element* div = GetDocument().getElementById(AtomicString("block"));
@@ -45,7 +46,8 @@ TEST_F(WhitespaceAttacherTest, WhitespaceAfterReattachedBlock) {
 }
 
 TEST_F(WhitespaceAttacherTest, WhitespaceAfterReattachedInline) {
-  GetDocument().body()->setInnerHTML("<span id=inline></span> ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span id=inline></span> ");
   UpdateAllLifecyclePhasesForTest();
 
   Element* span = GetDocument().getElementById(AtomicString("inline"));
@@ -64,7 +66,8 @@ TEST_F(WhitespaceAttacherTest, WhitespaceAfterReattachedInline) {
 }
 
 TEST_F(WhitespaceAttacherTest, WhitespaceAfterReattachedWhitespace) {
-  GetDocument().body()->setInnerHTML("<span id=inline></span> <!-- --> ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span id=inline></span> <!-- --> ");
   UpdateAllLifecyclePhasesForTest();
 
   Element* span = GetDocument().getElementById(AtomicString("inline"));
@@ -90,7 +93,8 @@ TEST_F(WhitespaceAttacherTest, WhitespaceAfterReattachedWhitespace) {
 }
 
 TEST_F(WhitespaceAttacherTest, VisitBlockAfterReattachedWhitespace) {
-  GetDocument().body()->setInnerHTML("<div id=block></div> ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div id=block></div> ");
   UpdateAllLifecyclePhasesForTest();
 
   Element* div = GetDocument().getElementById(AtomicString("block"));
@@ -108,7 +112,8 @@ TEST_F(WhitespaceAttacherTest, VisitBlockAfterReattachedWhitespace) {
 }
 
 TEST_F(WhitespaceAttacherTest, VisitInlineAfterReattachedWhitespace) {
-  GetDocument().body()->setInnerHTML("<span id=inline></span> ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span id=inline></span> ");
   UpdateAllLifecyclePhasesForTest();
 
   Element* span = GetDocument().getElementById(AtomicString("inline"));
@@ -129,7 +134,7 @@ TEST_F(WhitespaceAttacherTest, VisitInlineAfterReattachedWhitespace) {
 }
 
 TEST_F(WhitespaceAttacherTest, VisitTextAfterReattachedWhitespace) {
-  GetDocument().body()->setInnerHTML("Text<!-- --> ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("Text<!-- --> ");
   UpdateAllLifecyclePhasesForTest();
 
   auto* text = To<Text>(GetDocument().body()->firstChild());
@@ -152,7 +157,8 @@ TEST_F(WhitespaceAttacherTest, VisitTextAfterReattachedWhitespace) {
 }
 
 TEST_F(WhitespaceAttacherTest, ReattachWhitespaceInsideBlockExitingScope) {
-  GetDocument().body()->setInnerHTML("<div id=block> </div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div id=block> </div>");
   UpdateAllLifecyclePhasesForTest();
 
   Element* div = GetDocument().getElementById(AtomicString("block"));
@@ -173,7 +179,8 @@ TEST_F(WhitespaceAttacherTest, ReattachWhitespaceInsideBlockExitingScope) {
 }
 
 TEST_F(WhitespaceAttacherTest, ReattachWhitespaceInsideInlineExitingScope) {
-  GetDocument().body()->setInnerHTML("<span id=inline> </span>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span id=inline> </span>");
   UpdateAllLifecyclePhasesForTest();
 
   Element* span = GetDocument().getElementById(AtomicString("inline"));
@@ -194,13 +201,14 @@ TEST_F(WhitespaceAttacherTest, ReattachWhitespaceInsideInlineExitingScope) {
 }
 
 TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedBlock) {
-  GetDocument().body()->setInnerHTML("<div id=host> </div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<div id=host> </div>");
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML("<div id=block></div><slot></slot>");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      "<div id=block></div><slot></slot>");
   UpdateAllLifecyclePhasesForTest();
 
   Element* div = shadow_root.getElementById(AtomicString("block"));
@@ -221,13 +229,14 @@ TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedBlock) {
 }
 
 TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedInline) {
-  GetDocument().body()->setInnerHTML("<div id=host> </div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<div id=host> </div>");
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML("<span id=inline></span><slot></slot>");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      "<span id=inline></span><slot></slot>");
   UpdateAllLifecyclePhasesForTest();
 
   Element* span = shadow_root.getElementById(AtomicString("inline"));
@@ -249,7 +258,7 @@ TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedInline) {
 
 TEST_F(WhitespaceAttacherTest,
        WhitespaceInDisplayContentsAfterReattachedBlock) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id=block></div><span style='display:contents'> </span>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -274,7 +283,7 @@ TEST_F(WhitespaceAttacherTest,
 
 TEST_F(WhitespaceAttacherTest,
        WhitespaceInDisplayContentsAfterReattachedInline) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<span id=inline></span><span style='display:contents'> </span>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -299,7 +308,7 @@ TEST_F(WhitespaceAttacherTest,
 
 TEST_F(WhitespaceAttacherTest,
        WhitespaceAfterEmptyDisplayContentsAfterReattachedBlock) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id=block></div><span style='display:contents'></span> ");
   UpdateAllLifecyclePhasesForTest();
 
@@ -325,7 +334,7 @@ TEST_F(WhitespaceAttacherTest,
 
 TEST_F(WhitespaceAttacherTest,
        WhitespaceAfterDisplayContentsWithDisplayNoneChildAfterReattachedBlock) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id=block></div><span style='display:contents'>"
       "<span style='display:none'></span></span> ");
   UpdateAllLifecyclePhasesForTest();
@@ -351,7 +360,7 @@ TEST_F(WhitespaceAttacherTest,
 }
 
 TEST_F(WhitespaceAttacherTest, WhitespaceDeepInsideDisplayContents) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<span id=inline></span><span style='display:contents'>"
       "<span style='display:none'></span>"
       "<span id=inner style='display:contents'> </span></span>");
@@ -377,7 +386,7 @@ TEST_F(WhitespaceAttacherTest, WhitespaceDeepInsideDisplayContents) {
 }
 
 TEST_F(WhitespaceAttacherTest, MultipleDisplayContents) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<span id=inline></span>"
       "<span style='display:contents'></span>"
       "<span style='display:contents'></span>"
@@ -407,13 +416,13 @@ TEST_F(WhitespaceAttacherTest, MultipleDisplayContents) {
 }
 
 TEST_F(WhitespaceAttacherTest, SlottedWhitespaceInsideDisplayContents) {
-  GetDocument().body()->setInnerHTML("<div id=host> </div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<div id=host> </div>");
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML(
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
       "<span id=inline></span>"
       "<div style='display:contents'><slot></slot></div>");
   UpdateAllLifecyclePhasesForTest();
@@ -437,7 +446,8 @@ TEST_F(WhitespaceAttacherTest, SlottedWhitespaceInsideDisplayContents) {
 }
 
 TEST_F(WhitespaceAttacherTest, RemoveInlineBeforeSpace) {
-  GetDocument().body()->setInnerHTML("<span id=inline></span> ");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span id=inline></span> ");
   UpdateAllLifecyclePhasesForTest();
 
   Element* span = GetDocument().getElementById(AtomicString("inline"));
@@ -459,7 +469,7 @@ TEST_F(WhitespaceAttacherTest, RemoveInlineBeforeSpace) {
 }
 
 TEST_F(WhitespaceAttacherTest, RemoveInlineBeforeOutOfFlowBeforeSpace) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<span id=inline></span><div id=float style='float:right'></div> ");
   UpdateAllLifecyclePhasesForTest();
 
@@ -485,7 +495,8 @@ TEST_F(WhitespaceAttacherTest, RemoveInlineBeforeOutOfFlowBeforeSpace) {
 }
 
 TEST_F(WhitespaceAttacherTest, RemoveSpaceBeforeSpace) {
-  GetDocument().body()->setInnerHTML("<span> <!-- --> </span>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span> <!-- --> </span>");
   UpdateAllLifecyclePhasesForTest();
 
   Node* span = GetDocument().body()->firstChild();
@@ -508,7 +519,7 @@ TEST_F(WhitespaceAttacherTest, RemoveSpaceBeforeSpace) {
 }
 
 TEST_F(WhitespaceAttacherTest, CreateSpaceForScrollMarkerGroup) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<span>x</span> <span id=test></span> <span>y</span>"
       "<style>"
       "#test { scroll-marker-group: before; overflow: auto; }"
@@ -540,7 +551,7 @@ TEST_F(WhitespaceAttacherTest, CreateSpaceForScrollMarkerGroup) {
 }
 
 TEST_F(WhitespaceAttacherTest, RemoveSpaceForScrollMarkerGroup) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<span>x</span> <span id=test></span> <span>y</span>"
       "<style>"
       "#test { scroll-marker-group: after; overflow: auto; }"
@@ -578,7 +589,7 @@ TEST_F(WhitespaceAttacherTest, RemoveSpaceForScrollMarkerGroup) {
 }
 
 TEST_F(WhitespaceAttacherTest, RemoveInlineBeforeDisplayContentsWithSpace) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<style>div { display: contents }</style>"
       "<div><span id=inline></span></div>"
       "<div><div><div id=innerdiv> </div></div></div>text");
@@ -600,7 +611,8 @@ TEST_F(WhitespaceAttacherTest, RemoveInlineBeforeDisplayContentsWithSpace) {
 }
 
 TEST_F(WhitespaceAttacherTest, RemoveBlockBeforeSpace) {
-  GetDocument().body()->setInnerHTML("A<div id=block></div> <span>B</span>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "A<div id=block></div> <span>B</span>");
   UpdateAllLifecyclePhasesForTest();
 
   Node* div = GetDocument().getElementById(AtomicString("block"));

@@ -1179,8 +1179,8 @@ TEST_F(AccessibilityTest, SlotIsLineBreakingObject) {
   SetBodyContent(body_content);
   ShadowRoot& shadow_root =
       GetElementById("host")->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML(String::FromUTF8(shadow_content),
-                           ASSERT_NO_EXCEPTION);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(shadow_content),
+                                              ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
   const AXObject* host = GetAXObjectByElementId("host");

@@ -158,7 +158,8 @@ class TextPaintTimingDetectorTest : public testing::Test {
 
   void SetChildBodyInnerHTML(const String& content) {
     GetChildDocument()->SetBaseURLOverride(KURL("http://test.com"));
-    GetChildDocument()->body()->setInnerHTML(content, ASSERT_NO_EXCEPTION);
+    GetChildDocument()->body()->SetInnerHTMLWithoutTrustedTypes(
+        content, ASSERT_NO_EXCEPTION);
     child_frame_mock_callback_manager_ =
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
     GetChildFrameTextPaintTimingDetector().ResetCallbackManager(

@@ -22,7 +22,7 @@ class CanvasRenderingAPIUkmMetricsTest : public PageTestBase {
 
   void SetUp() override {
     PageTestBase::SetUp();
-    GetDocument().documentElement()->setInnerHTML(
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
         "<body><canvas id='c'></canvas></body>");
     canvas_element_ =
         To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));

@@ -48,7 +48,7 @@ TEST_F(UndoCommandTest, RedoWithDOMChanges) {
     )SCRIPT";
   auto& script_element =
       *GetDocument().CreateRawElement(html_names::kScriptTag);
-  script_element.setInnerHTML(script_text);
+  script_element.SetInnerHTMLWithoutTrustedTypes(script_text);
   GetDocument().body()->AppendChild(&script_element);
   UpdateAllLifecyclePhasesForTest();
 
@@ -86,7 +86,7 @@ TEST_F(UndoCommandTest, UndoWithDOMChanges) {
     )SCRIPT";
   auto& script_element =
       *GetDocument().CreateRawElement(html_names::kScriptTag);
-  script_element.setInnerHTML(script_text);
+  script_element.SetInnerHTMLWithoutTrustedTypes(script_text);
   GetDocument().body()->AppendChild(&script_element);
   UpdateAllLifecyclePhasesForTest();
 

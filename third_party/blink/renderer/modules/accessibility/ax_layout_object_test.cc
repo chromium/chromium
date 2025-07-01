@@ -129,7 +129,7 @@ TEST_F(AXLayoutObjectTest, AccessibilityHitTestShadowDOM) {
         "</div>");
     auto* host_a = GetElementById("host_a");
     auto& shadow_a = host_a->AttachShadowRootForTesting(root_type);
-    shadow_a.setInnerHTML(
+    shadow_a.SetInnerHTMLWithoutTrustedTypes(
         "<style>"
         "label {"
         "  display: inline-block;"

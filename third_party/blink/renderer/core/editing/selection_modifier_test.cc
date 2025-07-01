@@ -213,7 +213,7 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML(shadow_content);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(shadow_content);
   UpdateAllLifecyclePhasesForTest();
 
   Element* body = GetDocument().body();

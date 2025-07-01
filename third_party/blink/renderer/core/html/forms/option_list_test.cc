@@ -46,12 +46,12 @@ TEST_F(OptionListTest, Empty) {
 }
 
 TEST_F(OptionListTest, OptionOnly) {
-  Select().setInnerHTML(
+  Select().SetInnerHTMLWithoutTrustedTypes(
       "text<input><option id=o1></option><input><option "
       "id=o2></option><input>");
   auto* div = To<HTMLElement>(
       Select().GetDocument().CreateRawElement(html_names::kDivTag));
-  div->setInnerHTML("<option id=o3></option>");
+  div->SetInnerHTMLWithoutTrustedTypes("<option id=o3></option>");
   Select().AppendChild(div);
   OptionList list = Select().GetOptionList();
   OptionList::Iterator iter = list.begin();
@@ -66,7 +66,7 @@ TEST_F(OptionListTest, OptionOnly) {
 }
 
 TEST_F(OptionListTest, Optgroup) {
-  Select().setInnerHTML(
+  Select().SetInnerHTMLWithoutTrustedTypes(
       "<optgroup><option id=g11></option><option id=g12></option></optgroup>"
       "<optgroup><option id=g21></option></optgroup>"
       "<optgroup></optgroup>"
@@ -87,7 +87,7 @@ TEST_F(OptionListTest, Optgroup) {
   EXPECT_EQ(list.end(), iter);
 
   To<HTMLElement>(Select().firstChild())
-      ->setInnerHTML(
+      ->SetInnerHTMLWithoutTrustedTypes(
           "<optgroup><option id=gg11></option></optgroup>"
           "<option id=g11></option>");
   OptionList list2 = Select().GetOptionList();
@@ -96,7 +96,8 @@ TEST_F(OptionListTest, Optgroup) {
 }
 
 TEST_F(OptionListTest, RetreatBeforeBeginning) {
-  Select().setInnerHTML("<button>button</button><option id=o1>option</option>");
+  Select().SetInnerHTMLWithoutTrustedTypes(
+      "<button>button</button><option id=o1>option</option>");
   OptionList list = Select().GetOptionList();
   OptionList::Iterator it = list.begin();
   EXPECT_EQ("o1", Id(*it));
@@ -106,7 +107,7 @@ TEST_F(OptionListTest, RetreatBeforeBeginning) {
 }
 
 TEST_F(OptionListTest, RetreatOverHRAndOptgroup) {
-  Select().setInnerHTML(R"HTML(
+  Select().SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <option id=o1>one</option>
     <hr>
     <optgroup></optgroup>
@@ -123,7 +124,7 @@ TEST_F(OptionListTest, RetreatOverHRAndOptgroup) {
 }
 
 TEST_F(OptionListTest, RetreatWithOptgroups) {
-  Select().setInnerHTML(R"HTML(
+  Select().SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <optgroup>
       <option id=o1>one</option>
     </optgroup>

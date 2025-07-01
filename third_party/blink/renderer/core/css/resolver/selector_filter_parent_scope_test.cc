@@ -79,7 +79,7 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
 }
 
 TEST_F(SelectorFilterParentScopeTest, RootScope) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div class=x>
       <span id=y></span>
     </div>
@@ -113,7 +113,7 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
 }
 
 TEST_F(SelectorFilterParentScopeTest, ReentrantSVGImageLoading) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       div::before {
         content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"></svg>');
@@ -141,14 +141,14 @@ TEST_F(SelectorFilterParentScopeTest, ReentrantSVGImageLoading) {
   // TODO(crbug.com/337200890): Update this comment with more information and
   // see whether removing this code is possible once this crashbug's root cause
   // has been determined.
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div></div>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
 }
 
 TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       R"HTML(<div ATTR><svg VIewBox></svg></div>)HTML");
   auto* outer = To<Element>(GetDocument().body()->firstChild());
   auto* svg = To<Element>(outer->firstChild());

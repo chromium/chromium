@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedhtml.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
@@ -8185,12 +8186,22 @@ void Element::DispatchFocusOutEvent(
       new_focused_element, source_capabilities));
 }
 
-String Element::innerHTML() const {
+String Element::GetInnerHTMLString() const {
   return CreateMarkup(this, kChildrenOnly);
 }
 
-String Element::outerHTML() const {
+String Element::GetOuterHTMLString() const {
   return CreateMarkup(this);
+}
+
+V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* Element::innerHTML() const {
+  return MakeGarbageCollected<
+      V8UnionStringLegacyNullToEmptyStringOrTrustedHTML>(GetInnerHTMLString());
+}
+
+V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* Element::outerHTML() const {
+  return MakeGarbageCollected<
+      V8UnionStringLegacyNullToEmptyStringOrTrustedHTML>(GetOuterHTMLString());
 }
 
 void Element::SetInnerHTMLInternal(
@@ -8225,15 +8236,26 @@ void Element::SetInnerHTMLInternal(
   }
 }
 
-void Element::setInnerHTML(const String& html,
-                           ExceptionState& exception_state) {
-  probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
+void Element::SetInnerHTMLWithoutTrustedTypes(const String& html,
+                                              ExceptionState& exception_state) {
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kDontParse,
                        ForceHtml::kDontForce, exception_state);
 }
 
-void Element::setOuterHTML(const String& html,
-                           ExceptionState& exception_state) {
+void Element::setInnerHTML(
+    const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* html,
+    ExceptionState& exception_state) {
+  probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
+  String compliant_html = TrustedTypesCheckForHTML(
+      html, GetExecutionContext(), "Element", "innerHTML", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  SetInnerHTMLWithoutTrustedTypes(compliant_html, exception_state);
+}
+
+void Element::SetOuterHTMLWithoutTrustedTypes(const String& html,
+                                              ExceptionState& exception_state) {
   Node* p = parentNode();
   if (!p) {
     exception_state.ThrowDOMException(
@@ -8281,6 +8303,17 @@ void Element::setOuterHTML(const String& html,
       return;
     }
   }
+}
+
+void Element::setOuterHTML(
+    const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* html,
+    ExceptionState& exception_state) {
+  String compliant_html = TrustedTypesCheckForHTML(
+      html, GetExecutionContext(), "Element", "outerHTML", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  SetOuterHTMLWithoutTrustedTypes(compliant_html, exception_state);
 }
 
 // Step 4 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()

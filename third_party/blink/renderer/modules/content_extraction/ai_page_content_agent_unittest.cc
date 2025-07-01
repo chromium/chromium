@@ -603,7 +603,8 @@ TEST_F(AIPageContentAgentTest, IFrameWithContent) {
   auto* iframe_doc = iframe_element->contentDocument();
   ASSERT_TRUE(iframe_doc);
 
-  iframe_doc->body()->setInnerHTML("<body>inside iframe</body>");
+  iframe_doc->body()->SetInnerHTMLWithoutTrustedTypes(
+      "<body>inside iframe</body>");
 
   GetAIPageContent();
 

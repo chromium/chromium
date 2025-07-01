@@ -875,7 +875,7 @@ TEST_F(ContextMenuControllerTest, EditingActionsEnabledInXMLDocument) {
 }
 
 TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
-  GetDocument()->documentElement()->setInnerHTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<input id='sample' type='text' size='5' value='Sample Input Text'>");
 
   Document* document = GetDocument();
@@ -923,7 +923,7 @@ TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
 // Mac has no way to open a context menu based on a keyboard event.
 TEST_F(ContextMenuControllerTest,
        ValidateNonLocatedContextMenuOnLargeImageElement) {
-  GetDocument()->documentElement()->setInnerHTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<img src=\"http://example.test/cat.jpg\" id=\"sample_image\" "
       "width=\"200\" height=\"10000\" tabindex=\"-1\" />");
 
@@ -957,7 +957,7 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestSVGImageElement) {
   Document* document = GetDocument();
 
   ContextMenuAllowedScope context_menu_allowed_scope;
-  document->documentElement()->setInnerHTML(R"HTML(
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <svg>
       <image id="target" href="http://test.png" width="100" height="100"/>
     </svg>
@@ -979,7 +979,7 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestSVGImageElement) {
 }
 
 TEST_F(ContextMenuControllerTest, SelectionRectClipped) {
-  GetDocument()->documentElement()->setInnerHTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<textarea id='text-area' cols=6 rows=2>Sample editable text</textarea>");
 
   Document* document = GetDocument();
@@ -1052,7 +1052,7 @@ TEST_F(ContextMenuControllerTest,
 
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1104,7 +1104,7 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestSucceededPenetrating) {
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1164,7 +1164,7 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestSucceededPenetrating) {
 TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestStandardCanvas) {
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1215,7 +1215,7 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestOpaqueNodeBlocking) {
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1288,7 +1288,7 @@ TEST_F(ContextMenuControllerTest,
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1364,7 +1364,7 @@ TEST_F(ContextMenuControllerTest,
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1432,7 +1432,7 @@ TEST_F(ContextMenuControllerTest,
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1498,7 +1498,7 @@ TEST_F(ContextMenuControllerTest,
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #hiddenancestor {
@@ -1569,7 +1569,7 @@ TEST_F(ContextMenuControllerTest,
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1646,7 +1646,7 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageRetrievalCachedImageFound) {
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1702,7 +1702,7 @@ TEST_F(ContextMenuControllerTest,
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1756,7 +1756,7 @@ TEST_F(ContextMenuControllerTest,
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1816,7 +1816,7 @@ TEST_F(ContextMenuControllerTest,
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <style>
         #target {
@@ -1940,7 +1940,7 @@ TEST_F(ContextMenuControllerTest, AnnotationType) {
 }
 
 TEST_F(ContextMenuControllerTest, SelectAllEnabledForEditContext) {
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <div id=target>123</div>
     </body>
@@ -1948,7 +1948,7 @@ TEST_F(ContextMenuControllerTest, SelectAllEnabledForEditContext) {
   Element* target = GetDocument()->getElementById(AtomicString("target"));
   // Attach `EditContext` to the target.
   Element* script = GetDocument()->CreateRawElement(html_names::kScriptTag);
-  script->setInnerHTML(
+  script->SetInnerHTMLWithoutTrustedTypes(
       "document.getElementById('target').editContext = new EditContext()");
   GetDocument()->body()->AppendChild(script);
   target->Focus();
@@ -1965,7 +1965,7 @@ TEST_F(ContextMenuControllerTest,
        KeyboardTriggeredContextMenuPreservesSelection) {
   ContextMenuAllowedScope context_menu_allowed_scope;
 
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <p id='first'>This is a sample text."</p>
     </body>
@@ -2232,7 +2232,7 @@ TEST_F(ContextMenuControllerTest, AttributionSrc_DataHostLifetime) {
 // Test that if text selection contains unselectable content, the opened context
 // menu should omit the unselectable content.
 TEST_F(ContextMenuControllerTest, SelectUnselectableContent) {
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body>
       <p id="test">A <span style="user-select:none;">test_none <span>test_span
         </span><span style="user-select:all;">test_all</span></span> B</p>

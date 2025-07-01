@@ -73,7 +73,7 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
       Document::CreateForTest(execution_context.GetExecutionContext());
   auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document);
   document->AppendChild(html);
-  document->documentElement()->setInnerHTML(
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<body><style>span::before { content: 'X' }</style><span></span></body>");
 
   HeapVector<CSSSelector> arena;
@@ -106,8 +106,8 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document);
   document->AppendChild(html);
-  document->documentElement()->setInnerHTML(
-      "<body><p></p><p id=last></p></body>", ASSERT_NO_EXCEPTION);
+  document->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<body><p></p><p id=last></p></body>");
 
   document->body()->BeginParsingChildren();
 
@@ -346,7 +346,7 @@ TEST(SelectorQueryTest, DisconnectedSubtree) {
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   Element* scope = document->CreateRawElement(html_names::kDivTag);
-  scope->setInnerHTML(R"HTML(
+  scope->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <section>
       <span id=first>
         <span id=A class=A></span>
@@ -378,7 +378,7 @@ TEST(SelectorQueryTest, DisconnectedTreeScope) {
   Element* host = document->CreateRawElement(html_names::kDivTag);
   ShadowRoot& shadowRoot =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadowRoot.setInnerHTML(R"HTML(
+  shadowRoot.SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <section>
       <span id=first>
         <span id=A class=A></span>

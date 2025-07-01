@@ -1163,7 +1163,7 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
 
   Element* locker = GetDocument().getElementById(AtomicString("locker"));
   locker->setAttribute(html_names::kClassAttr, AtomicString("locked"));
-  locker->setInnerHTML("<span>Visible?</span>");
+  locker->SetInnerHTMLWithoutTrustedTypes("<span>Visible?</span>");
 
   UpdateAllLifecyclePhasesForTest();
 

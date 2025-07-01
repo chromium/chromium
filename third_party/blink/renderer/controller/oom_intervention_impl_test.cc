@@ -193,9 +193,13 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad("about:blank");
   Page* page = web_view->MainFrameImpl()->GetFrame()->GetPage();
 
-  web_view->MainFrameImpl()->GetFrame()->GetDocument()->body()->setInnerHTML(
-      "<iframe name='ad' src='data:text/html,'></iframe><iframe "
-      "name='non-ad' src='data:text/html,'>");
+  web_view->MainFrameImpl()
+      ->GetFrame()
+      ->GetDocument()
+      ->body()
+      ->SetInnerHTMLWithoutTrustedTypes(
+          "<iframe name='ad' src='data:text/html,'></iframe><iframe "
+          "name='non-ad' src='data:text/html,'>");
 
   WebFrame* ad_iframe = web_view_helper_.LocalMainFrame()->FindFrameByName(
       WebString::FromUTF8("ad"));

@@ -29,7 +29,7 @@ class ProgressShadowElementTest : public testing::Test {
 };
 
 TEST_F(ProgressShadowElementTest, LayoutObjectIsNeeded) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <progress id='prog' style='-webkit-appearance:none' />
   )HTML");
 

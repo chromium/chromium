@@ -69,7 +69,7 @@ class WebFormControlElementTest : public PageTestBase {
 
 // Tests that resetting a form clears the `user_has_edited_the_field_` state.
 TEST_F(WebFormControlElementTest, ResetDocumentClearsEditedState) {
-  GetDocument().documentElement()->setInnerHTML(R"(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"(
     <body>
       <form id="f">
         <input id="text_id">
@@ -104,7 +104,8 @@ class WebFormControlElementSetAutofillValueTest
       public testing::WithParamInterface<const char*> {
  protected:
   void InsertHTML() {
-    GetDocument().documentElement()->setInnerHTML(GetParam());
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+        GetParam());
   }
 
   WebFormControlElement TestElement() {
@@ -141,7 +142,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(WebFormControlElementTest,
        SetAutofillAndSuggestedValueMaxLengthForInput) {
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<input type='text' id=testElement maxlength='5'>");
 
   auto element = WebFormControlElement(To<HTMLFormControlElement>(
@@ -156,7 +157,7 @@ TEST_F(WebFormControlElementTest,
 
 TEST_F(WebFormControlElementTest,
        SetAutofillAndSuggestedValueMaxLengthForTextarea) {
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<textarea id=testElement maxlength='5'></textarea>");
 
   auto element = WebFormControlElement(To<HTMLFormControlElement>(

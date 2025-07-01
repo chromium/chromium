@@ -94,7 +94,7 @@ TEST_F(CompositeEditCommandTest, insertNodeBefore) {
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("foo<b></b>", div->innerHTML());
+  EXPECT_EQ("foo<b></b>", div->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest, insertNodeBeforeInUneditable) {
@@ -119,7 +119,7 @@ TEST_F(CompositeEditCommandTest, insertNodeBeforeDisconnectedNode) {
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("<b></b>", div->innerHTML())
+  EXPECT_EQ("<b></b>", div->GetInnerHTMLString())
       << "InsertNodeBeforeCommand does nothing for disconnected node";
 }
 
@@ -134,7 +134,7 @@ TEST_F(CompositeEditCommandTest, insertNodeBeforeWithDirtyLayoutTree) {
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("foo<b></b>", div->innerHTML());
+  EXPECT_EQ("foo<b></b>", div->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -156,7 +156,7 @@ TEST_F(CompositeEditCommandTest,
       "<div><br></div>"
       "<style>div{-webkit-user-modify:read-only;user-select:none;}</style>"
       "foo",
-      body->innerHTML());
+      body->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -173,7 +173,7 @@ TEST_F(CompositeEditCommandTest,
   sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<object contenteditable=\"\"><div><input></div></object>",
-            GetDocument().body()->innerHTML());
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -190,7 +190,7 @@ TEST_F(CompositeEditCommandTest,
   sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<div></div><span></span><button><meter></meter></button>",
-            GetDocument().body()->innerHTML());
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest, InsertNodeOnDisconnectedParent) {
@@ -237,7 +237,7 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithBr) {
   sample.MoveParagraphs(start, end, destination, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<ol><li><span><br></span></li></ol><br>",
-            GetDocument().body()->innerHTML());
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest, MoveParagraphsWithInlineBlocks) {
@@ -267,7 +267,7 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithInlineBlocks) {
   sample.MoveParagraphs(start, end, destination, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<div><span></span><span></span> </div><br>",
-            GetDocument().body()->innerHTML());
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest, MoveParagraphsWithTableAndCaption) {
@@ -294,7 +294,7 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithTableAndCaption) {
   sample.MoveParagraphs(start, end, destination, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<table><caption><div><input></div></caption></table>",
-            GetDocument().body()->innerHTML());
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -310,7 +310,8 @@ TEST_F(CompositeEditCommandTest,
   sample.MoveParagraphContentsToNewBlockIfNecessary(Position(body, 0),
                                                     &editing_state);
   EXPECT_TRUE(editing_state.IsAborted());
-  EXPECT_EQ("<div contenteditable=\"false\"><br></div>", body->innerHTML());
+  EXPECT_EQ("<div contenteditable=\"false\"><br></div>",
+            body->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -327,7 +328,7 @@ TEST_F(CompositeEditCommandTest,
   sample.MoveParagraphContentsToNewBlockIfNecessary(Position(body, 0),
                                                     &editing_state);
   EXPECT_TRUE(editing_state.IsAborted());
-  EXPECT_EQ("<div><br></div><input>", body->innerHTML());
+  EXPECT_EQ("<div><br></div><input>", body->GetInnerHTMLString());
 }
 
 }  // namespace blink

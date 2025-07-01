@@ -490,8 +490,8 @@ TEST_F(HTMLSelectElementTest, SetRecalcListItemsByOptgroupRemoval) {
       "<select><optgroup><option>sub1</option><option>sub2</option></"
       "optgroup></select>");
   auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
-  select->setInnerHTML("");
-  // PASS if setInnerHTML didn't have a check failure.
+  select->SetInnerHTMLWithoutTrustedTypes("");
+  // PASS if SetInnerHTMLWithoutTrustedTypes didn't have a check failure.
 }
 
 TEST_F(HTMLSelectElementTest, ScrollToOptionAfterLayoutCrash) {

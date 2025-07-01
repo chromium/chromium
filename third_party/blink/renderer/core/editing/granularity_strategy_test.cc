@@ -43,7 +43,7 @@ class GranularityStrategyTest : public EditingTestBase {
   void SetUp() override;
 
   Text* AppendTextNode(const String& data);
-  void SetInnerHTML(const char*);
+  void SetInnerHTMLWithoutTrustedTypes(const char*);
   // Parses the text node, appending the info to letter_pos_ and word_middles_.
   void ParseText(Text*);
   void ParseText(const TextNodeVector&);
@@ -91,8 +91,10 @@ Text* GranularityStrategyTest::AppendTextNode(const String& data) {
   return text;
 }
 
-void GranularityStrategyTest::SetInnerHTML(const char* html_content) {
-  GetDocument().documentElement()->setInnerHTML(String::FromUTF8(html_content));
+void GranularityStrategyTest::SetInnerHTMLWithoutTrustedTypes(
+    const char* html_content) {
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -138,7 +140,7 @@ void GranularityStrategyTest::ParseText(const TextNodeVector& text_nodes) {
 }
 
 Text* GranularityStrategyTest::SetupTranslateZ(String str) {
-  SetInnerHTML(
+  SetInnerHTMLWithoutTrustedTypes(
       "<html>"
       "<head>"
       "<style>"
@@ -163,7 +165,7 @@ Text* GranularityStrategyTest::SetupTranslateZ(String str) {
 }
 
 Text* GranularityStrategyTest::SetupTransform(String str) {
-  SetInnerHTML(
+  SetInnerHTMLWithoutTrustedTypes(
       "<html>"
       "<head>"
       "<style>"
@@ -188,7 +190,7 @@ Text* GranularityStrategyTest::SetupTransform(String str) {
 }
 
 Text* GranularityStrategyTest::SetupRotate(String str) {
-  SetInnerHTML(
+  SetInnerHTMLWithoutTrustedTypes(
       "<html>"
       "<head>"
       "<style>"
@@ -263,7 +265,7 @@ void GranularityStrategyTest::SetupVerticalAlign(String str1,
                                                  String str3,
                                                  wtf_size_t sel_begin,
                                                  wtf_size_t sel_end) {
-  SetInnerHTML(
+  SetInnerHTMLWithoutTrustedTypes(
       "<html>"
       "<head>"
       "<style>"
@@ -285,7 +287,7 @@ void GranularityStrategyTest::SetupFontSize(String str1,
                                             String str3,
                                             wtf_size_t sel_begin,
                                             wtf_size_t sel_end) {
-  SetInnerHTML(
+  SetInnerHTMLWithoutTrustedTypes(
       "<html>"
       "<head>"
       "<style>"
@@ -699,13 +701,13 @@ TEST_F(GranularityStrategyTest, DirectionSwitchStartOnBoundary) {
 TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForCharacter) {
   GetDummyPageHolder().GetFrame().GetSettings()->SetSelectionStrategy(
       SelectionStrategy::kCharacter);
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id=host></div><div id=sample>ab</div>");
   // Simulate VIDEO element which has a RANGE as slider of video time.
   Element* const host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML("<input type=range>");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<input type=range>");
   Element* const sample = GetDocument().getElementById(AtomicString("sample"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   const SelectionInDOMTree& selection_in_dom_tree =
@@ -737,13 +739,13 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForCharacter) {
 
 // For http://crbug.com/704529
 TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForDirectional) {
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<div id=host></div><div id=sample>ab</div>");
   // Simulate VIDEO element which has a RANGE as slider of video time.
   Element* const host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.setInnerHTML("<input type=range>");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<input type=range>");
   Element* const sample = GetDocument().getElementById(AtomicString("sample"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   const SelectionInDOMTree& selection_in_dom_tree =

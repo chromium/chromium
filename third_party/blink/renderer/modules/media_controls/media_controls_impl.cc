@@ -704,9 +704,9 @@ void MediaControlsImpl::InitializeControls() {
 
 void MediaControlsImpl::PopulatePanel() {
   // Clear the panels.
-  panel_->setInnerHTML("");
+  panel_->SetInnerHTMLWithoutTrustedTypes("");
   if (media_button_panel_)
-    media_button_panel_->setInnerHTML("");
+    media_button_panel_->SetInnerHTMLWithoutTrustedTypes("");
 
   Element* button_panel = panel_;
   if (ShouldShowVideoControls()) {

@@ -1182,7 +1182,7 @@ TEST_F(InlineNodeTest, RemoveInlineNodeDataIfBlockBecomesEmpty2) {
   SetupHtml("container", "<div id=container><b><i>foo</i></b></div>");
   ASSERT_TRUE(layout_block_flow_->GetInlineNodeData());
 
-  GetElementById("container")->setInnerHTML("");
+  GetElementById("container")->SetInnerHTMLWithoutTrustedTypes("");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(layout_block_flow_->GetInlineNodeData());

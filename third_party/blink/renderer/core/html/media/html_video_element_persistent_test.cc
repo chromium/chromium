@@ -39,7 +39,7 @@ class HTMLVideoElementPersistentTest : public PageTestBase {
   void SetUp() override {
     chrome_client_ = MakeGarbageCollected<FullscreenMockChromeClient>();
     PageTestBase::SetupPageWithClients(chrome_client_);
-    GetDocument().body()->setInnerHTML(
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
         "<body><div><video></video></div></body>");
   }
 

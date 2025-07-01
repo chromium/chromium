@@ -24,7 +24,7 @@ class HTMLLinkElementSimTest : public SimTest {};
 // This tests that we should ignore empty string value
 // in href attribute value of the link element.
 TEST_F(HTMLLinkElementTest, EmptyHrefAttribute) {
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<head>"
       "<link rel=\"icon\" type=\"image/ico\" href=\"\" />"
       "</head>");
@@ -35,14 +35,14 @@ TEST_F(HTMLLinkElementTest, EmptyHrefAttribute) {
 // This tests whether Web Monetization counter is properly triggered.
 TEST_F(HTMLLinkElementTest, WebMonetizationCounter) {
   // A <link rel="icon"> is not counted.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="icon" type="image/ico" href="">
   )HTML");
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kHTMLLinkElementMonetization));
 
   // A <link rel="monetization"> is counted.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="monetization">
   )HTML");
   EXPECT_TRUE(
@@ -89,13 +89,13 @@ TEST_F(HTMLLinkElementSimTest, WebMonetizationNotCountedInSubFrame) {
 // This tests whether the Canonical counter is properly triggered.
 TEST_F(HTMLLinkElementTest, CanonicalCounter) {
   // A <link rel="icon"> is not counted.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="icon" type="image/ico" href="">
   )HTML");
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelCanonical));
 
   // A <link rel="canonoical"> is counted.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="canonical" href="">
   )HTML");
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelCanonical));
@@ -136,13 +136,13 @@ TEST_F(HTMLLinkElementSimTest, CanonicalNotCountedInSubFrame) {
 // This tests whether `rel=privacy-policy` is properly counted.
 TEST_F(HTMLLinkElementTest, PrivacyPolicyCounter) {
   // <link rel="privacy-policy"> is not counted when absent
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="not-privacy-policy" href="/">
   )HTML");
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelPrivacyPolicy));
 
   // <link rel="privacy-policy"> is counted when present.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="privacy-policy" href="/">
   )HTML");
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelPrivacyPolicy));
@@ -151,13 +151,13 @@ TEST_F(HTMLLinkElementTest, PrivacyPolicyCounter) {
 // This tests whether `rel=terms-of-service` is properly counted.
 TEST_F(HTMLLinkElementTest, TermsOfServiceCounter) {
   // <link rel="terms-of-service"> is not counted when absent
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="not-terms-of-service" href="/">
   )HTML");
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelTermsOfService));
 
   // <link rel="terms-of-service"> is counted when present.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="terms-of-service" href="/">
   )HTML");
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelTermsOfService));
@@ -166,7 +166,7 @@ TEST_F(HTMLLinkElementTest, TermsOfServiceCounter) {
 // This tests whether `rel=facilitated-payment` is properly counted.
 TEST_F(HTMLLinkElementTest, PaymentCounter) {
   // <link rel="facilitated-payment"> is not counted when absent.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="not-facilitated-payment" href="https://example.com/">
   )HTML");
   EXPECT_FALSE(
@@ -174,14 +174,14 @@ TEST_F(HTMLLinkElementTest, PaymentCounter) {
 
   // <link rel="facilitated-payment"> is not counted when <link rel="payment">
   // is present.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="payment" href="https://example.com/">
   )HTML");
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kLinkRelFacilitatedPayment));
 
   // <link rel="facilitated-payment"> is counted when present.
-  GetDocument().head()->setInnerHTML(R"HTML(
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <link rel="facilitated-payment" href="https://example.com/">
   )HTML");
   EXPECT_TRUE(

@@ -117,7 +117,7 @@ TEST(CSSStyleDeclarationTest, QuietlyRemoveProperty) {
   test::TaskEnvironment task_environment;
   auto holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = holder->GetDocument();
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<style>div {color: green;}</style>");
   document.View()->UpdateAllLifecyclePhasesForTest();
   document.UpdateStyleAndLayoutTree();

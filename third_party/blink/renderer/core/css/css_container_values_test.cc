@@ -17,7 +17,7 @@ class CSSContainerValuesTest : public PageTestBase {
  public:
   void SetUp() override {
     PageTestBase::SetUp();
-    GetDocument().body()->setInnerHTML(R"HTML(
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <div id="container"></div>
     )HTML");
   }

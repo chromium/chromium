@@ -42,7 +42,7 @@ class RuleFeatureSetTest : public testing::Test {
     html->AppendChild(MakeGarbageCollected<HTMLBodyElement>(*document_));
     document_->AppendChild(html);
 
-    document_->body()->setInnerHTML("<b><i></i></b>");
+    document_->body()->SetInnerHTMLWithoutTrustedTypes("<b><i></i></b>");
   }
 
   SelectorPreMatch CollectFeatures(

@@ -213,7 +213,7 @@ class AXSelectionDeserializer final {
   // parts of the tree indicated by the selection markers in the snippet.
   const Vector<AXSelection> Deserialize(const std::string_view& html_snippet,
                                         HTMLElement& element) {
-    element.setInnerHTML(String::FromUTF8(html_snippet));
+    element.SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(html_snippet));
     element.GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     AXObject* root = ax_object_cache_->Get(&element);
     if (!root || root->IsDetached())

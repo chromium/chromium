@@ -76,7 +76,8 @@ TEST_F(ElementTest,
 
   // Insert a new <div> above the sticky. This will dirty layout and invalidate
   // the sticky constraints.
-  writer->setInnerHTML("<div style='height: 100px; width: 700px;'></div>");
+  writer->SetInnerHTMLWithoutTrustedTypes(
+      "<div style='height: 100px; width: 700px;'></div>");
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             document.Lifecycle().GetState());
 
@@ -116,7 +117,8 @@ TEST_F(ElementTest, OffsetTopAndLeftCorrectForStickyElementsAfterInsertion) {
 
   // Insert a new <div> above the sticky. This will dirty layout and invalidate
   // the sticky constraints.
-  writer->setInnerHTML("<div style='height: 100px; width: 700px;'></div>");
+  writer->SetInnerHTMLWithoutTrustedTypes(
+      "<div style='height: 100px; width: 700px;'></div>");
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             document.Lifecycle().GetState());
 
@@ -126,7 +128,8 @@ TEST_F(ElementTest, OffsetTopAndLeftCorrectForStickyElementsAfterInsertion) {
   EXPECT_EQ(DocumentLifecycle::kLayoutClean, document.Lifecycle().GetState());
 
   // Dirty layout again, since |OffsetTop| will have cleaned it.
-  writer->setInnerHTML("<div style='height: 100px; width: 700px;'></div>");
+  writer->SetInnerHTMLWithoutTrustedTypes(
+      "<div style='height: 100px; width: 700px;'></div>");
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             document.Lifecycle().GetState());
 
@@ -164,7 +167,8 @@ TEST_F(ElementTest, BoundsInWidgetCorrectForStickyElementsAfterInsertion) {
 
   // Insert a new <div> above the sticky. This will dirty layout and invalidate
   // the sticky constraints.
-  writer->setInnerHTML("<div style='height: 100px; width: 700px;'></div>");
+  writer->SetInnerHTMLWithoutTrustedTypes(
+      "<div style='height: 100px; width: 700px;'></div>");
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             document.Lifecycle().GetState());
 
@@ -1147,7 +1151,7 @@ TEST_F(ElementTest, MixStyleAttributeAndCSSOMChanges) {
 }
 
 TEST_F(ElementTest, GetPseudoElement) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
     #before::before { content:"a"; }
     #after::after { content:"a"; }
@@ -1185,7 +1189,7 @@ TEST_F(ElementTest, GetPseudoElement) {
 }
 
 TEST_F(ElementTest, ColumnPseudoElements) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style id="test-style">
     #test::column { content: "*"; opacity: 0.5; }
     #test::column::scroll-marker { content: "+"; opacity: 0.3; }
@@ -1236,14 +1240,14 @@ TEST_F(ElementTest, ColumnPseudoElements) {
   EXPECT_EQ(element->GetColumnPseudoElements()->size(), 3u);
 
   Element* style = GetElementById("test-style");
-  style->setInnerHTML("");
+  style->SetInnerHTMLWithoutTrustedTypes("");
   GetDocument().UpdateStyleAndLayoutTree();
 
   EXPECT_EQ(element->GetColumnPseudoElements()->size(), 0u);
 }
 
 TEST_F(ElementTest, TheCheckMarkPseudoElement) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .checked::checkmark {
         content: "*";
@@ -1305,7 +1309,7 @@ TEST_F(ElementTest, TheCheckMarkPseudoElement) {
 }
 
 TEST_F(ElementTest, ThePickerIconPseudoElement) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #a-div::picker-icon {
         content: "*";
@@ -1339,7 +1343,7 @@ TEST_F(ElementTest, ThePickerIconPseudoElement) {
 }
 
 TEST_F(ElementTest, GenerateScrollMarkerGroup) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style id="test-style">
       #scroller {
         scroll-marker-group: before;
@@ -1365,7 +1369,7 @@ TEST_F(ElementTest, GenerateScrollMarkerGroup) {
 
 TEST_F(ElementTest, NestedMarkerInheritsFromPseudoParent) {
   ScopedCSSNestedPseudoElementsForTest feature(false);
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
     li {
       list-style-type: none;

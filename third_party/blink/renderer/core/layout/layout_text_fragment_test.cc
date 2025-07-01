@@ -15,7 +15,7 @@ class LayoutTextFragmentTest : public RenderingTest {
  protected:
   void SetUp() override {
     RenderingTest::SetUp();
-    GetDocument().head()->setInnerHTML(
+    GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(
         "<style>#target::first-letter{color:red}</style>");
   }
 

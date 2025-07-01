@@ -17,7 +17,7 @@ namespace blink {
 class CustomHighlightMarkerTest : public PageTestBase {};
 
 TEST_F(CustomHighlightMarkerTest, CreationAndProperties) {
-  GetDocument().body()->setInnerHTML("1234");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* text = To<Text>(GetDocument().body()->firstChild());
   auto* range04 = MakeGarbageCollected<Range>(GetDocument(), text, 0, text, 4);
   HeapVector<Member<AbstractRange>> range_vector;

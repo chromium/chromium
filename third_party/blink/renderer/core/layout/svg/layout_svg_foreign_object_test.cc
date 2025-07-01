@@ -480,7 +480,7 @@ TEST_F(LayoutSVGForeignObjectTest, ZoomChangesInvalidatePaintProperties) {
 }
 
 TEST_F(LayoutSVGForeignObjectTest, DisplayLocked) {
-  GetDocument().body()->setInnerHTML(R"HTML(<style>
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(<style>
 foreignObject {
   content-visibility: auto;
 }

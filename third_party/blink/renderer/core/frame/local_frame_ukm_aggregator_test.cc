@@ -874,7 +874,7 @@ TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
           GetDocument().getElementById(AtomicString("frame")))
           ->contentDocument();
   Element* target = subframe_document->getElementById(AtomicString("target"));
-  target->setInnerHTML("test1");
+  target->SetInnerHTMLWithoutTrustedTypes("test1");
 
   // Do a frame that reaches FCP.
   Compositor().BeginFrame();
@@ -883,7 +883,7 @@ TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 0);
 
   // Make a change to the subframe that causes another frame.
-  target->setInnerHTML("test2");
+  target->SetInnerHTMLWithoutTrustedTypes("test2");
 
   // Do a post-FCP frame.
   Compositor().BeginFrame();
@@ -1197,7 +1197,7 @@ TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
 
   // Cause FCP on the next frame.
   Element* target = GetDocument().getElementById(AtomicString("card"));
-  target->setInnerHTML("hello world");
+  target->SetInnerHTMLWithoutTrustedTypes("hello world");
 
   Compositor().BeginFrame();
 

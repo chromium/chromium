@@ -58,7 +58,7 @@ class StyleScopeDataTest : public PageTestBase {
 };
 
 TEST_F(StyleScopeDataTest, NoScopes) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b></div>
   )HTML");
@@ -68,7 +68,7 @@ TEST_F(StyleScopeDataTest, NoScopes) {
 }
 
 TEST_F(StyleScopeDataTest, NotImplicitScope) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b>
       <style>
@@ -84,7 +84,7 @@ TEST_F(StyleScopeDataTest, NotImplicitScope) {
 }
 
 TEST_F(StyleScopeDataTest, Trivial) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b>
       <style>
@@ -100,7 +100,7 @@ TEST_F(StyleScopeDataTest, Trivial) {
 }
 
 TEST_F(StyleScopeDataTest, ExtraLeadingStyleRule) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b>
       <style>
@@ -117,7 +117,7 @@ TEST_F(StyleScopeDataTest, ExtraLeadingStyleRule) {
 }
 
 TEST_F(StyleScopeDataTest, ExtraTrailingStyleRule) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b>
       <style>
@@ -134,7 +134,7 @@ TEST_F(StyleScopeDataTest, ExtraTrailingStyleRule) {
 }
 
 TEST_F(StyleScopeDataTest, TwoInOne) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b>
       <style>
@@ -153,7 +153,7 @@ TEST_F(StyleScopeDataTest, TwoInOne) {
 }
 
 TEST_F(StyleScopeDataTest, TwoInOneNested) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b>
       <style>
@@ -173,7 +173,7 @@ TEST_F(StyleScopeDataTest, TwoInOneNested) {
 }
 
 TEST_F(StyleScopeDataTest, NestedNonImplicitOuter) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b>
       <style>
@@ -193,7 +193,7 @@ TEST_F(StyleScopeDataTest, NestedNonImplicitOuter) {
 }
 
 TEST_F(StyleScopeDataTest, DistinctContent) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a>
       <style>
         @scope {
@@ -218,7 +218,7 @@ TEST_F(StyleScopeDataTest, DistinctContent) {
 }
 
 TEST_F(StyleScopeDataTest, SharedContent) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a>
       <style>
         @scope {
@@ -256,7 +256,7 @@ TEST_F(StyleScopeDataTest, SharedContent) {
 }
 
 TEST_F(StyleScopeDataTest, Tree) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a1></div>
     <div id=a2>
       <div id=b1></div>
@@ -292,7 +292,7 @@ TEST_F(StyleScopeDataTest, Tree) {
 // Mutations
 
 TEST_F(StyleScopeDataTest, TrivialInsertRemove) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b></div>
   )HTML");
@@ -318,7 +318,7 @@ TEST_F(StyleScopeDataTest, TrivialInsertRemove) {
 }
 
 TEST_F(StyleScopeDataTest, DoubleInsertRemove) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b></div>
   )HTML");
@@ -360,7 +360,7 @@ TEST_F(StyleScopeDataTest, DoubleInsertRemove) {
 }
 
 TEST_F(StyleScopeDataTest, MutateSheet) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=a></div>
     <div id=b>
       <style id=s></style>

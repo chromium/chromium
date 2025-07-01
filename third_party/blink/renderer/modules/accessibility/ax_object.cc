@@ -2181,7 +2181,7 @@ void AXObject::SerializeMathContent(ui::AXNodeData* node_data) const {
       node_data->role == ax::mojom::blink::Role::kMathMLMath) {
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kMathContent,
-        element->innerHTML(), kMaxStaticTextLength);
+        element->GetInnerHTMLString(), kMaxStaticTextLength);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 }

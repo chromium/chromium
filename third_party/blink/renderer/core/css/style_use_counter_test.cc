@@ -19,10 +19,11 @@ bool IsCountedOnParsing(std::variant<WebFeature, WebDXFeature> feature,
                         String css) {
   auto holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = holder->GetDocument();
-  document.documentElement()->setInnerHTML("<style id=style></style>");
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<style id=style></style>");
   Element* style = document.getElementById(AtomicString("style"));
   CHECK(style);
-  style->setInnerHTML(css);
+  style->SetInnerHTMLWithoutTrustedTypes(css);
   document.View()->UpdateAllLifecyclePhasesForTest();
   if (WebFeature* web_feature = std::get_if<WebFeature>(&feature)) {
     return document.IsUseCounted(*web_feature);

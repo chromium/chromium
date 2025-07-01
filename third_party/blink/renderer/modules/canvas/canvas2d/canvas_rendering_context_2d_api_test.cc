@@ -115,7 +115,7 @@ void CanvasRenderingContext2DAPITest::CreateContext(OpacityMode opacity_mode) {
 
 void CanvasRenderingContext2DAPITest::SetUp() {
   PageTestBase::SetUp();
-  GetDocument().documentElement()->setInnerHTML(
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<body><canvas id='c'></canvas></body>");
   UpdateAllLifecyclePhasesForTest();
   canvas_element_ =
@@ -565,7 +565,7 @@ TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerDrawMesh) {
 }
 
 void ResetCanvasForAccessibilityRectTest(Document& document) {
-  document.documentElement()->setInnerHTML(R"HTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <canvas id='canvas' style='position:absolute; top:0px; left:0px;
     padding:10px; margin:5px;'>
     <button id='button'></button></canvas>

@@ -16,7 +16,8 @@ class ComputedStyleCSSValueMappingTest : public PageTestBase {};
 TEST_F(ComputedStyleCSSValueMappingTest, GetVariablesOnOldStyle) {
   using css_test_helpers::RegisterProperty;
 
-  GetDocument().body()->setInnerHTML("<div id=target style='--x:red'></div>");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div id=target style='--x:red'></div>");
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById(AtomicString("target"));

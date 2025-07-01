@@ -490,7 +490,7 @@ TEST_F(TextAutosizerTest, ChangingSuperClusterFirstText) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* long_text_element = GetElementById("longText");
-  long_text_element->setInnerHTML(
+  long_text_element->SetInnerHTMLWithoutTrustedTypes(
       "    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed "
       "do eiusmod tempor"
       "    incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
@@ -533,7 +533,7 @@ TEST_F(TextAutosizerTest, ChangingSuperClusterSecondText) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* long_text_element = GetElementById("longText");
-  long_text_element->setInnerHTML(
+  long_text_element->SetInnerHTMLWithoutTrustedTypes(
       "    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed "
       "do eiusmod tempor"
       "    incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
@@ -576,7 +576,7 @@ TEST_F(TextAutosizerTest, AddingSuperCluster) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* container = GetElementById("container");
-  container->setInnerHTML(
+  container->SetInnerHTMLWithoutTrustedTypes(
       "<div class='supercluster' id='longText'>"
       "    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed "
       "do eiusmod tempor"
@@ -622,7 +622,7 @@ TEST_F(TextAutosizerTest, ChangingInheritedClusterTextInsideSuperCluster) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* long_text_element = GetElementById("longText");
-  long_text_element->setInnerHTML(
+  long_text_element->SetInnerHTMLWithoutTrustedTypes(
       "    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed "
       "do eiusmod tempor"
       "    incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
@@ -707,7 +707,7 @@ TEST_F(TextAutosizerTest, ResizeAndGlyphOverflowChanged) {
   GetDocument().GetSettings()->SetTextAutosizingWindowSizeOverride(
       gfx::Size(360, 640));
   Element* html = GetDocument().body()->parentElement();
-  html->setInnerHTML(
+  html->SetInnerHTMLWithoutTrustedTypes(
       "<head>"
       "  <meta name='viewport' content='width=800'>"
       "  <style>"
@@ -747,7 +747,7 @@ TEST_F(TextAutosizerTest, ResizeAndGlyphOverflowChanged) {
 
 TEST_F(TextAutosizerTest, narrowContentInsideNestedWideBlock) {
   Element* html = GetDocument().body()->parentElement();
-  html->setInnerHTML(
+  html->SetInnerHTMLWithoutTrustedTypes(
       "<head>"
       "  <meta name='viewport' content='width=800'>"
       "  <style>"
@@ -783,7 +783,7 @@ TEST_F(TextAutosizerTest, narrowContentInsideNestedWideBlock) {
 
 TEST_F(TextAutosizerTest, LayoutViewWidthProvider) {
   Element* html = GetDocument().body()->parentElement();
-  html->setInnerHTML(
+  html->SetInnerHTMLWithoutTrustedTypes(
       "<head>"
       "  <meta name='viewport' content='width=800'>"
       "  <style>"
@@ -812,8 +812,8 @@ TEST_F(TextAutosizerTest, LayoutViewWidthProvider) {
   EXPECT_FLOAT_EQ(40.f,
                   content->GetLayoutObject()->StyleRef().ComputedFontSize());
 
-  GetElementById("panel")->setInnerHTML("insert text");
-  content->setInnerHTML(content->innerHTML());
+  GetElementById("panel")->SetInnerHTMLWithoutTrustedTypes("insert text");
+  content->SetInnerHTMLWithoutTrustedTypes(content->GetInnerHTMLString());
   UpdateAllLifecyclePhasesForTest();
 
   // (specified font-size = 16px) * (viewport width = 800px) /
@@ -824,7 +824,7 @@ TEST_F(TextAutosizerTest, LayoutViewWidthProvider) {
 
 TEST_F(TextAutosizerTest, MultiColumns) {
   Element* html = GetDocument().body()->parentElement();
-  html->setInnerHTML(
+  html->SetInnerHTMLWithoutTrustedTypes(
       "<head>"
       "  <meta name='viewport' content='width=800'>"
       "  <style>"
@@ -858,7 +858,7 @@ TEST_F(TextAutosizerTest, MultiColumns) {
 
 TEST_F(TextAutosizerTest, MultiColumns2) {
   Element* html = GetDocument().body()->parentElement();
-  html->setInnerHTML(
+  html->SetInnerHTMLWithoutTrustedTypes(
       "<head>"
       "  <meta name='viewport' content='width=800'>"
       "  <style>"

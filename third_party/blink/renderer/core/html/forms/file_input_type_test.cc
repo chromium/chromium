@@ -184,7 +184,8 @@ TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
       std::make_unique<DummyPageHolder>(gfx::Size(), chrome_client);
   Document& doc = page_holder->GetDocument();
 
-  doc.body()->setInnerHTML("<input type=file webkitdirectory>");
+  doc.body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input type=file webkitdirectory>");
   auto& input = *To<HTMLInputElement>(doc.body()->firstChild());
 
   base::RunLoop run_loop;
@@ -208,7 +209,7 @@ TEST(FileInputTypeTest, BeforePseudoCrash) {
   std::unique_ptr<DummyPageHolder> page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& doc = page_holder->GetDocument();
-  doc.documentElement()->setInnerHTML(R"HTML(
+  doc.documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
 <style>
 .c6 {
   zoom: 0.01;
@@ -253,7 +254,7 @@ TEST(FileInputTypeTest, ChangeTypeDuringOpeningFileChooser) {
   LocalFrame* frame = helper.LocalMainFrame()->GetFrame();
 
   Document& doc = *frame->GetDocument();
-  doc.body()->setInnerHTML("<input type=file>");
+  doc.body()->SetInnerHTMLWithoutTrustedTypes("<input type=file>");
   auto& input = *To<HTMLInputElement>(doc.body()->firstChild());
 
   base::RunLoop run_loop;

@@ -24,14 +24,14 @@ namespace blink {
 
 class WebNodeTest : public PageTestBase {
  protected:
-  void SetInnerHTML(const String& html) {
-    GetDocument().documentElement()->setInnerHTML(html);
+  void SetInnerHTMLWithoutTrustedTypes(const String& html) {
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(html);
   }
 
   void AddScript(String js) {
     GetDocument().GetSettings()->SetScriptEnabled(true);
     Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
-    script->setInnerHTML(js);
+    script->SetInnerHTMLWithoutTrustedTypes(js);
     GetDocument().body()->AppendChild(script);
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   }
@@ -40,26 +40,26 @@ class WebNodeTest : public PageTestBase {
 };
 
 TEST_F(WebNodeTest, QuerySelectorMatches) {
-  SetInnerHTML("<div id=x><span class=a></span></div>");
+  SetInnerHTMLWithoutTrustedTypes("<div id=x><span class=a></span></div>");
   WebElement element = Root().QuerySelector(AtomicString(".a"));
   EXPECT_FALSE(element.IsNull());
   EXPECT_TRUE(element.HasHTMLTagName("span"));
 }
 
 TEST_F(WebNodeTest, QuerySelectorDoesNotMatch) {
-  SetInnerHTML("<div id=x><span class=a></span></div>");
+  SetInnerHTMLWithoutTrustedTypes("<div id=x><span class=a></span></div>");
   WebElement element = Root().QuerySelector(AtomicString("section"));
   EXPECT_TRUE(element.IsNull());
 }
 
 TEST_F(WebNodeTest, QuerySelectorError) {
-  SetInnerHTML("<div></div>");
+  SetInnerHTMLWithoutTrustedTypes("<div></div>");
   WebElement element = Root().QuerySelector(AtomicString("@invalid-selector"));
   EXPECT_TRUE(element.IsNull());
 }
 
 TEST_F(WebNodeTest, GetElementsByHTMLTagName) {
-  SetInnerHTML(
+  SetInnerHTMLWithoutTrustedTypes(
       "<body><LABEL></LABEL><svg "
       "xmlns='http://www.w3.org/2000/svg'><label></label></svg></body>");
   // WebNode::getElementsByHTMLTagName returns only HTML elements.
@@ -100,7 +100,7 @@ TEST_F(WebNodeSimTest, IsFocused) {
 }
 
 TEST_F(WebNodeTest, CannotFindTextNodesThatAreNotContainers) {
-  SetInnerHTML(R"HTML(
+  SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div><br class="not-a-container"/> Hello world! </div>
   )HTML");
   WebElement element = Root().QuerySelector(AtomicString(".not-a-container"));
@@ -110,7 +110,7 @@ TEST_F(WebNodeTest, CannotFindTextNodesThatAreNotContainers) {
 }
 
 TEST_F(WebNodeTest, CanFindTextNodesThatAreContainers) {
-  SetInnerHTML(R"HTML(
+  SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body class="container"><div id="id"> Hello world! </div></body>
   )HTML");
   WebElement element = Root().QuerySelector(AtomicString(".container"));
@@ -124,7 +124,7 @@ TEST_F(WebNodeTest, CanFindTextNodesThatAreContainers) {
 }
 
 TEST_F(WebNodeTest, CannotFindTextNodesIfMatcherRejectsIt) {
-  SetInnerHTML(R"HTML(
+  SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body class="container"><div> Hello world! </div></body>
   )HTML");
   WebElement element = Root().QuerySelector(AtomicString(".container"));
@@ -134,7 +134,7 @@ TEST_F(WebNodeTest, CannotFindTextNodesIfMatcherRejectsIt) {
 }
 
 TEST_F(WebNodeTest, CannotFindTextNodesInNonTextInputElement) {
-  SetInnerHTML(R"HTML(
+  SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body class="container">
       <input type="url" readonly="" value=" HeLLo WoRLd! ">
     </body>
@@ -147,7 +147,7 @@ TEST_F(WebNodeTest, CannotFindTextNodesInNonTextInputElement) {
 }
 
 TEST_F(WebNodeTest, CannotFindTextNodesInNonReadonlyTextInputElement) {
-  SetInnerHTML(R"HTML(
+  SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <body class="container">
       <input type="text" value=" HeLLo WoRLd! ">
     </body>
@@ -173,7 +173,7 @@ TEST_F(WebNodeTest, AddEventListener) {
     EXPECT_CALL(checkpoint, Call("set_caret 3"));
   }
 
-  SetInnerHTML("<textarea id=field>0123456789</textarea>");
+  SetInnerHTMLWithoutTrustedTypes("<textarea id=field>0123456789</textarea>");
 
   // Focuses the textarea.
   auto focus = [&]() {
@@ -207,7 +207,7 @@ TEST_F(WebNodeTest, AddEventListener) {
 // content-visibility:auto elements should be focusable and should have
 // style/layout run on them when checking focusability.
 TEST_F(WebNodeTest, IsFocusableInDisplayLock) {
-  SetInnerHTML(R"HTML(
+  SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div style="content-visibility: hidden">
       <input id=input1>
     </div>
