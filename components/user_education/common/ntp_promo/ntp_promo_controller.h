@@ -10,12 +10,10 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
-#include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_storage_service.h"
-#include "ui/menus/simple_menu_model.h"
 
 namespace user_education {
 
