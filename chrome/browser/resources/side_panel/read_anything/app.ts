@@ -239,14 +239,6 @@ export class AppElement extends AppElementBase implements
       }
     };
 
-    this.$.containerScroller.onscroll = () => {
-      chrome.readingMode.onScroll(this.scrollingOnSelection_);
-      this.scrollingOnSelection_ = false;
-      if (this.isReadAloudEnabled_) {
-        this.speechController_.onScroll();
-      }
-    };
-
     // Pass copy commands to main page. Copy commands will not work if they are
     // disabled on the main page.
     document.oncopy = () => {
@@ -396,6 +388,14 @@ export class AppElement extends AppElementBase implements
 
     this.appendChildSubtrees_(element, nodeId);
     return element;
+  }
+
+  protected onContainerScroll_() {
+    chrome.readingMode.onScroll(this.scrollingOnSelection_);
+    this.scrollingOnSelection_ = false;
+    if (this.isReadAloudEnabled_) {
+      this.speechController_.onScroll();
+    }
   }
 
   // TODO: crbug.com/40910704- Potentially hide links during distillation.
