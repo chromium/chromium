@@ -1055,6 +1055,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("TimedHTMLParserBudget"),
         Flag.baseFeature("ServiceWorkerBackgroundUpdateForRegisteredStorageKeys"),
         Flag.baseFeature("ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"),
+        Flag.baseFeature("ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl"),
         Flag.baseFeature(
                 "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled"),
         Flag.baseFeature(

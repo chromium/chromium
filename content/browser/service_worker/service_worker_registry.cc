@@ -57,6 +57,10 @@ BASE_FEATURE(kServiceWorkerBackgroundUpdateForServiceWorkerScopeCache,
              "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl,
+             "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReduceCallingServiceWorkerRegisteredStorageKeysOnStartup,
              "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -250,7 +254,9 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
               base::FeatureList::IsEnabled(
                   kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled),
           base::FeatureList::IsEnabled(
-              kServiceWorkerBackgroundUpdateForServiceWorkerScopeCache))),
+              kServiceWorkerBackgroundUpdateForServiceWorkerScopeCache),
+          base::FeatureList::IsEnabled(
+              kServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl))),
       quota_manager_proxy_(quota_manager_proxy),
       special_storage_policy_(special_storage_policy),
       registration_scope_cache_(kServiceWorkerScopeCacheLimitSize),
@@ -409,6 +415,19 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
                         std::move(callback));
         return;
       }
+    }
+  }
+
+  if (storage_shared_buffer_) {
+    storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
+        storage_shared_buffer_->TakeFindRegistrationResult(client_url, key);
+    if (!preflight_result.is_null()) {
+      DidFindRegistrationForClientUrl(
+          client_url, key, trace_event_id, std::move(callback),
+          storage::mojom::ServiceWorkerDatabaseStatus::kOk,
+          std::move(preflight_result),
+          std::vector(scopes->begin(), scopes->end()));
+      return;
     }
   }
 
@@ -1338,9 +1357,11 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
       TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
       TRACE_EVENT_FLAG_FLOW_IN);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Discard RegistrationScopes from storage_shared_buffer.
+  // Discard RegistrationScopes and FindRegistrationResult from
+  // storage_shared_buffer.
   if (storage_shared_buffer_) {
     storage_shared_buffer_->TakeRegistrationScopes();
+    storage_shared_buffer_->TakeFindRegistrationResult(client_url, key);
   }
   if (database_status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       database_status !=

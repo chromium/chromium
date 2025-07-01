@@ -70,15 +70,19 @@ void RecordDeleteAndStartOverResult(DeleteAndStartOverResult result) {
 }  // namespace
 
 ServiceWorkerStorage::StorageSharedBuffer::StorageSharedBuffer()  // IN-TEST
-    : enable_registered_storage_keys_(true), enable_registration_scopes_(true) {
+    : enable_registered_storage_keys_(true),
+      enable_registration_scopes_(true),
+      enable_find_registration_result_(true) {
   CHECK_IS_TEST();
 }
 
 ServiceWorkerStorage::StorageSharedBuffer::StorageSharedBuffer(
     bool enable_registered_storage_keys,
-    bool enable_registration_scopes)
+    bool enable_registration_scopes,
+    bool enable_find_registration_result)
     : enable_registered_storage_keys_(enable_registered_storage_keys),
-      enable_registration_scopes_(enable_registration_scopes) {}
+      enable_registration_scopes_(enable_registration_scopes),
+      enable_find_registration_result_(enable_find_registration_result) {}
 
 ServiceWorkerStorage::StorageSharedBuffer::~StorageSharedBuffer() = default;
 
@@ -122,7 +126,7 @@ void ServiceWorkerStorage::StorageSharedBuffer::PutRegistrationScopes(
 std::map<blink::StorageKey, std::vector<GURL>>
 ServiceWorkerStorage::StorageSharedBuffer::TakeRegistrationScopes() {
   if (!enable_registration_scopes_) {
-    return std::map<blink::StorageKey, std::vector<GURL>>();
+    return {};
   }
   TRACE_EVENT(
       "ServiceWorker",
@@ -131,6 +135,36 @@ ServiceWorkerStorage::StorageSharedBuffer::TakeRegistrationScopes() {
   std::map<blink::StorageKey, std::vector<GURL>> scopes;
   registration_scopes_.swap(scopes);
   return scopes;
+}
+
+void ServiceWorkerStorage::StorageSharedBuffer::PutFindRegistrationResult(
+    const GURL& client_url,
+    const blink::StorageKey& key,
+    mojom::ServiceWorkerFindRegistrationResultPtr find_registration_result) {
+  if (!enable_find_registration_result_) {
+    return;
+  }
+  TRACE_EVENT(
+      "ServiceWorker",
+      "ServiceWorkerStorage::StorageSharedBuffer::PutFindRegistrationResult");
+  base::AutoLock lock(lock_);
+  find_registration_results_[std::make_pair(client_url, key)] =
+      std::move(find_registration_result);
+}
+
+mojom::ServiceWorkerFindRegistrationResultPtr
+ServiceWorkerStorage::StorageSharedBuffer::TakeFindRegistrationResult(
+    const GURL& client_url,
+    const blink::StorageKey& key) {
+  if (!enable_find_registration_result_) {
+    return nullptr;
+  }
+  TRACE_EVENT(
+      "ServiceWorker",
+      "ServiceWorkerStorage::StorageSharedBuffer::TakeFindRegistrationResult");
+  base::AutoLock lock(lock_);
+  auto result = find_registration_results_.extract(std::pair(client_url, key));
+  return !result.empty() ? std::move(result.mapped()) : nullptr;
 }
 
 void OverrideMaxServiceWorkerScopeUrlCountForTesting(  // IN-TEST

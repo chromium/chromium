@@ -164,7 +164,8 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForClientUrl(
       client_url, key,
       base::BindOnce(
           &ServiceWorkerStorageControlImpl::DidFindRegistrationForClientUrl,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), client_url, key,
+          std::move(callback)));
 }
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForScope(
@@ -452,6 +453,8 @@ void ServiceWorkerStorageControlImpl::SetPurgingCompleteCallbackForTest(
 }
 
 void ServiceWorkerStorageControlImpl::DidFindRegistrationForClientUrl(
+    GURL client_url,
+    blink::StorageKey key,
     FindRegistrationForClientUrlCallback callback,
     mojom::ServiceWorkerRegistrationDataPtr data,
     std::unique_ptr<ResourceList> resources,
@@ -464,6 +467,20 @@ void ServiceWorkerStorageControlImpl::DidFindRegistrationForClientUrl(
 
   DCHECK(resources);
   DCHECK(data);
+
+  if (storage_->storage_shared_buffer() &&
+      storage_->storage_shared_buffer()->enable_find_registration_result()) {
+    ResourceList copy_of_resources;
+    copy_of_resources.reserve(resources->size());
+    for (const mojom::ServiceWorkerResourceRecordPtr& res : *resources) {
+      copy_of_resources.push_back(res.Clone());
+    }
+    storage_->storage_shared_buffer()->PutFindRegistrationResult(
+        client_url, key,
+        mojom::ServiceWorkerFindRegistrationResult::New(
+            CreateLiveVersionReferenceRemote(data->version_id), data.Clone(),
+            std::move(copy_of_resources)));
+  }
 
   mojo::PendingRemote<mojom::ServiceWorkerLiveVersionRef> remote_reference =
       CreateLiveVersionReferenceRemote(data->version_id);
@@ -617,7 +634,8 @@ void ServiceWorkerStorageControlImpl::GetFakeRegistrationForClientUrl(
   std::vector<GURL> scopes({kScope});
 
   DidFindRegistrationForClientUrl(
-      std::move(callback), std::move(data), std::move(resources), scopes,
+      client_url, key, std::move(callback), std::move(data),
+      std::move(resources), scopes,
       storage::mojom::ServiceWorkerDatabaseStatus::kOk);
 }
 

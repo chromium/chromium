@@ -802,6 +802,10 @@ TEST_F(ServiceWorkerStorageControlImplTest, FindRegistration_NoRegistration) {
     EXPECT_TRUE(registration_scopes[kKey].empty());
     // The 2nd call of TakeRegistrationScopes() returns an empty map.
     EXPECT_TRUE(storage_shared_buffer()->TakeRegistrationScopes().empty());
+    // TakeFindRegistrationResult() returns null if there are no registrations.
+    EXPECT_TRUE(storage_shared_buffer()
+                    ->TakeFindRegistrationResult(kClientUrl, kKey)
+                    .is_null());
   }
 
   {
@@ -902,6 +906,23 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
     EXPECT_EQ(registration_scopes[kKey], std::vector<GURL>({kScope}));
     // The 2nd call of TakeRegistrationScopes() returns an empty map.
     EXPECT_TRUE(storage_shared_buffer()->TakeRegistrationScopes().empty());
+
+    mojom::ServiceWorkerFindRegistrationResultPtr find_registration_result =
+        storage_shared_buffer()->TakeFindRegistrationResult(kClientUrl, kKey);
+    EXPECT_EQ(find_registration_result->registration->registration_id,
+              kRegistrationId);
+    EXPECT_EQ(find_registration_result->registration->scope, kScope);
+    EXPECT_EQ(find_registration_result->registration->key, kKey);
+    EXPECT_EQ(find_registration_result->registration->script, kScriptUrl);
+    EXPECT_EQ(find_registration_result->registration->version_id, kVersionId);
+    EXPECT_EQ(
+        find_registration_result->registration->resources_total_size_bytes,
+        resources_total_size_bytes);
+    EXPECT_EQ(find_registration_result->resources.size(), 1UL);
+    // The 2nd call of TakeFindRegistrationResult() returns null.
+    EXPECT_TRUE(storage_shared_buffer()
+                    ->TakeFindRegistrationResult(kClientUrl, kKey)
+                    .is_null());
   }
 
   // Delete the registration.
@@ -930,6 +951,10 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
     EXPECT_TRUE(registration_scopes[kKey].empty());
     // The 2nd call of TakeRegistrationScopes() returns an empty map.
     EXPECT_TRUE(storage_shared_buffer()->TakeRegistrationScopes().empty());
+    // The 2nd call of TakeFindRegistrationResult() returns null.
+    EXPECT_TRUE(storage_shared_buffer()
+                    ->TakeFindRegistrationResult(kClientUrl, kKey)
+                    .is_null());
   }
 }
 

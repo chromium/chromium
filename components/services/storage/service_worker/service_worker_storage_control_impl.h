@@ -196,6 +196,8 @@ class ServiceWorkerStorageControlImpl
 
   // Callbacks for ServiceWorkerStorage methods.
   void DidFindRegistrationForClientUrl(
+      GURL client_url,
+      blink::StorageKey key,
       FindRegistrationForClientUrlCallback callback,
       mojom::ServiceWorkerRegistrationDataPtr data,
       std::unique_ptr<ResourceList> resources,

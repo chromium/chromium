@@ -67,7 +67,8 @@ class ServiceWorkerStorage {
    public:
     StorageSharedBuffer();
     StorageSharedBuffer(bool enable_registered_storage_keys,
-                        bool enable_registration_scopes);
+                        bool enable_registration_scopes,
+                        bool enable_find_registration_result);
     StorageSharedBuffer(const StorageSharedBuffer&) = delete;
     StorageSharedBuffer& operator=(const StorageSharedBuffer&) = delete;
 
@@ -83,16 +84,33 @@ class ServiceWorkerStorage {
     std::map<blink::StorageKey, std::vector<GURL>> TakeRegistrationScopes()
         LOCKS_EXCLUDED(lock_);
 
+    void PutFindRegistrationResult(
+        const GURL& client_url,
+        const blink::StorageKey& key,
+        mojom::ServiceWorkerFindRegistrationResultPtr find_registration_result)
+        LOCKS_EXCLUDED(lock_);
+    mojom::ServiceWorkerFindRegistrationResultPtr TakeFindRegistrationResult(
+        const GURL& client_url,
+        const blink::StorageKey& key) LOCKS_EXCLUDED(lock_);
+
+    bool enable_find_registration_result() const {
+      return enable_find_registration_result_;
+    }
+
    private:
     friend class base::RefCountedThreadSafe<StorageSharedBuffer>;
     ~StorageSharedBuffer();
 
     const bool enable_registered_storage_keys_;
     const bool enable_registration_scopes_;
+    const bool enable_find_registration_result_;
     std::optional<std::vector<blink::StorageKey>> GUARDED_BY(lock_)
         registered_keys_;
     std::map<blink::StorageKey, std::vector<GURL>> GUARDED_BY(lock_)
         registration_scopes_;
+    std::map<std::pair<GURL, blink::StorageKey>,
+             mojom::ServiceWorkerFindRegistrationResultPtr>
+        GUARDED_BY(lock_) find_registration_results_;
     base::Lock lock_;
   };
 
@@ -351,6 +369,9 @@ class ServiceWorkerStorage {
   void GetPurgingResourceIdsForTest(ResourceIdsCallback callback);
   void GetPurgeableResourceIdsForTest(ResourceIdsCallback callback);
   void GetUncommittedResourceIdsForTest(ResourceIdsCallback callback);
+  scoped_refptr<StorageSharedBuffer>& storage_shared_buffer() {
+    return storage_shared_buffer_;
+  }
 
  private:
   friend class ServiceWorkerStorageControlImplTest;
