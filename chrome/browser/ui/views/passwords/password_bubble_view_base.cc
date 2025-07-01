@@ -282,6 +282,7 @@ void PasswordBubbleViewBase::SetBubbleHeaderLottie(int lottie_image_id) {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   auto image_view = std::make_unique<views::ImageView>(
       bundle.GetThemedLottieImageNamed(lottie_image_id));
+  image_view->GetViewAccessibility().SetIsInvisible(true);
 
   gfx::Size preferred_size = image_view->GetPreferredSize();
   if (preferred_size.width()) {

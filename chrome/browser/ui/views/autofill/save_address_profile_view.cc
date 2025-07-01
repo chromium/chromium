@@ -280,8 +280,9 @@ void SaveAddressProfileView::AddedToWidget() {
       controller_->GetHeaderImages();
   if (images) {
     if (!images->lottie.IsEmpty()) {
-      GetBubbleFrameView()->SetHeaderView(
-          std::make_unique<views::ImageView>(images->lottie));
+      auto image_view = std::make_unique<views::ImageView>(images->lottie);
+      image_view->GetViewAccessibility().SetIsInvisible(true);
+      GetBubbleFrameView()->SetHeaderView(std::move(image_view));
     } else {
       GetBubbleFrameView()->SetHeaderView(
           std::make_unique<ThemeTrackingNonAccessibleImageView>(

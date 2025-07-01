@@ -47,8 +47,11 @@ void AddressSignInPromoView::AddedToWidget() {
                                     kBubbleFrameViewId);
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  GetBubbleFrameView()->SetHeaderView(std::make_unique<views::ImageView>(
-      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_ADDRESS_LOTTIE)));
+  auto image_view = std::make_unique<views::ImageView>(
+      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_ADDRESS_LOTTIE));
+  image_view->GetViewAccessibility().SetIsInvisible(true);
+
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
 void AddressSignInPromoView::Hide() {
