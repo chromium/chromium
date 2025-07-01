@@ -350,6 +350,7 @@ public class RootUiCoordinator
     private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
     protected AdaptiveToolbarUiCoordinator mAdaptiveToolbarUiCoordinator;
     private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private @Nullable ToolbarControlContainer mToolbarContainer;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -640,6 +641,7 @@ public class RootUiCoordinator
             if (mMicStateObserver != null && mToolbarManager.getVoiceRecognitionHandler() != null) {
                 mToolbarManager.getVoiceRecognitionHandler().removeObserver(mMicStateObserver);
             }
+            mTopControlsStacker.removeControl(mToolbarContainer);
             mToolbarManager.destroy();
             mToolbarManager = null;
         }
@@ -1404,7 +1406,9 @@ public class RootUiCoordinator
         try (TraceEvent te = TraceEvent.scoped("RootUiCoordinator.initializeToolbar")) {
             final View controlContainer = mActivity.findViewById(R.id.control_container);
             assert controlContainer != null;
-            ToolbarControlContainer toolbarContainer = (ToolbarControlContainer) controlContainer;
+            mToolbarContainer = (ToolbarControlContainer) controlContainer;
+            mTopControlsStacker.addControl(mToolbarContainer);
+
             Callback<Boolean> urlFocusChangedCallback =
                     hasFocus -> {
                         if (mOnOmniboxFocusChangedListener != null) {
@@ -1416,7 +1420,7 @@ public class RootUiCoordinator
                         mOmniboxFocusStateSupplier.set(hasFocus);
                     };
             if (getDesktopWindowStateManager() != null) {
-                toolbarContainer.setAppInUnfocusedDesktopWindow(
+                mToolbarContainer.setAppInUnfocusedDesktopWindow(
                         getDesktopWindowStateManager().isInUnfocusedDesktopWindow());
             }
 
@@ -1500,7 +1504,7 @@ public class RootUiCoordinator
                             mBrowserControlsManager,
                             mFullscreenManager,
                             mEdgeToEdgeControllerSupplier,
-                            toolbarContainer,
+                            mToolbarContainer,
                             mCompositorViewHolderSupplier.get(),
                             urlFocusChangedCallback,
                             mTopUiThemeColorProvider,
