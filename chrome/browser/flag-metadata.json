@@ -4029,7 +4029,7 @@
   {
     "name": "enable-pix-payments-in-landscape-mode",
     "owners": [ "vishwasuppoor@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 143
   },
   {
     "name": "enable-pixel-canvas-recording",
