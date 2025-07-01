@@ -224,7 +224,6 @@ BASE_FEATURE(kEnableDrDc,
              base::FEATURE_ENABLED_BY_DEFAULT
 #elif BUILDFLAG(IS_MAC)
              // DrDC will not be running if Graphite is disabled on Mac.
-             // Feature incomplete. DO NOT ENABLE!
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
              // NOT SUPPORTED. DO NOT ENABLE!
@@ -589,11 +588,11 @@ bool IsSkiaGraphiteSupportedByDevice(const base::CommandLine* command_line) {
                               model_name_split->variant == 1;
     if (!is_imac_15_1) {
       static constexpr struct {
-        const char* category;
+        std::string category;
         int32_t min_supported_model;
       } kModelSupportData[] = {
           {"MacBookPro", 13}, {"MacBookAir", 8}, {"MacBook", 9},
-          {"iMac", 17},       {"MacPro", 6},
+          {"iMac", 17},       {"MacPro", 6},     {"Macmini", 8},
       };
       for (const auto& [category, min_supported_model] : kModelSupportData) {
         if (model_name_split->category == category) {
@@ -719,7 +718,7 @@ bool IsDrDcEnabled() {
   if (!IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())) {
     return false;
   }
-  if (base::mac::MacOSVersion() <= 12) {
+  if (base::mac::MacOSVersion() < 13'00'00) {
     return false;
   }
 #endif

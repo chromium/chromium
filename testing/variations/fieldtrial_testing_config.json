@@ -9161,6 +9161,21 @@
             ]
         }
     ],
+    "EnableDrDc": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enableds",
+                    "enable_features": [
+                        "EnableDrDc"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableEwalletPayFlow": [
         {
             "platforms": [
