@@ -211,6 +211,10 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   bool CanBecomeFirstResponderForTesting() const;
   bool CanResignFirstResponderForTesting() const;
   void ContentInsetChanged();
+  void ExtendSelectionAndDelete(int32_t before, int32_t after);
+  void ExtendSelectionAndReplace(uint32_t before,
+                                 uint32_t after,
+                                 const std::u16string& replacement_text);
   void DeleteSurroundingText(int before, int after);
   void SendKeyEvent(const input::NativeWebKeyboardEvent& event);
 

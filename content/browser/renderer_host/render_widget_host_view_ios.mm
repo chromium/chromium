@@ -931,6 +931,26 @@ void RenderWidgetHostViewIOS::ContentInsetChanged() {
   }
 }
 
+void RenderWidgetHostViewIOS::ExtendSelectionAndDelete(int32_t before,
+                                                       int32_t after) {
+  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+  if (!input_handler) {
+    return;
+  }
+  input_handler->ExtendSelectionAndDelete(before, after);
+}
+
+void RenderWidgetHostViewIOS::ExtendSelectionAndReplace(
+    uint32_t before,
+    uint32_t after,
+    const std::u16string& replacement_text) {
+  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+  if (!input_handler) {
+    return;
+  }
+  input_handler->ExtendSelectionAndReplace(before, after, replacement_text);
+}
+
 void RenderWidgetHostViewIOS::DeleteSurroundingText(int before, int after) {
   if (auto* widget_host = GetActiveWidget()) {
     auto* input_handler = widget_host->GetFrameWidgetInputHandler();
