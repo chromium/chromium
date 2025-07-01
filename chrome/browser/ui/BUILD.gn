@@ -3451,6 +3451,7 @@ static_library("ui") {
 
     deps += [
       "//chrome/browser:titlebar_config",
+      "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar",
       "//chrome/browser/win:mica_titlebar",
       "//chrome/browser/win/conflicts:module_info",
       "//chrome/credential_provider/common:common_constants",

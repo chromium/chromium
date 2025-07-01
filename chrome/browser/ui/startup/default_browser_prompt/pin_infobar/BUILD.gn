@@ -1,0 +1,18 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win)
+
+source_set("pin_infobar") {
+  sources = [
+    "pin_infobar_controller.cc",
+    "pin_infobar_controller.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:shell_integration",
+    "//chrome/browser/ui/browser_window",
+    "//components/infobars/core",
+  ]
+}
