@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "base/values.h"
 #include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
@@ -97,21 +96,6 @@ std::string AnswerTypeToString(int answer_type) {
 namespace mojo {
 
 template <>
-struct TypeConverter<std::vector<mojom::DictionaryEntryPtr>,
-                     AutocompleteMatch::AdditionalInfo> {
-  static std::vector<mojom::DictionaryEntryPtr> Convert(
-      const AutocompleteMatch::AdditionalInfo& input) {
-    std::vector<mojom::DictionaryEntryPtr> output(input.size());
-    for (auto [input_element, output_element] : base::zip(input, output)) {
-      output_element = mojom::DictionaryEntry::New();
-      output_element->key = input_element.first;
-      output_element->value = input_element.second;
-    }
-    return output;
-  }
-};
-
-template <>
 struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
   static mojom::AutocompleteMatchPtr Convert(const AutocompleteMatch& input) {
     mojom::AutocompleteMatchPtr result(mojom::AutocompleteMatch::New());
@@ -169,9 +153,9 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
     if (input.scoring_signals.has_value()) {
       result->scoring_signals = input.scoring_signals.value();
     }
-    result->additional_info =
-        mojo::ConvertTo<std::vector<mojom::DictionaryEntryPtr>>(
-            input.additional_info);
+    for (const auto& [key, value] : input.additional_info) {
+      result->additional_info.insert({key, value});
+    }
     return result;
   }
 };

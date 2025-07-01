@@ -84,8 +84,7 @@ export class MlTableElement extends CustomElement {
     const headers = this.getRequiredElement('.thead .tr').children;
 
     result.forEach(match => {
-      const additionalInfo = Object.fromEntries(
-          match.additionalInfo.map(tuple => Object.values(tuple)));
+      const additionalInfo = match.additionalInfo;
 
       const matchDetails = [
         inputText,

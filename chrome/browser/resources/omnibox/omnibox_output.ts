@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {OmniboxElement} from './omnibox_element.js';
 import type {DisplayInputs} from './omnibox_input.js';
 import {OmniboxInput} from './omnibox_input.js';
-import type {ACMatchClassification, AutocompleteControllerType, AutocompleteMatch, DictionaryEntry, OmniboxResponse, Signals} from './omnibox_internals.mojom-webui.js';
+import type {ACMatchClassification, AutocompleteControllerType, AutocompleteMatch, OmniboxResponse, Signals} from './omnibox_internals.mojom-webui.js';
 import outputColumnWidthSheet from './omnibox_output_column_widths.css' with {type : 'css'};
 import {clearChildren, createEl} from './omnibox_util.js';
 import outputResultsGroupSheet from './output_results_group.css' with {type : 'css'};
@@ -542,11 +542,13 @@ class OutputBooleanProperty extends OutputProperty {
 class OutputDictionaryProperty extends OutputProperty {
   protected readonly container: HTMLElement;
 
-  constructor(value: DictionaryEntry[]) {
-    super(value.map(({key, value}) => `${key}: ${value}`).join('\n'));
+  constructor(value: {[key: string]: string}) {
+    super(Object.entries(value)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join('\n'));
     this.container = createEl('div', this);
     const pre = createEl('pre', this.container, ['json']);
-    value.forEach(({key, value}) => {
+    Object.entries(value).forEach(([key, value]) => {
       createEl('span', pre, ['key'], key + ': ');
       createEl('span', pre, ['value'], value + '\n');
     });
@@ -555,12 +557,8 @@ class OutputDictionaryProperty extends OutputProperty {
 
 class OutputScoringSignalsProperty extends OutputDictionaryProperty {
   constructor(value: Signals) {
-    super(Object.entries(value)
-              .filter(([, value]) => value !== null)
-              .map(([key, value]) => ({
-                     key,
-                     value,
-                   } as DictionaryEntry)));
+    super(Object.fromEntries(
+        Object.entries(value).filter(([, value]) => value !== null)));
     const link = createEl('a', null, ['icon', 'edit-icon']);
     link.href = `chrome://omnibox/ml?signals=${Object.values(value).join()}`;
     this.container.insertBefore(link, this.container.firstChild);
@@ -568,7 +566,7 @@ class OutputScoringSignalsProperty extends OutputDictionaryProperty {
 }
 
 class OutputAdditionalInfoProperty extends OutputDictionaryProperty {
-  constructor(value: DictionaryEntry[]) {
+  constructor(value: {[key: string]: string}) {
     super(value);
     const link = createEl('a', null, ['icon', 'download-icon']);
     link.download = 'AdditionalInfo.json';
@@ -576,16 +574,13 @@ class OutputAdditionalInfoProperty extends OutputDictionaryProperty {
     this.container.insertBefore(link, this.container.firstChild);
   }
 
-  private static createDownloadLink(value: DictionaryEntry[]): string {
-    const obj = value.reduce((obj: Record<string, string>, {key, value}) => {
-      obj[key] = value;
-      return obj;
-    }, {});
-    const text = JSON.stringify(obj, null, 2);
+  private static createDownloadLink(value: {[key: string]: string}): string {
+    const text = JSON.stringify(value, null, 2);
     const obj64 = btoa(unescape(encodeURIComponent(text)));
     return `data:application/json;base64,${obj64}`;
   }
 }
+
 
 class OutputUrlProperty extends FlexWrappingOutputProperty {
   constructor(
