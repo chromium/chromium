@@ -238,6 +238,9 @@ struct Toolbelt : Config<Toolbelt> {
   // input clears the zero suggest).
   bool keep_toolbelt_after_input;
 
+  // Whether the toolbelt is preserved after entering keyword mode.
+  bool keep_toolbelt_in_keyword_mode;
+
   // Whether the lens entrypoint action should stay unconditionally on the
   // toolbelt. When this is false, the regular triggering conditions apply
   // so the action can sometimes be included or sometimes not.

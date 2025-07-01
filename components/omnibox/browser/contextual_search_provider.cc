@@ -90,13 +90,15 @@ struct EligibleMatchesAndActions {
     // - Hide toolbelt in realbox.
     // - Check feature/params for zero and typed inputs.
     // - Hide toolbelt if user has disabled the context menu option.
+    // - Check feature param for removing toolbelt when in keyword mode.
     const auto& toolbelt_config = omnibox_feature_configs::Toolbelt::Get();
     toolbelt =
         input.current_page_classification() !=
             metrics::OmniboxEventProto::NTP_REALBOX &&
         toolbelt_config.enabled &&
         (toolbelt_config.keep_toolbelt_after_input || input.IsZeroSuggest()) &&
-        client->GetPrefs()->GetBoolean(omnibox::kShowSearchTools);
+        client->GetPrefs()->GetBoolean(omnibox::kShowSearchTools) &&
+        (toolbelt_config.keep_toolbelt_in_keyword_mode || !starter_pack_engine);
 
     // - Restricted to DSE google, which is already checked in
     //   `client->IsLensEnabled()`.

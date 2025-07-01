@@ -197,6 +197,11 @@ Toolbelt::Toolbelt() {
       base::FeatureParam<bool>(&kOmniboxToolbelt, "KeepToolbeltAfterInput",
                                enabled)
           .Get();
+  keep_toolbelt_in_keyword_mode =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "KeepToolbeltInKeywordMode",
+                               false)
+          .Get();
+
   always_include_lens_action =
       base::FeatureParam<bool>(&kOmniboxToolbelt, "AlwaysIncludeLensAction",
                                false)
