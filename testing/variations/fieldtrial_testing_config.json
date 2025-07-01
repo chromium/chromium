@@ -20839,27 +20839,6 @@
             ]
         }
     ],
-    "RustyPng": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "RustyPngExperimentForTests",
-                    "enable_features": [
-                        "RustyPng"
-                    ]
-                }
-            ]
-        }
-    ],
     "SRIMessageSignatureEnforcement": [
         {
             "platforms": [
