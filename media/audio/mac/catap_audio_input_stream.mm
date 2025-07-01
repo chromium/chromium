@@ -229,6 +229,10 @@ CatapAudioInputStream::CatapAudioInputStream(
 
   // Only mono and stereo audio is supported.
   CHECK(params_.channels() == 1 || params_.channels() == 2);
+
+  SendLogMessage("%s({device_id=%s}, {default_device=[%s]}, {params=[%s]})",
+                 __func__, device_id.c_str(), default_output_device_id.c_str(),
+                 params.AsHumanReadableString().c_str());
 }
 
 CatapAudioInputStream::~CatapAudioInputStream() {
@@ -239,6 +243,8 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Open");
   base::ElapsedTimer timer;
+
+  SendLogMessage("%s() => deviceId: %s", __func__, device_id_.c_str());
 
   if (is_device_open_) {
     ReportOpenStatus(OpenStatus::kErrorDeviceAlreadyOpen, timer.Elapsed());
@@ -382,6 +388,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
 void CatapAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Start");
+  SendLogMessage("%s()", __func__);
   base::ElapsedTimer timer;
   CHECK(callback);
   CHECK(is_device_open_);
@@ -402,6 +409,7 @@ void CatapAudioInputStream::Start(AudioInputCallback* callback) {
 void CatapAudioInputStream::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Stop");
+  SendLogMessage("%s()", __func__);
   base::ElapsedTimer timer;
   if (!sink_) {
     return;
@@ -431,6 +439,7 @@ void CatapAudioInputStream::Stop() {
 void CatapAudioInputStream::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Close");
+  SendLogMessage("%s() => deviceId: %s", __func__, device_id_.c_str());
   base::ElapsedTimer timer;
   Stop();
 
@@ -687,6 +696,8 @@ AudioInputStream* CreateCatapAudioInputStream(
                                      std::move(close_callback),
                                      default_output_device_id);
   }
+  log_callback.Run("CatapAudioInputStream::CreateCatapAudioInputStream() Catap "
+                   "not supported");
   return nullptr;
 }
 
