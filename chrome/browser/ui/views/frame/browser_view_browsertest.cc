@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -95,6 +96,10 @@ class BrowserViewTest : public InProcessBrowserTest {
 
   views::WebView* devtools_web_view() {
     return browser_view()->GetDevToolsWebViewForTest();
+  }
+
+  ContentsContainerView* contents_container_view() {
+    return browser_view()->contents_container_view();
   }
 
   views::WebView* contents_web_view() {
@@ -267,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsDockedUpdatesBrowserWindow) {
   browser_view()->UpdateDevTools();
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(full_bounds, contents_web_view()->bounds());
+  EXPECT_EQ(full_bounds, contents_container_view()->bounds());
 
   // Docked.
   OpenDevToolsWindow(true);
@@ -277,22 +282,22 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsDockedUpdatesBrowserWindow) {
   SetDevToolsBounds(small_bounds);
   EXPECT_TRUE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(small_bounds, contents_web_view()->bounds());
+  EXPECT_EQ(small_bounds, contents_container_view()->bounds());
 
   browser_view()->UpdateDevTools();
   EXPECT_TRUE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(small_bounds, contents_web_view()->bounds());
+  EXPECT_EQ(small_bounds, contents_container_view()->bounds());
 
   CloseDevToolsWindow();
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(full_bounds, contents_web_view()->bounds());
+  EXPECT_EQ(full_bounds, contents_container_view()->bounds());
 
   browser_view()->UpdateDevTools();
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(full_bounds, contents_web_view()->bounds());
+  EXPECT_EQ(full_bounds, contents_container_view()->bounds());
 }
 
 // Verifies that page and devtools WebViews are being correctly laid out
@@ -316,22 +321,22 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsUndockedUpdatesBrowserWindow) {
   SetDevToolsBounds(small_bounds);
   EXPECT_TRUE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(small_bounds, contents_web_view()->bounds());
+  EXPECT_EQ(small_bounds, contents_container_view()->bounds());
 
   browser_view()->UpdateDevTools();
   EXPECT_TRUE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(small_bounds, contents_web_view()->bounds());
+  EXPECT_EQ(small_bounds, contents_container_view()->bounds());
 
   CloseDevToolsWindow();
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(full_bounds, contents_web_view()->bounds());
+  EXPECT_EQ(full_bounds, contents_container_view()->bounds());
 
   browser_view()->UpdateDevTools();
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
-  EXPECT_EQ(full_bounds, contents_web_view()->bounds());
+  EXPECT_EQ(full_bounds, contents_container_view()->bounds());
 }
 
 void SetDevToolsWindowSizePrefs(Browser* browser,

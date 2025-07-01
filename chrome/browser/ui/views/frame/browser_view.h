@@ -71,6 +71,7 @@
 class AccessibilityFocusHighlight;
 class BookmarkBarView;
 class Browser;
+class ContentsContainerView;
 class ContentsLayoutManager;
 struct DropData;
 class ExclusiveAccessBubbleViews;
@@ -241,6 +242,10 @@ class BrowserView : public BrowserWindow,
 
   // Container for the web contents.
   views::View* contents_container() { return contents_container_; }
+
+  ContentsContainerView* contents_container_view() {
+    return contents_container_view_;
+  }
 
   SidePanel* unified_side_panel() { return unified_side_panel_; }
 
@@ -1309,6 +1314,12 @@ class BrowserView : public BrowserWindow,
   // The view managing the devtools and contents positions.
   // Handled by ContentsLayoutManager.
   raw_ptr<views::View> contents_container_ = nullptr;
+
+  // The view that will replace |contents_container_| and manage devtools and
+  // contents positions as well as other content related features (i.e. contents
+  // scrim, ntp footer, etc). contents_container_view_ only exists if the split
+  // view feature is disabled.
+  raw_ptr<ContentsContainerView> contents_container_view_ = nullptr;
 
   // The side panel aligned to the left or the right side of the browser window
   // depending on the kSidePanelHorizontalAlignment pref's value.

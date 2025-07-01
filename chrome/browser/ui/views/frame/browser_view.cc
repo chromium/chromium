@@ -123,6 +123,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -1038,13 +1039,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     multi_contents_view_->SetID(VIEW_ID_TAB_CONTAINER);
     contents_view = multi_contents_view_;
   } else {
-    auto contents_web_view =
-        std::make_unique<ContentsWebView>(browser_->profile());
-    contents_web_view_ =
-        contents_container->AddChildView(std::move(contents_web_view));
+    contents_container_view_ = contents_container->AddChildView(
+        std::make_unique<ContentsContainerView>(this));
+    contents_web_view_ = contents_container_view_->GetContentsView();
     contents_web_view_->SetID(VIEW_ID_TAB_CONTAINER);
     contents_web_view_->set_is_primary_web_contents_for_window(true);
-    contents_view = contents_web_view_;
+    contents_view = contents_container_view_;
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
@@ -1235,6 +1235,7 @@ BrowserView::~BrowserView() {
   download_shelf_ = nullptr;
   infobar_container_ = nullptr;
   multi_contents_view_ = nullptr;
+  contents_container_view_ = nullptr;
   contents_web_view_ = nullptr;
   lens_overlay_view_ = nullptr;
   devtools_web_view_ = nullptr;
@@ -5633,16 +5634,16 @@ void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
   }
   contents_container_->DeprecatedLayoutImmediately();
 
+  views::View* contents_view;
+  if (multi_contents_view_) {
+    contents_view = multi_contents_view_;
+  } else {
+    contents_view = contents_container_view_;
+  }
   if (devtools) {
     // When strategy.hide_inspected_contents() returns true, we are hiding the
     // WebContents behind the devtools_web_view_. Otherwise, the WebContents
     // should be right above the devtools_web_view_.
-    views::View* contents_view;
-    if (multi_contents_view_) {
-      contents_view = multi_contents_view_;
-    } else {
-      contents_view = contents_web_view_;
-    }
     size_t devtools_index =
         contents_container_->GetIndexOf(devtools_web_view_).value();
     size_t contents_index =
@@ -5654,9 +5655,7 @@ void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
   }
 
   DevToolsDockedPlacement new_placement = GetDevToolsDockedPlacement(
-      multi_contents_view_ ? multi_contents_view_->bounds()
-                           : contents_web_view_->bounds(),
-      contents_container_->GetLocalBounds());
+      contents_view->bounds(), contents_container_->GetLocalBounds());
 
   // When browser window is resizing, the contents_container and web_contents
   // bounds can be out of sync, resulting in a state, where it is impossible to
