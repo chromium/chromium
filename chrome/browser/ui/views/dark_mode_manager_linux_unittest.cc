@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "components/dbus/xdg/systemd.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,7 +81,9 @@ MATCHER_P2(Calls, interface, member, "") {
 }  // namespace
 
 using testing::_;
+using testing::AtLeast;
 using testing::ByMove;
+using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -115,11 +118,49 @@ class DarkModeManagerLinuxTest : public testing::Test {
  private:
   void SetUp() override {
     mock_bus_ = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+    mock_dbus_proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
+        mock_bus_.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+    mock_systemd_proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
+        mock_bus_.get(), "org.freedesktop.systemd1",
+        dbus::ObjectPath("/org/freedesktop/systemd1"));
     mock_portal_proxy_ =
         base::MakeRefCounted<StrictMock<dbus::MockObjectProxy>>(
             mock_bus_.get(), DarkModeManagerLinux::kFreedesktopSettingsService,
             dbus::ObjectPath(
                 DarkModeManagerLinux::kFreedesktopSettingsObjectPath));
+
+    EXPECT_CALL(*mock_bus_, GetObjectProxy(DBUS_SERVICE_DBUS,
+                                           dbus::ObjectPath(DBUS_PATH_DBUS)))
+        .WillRepeatedly(Return(mock_dbus_proxy_.get()));
+
+    EXPECT_CALL(*mock_bus_,
+                GetObjectProxy("org.freedesktop.systemd1",
+                               dbus::ObjectPath("/org/freedesktop/systemd1")))
+        .Times(AtLeast(0))
+        .WillRepeatedly(Return(mock_systemd_proxy_.get()));
+
+    EXPECT_CALL(*mock_systemd_proxy_, DoCallMethod(_, _, _))
+        .Times(AtLeast(0))
+        .WillRepeatedly(
+            Invoke([](dbus::MethodCall*, int,
+                      dbus::ObjectProxy::ResponseCallback* callback) {
+              std::move(*callback).Run(nullptr);
+            }));
+
+    EXPECT_CALL(*mock_dbus_proxy_,
+                DoCallMethod(Calls(DBUS_INTERFACE_DBUS, "NameHasOwner"), _, _))
+        .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
+                            dbus::ObjectProxy::ResponseCallback* callback) {
+          dbus::MessageReader reader(method_call);
+          std::string service_name;
+          EXPECT_TRUE(reader.PopString(&service_name));
+          EXPECT_EQ(service_name, "org.freedesktop.systemd1");
+
+          auto response = dbus::Response::CreateEmpty();
+          dbus::MessageWriter writer(response.get());
+          writer.AppendBool(true);
+          std::move(*callback).Run(response.get());
+        }));
 
     EXPECT_CALL(*mock_bus_,
                 GetObjectProxy(
@@ -156,6 +197,8 @@ class DarkModeManagerLinuxTest : public testing::Test {
     enable_portal_accent_color_.InitAndEnableFeature(
         features::kUsePortalAccentColor);
 
+    dbus_xdg::ResetCachedStateForTesting();
+
     manager_ = std::make_unique<DarkModeManagerLinux>(
         mock_bus_, mock_linux_ui_.get(), &linux_ui_themes_,
         std::vector<raw_ptr<NativeTheme, VectorExperimental>>{
@@ -175,6 +218,8 @@ class DarkModeManagerLinuxTest : public testing::Test {
   std::unique_ptr<MockNativeTheme> mock_native_theme_;
 
   scoped_refptr<dbus::MockBus> mock_bus_;
+  scoped_refptr<dbus::MockObjectProxy> mock_dbus_proxy_;
+  scoped_refptr<dbus::MockObjectProxy> mock_systemd_proxy_;
   scoped_refptr<dbus::MockObjectProxy> mock_portal_proxy_;
 
   dbus::ObjectProxy::SignalCallback setting_changed_callback_;
