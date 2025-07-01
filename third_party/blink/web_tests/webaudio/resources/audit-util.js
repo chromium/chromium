@@ -274,3 +274,35 @@ function createTestBuffer(context, length) {
 
   return buffer;
 }
+
+/**
+ * Asserts that two arrays are equal within a given epsilon for each element.
+ * @param {!Array<number>} actual
+ * @param {!Array<number>} expected
+ * @param {number} epsilon
+ * @param {string} desc
+ */
+function assert_array_equal_within_eps(
+    actual, expected, epsilon, desc) {
+  assert_equals(
+      actual.length, expected.length, desc + ": length");
+  for (let i = 0; i < actual.length; ++i) {
+    assert_approx_equals(
+        actual[i], expected[i], epsilon, `${desc} sample[${i}]`);
+  }
+}
+
+/**
+ * Asserts that all elements of an array are (approximately) equal to a value.
+ * @param {!Array<number>} arr
+ * @param {number} value
+ * @param {string} desc
+ * @param {number=} epsilon
+ */
+function assert_array_constant_value(
+    arr, value, desc, epsilon = 1e-7) {
+  for (let i = 0; i < arr.length; ++i) {
+    assert_approx_equals(
+        arr[i], value, epsilon, `${desc} sample[${i}]`);
+  }
+}
