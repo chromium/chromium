@@ -22,7 +22,7 @@ import type {SettingsSubpageElement} from './settings_page/settings_subpage.js';
  */
 export interface SearchResult {
   canceled: boolean;
-  didFindMatches: boolean;
+  matchCount: number;
   wasClearSearch: boolean;
 }
 
@@ -62,10 +62,10 @@ const IGNORED_ELEMENTS: Set<string> = new Set([
  * occurred under their subtree.
  *
  * @param root The root of the sub-tree to be searched
- * @return Whether or not matches were found.
+ * @return The number of matches that were found.
  */
-function findAndHighlightMatches(request: SearchRequest, root: Node): boolean {
-  let foundMatches = false;
+function findAndHighlightMatches(request: SearchRequest, root: Node): number {
+  let matchCount = 0;
   const highlights: HTMLElement[] = [];
 
   // Returns true if the node or any of its ancestors are a settings-subpage.
@@ -122,7 +122,7 @@ function findAndHighlightMatches(request: SearchRequest, root: Node): boolean {
       }
 
       if (ranges.length > 0) {
-        foundMatches = true;
+        matchCount += ranges.length;
         revealParentSection(
             node, /*numResults=*/ ranges.length, request.bubbles);
 
@@ -168,7 +168,7 @@ function findAndHighlightMatches(request: SearchRequest, root: Node): boolean {
 
   doSearch(root);
   request.addHighlights(highlights);
-  return foundMatches;
+  return matchCount;
 }
 
 /**
@@ -269,8 +269,8 @@ class RenderTask extends Task {
 
 class SearchAndHighlightTask extends Task {
   exec() {
-    const foundMatches = findAndHighlightMatches(this.request, this.node);
-    this.request.updateMatches(foundMatches);
+    const matchCount = findAndHighlightMatches(this.request, this.node);
+    this.request.updateMatchCount(matchCount);
     return Promise.resolve();
   }
 }
@@ -280,8 +280,8 @@ class TopLevelSearchTask extends Task {
     const shouldSearch = this.request.regExp !== null;
     this.setSectionsVisibility_(!shouldSearch);
     if (shouldSearch) {
-      const foundMatches = findAndHighlightMatches(this.request, this.node);
-      this.request.updateMatches(foundMatches);
+      const matchCount = findAndHighlightMatches(this.request, this.node);
+      this.request.updateMatchCount(matchCount);
     }
 
     return Promise.resolve();
@@ -385,8 +385,8 @@ export class SearchRequest {
   private root_: Element;
   regExp: RegExp|null;
   canceled: boolean;
-  private foundMatches_: boolean;
-  resolver: PromiseResolver<SearchRequest>;
+  private matchCount_: number = 0;
+  resolver: PromiseResolver<SearchRequest> = new PromiseResolver();
   queue: TaskQueue;
   private textObservers_: Set<MutationObserver>;
   private highlights_: HTMLElement[];
@@ -401,9 +401,6 @@ export class SearchRequest {
      * Whether this request was canceled before completing.
      */
     this.canceled = false;
-
-    this.foundMatches_ = false;
-    this.resolver = new PromiseResolver();
 
     this.queue = new TaskQueue(this);
     this.queue.onEmpty(() => {
@@ -477,22 +474,17 @@ export class SearchRequest {
   }
 
   /**
-   * Updates the result for this search request.
+   * Updates the number of search hits found for this search request.
    */
-  updateMatches(found: boolean) {
-    this.foundMatches_ = this.foundMatches_ || found;
-  }
-
-  /** @return Whether any matches were found. */
-  didFindMatches(): boolean {
-    return this.foundMatches_;
+  updateMatchCount(newMatches: number) {
+    this.matchCount_ += newMatches;
   }
 
   getSearchResult(): SearchResult {
     assert(this.resolver.isFulfilled);
     return {
       canceled: this.canceled,
-      didFindMatches: this.didFindMatches(),
+      matchCount: this.matchCount_,
       wasClearSearch: this.isSame(''),
     };
   }
@@ -505,7 +497,7 @@ export function combineSearchResults(results: SearchResult[]): SearchResult {
   assert(results.length > 0);
   return {
     canceled: results.some(r => r.canceled),
-    didFindMatches: results.some(r => r.didFindMatches),
+    matchCount: results.reduce((soFar, r) => soFar + r.matchCount, 0),
     wasClearSearch: results[0].wasClearSearch,
   };
 }

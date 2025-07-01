@@ -30,7 +30,7 @@ export class TestSearchManager extends TestBrowserProxy implements
 
     if (this.searchRequest_ == null || !this.searchRequest_.isSame(text)) {
       this.searchRequest_ = new SearchRequest(text, page);
-      this.searchRequest_.updateMatches(this.matchesFound_);
+      this.searchRequest_.updateMatchCount(this.matchesFound_ ? 1 : 0);
       this.searchRequest_.resolver.resolve(this.searchRequest_);
     }
     return this.searchRequest_.resolver.promise;

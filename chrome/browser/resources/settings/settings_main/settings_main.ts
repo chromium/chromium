@@ -186,7 +186,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
               // search results to come back.
               element.toggleAttribute(
                   'hidden-by-search',
-                  query === '' ? false : !result.didFindMatches);
+                  query === '' ? false : result.matchCount === 0);
               return result;
             });
           });
@@ -203,7 +203,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
       this.toolbarSpinnerActive = false;
       this.inSearchMode_ = !result.wasClearSearch;
-      this.showNoResultsFound_ = this.inSearchMode_ && !result.didFindMatches;
+      this.showNoResultsFound_ = this.inSearchMode_ && result.matchCount === 0;
 
       if (this.inSearchMode_) {
         getAnnouncerInstance().announce(

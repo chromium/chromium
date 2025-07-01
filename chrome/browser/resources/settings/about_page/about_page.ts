@@ -366,7 +366,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
     // settings-about-page is intentionally not included in search.
     return Promise.resolve({
       canceled: false,
-      didFindMatches: false,
+      matchCount: 0,
       wasClearSearch: query === '',
     });
   }
