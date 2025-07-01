@@ -23,6 +23,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/session_usage.h"
+#include "net/base/task/task_runner.h"
 #include "net/base/url_util.h"
 #include "net/http/alternative_service.h"
 #include "net/http/bidirectional_stream_impl.h"
@@ -612,7 +613,7 @@ void HttpStreamFactory::JobController::ResumeMainJobLater(
   resume_main_job_callback_.Reset(
       base::BindOnce(&HttpStreamFactory::JobController::ResumeMainJob,
                      ptr_factory_.GetWeakPtr()));
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  net::GetTaskRunner(priority_)->PostDelayedTask(
       FROM_HERE, resume_main_job_callback_.callback(), delay);
 }
 
@@ -756,7 +757,7 @@ void HttpStreamFactory::JobController::RunLoop(int result) {
     DCHECK(!main_job_);
     DCHECK(!alternative_job_);
     DCHECK(!dns_alpn_h3_job_);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    net::GetTaskRunner(priority_)->PostTask(
         FROM_HERE,
         base::BindOnce(&HttpStreamFactory::JobController::NotifyRequestFailed,
                        ptr_factory_.GetWeakPtr(), rv));
@@ -1522,7 +1523,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
         base::BindOnce(&JobController::OnPoolPreconnectsComplete,
                        ptr_factory_.GetWeakPtr()));
     if (rv != ERR_IO_PENDING) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      net::GetTaskRunner(priority_)->PostTask(
           FROM_HERE, base::BindOnce(&JobController::OnPoolPreconnectsComplete,
                                     ptr_factory_.GetWeakPtr(), rv));
     }
@@ -1536,7 +1537,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
       enable_ip_based_pooling_, enable_alternative_services_);
 
   // Delete `this` later as this method is called while running DoLoop().
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  net::GetTaskRunner(priority_)->PostTask(
       FROM_HERE, base::BindOnce(&JobController::MaybeNotifyFactoryOfCompletion,
                                 ptr_factory_.GetWeakPtr()));
 }

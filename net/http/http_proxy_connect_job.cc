@@ -29,6 +29,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/session_usage.h"
+#include "net/base/task/task_runner.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
@@ -406,9 +407,9 @@ void HttpProxyConnectJob::RestartWithAuthCredentials() {
 
   // Always do this asynchronously, to avoid re-entrancy.
   next_state_ = STATE_RESTART_WITH_AUTH;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&HttpProxyConnectJob::OnIOComplete,
-                                weak_ptr_factory_.GetWeakPtr(), OK));
+  net::GetTaskRunner(priority())
+      ->PostTask(FROM_HERE, base::BindOnce(&HttpProxyConnectJob::OnIOComplete,
+                                           weak_ptr_factory_.GetWeakPtr(), OK));
 }
 
 int HttpProxyConnectJob::DoLoop(int result) {
@@ -631,8 +632,9 @@ int HttpProxyConnectJob::DoHttpProxyConnect() {
 int HttpProxyConnectJob::DoHttpProxyConnectComplete(int result) {
   // Always inform caller of auth requests asynchronously.
   if (result == ERR_PROXY_AUTH_REQUESTED) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&HttpProxyConnectJob::OnAuthChallenge,
+    net::GetTaskRunner(priority())
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&HttpProxyConnectJob::OnAuthChallenge,
                                   weak_ptr_factory_.GetWeakPtr()));
     return ERR_IO_PENDING;
   }
