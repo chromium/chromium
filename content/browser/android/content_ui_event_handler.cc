@@ -86,7 +86,6 @@ bool ContentUiEventHandler::ScrollTo(float x, float y) {
 
 void ContentUiEventHandler::SendMouseWheelEvent(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jlong time_ns,
     jfloat x,
     jfloat y,
@@ -124,7 +123,6 @@ void ContentUiEventHandler::SendMouseWheelEvent(
 }
 
 void ContentUiEventHandler::SendMouseEvent(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj,
                                            jlong time_ns,
                                            jint android_action,
                                            jfloat x,
@@ -163,7 +161,6 @@ void ContentUiEventHandler::SendMouseEvent(JNIEnv* env,
 }
 
 void ContentUiEventHandler::SendScrollEvent(JNIEnv* env,
-                                            const JavaParamRef<jobject>& jobj,
                                             jlong time_ms,
                                             jfloat delta_x,
                                             jfloat delta_y) {
@@ -190,9 +187,7 @@ void ContentUiEventHandler::SendScrollEvent(JNIEnv* env,
       prevent_boosting));
 }
 
-void ContentUiEventHandler::CancelFling(JNIEnv* env,
-                                        const JavaParamRef<jobject>& jobj,
-                                        jlong time_ms) {
+void ContentUiEventHandler::CancelFling(JNIEnv* env, jlong time_ms) {
   auto* event_handler = GetRenderWidgetHostView();
   if (!event_handler)
     return;

@@ -105,7 +105,6 @@ public class ContentUiEventHandler implements UserData {
         ContentUiEventHandlerJni.get()
                 .sendMouseWheelEvent(
                         mNativeContentUiEventHandler,
-                        ContentUiEventHandler.this,
                         MotionEventUtils.getEventTimeNanos(event),
                         event.getX(),
                         event.getY(),
@@ -127,7 +126,6 @@ public class ContentUiEventHandler implements UserData {
         ContentUiEventHandlerJni.get()
                 .sendMouseEvent(
                         mNativeContentUiEventHandler,
-                        ContentUiEventHandler.this,
                         MotionEventUtils.getEventTimeNanos(event),
                         event.getActionMasked(),
                         event.getX(),
@@ -214,16 +212,10 @@ public class ContentUiEventHandler implements UserData {
                 GestureListenerManagerImpl.fromWebContents(mWebContents);
         assumeNonNull(gestureManager);
         if (gestureManager.hasActiveFlingScroll()) {
-            ContentUiEventHandlerJni.get()
-                    .cancelFling(mNativeContentUiEventHandler, ContentUiEventHandler.this, time);
+            ContentUiEventHandlerJni.get().cancelFling(mNativeContentUiEventHandler, time);
         }
         ContentUiEventHandlerJni.get()
-                .sendScrollEvent(
-                        mNativeContentUiEventHandler,
-                        ContentUiEventHandler.this,
-                        time,
-                        dxPix,
-                        dyPix);
+                .sendScrollEvent(mNativeContentUiEventHandler, time, dxPix, dyPix);
     }
 
     @CalledByNative
@@ -241,7 +233,6 @@ public class ContentUiEventHandler implements UserData {
 
         void sendMouseWheelEvent(
                 long nativeContentUiEventHandler,
-                ContentUiEventHandler caller,
                 long timeNs,
                 float x,
                 float y,
@@ -252,7 +243,6 @@ public class ContentUiEventHandler implements UserData {
 
         void sendMouseEvent(
                 long nativeContentUiEventHandler,
-                ContentUiEventHandler caller,
                 long timeNs,
                 int action,
                 float x,
@@ -267,13 +257,8 @@ public class ContentUiEventHandler implements UserData {
                 int toolType);
 
         void sendScrollEvent(
-                long nativeContentUiEventHandler,
-                ContentUiEventHandler caller,
-                long timeMs,
-                float deltaX,
-                float deltaY);
+                long nativeContentUiEventHandler, long timeMs, float deltaX, float deltaY);
 
-        void cancelFling(
-                long nativeContentUiEventHandler, ContentUiEventHandler caller, long timeMs);
+        void cancelFling(long nativeContentUiEventHandler, long timeMs);
     }
 }

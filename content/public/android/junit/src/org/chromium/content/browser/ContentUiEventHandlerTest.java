@@ -91,7 +91,6 @@ public class ContentUiEventHandlerTest {
         verify(mContentUiEventHandlerJniMock)
                 .sendMouseEvent(
                         NATIVE_CONTENT_UI_EVENT_HANDLER,
-                        mContentUiEventHandler,
                         MotionEventUtils.getEventTimeNanos(event),
                         event.getActionMasked(),
                         event.getX(),
