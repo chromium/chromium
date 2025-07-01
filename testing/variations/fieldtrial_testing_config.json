@@ -24653,9 +24653,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "ThreeButtonPasswordSaveDialog",
                     "enable_features": [
                         "ThreeButtonPasswordSaveDialog"
+                    ],
+                    "disable_features": [
+                        "IPH_PasswordsSavePrimingPromo",
+                        "IPH_PasswordsSaveRecoveryPromo"
                     ]
                 }
             ]
