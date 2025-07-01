@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SimpleCache.{CacheInstance}CacheSizeOnInit" units="KB"
+<histogram name="SimpleCache.{CacheInstance}CacheSizeOnInit2" units="MB"
     expires_after="2025-11-30">
   <owner>jkarlin@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
@@ -253,14 +253,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SimpleCache.{CacheInstance}MaxCacheSizeOnInit" units="KB"
+<histogram name="SimpleCache.{CacheInstance}MaxCacheSizeOnInit2" units="MB"
     expires_after="2025-11-30">
   <owner>morlovich@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The size limit computed for the cache. Warning: this was expired 2022-07-01
-    to about 2025-06-03; data may be missing. {CacheInstance}
-  </summary>
+  <summary>The size limit computed for the cache. {CacheInstance}</summary>
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}OpenEntryIndexState"

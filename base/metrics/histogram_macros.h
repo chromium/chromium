@@ -340,7 +340,7 @@ enum class ScopedHistogramTiming {
   UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1000, 500000, 50)
 
 // Used to measure common MB-granularity memory stats. Sample is in MB. Range is
-// 1MB to ~1G.
+// 1MB to ~4G.
 #define UMA_HISTOGRAM_MEMORY_MEDIUM_MB(name, sample) \
   UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 4000, 100)
 

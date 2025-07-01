@@ -48,7 +48,7 @@ constexpr int kWriteToDiskOnBackgroundDelayMSecs = 100;
 // is left.
 constexpr uint32_t kEvictionMarginDivisor = 20;
 
-constexpr uint32_t kBytesInKb = 1024;
+constexpr uint32_t kBytesInMiB = 1024 * 1024;
 
 // This is added to the size of each entry before using the size
 // to determine which entries to evict first. It's basically an
@@ -680,11 +680,11 @@ void SimpleIndex::MergeInitializingSet(
   SIMPLE_CACHE_UMA(CUSTOM_COUNTS, "IndexNumEntriesOnInit", cache_type_,
                    entries_set_.size(), 0, 100000, 50);
   SIMPLE_CACHE_UMA(
-      MEMORY_KB, "CacheSizeOnInit", cache_type_,
-      static_cast<base::HistogramBase::Sample32>(cache_size_ / kBytesInKb));
+      MEMORY_MEDIUM_MB, "CacheSizeOnInit2", cache_type_,
+      static_cast<base::HistogramBase::Sample32>(cache_size_ / kBytesInMiB));
   SIMPLE_CACHE_UMA(
-      MEMORY_KB, "MaxCacheSizeOnInit", cache_type_,
-      static_cast<base::HistogramBase::Sample32>(max_size_ / kBytesInKb));
+      MEMORY_MEDIUM_MB, "MaxCacheSizeOnInit2", cache_type_,
+      static_cast<base::HistogramBase::Sample32>(max_size_ / kBytesInMiB));
 
   // Run all callbacks waiting for the index to come up.
   for (auto& callback : to_run_when_initialized_) {
