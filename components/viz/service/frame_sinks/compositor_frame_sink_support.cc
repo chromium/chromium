@@ -960,9 +960,6 @@ SurfaceReference CompositorFrameSinkSupport::MakeTopLevelRootReference(
   return SurfaceReference(surface_manager_->GetRootSurfaceId(), surface_id);
 }
 
-void CompositorFrameSinkSupport::HandleCallback() {
-}
-
 void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
   DCHECK(!pending_frames_.empty());
   // TODO(https://crbug.com/40902503): Drawing from a layer context is indeed

@@ -311,10 +311,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void StartObservingBeginFrameSource();
   void StopObservingBeginFrameSource();
 
-  // For the sync API calls, if we are blocking a client callback, runs it once
-  // BeginFrame and FrameAck are done.
-  void HandleCallback();
-
   void MaybeEvictSurfaces();
   void EvictLastActiveSurface();
   bool ShouldSendBeginFrame(BeginFrameId frame_id,
