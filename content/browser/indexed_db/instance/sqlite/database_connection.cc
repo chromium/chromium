@@ -355,6 +355,17 @@ class ObjectStoreRecordIterator : public RecordIterator {
     return ReadRow(*statement);
   }
 
+  void SavePosition() override { saved_position_ = position_; }
+
+  bool TryResetToLastSavedPosition() override {
+    if (!saved_position_) {
+      return false;
+    }
+    position_ = *std::move(saved_position_);
+    saved_position_.reset();
+    return true;
+  }
+
  protected:
   // RecordIterator:
   void BindParameters(sql::Statement& statement,
@@ -407,6 +418,8 @@ class ObjectStoreRecordIterator : public RecordIterator {
 
   // Encoded key from the current record, tracking the position in the range.
   std::string position_;
+
+  std::optional<std::string> saved_position_;
 };
 
 class IndexRecordIterator : public RecordIterator {
@@ -483,9 +496,13 @@ class IndexRecordIterator : public RecordIterator {
           " OR (index_key = @position AND primary_key > @object_store_position)"
           " OR index_key > @position"
           ")"
-          " AND (@target_key IS NULL OR index_key >= @target_key)"
-          " AND (@target_primary_key IS NULL OR primary_key >= "
-          "@target_primary_key)");
+          "AND (@target_key IS NULL OR index_key >= @target_key)"
+          "AND"
+          "("
+          " @target_primary_key IS NULL"
+          " OR (index_key = @target_key AND primary_key >= @target_primary_key)"
+          " OR index_key > @target_key"
+          ")");
     } else {
       query_pieces.push_back(
           "("
@@ -493,9 +510,13 @@ class IndexRecordIterator : public RecordIterator {
           " OR (index_key = @position AND primary_key < @object_store_position)"
           " OR index_key < @position"
           ")"
-          " AND (@target_key IS NULL OR index_key <= @target_key)"
-          " AND (@target_primary_key IS NULL OR primary_key <= "
-          "@target_primary_key)");
+          "AND (@target_key IS NULL OR index_key <= @target_key)"
+          "AND"
+          "("
+          " @target_primary_key IS NULL"
+          " OR (index_key = @target_key AND primary_key <= @target_primary_key)"
+          " OR index_key < @target_key"
+          ")");
     }
     // LIMIT is needed to use OFFSET. A negative LIMIT implies no limit on the
     // number of rows returned:
@@ -531,6 +552,19 @@ class IndexRecordIterator : public RecordIterator {
       return nullptr;
     }
     return ReadRow(*statement);
+  }
+
+  void SavePosition() override {
+    saved_position_ = {position_, object_store_position_};
+  }
+
+  bool TryResetToLastSavedPosition() override {
+    if (!saved_position_) {
+      return false;
+    }
+    std::tie(position_, object_store_position_) = *std::move(saved_position_);
+    saved_position_.reset();
+    return true;
   }
 
  protected:
@@ -600,6 +634,8 @@ class IndexRecordIterator : public RecordIterator {
   std::string position_;
   // Encoded primary key from the current record.
   std::string object_store_position_;
+
+  std::optional<std::tuple<std::string, std::string>> saved_position_;
 };
 
 }  // namespace
@@ -812,7 +848,7 @@ void DatabaseConnection::RollBackTransaction(
 
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     CHECK(metadata_snapshot_.has_value());
-    metadata_ = std::move(*metadata_snapshot_);
+    metadata_ = *std::move(metadata_snapshot_);
     metadata_snapshot_.reset();
   }
 }

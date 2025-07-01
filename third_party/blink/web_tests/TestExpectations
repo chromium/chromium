@@ -6630,6 +6630,8 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstor
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_openCursor.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbindex_openKeyCursor.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/transaction-abort-index-metadata-revert.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/prefetch-race.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/mutating-cursor.html [ Pass ]
 
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/get-databases.any.html [ Pass ]
 

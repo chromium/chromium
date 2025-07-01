@@ -217,8 +217,12 @@ class BackingStore {
     virtual StatusOr<bool> Continue(const blink::IndexedDBKey& key,
                                     const blink::IndexedDBKey& primary_key) = 0;
     virtual StatusOr<bool> Advance(uint32_t count) = 0;
-    // Clone may return a nullptr if cloning fails for any reason.
-    virtual std::unique_ptr<Cursor> Clone() const = 0;
+
+    // Saves the current position of the cursor.
+    virtual void SavePosition() = 0;
+    // Attempts to reset the cursor to the last saved position. The cursor
+    // may not be in a valid state if this returns false.
+    virtual bool TryResetToLastSavedPosition() = 0;
   };
 
   virtual ~BackingStore() = default;

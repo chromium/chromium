@@ -365,6 +365,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     StatusOr<bool> Continue(const blink::IndexedDBKey& key,
                             const blink::IndexedDBKey& primary_key) override;
     StatusOr<bool> Advance(uint32_t count) override;
+    void SavePosition() override;
+    bool TryResetToLastSavedPosition() override;
 
     StatusOr<bool> Continue(const blink::IndexedDBKey& key,
                             const blink::IndexedDBKey& primary_key,
@@ -375,9 +377,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     Cursor(base::WeakPtr<Transaction> transaction,
            int64_t database_id,
            const CursorOptions& cursor_options);
-
-    explicit Cursor(const Cursor* other,
-                    std::unique_ptr<TransactionalLevelDBIterator> iterator);
 
     // May return nullptr.
     static std::unique_ptr<TransactionalLevelDBIterator> CloneIterator(
@@ -423,6 +422,10 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
         IteratorState state);
 
     int tombstones_count_ = 0;
+    // `iterator_` and `current_key_` are saved when `SavePosition()` is called.
+    std::optional<std::tuple<std::unique_ptr<TransactionalLevelDBIterator>,
+                             blink::IndexedDBKey>>
+        saved_members_;
     base::WeakPtrFactory<Cursor> weak_factory_{this};
   };
 

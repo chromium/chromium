@@ -45,6 +45,13 @@ class RecordIterator {
   // Iterates `count` times from the current position.
   StatusOr<std::unique_ptr<Record>> Iterate(uint32_t count);
 
+  // Saves the current position of the iterator.
+  virtual void SavePosition() = 0;
+
+  // Resets the iterator to the last saved position if there was one. Returns
+  // false if no position was saved previously.
+  virtual bool TryResetToLastSavedPosition() = 0;
+
  protected:
   RecordIterator();
 

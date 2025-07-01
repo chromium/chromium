@@ -29,11 +29,12 @@ class BackingStoreCursorImpl : public BackingStore::Cursor {
   blink::IndexedDBKey TakeKey() && override;
   const blink::IndexedDBKey& GetPrimaryKey() const override;
   IndexedDBValue& GetValue() override;
-  std::unique_ptr<Cursor> Clone() const override;
   StatusOr<bool> Continue() override;
   StatusOr<bool> Continue(const blink::IndexedDBKey& key,
                           const blink::IndexedDBKey& primary_key) override;
   StatusOr<bool> Advance(uint32_t count) override;
+  void SavePosition() override;
+  bool TryResetToLastSavedPosition() override;
 
  private:
   std::unique_ptr<RecordIterator> iterator_;

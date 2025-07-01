@@ -90,8 +90,12 @@ class Cursor : public blink::mojom::IDBCursor {
 
   // Must be destroyed before transaction_.
   std::unique_ptr<BackingStore::Cursor> cursor_;
-  // Must be destroyed before transaction_.
-  std::unique_ptr<BackingStore::Cursor> saved_cursor_;
+
+  // Normally, `cursor_` is immediately destroyed when it reaches the end of its
+  // range since it cannot be used any more. But if this happens during a
+  // prefetch operation, it can be reset to its last-saved position, making it
+  // usable again. Hence, use a flag to keep track of this only during prefetch.
+  bool reached_end_during_prefetch_ = false;
 
   bool closed_ = false;
 

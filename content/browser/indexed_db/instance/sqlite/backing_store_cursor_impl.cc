@@ -38,12 +38,6 @@ IndexedDBValue& BackingStoreCursorImpl::GetValue() {
   return current_record_->value();
 }
 
-std::unique_ptr<BackingStore::Cursor> BackingStoreCursorImpl::Clone() const {
-  // This is needed by `Cursor::PrefetchIterationOperation()`.
-  // TODO(crbug.com/419208481): Implement prefetch without using `Clone()`.
-  return nullptr;
-}
-
 StatusOr<bool> BackingStoreCursorImpl::Continue() {
   return Advance(1);
 }
@@ -64,6 +58,14 @@ StatusOr<bool> BackingStoreCursorImpl::Advance(uint32_t count) {
         current_record_ = std::move(new_record);
         return current_record_ != nullptr;
       });
+}
+
+void BackingStoreCursorImpl::SavePosition() {
+  iterator_->SavePosition();
+}
+
+bool BackingStoreCursorImpl::TryResetToLastSavedPosition() {
+  return iterator_->TryResetToLastSavedPosition();
 }
 
 }  // namespace content::indexed_db::sqlite

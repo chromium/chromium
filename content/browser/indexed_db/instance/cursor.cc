@@ -276,7 +276,6 @@ Status Cursor::PrefetchIterationOperation(
   std::vector<IndexedDBKey> found_primary_keys;
   std::vector<IndexedDBValue> found_values;
 
-  saved_cursor_.reset();
   // TODO(cmumford): Use IPC::Channel::kMaximumMessageSize
   const size_t max_size_estimate = 10 * 1024 * 1024;
   size_t size_estimate = 0;
@@ -285,17 +284,13 @@ Status Cursor::PrefetchIterationOperation(
   //                 properly fail, caller will not know why, and any corruption
   //                 will be ignored.
   for (int i = 0; i < number_to_fetch; ++i) {
-    if (!cursor_) {
+    if (!cursor_ || reached_end_during_prefetch_) {
       break;
     }
 
-    if (StatusOr<bool> result = cursor_->Continue();
-        !result.has_value() || !*result) {
+    StatusOr<bool> result = cursor_->Continue();
+    if (!result.has_value()) {
       cursor_.reset();
-      if (result.has_value()) {
-        // We've reached the end, so just return what we have.
-        break;
-      }
       // |transaction_| must be valid for CreateError(), so we can't call
       // Close() until after calling CreateError().
       DatabaseError error =
@@ -307,10 +302,16 @@ Status Cursor::PrefetchIterationOperation(
       return result.error();
     }
 
+    if (!*result) {
+      // We've reached the end, so just return what we have.
+      reached_end_during_prefetch_ = true;
+      break;
+    }
+
     if (i == 0) {
       // First prefetched result is always used, so that's the position
       // a cursor should be reset to if the prefetch is invalidated.
-      saved_cursor_ = cursor_->Clone();
+      cursor_->SavePosition();
     }
 
     found_keys.emplace_back(cursor_->GetKey().Clone());
@@ -361,17 +362,22 @@ Status Cursor::PrefetchIterationOperation(
 
 void Cursor::PrefetchReset(int used_prefetches) {
   TRACE_EVENT0("IndexedDB", "Cursor::PrefetchReset");
-  cursor_.swap(saved_cursor_);
-  saved_cursor_.reset();
-
   if (closed_) {
     return;
   }
+
+  reached_end_during_prefetch_ = false;
+  if (!cursor_->TryResetToLastSavedPosition()) {
+    cursor_.reset();
+  }
+
   // First prefetched result is always used.
   if (cursor_) {
     DCHECK_GT(used_prefetches, 0);
-    auto result = cursor_->Advance(used_prefetches - 1);
-    DCHECK(!result.has_value() || result.value());
+    if (used_prefetches > 1) {
+      auto result = cursor_->Advance(used_prefetches - 1);
+      DCHECK(!result.has_value() || result.value());
+    }
   }
 }
 
@@ -383,7 +389,6 @@ void Cursor::Close() {
   TRACE_EVENT0("IndexedDB", "Cursor::Close");
   closed_ = true;
   cursor_.reset();
-  saved_cursor_.reset();
   if (transaction_) {
     transaction_->UnregisterOpenCursor(this);
   }
