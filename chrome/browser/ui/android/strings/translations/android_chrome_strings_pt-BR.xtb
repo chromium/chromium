@@ -22,7 +22,7 @@
 <translation id="1087176310396019910">Possível spam</translation>
 <translation id="1087799850623149508">Toque e pressione para mover a barra de endereço para baixo</translation>
 <translation id="1089606299949659462">Revisão concluída</translation>
-<translation id="1094555143448724771">Para conferir as guias dos seus outros dispositivos, sincronize-as com o histórico</translation>
+<translation id="1094555143448724771">Para ver as guias dos seus outros dispositivos, sincronize-as com o histórico</translation>
 <translation id="1095761715416917775">Tenha sempre acesso aos seus dados sincronizados</translation>
 <translation id="1100066534610197918">Abrir em nova guia no grupo</translation>
 <translation id="1103142993930332957">Quer ajudar a melhorar o Chrome?</translation>
@@ -1695,7 +1695,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Permissões removidas de 1 site}one{Permissões removidas de # site}other{Permissões removidas de # sites}}</translation>
 <translation id="8453310803815879010">Iniciar jogo do dinossauro</translation>
 <translation id="8455675988389029454">Acesse seus favoritos, senhas e mais em todos os dispositivos</translation>
-<translation id="8458413889418591446">Para voltar rapidamente aos sites visitados, sincronize o histórico e as guias</translation>
+<translation id="8458413889418591446">Sincronize o histórico e as guias para acessar rapidamente os sites visitados</translation>
 <translation id="84594714173170813">Continue usando os dados do Chrome na sua Conta do Google</translation>
 <translation id="8460448946170646641">Revise os principais controles de privacidade e segurança</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>

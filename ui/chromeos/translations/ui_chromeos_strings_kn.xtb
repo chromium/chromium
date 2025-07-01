@@ -317,7 +317,7 @@
 <translation id="3549797760399244642">drive.google.com ಗೆ ಹೋಗಿ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ಬಳಸಿಕೊಂಡು ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು, ಅವುಗಳನ್ನು ಮೊದಲು Windows ಫೈಲ್‌ಗಳ ಫೋಲ್ಡರ್‌ಗೆ ಕಾಪಿ ಮಾಡಿ.</translation>
 <translation id="3556731189587832921">ಇಂಟರ್‌ನ್ಯಾಶನಲ್ PC ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಇಂಗ್ಲಿಷ್ (ಯುಎಸ್)</translation>
-<translation id="3557414470514932909"><ph name="FILE_NAME" /> ಅನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> ಅನ್ನು ಟ್ರ್ಯಾಶ್‌ಗೆ ಸರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3567221313191587603">ಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ನಿಮ್ಮ ಫೈಲ್‌ಗಳ ಆಫ್‌ಲೈನ್ ಪ್ರವೇಶಕ್ಕಾಗಿ ಅವುಗಳ ಮೇಲೆ <ph name="OFFLINE_CHECKBOX_NAME" /> ಟಾಗಲ್ ಮಾಡಿ.</translation>
 <translation id="357479282490346887">ಲಿಥುವಾನಿಯನ್</translation>
 <translation id="3587482841069643663">ಎಲ್ಲ</translation>
@@ -337,7 +337,7 @@
 <translation id="3690128548376345212">ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ವಿವರಗಳು</translation>
 <translation id="3691184985318546178">ಸಿಂಹಳ</translation>
 <translation id="3702842351052426940">ನಿಮ್ಮ SIM ಕಾರ್ಡ್ ಅಥವಾ eSIM ಪ್ರೊಫೈಲ್ ನಿಷ್ಕ್ರಿಯಗೊಂಡಿರಬಹುದು. ನಿಮ್ಮ SIM ಕಾರ್ಡ್ ಅನ್ನು ಬದಲಿಸಲು ಅಥವಾ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="3722341589402358578">ದೋಷ ಎದುರಾಗಿದೆ. ಕೆಲವು ಐಟಂಗಳನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸದೇ ಇರಬಹುದು.</translation>
+<translation id="3722341589402358578">ದೋಷ ಎದುರಾಗಿದೆ. ಕೆಲವು ಐಟಂಗಳನ್ನು ಟ್ರ್ಯಾಶ್‌ಗೆ ಸರಿಸದೇ ಇರಬಹುದು.</translation>
 <translation id="3726463242007121105">ಇದರ ಫೈಲ್‌ಸಿಸ್ಟಂ ಅನ್ನು ಬೆಂಬಲಿಸದ ಕಾರಣ ಈ ಸಾಧನವನ್ನು ತೆರೆಯಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3727148787322499904">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸುವುದರಿಂದ ಎಲ್ಲಾ ಹಂಚಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ</translation>
 <translation id="3737576078404241332">ಸೈಡ್‌ಬಾರ್‌ನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
@@ -382,7 +382,7 @@
 <translation id="4101601646343868113">ನಿಮ್ಮ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ನಿಮ್ಮ ಮೊಬೈಲ್ ಡೇಟಾ ಪ್ಲಾನ್ ಸಕ್ರಿಯವಾಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="4124731372776320263">1 ಡ್ರೈವ್ ಫೈಲ್ ಸಿಂಕ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="4124935795427217608">ಯುನಿಕಾರ್ನ್</translation>
-<translation id="4131235941541910880">ನಿಮಗೆ ಬೇಡದ ಐಟಂಗಳನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಿ</translation>
+<translation id="4131235941541910880">ನಿಮಗೆ ಬೇಡದ ಐಟಂಗಳನ್ನು ಟ್ರ್ಯಾಶ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ಸಾಧನದ ಸೆಟಪ್ ನಂತರ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4153015322587141338">ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ನಿಮ್ಮ ಫೈಲ್‌ಗಳಿಗೆ ತ್ವರಿತ ಆ್ಯಕ್ಸೆಸ್ ಪಡೆಯಲು, ಫೈಲ್ ಮೇಲೆ ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು "<ph name="PIN_COMMAND" />" ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="4157569377477607576">ನಿರ್ವಾಹಕರ ನೀತಿ ಇವುಗಳನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ:</translation>
@@ -609,7 +609,7 @@
 <translation id="5691596662111998220">ಓಹ್, <ph name="FILE_NAME" /> ಇನ್ನು ಮುಂದೆ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವುದಿಲ್ಲ.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" /> ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="5700087501958648444">ಆಡಿಯೋ ಮಾಹಿತಿ</translation>
-<translation id="5720028165859493293"><ph name="FILE_NAME" /> ಅನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> ಅನ್ನು ಟ್ರ್ಯಾಶ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="5724172041621205163">ಪಟ್ಟಾಚೋಟೆ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಥಾಯ್</translation>
 <translation id="57383366388012121">ಕಳೆದ ತಿಂಗಳು</translation>
 <translation id="575175778971367197">ಇದೀಗ ಈ ಫೈಲ್ ಅನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -703,7 +703,7 @@
 <translation id="642282551015776456">ಈ ಹೆಸರನ್ನು ಫೋಲ್ಡರ್‌ನ ಫೈಲ್‌ನಂತೆ ಬಳಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6423031066725912715">TCVN ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ವಿಯೆಟ್ನಾಮೀಸ್</translation>
 <translation id="6430271654280079150">ನೀವು 1 ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನವನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
-<translation id="643243556292470964">ಅಳಿಸಲಾದ ಫೈಲ್‌ಗಳನ್ನು ಈಗ ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
+<translation id="643243556292470964">ಅಳಿಸಲಾದ ಫೈಲ್‌ಗಳನ್ನು ಈಗ ಟ್ರ್ಯಾಶ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="6438480100790416671">ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="6451527188465304418">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತಾ ನೀತಿಗಳಿಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ಫೈಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6485131920355264772">ಅಂತರ ಮಾಹಿತಿಯನ್ನು ಹಿಂಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ</translation>
@@ -858,7 +858,7 @@
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7663224033570512922">ಹಿಂದಿ</translation>
 <translation id="7665680517722058469">ಬೇರೆ ವಿಡಿಯೋಗಳನ್ನು ಹುಡುಕಲು ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಟ್ರ್ಯಾಶ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="7693909743393669729">ಡ್ರೈವ್ ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡುವುದರಿಂದ ಅದರಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ ಹಾಗೂ ಗೋಚರಿಸದ ವಿಭಾಗಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಎಲ್ಲಾ ವಿಭಾಗಗಳನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ. ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="76959938259365003">ಅನುಪಯುಕ್ತವನ್ನು ಖಾಲಿ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
@@ -1085,7 +1085,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ನಿಂದ <ph name="TO_ENTRY_NAME" /> ವರೆಗಿನ <ph name="ENTRY_COUNT" /> ನಮೂದುಗಳ ಶ್ರೇಣಿಯನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="954194396377670556">ನಿರ್ವಾಹಕರ ನೀತಿ ಇವುಗಳನ್ನು ತಡೆಯುತ್ತದೆ:</translation>
 <translation id="965477715979482472">ಇಂಗ್ಲಿಷ್‌‌ (ದಕ್ಷಿಣ ಆಫ್ರಿಕಾ)</translation>
-<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಟ್ರ್ಯಾಶ್‌ಗೆ ಸರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="981121421437150478">ಆಫ್‌ಲೈನ್</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ಹೆಸರಿನ ಫೈಲ್ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ. ಇದನ್ನು ನೀವು ಬದಲಾಯಿಸಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="992401651319295351">ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ. ಹೊಸ ಪಿನ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡುವವರೆಗೆ ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
