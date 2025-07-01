@@ -564,7 +564,7 @@
       "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
       "--dark-mode-settings=ImageClassifierPolicy=1"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "dark-mode-default",
@@ -584,7 +584,7 @@
     "args": [
       "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "dark-mode-images-filter-all",
@@ -604,7 +604,7 @@
       "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
       "--dark-mode-settings=ImagePolicy=0"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "dark-mode-images-filter-none",
@@ -624,7 +624,7 @@
       "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
       "--dark-mode-settings=ImagePolicy=1"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "dbsc-enabled",
