@@ -5,6 +5,8 @@
 #ifndef CHROME_TEST_BASE_CHROME_ASH_TEST_BASE_H_
 #define CHROME_TEST_BASE_CHROME_ASH_TEST_BASE_H_
 
+#include <memory>
+
 #include "ash/test/ash_test_base.h"
 
 // AshTestBase used in Chrome.
@@ -13,9 +15,8 @@
 class ChromeAshTestBase : public ash::AshTestBase {
  public:
   ChromeAshTestBase();
-  ChromeAshTestBase(
-      std::unique_ptr<base::test::TaskEnvironment> task_environment)
-      : AshTestBase(std::move(task_environment)) {}
+  explicit ChromeAshTestBase(
+      std::unique_ptr<base::test::TaskEnvironment> task_environment);
 
   ChromeAshTestBase(const ChromeAshTestBase&) = delete;
   ChromeAshTestBase& operator=(const ChromeAshTestBase&) = delete;

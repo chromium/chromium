@@ -20,6 +20,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/traits_bag.h"
@@ -96,6 +97,11 @@ class AshTestBase : public testing::Test {
   // Alternatively a subclass may pass a TaskEnvironment directly.
   explicit AshTestBase(
       std::unique_ptr<base::test::TaskEnvironment> task_environment);
+
+  // In addition, a subclass may pass a TestingPrefServiceSimple to be used in
+  // the shell. `local_state` must be non-null and outlive `this`.
+  AshTestBase(std::unique_ptr<base::test::TaskEnvironment> task_environment,
+              TestingPrefServiceSimple* local_state);
 
   AshTestBase(const AshTestBase&) = delete;
   AshTestBase& operator=(const AshTestBase&) = delete;
@@ -305,7 +311,10 @@ class AshTestBase : public testing::Test {
   base::test::TaskEnvironment* task_environment() {
     return task_environment_.get();
   }
-  TestingPrefServiceSimple* local_state() { return &local_state_; }
+
+  // Always returns a non-null pointer.
+  TestingPrefServiceSimple* local_state() { return local_state_.get(); }
+
   AshTestHelper* ash_test_helper() { return ash_test_helper_.get(); }
 
   // Returns nullptr before SetUp() is called.
@@ -406,8 +415,11 @@ class AshTestBase : public testing::Test {
   // subclasses may elect to provide their own.
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
+  // Used only if no TestingPrefServiceSimple is provided to ctor.
+  std::unique_ptr<TestingPrefServiceSimple> owned_local_state_;
+
   // A pref service used for local state.
-  TestingPrefServiceSimple local_state_;
+  raw_ptr<TestingPrefServiceSimple> local_state_;
 
   // A helper class to take screen shots then compare with benchmarks. Set by
   // `PrepareForPixelDiffTest()`.

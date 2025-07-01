@@ -47,6 +47,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioner.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/check_deref.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -129,8 +130,19 @@ class AshEventGeneratorDelegate
 
 AshTestBase::AshTestBase(
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
-    : task_environment_(std::move(task_environment)) {
-  RegisterLocalStatePrefs(local_state_.registry(), true);
+    : task_environment_(std::move(task_environment)),
+      owned_local_state_(std::make_unique<TestingPrefServiceSimple>()),
+      local_state_(owned_local_state_.get()) {
+  CHECK(local_state_);
+  RegisterLocalStatePrefs(owned_local_state_->registry(), true);
+}
+
+AshTestBase::AshTestBase(
+    std::unique_ptr<base::test::TaskEnvironment> task_environment,
+    TestingPrefServiceSimple* local_state)
+    : task_environment_(std::move(task_environment)),
+      local_state_(local_state) {
+  CHECK(local_state_);
 }
 
 AshTestBase::~AshTestBase() {
