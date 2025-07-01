@@ -3942,7 +3942,7 @@
   {
     "name": "enable-openxr-android",
     "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-openxr-android-smooth-depth",
@@ -3952,7 +3952,7 @@
   {
     "name": "enable-openxr-extended",
     "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-palm-suppression",
