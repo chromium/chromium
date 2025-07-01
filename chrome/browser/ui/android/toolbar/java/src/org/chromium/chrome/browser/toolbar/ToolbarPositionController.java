@@ -530,9 +530,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         if (newControlsPosition == currentPosition) {
             // Don't do anything for non-transitions.
             return StateTransition.NONE;
-        } else if (formFieldStateChanged || prefStateChanged) {
-            // Animate when the pref changes (i.e. the long press menu is invoked) or the keyboard
-            // shows/hides.
+        } else if (prefStateChanged) {
+            // Animate when the pref changes (i.e. the long press menu is invoked).
             return switchingToBottom
                     ? StateTransition.ANIMATE_TO_BOTTOM
                     : StateTransition.ANIMATE_TO_TOP;
