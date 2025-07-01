@@ -5,72 +5,50 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_OBSERVER_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_OBSERVER_LIST_H_
 
-#include <algorithm>
-
 #include "base/auto_reset.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
-// A list of observers. Ensures that the list is not mutated while iterating.
-// Observers are not retained by the list. The implementation favors performance
-// of iteration over modifications via add and remove.
+// A list of observers. Ensures list is not mutated while iterating. Observers
+// are not retained by the list. The implementation favors performance of
+// iteration instead of modifications.
 template <class ObserverType>
 class PLATFORM_EXPORT HeapObserverList final {
   DISALLOW_NEW();
 
  public:
-  // Adds an observer to this list. An observer must not be added to the same
-  // list more than once. Adding an observer is O(n) but amortized constant.
+  // Add an observer to this list. An observer must not be added to the same
+  // list more than once. Adding an observer is O(n).
   void AddObserver(ObserverType* observer) {
     CHECK(mutation_state_ & kAllowAddition);
     DCHECK(!HasObserver(observer));
-    DCHECK_EQ(observers_to_indices_.size(), observers_.size());
-    observers_to_indices_.insert(observer, observers_.size());
     observers_.push_back(observer);
     if (check_capacity_) [[unlikely]] {
       // On first addition after GC, check whether we need to shrink to a
       // reasoanble capacity.
       observers_.ShrinkToReasonableCapacity();
-      // observers_to_indices_ did already shrink if necessary due to insert().
       check_capacity_ = false;
     }
   }
 
   // Removes the given observer from this list. Does nothing if this observer is
-  // not in this list. Removing an observer is O(n) but amortized constant.
+  // not in this list. Removing an observer is O(n).
   void RemoveObserver(ObserverType* observer) {
     CHECK(mutation_state_ & kAllowRemoval);
-    DCHECK_EQ(observers_to_indices_.size(), observers_.size());
-
-    const auto it = observers_to_indices_.find(observer);
-    if (it == observers_to_indices_.end()) [[unlikely]] {
-      return;
+    const auto it = std::find(observers_.begin(), observers_.end(), observer);
+    if (it != observers_.end()) {
+      observers_.erase(it);
     }
-    const wtf_size_t index = it->value;
-    observers_to_indices_.erase(it);
-
-    const wtf_size_t last_observer_index = observers_.size() - 1;
-    if (index != last_observer_index) {
-      auto* last_observer = observers_[last_observer_index].Get();
-      observers_[index] = last_observer;
-      observers_to_indices_.find(last_observer)->value = index;
-    }
-    observers_.pop_back();
-    observers_.ShrinkToReasonableCapacity();
-    // observers_to_indices_ did already shrink if necessary due to erase().
-    check_capacity_ = false;
   }
 
   // Determine whether a particular observer is in the list. Checking
-  // containment is O(1).
+  // containment is O(n).
   bool HasObserver(ObserverType* observer) const {
     DCHECK(!IsIteratingOverObservers());
-    return observers_to_indices_.Contains(observer);
+    return observers_.Contains(observer);
   }
 
   // Returns true if the list is being iterated over.
@@ -80,7 +58,6 @@ class PLATFORM_EXPORT HeapObserverList final {
   void Clear() {
     CHECK(mutation_state_ & kAllowRemoval);
     observers_.clear();
-    observers_to_indices_.clear();
   }
 
   // Iterate over the registered lifecycle observers in an unpredictable order.
@@ -89,11 +66,9 @@ class PLATFORM_EXPORT HeapObserverList final {
   // will be called synchronously inside `ForEachObserver()`.
   //
   // Sample usage:
-  // ```
-  // ForEachObserver([](ObserverType* observer) {
-  //   observer->SomeMethod();
-  // });
-  // ```
+  //     ForEachObserver([](ObserverType* observer) {
+  //       observer->SomeMethod();
+  //     });
   template <typename ForEachCallable>
   void ForEachObserver(const ForEachCallable& callable) const {
     base::AutoReset<MutationState> scope(&mutation_state_, kNoMutationAllowed);
@@ -109,10 +84,13 @@ class PLATFORM_EXPORT HeapObserverList final {
     visitor->Trace(observers_);
     visitor->RegisterWeakCallbackMethod<
         HeapObserverList, &HeapObserverList::CleanupDeadObservers>(this);
-    visitor->Trace(observers_to_indices_);
   }
 
  private:
+  // HeapVector doesn't allow WeakMember at this point. Instead, use a
+  // UntracedMember with a custom weak callback.
+  using ObserverList = HeapVector<UntracedMember<ObserverType>>;
+
   void CleanupDeadObservers(const LivenessBroker& broker) {
     // This method must not allocate.
 
@@ -133,20 +111,9 @@ class PLATFORM_EXPORT HeapObserverList final {
       observers_.erase(
           std::remove_if(observers_.begin(), observers_.end(),
                          [broker](auto& observer) {
-                           // If there's no iteration allowed we just `Clear()`
-                           // the entry which writes nullptr.
-                           // `IsHeapObjectAlive()` then treats nullptr as live
-                           // object for other reasons. Consequently, we require
-                           // an explicit nullptr check here.
-                           return !observer ||
-                                  !broker.IsHeapObjectAlive(observer);
+                           return !broker.IsHeapObjectAlive(observer);
                          }),
           observers_.end());
-      // We also need to fix up the indices map. This works because we only
-      // query and update live indices.
-      for (wtf_size_t i = 0; i < observers_.size(); ++i) {
-        observers_to_indices_.find(observers_[i])->value = i;
-      }
       check_capacity_ = true;
     }
   }
@@ -164,11 +131,7 @@ class PLATFORM_EXPORT HeapObserverList final {
   // observers. Iteration e.g. prohibits any mutations.
   mutable MutationState mutation_state_ = kAllowAll;
   bool check_capacity_ = false;
-  // Compact list of observers used for iteration. HeapVector doesn't allow
-  // WeakMember at this point. Instead, use UntracedMember with a custom weak
-  // callback.
-  HeapVector<UntracedMember<ObserverType>> observers_;
-  HeapHashMap<WeakMember<ObserverType>, wtf_size_t> observers_to_indices_;
+  ObserverList observers_;
 };
 
 }  // namespace blink
