@@ -175,7 +175,7 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
 
   CaretShape caret_shape = CaretShape::kBar;
   bool is_caret_color_auto = false;
-  if (caret_position.AnchorNode()) {
+  if (caret_position.AnchorNode() && IsEditable(*caret_position.AnchorNode())) {
     const ComputedStyle* style =
         GetComputedStyleForElementOrLayoutObject(*caret_position.AnchorNode());
     is_caret_color_auto = style->IsCaretColorAuto();

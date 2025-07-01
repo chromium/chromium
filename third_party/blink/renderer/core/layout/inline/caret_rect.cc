@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/caret_rect.h"
 
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -342,6 +343,11 @@ LocalCaretRect ComputeLocalCaretRect(const InlineCaretPosition& caret_position,
 
   const LayoutObject* const layout_object =
       caret_position.cursor.Current().GetLayoutObject();
+  // Care-shape applies to text or elements that accept text input.
+  const Node* node = layout_object->GetNode();
+  if (!node || !IsEditable(*node)) {
+    caret_shape = CaretShape::kBar;
+  }
   const PhysicalBoxFragment& container_fragment =
       caret_position.cursor.ContainerFragment();
   switch (caret_position.position_type) {

@@ -221,7 +221,7 @@ gfx::Rect FrameCaret::AbsoluteCaretBounds() const {
 CaretShape FrameCaret::GetCaretShape() const {
   PositionWithAffinity caret_position = CaretPosition();
   CaretShape caret_shape = CaretShape::kBar;
-  if (caret_position.AnchorNode()) {
+  if (caret_position.AnchorNode() && IsEditable(*caret_position.AnchorNode())) {
     caret_shape = GetCaretShapeFromComputedStyle(
         *GetComputedStyleForElementOrLayoutObject(
             *caret_position.AnchorNode()));

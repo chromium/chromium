@@ -94,7 +94,8 @@ TEST_F(LocalCaretRectTest, SimpleText) {
 
   LoadAhem();
   SetBodyContent(
-      "<div id=div style='font: 10px/10px Ahem; width: 30px'>XXX</div>");
+      "<div id=div contenteditable style='font: 10px/10px Ahem; width: "
+      "30px'>XXX</div>");
   const Node* foo = GetElementById("div")->firstChild();
 
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
@@ -158,7 +159,8 @@ TEST_F(LocalCaretRectTest, MixedHeightText) {
 
   LoadAhem();
   SetBodyContent(
-      "<div id=div style='font: 10px/10px Ahem; width: 30px'>Xpp</div>");
+      "<div id=div contenteditable style='font: 10px/10px Ahem; width: "
+      "30px'>Xpp</div>");
   const Node* foo = GetElementById("div")->firstChild();
 
   EXPECT_EQ(LocalCaretRect(foo->GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
@@ -222,7 +224,7 @@ TEST_F(LocalCaretRectTest, RtlText) {
 
   LoadAhem();
   SetBodyContent(
-      "<bdo dir=rtl id=bdo style='display: block; "
+      "<bdo contenteditable dir=rtl id=bdo style='display: block; "
       "font: 10px/10px Ahem; width: 30px'>XXX</bdo>");
   const Node* foo = GetElementById("bdo")->firstChild();
 
@@ -294,7 +296,7 @@ TEST_F(LocalCaretRectTest, ClampingAndRounding) {
         font: 30px/30px Ahem;
       }
       </style>
-      <div id=root>def</div>)HTML");
+      <div id=root contenteditable>def</div>)HTML");
   const Node* text = GetElementById("root")->firstChild();
   // caret-shape: bar
   EXPECT_EQ(
@@ -395,7 +397,8 @@ TEST_F(LocalCaretRectTest, VerticalRLText) {
 
   LoadAhem();
   SetBodyContent(
-      "<div id=div style='writing-mode: vertical-rl; word-break: break-all; "
+      "<div id=div contenteditable style='writing-mode: vertical-rl; "
+      "word-break: break-all; "
       "font: 10px/10px Ahem; width: 30px; height: 30px'>XXXYYYZZZ</div>");
   const Node* foo = GetElementById("div")->firstChild();
 
@@ -571,7 +574,8 @@ TEST_F(LocalCaretRectTest, VerticalLRText) {
 
   LoadAhem();
   SetBodyContent(
-      "<div id=div style='writing-mode: vertical-lr; word-break: break-all; "
+      "<div id=div contenteditable style='writing-mode: vertical-lr; "
+      "word-break: break-all; "
       "font: 10px/10px Ahem; width: 30px; height: 30px'>XXXYYYZZZ</div>");
   const Node* foo = GetElementById("div")->firstChild();
 
@@ -823,7 +827,7 @@ TEST_F(LocalCaretRectTest, TwoLinesOfTextWithSoftWrap) {
 
   LoadAhem();
   SetBodyContent(
-      "<div id=div style='font: 10px/10px Ahem; width: 30px; "
+      "<div id=div contenteditable style='font: 10px/10px Ahem; width: 30px; "
       "word-break: break-all'>XXXXXX</div>");
   const Node* foo = GetElementById("div")->firstChild();
 
@@ -949,7 +953,8 @@ TEST_F(LocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodes) {
 
   LoadAhem();
   SetBodyContent(
-      "<div style='font: 10px/10px Ahem; width: 30px; word-break: break-all'>"
+      "<div contenteditable style='font: 10px/10px Ahem; width: 30px; "
+      "word-break: break-all'>"
       "<span>A</span>"
       "<span>B</span>"
       "<span id=span-c>C</span>"
@@ -1036,7 +1041,7 @@ TEST_F(LocalCaretRectTest, SoftLineWrapBetweenMultipleTextNodesRtl) {
 
   LoadAhem();
   SetBodyContent(
-      "<bdo dir=rtl style='font: 10px/10px Ahem; width: 30px; "
+      "<bdo contenteditable dir=rtl style='font: 10px/10px Ahem; width: 30px; "
       "word-break: break-all; display: block'>"
       "<span>A</span>"
       "<span>B</span>"
@@ -1123,7 +1128,8 @@ TEST_F(LocalCaretRectTest, MultipleTextNodesVlr) {
   // This test only records the current behavior. Future changes are allowed.
   LoadAhem();
   SetBodyContent(
-      "<bdo style='font: 10px/10px Ahem; writing-mode: vertical-lr;'>"
+      "<bdo contenteditable style='font: 10px/10px Ahem; writing-mode: "
+      "vertical-lr;'>"
       "<span id=span-ab>Ab</span>"
       "<br>"
       "<span id=span-cd style='font: 30px/30px Ahem'>cD</span>"
@@ -1198,7 +1204,8 @@ TEST_F(LocalCaretRectTest, MultipleTextNodesVrl) {
   // This test only records the current behavior. Future changes are allowed.
   LoadAhem();
   SetBodyContent(
-      "<bdo style='font: 10px/10px Ahem; writing-mode: vertical-rl;'>"
+      "<bdo contenteditable style='font: 10px/10px Ahem; writing-mode: "
+      "vertical-rl;'>"
       "<span id=span-ab>Ab</span>"
       "<br>"
       "<span id=span-cd style='font: 30px/30px Ahem'>cD</span>"
@@ -1274,7 +1281,8 @@ TEST_F(LocalCaretRectTest, CaretRectAtBR) {
 
   LoadAhem();
   SetBodyContent(
-      "<div style='font: 10px/10px Ahem; width: 30px'><br>foo</div>");
+      "<div contenteditable style='font: 10px/10px Ahem; width: "
+      "30px'><br>foo</div>");
   const Element& br = *QuerySelector("br");
 
   // caret-shape: bar
@@ -1302,7 +1310,8 @@ TEST_F(LocalCaretRectTest, CaretRectAtRtlBR) {
 
   LoadAhem();
   SetBodyContent(
-      "<bdo dir=rtl style='display: block; font: 10px/10px Ahem; width: 30px'>"
+      "<bdo contenteditable dir=rtl style='display: block; font: 10px/10px "
+      "Ahem; width: 30px'>"
       "<br>foo</bdo>");
   const Element& br = *QuerySelector("br");
 
@@ -1452,7 +1461,8 @@ TEST_F(LocalCaretRectTest, FloatFirstLetter) {
   LoadAhem();
   InsertStyleElement("#container::first-letter{float:right}");
   SetBodyContent(
-      "<div id=container style='font: 10px/10px Ahem; width: 40px'>foo</div>");
+      "<div id=container contenteditable style='font: 10px/10px Ahem; width: "
+      "40px'>foo</div>");
   const Node* foo = GetElementById("container")->firstChild();
   const LayoutObject* first_letter = AssociatedLayoutObjectOf(*foo, 0);
   const LayoutObject* remaining_text = AssociatedLayoutObjectOf(*foo, 1);
@@ -1473,7 +1483,7 @@ TEST_F(LocalCaretRectTest, FloatFirstLetter) {
 
   // caret-shape: block
   EXPECT_EQ(
-      LocalCaretRect(first_letter, PhysicalRect(0, 0, 10, 10)),
+      LocalCaretRect(first_letter, PhysicalRect(0, 0, 1, 10)),
       LocalCaretRectOfPosition(
           PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
           CaretShape::kBlock));
@@ -1495,7 +1505,7 @@ TEST_F(LocalCaretRectTest, FloatFirstLetter) {
 
   // caret-shape: underscore
   EXPECT_EQ(
-      LocalCaretRect(first_letter, PhysicalRect(0, 9, 10, 1)),
+      LocalCaretRect(first_letter, PhysicalRect(0, 0, 1, 10)),
       LocalCaretRectOfPosition(
           PositionWithAffinity(Position(foo, 0), TextAffinity::kDownstream),
           CaretShape::kUnderscore));
@@ -1518,7 +1528,8 @@ TEST_F(LocalCaretRectTest, FloatFirstLetter) {
 
 TEST_F(LocalCaretRectTest, AfterLineBreak) {
   LoadAhem();
-  SetBodyContent("<div style='font: 10px/10px Ahem;'>foo<br><br></div>");
+  SetBodyContent(
+      "<div contenteditable style='font: 10px/10px Ahem;'>foo<br><br></div>");
   const Node* div = GetDocument().body()->firstChild();
   const Node* foo = div->firstChild();
   const Node* first_br = foo->nextSibling();
@@ -1577,7 +1588,8 @@ TEST_F(LocalCaretRectTest, AfterLineBreak) {
 
 TEST_F(LocalCaretRectTest, AfterLineBreakInPre) {
   LoadAhem();
-  SetBodyContent("<pre style='font: 10px/10px Ahem;'>foo\n\n</pre>");
+  SetBodyContent(
+      "<pre contenteditable style='font: 10px/10px Ahem;'>foo\n\n</pre>");
   const Node* pre = GetDocument().body()->firstChild();
   const Node* foo = pre->firstChild();
   // caret-shape: bar
@@ -1630,7 +1642,8 @@ TEST_F(LocalCaretRectTest, AfterLineBreakInPre2) {
   LoadAhem();
   // This test case simulates the rendering of the inner editor of
   // <textarea>foo\n</textarea> without using text control element.
-  SetBodyContent("<pre style='font: 10px/10px Ahem;'>foo\n<br></pre>");
+  SetBodyContent(
+      "<pre contenteditable style='font: 10px/10px Ahem;'>foo\n<br></pre>");
   const Node* pre = GetDocument().body()->firstChild();
   const Node* foo = pre->firstChild();
   const Node* br = foo->nextSibling();
@@ -1967,7 +1980,8 @@ TEST_F(LocalCaretRectTest, MultiColumnEmptyBlock) {
 TEST_F(LocalCaretRectTest, UnicodeBidiPlaintextWithDifferentBlockDirection) {
   LoadAhem();
   InsertStyleElement("div { font: 10px/10px Ahem; unicode-bidi: plaintext }");
-  const Position position = SetCaretTextToBody("<div dir='rtl'>|abc</div>");
+  const Position position =
+      SetCaretTextToBody("<div contenteditable dir='rtl'>|abc</div>");
   PhysicalRect caret_rect =
       LocalCaretRectOfPosition(PositionWithAffinity(position)).rect;
   // caret-shape: bar
@@ -1989,7 +2003,7 @@ TEST_F(LocalCaretRectTest, NextLineWithoutLeafChild) {
   LoadAhem();
   InsertStyleElement("div { font: 10px/10px Ahem; width: 30px }");
   SetBodyContent(
-      "<div>"
+      "<div contenteditable>"
       "<br>"
       "<span style=\"border-left: 50px solid\"></span>"
       "foo"
@@ -2048,8 +2062,8 @@ TEST_F(LocalCaretRectTest, AfterCollapsedWhiteSpaceInRTLText) {
   LoadAhem();
   InsertStyleElement(
       "bdo { display: block; font: 10px/10px Ahem; width: 100px }");
-  const Position position =
-      SetCaretTextToBody("<bdo dir=rtl>AAA  |BBB<span>CCC</span></bdo>");
+  const Position position = SetCaretTextToBody(
+      "<bdo contenteditable dir=rtl>AAA  |BBB<span>CCC</span></bdo>");
   const Node* text = position.AnchorNode();
   // caret-shape: bar
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(60, 0, 1, 10)),
@@ -2083,13 +2097,12 @@ TEST_F(LocalCaretRectTest, AfterIneditableInline) {
             LocalCaretRectOfPosition(PositionWithAffinity(position)));
 
   // caret-shape: block
-  EXPECT_EQ(
-      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 0, 10, 10)),
-      LocalCaretRectOfPosition(PositionWithAffinity(position),
-                               CaretShape::kBlock));
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
+            LocalCaretRectOfPosition(PositionWithAffinity(position),
+                                     CaretShape::kBlock));
 
   // caret-shape: underscore
-  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 9, 10, 1)),
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(position),
                                      CaretShape::kUnderscore));
 }
@@ -2107,11 +2120,28 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditable) {
   const Node* text = span->firstChild();
 
   const Position& position = Position::FirstPositionInNode(*div);
+  // caret-shape: bar
   EXPECT_EQ(
       LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
       LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
             LocalCaretRectOf(position, CaretShape::kBar,
+                             kCannotCrossEditingBoundary));
+
+  // caret-shape: block
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, CaretShape::kBlock,
+                             kCannotCrossEditingBoundary));
+
+  // caret-shape: underscore
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+            LocalCaretRectOf(position, CaretShape::kUnderscore,
+                             kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, CaretShape::kUnderscore,
                              kCannotCrossEditingBoundary));
 }
 
@@ -2136,6 +2166,20 @@ TEST_F(LocalCaretRectTest,
   EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
             LocalCaretRectOf(position, CaretShape::kBar,
                              kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, CaretShape::kBlock,
+                             kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+            LocalCaretRectOf(position, CaretShape::kUnderscore,
+                             kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, CaretShape::kUnderscore,
+                             kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/1384470
@@ -2159,6 +2203,20 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableWithSvg) {
       LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
   EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
             LocalCaretRectOf(position, CaretShape::kBar,
+                             kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(
+      LocalCaretRect(div->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, CaretShape::kBlock,
+                             kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(LocalCaretRect(div->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, CaretShape::kUnderscore,
+                             kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, CaretShape::kUnderscore,
                              kCannotCrossEditingBoundary));
 }
 
@@ -2192,12 +2250,43 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableInFlatTree) {
       LocalCaretRectOf(position, CaretShape::kBar,
                        kCannotCrossEditingBoundary));
 
+  EXPECT_EQ(
+      LocalCaretRect(foo1->GetLayoutObject(), PhysicalRect(25, 0, 10, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock, kCanCrossEditingBoundary));
+  // TODO(abotella): The layout object should probably be |foo1_span|'s.
+  // TODO(abotella): We should avoid using LayoutBox::LocalCaretRect in
+  // LayoutNG.
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock,
+                       kCannotCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(foo1->GetLayoutObject(), PhysicalRect(25, 9, 10, 1)),
+            LocalCaretRectOf(position, CaretShape::kUnderscore,
+                             kCanCrossEditingBoundary));
+  // TODO(abotella): The layout object should probably be |foo1_span|'s.
+  // TODO(abotella): We should avoid using LayoutBox::LocalCaretRect in
+  // LayoutNG.
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kUnderscore,
+                       kCannotCrossEditingBoundary));
+
   const PositionInFlatTree& position_in_flat_tree =
       PositionInFlatTree::FirstPositionInNode(*target);
   EXPECT_EQ(LocalCaretRect(foo1->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
             LocalCaretRectOfPosition(
                 PositionInFlatTreeWithAffinity(position_in_flat_tree),
                 CaretShape::kBar, kCanCrossEditingBoundary));
+
+  EXPECT_EQ(
+      LocalCaretRect(foo1->GetLayoutObject(), PhysicalRect(25, 0, 10, 10)),
+      LocalCaretRectOfPosition(
+          PositionInFlatTreeWithAffinity(position_in_flat_tree),
+          CaretShape::kBlock, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(foo1->GetLayoutObject(), PhysicalRect(25, 9, 10, 1)),
+            LocalCaretRectOfPosition(
+                PositionInFlatTreeWithAffinity(position_in_flat_tree),
+                CaretShape::kUnderscore, kCanCrossEditingBoundary));
   // TODO(abotella): The layout object should probably be |foo1_span|'s.
   // TODO(abotella): We should avoid using LayoutBox::LocalCaretRect in
   // LayoutNG.
@@ -2206,6 +2295,17 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableInFlatTree) {
       LocalCaretRectOfPosition(
           PositionInFlatTreeWithAffinity(position_in_flat_tree),
           CaretShape::kBar, kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionInFlatTreeWithAffinity(position_in_flat_tree),
+          CaretShape::kBlock, kCannotCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionInFlatTreeWithAffinity(position_in_flat_tree),
+          CaretShape::kUnderscore, kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/688015
@@ -2227,6 +2327,23 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditable) {
   EXPECT_EQ(
       LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
       LocalCaretRectOf(position, CaretShape::kBar,
+                       kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock,
+                       kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kUnderscore,
+                       kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kUnderscore,
                        kCannotCrossEditingBoundary));
 }
 
@@ -2252,6 +2369,22 @@ TEST_F(LocalCaretRectTest,
       LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
       LocalCaretRectOf(position, CaretShape::kBar,
                        kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock,
+                       kCannotCrossEditingBoundary));
+
+  LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kUnderscore,
+                       kCanCrossEditingBoundary);
+  EXPECT_EQ(
+      LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kUnderscore,
+                       kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/1384470
@@ -2276,6 +2409,22 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableWithSvg) {
   EXPECT_EQ(
       LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
       LocalCaretRectOf(position, CaretShape::kBar,
+                       kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(
+      LocalCaretRect(svg->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kBlock,
+                       kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(LocalCaretRect(svg->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
+            LocalCaretRectOf(position, CaretShape::kUnderscore,
+                             kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
+      LocalCaretRectOf(position, CaretShape::kUnderscore,
                        kCannotCrossEditingBoundary));
 }
 
@@ -2309,12 +2458,26 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableInFlatTree) {
   EXPECT_EQ(
       LocalCaretRect(target->GetLayoutObject(), expected),
       LocalCaretRectOf(position, CaretShape::kBar, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), expected),
+      LocalCaretRectOf(position, CaretShape::kBlock, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(target->GetLayoutObject(), expected),
+            LocalCaretRectOf(position, CaretShape::kUnderscore,
+                             kCanCrossEditingBoundary));
+
   // TODO(abotella): The coordinates should be (49, 20) and the layout object
   // should probably be |foo2_span|'s.
   // TODO(abotella): We should avoid using LayoutBox::LocalCaretRect in
   // LayoutNG.
   EXPECT_EQ(LocalCaretRect(target->GetLayoutObject(), expected),
             LocalCaretRectOf(position, CaretShape::kBar,
+                             kCannotCrossEditingBoundary));
+
+  EXPECT_EQ(LocalCaretRect(target->GetLayoutObject(), expected),
+            LocalCaretRectOf(position, CaretShape::kBlock,
+                             kCannotCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(target->GetLayoutObject(), expected),
+            LocalCaretRectOf(position, CaretShape::kUnderscore,
                              kCannotCrossEditingBoundary));
 
   const PositionInFlatTree& position_in_flat_tree =
@@ -2324,6 +2487,17 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableInFlatTree) {
       LocalCaretRectOfPosition(
           PositionInFlatTreeWithAffinity(position_in_flat_tree),
           CaretShape::kBar, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(foo2->GetLayoutObject(), PhysicalRect(50, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionInFlatTreeWithAffinity(position_in_flat_tree),
+          CaretShape::kBlock, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(foo2->GetLayoutObject(), PhysicalRect(50, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionInFlatTreeWithAffinity(position_in_flat_tree),
+          CaretShape::kUnderscore, kCanCrossEditingBoundary));
+
   // 50 rather than 49 and a |foo2|'s layout object rather than |foo2_span|'s
   // because |foo2_span| is a culled inline. This is probably fine, because
   // the 1px difference isn't appreciable in practice.
@@ -2332,6 +2506,16 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableInFlatTree) {
       LocalCaretRectOfPosition(
           PositionInFlatTreeWithAffinity(position_in_flat_tree),
           CaretShape::kBar, kCannotCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(foo2->GetLayoutObject(), PhysicalRect(50, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionInFlatTreeWithAffinity(position_in_flat_tree),
+          CaretShape::kBlock, kCannotCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(foo2->GetLayoutObject(), PhysicalRect(50, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionInFlatTreeWithAffinity(position_in_flat_tree),
+          CaretShape::kUnderscore, kCannotCrossEditingBoundary));
 }
 
 // http://crbug.com/688015
@@ -2354,6 +2538,24 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtEndOfNonEditable) {
             AbsoluteCaretBoundsOf(PositionWithAffinity(position),
                                   CaretShape::kBar, kCannotCrossEditingBoundary)
                 .ToString());
+
+  EXPECT_EQ("60,5 1x10",
+            AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                  CaretShape::kBlock, kCanCrossEditingBoundary)
+                .ToString());
+  EXPECT_EQ("59,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                               CaretShape::kBlock,
+                                               kCannotCrossEditingBoundary)
+                             .ToString());
+
+  EXPECT_EQ("60,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                               CaretShape::kUnderscore,
+                                               kCanCrossEditingBoundary)
+                             .ToString());
+  EXPECT_EQ("59,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                               CaretShape::kUnderscore,
+                                               kCannotCrossEditingBoundary)
+                             .ToString());
 }
 
 // http://crbug.com/688015
@@ -2376,6 +2578,24 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtBeginningOfNonEditable) {
             AbsoluteCaretBoundsOf(PositionWithAffinity(position),
                                   CaretShape::kBar, kCannotCrossEditingBoundary)
                 .ToString());
+
+  EXPECT_EQ("30,5 1x10",
+            AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                  CaretShape::kBlock, kCanCrossEditingBoundary)
+                .ToString());
+  EXPECT_EQ("15,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                               CaretShape::kBlock,
+                                               kCannotCrossEditingBoundary)
+                             .ToString());
+
+  EXPECT_EQ("30,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                               CaretShape::kUnderscore,
+                                               kCanCrossEditingBoundary)
+                             .ToString());
+  EXPECT_EQ("15,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                               CaretShape::kUnderscore,
+                                               kCannotCrossEditingBoundary)
+                             .ToString());
 }
 
 // https://crbug.com/1155399
@@ -2592,25 +2812,25 @@ TEST_F(LocalCaretRectTest, LocalCaretInSvgTextWithFontScaling) {
   EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(10, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 0)));
   // caret-shape: block
-  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(10, 2, 10, 10)),
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(10, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 0), CaretShape::kBlock));
   // caret-shape: underscore
-  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(10, 11, 10, 1)),
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(10, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 0), CaretShape::kUnderscore));
 
   // caret-shape: block
   EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(20, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 1)));
-  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(20, 2, 10, 10)),
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(20, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 1), CaretShape::kBlock));
-  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(20, 11, 10, 1)),
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(20, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 1), CaretShape::kUnderscore));
   // caret-shape: underscore
   EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(30, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 2)));
-  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(30, 2, 10, 10)),
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(30, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 2), CaretShape::kBlock));
-  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(30, 11, 10, 1)),
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(30, 2, 1, 10)),
             LocalCaretRectOf(Position(text, 2), CaretShape::kUnderscore));
 }
 
