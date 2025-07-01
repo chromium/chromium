@@ -220,6 +220,10 @@ BASE_FEATURE(kEnableErrorBadgeOnIdentityDisc,
 BASE_FEATURE(kEnableASWebAuthenticationSession,
              "EnableASWebAuthenticationSession",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAllowlistScopesForMdmErrors,
+             "AllowlistScopesForMdmErrors",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kEnableExtensionsExplicitBrowserSignin,

@@ -165,6 +165,11 @@ BASE_DECLARE_FEATURE(kEnableErrorBadgeOnIdentityDisc);
 // device.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableASWebAuthenticationSession);
+
+// Feature to allowlist certain scopes for which mdm errors will be shown. All
+// other scopes will be ignored.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kAllowlistScopesForMdmErrors);
 #endif
 
 // Enables users to perform an explicit signin upon installing an extension.
