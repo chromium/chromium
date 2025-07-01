@@ -30,6 +30,7 @@ android_library("content_filters_observer_bridge_java") {
   sources = [ "java/src/org/chromium/components/supervised_user/ContentFiltersObserverBridge.java" ]
   deps = [
     "//base:base_java",
+    "//base:tasks_java",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",

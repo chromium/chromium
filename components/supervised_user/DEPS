@@ -25,4 +25,5 @@ include_rules = [
   "+services/network/test",
   "+third_party/protobuf",
   "+ui/base",
+  "+base/android",
 ]
