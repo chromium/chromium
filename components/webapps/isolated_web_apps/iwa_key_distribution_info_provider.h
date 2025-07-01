@@ -23,7 +23,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
-#include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
 
 namespace base {
 class FilePath;
