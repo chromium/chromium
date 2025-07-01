@@ -746,9 +746,7 @@
   },
   "omnibox": {
     "dependencies": ["manifest:omnibox"],
-    "contexts": ["privileged_extension"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
+    "contexts": ["privileged_extension"]
   },
   "pageAction": {
     "dependencies": ["manifest:page_action"],

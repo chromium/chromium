@@ -11,7 +11,7 @@ source_set("omnibox") {
   ]
 
   # Matches the build check used for the objects constructed by these factories.
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     sources += [
       "omnibox_input_watcher_factory.cc",
       "omnibox_input_watcher_factory.h",

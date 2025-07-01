@@ -485,8 +485,6 @@
 #include "apps/browser_context_keyed_service_factories.h"
 #include "chrome/browser/apps/platform_apps/api/browser_context_keyed_service_factories.h"
 #include "chrome/browser/apps/platform_apps/browser_context_keyed_service_factories.h"
-#include "chrome/browser/omnibox/omnibox_input_watcher_factory.h"
-#include "chrome/browser/omnibox/omnibox_suggestions_watcher_factory.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_factory.h"
@@ -496,11 +494,13 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_extension_api_browser_context_keyed_service_factories.h"
 #include "chrome/browser/extensions/api/chromeos_api_browser_context_keyed_service_factories.h"
-#endif
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
+#include "chrome/browser/omnibox/omnibox_input_watcher_factory.h"
+#include "chrome/browser/omnibox/omnibox_suggestions_watcher_factory.h"
 #include "extensions/browser/browser_context_keyed_service_factories.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -1075,7 +1075,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   OfflineItemModelManagerFactory::GetInstance();
 #endif
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   OmniboxInputWatcherFactory::GetInstance();
   OmniboxSuggestionsWatcherFactory::GetInstance();
 #endif

@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/common/extensions/api/omnibox.h"
+
 #include <stddef.h>
 
 #include <utility>
 
 #include "base/values.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
-#include "chrome/common/extensions/api/omnibox.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

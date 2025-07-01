@@ -12,6 +12,7 @@ source_set("extensions") {
   # The files that can be included from other modules.
   public = [
     "api/notifications/notification_style.h",
+    "api/omnibox/omnibox_handler.h",
     "api/storage/storage_schema_manifest_handler.h",
     "chrome_extensions_client.h",
     "chrome_manifest_url_handlers.h",
@@ -32,6 +33,7 @@ source_set("extensions") {
   # Files that can only be included from here.
   sources = [
     "api/notifications/notification_style.cc",
+    "api/omnibox/omnibox_handler.cc",
     "api/storage/storage_schema_manifest_handler.cc",
     "chrome_extensions_api_provider.cc",
     "chrome_extensions_api_provider.h",
@@ -106,7 +108,6 @@ source_set("extensions") {
 
     sources += [
       "api/file_browser_handlers/file_browser_handler.cc",
-      "api/omnibox/omnibox_handler.cc",
       "api/side_panel/side_panel_info.cc",
       "api/speech/tts_engine_manifest_handler.cc",
       "api/url_handlers/url_handlers_parser.cc",

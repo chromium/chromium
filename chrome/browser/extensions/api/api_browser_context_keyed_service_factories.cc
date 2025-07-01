@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/api/font_settings/font_settings_api.h"
 #include "chrome/browser/extensions/api/history/history_api.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
+#include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/extensions/api/permissions/permissions_event_router_factory.h"
 #include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "chrome/browser/extensions/api/processes/processes_api.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate_factory.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"  // nogncheck
 #include "chrome/browser/extensions/api/networking_private/networking_private_ui_delegate_factory_impl.h"
-#include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/sessions/sessions_api.h"
@@ -86,6 +86,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExtensionNotificationDisplayHelperFactory::GetInstance();
   extensions::FontSettingsAPI::GetFactoryInstance();
   extensions::HistoryAPI::GetFactoryInstance();
+  extensions::OmniboxAPI::GetFactoryInstance();
   extensions::PermissionsEventRouterFactory::GetInstance();
   extensions::PreferenceAPI::GetFactoryInstance();
   extensions::ProcessesAPI::GetFactoryInstance();
@@ -117,7 +118,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::NetworkingPrivateDelegateFactory::GetInstance()
       ->SetUIDelegateFactory(std::move(networking_private_ui_delegate_factory));
 #endif
-  extensions::OmniboxAPI::GetFactoryInstance();
   extensions::PasswordsPrivateDelegateFactory::GetInstance();
   extensions::PasswordsPrivateEventRouterFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
