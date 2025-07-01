@@ -278,8 +278,7 @@ GetPrefetchResponseCompletedCallbackForTesting() {
 class PrefetchContainer::SinglePrefetch {
  public:
   explicit SinglePrefetch(const GURL& url,
-                          bool is_isolated_network_context_required,
-                          bool is_reusable);
+                          bool is_isolated_network_context_required);
   ~SinglePrefetch();
 
   SinglePrefetch(const SinglePrefetch&) = delete;
@@ -510,48 +509,8 @@ PrefetchContainer::PrefetchContainer(
   is_likely_ahead_of_prerender_ =
       CalculateIsLikelyAheadOfPrerender(*preload_pipeline_info_);
 
-  const bool is_reusable = [&]() -> bool {
-    if (base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
-      return true;
-    }
-
-    // If `kPrerender2FallbackPrefetchSpecRules` is enabled, SpecRules prerender
-    // triggers a prefetch ahead of prerender. If prerender failed after initial
-    // navigation (with prefetch), e.g. due to use of forbidden mojo interface
-    // in prerendering, the following user-initiated navigation reaches here. We
-    // allow multiple use of the result of such prefetch to prevent the second
-    // fetch via network.
-    //
-    // Note that this logic reduces the second fetch iff the prefetch is
-    // ahead of prerender and doesn't for a prefetch that is not ahead of
-    // prerender and then marked as `IsLikelyAheadOfPrerender()`. This is
-    // because we can't update the property of `PrefetchResponseReader` after
-    // ctor.
-    //
-    // TODO(crbug.com/40064891): Remove this once `kPrefetchReusable` is
-    // launched.
-    //
-    // Note that we keep the check instead of
-    // `features::UsePrefetchPrerenderIntegration()` as `PrefetchReusable` is
-    // enabled on Desktop and the difference doesn't affect `SearchPreload2`.
-    if (base::FeatureList::IsEnabled(
-            features::kPrerender2FallbackPrefetchSpecRules)) {
-      switch (features::kPrerender2FallbackPrefetchReusablePolicy.Get()) {
-        case features::Prerender2FallbackPrefetchReusablePolicy::kNotUse:
-          return false;
-        case features::Prerender2FallbackPrefetchReusablePolicy::
-            kUseIfIsLikelyAheadOfPrerender:
-          return is_likely_ahead_of_prerender_;
-        case features::Prerender2FallbackPrefetchReusablePolicy::kUseAlways:
-          return true;
-      }
-    }
-
-    return false;
-  }();
   redirect_chain_.push_back(std::make_unique<SinglePrefetch>(
-      GetURL(), IsCrossSiteRequest(url::Origin::Create(GetURL())),
-      is_reusable));
+      GetURL(), IsCrossSiteRequest(url::Origin::Create(GetURL()))));
 
   // Disallow prefetching ServiceWorker-controlled responses for isolated
   // network contexts.
@@ -1054,10 +1013,7 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
 
   redirect_chain_.push_back(std::make_unique<SinglePrefetch>(
       redirect_info.new_url,
-      IsCrossSiteRequest(url::Origin::Create(redirect_info.new_url)),
-      // If `PrefetchResponseReader` of the initial navigation is reusable,
-      // inherit the property.
-      redirect_chain_[0]->response_reader_->is_reusable()));
+      IsCrossSiteRequest(url::Origin::Create(redirect_info.new_url))));
 }
 
 bool PrefetchContainer::IsCrossSiteRequest(const url::Origin& origin) const {
@@ -1485,23 +1441,8 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
 }
 
 bool PrefetchContainer::HasPrefetchBeenConsideredToServe() const {
-  // If `kPrefetchReusable` is enabled, we allow multiple navigations
-  // to use a PrefetchContainer, and thus skip the `navigated_to_` check.
-  if (base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
-    return false;
-  }
-
-  if (features::UsePrefetchPrerenderIntegration()) {
-    // If `PrefetchResponseReader` of the initial navigation is reusable, it is
-    // reusable.
-    if (redirect_chain_[0]->response_reader_->is_reusable()) {
-      return false;
-    }
-  }
-
-  // Otherwise, if this prefetch has been considered to serve for a navigation
-  // in the past, then it shouldn't be used for any future navigations.
-  return navigated_to_;
+  // TODO(397882995): Remove the callers.
+  return false;
 }
 
 PrefetchContainer::ServableState PrefetchContainer::GetServableState(
@@ -1977,13 +1918,11 @@ CONTENT_EXPORT std::ostream& operator<<(
 
 PrefetchContainer::SinglePrefetch::SinglePrefetch(
     const GURL& url,
-    bool is_isolated_network_context_required,
-    bool is_reusable)
+    bool is_isolated_network_context_required)
     : url_(url),
       is_isolated_network_context_required_(
           is_isolated_network_context_required),
-      response_reader_(
-          base::MakeRefCounted<PrefetchResponseReader>(is_reusable)) {}
+      response_reader_(base::MakeRefCounted<PrefetchResponseReader>()) {}
 
 PrefetchContainer::SinglePrefetch::~SinglePrefetch() {
   CHECK(response_reader_);

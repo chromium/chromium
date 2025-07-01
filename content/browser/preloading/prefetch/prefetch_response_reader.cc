@@ -98,16 +98,11 @@ bool PrefetchResponseReader::MatchesCookieIndices(
   return hash == cookie_indices_->expected_hash;
 }
 
-PrefetchResponseReader::PrefetchResponseReader(bool is_reusable)
-    : is_reusable_(is_reusable) {
+PrefetchResponseReader::PrefetchResponseReader() {
   serving_url_loader_receivers_.set_disconnect_handler(base::BindRepeating(
       &PrefetchResponseReader::OnServingURLLoaderMojoDisconnect,
       weak_ptr_factory_.GetWeakPtr()));
 }
-
-PrefetchResponseReader::PrefetchResponseReader()
-    : PrefetchResponseReader(
-          base::FeatureList::IsEnabled(features::kPrefetchReusable)) {}
 
 PrefetchResponseReader::~PrefetchResponseReader() {
   if (should_record_metrics_) {
@@ -158,12 +153,8 @@ PrefetchResponseReader::CreateRequestHandler() {
     case LoadState::kResponseReceived:
     case LoadState::kCompleted:
     case LoadState::kFailed:
-      if (is_reusable_) {
-        if (body_tee_) {
-          body = body_tee_->Clone();
-        }
-      } else {
-        body = std::move(body_);
+      if (body_tee_) {
+        body = body_tee_->Clone();
       }
       if (!body) {
         // This might be because `CreateRequestHandler()` is called for the
@@ -177,7 +168,6 @@ PrefetchResponseReader::CreateRequestHandler() {
       break;
 
     case LoadState::kRedirectHandled:
-      CHECK(!body_);
       CHECK(!body_tee_);
       break;
 
@@ -203,11 +193,6 @@ void PrefetchResponseReader::BindAndStart(
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  if (!is_reusable_) {
-    // Only one client is allowed if the feature is disabled.
-    CHECK(serving_url_loader_clients_.empty());
-  }
-
   serving_url_loader_receivers_.Add(this, std::move(receiver));
   ServingUrlLoaderClientId client_id =
       serving_url_loader_clients_.Add(std::move(client));
@@ -436,7 +421,6 @@ void PrefetchResponseReader::OnReceiveResponse(
   CHECK_EQ(load_state(), LoadState::kStarted);
   CHECK(!head_);
   CHECK(head);
-  CHECK(!body_);
   CHECK(!body_tee_);
   CHECK(!service_worker_handle_);
   CHECK(serving_url_loader_clients_.empty());
@@ -462,12 +446,8 @@ void PrefetchResponseReader::OnReceiveResponse(
   head->request_cookies.clear();
 
   head_ = std::move(head);
-  if (is_reusable_) {
-    body_tee_ = base::MakeRefCounted<PrefetchDataPipeTee>(
-        std::move(body), GetPrefetchDataPipeTeeBodySizeLimit());
-  } else {
-    body_ = std::move(body);
-  }
+  body_tee_ = base::MakeRefCounted<PrefetchDataPipeTee>(
+      std::move(body), GetPrefetchDataPipeTeeBodySizeLimit());
 
   SetLoadStateAndAddEventToQueue(
       new_load_state,
