@@ -351,8 +351,7 @@ TEST_F(SearchEngineTableViewControllerNonEEATest, EditingMode) {
 // - Test that the second section contains C#1 and C#3
 // - Remove C#1 and C#3.
 // - Test that the second section doesn't exist.
-TEST_F(SearchEngineTableViewControllerNonEEATest,
-       DeleteItems_SearchEngineChoiceTriggerEnabled) {
+TEST_F(SearchEngineTableViewControllerNonEEATest, DeleteItems) {
   AddPriorSearchEngine(prepopulated_search_engine_[2], 1003,
                        /*set_default=*/false);
   AddPriorSearchEngine(prepopulated_search_engine_[0], 1001,
@@ -434,9 +433,8 @@ TEST_F(SearchEngineTableViewControllerNonEEATest,
 // + Start edit mode.
 // + Test in section 0: P#0, P#1 and C#1 disabled.
 // + Test in section 1: C#0 enabled.
-TEST_F(
-    SearchEngineTableViewControllerNonEEATest,
-    EditModeWithCustomSearchEngineAsDefault_SearchEngineChoiceTriggerEnabled) {
+TEST_F(SearchEngineTableViewControllerNonEEATest,
+       EditModeWithCustomSearchEngineAsDefault) {
   AddPriorSearchEngine(prepopulated_search_engine_[0], 1001,
                        /*default=*/false);
   AddPriorSearchEngine(prepopulated_search_engine_[1], 1002,
@@ -503,9 +501,8 @@ TEST_F(SearchEngineTableViewControllerNonEEATest,
 
 // Tests that when the only custom search engine is set as default, the edit
 // button is disabled.
-TEST_F(
-    SearchEngineTableViewControllerNonEEATest,
-    EditButtonWithSelectedCustomSearchEngine_SearchEngineChoiceTriggerEnabled) {
+TEST_F(SearchEngineTableViewControllerNonEEATest,
+       EditButtonWithSelectedCustomSearchEngine) {
   AddPriorSearchEngine(prepopulated_search_engine_[1], 1002,
                        /*default=*/false);
   AddCustomSearchEngine(custom_search_engine_[0],
