@@ -1,0 +1,78 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_DeviceRef_Dev</code> interface.
+ */
+
+[generate_thunk]
+
+label Chrome {
+  M18 = 0.1
+};
+
+/**
+ * Defines the callback type to receive device change notifications for
+ * <code>PPB_AudioInput_Dev.MonitorDeviceChange()</code> and
+ * <code>PPB_VideoCapture_Dev.MonitorDeviceChange()</code>.
+ *
+ * @param[inout] user_data The opaque pointer that the caller passed into
+ * <code>MonitorDeviceChange()</code>.
+ * @param[in] device_count How many devices in the array.
+ * @param[in] devices An array of <code>PPB_DeviceRef_Dev</code>. Please note
+ * that the ref count of the elements is not increased on behalf of the plugin.
+ */
+typedef void PP_MonitorDeviceChangeCallback(
+    [inout] mem_t user_data,
+    [in] uint32_t device_count,
+    [in, size_is(device_count)] PP_Resource[] devices);
+
+/**
+ * Device types.
+ */
+[assert_size(4)]
+enum PP_DeviceType_Dev {
+  PP_DEVICETYPE_DEV_INVALID = 0,
+  PP_DEVICETYPE_DEV_AUDIOCAPTURE = 1,
+  PP_DEVICETYPE_DEV_VIDEOCAPTURE = 2,
+  PP_DEVICETYPE_DEV_AUDIOOUTPUT = 3,
+  PP_DEVICETYPE_DEV_MAX = PP_DEVICETYPE_DEV_AUDIOOUTPUT
+};
+
+interface PPB_DeviceRef_Dev {
+  /**
+   * Determines if the provided resource is a device reference.
+   *
+   * @param[in] resource A <code>PP_Resource</code> corresponding to a generic
+   * resource.
+   *
+   * @return A <code>PP_Bool</code> that is <code>PP_TRUE</code> if the given
+   * resource is a device reference, otherwise <code>PP_FALSE</code>.
+   */
+  PP_Bool IsDeviceRef([in] PP_Resource resource);
+
+  /**
+   * Gets the device type.
+   *
+   * @param[in] device_ref A <code>PP_Resource</code> corresponding to a device
+   * reference.
+   *
+   * @return A <code>PP_DeviceType_Dev</code> value.
+   */
+  [on_failure=PP_DEVICETYPE_DEV_INVALID]
+  PP_DeviceType_Dev GetType([in] PP_Resource device_ref);
+
+  /**
+   * Gets the device name.
+   *
+   * @param[in] device_ref A <code>PP_Resource</code> corresponding to a device
+   * reference.
+   *
+   * @return A <code>PP_Var</code> of type <code>PP_VARTYPE_STRING</code>
+   * containing the name of the device if successful; a <code>PP_Var</code> of
+   * type <code>PP_VARTYPE_UNDEFINED</code> if failed.
+   */
+  PP_Var GetName([in] PP_Resource device_ref);
+};

@@ -1,0 +1,90 @@
+/* Copyright 2013 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_VarDictionary</code> struct providing
+ * a way to interact with dictionary vars.
+ */
+
+label Chrome {
+  M29 = 1.0
+};
+
+/**
+ * A dictionary var contains key-value pairs with unique keys. The keys are
+ * strings while the values can be arbitrary vars. Key comparison is always
+ * done by value instead of by reference.
+ */
+[macro="PPB_VAR_DICTIONARY_INTERFACE"]
+interface PPB_VarDictionary {
+  /**
+   * Creates a dictionary var, i.e., a <code>PP_Var</code> with type set to
+   * <code>PP_VARTYPE_DICTIONARY</code>.
+   *
+   * @return An empty dictionary var, whose reference count is set to 1 on
+   * behalf of the caller.
+   */
+  PP_Var Create();
+
+  /**
+   * Gets the value associated with the specified key.
+   *
+   * @param[in] dict A dictionary var.
+   * @param[in] key A string var.
+   *
+   * @return The value that is associated with <code>key</code>. The reference
+   * count of the element returned is incremented on behalf of the caller. If
+   * <code>key</code> is not a string var, or it doesn't exist in
+   * <code>dict</code>, an undefined var is returned.
+   */
+  PP_Var Get([in] PP_Var dict, [in] PP_Var key);
+
+  /**
+   * Sets the value associated with the specified key.
+   *
+   * @param[in] dict A dictionary var.
+   * @param[in] key A string var. If this key hasn't existed in
+   * <code>dict</code>, it is added and associated with <code>value</code>;
+   * otherwise, the previous value is replaced with <code>value</code>.
+   * @param[in] value The value to set. The dictionary holds a reference to it
+   * on success.
+   *
+   * @return A <code>PP_Bool</code> indicating whether the operation succeeds.
+   */
+  PP_Bool Set([in] PP_Var dict, [in] PP_Var key, [in] PP_Var value);
+
+  /**
+   * Deletes the specified key and its associated value, if the key exists. The
+   * reference to the element will be released.
+   *
+   * @param[in] dict A dictionary var.
+   * @param[in] key A string var.
+   */
+  void Delete([in] PP_Var dict, [in] PP_Var key);
+
+  /**
+   * Checks whether a key exists.
+   *
+   * @param[in] dict A dictionary var.
+   * @param[in] key A string var.
+   *
+   * @return A <code>PP_Bool</code> indicating whether the key exists.
+   */
+  PP_Bool HasKey([in] PP_Var dict, [in] PP_Var key);
+
+  /**
+   * Gets all the keys in a dictionary. Please note that for each key that you
+   * set into the dictionary, a string var with the same contents is returned;
+   * but it may not be the same string var (i.e., <code>value.as_id</code> may
+   * be different).
+   *
+   * @param[in] dict A dictionary var.
+   *
+   * @return An array var which contains all the keys of <code>dict</code>. Its
+   * reference count is incremented on behalf of the caller. The elements are
+   * string vars. Returns a null var if failed.
+   */
+  PP_Var GetKeys([in] PP_Var dict);
+};

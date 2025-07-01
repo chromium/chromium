@@ -1,0 +1,123 @@
+/* Copyright 2014 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * Defines the <code>PPB_VideoFrame</code> interface.
+ */
+
+[generate_thunk]
+
+label Chrome {
+  [channel=dev] M34 = 0.1,
+  M35 = 0.1
+};
+
+enum PP_VideoFrame_Format {
+  /**
+   * Unknown format value.
+   */
+  PP_VIDEOFRAME_FORMAT_UNKNOWN = 0,
+
+  /**
+   * 12bpp YVU planar 1x1 Y, 2x2 VU samples.
+   */
+  PP_VIDEOFRAME_FORMAT_YV12 = 1,
+
+  /**
+   * 12bpp YUV planar 1x1 Y, 2x2 UV samples.
+   */
+  PP_VIDEOFRAME_FORMAT_I420 = 2,
+
+  /**
+   * 32bpp BGRA.
+   */
+  PP_VIDEOFRAME_FORMAT_BGRA = 3,
+
+  /**
+   * The last format.
+   */
+  PP_VIDEOFRAME_FORMAT_LAST = PP_VIDEOFRAME_FORMAT_BGRA
+};
+
+[version=0.1]
+interface PPB_VideoFrame {
+  /**
+   * Determines if a resource is a VideoFrame resource.
+   *
+   * @param[in] resource The <code>PP_Resource</code> to test.
+   *
+   * @return A <code>PP_Bool</code> with <code>PP_TRUE</code> if the given
+   * resource is a VideoFrame resource or <code>PP_FALSE</code> otherwise.
+   */
+  PP_Bool IsVideoFrame([in] PP_Resource resource);
+
+  /**
+   * Gets the timestamp of the video frame.
+   *
+   * @param[in] frame A <code>PP_Resource</code> corresponding to a video frame
+   * resource.
+   *
+   * @return A <code>PP_TimeDelta</code> containing the timestamp of the video
+   * frame. Given in seconds since the start of the containing video stream.
+   */
+  [on_failure=0.0]
+  PP_TimeDelta GetTimestamp([in] PP_Resource frame);
+
+  /**
+   * Sets the timestamp of the video frame. Given in seconds since the
+   * start of the containing video stream.
+   *
+   * @param[in] frame A <code>PP_Resource</code> corresponding to a video frame
+   * resource.
+   * @param[in] timestamp A <code>PP_TimeDelta</code> containing the timestamp
+   * of the video frame. Given in seconds since the start of the containing
+   * video stream.
+   */
+  void SetTimestamp([in] PP_Resource frame, [in] PP_TimeDelta timestamp);
+
+  /**
+   * Gets the format of the video frame.
+   *
+   * @param[in] frame A <code>PP_Resource</code> corresponding to a video frame
+   * resource.
+   *
+   * @return A <code>PP_VideoFrame_Format</code> containing the format of the
+   * video frame.
+   */
+  [on_failure=PP_VIDEOFRAME_FORMAT_UNKNOWN]
+  PP_VideoFrame_Format GetFormat([in] PP_Resource frame);
+
+  /**
+   * Gets the size of the video frame.
+   *
+   * @param[in] frame A <code>PP_Resource</code> corresponding to a video frame
+   * resource.
+   * @param[out] size A <code>PP_Size</code>.
+   *
+   * @return A <code>PP_Bool</code> with <code>PP_TRUE</code> on success or
+   * <code>PP_FALSE</code> on failure.
+   */
+  PP_Bool GetSize([in] PP_Resource frame, [out] PP_Size size);
+
+  /**
+   * Gets the data buffer for video frame pixels.
+   *
+   * @param[in] frame A <code>PP_Resource</code> corresponding to a video frame
+   * resource.
+   *
+   * @return A pointer to the beginning of the data buffer.
+   */
+  mem_t GetDataBuffer([in] PP_Resource frame);
+
+  /**
+   * Gets the size of data buffer.
+   *
+   * @param[in] frame A <code>PP_Resource</code> corresponding to a video frame
+   * resource.
+   *
+   * @return The size of the data buffer.
+   */
+  uint32_t GetDataBufferSize([in] PP_Resource frame);
+};

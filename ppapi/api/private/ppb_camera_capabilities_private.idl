@@ -1,0 +1,55 @@
+/* Copyright 2014 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the PPB_CameraCapabilities_Private interface for
+ * establishing an image capture configuration resource within the browser.
+ */
+
+[generate_thunk]
+
+label Chrome {
+  M42 = 0.1
+};
+
+/**
+ * The <code>PPB_CameraCapabilities_Private</code> interface contains pointers
+ * to several functions for getting the image capture capabilities within the
+ * browser.
+ */
+[version=0.1]
+interface PPB_CameraCapabilities_Private {
+  /**
+   * IsCameraCapabilities() determines if the given resource is a
+   * <code>PPB_CameraCapabilities_Private</code>.
+   *
+   * @param[in] resource A <code>PP_Resource</code> corresponding to an image
+   * capture capabilities resource.
+   *
+   * @return A <code>PP_Bool</code> containing <code>PP_TRUE</code> if the given
+   * resource is an <code>PP_CameraCapabilities_Private</code> resource,
+   * otherwise <code>PP_FALSE</code>.
+   */
+  PP_Bool IsCameraCapabilities(
+      [in] PP_Resource resource);
+
+  /**
+   * GetSupportedVideoCaptureFormats() returns the supported video capture
+   * formats for the given <code>PPB_CameraCapabilities_Private</code>.
+   *
+   * @param[in] capabilities A <code>PP_Resource</code> corresponding to an
+   * image capture capabilities resource.
+   * @param[out] array_size The size of preview size array.
+   * @param[out] formats An array of <code>PP_VideoCaptureFormat</code>
+   * corresponding to the supported video capture formats. The ownership of the
+   * array belongs to <code>PPB_CameraCapabilities_Private</code> and the caller
+   * should not free it. When a PPB_CameraCapabilities_Private is deleted, the
+   * array returning from this is no longer valid.
+   */
+  void GetSupportedVideoCaptureFormats(
+      [in] PP_Resource capabilities,
+      [out] uint32_t array_size,
+      [out, size_is(array_size)] PP_VideoCaptureFormat[] formats);
+};

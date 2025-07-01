@@ -1,0 +1,37 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the PPP_InstancePrivate structure; a series of functions
+ * that a trusted plugin may implement to provide capabilities only available
+ * to trusted plugins.
+ */
+label Chrome {
+  M18 = 0.1
+};
+
+/**
+ * The PPP_Instance_Private interface contains pointers to a series of
+ * functions that may be implemented in a trusted plugin to provide capabilities
+ * that aren't possible in untrusted modules.
+ */
+
+interface PPP_Instance_Private {
+  /**
+   * GetInstanceObject returns a PP_Var representing the scriptable object for
+   * the given instance. Normally this will be a PPP_Class_Deprecated object
+   * that exposes methods and properties to JavaScript.
+   *
+   * On Failure, the returned PP_Var should be a "void" var.
+   *
+   * The returned PP_Var should have a reference added for the caller, which
+   * will be responsible for Release()ing that reference.
+   *
+   * @param[in] instance A PP_Instance identifying the instance from which the
+   *            instance object is being requested.
+   * @return A PP_Var containing scriptable object.
+   */
+  PP_Var GetInstanceObject([in] PP_Instance instance);
+};

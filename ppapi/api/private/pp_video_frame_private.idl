@@ -1,0 +1,36 @@
+/* Copyright 2013 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the struct used to hold a video frame.
+ */
+
+/**
+ * The <code>PP_VideoFrame_Private</code> struct represents a video frame.
+ * Video sources and destinations use frames to transfer video to and from
+ * the browser.
+ */
+[assert_size(16)]
+struct PP_VideoFrame_Private {
+  /**
+   * A timestamp placing the frame in a video stream.
+   */
+  PP_TimeTicks timestamp;
+
+  /**
+   * An image data resource to hold the video frame.
+   */
+  PP_Resource image_data;
+
+  /**
+   * Ensure that this struct is 16-bytes wide by padding the end.  In some
+   * compilers, PP_TimeTicks is 8-byte aligned, so those compilers align this
+   * struct on 8-byte boundaries as well and pad it to 8 bytes even without this
+   * padding attribute.  This padding makes its size consistent across
+   * compilers.
+   */
+  int32_t padding;
+};
+

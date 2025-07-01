@@ -1,0 +1,196 @@
+# Copyright 2015 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ppapi/buildflags/buildflags.gni")
+
+assert(enable_ppapi)
+
+source_set("headers") {
+  visibility = [
+    ":thunk",
+    "//ppapi/shared_impl:common",
+  ]
+  sources = [
+    "enter.h",
+    "interfaces_postamble.h",
+    "interfaces_ppb_private.h",
+    "interfaces_ppb_private_no_permissions.h",
+    "interfaces_ppb_public_dev.h",
+    "interfaces_ppb_public_dev_channel.h",
+    "interfaces_ppb_public_socket.h",
+    "interfaces_ppb_public_stable.h",
+    "interfaces_preamble.h",
+    "ppapi_thunk_export.h",
+    "ppb_audio_config_api.h",
+    "ppb_device_ref_api.h",
+    "ppb_instance_api.h",
+    "ppb_message_loop_api.h",
+    "resource_creation_api.h",
+    "thunk.h",
+  ]
+
+  configs += [ "//ppapi/shared_impl:export_shared_impl_and_thunk" ]
+
+  deps = [
+    "//base",
+    "//gpu/command_buffer/common",
+    "//ppapi/c",
+    "//ppapi/shared_impl:headers",
+  ]
+}
+
+source_set("thunk") {
+  visibility = [ "//ppapi/shared_impl" ]
+
+  sources = [
+    "enter.cc",
+    "interfaces_legacy.h",
+    "ppb_audio_api.h",
+    "ppb_audio_buffer_api.h",
+    "ppb_audio_buffer_thunk.cc",
+    "ppb_audio_config_thunk.cc",
+    "ppb_audio_input_api.h",
+    "ppb_audio_output_api.h",
+    "ppb_audio_thunk.cc",
+    "ppb_browser_font_singleton_api.h",
+    "ppb_browser_font_trusted_api.h",
+    "ppb_buffer_api.h",
+    "ppb_camera_capabilities_api.h",
+    "ppb_camera_capabilities_private_thunk.cc",
+    "ppb_camera_device_api.h",
+    "ppb_camera_device_private_thunk.cc",
+    "ppb_console_thunk.cc",
+    "ppb_cursor_control_thunk.cc",
+    "ppb_device_ref_dev_thunk.cc",
+    "ppb_ext_crx_file_system_private_thunk.cc",
+    "ppb_file_chooser_api.h",
+    "ppb_file_chooser_dev_thunk.cc",
+    "ppb_file_chooser_trusted_thunk.cc",
+    "ppb_file_io_api.h",
+    "ppb_file_io_private_thunk.cc",
+    "ppb_file_io_thunk.cc",
+    "ppb_file_ref_api.h",
+    "ppb_file_ref_thunk.cc",
+    "ppb_file_system_api.h",
+    "ppb_file_system_thunk.cc",
+    "ppb_fullscreen_thunk.cc",
+    "ppb_gamepad_api.h",
+    "ppb_gamepad_thunk.cc",
+    "ppb_graphics_2d_api.h",
+    "ppb_graphics_2d_thunk.cc",
+    "ppb_graphics_3d_api.h",
+    "ppb_graphics_3d_thunk.cc",
+    "ppb_host_resolver_api.h",
+    "ppb_host_resolver_private_api.h",
+    "ppb_host_resolver_private_thunk.cc",
+    "ppb_host_resolver_thunk.cc",
+    "ppb_image_data_api.h",
+    "ppb_image_data_thunk.cc",
+    "ppb_input_event_api.h",
+    "ppb_input_event_thunk.cc",
+    "ppb_instance_private_thunk.cc",
+    "ppb_instance_thunk.cc",
+    "ppb_isolated_file_system_private_api.h",
+    "ppb_isolated_file_system_private_thunk.cc",
+    "ppb_media_stream_audio_track_api.h",
+    "ppb_media_stream_audio_track_thunk.cc",
+    "ppb_media_stream_video_track_api.h",
+    "ppb_media_stream_video_track_thunk.cc",
+    "ppb_messaging_thunk.cc",
+    "ppb_mouse_cursor_thunk.cc",
+    "ppb_mouse_lock_thunk.cc",
+    "ppb_net_address_api.h",
+    "ppb_net_address_thunk.cc",
+    "ppb_network_list_api.h",
+    "ppb_network_list_thunk.cc",
+    "ppb_network_monitor_api.h",
+    "ppb_network_monitor_thunk.cc",
+    "ppb_network_proxy_api.h",
+    "ppb_network_proxy_thunk.cc",
+    "ppb_printing_api.h",
+    "ppb_printing_dev_thunk.cc",
+    "ppb_tcp_server_socket_private_api.h",
+    "ppb_tcp_server_socket_private_thunk.cc",
+    "ppb_tcp_socket_api.h",
+    "ppb_tcp_socket_private_api.h",
+    "ppb_tcp_socket_private_thunk.cc",
+    "ppb_tcp_socket_thunk.cc",
+    "ppb_text_input_thunk.cc",
+    "ppb_udp_socket_api.h",
+    "ppb_udp_socket_private_api.h",
+    "ppb_udp_socket_private_thunk.cc",
+    "ppb_udp_socket_thunk.cc",
+    "ppb_uma_private_thunk.cc",
+    "ppb_uma_singleton_api.h",
+    "ppb_url_loader_api.h",
+    "ppb_url_loader_thunk.cc",
+    "ppb_url_loader_trusted_thunk.cc",
+    "ppb_url_request_info_api.h",
+    "ppb_url_request_info_thunk.cc",
+    "ppb_url_response_info_api.h",
+    "ppb_url_response_info_thunk.cc",
+    "ppb_var_array_thunk.cc",
+    "ppb_var_dictionary_thunk.cc",
+    "ppb_video_capture_api.h",
+    "ppb_video_decoder_api.h",
+    "ppb_video_decoder_dev_api.h",
+    "ppb_video_decoder_thunk.cc",
+    "ppb_video_encoder_api.h",
+    "ppb_video_encoder_thunk.cc",
+    "ppb_video_frame_api.h",
+    "ppb_video_frame_thunk.cc",
+    "ppb_view_api.h",
+    "ppb_view_dev_thunk.cc",
+    "ppb_view_thunk.cc",
+    "ppb_vpn_provider_api.h",
+    "ppb_vpn_provider_thunk.cc",
+    "ppb_websocket_api.h",
+    "ppb_websocket_thunk.cc",
+  ]
+
+  if (!is_nacl) {
+    sources += [
+      "ppb_audio_input_dev_thunk.cc",
+      "ppb_audio_output_dev_thunk.cc",
+      "ppb_browser_font_trusted_thunk.cc",
+      "ppb_buffer_thunk.cc",
+      "ppb_char_set_thunk.cc",
+      "ppb_gles_chromium_texture_mapping_thunk.cc",
+      "ppb_url_util_thunk.cc",
+      "ppb_video_capture_thunk.cc",
+      "ppb_video_decoder_dev_thunk.cc",
+      "ppb_x509_certificate_private_api.h",
+      "ppb_x509_certificate_private_thunk.cc",
+    ]
+  }
+
+  # This condition is catching the build of nacl64.exe, which is built in
+  # the 64-bit toolchain when the overall build is 32-bit.  We exclude a
+  # few more things, to avoid pulling in more dependencies.
+  # See also //ppapi/shared_impl
+  if (is_win && target_cpu == "x86" && current_cpu == "x64") {
+    sources -= [
+      "ppb_graphics_3d_thunk.cc",
+      "ppb_host_resolver_private_thunk.cc",
+      "ppb_tcp_server_socket_private_thunk.cc",
+      "ppb_tcp_socket_private_thunk.cc",
+      "ppb_udp_socket_private_thunk.cc",
+      "ppb_x509_certificate_private_thunk.cc",
+    ]
+  }
+
+  configs += [
+    "//ppapi/shared_impl:export_shared_impl_and_thunk",
+    "//build/config:precompiled_headers",
+  ]
+
+  deps = [
+    "//base",
+    "//gpu/command_buffer/common",
+    "//ppapi/c",
+    "//ppapi/shared_impl:common",
+    "//ppapi/shared_impl:headers",
+  ]
+  public_deps = [ ":headers" ]
+}

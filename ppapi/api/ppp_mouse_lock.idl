@@ -1,0 +1,30 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPP_MouseLock</code> interface containing a 
+ * function that you must implement to receive mouse lock events from the
+ * browser. 
+ */
+
+label Chrome {
+  M16 = 1.0
+};
+
+/**
+ * The <code>PPP_MouseLock</code> interface contains a function that you must
+ * implement to receive mouse lock events from the browser.
+ */
+interface PPP_MouseLock {
+  /**
+   * MouseLockLost() is called when the instance loses the mouse lock, such as   
+   * when the user presses the ESC key.
+   *
+   * @param[in] instance A <code>PP_Instance</code> identifying one instance
+   * of a module.
+   */
+  void MouseLockLost([in] PP_Instance instance);
+};
+

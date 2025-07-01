@@ -1,0 +1,26 @@
+/* Copyright 2013 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#inline c
+#include "ppapi/c/private/pp_file_handle.h"
+#endinl
+
+/* This file contains the <code>PPB_FileIO_Private</code> interface. */
+label Chrome {
+  M28 = 0.1
+};
+
+/* PPB_FileIO_Private interface */
+interface PPB_FileIO_Private {
+  /**
+   * Returns a file handle corresponding to the given FileIO
+   * object.  The FileIO object must have been opened with a
+   * successful call to FileIO::Open.  The caller gets the ownership
+   * of the returned file handle and must close it.
+   */
+  int32_t RequestOSFileHandle([in] PP_Resource file_io,
+                              [out] PP_FileHandle handle,
+                              [in] PP_CompletionCallback callback);
+};

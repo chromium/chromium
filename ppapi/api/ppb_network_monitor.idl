@@ -1,0 +1,69 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_NetworkMonitor</code> interface.
+ */
+
+[generate_thunk]
+
+label Chrome {
+  M31 = 1.0
+};
+
+/**
+ * The <code>PPB_NetworkMonitor</code> allows to get network interfaces
+ * configuration and monitor network configuration changes.
+ *
+ * Permissions: Apps permission <code>socket</code> with subrule
+ * <code>network-state</code> is required for <code>UpdateNetworkList()</code>.
+ * For more details about network communication permissions, please see:
+ * http://developer.chrome.com/apps/app_network.html
+ */
+interface PPB_NetworkMonitor {
+  /**
+   * Creates a Network Monitor resource.
+   *
+   * @param[in] instance A <code>PP_Instance</code> identifying one instance of
+   * a module.
+   *
+   * @return A <code>PP_Resource</code> corresponding to a network monitor or 0
+   * on failure.
+   */
+  PP_Resource Create([in] PP_Instance instance);
+
+
+  /**
+   * Gets current network configuration. When called for the first time,
+   * completes as soon as the current network configuration is received from
+   * the browser. Each consequent call will wait for network list changes,
+   * returning a new <code>PPB_NetworkList</code> resource every time.
+   *
+   * @param[in] network_monitor A <code>PP_Resource</code> corresponding to a
+   * network monitor.
+   * @param[out] network_list The <code>PPB_NetworkList<code> resource with the
+   * current state of network interfaces.
+   * @param[in] callback A <code>PP_CompletionCallback</code> to be called upon
+   * completion.
+   *
+   * @return An int32_t containing an error code from <code>pp_errors.h</code>.
+   * <code>PP_ERROR_NOACCESS</code> will be returned if the caller doesn't have
+   * required permissions.
+   */
+  int32_t UpdateNetworkList([in] PP_Resource network_monitor,
+                            [out] PP_Resource network_list,
+                            [in] PP_CompletionCallback callback);
+
+  /**
+   * Determines if the specified <code>resource</code> is a
+   * <code>NetworkMonitor</code> object.
+   *
+   * @param[in] resource A <code>PP_Resource</code> resource.
+   *
+   * @return Returns <code>PP_TRUE</code> if <code>resource</code> is a
+   * <code>PPB_NetworkMonitor</code>, <code>PP_FALSE</code>  otherwise.
+   */
+  PP_Bool IsNetworkMonitor([in] PP_Resource resource);
+};

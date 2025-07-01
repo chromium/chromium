@@ -1,0 +1,20 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the PPB_Crypto_Dev interface.
+ */
+
+label Chrome {
+  M13 = 0.1
+};
+
+interface PPB_Crypto_Dev {
+  /**
+   * Fills the given buffer with random bytes. This is potentially slow so only
+   * request the amount of data you need.
+   */
+  void GetRandomBytes([out] str_t buffer, [in] uint32_t num_bytes);
+};

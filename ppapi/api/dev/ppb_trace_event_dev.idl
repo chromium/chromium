@@ -1,0 +1,84 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_Trace_Event</code> interface. It is meant
+ * to be used in plugins as the API that trace macros from trace_event.h use.
+ */
+
+label Chrome {
+  M25 = 0.1,
+  M29 = 0.2
+};
+
+/**
+ * A trace event timestamp.
+ */
+typedef int64_t PP_TraceEventTime;
+
+interface PPB_Trace_Event_Dev {
+  /**
+   * Gets a pointer to a character for identifying a category name in the
+   * tracing system as well as for being able to early exit in client-side
+   * tracing code.
+   *
+   * NB: This mem_t return value should technically be const, but return values
+   * for Pepper IDL of mem_t type are not const.  The same is true for the arg
+   * |category_enabled| for AddTraceEvent.
+   */
+  mem_t GetCategoryEnabled([in] cstr_t category_name);
+
+  /**
+   * Adds a trace event to the platform tracing system. This function call is
+   * usually the result of a TRACE_* macro from trace_event.h when tracing and
+   * the category of the particular trace are enabled. It is not advisable to
+   * call this function on its own; it is really only meant to be used by the
+   * trace macros.
+   */
+  void AddTraceEvent(
+      [in] int8_t phase,
+      [in] mem_t category_enabled,
+      [in] cstr_t name,
+      [in] uint64_t id,
+      [in] uint32_t num_args,
+      [in, size_as=num_args] str_t[] arg_names,
+      [in, size_as=num_args] uint8_t[] arg_types,
+      [in, size_as=num_args] uint64_t[] arg_values,
+      [in] uint8_t flags);
+
+  /**
+   * Version of the above interface that allows specifying a custom thread id
+   * and timestamp. This is useful for when tracing data cannot be registered
+   * in real time. For example, this could be used by storing timestamps
+   * internally and then registering the events retroactively.
+   */
+  [version=0.2]
+  void AddTraceEventWithThreadIdAndTimestamp(
+      [in] int8_t phase,
+      [in] mem_t category_enabled,
+      [in] cstr_t name,
+      [in] uint64_t id,
+      [in] int32_t thread_id,
+      [in] PP_TraceEventTime timestamp,
+      [in] uint32_t num_args,
+      [in, size_as=num_args] str_t[] arg_names,
+      [in, size_as=num_args] uint8_t[] arg_types,
+      [in, size_as=num_args] uint64_t[] arg_values,
+      [in] uint8_t flags);
+
+  /**
+   * Get the current clock value. Since this uses the same function as the trace
+   * events use internally, it can be used to create events with explicit time
+   * stamps.
+   */
+  [version=0.2]
+  PP_TraceEventTime Now();
+
+  /**
+   * Sets the thread name of the calling thread in the tracing system so it will
+   * show up properly in chrome://tracing.
+   */
+  void SetThreadName([in] cstr_t thread_name);
+};

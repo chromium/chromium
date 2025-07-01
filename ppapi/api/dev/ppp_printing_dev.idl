@@ -1,0 +1,60 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * Definition of the PPP_Printing interface.
+ */
+
+// Note: This version should always match the PPB_Printing_Dev interface.
+label Chrome {
+  M21 = 0.6
+};
+
+/**
+ * Specifies a contiguous range of page numbers to be printed.
+ * The page numbers use a zero-based index.
+ */
+[assert_size(8)]
+struct PP_PrintPageNumberRange_Dev {
+  uint32_t first_page_number;
+  uint32_t last_page_number;
+};
+
+interface PPP_Printing_Dev {
+  /**
+   *  Returns a bit field representing the supported print output formats.  For
+   *  example, if only PDF and PostScript are supported,
+   *  QuerySupportedFormats returns a value equivalent to:
+   *  (PP_PRINTOUTPUTFORMAT_PDF | PP_PRINTOUTPUTFORMAT_POSTSCRIPT)
+   */
+  uint32_t QuerySupportedFormats([in] PP_Instance instance);
+
+  /**
+   * Begins a print session with the given print settings. Calls to PrintPages
+   * can only be made after a successful call to Begin. Returns the number of
+   * pages required for the print output at the given page size (0 indicates
+   * a failure).
+   */
+  int32_t Begin([in] PP_Instance instance,
+                [in] PP_PrintSettings_Dev print_settings);
+
+  /**
+   * Prints the specified pages using the format specified in Begin.
+   * Returns a PPB_Buffer resource that represents the printed output. Returns
+   * 0 on failure.
+   */
+  PP_Resource PrintPages([in] PP_Instance instance,
+                         [in] PP_PrintPageNumberRange_Dev page_ranges,
+                         [in] uint32_t page_range_count);
+
+  /** Ends the print session. Further calls to PrintPages will fail. */
+  void End([in] PP_Instance instance);
+
+  /**
+   *  Returns true if the current content should be printed into the full page
+   *  and not scaled down to fit within the printer's printable area.
+   */
+  PP_Bool IsScalingDisabled([in] PP_Instance instance);
+};

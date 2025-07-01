@@ -1,0 +1,27 @@
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is auto-generated from
+// gpu/command_buffer/build_gles2_cmd_buffer.py
+// It's formatted by clang-format using chromium coding style:
+//    clang-format -i -style=chromium filename
+// DO NOT EDIT!
+
+label Chrome {
+  M39 = 1.0
+};
+
+#inline c
+#include "ppapi/c/pp_resource.h"
+#include "ppapi/c/ppb_opengles2.h"
+
+#endinl
+
+[macro="PPB_OPENGLES2_DRAWBUFFERS_DEV_INTERFACE", force_struct_namespace]
+interface PPB_OpenGLES2DrawBuffers_Dev {
+  void DrawBuffersEXT([in] PP_Resource context,
+                      [in] GLsizei count,
+                      [in] GLenum_ptr_t bufs);
+};
+

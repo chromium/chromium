@@ -1,0 +1,162 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_TCPSocket_Private</code> interface.
+ */
+
+label Chrome {
+  M17 = 0.3,
+  M20 = 0.4,
+  M27 = 0.5
+};
+
+[assert_size(4)]
+enum PP_TCPSocketOption_Private {
+  // Special value used for testing. Guaranteed to fail SetOption().
+  PP_TCPSOCKETOPTION_PRIVATE_INVALID = 0,
+
+  // Disable coalescing of small writes to make TCP segments, and instead
+  // deliver data immediately. For SSL sockets, this option must be set before
+  // SSLHandshake() is called. Value type is PP_VARTYPE_BOOL.
+  PP_TCPSOCKETOPTION_PRIVATE_NO_DELAY = 1
+};
+
+/**
+ * The <code>PPB_TCPSocket_Private</code> interface provides TCP socket
+ * operations.
+ */
+interface PPB_TCPSocket_Private {
+  /**
+   * Allocates a TCP socket resource.
+   */
+  PP_Resource Create([in] PP_Instance instance);
+
+  /**
+   * Determines if a given resource is TCP socket.
+   */
+  PP_Bool IsTCPSocket([in] PP_Resource resource);
+
+  /**
+   * Connects to a TCP port given as a host-port pair.
+   * When a proxy server is used, |host| and |port| refer to the proxy server
+   * instead of the destination server.
+   */
+  int32_t Connect([in] PP_Resource tcp_socket,
+                  [in] str_t host,
+                  [in] uint16_t port,
+                  [in] PP_CompletionCallback callback);
+
+  /**
+   * Same as Connect(), but connecting to the address given by |addr|. A typical
+   * use-case would be for reconnections.
+   */
+  int32_t ConnectWithNetAddress([in] PP_Resource tcp_socket,
+                                [in] PP_NetAddress_Private addr,
+                                [in] PP_CompletionCallback callback);
+
+  /**
+   * Gets the local address of the socket, if it has been connected.
+   * Returns PP_TRUE on success.
+   */
+  PP_Bool GetLocalAddress([in] PP_Resource tcp_socket,
+                          [out] PP_NetAddress_Private local_addr);
+
+  /**
+   * Gets the remote address of the socket, if it has been connected.
+   * Returns PP_TRUE on success.
+   */
+  PP_Bool GetRemoteAddress([in] PP_Resource tcp_socket,
+                           [out] PP_NetAddress_Private remote_addr);
+
+  /**
+   * Does SSL handshake and moves to sending and receiving encrypted data. The
+   * socket must have been successfully connected. |server_name| will be
+   * compared with the name(s) in the server's certificate during the SSL
+   * handshake. |server_port| is only used to identify an SSL server in the SSL
+   * session cache.
+   * When a proxy server is used, |server_name| and |server_port| refer to the
+   * destination server.
+   * If the socket is not connected, or there are pending read/write requests,
+   * SSLHandshake() will fail without starting a handshake. Otherwise, any
+   * failure during the handshake process will cause the socket to be
+   * disconnected.
+   */
+  int32_t SSLHandshake([in] PP_Resource tcp_socket,
+                       [in] str_t server_name,
+                       [in] uint16_t server_port,
+                       [in] PP_CompletionCallback callback);
+
+  /**
+   * Returns the server's <code>PPB_X509Certificate_Private</code> for a socket
+   * connection if an SSL connection has been established using
+   * <code>SSLHandshake</code>. If no SSL connection has been established, a
+   * null resource is returned.
+   */
+  [version=0.4]
+  PP_Resource GetServerCertificate([in] PP_Resource tcp_socket);
+
+  /**
+   * NOTE: This function is not implemented and will return
+   * <code>PP_FALSE</code>.
+   * Adds a trusted/untrusted chain building certificate to be used for this
+   * connection. The <code>certificate</code> must be a
+   * <code>PPB_X509Certificate_Private<code>. <code>PP_TRUE</code> is returned
+   * upon success.
+   */
+  [version=0.4]
+  PP_Bool AddChainBuildingCertificate([in] PP_Resource tcp_socket,
+                                      [in] PP_Resource certificate,
+                                      [in] PP_Bool is_trusted);
+
+  /**
+   * Reads data from the socket. The size of |buffer| must be at least as large
+   * as |bytes_to_read|. May perform a partial read. Returns the number of bytes
+   * read or an error code. If the return value is 0, then it indicates that
+   * end-of-file was reached.
+   * This method won't return more than 1 megabyte, so if |bytes_to_read|
+   * exceeds 1 megabyte, it will always perform a partial read.
+   * Multiple outstanding read requests are not supported.
+   */
+  int32_t Read([in] PP_Resource tcp_socket,
+               [out] str_t buffer,
+               [in] int32_t bytes_to_read,
+               [in] PP_CompletionCallback callback);
+
+  /**
+   * Writes data to the socket. May perform a partial write. Returns the number
+   * of bytes written or an error code.
+   * This method won't write more than 1 megabyte, so if |bytes_to_write|
+   * exceeds 1 megabyte, it will always perform a partial write.
+   * Multiple outstanding write requests are not supported.
+   */
+  int32_t Write([in] PP_Resource tcp_socket,
+                [in] str_t buffer,
+                [in] int32_t bytes_to_write,
+                [in] PP_CompletionCallback callback);
+
+  /**
+   * Cancels any IO that may be pending, and disconnects the socket. Any pending
+   * callbacks will still run, reporting PP_Error_Aborted if pending IO was
+   * interrupted. It is NOT valid to call Connect() again after a call to this
+   * method. Note: If the socket is destroyed when it is still connected, then
+   * it will be implicitly disconnected, so you are not required to call this
+   * method.
+   */
+  void Disconnect([in] PP_Resource tcp_socket);
+
+  /**
+   * Sets an option on |tcp_socket|.  Supported |name| and |value| parameters
+   * are as described for PP_TCPSocketOption_Private.  |callback| will be
+   * invoked with PP_OK if setting the option succeeds, or an error code
+   * otherwise. The socket must be connection before SetOption is called.
+   */
+  [version=0.5]
+  int32_t SetOption([in] PP_Resource tcp_socket,
+                    [in] PP_TCPSocketOption_Private name,
+                    [in] PP_Var value,
+                    [in] PP_CompletionCallback callback);
+
+};

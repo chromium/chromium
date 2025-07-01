@@ -1,0 +1,79 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_HostResolver_Private</code> interface.
+ */
+
+label Chrome {
+  M19 = 0.1
+};
+
+/**
+ * The <code>PP_HostResolver_Flags</code> is an enumeration of the
+ * different types of flags, that can be OR-ed and passed to host
+ * resolver.
+ */
+[assert_size(4)]
+enum PP_HostResolver_Private_Flags {
+  /**
+   * AI_CANONNAME
+   */
+  PP_HOST_RESOLVER_PRIVATE_FLAGS_CANONNAME = 1 << 0,
+  /**
+   * Hint to the resolver that only loopback addresses are configured.
+   */
+  PP_HOST_RESOLVER_PRIVATE_FLAGS_LOOPBACK_ONLY = 1 << 1
+};
+
+[assert_size(8)]
+struct PP_HostResolver_Private_Hint {
+  PP_NetAddressFamily_Private family;
+  int32_t flags;
+};
+
+interface PPB_HostResolver_Private {
+  /**
+   * Allocates a Host Resolver resource.
+   */
+  PP_Resource Create([in] PP_Instance instance);
+
+  /**
+   * Determines if a given resource is a Host Resolver.
+   */
+  PP_Bool IsHostResolver([in] PP_Resource resource);
+
+  /**
+   * Creates a new request to Host Resolver. |callback| is invoked
+   * when request is processed and a list of network addresses is
+   * obtained. These addresses can be be used in Connect, Bind or
+   * Listen calls to connect to a given |host| and |port|.
+   */
+  int32_t Resolve([in] PP_Resource host_resolver,
+                  [in] str_t host,
+                  [in] uint16_t port,
+                  [in] PP_HostResolver_Private_Hint hint,
+                  [in] PP_CompletionCallback callback);
+
+  /**
+   * Returns canonical name of host.
+   */
+  PP_Var GetCanonicalName([in] PP_Resource host_resolver);
+
+  /**
+   * Returns number of network addresses obtained after Resolve call.
+   */
+  uint32_t GetSize([in] PP_Resource host_resolver);
+
+  /**
+   * Stores in the |addr| |index|-th network address. |addr| can't be
+   * NULL. Returns PP_TRUE if success or PP_FALSE if the given
+   * resource is not a Host Resolver or |index| exceeds number of
+   * available addresses.
+  */
+  PP_Bool GetNetAddress([in] PP_Resource host_resolver,
+                        [in] uint32_t index,
+                        [out] PP_NetAddress_Private addr);
+};

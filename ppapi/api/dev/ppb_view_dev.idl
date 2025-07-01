@@ -1,0 +1,46 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* This file contains the <code>PPB_View_Dev</code> interface. */
+
+[generate_thunk]
+
+label Chrome {
+  M22 = 0.1
+};
+
+/* PPB_View_Dev interface */
+interface PPB_View_Dev {
+  /**
+   * GetDeviceScale returns the scale factor between device pixels and DIPs
+   * (also known as logical pixels or UI pixels on some platforms). This allows
+   * the developer to render their contents at device resolution, even as
+   * coordinates / sizes are given in DIPs through the API.
+   *
+   * Note that the coordinate system for Pepper APIs is DIPs. Also note that
+   * one DIP might not equal one CSS pixel - when page scale/zoom is in effect.
+   *
+   * @param[in] resource A <code>PP_Resource</code> corresponding to a
+   * <code>PPB_View</code> resource.
+   *
+   * @return A <code>float</code> value representing the number of device pixels
+   * per DIP. If the resource is invalid, the value will be 0.0.
+   */
+  float_t GetDeviceScale([in] PP_Resource resource);
+
+  /**
+   * GetCSSScale returns the scale factor between DIPs and CSS pixels. This
+   * allows proper scaling between DIPs - as sent via the Pepper API - and CSS
+   * pixel coordinates used for Web content.
+   *
+   * @param[in] resource A <code>PP_Resource</code> corresponding to a
+   * <code>PPB_View</code> resource.
+   *
+   * @return css_scale A <code>float</code> value representing the number of
+   * DIPs per CSS pixel. If the resource is invalid, the value will be 0.0.
+   */
+  float_t GetCSSScale([in] PP_Resource resource);
+};
+

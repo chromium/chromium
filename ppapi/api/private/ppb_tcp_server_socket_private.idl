@@ -1,0 +1,71 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_TCPServerSocket_Private</code> interface.
+ */
+
+label Chrome {
+  M18 = 0.1,
+  M28 = 0.2
+};
+
+/**
+ * The <code>PPB_TCPServerSocket_Private</code> interface provides TCP
+ * server socket operations.
+ */
+interface PPB_TCPServerSocket_Private {
+  /**
+   * Allocates a TCP server socket resource.
+   */
+  PP_Resource Create([in] PP_Instance instance);
+
+  /**
+   * Determines if a given resource is TCP server socket.
+   */
+  PP_Bool IsTCPServerSocket([in] PP_Resource resource);
+
+  /**
+   * Binds |tcp_server_socket| to the address given by |addr| and
+   * starts listening.  The |backlog| argument defines the maximum
+   * length to which the queue of pending connections may
+   * grow. |callback| is invoked when |tcp_server_socket| is ready to
+   * accept incoming connections or in the case of failure. Returns
+   * PP_ERROR_NOSPACE if socket can't be initialized, or
+   * PP_ERROR_FAILED in the case of Listen failure. Otherwise, returns
+   * PP_OK.
+   */
+  int32_t Listen([in] PP_Resource tcp_server_socket,
+                 [in] PP_NetAddress_Private addr,
+                 [in] int32_t backlog,
+                 [in] PP_CompletionCallback callback);
+
+  /**
+   * Accepts single connection, creates instance of
+   * PPB_TCPSocket_Private and stores reference to it in
+   * |tcp_socket|. |callback| is invoked when connection is accepted
+   * or in the case of failure. This method can be called only after
+   * successful Listen call on |tcp_server_socket|.
+   */
+  int32_t Accept([in] PP_Resource tcp_server_socket,
+                 [out] PP_Resource tcp_socket,
+                 [in] PP_CompletionCallback callback);
+
+  /**
+   * Returns the current address to which the socket is bound, in the
+   * buffer pointed to by |addr|. This method can be called only after
+   * successful Listen() call and before StopListening() call.
+   */
+  [version=0.2]
+  int32_t GetLocalAddress([in] PP_Resource tcp_server_socket,
+                          [out] PP_NetAddress_Private addr);
+
+  /**
+   * Cancels all pending callbacks reporting PP_ERROR_ABORTED and
+   * closes the socket. Note: this method is implicitly called when
+   * server socket is destroyed.
+   */
+  void StopListening([in] PP_Resource tcp_server_socket);
+};

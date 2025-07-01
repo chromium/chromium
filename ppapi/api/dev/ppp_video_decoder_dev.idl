@@ -1,0 +1,87 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPP_VideoDecoder_Dev</code> interface.
+ */
+label Chrome {
+  M21 = 0.11
+};
+
+/**
+ * PPP_VideoDecoder_Dev structure contains the function pointers that the
+ * plugin MUST implement to provide services needed by the video decoder
+ * implementation.
+ *
+ * See PPB_VideoDecoder_Dev for general usage tips.
+ */
+interface PPP_VideoDecoder_Dev {
+  /**
+   * Callback function to provide buffers for the decoded output pictures. If
+   * succeeds plugin must provide buffers through AssignPictureBuffers function
+   * to the API. If |req_num_of_bufs| matching exactly the specification
+   * given in the parameters cannot be allocated decoder should be destroyed.
+   *
+   * Decoding will not proceed until buffers have been provided.
+   *
+   * Parameters:
+   *  |instance| the plugin instance to which the callback is responding.
+   *  |decoder| the PPB_VideoDecoder_Dev resource.
+   *  |req_num_of_bufs| tells how many buffers are needed by the decoder.
+   *  |dimensions| tells the dimensions of the buffer to allocate.
+   *  |texture_target| the type of texture used. Sample targets in use are
+   *      TEXTURE_2D (most platforms) and TEXTURE_EXTERNAL_OES (on ARM).
+   */
+  [version=0.11]
+  void ProvidePictureBuffers(
+      [in] PP_Instance instance,
+      [in] PP_Resource decoder,
+      [in] uint32_t req_num_of_bufs,
+      [in] PP_Size dimensions,
+      [in] uint32_t texture_target);
+
+  /**
+   * Callback function for decoder to deliver unneeded picture buffers back to
+   * the plugin.
+   *
+   * Parameters:
+   *  |instance| the plugin instance to which the callback is responding.
+   *  |decoder| the PPB_VideoDecoder_Dev resource.
+   *  |picture_buffer| points to the picture buffer that is no longer needed.
+   */
+  void DismissPictureBuffer(
+      [in] PP_Instance instance,
+      [in] PP_Resource decoder,
+      [in] int32_t picture_buffer_id);
+
+  /**
+   * Callback function for decoder to deliver decoded pictures ready to be
+   * displayed. Decoder expects the plugin to return the buffer back to the
+   * decoder through ReusePictureBuffer function in PPB Video Decoder API.
+   *
+   * Parameters:
+   *  |instance| the plugin instance to which the callback is responding.
+   *  |decoder| the PPB_VideoDecoder_Dev resource.
+   *  |picture| is the picture that is ready.
+   */
+  void PictureReady(
+      [in] PP_Instance instance,
+      [in] PP_Resource decoder,
+      [in] PP_Picture_Dev picture);
+
+  /**
+   * Error handler callback for decoder to deliver information about detected
+   * errors to the plugin.
+   *
+   * Parameters:
+   *  |instance| the plugin instance to which the callback is responding.
+   *  |decoder| the PPB_VideoDecoder_Dev resource.
+   *  |error| error is the enumeration specifying the error.
+   */
+  void NotifyError(
+      [in] PP_Instance instance,
+      [in] PP_Resource decoder,
+      [in] PP_VideoDecodeError_Dev error);
+};

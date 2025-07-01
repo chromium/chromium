@@ -1,0 +1,57 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* URL loader trusted interfaces. */
+
+[generate_thunk]
+
+label Chrome {
+  M14 = 0.3
+};
+
+/**
+ * NOTE: Permission checks for functions added to this file must be done in
+ * pepper_url_loader.cc.
+ *
+ */
+
+/**
+ * Callback that indicates the status of the download and upload for the
+ * given URLLoader resource.
+ */
+typedef void PP_URLLoaderTrusted_StatusCallback(
+      [in] PP_Instance pp_instance,
+      [in] PP_Resource pp_resource,
+      [in] int64_t bytes_sent,
+      [in] int64_t total_bytes_to_be_sent,
+      [in] int64_t bytes_received,
+      [in] int64_t total_bytes_to_be_received);
+
+/* Available only to trusted implementations. */
+interface PPB_URLLoaderTrusted {
+  /**
+   * Grant this URLLoader the capability to make unrestricted cross-origin
+   * requests.
+   */
+  void GrantUniversalAccess([in] PP_Resource loader);
+
+  /**
+   * Registers that the given function will be called when the upload or
+   * downloaded byte count has changed. This is not exposed on the untrusted
+   * interface because it can be quite chatty and encourages people to write
+   * feedback UIs that update as frequently as the progress updates.
+   *
+   * The other serious gotcha with this callback is that the callback must not
+   * mutate the URL loader or cause it to be destroyed.
+   *
+   * However, the proxy layer needs this information to push to the other
+   * process, so we expose it here. Only one callback can be set per URL
+   * Loader. Setting to a NULL callback will disable it.
+   */
+  void RegisterStatusCallback(
+      [in] PP_Resource loader,
+      [in] PP_URLLoaderTrusted_StatusCallback cb);
+};
+

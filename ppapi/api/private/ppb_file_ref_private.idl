@@ -1,0 +1,24 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* This file contains the <code>PPB_FileRefPrivate</code> interface. */
+label Chrome {
+  M15 = 0.1
+};
+
+/* PPB_FileRefPrivate interface */
+interface PPB_FileRefPrivate {
+  /**
+   * GetAbsolutePath() returns the absolute path of the file.
+   *
+   * @param[in] file_ref A <code>PP_Resource</code> corresponding to a file
+   * reference.
+   *
+   * @return A <code>PP_Var</code> containing the absolute path of the file.
+   */
+  PP_Var GetAbsolutePath([in] PP_Resource file_ref);
+};
+
+

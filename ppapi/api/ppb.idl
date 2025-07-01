@@ -1,0 +1,29 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines a function pointer type for the
+ * <code>PPB_GetInterface</code> function.
+ */
+
+/**
+ * This function pointer type defines the signature for the
+ * <code>PPB_GetInterface</code> function. A generic
+ * <code>PPB_GetInterface</code> pointer is passed to
+ * <code>PPP_InitializedModule</code> when your module is loaded. You can use
+ * this pointer to request a pointer to a specific browser interface. Browser
+ * interface names are ASCII strings and are generally defined in the header
+ * file for the interface, such as <code>PPB_AUDIO_INTERFACE</code> found in
+ * <code>ppb.audio.h</code> or
+ * <code>PPB_GRAPHICS_2D_INTERFACE</code> in <code>ppb_graphics_2d.h</code>.
+ * Click
+ * <a href="globals_defs.html"
+ * title="macros">here</a> for a complete list of interface
+ * names.
+ *
+ * This value will be NULL if the interface is not supported on the browser.
+ */
+typedef interface_t PPB_GetInterface([in] str_t interface_name);
+

@@ -1,0 +1,52 @@
+/* Copyright 2013 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+[generate_thunk,thunk_include="ppapi/thunk/ppb_isolated_file_system_private_api.h"]
+
+/**
+ * This file contains the <code>PPB_IsolatedFileSystem_Private</code> interface.
+ */
+label Chrome {
+  M33 = 0.2
+};
+
+
+/**
+ * The <code>PP_IsolatedFileSystemType_Private</code> values indicate the type
+ * of isolated file systems.
+ */
+[assert_size(4)]
+enum PP_IsolatedFileSystemType_Private {
+  /** Type for invalid file systems */
+  PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_INVALID = 0,
+  /** Type for CRX file systems */
+  PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX = 1
+};
+
+/* <code>PPB_IsolatedFileSystem_Private</code> interface */
+interface PPB_IsolatedFileSystem_Private {
+  /**
+   * Open() opens a file system corresponding the given file system type.
+   *
+   * When opening the CRX file system, this should be called from an extension
+   * context, otherwise it will fail. 
+   *
+   * @param[in] instance A <code>PP_Instance</code> identifying the instance
+   * with the file system.
+   * @param[in] type A file system type as defined by
+   * <code>PP_IsolatedFileSystemType_Private</code> enum.
+   * @param[out] file_system An output <code>PP_Resource</code> corresponding
+   * to a PPB_FileSystem.
+   * @param[in] callback A <code>PP_CompletionCallback</code> to be called upon
+   * completion of Open.
+   *
+   * @return An int32_t containing an error code from <code>pp_errors.h</code>.
+   */
+  [singleton,api=PPB_IsolatedFileSystem_Private_API]
+  int32_t Open([in] PP_Instance instance,
+               [in] PP_IsolatedFileSystemType_Private type,
+               [out] PP_Resource file_system,
+               [in] PP_CompletionCallback callback);
+};

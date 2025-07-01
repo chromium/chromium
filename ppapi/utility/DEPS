@@ -1,0 +1,15 @@
+# ppapi/cpp should not be dependent on other parts of chromium; it should stay
+# browser-neutral as much as possible.
+include_rules = [
+  "-base",
+  "-build",
+  "-ipc",
+  "-ppapi",
+  "+ppapi/c",
+  "-ppapi/c/private",
+  "-ppapi/c/trusted",
+  "+ppapi/cpp",
+  "-ppapi/cpp/private",
+  "-ppapi/cpp/trusted",
+  "+ppapi/utility",
+]

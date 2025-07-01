@@ -1,0 +1,64 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPP_VideoCapture_Dev</code> interface.
+ */
+label Chrome {
+  M15 = 0.1
+};
+
+/**
+ * Video Capture client interface. See |PPB_VideoCapture_Dev| for general theory
+ * of operation.
+ */
+[macro="PPP_VIDEO_CAPTURE_DEV_INTERFACE"]
+interface PPP_VideoCapture_Dev {
+  /**
+   * Signals the capture device information, such as resolution and frame rate,
+   * and the array of buffers that the browser will use to send pixel data.
+   *
+   * |info| is a pointer to the PP_VideoCaptureDeviceInfo_Dev structure
+   * containing resolution and frame rate.
+   * |buffer_count| is the number of buffers, and |buffers| is the array of
+   * PPB_Buffer_Dev buffers.
+   *
+   * Note: the buffers are passed without an extra reference. The plugin is
+   * expected to add its own references to the buffers.
+   */
+  void OnDeviceInfo([in] PP_Instance instance,
+                    [in] PP_Resource video_capture,
+                    [in] PP_VideoCaptureDeviceInfo_Dev info,
+                    [in] uint32_t buffer_count,
+                    [in, size_is(buffer_count)] PP_Resource[] buffers);
+
+  /**
+   * Signals status changes on the VideoCapture. |status| is a
+   * one of the values from PP_VideoCaptureStatus_Dev;
+   */
+  void OnStatus([in] PP_Instance instance,
+                [in] PP_Resource video_capture,
+                [in] uint32_t status);
+
+  /**
+   * Signals an error from the video capture system.
+   *
+   * Errors that can be generated:
+   * - PP_ERROR_NOMEMORY: not enough memory was available to allocate buffers.
+   * - PP_ERROR_FAILED: video capture could not start.
+   */
+  void OnError([in] PP_Instance instance,
+               [in] PP_Resource video_capture,
+               [in] uint32_t error_code);
+
+  /**
+   * Signals that a buffer is available for consumption by the plugin.
+   *
+   * |buffer| is the index of the buffer, in the array returned by OnDeviceInfo.
+   */
+  void OnBufferReady([in] PP_Instance instance,
+                     [in] PP_Resource video_capture,
+                     [in] uint32_t buffer);
+};

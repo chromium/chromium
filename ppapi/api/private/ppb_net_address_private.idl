@@ -1,0 +1,129 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_NetAddress_Private</code> interface.
+ */
+
+label Chrome {
+    M13 = 0.0,
+    M17 = 0.1,
+    M19_0 = 1.0,
+    M19_1 = 1.1
+};
+
+[assert_size(4)]
+enum PP_NetAddressFamily_Private {
+  /**
+   * The address family is unspecified.
+   */
+  PP_NETADDRESSFAMILY_PRIVATE_UNSPECIFIED = 0,
+  /**
+   * The Internet Protocol version 4 (IPv4) address family.
+   */
+  PP_NETADDRESSFAMILY_PRIVATE_IPV4 = 1,
+  /**
+   * The Internet Protocol version 6 (IPv6) address family.
+   */
+  PP_NETADDRESSFAMILY_PRIVATE_IPV6 = 2
+};
+
+/**
+ * This is an opaque type holding a network address. Plugins must
+ * never access members of this struct directly.
+ */
+[assert_size(132)]
+struct PP_NetAddress_Private {
+  uint32_t size;
+  int8_t[128] data;
+};
+
+/**
+ * The <code>PPB_NetAddress_Private</code> interface provides operations on
+ * network addresses.
+ */
+[version=0.1] interface PPB_NetAddress_Private {
+  /**
+   * Returns PP_TRUE if the two addresses are equal (host and port).
+   */
+  PP_Bool AreEqual([in] PP_NetAddress_Private addr1,
+                   [in] PP_NetAddress_Private addr2);
+
+  /**
+   * Returns PP_TRUE if the two addresses refer to the same host.
+   */
+  PP_Bool AreHostsEqual([in] PP_NetAddress_Private addr1,
+                        [in] PP_NetAddress_Private addr2);
+
+  /**
+   * Returns a human-readable description of the network address, optionally
+   * including the port (e.g., "192.168.0.1", "192.168.0.1:99", or "[::1]:80"),
+   * or an undefined var on failure.
+   */
+  PP_Var Describe([in] PP_Module module,
+                  [in] PP_NetAddress_Private addr,
+                  [in] PP_Bool include_port);
+
+  /**
+   * Replaces the port in the given source address. Returns PP_TRUE on success.
+   */
+  PP_Bool ReplacePort([in] PP_NetAddress_Private src_addr,
+                      [in] uint16_t port,
+                      [out] PP_NetAddress_Private addr_out);
+
+  /**
+   * Gets the "any" address (for IPv4 or IPv6); for use with UDP Bind.
+   */
+  void GetAnyAddress([in] PP_Bool is_ipv6,
+                     [out] PP_NetAddress_Private addr);
+
+  /**
+   * Gets the address family.
+   */
+  [version=1.0]
+  PP_NetAddressFamily_Private GetFamily([in] PP_NetAddress_Private addr);
+
+  /**
+   * Gets the port. The port is returned in host byte order.
+   */
+  [version=1.0]
+  uint16_t GetPort([in] PP_NetAddress_Private addr);
+
+  /**
+   * Gets the address. The output, address, must be large enough for the
+   * current socket family. The output will be the binary representation of an
+   * address for the current socket family. For IPv4 and IPv6 the address is in
+   * network byte order. PP_TRUE is returned if the address was successfully
+   * retrieved.
+   */
+  [version=1.0]
+  PP_Bool GetAddress([in] PP_NetAddress_Private addr,
+                     [out] mem_t address,
+                     [in] uint16_t address_size);
+
+  /**
+   * Returns ScopeID for IPv6 addresses or 0 for IPv4.
+   */
+  [version=1.1]
+  uint32_t GetScopeID([in] PP_NetAddress_Private addr);
+
+  /**
+   * Creates NetAddress with the specified IPv4 address and port
+   * number.
+   */
+  [version=1.1]
+  void CreateFromIPv4Address([in] uint8_t[4] ip,
+                             [in] uint16_t port,
+                             [out] PP_NetAddress_Private addr_out);
+  /**
+   * Creates NetAddress with the specified IPv6 address, scope_id and
+   * port number.
+   */
+  [version=1.1]
+  void CreateFromIPv6Address([in] uint8_t[16] ip,
+                             [in] uint32_t scope_id,
+                             [in] uint16_t port,
+                             [out] PP_NetAddress_Private addr_out);
+};

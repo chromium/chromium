@@ -1,0 +1,25 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * Defines the <code>PPP_Graphics3D</code> struct representing a 3D graphics
+ * context within the browser.
+ */
+
+label Chrome {
+  M15 = 1.0
+};
+
+/**
+ * <code>PPP_Graphics3D</code> defines the notification interface for a 3D 
+ * graphics context.
+ */
+[macro="PPP_GRAPHICS_3D_INTERFACE", iname="PPP_Graphics_3D"]
+interface PPP_Graphics3D {
+  /**
+   * Called when the OpenGL ES window is invalidated and needs to be repainted.
+   */
+  void Graphics3DContextLost(PP_Instance instance);
+};

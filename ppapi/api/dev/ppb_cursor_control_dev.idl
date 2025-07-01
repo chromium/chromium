@@ -1,0 +1,65 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_CursorControl_Dev</code> interface
+ * implemented by the browser for controlling the cursor.
+ */
+
+label Chrome {
+  M14 = 0.4
+};
+
+[macro="PPB_CURSOR_CONTROL_DEV_INTERFACE"]
+interface PPB_CursorControl_Dev {
+  /** 
+   * Set a cursor.  If "type" is PP_CURSORTYPE_CUSTOM, then "custom_image"
+   * must be an ImageData resource containing the cursor and "hot_spot" must
+   * contain the offset within that image that refers to the cursor's position.
+   */
+   PP_Bool SetCursor([in] PP_Instance instance,
+                     [in] PP_CursorType_Dev type,
+                     [in] PP_Resource custom_image,
+                     [in] PP_Point hot_spot);
+
+  /**
+   * This method causes the cursor to be moved to the center of the
+   * instance and be locked, preventing the user from moving it.
+   * The cursor is implicitly hidden from the user while locked.
+   * Cursor lock may only be requested in response to a
+   * PP_InputEvent_MouseDown, and then only if the event was generated via
+   * user gesture.
+   *
+   * While the cursor is locked, any movement of the mouse will
+   * generate a PP_InputEvent_Type_MouseMove, whose x and y values
+   * indicate the position the cursor would have been moved to had
+   * the cursor not been locked, and had the screen been infinite in size.
+   *
+   * The browser may revoke cursor lock for reasons including but not
+   * limited to the user pressing the ESC key, the user activating
+   * another program via a reserved keystroke (e.g., ALT+TAB), or
+   * some other system event.
+   *
+   * Returns PP_TRUE if the cursor could be locked, PP_FALSE otherwise.
+   */
+  PP_Bool LockCursor([in] PP_Instance instance);
+
+  /**
+   * Causes the cursor to be unlocked, allowing it to track user
+   * movement again.
+   */
+  PP_Bool UnlockCursor([in] PP_Instance instance);
+
+  /** 
+   * Returns PP_TRUE if the cursor is locked, PP_FALSE otherwise.
+   */
+  PP_Bool HasCursorLock([in] PP_Instance instance);
+
+  /**
+   * Returns PP_TRUE if the cursor can be locked, PP_FALSE otherwise.
+   */
+  PP_Bool CanLockCursor([in] PP_Instance instance);
+};
+

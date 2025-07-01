@@ -1,0 +1,29 @@
+/* Copyright 2015 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the struct used to hold a video capture format.
+ */
+
+label Chrome {
+  M42 = 0.1
+};
+
+/**
+ * The <code>PP_VideoCaptureFormat</code> struct represents a video capture
+ * format.
+ */
+[assert_size(12)]
+struct PP_VideoCaptureFormat {
+  /**
+   * Frame size in pixels.
+   */
+  PP_Size frame_size;
+
+  /**
+   * Frame rate in frames per second.
+   */
+  float_t frame_rate;
+};

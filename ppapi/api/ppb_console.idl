@@ -1,0 +1,51 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_Console</code> interface.
+ */
+
+[generate_thunk]
+
+label Chrome {
+  M25 = 1.0
+};
+
+[assert_size(4)]
+enum PP_LogLevel {
+  PP_LOGLEVEL_TIP = 0,
+  PP_LOGLEVEL_LOG = 1,
+  PP_LOGLEVEL_WARNING = 2,
+  PP_LOGLEVEL_ERROR = 3
+};
+
+interface PPB_Console {
+  /**
+   * Logs the given message to the JavaScript console associated with the
+   * given plugin instance with the given logging level. The name of the plugin
+   * issuing the log message will be automatically prepended to the message.
+   * The value may be any type of Var.
+   */
+  void Log(
+      [in] PP_Instance instance,
+      [in] PP_LogLevel level,
+      [in] PP_Var value);
+
+  /**
+   * Logs a message to the console with the given source information rather
+   * than using the internal PPAPI plugin name. The name must be a string var.
+   *
+   * The regular log function will automatically prepend the name of your
+   * plugin to the message as the "source" of the message. Some plugins may
+   * wish to override this. For example, if your plugin is a Python
+   * interpreter, you would want log messages to contain the source .py file
+   * doing the log statement rather than have "python" show up in the console.
+   */
+  void LogWithSource(
+      [in] PP_Instance instance,
+      [in] PP_LogLevel level,
+      [in] PP_Var source,
+      [in] PP_Var value);
+};

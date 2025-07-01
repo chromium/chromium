@@ -1,0 +1,20 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the PP_Module type which uniquely identifies the module
+ * or .nexe.
+ */
+
+/**
+ * The PP_Module value uniquely identifies the module or .nexe.
+ *
+ * This identifier is an opaque handle assigned by the browser to the module. It
+ * is guaranteed never to be 0, so a module can initialize it to 0 to
+ * indicate a "NULL handle."
+ */
+[assert_size(4)]
+typedef int32_t PP_Module;
+

@@ -1,0 +1,25 @@
+include_rules = [
+  "+base",
+  "+device",
+  "+gin",
+  "+gpu",
+  "+ipc",
+  "+media/audio",
+  "+media/base",
+  "+skia",
+  "+ui/surface",
+
+  # We don't want the proxy to depend on the C++ layer, which is appropriate
+  # for plugins only. However, the completion callback factory is a very useful
+  # tool that we would otherwise have to duplicate, and has no other
+  # dependencies, so we allow that (and the output traits it depends on).
+  "-ppapi/cpp",
+  "+ppapi/cpp/completion_callback.h",
+  "+ppapi/cpp/output_traits.h",
+]
+
+specific_include_rules = {
+  "ppapi_perftests\.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ]
+}

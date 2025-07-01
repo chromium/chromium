@@ -1,0 +1,27 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPP_TextInput_Dev</code> interface.
+ */
+
+label Chrome {
+  M19 = 0.1
+};
+
+/**
+ * <code>PPP_TextInput_Dev</code> is a set of function pointers that the
+ * plugin has to implement to provide hints for text input system (IME).
+ */
+interface PPP_TextInput_Dev {
+  /**
+   * Requests the plugin to send back the text around the current caret or
+   * selection by <code>PPB_TextInput_Dev::UpdateSurroundingText</code>.
+   * It is recommended to include the <code>desired_number_of_characters</code>
+   * characters before and after the selection, but not mandatory.
+   */
+  void RequestSurroundingText([in] PP_Instance instance,
+                              [in] uint32_t desired_number_of_characters);
+};

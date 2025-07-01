@@ -1,0 +1,37 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_Memory interface</code> for functions
+ * related to memory management.
+ */
+
+label Chrome {
+  M14 = 0.1
+};
+
+/**
+ * The PPB_Memory_Dev interface contains pointers to functions related to memory
+ * management.
+ *
+ */
+interface PPB_Memory_Dev {
+  /**
+   * MemAlloc is a pointer to a function that allocate memory.
+   *
+   * @param[in] num_bytes A number of bytes to allocate.
+   * @return A pointer to the memory if successful, NULL If the
+   * allocation fails.
+   */
+  mem_t MemAlloc([in] uint32_t num_bytes);
+
+  /**
+   * MemFree is a pointer to a function that deallocates memory.
+   *
+   * @param[in] ptr A pointer to the memory to deallocate. It is safe to
+   * pass NULL to this function.
+   */
+  void MemFree([inout] mem_t ptr);
+};

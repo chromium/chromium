@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+[include "/chrome/nativeclient/_local_variables.ezt"]  [# this file should be at root of your document hierarchy ]
+[define section]docs[end]  [# this should be "docs" if the file lives in the "Docs" section (top nav)]
+                           [# Otherwise, it's "home," "articles," "download," or "terms" ]
+[define page_title]Pepper C API[end]  [# this is the title for only this page ]
+
+[include "/_boilerplate_header.ezt"]
+[verbatim]
+
+<p>This reference documentation describes the C version of the Pepper API, a cross-platform, open-source API for creating Native Client modules. Some interfaces are already implemented in any Native Client-aware browser and certain portions of the API will be implemented by you in the Native Client module. This page has the following contents:
+</p>
+
+<ol class="toc">
+<li><a href="#reading">Before you start</a></li>
+<li><a href="#pepperc">Pepper C reference</a></li>
+<li><a href="#navigate">Navigating the Pepper C reference</a></li>
+</ol>
+
+<h2 id="reading">Before you start</h2>
+
+<p>We recommend that you read the following documents prior to reading the API documentation:</p>
+
+<ul class="nolist">
+<li><a href="/chrome/nativeclient/docs/technical_overview.html">Technical Overview</a></li>
+<li><a href="/chrome/nativeclient/docs/tutorial.html">Tutorial: Getting Started</a></li>
+<li><a href="/chrome/nativeclient/docs/developers_guide.html">Developer's Guide</a></li>
+</ul>
+
+<h2 id="pepperc">Pepper C reference</h2>
+
+<p>The lowest level of the Pepper API is the C API, declared in the header files in ppapi/c. The C API represents the lowest level binary interface between a Native Client module and the browser.</p>
+
+<h3>C API Groupings</h3>
+
+<p>The C API is divided into three sub-groupings, indicated by the prefixes PP, PPB, and PPP.</p> 
+
+<p>The prefix "PP," used to help prevent naming collisions, stands for "Pepper Plugin" also known as the "Native Client module." Common structs have a PP_ prefix, such as PP_Var for representing a JavaScript variable or PP_Rect for describing a rectangle. There are also several PP_ utility functions in the PP_ grouping.</p>
+
+<p>Interfaces in the C API are named according to whether they are implemented by the browser or by you, the web app developer, in the Native Client module. Interfaces implemented by the browser are prefixed by "PPB" where "B" stands for browser. For example, the PPB_Core interface is a collection of core interfaces implemented by the browser and accessed by the Native Client module. As a web app developer, you need only know how to invoke PPB_ interfaces in your Native Client module.</p>
+
+<p>Interfaces implemented by the Native Client module (Plugin) are prefixed by "PPP" where "P" stands for plugin. For example, the PPP_Class interface provides an object accessible to JavaScript in the browser. You will implement these interfaces in your Native Client module.</p>
+
+<p>In some cases, there might be both a browser and a Native Client module interface for the same concept. For example, the PPP_Instance interface represents the Native Client module functions that the browser calls related to a certain instance. This interface is used to deliver mouse click events to the Native Client module. The Native Client module will call PPB_Instance in the browser to allow the Native Client module to manipulate its instance.</p>
+
+<h2 id="navigate">Navigating the Pepper C reference</h2>
+
+<p>Click on any of the links below "Pepper C API" on the left to view the API by construct (all interfaces, structures, functions, and so on), functional area (all APIs pertaining to audio, 2D graphics, 3D graphics, and so on), or file (all APIs in <code>pp_bool.h</code>, <code>ppp.h</code>, <code>ppb_var.h</code>, and so on).</p>
+
+[endverbatim]
+[include "/_boilerplate_footer.ezt"]

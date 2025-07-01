@@ -1,0 +1,71 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+
+/**
+ * This file defines the <code>PPB_FileChooser_Trusted</code> interface.
+ */
+
+[generate_thunk]
+
+label Chrome {
+  M16 = 0.5,
+  M20 = 0.6
+};
+
+[macro="PPB_FILECHOOSER_TRUSTED_INTERFACE"]
+interface PPB_FileChooserTrusted {
+ /**
+  * This function displays a previously created file chooser resource as a
+  * dialog box, prompting the user to choose a file or files to open, or a
+  * single file for saving. The callback is called with PP_OK on successful
+  * completion with a file (or files) selected or PP_ERROR_USERCANCEL if the
+  * user selected no file.
+  *
+  * @param[in] chooser The file chooser resource.
+  * @param[in] save_as A <code>PP_Bool</code> value indicating if this dialog
+  * is choosing a file for saving.
+  * @param[in] suggested_file_name If saving, the suggested name for the
+  * file, otherwise, null or undefined.
+  * @param[in] callback A <code>CompletionCallback</code> to be called after
+  * the user has closed the file chooser dialog.
+  *
+  * @return PP_OK_COMPLETIONPENDING if request to show the dialog was
+  * successful, another error code from pp_errors.h on failure.
+  */
+  [deprecate=0.6]
+  int32_t ShowWithoutUserGesture(
+      [in] PP_Resource chooser,
+      [in] PP_Bool save_as,
+      [in] PP_Var suggested_file_name,
+      [in] PP_CompletionCallback callback);
+
+ /**
+  * This function displays a previously created file chooser resource as a
+  * dialog box, prompting the user to choose a file or files to open, or a
+  * single file for saving. The callback is called with PP_OK on successful
+  * completion with a file (or files) selected or PP_ERROR_USERCANCEL if the
+  * user selected no file.
+  *
+  * @param[in] chooser The file chooser resource.
+  * @param[in] save_as A <code>PP_Bool</code> value indicating if this dialog
+  * is choosing a file for saving.
+  * @param[in] suggested_file_name If saving, the suggested name for the
+  * file, otherwise, null or undefined.
+  * @param[in] callback A <code>CompletionCallback</code> to be called after
+  * the user has closed the file chooser dialog.
+  *
+  * @return PP_OK_COMPLETIONPENDING if request to show the dialog was
+  * successful, another error code from pp_errors.h on failure.
+  */
+  [version=0.6]
+  int32_t ShowWithoutUserGesture(
+      [in] PP_Resource chooser,
+      [in] PP_Bool save_as,
+      [in] PP_Var suggested_file_name,
+      [in] PP_ArrayOutput output,
+      [in] PP_CompletionCallback callback);
+};
+

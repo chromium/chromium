@@ -1,0 +1,46 @@
+/* Copyright 2014 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* This file contains NaCl private interfaces. This interface is not versioned
+ * and is for internal Chrome use. It may change without notice. */
+
+#inline c
+#include "ppapi/c/private/pp_file_handle.h"
+#endinl
+
+label Chrome {
+  M25 = 1.0
+};
+
+interface PPP_PexeStreamHandler {
+  /**
+   * Invoked as a result of a cache hit for a translated pexe.
+   */
+  void DidCacheHit([inout] mem_t user_data,
+                   [in] PP_FileHandle nexe_file_handle);
+
+  /**
+   * Invoked as a result of a cache miss for a translated pexe.
+   * Provides the expected length of the pexe, as read from HTTP headers.
+   */
+  void DidCacheMiss([inout] mem_t user_data,
+                    [in] int64_t expected_total_length,
+                    [in] PP_FileHandle temp_nexe_file);
+
+  /**
+   * Invoked when a block of data has been downloaded.
+   * Only invoked after DidCacheMiss().
+   */
+  void DidStreamData([inout] mem_t user_data,
+                     [in] mem_t data,
+                     [in] int32_t length);
+
+  /**
+   * Invoked when the stream has finished downloading, regardless of whether it
+   * succeeded. Not invoked if DidCacheHit() was called.
+   */
+  void DidFinishStream([inout] mem_t user_data,
+                       [in] int32_t pp_error);
+};

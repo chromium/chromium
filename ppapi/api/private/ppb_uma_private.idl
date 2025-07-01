@@ -1,0 +1,67 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_UMA_Private</code> interface.
+ */
+
+[generate_thunk,thunk_include="ppapi/thunk/ppb_uma_singleton_api.h"]
+
+label Chrome {
+  M35 = 0.3
+};
+
+/**
+ * Contains functions for plugins to report UMA usage stats.
+ */
+interface PPB_UMA_Private {
+  /**
+   * HistogramCustomTimes is a pointer to a function which records a time
+   * sample given in milliseconds in the histogram given by |name|, possibly
+   * creating the histogram if it does not exist.
+   */
+  [singleton,api=PPB_UMA_Singleton_API]
+  void HistogramCustomTimes([in] PP_Instance instance,
+                            [in] PP_Var name,
+                            [in] int64_t sample,
+                            [in] int64_t min,
+                            [in] int64_t max,
+                            [in] uint32_t bucket_count);
+
+  /**
+   * HistogramCustomCounts is a pointer to a function which records a sample
+   * in the histogram given by |name|, possibly creating the histogram if it
+   * does not exist.
+   */
+  [singleton,api=PPB_UMA_Singleton_API]
+  void HistogramCustomCounts([in] PP_Instance instance,
+                             [in] PP_Var name,
+                             [in] int32_t sample,
+                             [in] int32_t min,
+                             [in] int32_t max,
+                             [in] uint32_t bucket_count);
+
+  /**
+   * HistogramEnumeration is a pointer to a function which records a sample
+   * in the histogram given by |name|, possibly creating the histogram if it
+   * does not exist.  The sample represents a value in an enumeration bounded
+   * by |boundary_value|, that is, sample < boundary_value always.
+   */
+  [singleton,api=PPB_UMA_Singleton_API]
+  void HistogramEnumeration([in] PP_Instance instance,
+                            [in] PP_Var name,
+                            [in] int32_t sample,
+                            [in] int32_t boundary_value);
+
+  /**
+   * IsCrashReportingEnabled returns PP_OK to the completion callback to
+   * indicate that the current user has opted-in to crash reporting, or
+   * PP_ERROR_* on failure or when a user has not opted-in.  This can be used to
+   * gate other reporting processes such as analytics and crash reporting.
+   */
+   [singleton,api=PPB_UMA_Singleton_API]
+   int32_t IsCrashReportingEnabled([in] PP_Instance instance,
+                                   [in] PP_CompletionCallback callback);
+};

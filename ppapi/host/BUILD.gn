@@ -1,0 +1,49 @@
+# Copyright 2015 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ppapi/buildflags/buildflags.gni")
+
+assert(enable_ppapi)
+
+component("host") {
+  output_name = "ppapi_host"
+
+  sources = [
+    "dispatch_host_message.h",
+    "error_conversion.cc",
+    "error_conversion.h",
+    "host_factory.h",
+    "host_message_context.cc",
+    "host_message_context.h",
+    "instance_message_filter.cc",
+    "instance_message_filter.h",
+    "message_filter_host.cc",
+    "message_filter_host.h",
+    "ppapi_host.cc",
+    "ppapi_host.h",
+    "ppapi_host_export.h",
+    "resource_host.cc",
+    "resource_host.h",
+    "resource_message_filter.cc",
+    "resource_message_filter.h",
+    "resource_message_handler.cc",
+    "resource_message_handler.h",
+  ]
+
+  defines = [ "PPAPI_HOST_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//media:shared_memory_support",
+    "//net",
+    "//ppapi/c",
+    "//ppapi/proxy:ipc",
+    "//ppapi/shared_impl",
+    "//ui/events:events_base",
+    "//ui/surface",
+    "//url",
+  ]
+
+  public_deps = [ "//ipc" ]
+}

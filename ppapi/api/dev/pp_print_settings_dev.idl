@@ -1,0 +1,48 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the struct for PrintSettings.
+ */
+
+[assert_size(4)]
+enum PP_PrintOrientation_Dev {
+  PP_PRINTORIENTATION_NORMAL         = 0,
+  PP_PRINTORIENTATION_ROTATED_90_CW  = 1,
+  PP_PRINTORIENTATION_ROTATED_180    = 2,
+  PP_PRINTORIENTATION_ROTATED_90_CCW = 3,
+  PP_PRINTORIENTATION_ROTATED_LAST = PP_PRINTORIENTATION_ROTATED_90_CCW
+};
+
+[assert_size(4)]
+enum PP_PrintOutputFormat_Dev {
+  PP_PRINTOUTPUTFORMAT_RASTER     = 1u << 0,
+  PP_PRINTOUTPUTFORMAT_PDF        = 1u << 1,
+  PP_PRINTOUTPUTFORMAT_POSTSCRIPT = 1u << 2,
+  PP_PRINTOUTPUTFORMAT_EMF        = 1u << 3
+};
+
+[assert_size(4)]
+enum PP_PrintScalingOption_Dev {
+  PP_PRINTSCALINGOPTION_NONE = 0,
+  PP_PRINTSCALINGOPTION_FIT_TO_PRINTABLE_AREA = 1,
+  PP_PRINTSCALINGOPTION_SOURCE_SIZE = 2,
+  PP_PRINTSCALINGOPTION_FIT_TO_PAPER = 3,
+  PP_PRINTSCALINGOPTION_LAST = PP_PRINTSCALINGOPTION_FIT_TO_PAPER
+};
+
+[assert_size(60)]
+struct PP_PrintSettings_Dev {
+  /** This is the size of the printable area in points (1/72 of an inch). */
+  PP_Rect printable_area;
+  PP_Rect content_area;
+  PP_Size paper_size;
+  int32_t dpi;
+  PP_PrintOrientation_Dev orientation;
+  PP_PrintScalingOption_Dev print_scaling_option;
+  PP_Bool grayscale;
+  /** Note that Chrome currently only supports PDF printing. */
+  PP_PrintOutputFormat_Dev format;
+};

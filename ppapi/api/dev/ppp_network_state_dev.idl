@@ -1,0 +1,25 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the PPP_NetworkState interface.
+ */
+
+label Chrome {
+  M14 = 0.1
+};
+
+[macro="PPP_NETWORK_STATE_DEV_INTERFACE"]
+interface PPP_NetworkState_Dev {
+  /**
+   * Notification that the online state has changed for the user's network.
+   * This will change as a result of a network cable being plugged or
+   * unplugged, WiFi connections going up and down, or other events.
+   *
+   * Note that being "online" isn't a guarantee that any particular connections
+   * will succeed.
+   */
+  void SetOnLine([in] PP_Bool is_online);
+};

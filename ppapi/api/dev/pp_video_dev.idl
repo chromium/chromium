@@ -1,0 +1,130 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * NOTE: these must be kept in sync with the versions in media/!
+ */
+
+
+/**
+ * Video format.
+ *
+ * Keep the values in this enum unique, as they imply format (h.264 vs. VP8,
+ * for example), and keep the values for a particular format grouped together
+ * for clarity.
+ * Note: Keep these in sync with media::VideoCodecProfile.
+ */
+[assert_size(4)]
+enum PP_VideoDecoder_Profile {
+  PP_VIDEODECODER_PROFILE_UNKNOWN = -1,
+  PP_VIDEODECODER_PROFILE_FIRST = PP_VIDEODECODER_PROFILE_UNKNOWN,
+  PP_VIDEODECODER_H264PROFILE_NONE = 0,
+  PP_VIDEODECODER_H264PROFILE_BASELINE = 1,
+  PP_VIDEODECODER_H264PROFILE_MAIN = 2,
+  PP_VIDEODECODER_H264PROFILE_EXTENDED = 3,
+  PP_VIDEODECODER_H264PROFILE_HIGH = 4,
+  PP_VIDEODECODER_H264PROFILE_HIGH10PROFILE = 5,
+  PP_VIDEODECODER_H264PROFILE_HIGH422PROFILE = 6,
+  PP_VIDEODECODER_H264PROFILE_HIGH444PREDICTIVEPROFILE = 7,
+  PP_VIDEODECODER_H264PROFILE_SCALABLEBASELINE = 8,
+  PP_VIDEODECODER_H264PROFILE_SCALABLEHIGH = 9,
+  PP_VIDEODECODER_H264PROFILE_STEREOHIGH = 10,
+  PP_VIDEODECODER_H264PROFILE_MULTIVIEWHIGH = 11,
+  PP_VIDEODECODER_VP8PROFILE_ANY = 12,
+  PP_VIDEODECODER_PROFILE_LAST = PP_VIDEODECODER_VP8PROFILE_ANY
+};
+
+/**
+ * The data structure for video bitstream buffer.
+ */
+[assert_size(12)]
+struct PP_VideoBitstreamBuffer_Dev {
+  /**
+   * Client-specified identifier for the bitstream buffer. Valid values are
+   * non-negative.
+   */
+  int32_t id;
+
+  /**
+   * Buffer to hold the bitstream data. Should be allocated using the
+   * PPB_Buffer interface for consistent interprocess behaviour.
+   */
+  PP_Resource data;
+
+  /**
+   * Size of the bitstream contained in buffer (in bytes).
+   */
+  uint32_t size;
+};
+
+/**
+ * Struct for specifying texture-backed picture data.
+ */
+[assert_size(16)]
+struct PP_PictureBuffer_Dev {
+  /**
+   * Client-specified id for the picture buffer. By using this value client can
+   * keep track of the buffers it has assigned to the video decoder and how they
+   * are passed back to it. Valid values are non-negative.
+   */
+  int32_t id;
+
+  /**
+   * Dimensions of the buffer.
+   */
+  PP_Size size;
+
+  /**
+   * Texture ID in the given context where picture is stored.
+   */
+  uint32_t texture_id;
+};
+
+/**
+ * Structure to describe a decoded output frame.
+ */
+[assert_size(8)]
+struct PP_Picture_Dev {
+  /**
+   * ID of the picture buffer where the picture is stored.
+   */
+  int32_t picture_buffer_id;
+
+  /**
+   * ID of the bitstream from which this data was decoded.
+   */
+  int32_t bitstream_buffer_id;
+};
+
+/**
+ * Decoder error codes reported to the plugin. A reasonable naive
+ * error handling policy is for the plugin to Destroy() the decoder on error.
+ */
+[assert_size(4)]
+enum PP_VideoDecodeError_Dev {
+  /**
+   * An operation was attempted during an incompatible decoder state.
+   */
+  PP_VIDEODECODERERROR_ILLEGAL_STATE = 1,
+  PP_VIDEODECODERERROR_FIRST = PP_VIDEODECODERERROR_ILLEGAL_STATE,
+
+  /**
+   * Invalid argument was passed to an API method.
+   */
+  PP_VIDEODECODERERROR_INVALID_ARGUMENT = 2,
+
+  /**
+   * Encoded input is unreadable.
+   */
+  PP_VIDEODECODERERROR_UNREADABLE_INPUT = 3,
+
+  /** 
+   * A failure occurred at the browser layer or lower.  Examples of such
+   * failures include GPU hardware failures, GPU driver failures, GPU library
+   * failures, browser programming errors, and so on.
+   */
+  PP_VIDEODECODERERROR_PLATFORM_FAILURE = 4,
+  PP_VIDEODECODERERROR_LAST = PP_VIDEODECODERERROR_PLATFORM_FAILURE
+};

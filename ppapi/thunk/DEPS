@@ -1,0 +1,8 @@
+include_rules = [
+  # For gpu::CommandBuffer::State
+  "+gpu/command_buffer/common/command_buffer.h",
+  "+gpu/command_buffer/common/command_buffer_id.h",
+  "+gpu/command_buffer/common/sync_token.h",
+  "-ppapi/cpp",
+  "-ppapi/proxy",
+]

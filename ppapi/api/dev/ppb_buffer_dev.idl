@@ -1,0 +1,51 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines the <code>PPB_Buffer_Dev</code> interface.
+ */
+
+label Chrome {
+  M14 = 0.4
+};
+
+interface PPB_Buffer_Dev {
+  /**
+   * Allocates a buffer of the given size in bytes. The return value will have
+   * a non-zero ID on success, or zero on failure. Failure means the module
+   * handle was invalid. The buffer will be initialized to contain zeroes.
+   */
+  PP_Resource Create(
+      [in] PP_Instance instance,
+      [in] uint32_t size_in_bytes);
+
+  /**
+   * Returns PP_TRUE if the given resource is a Buffer. Returns PP_FALSE if the
+   * resource is invalid or some type other than a Buffer.
+   */
+  PP_Bool IsBuffer(
+      [in] PP_Resource resource);
+
+  /**
+   * Gets the size of the buffer. Returns PP_TRUE on success, PP_FALSE
+   * if the resource is not a buffer. On failure, |*size_in_bytes| is not set.
+   */
+  PP_Bool Describe(
+      [in] PP_Resource resource,
+      [out] uint32_t size_in_bytes);
+
+  /**
+   * Maps this buffer into the plugin address space and returns a pointer to
+   * the beginning of the data.
+   */
+  mem_t Map(
+      [in] PP_Resource resource);
+
+  /**
+   * Unmaps this buffer.
+   */
+  void Unmap(
+      [in] PP_Resource resource);
+};

@@ -1,0 +1,15 @@
+include_rules = [
+  "+base",
+  "+device/gamepad/public/cpp",
+  "+gpu",
+  "+media/audio",
+  "+media/base",
+  "+skia",
+  "+ui/gfx",
+
+  "-ppapi/cpp",
+  "-ppapi/proxy",
+
+  # For testing purpose.
+  "+ppapi/proxy/ppapi_proxy_test.h",
+]

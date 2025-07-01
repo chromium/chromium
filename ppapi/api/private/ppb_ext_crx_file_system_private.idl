@@ -1,0 +1,31 @@
+/* Copyright 2013 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file contains the <code>PPB_Ext_CrxFileSystem_Private</code> interface.
+ */
+label Chrome {
+  M28 = 0.1
+};
+
+/* <code>PPB_Ext_CrxFileSystem_Private</code> interface */
+interface PPB_Ext_CrxFileSystem_Private {
+  /**
+   * Open() opens the CRX file system for the current extension.  It will fail
+   * when called from non-extension context.
+   *
+   * @param[in] crxfs A <code>PP_Resource</code> corresponding to a
+   * CrxFileSystem.
+   * @param[out] file_system An output <code>PP_Resource</code> corresponding
+   * to a PPB_FileSystem.
+   * @param[in] callback A <code>PP_CompletionCallback</code> to be called upon
+   * completion of Open.
+   *
+   * @return An int32_t containing an error code from <code>pp_errors.h</code>.
+   */
+  int32_t Open([in] PP_Instance instance,
+               [out] PP_Resource file_system,
+               [in] PP_CompletionCallback callback);
+};

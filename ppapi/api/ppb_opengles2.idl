@@ -1,0 +1,741 @@
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is auto-generated from
+// gpu/command_buffer/build_gles2_cmd_buffer.py
+// It's formatted by clang-format using chromium coding style:
+//    clang-format -i -style=chromium filename
+// DO NOT EDIT!
+
+label Chrome {
+  M39 = 1.0
+};
+
+[version=1.0]
+describe {
+  GLbitfield;
+  GLbitfield_ptr_t;
+  GLboolean;
+  GLboolean_ptr_t;
+  GLbyte;
+  GLbyte_ptr_t;
+  GLclampf;
+  GLclampf_ptr_t;
+  GLclampx;
+  GLclampx_ptr_t;
+  GLenum;
+  GLenum_ptr_t;
+  GLfixed;
+  GLfixed_ptr_t;
+  GLfloat;
+  GLfloat_ptr_t;
+  GLint;
+  GLint_ptr_t;
+  GLintptr;
+  GLintptr_ptr_t;
+  GLshort;
+  GLshort_ptr_t;
+  GLsizei;
+  GLsizei_ptr_t;
+  GLsizeiptr;
+  GLsizeiptr_ptr_t;
+  GLubyte;
+  GLubyte_ptr_t;
+  GLuint;
+  GLuint_ptr_t;
+  GLushort;
+  GLushort_ptr_t;
+};
+
+#inline c
+#include "ppapi/c/pp_resource.h"
+
+#ifndef __gl2_h_
+typedef unsigned int GLenum;
+typedef unsigned char GLboolean;
+typedef unsigned int GLbitfield;
+typedef signed char GLbyte;
+typedef short GLshort;
+typedef int GLint;
+typedef int GLsizei;
+typedef unsigned char GLubyte;
+typedef unsigned short GLushort;
+typedef unsigned int GLuint;
+typedef float GLfloat;
+typedef float GLclampf;
+typedef void GLvoid;
+typedef int GLfixed;
+typedef int GLclampx;
+#ifdef _WIN64
+typedef long long int GLintptr;
+typedef long long int GLsizeiptr;
+#else
+typedef long int GLintptr;
+typedef long int GLsizeiptr;
+#endif  // _WIN64
+#endif  // __gl2_h_
+
+#endinl
+
+[macro="PPB_OPENGLES2_INTERFACE", force_struct_namespace]
+interface PPB_OpenGLES2 {
+  void ActiveTexture([in] PP_Resource context,
+                     [in] GLenum texture);
+  void AttachShader([in] PP_Resource context,
+                    [in] GLuint program,
+                    [in] GLuint shader);
+  void BindAttribLocation([in] PP_Resource context,
+                          [in] GLuint program,
+                          [in] GLuint index,
+                          [in] cstr_t name);
+  void BindBuffer([in] PP_Resource context,
+                  [in] GLenum target,
+                  [in] GLuint buffer);
+  void BindFramebuffer([in] PP_Resource context,
+                       [in] GLenum target,
+                       [in] GLuint framebuffer);
+  void BindRenderbuffer([in] PP_Resource context,
+                        [in] GLenum target,
+                        [in] GLuint renderbuffer);
+  void BindTexture([in] PP_Resource context,
+                   [in] GLenum target,
+                   [in] GLuint texture);
+  void BlendColor([in] PP_Resource context,
+                  [in] GLclampf red,
+                  [in] GLclampf green,
+                  [in] GLclampf blue,
+                  [in] GLclampf alpha);
+  void BlendEquation([in] PP_Resource context,
+                     [in] GLenum mode);
+  void BlendEquationSeparate([in] PP_Resource context,
+                             [in] GLenum modeRGB,
+                             [in] GLenum modeAlpha);
+  void BlendFunc([in] PP_Resource context,
+                 [in] GLenum sfactor,
+                 [in] GLenum dfactor);
+  void BlendFuncSeparate([in] PP_Resource context,
+                         [in] GLenum srcRGB,
+                         [in] GLenum dstRGB,
+                         [in] GLenum srcAlpha,
+                         [in] GLenum dstAlpha);
+  void BufferData([in] PP_Resource context,
+                  [in] GLenum target,
+                  [in] GLsizeiptr size,
+                  [in] mem_t data,
+                  [in] GLenum usage);
+  void BufferSubData([in] PP_Resource context,
+                     [in] GLenum target,
+                     [in] GLintptr offset,
+                     [in] GLsizeiptr size,
+                     [in] mem_t data);
+  GLenum CheckFramebufferStatus([in] PP_Resource context,
+                                [in] GLenum target);
+  void Clear([in] PP_Resource context,
+             [in] GLbitfield mask);
+  void ClearColor([in] PP_Resource context,
+                  [in] GLclampf red,
+                  [in] GLclampf green,
+                  [in] GLclampf blue,
+                  [in] GLclampf alpha);
+  void ClearDepthf([in] PP_Resource context,
+                   [in] GLclampf depth);
+  void ClearStencil([in] PP_Resource context,
+                    [in] GLint s);
+  void ColorMask([in] PP_Resource context,
+                 [in] GLboolean red,
+                 [in] GLboolean green,
+                 [in] GLboolean blue,
+                 [in] GLboolean alpha);
+  void CompileShader([in] PP_Resource context,
+                     [in] GLuint shader);
+  void CompressedTexImage2D([in] PP_Resource context,
+                            [in] GLenum target,
+                            [in] GLint level,
+                            [in] GLenum internalformat,
+                            [in] GLsizei width,
+                            [in] GLsizei height,
+                            [in] GLint border,
+                            [in] GLsizei imageSize,
+                            [in] mem_t data);
+  void CompressedTexSubImage2D([in] PP_Resource context,
+                               [in] GLenum target,
+                               [in] GLint level,
+                               [in] GLint xoffset,
+                               [in] GLint yoffset,
+                               [in] GLsizei width,
+                               [in] GLsizei height,
+                               [in] GLenum format,
+                               [in] GLsizei imageSize,
+                               [in] mem_t data);
+  void CopyTexImage2D([in] PP_Resource context,
+                      [in] GLenum target,
+                      [in] GLint level,
+                      [in] GLenum internalformat,
+                      [in] GLint x,
+                      [in] GLint y,
+                      [in] GLsizei width,
+                      [in] GLsizei height,
+                      [in] GLint border);
+  void CopyTexSubImage2D([in] PP_Resource context,
+                         [in] GLenum target,
+                         [in] GLint level,
+                         [in] GLint xoffset,
+                         [in] GLint yoffset,
+                         [in] GLint x,
+                         [in] GLint y,
+                         [in] GLsizei width,
+                         [in] GLsizei height);
+  GLuint CreateProgram([in] PP_Resource context);
+  GLuint CreateShader([in] PP_Resource context,
+                      [in] GLenum type);
+  void CullFace([in] PP_Resource context,
+                [in] GLenum mode);
+  void DeleteBuffers([in] PP_Resource context,
+                     [in] GLsizei n,
+                     [in] GLuint_ptr_t buffers);
+  void DeleteFramebuffers([in] PP_Resource context,
+                          [in] GLsizei n,
+                          [in] GLuint_ptr_t framebuffers);
+  void DeleteProgram([in] PP_Resource context,
+                     [in] GLuint program);
+  void DeleteRenderbuffers([in] PP_Resource context,
+                           [in] GLsizei n,
+                           [in] GLuint_ptr_t renderbuffers);
+  void DeleteShader([in] PP_Resource context,
+                    [in] GLuint shader);
+  void DeleteTextures([in] PP_Resource context,
+                      [in] GLsizei n,
+                      [in] GLuint_ptr_t textures);
+  void DepthFunc([in] PP_Resource context,
+                 [in] GLenum func);
+  void DepthMask([in] PP_Resource context,
+                 [in] GLboolean flag);
+  void DepthRangef([in] PP_Resource context,
+                   [in] GLclampf zNear,
+                   [in] GLclampf zFar);
+  void DetachShader([in] PP_Resource context,
+                    [in] GLuint program,
+                    [in] GLuint shader);
+  void Disable([in] PP_Resource context,
+               [in] GLenum cap);
+  void DisableVertexAttribArray([in] PP_Resource context,
+                                [in] GLuint index);
+  void DrawArrays([in] PP_Resource context,
+                  [in] GLenum mode,
+                  [in] GLint first,
+                  [in] GLsizei count);
+  void DrawElements([in] PP_Resource context,
+                    [in] GLenum mode,
+                    [in] GLsizei count,
+                    [in] GLenum type,
+                    [in] mem_t indices);
+  void Enable([in] PP_Resource context,
+              [in] GLenum cap);
+  void EnableVertexAttribArray([in] PP_Resource context,
+                               [in] GLuint index);
+  void Finish([in] PP_Resource context);
+  void Flush([in] PP_Resource context);
+  void FramebufferRenderbuffer([in] PP_Resource context,
+                               [in] GLenum target,
+                               [in] GLenum attachment,
+                               [in] GLenum renderbuffertarget,
+                               [in] GLuint renderbuffer);
+  void FramebufferTexture2D([in] PP_Resource context,
+                            [in] GLenum target,
+                            [in] GLenum attachment,
+                            [in] GLenum textarget,
+                            [in] GLuint texture,
+                            [in] GLint level);
+  void FrontFace([in] PP_Resource context,
+                 [in] GLenum mode);
+  void GenBuffers([in] PP_Resource context,
+                  [in] GLsizei n,
+                  [out] GLuint_ptr_t buffers);
+  void GenerateMipmap([in] PP_Resource context,
+                      [in] GLenum target);
+  void GenFramebuffers([in] PP_Resource context,
+                       [in] GLsizei n,
+                       [out] GLuint_ptr_t framebuffers);
+  void GenRenderbuffers([in] PP_Resource context,
+                        [in] GLsizei n,
+                        [out] GLuint_ptr_t renderbuffers);
+  void GenTextures([in] PP_Resource context,
+                   [in] GLsizei n,
+                   [out] GLuint_ptr_t textures);
+  void GetActiveAttrib([in] PP_Resource context,
+                       [in] GLuint program,
+                       [in] GLuint index,
+                       [in] GLsizei bufsize,
+                       [out] GLsizei_ptr_t length,
+                       [out] GLint_ptr_t size,
+                       [out] GLenum_ptr_t type,
+                       [out] str_t name);
+  void GetActiveUniform([in] PP_Resource context,
+                        [in] GLuint program,
+                        [in] GLuint index,
+                        [in] GLsizei bufsize,
+                        [out] GLsizei_ptr_t length,
+                        [out] GLint_ptr_t size,
+                        [out] GLenum_ptr_t type,
+                        [out] str_t name);
+  void GetAttachedShaders([in] PP_Resource context,
+                          [in] GLuint program,
+                          [in] GLsizei maxcount,
+                          [out] GLsizei_ptr_t count,
+                          [out] GLuint_ptr_t shaders);
+  GLint GetAttribLocation([in] PP_Resource context,
+                          [in] GLuint program,
+                          [in] cstr_t name);
+  void GetBooleanv([in] PP_Resource context,
+                   [in] GLenum pname,
+                   [out] GLboolean_ptr_t params);
+  void GetBufferParameteriv([in] PP_Resource context,
+                            [in] GLenum target,
+                            [in] GLenum pname,
+                            [out] GLint_ptr_t params);
+  GLenum GetError([in] PP_Resource context);
+  void GetFloatv([in] PP_Resource context,
+                 [in] GLenum pname,
+                 [out] GLfloat_ptr_t params);
+  void GetFramebufferAttachmentParameteriv([in] PP_Resource context,
+                                           [in] GLenum target,
+                                           [in] GLenum attachment,
+                                           [in] GLenum pname,
+                                           [out] GLint_ptr_t params);
+  void GetIntegerv([in] PP_Resource context,
+                   [in] GLenum pname,
+                   [out] GLint_ptr_t params);
+  void GetProgramiv([in] PP_Resource context,
+                    [in] GLuint program,
+                    [in] GLenum pname,
+                    [out] GLint_ptr_t params);
+  void GetProgramInfoLog([in] PP_Resource context,
+                         [in] GLuint program,
+                         [in] GLsizei bufsize,
+                         [out] GLsizei_ptr_t length,
+                         [out] str_t infolog);
+  void GetRenderbufferParameteriv([in] PP_Resource context,
+                                  [in] GLenum target,
+                                  [in] GLenum pname,
+                                  [out] GLint_ptr_t params);
+  void GetShaderiv([in] PP_Resource context,
+                   [in] GLuint shader,
+                   [in] GLenum pname,
+                   [out] GLint_ptr_t params);
+  void GetShaderInfoLog([in] PP_Resource context,
+                        [in] GLuint shader,
+                        [in] GLsizei bufsize,
+                        [out] GLsizei_ptr_t length,
+                        [out] str_t infolog);
+  void GetShaderPrecisionFormat([in] PP_Resource context,
+                                [in] GLenum shadertype,
+                                [in] GLenum precisiontype,
+                                [out] GLint_ptr_t range,
+                                [out] GLint_ptr_t precision);
+  void GetShaderSource([in] PP_Resource context,
+                       [in] GLuint shader,
+                       [in] GLsizei bufsize,
+                       [out] GLsizei_ptr_t length,
+                       [out] str_t source);
+  GLubyte_ptr_t GetString([in] PP_Resource context,
+                          [in] GLenum name);
+  void GetTexParameterfv([in] PP_Resource context,
+                         [in] GLenum target,
+                         [in] GLenum pname,
+                         [out] GLfloat_ptr_t params);
+  void GetTexParameteriv([in] PP_Resource context,
+                         [in] GLenum target,
+                         [in] GLenum pname,
+                         [out] GLint_ptr_t params);
+  void GetUniformfv([in] PP_Resource context,
+                    [in] GLuint program,
+                    [in] GLint location,
+                    [out] GLfloat_ptr_t params);
+  void GetUniformiv([in] PP_Resource context,
+                    [in] GLuint program,
+                    [in] GLint location,
+                    [out] GLint_ptr_t params);
+  GLint GetUniformLocation([in] PP_Resource context,
+                           [in] GLuint program,
+                           [in] cstr_t name);
+  void GetVertexAttribfv([in] PP_Resource context,
+                         [in] GLuint index,
+                         [in] GLenum pname,
+                         [out] GLfloat_ptr_t params);
+  void GetVertexAttribiv([in] PP_Resource context,
+                         [in] GLuint index,
+                         [in] GLenum pname,
+                         [out] GLint_ptr_t params);
+  void GetVertexAttribPointerv([in] PP_Resource context,
+                               [in] GLuint index,
+                               [in] GLenum pname,
+                               [out] mem_ptr_t pointer);
+  void Hint([in] PP_Resource context,
+            [in] GLenum target,
+            [in] GLenum mode);
+  GLboolean IsBuffer([in] PP_Resource context,
+                     [in] GLuint buffer);
+  GLboolean IsEnabled([in] PP_Resource context,
+                      [in] GLenum cap);
+  GLboolean IsFramebuffer([in] PP_Resource context,
+                          [in] GLuint framebuffer);
+  GLboolean IsProgram([in] PP_Resource context,
+                      [in] GLuint program);
+  GLboolean IsRenderbuffer([in] PP_Resource context,
+                           [in] GLuint renderbuffer);
+  GLboolean IsShader([in] PP_Resource context,
+                     [in] GLuint shader);
+  GLboolean IsTexture([in] PP_Resource context,
+                      [in] GLuint texture);
+  void LineWidth([in] PP_Resource context,
+                 [in] GLfloat width);
+  void LinkProgram([in] PP_Resource context,
+                   [in] GLuint program);
+  void PixelStorei([in] PP_Resource context,
+                   [in] GLenum pname,
+                   [in] GLint param);
+  void PolygonOffset([in] PP_Resource context,
+                     [in] GLfloat factor,
+                     [in] GLfloat units);
+  void ReadPixels([in] PP_Resource context,
+                  [in] GLint x,
+                  [in] GLint y,
+                  [in] GLsizei width,
+                  [in] GLsizei height,
+                  [in] GLenum format,
+                  [in] GLenum type,
+                  [out] mem_t pixels);
+  void ReleaseShaderCompiler([in] PP_Resource context);
+  void RenderbufferStorage([in] PP_Resource context,
+                           [in] GLenum target,
+                           [in] GLenum internalformat,
+                           [in] GLsizei width,
+                           [in] GLsizei height);
+  void SampleCoverage([in] PP_Resource context,
+                      [in] GLclampf value,
+                      [in] GLboolean invert);
+  void Scissor([in] PP_Resource context,
+               [in] GLint x,
+               [in] GLint y,
+               [in] GLsizei width,
+               [in] GLsizei height);
+  void ShaderBinary([in] PP_Resource context,
+                    [in] GLsizei n,
+                    [in] GLuint_ptr_t shaders,
+                    [in] GLenum binaryformat,
+                    [in] mem_t binary,
+                    [in] GLsizei length);
+  void ShaderSource([in] PP_Resource context,
+                    [in] GLuint shader,
+                    [in] GLsizei count,
+                    [out] cstr_t str,
+                    [in] GLint_ptr_t length);
+  void StencilFunc([in] PP_Resource context,
+                   [in] GLenum func,
+                   [in] GLint ref,
+                   [in] GLuint mask);
+  void StencilFuncSeparate([in] PP_Resource context,
+                           [in] GLenum face,
+                           [in] GLenum func,
+                           [in] GLint ref,
+                           [in] GLuint mask);
+  void StencilMask([in] PP_Resource context,
+                   [in] GLuint mask);
+  void StencilMaskSeparate([in] PP_Resource context,
+                           [in] GLenum face,
+                           [in] GLuint mask);
+  void StencilOp([in] PP_Resource context,
+                 [in] GLenum fail,
+                 [in] GLenum zfail,
+                 [in] GLenum zpass);
+  void StencilOpSeparate([in] PP_Resource context,
+                         [in] GLenum face,
+                         [in] GLenum fail,
+                         [in] GLenum zfail,
+                         [in] GLenum zpass);
+  void TexImage2D([in] PP_Resource context,
+                  [in] GLenum target,
+                  [in] GLint level,
+                  [in] GLint internalformat,
+                  [in] GLsizei width,
+                  [in] GLsizei height,
+                  [in] GLint border,
+                  [in] GLenum format,
+                  [in] GLenum type,
+                  [in] mem_t pixels);
+  void TexParameterf([in] PP_Resource context,
+                     [in] GLenum target,
+                     [in] GLenum pname,
+                     [in] GLfloat param);
+  void TexParameterfv([in] PP_Resource context,
+                      [in] GLenum target,
+                      [in] GLenum pname,
+                      [in] GLfloat_ptr_t params);
+  void TexParameteri([in] PP_Resource context,
+                     [in] GLenum target,
+                     [in] GLenum pname,
+                     [in] GLint param);
+  void TexParameteriv([in] PP_Resource context,
+                      [in] GLenum target,
+                      [in] GLenum pname,
+                      [in] GLint_ptr_t params);
+  void TexSubImage2D([in] PP_Resource context,
+                     [in] GLenum target,
+                     [in] GLint level,
+                     [in] GLint xoffset,
+                     [in] GLint yoffset,
+                     [in] GLsizei width,
+                     [in] GLsizei height,
+                     [in] GLenum format,
+                     [in] GLenum type,
+                     [in] mem_t pixels);
+  void Uniform1f([in] PP_Resource context,
+                 [in] GLint location,
+                 [in] GLfloat x);
+  void Uniform1fv([in] PP_Resource context,
+                  [in] GLint location,
+                  [in] GLsizei count,
+                  [in] GLfloat_ptr_t v);
+  void Uniform1i([in] PP_Resource context,
+                 [in] GLint location,
+                 [in] GLint x);
+  void Uniform1iv([in] PP_Resource context,
+                  [in] GLint location,
+                  [in] GLsizei count,
+                  [in] GLint_ptr_t v);
+  void Uniform2f([in] PP_Resource context,
+                 [in] GLint location,
+                 [in] GLfloat x,
+                 [in] GLfloat y);
+  void Uniform2fv([in] PP_Resource context,
+                  [in] GLint location,
+                  [in] GLsizei count,
+                  [in] GLfloat_ptr_t v);
+  void Uniform2i([in] PP_Resource context,
+                 [in] GLint location,
+                 [in] GLint x,
+                 [in] GLint y);
+  void Uniform2iv([in] PP_Resource context,
+                  [in] GLint location,
+                  [in] GLsizei count,
+                  [in] GLint_ptr_t v);
+  void Uniform3f([in] PP_Resource context,
+                 [in] GLint location,
+                 [in] GLfloat x,
+                 [in] GLfloat y,
+                 [in] GLfloat z);
+  void Uniform3fv([in] PP_Resource context,
+                  [in] GLint location,
+                  [in] GLsizei count,
+                  [in] GLfloat_ptr_t v);
+  void Uniform3i([in] PP_Resource context,
+                 [in] GLint location,
+                 [in] GLint x,
+                 [in] GLint y,
+                 [in] GLint z);
+  void Uniform3iv([in] PP_Resource context,
+                  [in] GLint location,
+                  [in] GLsizei count,
+                  [in] GLint_ptr_t v);
+  void Uniform4f([in] PP_Resource context,
+                 [in] GLint location,
+                 [in] GLfloat x,
+                 [in] GLfloat y,
+                 [in] GLfloat z,
+                 [in] GLfloat w);
+  void Uniform4fv([in] PP_Resource context,
+                  [in] GLint location,
+                  [in] GLsizei count,
+                  [in] GLfloat_ptr_t v);
+  void Uniform4i([in] PP_Resource context,
+                 [in] GLint location,
+                 [in] GLint x,
+                 [in] GLint y,
+                 [in] GLint z,
+                 [in] GLint w);
+  void Uniform4iv([in] PP_Resource context,
+                  [in] GLint location,
+                  [in] GLsizei count,
+                  [in] GLint_ptr_t v);
+  void UniformMatrix2fv([in] PP_Resource context,
+                        [in] GLint location,
+                        [in] GLsizei count,
+                        [in] GLboolean transpose,
+                        [in] GLfloat_ptr_t value);
+  void UniformMatrix3fv([in] PP_Resource context,
+                        [in] GLint location,
+                        [in] GLsizei count,
+                        [in] GLboolean transpose,
+                        [in] GLfloat_ptr_t value);
+  void UniformMatrix4fv([in] PP_Resource context,
+                        [in] GLint location,
+                        [in] GLsizei count,
+                        [in] GLboolean transpose,
+                        [in] GLfloat_ptr_t value);
+  void UseProgram([in] PP_Resource context,
+                  [in] GLuint program);
+  void ValidateProgram([in] PP_Resource context,
+                       [in] GLuint program);
+  void VertexAttrib1f([in] PP_Resource context,
+                      [in] GLuint indx,
+                      [in] GLfloat x);
+  void VertexAttrib1fv([in] PP_Resource context,
+                       [in] GLuint indx,
+                       [in] GLfloat_ptr_t values);
+  void VertexAttrib2f([in] PP_Resource context,
+                      [in] GLuint indx,
+                      [in] GLfloat x,
+                      [in] GLfloat y);
+  void VertexAttrib2fv([in] PP_Resource context,
+                       [in] GLuint indx,
+                       [in] GLfloat_ptr_t values);
+  void VertexAttrib3f([in] PP_Resource context,
+                      [in] GLuint indx,
+                      [in] GLfloat x,
+                      [in] GLfloat y,
+                      [in] GLfloat z);
+  void VertexAttrib3fv([in] PP_Resource context,
+                       [in] GLuint indx,
+                       [in] GLfloat_ptr_t values);
+  void VertexAttrib4f([in] PP_Resource context,
+                      [in] GLuint indx,
+                      [in] GLfloat x,
+                      [in] GLfloat y,
+                      [in] GLfloat z,
+                      [in] GLfloat w);
+  void VertexAttrib4fv([in] PP_Resource context,
+                       [in] GLuint indx,
+                       [in] GLfloat_ptr_t values);
+  void VertexAttribPointer([in] PP_Resource context,
+                           [in] GLuint indx,
+                           [in] GLint size,
+                           [in] GLenum type,
+                           [in] GLboolean normalized,
+                           [in] GLsizei stride,
+                           [in] mem_t ptr);
+  void Viewport([in] PP_Resource context,
+                [in] GLint x,
+                [in] GLint y,
+                [in] GLsizei width,
+                [in] GLsizei height);
+};
+
+
+[macro="PPB_OPENGLES2_INSTANCEDARRAYS_INTERFACE", force_struct_namespace]
+interface PPB_OpenGLES2InstancedArrays {
+  void DrawArraysInstancedANGLE([in] PP_Resource context,
+                                [in] GLenum mode,
+                                [in] GLint first,
+                                [in] GLsizei count,
+                                [in] GLsizei primcount);
+  void DrawElementsInstancedANGLE([in] PP_Resource context,
+                                  [in] GLenum mode,
+                                  [in] GLsizei count,
+                                  [in] GLenum type,
+                                  [in] mem_t indices,
+                                  [in] GLsizei primcount);
+  void VertexAttribDivisorANGLE([in] PP_Resource context,
+                                [in] GLuint index,
+                                [in] GLuint divisor);
+};
+
+
+[macro="PPB_OPENGLES2_FRAMEBUFFERBLIT_INTERFACE", force_struct_namespace]
+interface PPB_OpenGLES2FramebufferBlit {
+  void BlitFramebufferEXT([in] PP_Resource context,
+                          [in] GLint srcX0,
+                          [in] GLint srcY0,
+                          [in] GLint srcX1,
+                          [in] GLint srcY1,
+                          [in] GLint dstX0,
+                          [in] GLint dstY0,
+                          [in] GLint dstX1,
+                          [in] GLint dstY1,
+                          [in] GLbitfield mask,
+                          [in] GLenum filter);
+};
+
+
+[macro="PPB_OPENGLES2_FRAMEBUFFERMULTISAMPLE_INTERFACE", force_struct_namespace]
+interface PPB_OpenGLES2FramebufferMultisample {
+  void RenderbufferStorageMultisampleEXT([in] PP_Resource context,
+                                         [in] GLenum target,
+                                         [in] GLsizei samples,
+                                         [in] GLenum internalformat,
+                                         [in] GLsizei width,
+                                         [in] GLsizei height);
+};
+
+
+[macro="PPB_OPENGLES2_CHROMIUMENABLEFEATURE_INTERFACE", force_struct_namespace]
+interface PPB_OpenGLES2ChromiumEnableFeature {
+  GLboolean EnableFeatureCHROMIUM([in] PP_Resource context,
+                                  [in] cstr_t feature);
+};
+
+
+[macro="PPB_OPENGLES2_CHROMIUMMAPSUB_INTERFACE", force_struct_namespace]
+interface PPB_OpenGLES2ChromiumMapSub {
+  mem_t MapBufferSubDataCHROMIUM([in] PP_Resource context,
+                                 [in] GLuint target,
+                                 [in] GLintptr offset,
+                                 [in] GLsizeiptr size,
+                                 [in] GLenum access);
+  void UnmapBufferSubDataCHROMIUM([in] PP_Resource context,
+                                  [in] mem_t mem);
+  mem_t MapTexSubImage2DCHROMIUM([in] PP_Resource context,
+                                 [in] GLenum target,
+                                 [in] GLint level,
+                                 [in] GLint xoffset,
+                                 [in] GLint yoffset,
+                                 [in] GLsizei width,
+                                 [in] GLsizei height,
+                                 [in] GLenum format,
+                                 [in] GLenum type,
+                                 [in] GLenum access);
+  void UnmapTexSubImage2DCHROMIUM([in] PP_Resource context,
+                                  [in] mem_t mem);
+};
+
+
+[macro="PPB_OPENGLES2_QUERY_INTERFACE", force_struct_namespace]
+interface PPB_OpenGLES2Query {
+  void GenQueriesEXT([in] PP_Resource context,
+                     [in] GLsizei n,
+                     [out] GLuint_ptr_t queries);
+  void DeleteQueriesEXT([in] PP_Resource context,
+                        [in] GLsizei n,
+                        [in] GLuint_ptr_t queries);
+  GLboolean IsQueryEXT([in] PP_Resource context,
+                       [in] GLuint id);
+  void BeginQueryEXT([in] PP_Resource context,
+                     [in] GLenum target,
+                     [in] GLuint id);
+  void EndQueryEXT([in] PP_Resource context,
+                   [in] GLenum target);
+  void GetQueryivEXT([in] PP_Resource context,
+                     [in] GLenum target,
+                     [in] GLenum pname,
+                     [out] GLint_ptr_t params);
+  void GetQueryObjectuivEXT([in] PP_Resource context,
+                            [in] GLuint id,
+                            [in] GLenum pname,
+                            [out] GLuint_ptr_t params);
+};
+
+
+[macro="PPB_OPENGLES2_VERTEXARRAYOBJECT_INTERFACE", force_struct_namespace]
+interface PPB_OpenGLES2VertexArrayObject {
+  void GenVertexArraysOES([in] PP_Resource context,
+                          [in] GLsizei n,
+                          [out] GLuint_ptr_t arrays);
+  void DeleteVertexArraysOES([in] PP_Resource context,
+                             [in] GLsizei n,
+                             [in] GLuint_ptr_t arrays);
+  GLboolean IsVertexArrayOES([in] PP_Resource context,
+                             [in] GLuint array);
+  void BindVertexArrayOES([in] PP_Resource context,
+                          [in] GLuint array);
+};
+

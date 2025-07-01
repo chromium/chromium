@@ -1,0 +1,273 @@
+# Copyright 2015 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ppapi/buildflags/buildflags.gni")
+
+if (is_nacl) {
+  import("//build/config/nacl/config.gni")
+}
+
+assert(enable_ppapi)
+
+if (is_nacl && is_nacl_glibc) {
+  cpp_target_type = "shared_library"
+} else {
+  cpp_target_type = "static_library"
+}
+
+# Link to this target to get the PPAPI C++ wrapper objects and plugin startup
+# code. See also "objects" below.
+target(cpp_target_type, "cpp") {
+  output_name = "ppapi_cpp_lib"
+
+  sources = [
+    "module_embedder.h",
+    "ppp_entrypoints.cc",
+  ]
+
+  public_deps = [
+    ":objects",
+    "//ppapi/c",
+  ]
+
+  if (is_nacl) {
+    public_deps += [ "//build/config/nacl:nacl_base" ]
+
+    if (is_nacl_glibc) {
+      # When using gcc, we hide all symbols by default, but that breaks at
+      # link time as the test executable requires symbols defined in the
+      # shared library.
+      configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+      configs += [ "//build/config/gcc:symbol_visibility_default" ]
+
+      cflags = [ "-fPIC" ]
+    } else {
+      # This library is distributed as a part of the SDK and as such has to
+      # be a static library rather than a source set.
+      complete_static_lib = true
+      configs -= [ "//build/config/compiler:thin_archive" ]
+    }
+  }
+}
+
+# Link to this target to get only the PPAPI C++ wrapper objects but not the
+# plugin startup code. Some plugins need special startup code that they supply
+# themselves.
+source_set("objects") {
+  sources = [
+    "array_output.cc",
+    "array_output.h",
+    "audio.cc",
+    "audio.h",
+    "audio_buffer.cc",
+    "audio_buffer.h",
+    "audio_config.cc",
+    "audio_config.h",
+    "completion_callback.h",
+    "core.cc",
+    "core.h",
+    "directory_entry.cc",
+    "directory_entry.h",
+    "file_io.cc",
+    "file_io.h",
+    "file_ref.cc",
+    "file_ref.h",
+    "file_system.cc",
+    "file_system.h",
+    "fullscreen.cc",
+    "fullscreen.h",
+    "graphics_2d.cc",
+    "graphics_2d.h",
+    "graphics_3d.cc",
+    "graphics_3d.h",
+    "graphics_3d_client.cc",
+    "graphics_3d_client.h",
+    "host_resolver.cc",
+    "host_resolver.h",
+    "image_data.cc",
+    "image_data.h",
+    "input_event.cc",
+    "input_event.h",
+    "input_event_interface_name.h",
+    "instance.cc",
+    "instance.h",
+    "instance_handle.cc",
+    "instance_handle.h",
+    "logging.h",
+    "media_stream_audio_track.cc",
+    "media_stream_audio_track.h",
+    "media_stream_video_track.cc",
+    "media_stream_video_track.h",
+    "message_handler.h",
+    "message_loop.cc",
+    "message_loop.h",
+    "module.cc",
+    "module.h",
+    "module_impl.h",
+    "mouse_cursor.cc",
+    "mouse_cursor.h",
+    "mouse_lock.cc",
+    "mouse_lock.h",
+    "net_address.cc",
+    "net_address.h",
+    "network_list.cc",
+    "network_list.h",
+    "network_monitor.cc",
+    "network_monitor.h",
+    "network_proxy.cc",
+    "network_proxy.h",
+    "output_traits.h",
+    "point.h",
+    "rect.cc",
+    "rect.h",
+    "resource.cc",
+    "resource.h",
+    "size.h",
+    "tcp_socket.cc",
+    "tcp_socket.h",
+    "text_input_controller.cc",
+    "text_input_controller.h",
+    "touch_point.h",
+    "udp_socket.cc",
+    "udp_socket.h",
+    "url_loader.cc",
+    "url_loader.h",
+    "url_request_info.cc",
+    "url_request_info.h",
+    "url_response_info.cc",
+    "url_response_info.h",
+    "var.cc",
+    "var.h",
+    "var_array.cc",
+    "var_array.h",
+    "var_array_buffer.cc",
+    "var_array_buffer.h",
+    "var_dictionary.cc",
+    "var_dictionary.h",
+    "video_decoder.cc",
+    "video_decoder.h",
+    "video_encoder.cc",
+    "video_encoder.h",
+    "video_frame.cc",
+    "video_frame.h",
+    "view.cc",
+    "view.h",
+    "vpn_provider.cc",
+    "vpn_provider.h",
+    "websocket.cc",
+    "websocket.h",
+
+    # Dev interfaces.
+    "dev/audio_input_dev.cc",
+    "dev/audio_input_dev.h",
+    "dev/audio_output_dev.cc",
+    "dev/audio_output_dev.h",
+    "dev/buffer_dev.cc",
+    "dev/buffer_dev.h",
+    "dev/crypto_dev.cc",
+    "dev/crypto_dev.h",
+    "dev/cursor_control_dev.cc",
+    "dev/cursor_control_dev.h",
+    "dev/device_ref_dev.cc",
+    "dev/device_ref_dev.h",
+    "dev/file_chooser_dev.cc",
+    "dev/file_chooser_dev.h",
+    "dev/ime_input_event_dev.cc",
+    "dev/ime_input_event_dev.h",
+    "dev/memory_dev.cc",
+    "dev/memory_dev.h",
+    "dev/printing_dev.cc",
+    "dev/printing_dev.h",
+    "dev/text_input_dev.cc",
+    "dev/text_input_dev.h",
+    "dev/url_util_dev.cc",
+    "dev/url_util_dev.h",
+    "dev/video_capture_client_dev.cc",
+    "dev/video_capture_client_dev.h",
+    "dev/video_capture_dev.cc",
+    "dev/video_capture_dev.h",
+    "dev/video_decoder_client_dev.cc",
+    "dev/video_decoder_client_dev.h",
+    "dev/video_decoder_dev.cc",
+    "dev/video_decoder_dev.h",
+    "dev/view_dev.cc",
+    "dev/view_dev.h",
+
+    # Deprecated interfaces.
+    "dev/scriptable_object_deprecated.cc",
+    "dev/scriptable_object_deprecated.h",
+
+    # Private interfaces.
+    "private/camera_capabilities_private.cc",
+    "private/camera_capabilities_private.h",
+    "private/camera_device_private.cc",
+    "private/camera_device_private.h",
+    "private/ext_crx_file_system_private.cc",
+    "private/ext_crx_file_system_private.h",
+    "private/file_io_private.cc",
+    "private/file_io_private.h",
+    "private/host_resolver_private.cc",
+    "private/host_resolver_private.h",
+    "private/instance_private.cc",
+    "private/instance_private.h",
+    "private/isolated_file_system_private.cc",
+    "private/isolated_file_system_private.h",
+    "private/net_address_private.cc",
+    "private/net_address_private.h",
+    "private/pass_file_handle.cc",
+    "private/pass_file_handle.h",
+    "private/tcp_server_socket_private.cc",
+    "private/tcp_server_socket_private.h",
+    "private/tcp_socket_private.cc",
+    "private/tcp_socket_private.h",
+    "private/udp_socket_private.cc",
+    "private/udp_socket_private.h",
+    "private/uma_private.cc",
+    "private/uma_private.h",
+    "private/var_private.cc",
+    "private/var_private.h",
+    "private/video_frame_private.cc",
+    "private/video_frame_private.h",
+    "private/x509_certificate_private.cc",
+    "private/x509_certificate_private.h",
+
+    # Trusted interfaces.
+    "trusted/browser_font_trusted.cc",
+    "trusted/browser_font_trusted.h",
+    "trusted/file_chooser_trusted.cc",
+    "trusted/file_chooser_trusted.h",
+
+    # Utility sources.
+    "../utility/completion_callback_factory.h",
+    "../utility/completion_callback_factory_thread_traits.h",
+    "../utility/graphics/paint_aggregator.cc",
+    "../utility/graphics/paint_aggregator.h",
+    "../utility/graphics/paint_manager.cc",
+    "../utility/graphics/paint_manager.h",
+    "../utility/threading/lock.cc",
+    "../utility/threading/lock.h",
+    "../utility/threading/simple_thread.cc",
+    "../utility/threading/simple_thread.h",
+    "../utility/websocket/websocket_api.cc",
+    "../utility/websocket/websocket_api.h",
+  ]
+
+  configs += [ "//build/config:precompiled_headers" ]
+
+  public_deps = [ "//ppapi/c" ]
+
+  if (is_nacl) {
+    public_deps += [ "//build/config/nacl:nacl_base" ]
+
+    if (is_nacl_glibc) {
+      # When using gcc, we hide all symbols by default, but that breaks at
+      # link time as the test executable requires symbols defined in the
+      # shared library.
+      configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+      configs += [ "//build/config/gcc:symbol_visibility_default" ]
+
+      cflags = [ "-fPIC" ]
+    }
+  }
+}

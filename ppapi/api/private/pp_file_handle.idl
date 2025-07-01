@@ -1,0 +1,22 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file provides support for native OS file handles.
+ */
+
+#inline c
+
+#ifdef _WIN32
+#include<windows.h>
+typedef HANDLE PP_FileHandle;
+static const PP_FileHandle PP_kInvalidFileHandle = NULL;
+
+#else
+typedef int PP_FileHandle;
+static const PP_FileHandle PP_kInvalidFileHandle = -1;
+#endif
+
+#endinl

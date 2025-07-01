@@ -1,0 +1,100 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file provides a definition of C99 sized types
+ * for Microsoft compilers. These definitions only apply
+ * for trusted modules.
+ */
+
+label Chrome {
+  M13 = 0.0
+};
+
+[version=0.0]
+describe {
+  /** Standard Ints. */
+  int8_t;
+  int16_t;
+  int32_t;
+  int64_t;
+  uint8_t;
+  uint16_t;
+  uint32_t;
+  uint64_t;
+  /** Small and large floats. */
+  double_t;
+  float_t;
+
+  /** Native file handle (int). */
+  handle_t;
+
+  /** Interface object (void *). */
+  interface_t;
+
+  /** Used for padding, should be (u)int8_t */
+  char;
+
+  /** Pointer to memory (void *). */
+  mem_t;
+
+  /** Pointer to pointer to memory (void **). */
+  mem_ptr_t;
+
+  /** Pointer to null terminated string (char *). */
+  str_t;
+
+  /** Pointer to constant null terminated string (const char *). */
+  cstr_t;
+
+  /** No return value. */
+  void;
+
+  /** Platform-specific file handle */
+  PP_FileHandle;
+};
+
+#inline c
+
+/**
+ *
+ * @addtogroup Typedefs
+ * @{
+ */
+#if defined(_MSC_VER)
+
+/** This value represents a guaranteed unsigned 8 bit integer. */
+typedef unsigned char uint8_t;
+
+/** This value represents a guaranteed signed 8 bit integer. */
+typedef signed char int8_t;
+
+/** This value represents a guaranteed unsigned 16 bit short. */
+typedef unsigned short uint16_t;
+
+/** This value represents a guaranteed signed 16 bit short. */
+typedef short int16_t;
+
+/** This value represents a guaranteed unsigned 32 bit integer. */
+typedef unsigned int uint32_t;
+
+/** This value represents a guaranteed signed 32 bit integer. */
+typedef int int32_t;
+
+/** This value represents a guaranteed signed 64 bit integer. */
+typedef __int64 int64_t;
+
+/** This value represents a guaranteed unsigned 64 bit integer. */
+typedef unsigned __int64 uint64_t;
+
+#else
+#include <stdint.h>
+#endif
+/**
+ * @}
+ */
+
+#endinl
+

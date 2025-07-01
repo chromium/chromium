@@ -1,0 +1,44 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * Definition of the PPB_Printing interface.
+ */
+
+[generate_thunk]
+
+// Note: This version should always match the PPP_Printing_Dev interface.
+label Chrome {
+  M23 = 0.7
+};
+
+interface PPB_Printing_Dev {
+  /** Create a resource for accessing printing functionality.
+   *
+   * @param[in] instance A <code>PP_Instance</code> identifying one instance
+   * of a module.
+   *
+   * @return A <code>PP_Resource</code> containing the printing resource if
+   * successful or 0 if it could not be created.
+   */
+  PP_Resource Create([in] PP_Instance instance);
+
+  /**
+   * Outputs the default print settings for the default printer into
+   * <code>print_settings</code>. The callback is called with
+   * <code>PP_OK</code> when the settings have been retrieved successfully.
+   *
+   * @param[in] resource The printing resource.
+   *
+   * @param[in] callback A <code>CompletionCallback</code> to be called when
+   * <code>print_settings</code> have been retrieved.
+   *
+   * @return PP_OK_COMPLETIONPENDING if request for the default print settings
+   * was successful, another error code from pp_errors.h on failure.
+   */
+  int32_t GetDefaultPrintSettings([in] PP_Resource resource,
+                                  [out] PP_PrintSettings_Dev print_settings,
+                                  [in] PP_CompletionCallback callback);
+};
