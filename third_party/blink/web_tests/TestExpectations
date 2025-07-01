@@ -6576,6 +6576,9 @@ crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/key-sort-order-acr
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/odd-strings.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/open-ordering.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/transaction-error.html [ Failure ]
+# Gardener 2025-07-01
+crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/transaction-complete-with-js-recursion-cross-frame.html [ Crash Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/transaction-complete-with-js-recursion.html [ Crash Pass ]
 
 # Sheriff 2022-08-06
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
