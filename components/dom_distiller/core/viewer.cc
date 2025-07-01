@@ -101,11 +101,11 @@ const std::string GetFontCssClass(mojom::FontFamily font_family) {
   return kSansSerifCssClass;
 }
 
-void EnsureNonEmptyContent(std::string* content) {
-  if (content->empty()) {
-    *content =
-        l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT);
+const std::string EnsureNonEmptyContent(const std::string& content) {
+  if (content.empty()) {
+    return l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT);
   }
+  return content;
 }
 
 std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
@@ -205,13 +205,8 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
 const std::string GetUnsafeIncrementalDistilledPageJs(
     const DistilledPageProto* page_proto,
     bool is_last_page) {
-  std::string output(page_proto->html());
-  EnsureNonEmptyContent(&output);
-  base::Value value(output);
-  base::JSONWriter::Write(value, &output);
-  std::string page_update("addToPage(");
-  page_update += output + ");";
-  return page_update + GetToggleLoadingIndicatorJs(is_last_page);
+  return GetAddToPageJs(page_proto->html()) +
+         GetToggleLoadingIndicatorJs(is_last_page);
 }
 
 const std::string GetErrorPageJs() {
@@ -219,11 +214,8 @@ const std::string GetErrorPageJs() {
       IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_TITLE));
   std::string page_update(GetSetTitleJs(title));
 
-  base::Value value(l10n_util::GetStringUTF8(
+  page_update += GetAddToPageJs(l10n_util::GetStringUTF8(
       IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_CONTENT));
-  std::string output;
-  base::JSONWriter::Write(value, &output);
-  page_update += "addToPage(" + output + ");";
   page_update += GetSetTextDirectionJs(std::string("auto"));
   page_update += GetToggleLoadingIndicatorJs(true);
   return page_update;
@@ -276,12 +268,14 @@ const std::string GetUnsafeArticleContentJs(
     }
   }
 
-  std::string output(unsafe_output_stream.str());
-  EnsureNonEmptyContent(&output);
+  return GetAddToPageJs(unsafe_output_stream.str()) +
+         GetToggleLoadingIndicatorJs(true);
+}
+
+const std::string GetAddToPageJs(const std::string& unsafe_content) {
+  std::string output(EnsureNonEmptyContent(unsafe_content));
   base::JSONWriter::Write(base::Value(output), &output);
-  std::string page_update("addToPage(");
-  page_update += output + ");";
-  return page_update + GetToggleLoadingIndicatorJs(true);
+  return "addToPage(" + output + ");";
 }
 
 const std::string GetCss() {
