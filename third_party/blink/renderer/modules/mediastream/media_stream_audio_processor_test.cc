@@ -223,9 +223,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_WithAudioProcessing) {
 }
 
 TEST_F(MediaStreamAudioProcessorTest, TurnOffDefaultConstraints) {
-  blink::AudioProcessingProperties properties;
-  // Turn off the default constraints and pass it to MediaStreamAudioProcessor.
-  properties.DisableDefaultProperties();
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
       new webrtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
@@ -394,7 +392,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
     blink::AudioProcessingProperties properties;
     if (!use_apm) {
       // Turn off the audio processing.
-      properties.DisableDefaultProperties();
+      properties = AudioProcessingProperties::Disabled();
     }
     scoped_refptr<MediaStreamAudioProcessor> audio_processor(
         new webrtc::RefCountedObject<MediaStreamAudioProcessor>(
@@ -613,8 +611,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
      UnprocessedAudioIsDeliveredImmediatelyWithShortBuffers) {
   test::TaskEnvironment task_environment_;
   MockProcessedCaptureCallback mock_capture_callback;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
       new webrtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   // Set buffer size to 4 ms.
@@ -662,8 +659,7 @@ TEST(MediaStreamAudioProcessorCallbackTest,
      UnprocessedAudioIsDeliveredImmediatelyWithLongBuffers) {
   test::TaskEnvironment task_environment_;
   MockProcessedCaptureCallback mock_capture_callback;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
       new webrtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   // Set buffer size to 35 ms.
@@ -745,8 +741,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest, TrueByDefault) {
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      FalseWhenEverythingIsDisabled) {
   test::TaskEnvironment task_environment_;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   MediaStreamAudioProcessingLayout processing_layout(
       properties,
       /*available_platform_effects=*/0, /*multichannel_processing=*/false);
@@ -760,8 +755,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      FalseWhenOnlyHardwareEffectsAreUsed) {
   test::TaskEnvironment task_environment_;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   properties.echo_cancellation_type =
       AudioProcessingProperties::EchoCancellationType::kEchoCancellationSystem;
   MediaStreamAudioProcessingLayout processing_layout(
@@ -787,8 +781,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenSoftwareEchoCancellationIsEnabled) {
   test::TaskEnvironment task_environment_;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   properties.echo_cancellation_type =
       AudioProcessingProperties::EchoCancellationType::kEchoCancellationAec3;
   MediaStreamAudioProcessingLayout processing_layout(
@@ -818,8 +811,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenGainControlIsEnabled) {
   test::TaskEnvironment task_environment_;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   properties.auto_gain_control = true;
   MediaStreamAudioProcessingLayout processing_layout(
       properties,
@@ -840,8 +832,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      TrueWhenNoiseSuppressionIsEnabled) {
   test::TaskEnvironment task_environment_;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   properties.noise_suppression = true;
   MediaStreamAudioProcessingLayout processing_layout(
       properties,

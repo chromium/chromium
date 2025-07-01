@@ -176,8 +176,7 @@ using EchoCancellationType =
 
 std::optional<blink::AudioProcessingProperties>
 LocalMediaStreamAudioSource::GetAudioProcessingProperties() const {
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
 
   if (device().input.effects() & media::AudioParameters::ECHO_CANCELLER) {
     properties.echo_cancellation_type =

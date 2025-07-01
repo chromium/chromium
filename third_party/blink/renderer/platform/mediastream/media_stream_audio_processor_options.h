@@ -33,7 +33,7 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
   };
 
   // Disables properties that are enabled by default.
-  void DisableDefaultProperties();
+  static const AudioProcessingProperties& Disabled();
 
   bool HasSameReconfigurableSettings(
       const AudioProcessingProperties& other) const;

@@ -10,11 +10,15 @@
 
 namespace blink {
 
-void AudioProcessingProperties::DisableDefaultProperties() {
-  echo_cancellation_type = EchoCancellationType::kEchoCancellationDisabled;
-  auto_gain_control = false;
-  noise_suppression = false;
-  voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
+// static
+const AudioProcessingProperties& AudioProcessingProperties::Disabled() {
+  static constexpr AudioProcessingProperties kDisabledProperties{
+      .echo_cancellation_type = EchoCancellationType::kEchoCancellationDisabled,
+      .auto_gain_control = false,
+      .noise_suppression = false,
+      .voice_isolation = VoiceIsolationType::kVoiceIsolationDefault};
+
+  return kDisabledProperties;
 }
 
 bool AudioProcessingProperties::HasSameReconfigurableSettings(

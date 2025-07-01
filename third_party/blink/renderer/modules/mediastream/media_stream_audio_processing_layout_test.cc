@@ -39,8 +39,7 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
 
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
      DisableDefaultProperties) {
-  AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   const media::AudioProcessingSettings settings =
       MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
           properties,
