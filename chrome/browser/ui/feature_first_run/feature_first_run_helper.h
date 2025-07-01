@@ -37,7 +37,6 @@ enum class InfoBoxPosition { kStart, kMiddle, kEnd };
 views::Widget* ShowFeatureFirstRunDialog(
     std::u16string title,
     ui::ImageModel banner,
-    ui::ImageModel dark_mode_banner,
     std::unique_ptr<views::View> content_view,
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,

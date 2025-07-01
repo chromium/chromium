@@ -16,12 +16,15 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
-#include "chrome/grit/theme_resources.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
@@ -42,13 +45,11 @@ views::Widget* ShowDialog(content::WebContents* web_contents,
                           base::OnceClosure cancel_callback = base::DoNothing(),
                           std::u16string title = std::u16string(),
                           ui::ImageModel banner = ui::ImageModel(),
-                          ui::ImageModel dark_mode_banner = ui::ImageModel(),
                           std::unique_ptr<views::View> content_view =
                               std::make_unique<views::View>()) {
   return ShowFeatureFirstRunDialog(
-      std::move(title), std::move(banner), std::move(dark_mode_banner),
-      std::move(content_view), std::move(accept_callback),
-      std::move(cancel_callback), web_contents);
+      std::move(title), std::move(banner), std::move(content_view),
+      std::move(accept_callback), std::move(cancel_callback), web_contents);
 }
 
 }  // namespace
@@ -60,14 +61,15 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
   const std::u16string title = u"Test Title";
   auto content_view = std::make_unique<views::View>();
   auto* expected_content_view = content_view.get();
-  auto banner = ui::ImageModel::FromResourceId(IDR_SAVE_PASSPORT);
-  auto dark_mode_banner =
-      ui::ImageModel::FromResourceId(IDR_SAVE_PASSPORT_DARK);
+
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto banner =
+      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_PASSPORT_LOTTIE);
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* dialog_widget =
       ShowDialog(web_contents, base::DoNothing(), base::DoNothing(), title,
-                 banner, dark_mode_banner, std::move(content_view));
+                 banner, std::move(content_view));
   auto* dialog_widget_delegate = dialog_widget->widget_delegate();
 
   EXPECT_TRUE(dialog_widget->IsVisible());
@@ -78,17 +80,11 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
   auto* banner_view = static_cast<views::ImageView*>(
       bubble_frame_view->GetHeaderViewForTesting());
 
-  // Verify light mode banner.
-  auto* theme_service =
-      ThemeServiceFactory::GetForProfile(browser()->profile());
-  theme_service->SetBrowserColorScheme(
-      ThemeService::BrowserColorScheme::kLight);
-  EXPECT_EQ(banner.GetImage().ToSkBitmap(), banner_view->GetImage().bitmap());
-
-  // Verify dark mode banner.
-  theme_service->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
-  EXPECT_EQ(dark_mode_banner.GetImage().ToSkBitmap(),
-            banner_view->GetImage().bitmap());
+  // Synchronously update the widget and its children.
+  gfx::ImageSkia expected_skia =
+      banner.GetImageGenerator().Run(banner_view->GetColorProvider());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_skia),
+                                        gfx::Image(banner_view->GetImage())));
 
   auto* actual_content_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(

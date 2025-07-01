@@ -53,7 +53,7 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   std::vector<EntityAttributeUpdateDetails> GetUpdatedAttributesDetails()
       const override;
   bool IsSavePrompt() const override;
-  std::pair<int, int> GetTitleImagesResourceId() const override;
+  int GetTitleImagesResourceId() const override;
 
  protected:
   explicit SaveOrUpdateAutofillAiDataControllerImpl(

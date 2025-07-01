@@ -38,13 +38,12 @@ namespace {
 std::unique_ptr<ui::DialogModel> CreateGenericFeatureFirstRunDialogModel(
     std::u16string title,
     ui::ImageModel banner,
-    ui::ImageModel dark_mode_banner,
     std::unique_ptr<views::View> content_view,
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback) {
   return ui::DialogModel::Builder()
       .SetTitle(std::move(title))
-      .SetBannerImage(std::move(banner), std::move(dark_mode_banner))
+      .SetBannerImage(std::move(banner))
       .AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
               std::move(content_view),
@@ -157,7 +156,6 @@ std::unique_ptr<views::View> CreateDialogContentViewContainer() {
 views::Widget* ShowFeatureFirstRunDialog(
     std::u16string title,
     ui::ImageModel banner,
-    ui::ImageModel dark_mode_banner,
     std::unique_ptr<views::View> content_view,
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,
@@ -170,9 +168,8 @@ views::Widget* ShowFeatureFirstRunDialog(
 
   return constrained_window::ShowWebModal(
       CreateGenericFeatureFirstRunDialogModel(
-          std::move(title), std::move(banner), std::move(dark_mode_banner),
-          std::move(content_view), std::move(accept_callback),
-          std::move(cancel_callback)),
+          std::move(title), std::move(banner), std::move(content_view),
+          std::move(accept_callback), std::move(cancel_callback)),
       web_contents);
 }
 

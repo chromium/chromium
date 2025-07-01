@@ -35,10 +35,7 @@ class MockSaveOrUpdateAutofillAiDataController
               (),
               (const override));
   MOCK_METHOD(bool, IsSavePrompt, (), (const override));
-  MOCK_METHOD((std::pair<int, int>),
-              GetTitleImagesResourceId,
-              (),
-              (const override));
+  MOCK_METHOD((int), GetTitleImagesResourceId, (), (const override));
   MOCK_METHOD(void, OnBubbleClosed, (AutofillAiBubbleClosedReason), (override));
   base::WeakPtr<SaveOrUpdateAutofillAiDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

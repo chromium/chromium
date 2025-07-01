@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font.h"
@@ -30,6 +31,7 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -325,13 +327,15 @@ void SaveOrUpdateAutofillAiDataBubbleView::Hide() {
 
 void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {
   if (controller_->IsSavePrompt()) {
-    std::pair<int, int> images = controller_->GetTitleImagesResourceId();
-    GetBubbleFrameView()->SetHeaderView(
-        std::make_unique<ThemeTrackingNonAccessibleImageView>(
-            ui::ImageModel::FromResourceId(images.first),
-            ui::ImageModel::FromResourceId(images.second),
-            base::BindRepeating(&views::BubbleDialogDelegate::background_color,
-                                base::Unretained(this))));
+    int image = controller_->GetTitleImagesResourceId();
+    ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+
+    std::unique_ptr<views::ImageView> image_view =
+        std::make_unique<views::ImageView>(
+            bundle.GetThemedLottieImageNamed(image));
+    image_view->GetViewAccessibility().SetIsInvisible(true);
+
+    GetBubbleFrameView()->SetHeaderView(std::move(image_view));
   }
 }
 

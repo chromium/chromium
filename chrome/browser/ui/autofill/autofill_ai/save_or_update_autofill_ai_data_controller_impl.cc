@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/grit/theme_resources.h"
+#include "chrome/grit/browser_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
@@ -262,16 +262,14 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-// TODO(389629676): Return proper resources once we have them.
-std::pair<int, int>
-SaveOrUpdateAutofillAiDataControllerImpl::GetTitleImagesResourceId() const {
+int SaveOrUpdateAutofillAiDataControllerImpl::GetTitleImagesResourceId() const {
   switch (new_entity_->type().name()) {
     case EntityTypeName::kVehicle:
-      return {IDR_SAVE_VEHICLE, IDR_SAVE_VEHICLE_DARK};
+      return IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE;
     case EntityTypeName::kPassport:
-      return {IDR_SAVE_PASSPORT, IDR_SAVE_PASSPORT_DARK};
+      return IDR_AUTOFILL_SAVE_PASSPORT_LOTTIE;
     case EntityTypeName::kDriversLicense:
-      return {IDR_SAVE_DRIVERS_LICENSE, IDR_SAVE_DRIVERS_LICENSE_DARK};
+      return IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE;
   }
   NOTREACHED();
 }

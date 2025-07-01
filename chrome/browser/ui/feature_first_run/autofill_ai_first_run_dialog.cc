@@ -85,7 +85,6 @@ void ShowAutofillAiFirstRunDialog(content::WebContents* web_contents) {
   ShowFeatureFirstRunDialog(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE),
       bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_AI_FFR_BANNER_LOTTIE),
-      /*dark_mode_banner=*/ui::ImageModel(),
       CreateDialogContentView(web_contents),
       base::BindOnce(&OnDialogAccepted, web_contents),
       base::BindOnce(&OnDialogCancelled), web_contents);
