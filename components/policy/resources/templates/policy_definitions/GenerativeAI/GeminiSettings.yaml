@@ -8,7 +8,7 @@ desc: |-
 
   If the policy is unset, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy.
 
-  For more information, please check the Enterprise Release Notes (https://support.google.com/chrome/a/answer/7679408).
+  For more information, please check the Help Center article https://support.google.com/chrome/a?p=gemini_in_chrome.
 owners:
 - salg@google.com
 - ssid@chromium.org
