@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_entrypoint_view.h"
 
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -51,8 +52,20 @@ const CGFloat kHighlightScaling = 0.7;
                              scale:UIImageSymbolScaleMedium];
     [self setPreferredSymbolConfiguration:symbolConfig
                           forImageInState:UIControlStateNormal];
-    [self setImage:CustomSymbolWithPointSize(kTextSparkSymbol, kIconPointSize)
-          forState:UIControlStateNormal];
+    if (IsDirectBWGEntryPoint()) {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+      [self setImage:CustomSymbolWithPointSize(kGeminiBrandedLogoImage,
+                                               kIconPointSize)
+            forState:UIControlStateNormal];
+#else
+      [self setImage:DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage,
+                                                kIconPointSize)
+            forState:UIControlStateNormal];
+#endif
+    } else {
+      [self setImage:CustomSymbolWithPointSize(kTextSparkSymbol, kIconPointSize)
+            forState:UIControlStateNormal];
+    }
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [self createBackgroundView];
 

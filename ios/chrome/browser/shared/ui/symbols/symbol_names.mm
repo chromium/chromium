@@ -7,6 +7,7 @@
 // Branded symbol names.
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 // TODO(crbug.com/1489185): Move PNG images out of this file.
+NSString* const kChromeAIHubHeaderImage = @"chrome_ai_hub_header";
 NSString* const kChromeDefaultBrowserIllustrationImage =
     @"chrome_default_browser_illustration";
 NSString* const kChromeDefaultBrowserScreenBannerImage =
@@ -20,6 +21,7 @@ NSString* const kChromeSearchEngineChoiceIcon =
     @"chrome_search_engine_choice_icon";
 NSString* const kChromeSigninBannerImage = @"chrome_signin_banner";
 NSString* const kChromeSigninPromoLogoImage = @"chrome_signin_promo_logo";
+NSString* const kGeminiBrandedLogoImage = @"gemini_logo";
 NSString* const kGoogleDriveSymbol = @"google_drive";
 NSString* const kGoogleFullSymbol = @"google_full";
 NSString* const kGoogleIconSymbol = @"google_icon";
@@ -40,6 +42,7 @@ NSString* const kFedexCarrierImage = @"parcel_tracking_carrier_fedex";
 NSString* const kUPSCarrierImage = @"parcel_tracking_carrier_ups";
 NSString* const kUSPSCarrierImage = @"parcel_tracking_carrier_usps";
 #else
+NSString* const kChromiumAIHubHeaderImage = @"chromium_ai_hub_header";
 NSString* const kChromiumDefaultBrowserScreenBannerImage =
     @"chromium_default_browser_screen_banner";
 NSString* const kChromiumGuidedTourBannerImage = @"chromium_guided_tour_banner";
@@ -57,6 +60,7 @@ NSString* const kChromiumSettingsPasswordsInOtherAppsBannerImage =
     @"chromium_settings_passwords_in_other_apps_banner";
 NSString* const kChromiumSigninBannerImage = @"chromium_signin_banner";
 NSString* const kChromiumSigninPromoLogoImage = @"chromium_signin_promo_logo";
+NSString* const kGeminiNonBrandedLogoImage = @"sparkle";
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
 // Custom symbol names.

@@ -46,6 +46,9 @@ const CGFloat kButtonsCornerRadius = 16;
 // The height of the menu's header.
 const CGFloat kMenuHeaderHeight = 58;
 
+// The padding between the image and text of the large button.
+const CGFloat kLargeButtonImagePadding = 8;
+
 }  // namespace
 
 @interface PageActionMenuViewController () <
@@ -191,12 +194,11 @@ const CGFloat kMenuHeaderHeight = 58;
 
   // Add the logo.
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  // TODO(crbug.com/419246126): Use Chrome branded logo.
   UIImageView* logoIcon = [[UIImageView alloc]
-      initWithImage:[UIImage imageNamed:@"page_action_menu_header_chromium"]];
+      initWithImage:[UIImage imageNamed:kChromeAIHubHeaderImage]];
 #else
   UIImageView* logoIcon = [[UIImageView alloc]
-      initWithImage:[UIImage imageNamed:@"page_action_menu_header_chromium"]];
+      initWithImage:[UIImage imageNamed:kChromiumSigninPromoLogoImage]];
 #endif
   logoIcon.translatesAutoresizingMaskIntoConstraints = NO;
   [topBar addSubview:logoIcon];
@@ -252,12 +254,10 @@ const CGFloat kMenuHeaderHeight = 58;
                forControlEvents:UIControlEventTouchUpInside];
     [stackView addArrangedSubview:readerModeButton];
   } else {
-    // TODO(crbug.com/419067173): Update the icon.
     UIButton* BWGSmallButton =
-        [self createSmallButtonWithIcon:DefaultSymbolWithPointSize(
-                                            @"sparkle", kSmallButtonIconSize)
+        [self createSmallButtonWithIcon:[self askGeminiIcon]
                                   title:l10n_util::GetNSString(
-                                            IDS_IOS_AI_HUB_BWG_LABEL)
+                                            IDS_IOS_AI_HUB_GEMINI_LABEL)
                             destructive:NO];
     [BWGSmallButton addTarget:self
                        action:@selector(handleBWGTapped:)
@@ -280,6 +280,9 @@ const CGFloat kMenuHeaderHeight = 58;
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration filledButtonConfiguration];
   buttonConfiguration.background = backgroundConfig;
+  buttonConfiguration.image = [self askGeminiIcon];
+  buttonConfiguration.imagePlacement = NSDirectionalRectEdgeLeading;
+  buttonConfiguration.imagePadding = kLargeButtonImagePadding;
 
   // Set the font and text color as attributes.
   UIFont* font = PreferredFontForTextStyle(UIFontTextStyleHeadline);
@@ -287,7 +290,7 @@ const CGFloat kMenuHeaderHeight = 58;
     NSFontAttributeName : font,
   };
   NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
-      initWithString:l10n_util::GetNSString(IDS_IOS_AI_HUB_BWG_LABEL)];
+      initWithString:l10n_util::GetNSString(IDS_IOS_AI_HUB_GEMINI_LABEL)];
   [string addAttributes:titleAttributes range:NSMakeRange(0, string.length)];
   buttonConfiguration.attributedTitle = string;
 
@@ -343,6 +346,17 @@ const CGFloat kMenuHeaderHeight = 58;
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
   return button;
+}
+
+// Returns the symbol for the Ask Gemini button.
+- (UIImage*)askGeminiIcon {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return CustomSymbolWithPointSize(kGeminiBrandedLogoImage,
+                                   kSmallButtonIconSize);
+#else
+  return DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage,
+                                    kSmallButtonIconSize);
+#endif
 }
 
 // Dismisses this view controller and starts the BWG overlay.

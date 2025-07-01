@@ -16,6 +16,7 @@
 
 // Branded symbol names.
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+extern NSString* const kChromeAIHubHeaderImage;
 extern NSString* const kChromeDefaultBrowserIllustrationImage;
 extern NSString* const kChromeDefaultBrowserScreenBannerImage;
 extern NSString* const kChromeGuidedTourBannerImage;
@@ -24,6 +25,7 @@ extern NSString* const kChromeNotificationsOptInBannerLandscapeImage;
 extern NSString* const kChromeSearchEngineChoiceIcon;
 extern NSString* const kChromeSigninBannerImage;
 extern NSString* const kChromeSigninPromoLogoImage;
+extern NSString* const kGeminiBrandedLogoImage;
 extern NSString* const kGoogleDriveSymbol;
 extern NSString* const kGoogleFullSymbol;
 extern NSString* const kGoogleIconSymbol;
@@ -41,6 +43,7 @@ extern NSString* const kFedexCarrierImage;
 extern NSString* const kUPSCarrierImage;
 extern NSString* const kUSPSCarrierImage;
 #else
+extern NSString* const kChromiumAIHubHeaderImage;
 extern NSString* const kChromiumDefaultBrowserIllustrationImage;
 extern NSString* const kChromiumDefaultBrowserScreenBannerImage;
 extern NSString* const kChromiumGuidedTourBannerImage;
@@ -52,6 +55,7 @@ extern NSString* const kChromiumSearchEngineChoiceIcon;
 extern NSString* const kChromiumSettingsPasswordsInOtherAppsBannerImage;
 extern NSString* const kChromiumSigninBannerImage;
 extern NSString* const kChromiumSigninPromoLogoImage;
+extern NSString* const kGeminiNonBrandedLogoImage;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
 // Custom symbol names.

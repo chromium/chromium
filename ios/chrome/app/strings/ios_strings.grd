@@ -267,8 +267,8 @@
       <message name="IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_MESSAGE" desc="Alert title to ask if the user really wants to cancel sign-in and sync.">
         Cancel sync? You can turn on sync anytime in settings.
       </message>
-      <message name="IDS_IOS_AI_HUB_BWG_LABEL" translateable="false" desc="The button label for the Gemini entry point of the AI hub.">
-        Ask Me
+      <message name="IDS_IOS_AI_HUB_GEMINI_LABEL" translateable="false" desc="The button label for the Gemini entry point of the AI hub.">
+        Ask Gemini
       </message>
       <message name="IDS_IOS_AI_HUB_HIDE_READER_MODE_LABEL" desc="The button label for hiding Reader mode when it's active from the AI hub.">
         Hide Reader

@@ -844,12 +844,19 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 - (OverflowMenuAction*)openAskBWGAction {
   __weak __typeof(self) weakSelf = self;
-  // TODO(crbug.com/414777888): Change the icon.
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  BOOL isBrandedIcon = YES;
+  NSString* symbolName = kGeminiBrandedLogoImage;
+#else
+  BOOL isBrandedIcon = NO;
+  NSString* symbolName = kGeminiNonBrandedLogoImage;
+#endif
   return
-      [self createOverflowMenuActionWithName:@"Ask BWG"
+      [self createOverflowMenuActionWithName:l10n_util::GetNSString(
+                                                 IDS_IOS_AI_HUB_GEMINI_LABEL)
                                   actionType:overflow_menu::ActionType::AskBWG
-                                  symbolName:kMagicStackSymbol
-                                systemSymbol:YES
+                                  symbolName:symbolName
+                                systemSymbol:!isBrandedIcon
                             monochromeSymbol:NO
                              accessibilityID:kToolsMenuOpenAskBWG
                                 hideItemText:nil

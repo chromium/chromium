@@ -132,6 +132,8 @@ bundle_data_xcassets("resources") {
 bundle_data_xcassets("branded_assets") {
   catalog = "Chromium.xcassets"
   sources = [
+    "Chromium.xcassets/chromium_ai_hub_header.symbolset/Contents.json",
+    "Chromium.xcassets/chromium_ai_hub_header.symbolset/chromium_ai_hub_header.cr.svg",
     "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/Contents.json",
     "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner@2x.png",
     "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner@3x.png",
