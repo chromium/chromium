@@ -4,6 +4,9 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/window_management/multiple_web_contents_opened_service.h"
 
+#include <vector>
+
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/stringprintf.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/isolated_web_apps/window_management/multiple_web_contents_opened_notification_delegate.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -30,6 +34,7 @@
 
 namespace {
 
+constexpr int kMaxNotificationShowCount = 3;
 constexpr std::string_view kMultipleWebContentsOpenedNotificationPattern =
     "multiple_web_contents_opened_app_%s";
 
@@ -67,6 +72,22 @@ void MultipleWebContentsOpenedService::Shutdown() {
 
   app_window_counts_.clear();
   opened_by_app_map_.clear();
+  app_notification_states_.clear();
+}
+
+int MultipleWebContentsOpenedService::GetWindowCountForAppForTesting(
+    const webapps::AppId& app_id) const {
+  CHECK_IS_TEST();
+  if (auto* count = base::FindOrNull(app_window_counts_, app_id)) {
+    return *count;
+  }
+  return 0;
+}
+
+bool MultipleWebContentsOpenedService::IsWebContentsTrackedForTesting(
+    content::WebContents* contents) const {
+  CHECK_IS_TEST();
+  return base::Contains(opened_by_app_map_, contents);
 }
 
 void MultipleWebContentsOpenedService::OnBrowserAdded(Browser* browser) {
@@ -188,22 +209,43 @@ void MultipleWebContentsOpenedService::UpdateOrRemoveNotificationForOpener(
     const webapps::AppId& app_id) {
   NotificationDisplayService* display_service =
       NotificationDisplayServiceFactory::GetForProfile(profile_);
-  if (!display_service) {
-    return;
-  }
-
-  if (!base::Contains(app_window_counts_, app_id)) {
+  if (!display_service || !base::Contains(app_window_counts_, app_id)) {
     return;
   }
 
   const int current_window_count = app_window_counts_[app_id];
+  NotificationState& notification_state = app_notification_states_[app_id];
 
-  if (current_window_count > 1) {
-    CreateAndDisplayNotification(app_id, current_window_count);
-  } else {
+  if (current_window_count <= 1) {
+    if (notification_state.is_active) {
+      notification_state.is_active = false;
+      CloseNotification(app_id);
+    }
+    return;
+  }
+
+  // If this is a notification creation, not an update to it.
+  if (!notification_state.is_active) {
+    notification_state.is_active = true;
+    notification_state.times_shown++;
+  }
+
+  if (notification_state.acknowledged ||
+      notification_state.times_shown > kMaxNotificationShowCount) {
     display_service->Close(NotificationHandler::Type::TRANSIENT,
                            GetNotificationIdForApp(app_id));
+    return;
   }
+
+  CreateAndDisplayNotification(app_id, current_window_count);
+}
+
+void MultipleWebContentsOpenedService::OnNotificationAcknowledged(
+    const webapps::AppId& app_id) {
+  app_notification_states_[app_id].acknowledged = true;
+
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
+      NotificationHandler::Type::TRANSIENT, GetNotificationIdForApp(app_id));
 }
 
 void MultipleWebContentsOpenedService::CreateAndDisplayNotification(
@@ -224,9 +266,24 @@ void MultipleWebContentsOpenedService::CreateAndDisplayNotification(
       IDS_MULTIPLE_WEB_CONTENTS_OPENED_NOTIFICATION_BUTTON_SETTINGS);
   rich_data.buttons.push_back(content_settings_button_info);
 
+  message_center::ButtonInfo close_button_info;
+  close_button_info.title = l10n_util::GetStringUTF16(
+      IDS_MULTIPLE_WEB_CONTENTS_OPENED_NOTIFICATION_CLOSE_BUTTON);
+  rich_data.buttons.push_back(close_button_info);
+
   scoped_refptr<message_center::NotificationDelegate> delegate =
       base::MakeRefCounted<MultipleWebContentsOpenedNotificationDelegate>(
-          profile_, app_id);
+          profile_, app_id,
+          base::BindRepeating(
+              &MultipleWebContentsOpenedService::CloseAllWebContentsOpenedByApp,
+              weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(
+              &MultipleWebContentsOpenedService::OnNotificationAcknowledged,
+              weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(
+              &MultipleWebContentsOpenedService::CloseNotification,
+              weak_ptr_factory_.GetWeakPtr(), app_id));
+
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, GetNotificationIdForApp(app_id),
       title, message, /*icon=*/ui::ImageModel(),
@@ -238,4 +295,26 @@ void MultipleWebContentsOpenedService::CreateAndDisplayNotification(
 
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
+}
+
+void MultipleWebContentsOpenedService::CloseAllWebContentsOpenedByApp(
+    const webapps::AppId& app_id) {
+  std::vector<content::WebContents*> web_contents_to_close;
+  for (auto const& [web_contents, opener_app_id] : opened_by_app_map_) {
+    if (opener_app_id == app_id) {
+      web_contents_to_close.push_back(web_contents);
+    }
+  }
+
+  for (content::WebContents* web_contents : web_contents_to_close) {
+    // This will trigger OnTabStripModelChanged, which in turn will remove
+    // contents from `opened_by_app_map_` and decrement counts.
+    web_contents->Close();
+  }
+}
+
+void MultipleWebContentsOpenedService::CloseNotification(
+    const webapps::AppId& app_id) {
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
+      NotificationHandler::Type::TRANSIENT, GetNotificationIdForApp(app_id));
 }

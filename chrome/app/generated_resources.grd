@@ -18889,8 +18889,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
 
 <!-- Isolated Web Apps Window Management notification. -->
-    <message name="IDS_MULTIPLE_WEB_CONTENTS_OPENED_NOTIFICATION_TITLE" desc="Title for the notification displayed when an Isolated Web App opens multiple wtabs/windows.">
-            <ph name="APP_NAME">$1<ex>Example App</ex></ph> has opened multiple windows.
+    <message name="IDS_MULTIPLE_WEB_CONTENTS_OPENED_NOTIFICATION_TITLE" desc="Title for the notification displayed when an Isolated Web App opens multiple tabs/windows.">
+            <ph name="APP_NAME">$1<ex>Example App</ex></ph> has opened multiple windows/tabs.
           </message>
 
     <message name="IDS_MULTIPLE_WEB_CONTENTS_OPENED_NOTIFICATION_MESSAGE" desc="Message for the notification displaying the count of open windows/tabs for an Isolated Web App.">
@@ -18899,6 +18899,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <message name="IDS_MULTIPLE_WEB_CONTENTS_OPENED_NOTIFICATION_BUTTON_SETTINGS" desc="Text for the button on the multiple web contents opened notification that opens the app's content settings.">
       Change permissions
+    </message>
+
+    <message name="IDS_MULTIPLE_WEB_CONTENTS_OPENED_NOTIFICATION_CLOSE_BUTTON" desc="Text for the button on the multiple windows opened notification that closes all additional windows/tabs opened by the app.">
+      Close all
     </message>
 
     <!-- Common WebUI elements. -->
