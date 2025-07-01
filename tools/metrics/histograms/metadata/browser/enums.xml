@@ -331,6 +331,8 @@ chromium-metrics-reviews@google.com.
   <int value="122" label="CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_IOS"/>
   <int value="123" label="PDF_INFOBAR_DELEGATE"/>
   <int value="124" label="INSTALLER_DOWNLOADER_INFOBAR_DELEGATE"/>
+  <int value="125" label="COLLABORATION_GROUP_UPDATE_INFOBAR_DELEGATE"/>
+  <int value="126" label="COLLABORATION_OUT_OF_DATE_INFOBAR_DELEGATE"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/infobars/core/infobar_delegate.h:InfoBarIdentifier) -->

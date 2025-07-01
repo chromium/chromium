@@ -58,7 +58,7 @@ CollaborationOutOfDateInfoBarDelegate::
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 CollaborationOutOfDateInfoBarDelegate::GetIdentifier() const {
-  return TAB_SHARING_INFOBAR_DELEGATE;
+  return COLLABORATION_OUT_OF_DATE_INFOBAR_DELEGATE;
 }
 
 std::u16string CollaborationOutOfDateInfoBarDelegate::GetMessageText() const {
