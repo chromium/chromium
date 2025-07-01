@@ -506,7 +506,7 @@ public class FeedV2NewTabPageTest {
         RecyclerView recyclerView = getRecyclerView();
         FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, recyclerView);
 
-        mRenderTestRule.render(recyclerView, "feedContent_landscape_with_scrollable_mvt_v4");
+        mRenderTestRule.render(recyclerView, "feedContent_landscape_with_scrollable_mvt_v5");
     }
 
     @Test
