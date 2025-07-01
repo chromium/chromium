@@ -30,7 +30,8 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
     EXPECT_CALL(create_and_show_view_callback, Run())
         .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
 
-    controller_->ShowDialog(create_and_show_view_callback.Get());
+    controller_->ShowDialog(create_and_show_view_callback.Get(),
+                            card_save_and_fill_dialog_callback_.Get());
   }
 
   SaveAndFillDialogControllerImpl* controller() const {
@@ -42,6 +43,9 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
   base::MockCallback<
       base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
       create_and_show_view_callback;
+  base::MockCallback<
+      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
+      card_save_and_fill_dialog_callback_;
 };
 
 namespace {

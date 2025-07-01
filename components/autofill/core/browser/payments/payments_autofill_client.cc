@@ -258,7 +258,14 @@ PaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return nullptr;
 }
 
-void PaymentsAutofillClient::ShowCreditCardSaveAndFillDialog() {}
+PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails::
+    UserProvidedCardSaveAndFillDetails() = default;
+
+PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails::
+    ~UserProvidedCardSaveAndFillDetails() = default;
+
+void PaymentsAutofillClient::ShowCreditCardLocalSaveAndFillDialog(
+    CardSaveAndFillDialogCallback callback) {}
 
 payments::SaveAndFillManager* PaymentsAutofillClient::GetSaveAndFillManager() {
   return nullptr;

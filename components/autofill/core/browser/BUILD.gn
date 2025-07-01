@@ -1458,6 +1458,7 @@ source_set("unit_tests") {
     "payments/payments_requests/upload_iban_request_unittest.cc",
     "payments/payments_service_url_unittest.cc",
     "payments/payments_util_unittest.cc",
+    "payments/save_and_fill_manager_impl_unittest.cc",
     "payments/virtual_card_enroll_metrics_logger_unittest.cc",
     "payments/virtual_card_enrollment_manager_unittest.cc",
     "payments/wait_for_signal_or_timeout_unittest.cc",

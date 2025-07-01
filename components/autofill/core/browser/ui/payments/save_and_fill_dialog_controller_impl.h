@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_view.h"
 
@@ -24,8 +25,11 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
       const SaveAndFillDialogControllerImpl&) = delete;
   ~SaveAndFillDialogControllerImpl() override;
 
-  void ShowDialog(base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
-                      create_and_show_view_callback);
+  void ShowDialog(
+      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
+          create_and_show_view_callback,
+      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
+          card_save_and_fill_dialog_callback);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   std::u16string GetWindowTitle() const override;

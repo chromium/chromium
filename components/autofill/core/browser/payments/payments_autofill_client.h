@@ -217,6 +217,39 @@ class PaymentsAutofillClient : public RiskDataLoader {
     std::u16string expiration_date_year;
   };
 
+  enum class CardSaveAndFillDialogUserDecision {
+    // The user accepted credit card Save and Fill dialog.
+    kAccepted,
+
+    // The user explicitly declined credit card Save and Fill dialog.
+    kDeclined,
+  };
+
+  // Used to hold the data entered by the user in the Save and Fill dialog,
+  // including card number, expiration date, name on card, and an optional
+  // security code.
+  struct UserProvidedCardSaveAndFillDetails : public UserProvidedCardDetails {
+    UserProvidedCardSaveAndFillDetails();
+    UserProvidedCardSaveAndFillDetails(
+        const UserProvidedCardSaveAndFillDetails&);
+    UserProvidedCardSaveAndFillDetails& operator=(
+        const UserProvidedCardSaveAndFillDetails&);
+    ~UserProvidedCardSaveAndFillDetails();
+
+    std::u16string card_number;
+    std::optional<std::u16string> security_code;
+  };
+
+  // Callback to run after the local/upload card Save and Fill dialog is shown.
+  // The callback runs with `user_decision` indicating whether the dialog was
+  // accepted, declined, or ignored. `user_provided_card_save_and_fill_details`
+  // contains the data entered by the user, such as card number, expiration
+  // date, name on card, and security code.
+  using CardSaveAndFillDialogCallback =
+      base::OnceCallback<void(CardSaveAndFillDialogUserDecision user_decision,
+                              const UserProvidedCardSaveAndFillDetails&
+                                  user_provided_card_save_and_fill_details)>;
+
   // Callback to run after local/upload IBAN save is offered. The callback runs
   // with `user_decision` indicating whether the prompt was accepted, declined,
   // or ignored. `nickname` is optionally provided by the user when IBAN local
@@ -590,8 +623,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual payments::MandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager();
 
-  // Shows the `Save and Fill` modal dialog.
-  virtual void ShowCreditCardSaveAndFillDialog();
+  // Shows the local `Save and Fill` modal dialog.
+  virtual void ShowCreditCardLocalSaveAndFillDialog(
+      CardSaveAndFillDialogCallback callback);
 
   // Gets the payments Save and Fill manager owned by the client. This will be
   // used to handle the Save and Fill dialog.

@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/strings/grit/components_strings.h"
@@ -22,7 +23,9 @@ SaveAndFillDialogControllerImpl::~SaveAndFillDialogControllerImpl() = default;
 
 void SaveAndFillDialogControllerImpl::ShowDialog(
     base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
-        create_and_show_view_callback) {
+        create_and_show_view_callback,
+    payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
+        card_save_and_fill_dialog_callback) {
   dialog_view_ = std::move(create_and_show_view_callback).Run();
   CHECK(dialog_view_);
 }
