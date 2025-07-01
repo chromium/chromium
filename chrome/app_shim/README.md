@@ -31,4 +31,4 @@ Finally at the start of the *running phase*, Chrome passes its actual current fe
 
 ### Launch and shim creation
 
-The code responsible for creating and launching app shims can be found in [/chrome/browser/web_applications/os_integration/web_app_shortcut_mac.mm](/chrome/browser/web_applications/os_integration/web_app_shortcut_mac.mm).
+The code responsible for creating and launching app shims can be found in [/chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.mm](/chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.mm).
