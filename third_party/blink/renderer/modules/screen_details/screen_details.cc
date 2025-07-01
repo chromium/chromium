@@ -143,11 +143,19 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
       CHECK(new_it != new_infos.screen_infos.end());
       auto old_it = std::ranges::find(prev_screen_infos_.screen_infos, id,
                                       &display::ScreenInfo::display_id);
-      if (old_it != prev_screen_infos_.screen_infos.end() &&
-          !ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
-              *old_it, *new_it)) {
-        screen->EnqueueEvent(*Event::Create(event_type_names::kChange),
-                             TaskType::kMiscPlatformAPI);
+      if (old_it != prev_screen_infos_.screen_infos.end()) {
+        if (!ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
+                *old_it, *new_it)) {
+          screen->EnqueueEvent(*Event::Create(event_type_names::kChange),
+                               TaskType::kMiscPlatformAPI);
+        }
+        if (RuntimeEnabledFeatures::ScreenDetailedHdrHeadroomEnabled()) {
+          if (!ScreenDetailed::AreHdrHeadroomEqual(*old_it, *new_it)) {
+            screen->EnqueueEvent(
+                *Event::Create(event_type_names::kHdrheadroomchange),
+                TaskType::kMiscPlatformAPI);
+          }
+        }
       }
     }
   }

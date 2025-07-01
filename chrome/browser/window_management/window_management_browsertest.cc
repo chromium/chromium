@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -16,6 +17,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/display/screen_base.h"
 #include "ui/display/test/test_screen.h"
@@ -71,6 +74,9 @@ class FakeScreen : public display::ScreenBase {
 class MAYBE_WindowManagementTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {blink::features::kScreenDetailedHdrHeadroom}, {});
+
 #if !BUILDFLAG(IS_CHROMEOS)
     screen_.display_list().AddDisplay({1, gfx::Rect(100, 1, 801, 802)},
                                       display::DisplayList::Type::PRIMARY);
@@ -138,6 +144,7 @@ class MAYBE_WindowManagementTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
+  base::test::ScopedFeatureList feature_list_;
 #if !BUILDFLAG(IS_CHROMEOS)
   FakeScreen screen_;
 #endif
@@ -551,6 +558,124 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
   EXPECT_EQ(true, EvalJs(local_child, await_both_changes_width));
   EXPECT_EQ(true, EvalJs(remote_child, await_both_changes_width));
 }
+
+// Test that onchange events for individual screens in the screen list are
+// supported.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest,
+                       ScreenDetailedOnHdrHeadroomChange) {
+  display::Display display(1, gfx::Rect(100, 100, 801, 802));
+  auto display_cs = display.GetColorSpaces();
+  // Transitions between HDR headroom 0 and HDR headroom >0 will result in the
+  // bit depth from 8 to 10. Start at 10 bit, to avoid extra change events.
+  display.set_color_depth(30);
+  display.set_depth_per_component(10);
+  screen_.display_list().UpdateDisplay(display,
+                                       display::DisplayList::Type::PRIMARY);
+  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+
+  SetupTwoIframes();
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_EQ(true, EvalJs(tab, R"(
+      var screenDetails;
+      var promiseForEvent = (target, evt) => {
+        return new Promise((resolve) => {
+          const handler = (e) => {
+            target.removeEventListener(evt, handler);
+            resolve(e);
+          };
+          target.addEventListener(evt, handler);
+        });
+      }
+      var screenChanges = 0;
+      var screenHdrHeadroomChanges = 0;
+      (async () => {
+        screenDetails = await self.getScreenDetails();
+        if (screenDetails.screens.length !== 1)
+          return false;
+        // Add some event listeners for individual screens.
+        screenDetails.screens[0].addEventListener('change', () => {
+          screenChanges++;
+        });
+        screenDetails.screens[0].addEventListener('hdrheadroomchange', () => {
+          screenHdrHeadroomChanges++;
+        });
+        return true;
+      })();
+  )"));
+
+  // Update the display to have a different height. Ensure that the HDR headroom
+  // event does not fire.
+  {
+    EXPECT_TRUE(ExecJs(tab, R"(
+      var change0 = promiseForEvent(screenDetails.screens[0], 'change');
+    )"));
+    display.set_bounds(gfx::Rect(100, 100, 801, 301));
+    screen_.display_list().UpdateDisplay(display,
+                                         display::DisplayList::Type::PRIMARY);
+    EXPECT_EQ(301, EvalJs(tab, R"(
+        (async () => {
+            if (!change0) return -1;
+            await change0;
+            if (screenChanges !== 1)
+              return -2;
+            if (screenHdrHeadroomChanges !== 0)
+              return -3;
+            return screenDetails.screens[0].height;
+        })();
+    )"));
+  }
+
+  // Update the display's HDR headroom. Ensure that the HDR headroom event
+  // fires, but the change event does not fire.
+  {
+    EXPECT_TRUE(ExecJs(tab, R"(
+      var change1 = promiseForEvent(screenDetails.screens[0],
+                                    'hdrheadroomchange');
+    )"));
+    display_cs.SetHDRMaxLuminanceRelative(2.f);
+    display.SetColorSpaces(display_cs);
+    screen_.display_list().UpdateDisplay(display,
+                                         display::DisplayList::Type::PRIMARY);
+    EXPECT_EQ(1, EvalJs(tab, R"(
+        (async () => {
+            if (!change1) return -4;
+            await change1;
+            if (screenChanges !== 1)
+              return -5;
+            if (screenHdrHeadroomChanges !== 1)
+              return -6;
+            return screenDetails.screens[0].hdrHeadroom;
+        })();
+    )"));
+  }
+
+  // Update the display's HDR headroom again. Ensure that the HDR headroom event
+  // fires, but the change event does not fire.
+  {
+    EXPECT_TRUE(ExecJs(tab, R"(
+      var change2 = promiseForEvent(screenDetails.screens[0],
+                                    'hdrheadroomchange');
+    )"));
+    display_cs.SetHDRMaxLuminanceRelative(4.f);
+    display.SetColorSpaces(display_cs);
+    screen_.display_list().UpdateDisplay(display,
+                                         display::DisplayList::Type::PRIMARY);
+    EXPECT_EQ(2, EvalJs(tab, R"(
+        (async () => {
+            if (!change2) return -7;
+            await change2;
+            if (screenChanges !== 1)
+              return -8;
+            if (screenHdrHeadroomChanges !== 2)
+              return -9;
+            return screenDetails.screens[0].hdrHeadroom;
+        })();
+    )"));
+  }
+}
+#endif
 
 // Tests that the old alias for window-management throws an error.
 // See: https://chromestatus.com/feature/5137018030391296

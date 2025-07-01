@@ -24,6 +24,8 @@ class MODULES_EXPORT ScreenDetailed final : public Screen {
   static bool AreWebExposedScreenDetailedPropertiesEqual(
       const display::ScreenInfo& prev,
       const display::ScreenInfo& current);
+  static bool AreHdrHeadroomEqual(const display::ScreenInfo& prev,
+                                  const display::ScreenInfo& current);
 
   // Web-exposed interface (additional per-screen information):
   int left() const;
@@ -32,6 +34,10 @@ class MODULES_EXPORT ScreenDetailed final : public Screen {
   bool isInternal() const;
   float devicePixelRatio() const;
   String label() const;
+  float hdrHeadroom() const;
+
+  // Fired when the hdrHeadroom attribute changes.
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(hdrheadroomchange, kHdrheadroomchange)
 
   // Attributes exposed for HDR canvas.
   // https://github.com/w3c/ColorWeb-CG/blob/main/hdr_html_canvas_element.md
