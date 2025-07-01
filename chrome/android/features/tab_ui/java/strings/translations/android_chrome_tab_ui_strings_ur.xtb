@@ -81,7 +81,7 @@
 <translation id="4076226664360336092">ٹیب گروپ کی فہرست، پوری اسکرین پر کھلی ہے</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="4159784952369912983">جامنی</translation>
-<translation id="4203448675570432781">ٹیبز خودکار طور پر حذف کرنے خصوصیت میں کی گئی تبدیلیوں کے لیے نیچے کی شیٹ بند ہے۔</translation>
+<translation id="4203448675570432781">ٹیبز کے خودکار طور پر حذف ہونے کی خصوصیت میں تبدیلیوں کے بارے میں نوٹس بند ہے۔</translation>
 <translation id="427987768447457592">نیا ٹیب گروپ</translation>
 <translation id="4371591986692297148">غیر فعال ہے</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{آئٹم بحال کریں}other{آئٹمز کو بحال کریں؟}}</translation>
@@ -191,7 +191,7 @@
 <translation id="8205266828577616993">ٹیب اوپر منتقل کریں</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{‫<ph name="NUM_MINS_ONE" /> منٹ قبل اپ ڈیٹ کیا گیا}other{‫<ph name="NUM_MINS_MANY" /> منٹ قبل اپ ڈیٹ کیا گیا}}</translation>
 <translation id="8236097722223016103">بُک مارکس میں شامل کریں</translation>
-<translation id="827881768507898324">ٹیبز کے خودکار طور پر حذف کرنے کی پرومو نیچے کی شیٹ پوری اسکرین میں دکھائی دیتی ہے</translation>
+<translation id="827881768507898324">ٹیبز کے خودکار طور پر حذف ہونے کی نوٹس مکمل ہائٹ پر</translation>
 <translation id="8338427544764842461">آپ کے ٹیب گروپس یہاں محفوظ کیے جاتے ہیں اور آپ کے تمام سائن ان کردہ آلات پر اپ ڈیٹ ہوتے ہیں</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، رنگ <ph name="COLOR_NAME" /> کے ساتھ اشتراک کردہ ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، رنگ <ph name="COLOR_NAME" /> کے ساتھ اشتراک کردہ ٹیب گروپ کو پھیلائیں۔}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب بند کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز بند کریں}}</translation>
@@ -212,7 +212,7 @@
 <translation id="9090098097337832354">اس اسٹور سے متعلق معلومات بند ہے</translation>
 <translation id="9114502155681725011">ٹیب گروپ <ph name="TITLE_OF_GROUP" />، رنگ <ph name="COLOR_NAME" /> کے لیے ٹیب گروپ کارروائی مینو کھولیں۔</translation>
 <translation id="9169594135889675189">گروپ میں نیا ٹیب شامل کریں</translation>
-<translation id="9187834032751045001">ٹیبز کے خودکار طور پر حذف کرنے کی پرومو نیچے کی شیٹ نصف اسکرین میں دکھائی دیتی ہے۔</translation>
+<translation id="9187834032751045001">ٹیبز کے خودکار طور پر حذف ہونے کی نوٹس نصف ہائٹ پر۔</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو پھیلائیں۔}}</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="992256792861109788">گلابی</translation>

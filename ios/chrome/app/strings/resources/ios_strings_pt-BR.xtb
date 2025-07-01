@@ -1191,7 +1191,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5888889603768021126">Login feito com</translation>
 <translation id="5889333064153755823">Excluir dados de navegação</translation>
 <translation id="5896576662943111387">Desenvolvido para iOS</translation>
-<translation id="5897749768294722429">Para voltar rapidamente aos sites visitados, sincronize as guias e o histórico.</translation>
+<translation id="5897749768294722429">Sincronize o histórico e as guias para acessar rapidamente os sites visitados.</translation>
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Para compartilhar com pessoas próximas, permita que elas leiam esse QR code com a câmera ou um app adequado</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nova guia}one{{count} nova guia}other{{count} novas guias}}</translation>
@@ -1659,7 +1659,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7712361583414030698">Mostrando a versão off-line</translation>
 <translation id="7719038820139380048">Faça login para acessar conteúdo com base nos seus interesses.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item salvo na sua Conta do Google {email}}one{Item salvo na sua Conta do Google {email}}other{Itens salvos na sua Conta do Google {email}}}</translation>
-<translation id="7729458878441927652">Para conferir as guias dos seus outros dispositivos, sincronize-as com o histórico.</translation>
+<translation id="7729458878441927652">Para ver as guias dos seus outros dispositivos, sincronize-as com o histórico.</translation>
 <translation id="7730020510075123961">Não, juntar dados</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Somente neste dispositivo.</translation>
 <translation id="7744192722284567281">Encontrada em uma violação de dados</translation>
