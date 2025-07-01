@@ -347,16 +347,13 @@ void RecordPreferredDisplaySurfaceConstraintUma(
   NOTREACHED();
 }
 
-void RecordSuppressLocalAudioPlaybackConstraintUma(
-    std::optional<bool> suppress_local_audio_playback) {
+void RecordBooleanConstraintUma(std::optional<bool> boolean,
+                                const std::string& histogram_name) {
   const GetDisplayMediaBooleanConstraint value =
-      (!suppress_local_audio_playback.has_value()
-           ? GetDisplayMediaBooleanConstraint::kNotSpecified
-       : suppress_local_audio_playback.value()
-           ? GetDisplayMediaBooleanConstraint::kTrue
-           : GetDisplayMediaBooleanConstraint::kFalse);
-  base::UmaHistogramEnumeration(
-      "Media.GetDisplayMedia.Constraints.SuppressLocalAudioPlayback", value);
+      (!boolean.has_value() ? GetDisplayMediaBooleanConstraint::kNotSpecified
+       : boolean.value()    ? GetDisplayMediaBooleanConstraint::kTrue
+                            : GetDisplayMediaBooleanConstraint::kFalse);
+  base::UmaHistogramEnumeration(histogram_name, value);
 }
 
 MediaConstraints ParseOptions(
@@ -654,10 +651,18 @@ UserMediaRequest* UserMediaRequest::Create(
 
   result->set_suppress_local_audio_playback(
       suppress_local_audio_playback.value_or(false));
-  result->set_restrict_own_audio(restrict_own_audio.value_or(false));
   if (media_type == UserMediaRequestType::kDisplayMedia) {
-    RecordSuppressLocalAudioPlaybackConstraintUma(
-        suppress_local_audio_playback);
+    RecordBooleanConstraintUma(
+        suppress_local_audio_playback,
+        "Media.GetDisplayMedia.Constraints.SuppressLocalAudioPlayback");
+  }
+  result->set_restrict_own_audio(restrict_own_audio.value_or(false));
+  if (RuntimeEnabledFeatures::RestrictOwnAudioEnabled()) {
+    if (media_type == UserMediaRequestType::kDisplayMedia) {
+      RecordBooleanConstraintUma(
+          restrict_own_audio,
+          "Media.GetDisplayMedia.Constraints.RestrictOwnAudio");
+    }
   }
 
   return result;
