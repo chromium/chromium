@@ -460,16 +460,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     self.fakeLocationBarHeightConstraint,
   ]];
 
-  UIView* referenceView = _buttonStack.arrangedSubviews.firstObject;
-  self.hintLabelTrailingConstraint = [self.searchHintLabel.trailingAnchor
-      constraintLessThanOrEqualToAnchor:referenceView.leadingAnchor];
-  self.hintLabelTrailingConstraint.priority = UILayoutPriorityDefaultHigh;
-  [NSLayoutConstraint activateConstraints:@[
-    [referenceView.centerYAnchor
-        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
-    self.hintLabelTrailingConstraint,
-  ]];
-
   [self addSearchEngineLogoIfNeededToSearchField:searchField];
 }
 
@@ -597,7 +587,11 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   CGFloat hintLabelScalingExtraOffset =
       (_currentHintLabelScale - 1) *
       self.searchHintLabel.intrinsicContentSize.width * 0.5;
-  self.hintLabelTrailingConstraint.constant = -hintLabelScalingExtraOffset;
+
+  // If MIA animation view is shown then add an aditional spacing to avoid any
+  // overlap with the label.
+  self.hintLabelTrailingConstraint.constant =
+      -hintLabelScalingExtraOffset - [self miaButtonHintLabelOffset];
 
   CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
   CGFloat locationBarHeight = content_suggestions::PinnedFakeOmniboxHeight();
@@ -933,6 +927,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
                                                .userInterfaceStyle];
 
   [self addActionsToFakeboxButtons];
+  [self updateHintLabelTrailingConstraint];
 }
 
 // Registers the actions for the fakebox buttons.
@@ -949,6 +944,25 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   [self.miaButton addTarget:self
                      action:@selector(openMIA)
            forControlEvents:UIControlEventTouchUpInside];
+}
+
+// Updates the trailing constraint of the label to the nearest button stack
+// element.
+- (void)updateHintLabelTrailingConstraint {
+  UIView* referenceView = _buttonStack.arrangedSubviews.firstObject;
+  if (!referenceView) {
+    return;
+  }
+
+  self.hintLabelTrailingConstraint = [self.searchHintLabel.trailingAnchor
+      constraintLessThanOrEqualToAnchor:referenceView.leadingAnchor
+                               constant:-[self miaButtonHintLabelOffset]];
+  self.hintLabelTrailingConstraint.priority = UILayoutPriorityDefaultHigh;
+  [NSLayoutConstraint activateConstraints:@[
+    [referenceView.centerYAnchor
+        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
+    self.hintLabelTrailingConstraint,
+  ]];
 }
 
 // Gets the fonts for the pinned and unpinned fakebox hint label, and sets
@@ -1204,6 +1218,14 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   [self.miaButton addSubview:_miaAnimationView];
   AddSameCenterConstraints(_miaAnimationView, self.miaButton);
   AddSizeConstraints(_miaAnimationView, [self miaAnimationSize]);
+}
+
+- (CGFloat)miaButtonHintLabelOffset {
+  if (self.useSingleButtonMIA && _miaAnimationView) {
+    return [self miaAnimationSize].width / 2;
+  }
+
+  return 0;
 }
 
 // The size for the animation view dependant on the fakebox size.
