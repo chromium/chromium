@@ -930,6 +930,7 @@ test("components_unittests") {
       "//components/signin/public/identity_manager/objc:unit_tests",
       "//components/translate/ios/browser:unit_tests",
       "//components/ukm/ios:unit_tests",
+      "//components/user_data_importer/utility:unit_tests",
       "//components/webauthn/ios:unit_tests",
     ]
   }
