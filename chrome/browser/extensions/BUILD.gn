@@ -116,6 +116,7 @@ source_set("extensions") {
     "api/identity/web_auth_flow_info_bar_delegate.h",
     "api/instance_id/instance_id_api.cc",
     "api/instance_id/instance_id_api.h",
+    "api/management/chrome_management_api_delegate.cc",
     "api/management/chrome_management_api_delegate.h",
     "api/messaging/chrome_messaging_delegate.cc",
     "api/messaging/chrome_messaging_delegate.h",

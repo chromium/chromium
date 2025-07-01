@@ -51,22 +51,6 @@ ChromeManagementAPIDelegate::SetEnabledFunctionDelegate(
   return nullptr;
 }
 
-std::unique_ptr<UninstallDialogDelegate>
-ChromeManagementAPIDelegate::UninstallFunctionDelegate(
-    ManagementUninstallFunctionBase* function,
-    const Extension* target_extension,
-    bool show_programmatic_uninstall_ui) const {
-  // TODO(crbug.com/410932770): Show an uninstall dialog. For now, just
-  // uninstall the extension.
-  auto* registrar = ExtensionRegistrar::Get(function->browser_context());
-  std::u16string error;
-  registrar->UninstallExtension(target_extension->id(),
-                                UNINSTALL_REASON_MANAGEMENT_API, &error);
-  function->OnExtensionUninstallDialogClosed(/*did_start_uninstall=*/true,
-                                             error);
-  return nullptr;
-}
-
 bool ChromeManagementAPIDelegate::CreateAppShortcutFunctionDelegate(
     ManagementCreateAppShortcutFunction* function,
     const Extension* extension,
