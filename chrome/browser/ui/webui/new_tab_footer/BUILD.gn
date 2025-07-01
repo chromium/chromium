@@ -62,6 +62,7 @@ source_set("test_support") {
   public_deps = [
     ":new_tab_footer",
     "//base/test:test_support",
+    "//chrome/browser/ui:ui_features",
     "//chrome/test:test_support",
   ]
 }
@@ -82,10 +83,7 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "new_tab_footer_handler_unittest.cc" ]
-  deps = [
-    ":test_support",
-    "//chrome/browser/ui:ui_features",
-  ]
+  deps = [ ":test_support" ]
 }
 
 mojom("mojo_bindings") {
