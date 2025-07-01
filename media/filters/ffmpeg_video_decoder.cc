@@ -1,12 +1,6 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/ffmpeg_video_decoder.h"
 
 #include <stddef.h>
@@ -16,10 +10,12 @@
 #include <numeric>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/decoder_buffer.h"
@@ -43,13 +39,11 @@ namespace {
 struct OpaqueData {
   OpaqueData(void* fb,
              scoped_refptr<FrameBufferPool> pool,
-             uint8_t* d,
-             size_t z,
+             base::span<uint8_t> data,
              VideoFrameLayout l)
       : fb_priv(fb),
         frame_pool(std::move(pool)),
-        data(d),
-        size(z),
+        data(data),
         layout(std::move(l)) {}
 
   // FrameBufferPool key that we'll free when the AVBuffer is unused.
@@ -58,11 +52,8 @@ struct OpaqueData {
   // Pool which owns `fb_priv`.
   scoped_refptr<FrameBufferPool> frame_pool;
 
-  // Data pointer from `fb_priv`.  This is owned by `fb_priv`; do not free it.
-  raw_ptr<uint8_t> data = nullptr;
-
-  // Size of `data`.
-  size_t size = 0;
+  // Span pointing at `fb_priv`.  This is owned by `fb_priv`.
+  base::raw_span<uint8_t> data;
 
   // Layout used to compute the size / stride / etc.
   VideoFrameLayout layout;
@@ -202,16 +193,24 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
     return AVERROR(ENOMEM);
   }
 
-  uint8_t* data = base::bits::AlignUp(span.data(), layout->buffer_addr_align());
+  uintptr_t span_ptr = reinterpret_cast<uintptr_t>(span.data());
+  uintptr_t aligned_span_ptr =
+      base::bits::AlignUp(span_ptr, layout->buffer_addr_align());
+  auto aligned_span = span.subspan(aligned_span_ptr - span_ptr);
 
+  // SAFETY: This CHECK makes sure that we don't go out of bounds accessing
+  // `AVFrame::data` and `AVFrame::linesize`.
+  // `AV_NUM_DATA_POINTERS` is their size.
+  CHECK_LE(base::saturated_cast<int>(num_planes), AV_NUM_DATA_POINTERS);
   for (size_t plane = 0; plane < num_planes; ++plane) {
-    frame->data[plane] = data + layout->planes()[plane].offset;
-    frame->linesize[plane] = layout->planes()[plane].stride;
+    UNSAFE_BUFFERS(frame->data[plane]) =
+        aligned_span.subspan(layout->planes()[plane].offset).data();
+    UNSAFE_BUFFERS(frame->linesize[plane]) = layout->planes()[plane].stride;
   }
 
   // This will be freed by `ReleaseVideoBufferImpl`.
-  auto* opaque = new OpaqueData(fb_priv, frame_pool_, data, allocation_size,
-                                std::move(*layout));
+  auto* opaque =
+      new OpaqueData(fb_priv, frame_pool_, aligned_span, std::move(*layout));
 
   frame->buf[0] = av_buffer_create(
       frame->data[0], VideoFrame::AllocationSize(format, coded_size),
@@ -431,8 +430,7 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
   }
   const auto pts = base::Microseconds(std::get<1>(*ts_lookup));
   auto video_frame = VideoFrame::WrapExternalDataWithLayout(
-      opaque->layout, visible_rect, natural_size, opaque->data, opaque->size,
-      pts);
+      opaque->layout, visible_rect, natural_size, opaque->data, pts);
   if (!video_frame) {
     return false;
   }
