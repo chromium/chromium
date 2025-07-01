@@ -954,7 +954,7 @@ public class AutocompleteMediatorUnitTest {
         // We have a tab, and tab manager. The tab is part of the stopped activity.
         doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(any());
         mTabWindowManagerSupplier.set(mTabManager);
-        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroidChecked();
+        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
         doReturn(ActivityState.STOPPED).when(mMockWindowAndroid).getActivityState();
         assertTrue(mMediator.maybeSwitchToTab(null));
     }
@@ -969,7 +969,7 @@ public class AutocompleteMediatorUnitTest {
         // https://crbug.com/1300447
         doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(any());
         mTabWindowManagerSupplier.set(mTabManager);
-        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroidChecked();
+        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
         doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
         doReturn(null).when(mTabManager).getTabModelForTab(any());
         assertFalse(mMediator.maybeSwitchToTab(null));
@@ -985,7 +985,7 @@ public class AutocompleteMediatorUnitTest {
         // https://crbug.com/1300447
         doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(any());
         mTabWindowManagerSupplier.set(mTabManager);
-        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroidChecked();
+        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
         doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
         doReturn(mTabModel).when(mTabManager).getTabModelForTab(any());
 
@@ -1004,7 +1004,7 @@ public class AutocompleteMediatorUnitTest {
         // The tab reports association with an existing model; the model confirms this.
         doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(any());
         mTabWindowManagerSupplier.set(mTabManager);
-        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroidChecked();
+        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
         doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
         doReturn(mTabModel).when(mTabManager).getTabModelForTab(any());
         doReturn(1).when(mTabModel).getCount();

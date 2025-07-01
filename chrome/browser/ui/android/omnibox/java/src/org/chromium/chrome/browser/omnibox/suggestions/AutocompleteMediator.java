@@ -640,7 +640,8 @@ class AutocompleteMediator
         // When invoked directly from a browser, we want to trigger switch to tab animation.
         // If invoked from other activities, ex. searchActivity, we do not need to trigger the
         // animation since Android will show the animation for switching apps.
-        WindowAndroid windowAndroid = tab.getWindowAndroidChecked();
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null) return false;
         if (windowAndroid.getActivityState() == ActivityState.STOPPED
                 || windowAndroid.getActivityState() == ActivityState.DESTROYED) {
             mBringTabToFrontCallback.onResult(tab);
