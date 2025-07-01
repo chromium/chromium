@@ -222,6 +222,10 @@ class Check(check.Check):
         raise check.CheckException(
             self.module, f"[Native] is not allowed on {full_name}; "
             "no new uses should be introduced")
+      if full_name in _NATIVE_ALLOWLIST and (not enum.attributes or
+                                             not 'Native' in enum.attributes):
+        raise check.CheckException(
+            self.module, f"{full_name} can be removed from _NATIVE_ALLOWLIST")
     for enumval in enum.fields:
       self._CheckAttributes("enum value", _ENUMVAL_ATTRIBUTES,
                             enumval.attributes)
@@ -246,12 +250,17 @@ class Check(check.Check):
 
   def _CheckStructAttributes(self, struct):
     self._CheckAttributes("struct", _STRUCT_ATTRIBUTES, struct.attributes)
+    full_name = f"{self.module.mojom_namespace}.{struct.mojom_name}"
     if struct.attributes and 'Native' in struct.attributes:
-      full_name = f"{self.module.mojom_namespace}.{struct.mojom_name}"
       if full_name not in _NATIVE_ALLOWLIST:
         raise check.CheckException(
             self.module, f"[Native] is not allowed on {full_name}; "
             "no new uses should be introduced")
+    if full_name in _NATIVE_ALLOWLIST and (not struct.attributes or
+                                           not 'Native' in struct.attributes):
+      raise check.CheckException(
+          self.module, f"{full_name} can be removed from _NATIVE_ALLOWLIST")
+
     for field in struct.fields:
       self._CheckAttributes("struct field", _STRUCT_FIELD_ATTRIBUTES,
                             field.attributes)
