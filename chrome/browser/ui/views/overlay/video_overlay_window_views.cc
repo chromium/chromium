@@ -303,6 +303,13 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
     }
 #endif
 
+    // If the live caption dialog is open, then we'll want to capture all mouse
+    // clicks within the window so we can use them to close the dialog when the
+    // user clicks outside of it.
+    if (!window->GetLiveCaptionDialogBounds().IsEmpty()) {
+      return window_component;
+    }
+
     // Allows for dragging and resizing the window.
     return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
   }
@@ -713,6 +720,15 @@ void VideoOverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
       }
       break;
     }
+
+    case ui::EventType::kMousePressed:
+      // Hide the live caption dialog if it's visible and the user clicks
+      // outside of it.
+      if (live_caption_dialog_ && live_caption_dialog_->GetVisible() &&
+          !GetLiveCaptionDialogBounds().Contains(event->location())) {
+        live_caption_dialog_->SetVisible(false);
+      }
+      break;
 
     default:
       break;
@@ -2231,6 +2247,13 @@ void VideoOverlayWindowViews::OnNativeWidgetRemovingFromCompositor() {
 void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
   if (OnGestureEventHandledOrIgnored(event)) {
     return;
+  }
+
+  // Hide the live caption dialog if it's visible and the user taps outside of
+  // it.
+  if (live_caption_dialog_ && live_caption_dialog_->GetVisible() &&
+      !GetLiveCaptionDialogBounds().Contains(event->location())) {
+    live_caption_dialog_->SetVisible(false);
   }
 
   if (GetBackToTabControlsBounds().Contains(event->location())) {

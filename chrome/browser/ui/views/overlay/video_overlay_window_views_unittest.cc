@@ -1362,6 +1362,76 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption) {
   EXPECT_FALSE(live_translate_toggle_button->GetIsOn());
 }
 
+TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_MouseClickOutside) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  SimpleOverlayWindowImageButton* live_caption_button =
+      overlay_window().live_caption_button_for_testing();
+  OverlayWindowLiveCaptionDialog* live_caption_dialog =
+      overlay_window().live_caption_dialog_for_testing();
+
+  ASSERT_NE(nullptr, live_caption_button);
+  ASSERT_NE(nullptr, live_caption_dialog);
+
+  // The live caption button should start visible and the live caption dialog
+  // should start invisible.
+  WaitForLayout();
+  EXPECT_TRUE(live_caption_button->IsDrawn());
+  EXPECT_FALSE(live_caption_dialog->IsDrawn());
+
+  // Pressing the live caption button should display the live caption dialog.
+  views::test::ButtonTestApi live_caption_button_clicker(live_caption_button);
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
+  live_caption_button_clicker.NotifyClick(dummy_event);
+  WaitForLayout();
+  EXPECT_TRUE(live_caption_dialog->IsDrawn());
+
+  // Clicking outside of the live caption dialog should close the live caption
+  // dialog.
+  gfx::Point outside_point = live_caption_dialog->bounds().origin();
+  outside_point.Offset(-20, -20);
+  ui::MouseEvent click_outside_event(ui::EventType::kMousePressed,
+                                     outside_point, outside_point,
+                                     ui::EventTimeForNow(), 0, 0);
+  overlay_window().OnMouseEvent(&click_outside_event);
+  EXPECT_FALSE(live_caption_dialog->IsDrawn());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_GestureTapOutside) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  SimpleOverlayWindowImageButton* live_caption_button =
+      overlay_window().live_caption_button_for_testing();
+  OverlayWindowLiveCaptionDialog* live_caption_dialog =
+      overlay_window().live_caption_dialog_for_testing();
+
+  ASSERT_NE(nullptr, live_caption_button);
+  ASSERT_NE(nullptr, live_caption_dialog);
+
+  // The live caption button should start visible and the live caption dialog
+  // should start invisible.
+  WaitForLayout();
+  EXPECT_TRUE(live_caption_button->IsDrawn());
+  EXPECT_FALSE(live_caption_dialog->IsDrawn());
+
+  // Pressing the live caption button should display the live caption dialog.
+  views::test::ButtonTestApi live_caption_button_clicker(live_caption_button);
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
+  live_caption_button_clicker.NotifyClick(dummy_event);
+  WaitForLayout();
+  EXPECT_TRUE(live_caption_dialog->IsDrawn());
+
+  // Tapping outside of the live caption dialog should close the live caption
+  // dialog.
+  gfx::Point outside_point = live_caption_dialog->bounds().origin();
+  outside_point.Offset(-20, -20);
+  ui::GestureEvent tap_outside_event(
+      outside_point.x(), outside_point.y(), 0, base::TimeTicks::Now(),
+      ui::GestureEventDetails(ui::EventType::kGestureTap));
+  overlay_window().OnGestureEvent(&tap_outside_event);
+  EXPECT_FALSE(live_caption_dialog->IsDrawn());
+}
+
 class VideoOverlayWindowWithShowAnimationTest
     : public VideoOverlayWindowViewsTest {
  public:
