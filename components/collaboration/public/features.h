@@ -13,6 +13,8 @@ BASE_DECLARE_FEATURE(kCollaborationMessaging);
 
 BASE_DECLARE_FEATURE(kCollaborationMessagingDatabase);
 
+BASE_DECLARE_FEATURE(kCollaborationComments);
+
 }  // namespace collaboration::features
 
 #endif  // COMPONENTS_COLLABORATION_PUBLIC_FEATURES_H_
