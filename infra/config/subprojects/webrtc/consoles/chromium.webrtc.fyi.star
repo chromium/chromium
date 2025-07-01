@@ -11,19 +11,19 @@ luci.console_view(
     header = HEADER,
     entries = [
         luci.console_view_entry(
-            builder = "webrtc.fyi/WebRTC Chromium FYI Android Builder ARM64 (dbg)",
+            builder = "webrtc.fyi/WebRTC Chromium FYI Android Builder (dbg)",
             category = "android|debug",
             short_name = "bld",
-        ),
-        luci.console_view_entry(
-            builder = "webrtc.fyi/WebRTC Chromium FYI Android Tests ARM64 (dbg)",
-            category = "android|debug",
-            short_name = "tst",
         ),
         luci.console_view_entry(
             builder = "webrtc.fyi/WebRTC Chromium FYI Android Builder",
             category = "android|release",
             short_name = "bld",
+        ),
+        luci.console_view_entry(
+            builder = "webrtc.fyi/WebRTC Chromium FYI Android Tester",
+            category = "android|release",
+            short_name = "tst",
         ),
         luci.console_view_entry(
             builder = "webrtc.fyi/WebRTC Chromium FYI Linux Builder (dbg)",

@@ -1,6 +1,6 @@
 webrtc.fyi/WebRTC Chromium FYI Android Builder
-webrtc.fyi/WebRTC Chromium FYI Android Builder ARM64 (dbg)
-webrtc.fyi/WebRTC Chromium FYI Android Tests ARM64 (dbg)
+webrtc.fyi/WebRTC Chromium FYI Android Builder (dbg)
+webrtc.fyi/WebRTC Chromium FYI Android Tester
 webrtc.fyi/WebRTC Chromium FYI Linux Builder
 webrtc.fyi/WebRTC Chromium FYI Linux Builder (dbg)
 webrtc.fyi/WebRTC Chromium FYI Linux Tester

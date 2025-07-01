@@ -38,6 +38,44 @@
                 "config": "chromium_webrtc_tot"
               }
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "webrtc.fyi",
+              "builder": "WebRTC Chromium FYI Android Tester",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-webrtc",
+              "builder_group": "chromium.webrtc.fyi",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "base_config"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "dcheck",
+                  "mb",
+                  "android"
+                ],
+                "build_config": "Release",
+                "config": "base_config",
+                "target_arch": "arm",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium_webrtc_tot"
+              },
+              "parent": {
+                "bucket": "webrtc.fyi",
+                "builder": "WebRTC Chromium FYI Android Builder",
+                "project": "chromium"
+              }
+            }
           }
         ]
       },
@@ -45,6 +83,13 @@
         {
           "bucket": "webrtc.fyi",
           "builder": "WebRTC Chromium FYI Android Builder",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "webrtc.fyi",
+          "builder": "WebRTC Chromium FYI Android Tester",
           "project": "chromium"
         }
       ],

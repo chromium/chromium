@@ -112,7 +112,7 @@ targets.builder_defaults.set(
 
 builder(
     name = "WebRTC Chromium FYI Android Builder",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium_webrtc_tot",
@@ -155,8 +155,8 @@ builder(
 )
 
 builder(
-    name = "WebRTC Chromium FYI Android Builder ARM64 (dbg)",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    name = "WebRTC Chromium FYI Android Builder (dbg)",
+    description_html = "Building Chromium at each WebRTC commit",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium_webrtc_tot",
@@ -190,9 +190,9 @@ builder(
 )
 
 builder(
-    name = "WebRTC Chromium FYI Android Tests ARM64 (dbg)",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
-    parent = "WebRTC Chromium FYI Android Builder ARM64 (dbg)",
+    name = "WebRTC Chromium FYI Android Tester",
+    description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
+    parent = "WebRTC Chromium FYI Android Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -206,7 +206,7 @@ builder(
                 "mb",
                 "android",
             ],
-            build_config = builder_config.build_config.DEBUG,
+            build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
@@ -236,7 +236,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Linux Builder",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium_webrtc_tot",
@@ -267,7 +267,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Linux Builder (dbg)",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Building Chromium at each WebRTC commit",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium_webrtc_tot"),
         chromium_config = builder_config.chromium_config(
@@ -303,7 +303,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Linux Tester",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     parent = "WebRTC Chromium FYI Linux Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -333,7 +333,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium_webrtc_tot",
@@ -365,7 +365,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder (dbg)",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Building Chromium at each WebRTC commit",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium_webrtc_tot"),
         chromium_config = builder_config.chromium_config(
@@ -402,7 +402,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Mac Tester",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     parent = "WebRTC Chromium FYI Mac Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -432,7 +432,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Win Builder",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium_webrtc_tot",
@@ -466,7 +466,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Win Builder (dbg)",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Building Chromium at each WebRTC commit",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium_webrtc_tot"),
         chromium_config = builder_config.chromium_config(
@@ -505,7 +505,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Win10 Tester",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     parent = "WebRTC Chromium FYI Win Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -540,7 +540,7 @@ builder(
 # dimensions.
 builder(
     name = "WebRTC Chromium FYI ios-device",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "ios"),
         chromium_config = builder_config.chromium_config(
@@ -574,7 +574,7 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI ios-simulator",
-    description_html = "Testing WebRTC inside Chromium at each WebRTC commits",
+    description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "ios"),
         chromium_config = builder_config.chromium_config(

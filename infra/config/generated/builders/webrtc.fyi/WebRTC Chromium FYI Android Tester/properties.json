@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "webrtc.fyi",
-              "builder": "WebRTC Chromium FYI Android Builder ARM64 (dbg)",
+              "builder": "WebRTC Chromium FYI Android Builder",
               "project": "chromium"
             },
             "builder_spec": {
@@ -22,7 +22,7 @@
                   "mb",
                   "android"
                 ],
-                "build_config": "Debug",
+                "build_config": "Release",
                 "config": "base_config",
                 "target_arch": "arm",
                 "target_bits": 64,
@@ -39,7 +39,7 @@
           {
             "builder_id": {
               "bucket": "webrtc.fyi",
-              "builder": "WebRTC Chromium FYI Android Tests ARM64 (dbg)",
+              "builder": "WebRTC Chromium FYI Android Tester",
               "project": "chromium"
             },
             "builder_spec": {
@@ -55,7 +55,7 @@
                   "mb",
                   "android"
                 ],
-                "build_config": "Debug",
+                "build_config": "Release",
                 "config": "base_config",
                 "target_arch": "arm",
                 "target_bits": 64,
@@ -69,7 +69,7 @@
               },
               "parent": {
                 "bucket": "webrtc.fyi",
-                "builder": "WebRTC Chromium FYI Android Builder ARM64 (dbg)",
+                "builder": "WebRTC Chromium FYI Android Builder",
                 "project": "chromium"
               }
             }
@@ -79,11 +79,11 @@
       "builder_ids": [
         {
           "bucket": "webrtc.fyi",
-          "builder": "WebRTC Chromium FYI Android Tests ARM64 (dbg)",
+          "builder": "WebRTC Chromium FYI Android Tester",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI Android Tests ARM64 (dbg)/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI Android Tester/targets"
     }
   },
   "$build/siso": {

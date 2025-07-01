@@ -472,7 +472,7 @@
   },
   "chromium.webrtc.fyi": {
     "WebRTC Chromium FYI Android Builder": "webrtc.fyi/WebRTC Chromium FYI Android Builder/gn-args.json",
-    "WebRTC Chromium FYI Android Builder ARM64 (dbg)": "webrtc.fyi/WebRTC Chromium FYI Android Builder ARM64 (dbg)/gn-args.json",
+    "WebRTC Chromium FYI Android Builder (dbg)": "webrtc.fyi/WebRTC Chromium FYI Android Builder (dbg)/gn-args.json",
     "WebRTC Chromium FYI Linux Builder": "webrtc.fyi/WebRTC Chromium FYI Linux Builder/gn-args.json",
     "WebRTC Chromium FYI Linux Builder (dbg)": "webrtc.fyi/WebRTC Chromium FYI Linux Builder (dbg)/gn-args.json",
     "WebRTC Chromium FYI Mac Builder": "webrtc.fyi/WebRTC Chromium FYI Mac Builder/gn-args.json",
