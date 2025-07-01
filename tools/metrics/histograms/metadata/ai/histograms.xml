@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
-    expires_after="2025-10-27">
+    expires_after="2025-12-28">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseSize" units="bytes"
-    expires_after="2025-10-27">
+    expires_after="2025-12-28">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -240,7 +240,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseStatus"
-    enum="AIModelStreamingResponseStatus" expires_after="2025-10-27">
+    enum="AIModelStreamingResponseStatus" expires_after="2025-12-28">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -301,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Translation.LoadTranslateKitResult"
-    enum="LoadTranslateKitResult" expires_after="2025-10-27">
+    enum="LoadTranslateKitResult" expires_after="2025-12-28">
   <owner>mych@google.com</owner>
   <owner>fergal@google.com</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -314,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.{SessionType}.APIUsage" enum="AIAPI"
-    expires_after="2025-10-27">
+    expires_after="2025-12-28">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -327,7 +327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.{SessionType}.AvailabilityV2" enum="Availability"
-    expires_after="2025-10-27">
+    expires_after="2025-12-28">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
