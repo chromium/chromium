@@ -6452,8 +6452,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.StoredProfileUsedCount.{Category}" units="Profiles"
-    expires_after="2025-07-13">
-  <owner>koerber@google.com</owner>
+    expires_after="2026-07-13">
+  <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of stored Autofill address profiles of the given category, which
