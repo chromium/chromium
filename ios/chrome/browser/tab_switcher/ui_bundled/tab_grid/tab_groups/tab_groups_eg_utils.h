@@ -21,6 +21,9 @@ void CreateTabGroupAtIndex(int index,
 // Opens the tab group at `group_cell_index`.
 void OpenTabGroupAtIndex(int group_cell_index);
 
+// Long presses a tab group cell.
+void LongPressTabGroupCellAtIndex(unsigned int index);
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GROUPS_TAB_GROUPS_EG_UTILS_H_

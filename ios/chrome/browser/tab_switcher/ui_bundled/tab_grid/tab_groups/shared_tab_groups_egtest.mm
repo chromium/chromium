@@ -57,6 +57,7 @@ using chrome_test_util::FakeShareFlowView;
 using chrome_test_util::KeepSharedConfirmationButton;
 using chrome_test_util::LeaveSharedGroupButton;
 using chrome_test_util::LeaveSharedGroupConfirmationButton;
+using chrome_test_util::LongPressTabGroupCellAtIndex;
 using chrome_test_util::ManageGroupButton;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarSaveButton;
@@ -116,14 +117,6 @@ void LongPressOn(id<GREYMatcher> matcher) {
 
   GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
              @"Long press failed.");
-}
-
-// Long presses a tab group cell.
-void LongPressTabGroupCellAtIndex(unsigned int index) {
-  // Make sure the cell has appeared. Otherwise, long pressing can be flaky.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(index)];
-  LongPressOn(TabGridGroupCellAtIndex(index));
 }
 
 // Shares the group at `index`.

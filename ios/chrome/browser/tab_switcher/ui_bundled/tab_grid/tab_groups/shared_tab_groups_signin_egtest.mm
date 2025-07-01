@@ -42,6 +42,7 @@ using ::base::test::ios::kWaitForActionTimeout;
 using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::FakeJoinFlowView;
 using chrome_test_util::FakeShareFlowView;
+using chrome_test_util::LongPressTabGroupCellAtIndex;
 using chrome_test_util::ManageGroupButton;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarSaveButton;
@@ -55,23 +56,6 @@ namespace {
 // Put the number at the beginning to avoid issues with sentence case, as the
 // keyboard default can differ iPhone vs iPad, simulator vs device.
 NSString* const kGroup1Name = @"1group";
-
-// Long press on the given matcher.
-void LongPressOn(id<GREYMatcher> matcher) {
-  // Ensure the element is visible.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:matcher];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_longPress()
-                                                         error:&error];
-    return error == nil;
-  };
-
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout, condition),
-             @"Long press failed.");
-}
 
 // Waits for the fake join flow view to appear.
 void WaitForFakeJoinFlowView() {
@@ -87,14 +71,6 @@ void WaitForFakeJoinFlowView() {
   GREYAssertTrue([waitForFakeJoinFlowView
                      waitWithTimeout:kWaitForActionTimeout.InSecondsF()],
                  @"The fake join flow view did not appear.");
-}
-
-// Long presses a tab group cell.
-void LongPressTabGroupCellAtIndex(unsigned int index) {
-  // Make sure the cell has appeared. Otherwise, long pressing can be flaky.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(index)];
-  LongPressOn(TabGridGroupCellAtIndex(index));
 }
 
 // Returns the completely configured AppLaunchConfiguration (i.e. setting all

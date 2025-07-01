@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 using chrome_test_util::CreateTabGroupTextField;
 using chrome_test_util::TabGridCellAtIndex;
@@ -57,6 +61,22 @@ void SetTabGroupCreationName(NSString* group_name) {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:group_name flags:0];
 }
 
+// Long press on the given matcher.
+void LongPressOn(id<GREYMatcher> matcher) {
+  // Ensure the element is visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:matcher];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_longPress()
+                                                         error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
+             @"Long press failed.");
+}
+
 }  // namespace
 
 namespace chrome_test_util {
@@ -85,6 +105,14 @@ void OpenTabGroupAtIndex(int group_cell_index) {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(
                                               kTabGroupViewTitleIdentifier)];
+}
+
+// Long presses a tab group cell.
+void LongPressTabGroupCellAtIndex(unsigned int index) {
+  // Make sure the cell has appeared. Otherwise, long pressing can be flaky.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(index)];
+  LongPressOn(TabGridGroupCellAtIndex(index));
 }
 
 }  // namespace chrome_test_util

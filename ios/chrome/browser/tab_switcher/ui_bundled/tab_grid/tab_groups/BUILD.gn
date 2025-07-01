@@ -352,6 +352,7 @@ source_set("eg2_utils") {
   deps = [
     ":tab_groups_constant",
     "//base",
+    "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
