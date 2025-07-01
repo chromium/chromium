@@ -244,11 +244,9 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      * @return {@link LoadUrlResult} from Tab#loadUrl.
      */
     public LoadUrlResult loadUrl(String url, long secondsToWait) throws IllegalArgumentException {
+        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> getActivity().getActivityTab());
         return loadUrlInTab(
-                url,
-                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
-                getActivity().getActivityTab(),
-                secondsToWait);
+                url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab, secondsToWait);
     }
 
     /**
@@ -259,10 +257,8 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      * @return {@link LoadUrlResult} from Tab#loadUrl.
      */
     public LoadUrlResult loadUrl(String url) throws IllegalArgumentException {
-        return loadUrlInTab(
-                url,
-                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
-                getActivity().getActivityTab());
+        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> getActivity().getActivityTab());
+        return loadUrlInTab(url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
     }
 
     /** {@link #loadUrl(String) */

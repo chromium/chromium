@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -66,6 +67,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     private final TabCreator mRegularTabCreator;
     private final TabCreator mIncognitoTabCreator;
     private final TabModelOrderController mOrderController;
+    private final TabContentManager mTabContentManager;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final TabModelDelegate mModelDelegate;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
@@ -86,6 +88,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
      * @param regularTabCreator The tab creator for regular tabs.
      * @param incognitoTabCreator The tab creator for incognito tabs.
      * @param orderController Controls logic for selecting and positioning tabs.
+     * @param tabContentManager Manages tab content.
      * @param nextTabPolicySupplier Supplies the next tab policy.
      * @param modelDelegate The {@link TabModelDelegate} for interacting outside the tab model.
      * @param asyncTabParamsManager To detect if an async tab operation is in progress.
@@ -98,6 +101,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             TabCreator regularTabCreator,
             TabCreator incognitoTabCreator,
             TabModelOrderController orderController,
+            TabContentManager tabContentManager,
             NextTabPolicySupplier nextTabPolicySupplier,
             TabModelDelegate modelDelegate,
             AsyncTabParamsManager asyncTabParamsManager,
@@ -108,6 +112,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;
+        mTabContentManager = tabContentManager;
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mModelDelegate = modelDelegate;
         mAsyncTabParamsManager = asyncTabParamsManager;
@@ -416,8 +421,71 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     // TabCloser overrides.
 
     @Override
-    public boolean closeTabs(TabClosureParams tabClosureParams) {
-        return false;
+    public boolean closeTabs(TabClosureParams params) {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return false;
+
+        final List<Tab> tabsToClose;
+        if (params.isAllTabs) {
+            tabsToClose = getAllTabs();
+        } else {
+            tabsToClose = new ArrayList<>(assumeNonNull(params.tabs));
+        }
+
+        tabsToClose.removeIf(
+                tab -> {
+                    if (!mTabIdToTabs.containsKey(tab.getId())) {
+                        assert false : "Attempting to close a tab that is not in the TabModel.";
+                        return true;
+                    } else if (tab.isClosing()) {
+                        assert false : "Attempting to close a tab that is already closing.";
+                        return true;
+                    }
+                    return false;
+                });
+        if (tabsToClose.isEmpty()) return false;
+
+        for (Tab tab : tabsToClose) {
+            tab.setClosing(true);
+        }
+
+        // TODO(crbug.com/381471263): Simplify the observer calls.
+        if (params.tabCloseType == TabCloseType.ALL) {
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.willCloseAllTabs(isIncognitoBranded());
+            }
+        } else if (params.tabCloseType == TabCloseType.MULTIPLE) {
+            // TODO(crbug.com/428977566): Add support for undo.
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.willCloseMultipleTabs(false, tabsToClose);
+            }
+        }
+
+        boolean isSingle = params.tabCloseType == TabCloseType.SINGLE;
+        for (Tab tab : tabsToClose) {
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.willCloseTab(tab, isSingle);
+            }
+        }
+
+        // TODO(crbug.com/428977566): Add support for undo and only emit this if non-undoable.
+        for (TabModelObserver obs : mTabModelObservers) {
+            obs.onFinishingMultipleTabClosure(tabsToClose, params.saveToTabRestoreService);
+        }
+
+        @TabSelectionType
+        int selectionType =
+                params.uponExit ? TabSelectionType.FROM_EXIT : TabSelectionType.FROM_CLOSE;
+        // Since undo is not supported, pauseMedia is false.
+        removeTabsAndSelectNext(
+                tabsToClose, params.recommendedNextTab, selectionType, false, params.tabCloseType);
+
+        // TODO(crbug.com/428977566): Add support for undo and only do this if non-undoable.
+        for (Tab tab : tabsToClose) {
+            finalizeTabClosure(tab, params.tabClosingSource);
+        }
+
+        return true;
     }
 
     // TabModelInternal overrides.
@@ -491,7 +559,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     protected List<Tab> getAllTabs() {
         assertOnUiThread();
         List<Tab> tabs = new ArrayList<>();
-        for (Tab tab : this) {
+        // TODO(crbug.com/428981631): Use an iterator instead.
+        for (int i = 0; i < getCount(); i++) {
+            Tab tab = getTabAtChecked(i);
             tabs.add(tab);
         }
         return tabs;
@@ -720,6 +790,18 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {}
 
     // Internal methods.
+
+    private void finalizeTabClosure(Tab tab, @TabClosingSource int closingSource) {
+        mTabContentManager.removeTabThumbnail(tab.getId());
+
+        for (TabModelObserver obs : mTabModelObservers) {
+            obs.onFinishingTabClosure(tab, closingSource);
+        }
+
+        // Destroy the native tab after the observer notifications have fired, otherwise they risk a
+        // use after free or null dereference.
+        tab.destroy();
+    }
 
     private void removeTabsAndSelectNext(
             List<Tab> tabsToRemove,
