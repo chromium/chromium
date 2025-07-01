@@ -785,11 +785,6 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     const AccountInfo& intercepted_account_info) const {
   DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
 
-  if (!base::FeatureList::IsEnabled(
-          switches::kShowEnterpriseDialogForAllManagedAccountsSignin)) {
-    return false;
-  }
-
   if (intercepted_account_info.IsManaged() != signin::Tribool::kTrue) {
     return false;
   }

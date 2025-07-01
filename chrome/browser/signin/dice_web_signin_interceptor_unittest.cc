@@ -540,10 +540,7 @@ class DiceWebSigninInterceptorManagedAccountTest
 };
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
-       NoForcedInterceptionShowsDialogIfFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      switches::kShowEnterpriseDialogForAllManagedAccountsSignin);
+       NoForcedInterceptionShowsDialog) {
   // Reauth intercepted if enterprise confirmation not shown yet for forced
   // managed separation.
   AccountInfo account_info =
@@ -567,10 +564,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 }
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
-       NoForcedInterceptionShowsDialogForReauthIfFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      switches::kShowEnterpriseDialogForAllManagedAccountsSignin);
+       NoForcedInterceptionShowsDialogForReauth) {
   // Reauth intercepted if enterprise confirmation not shown yet for forced
   // managed separation.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(

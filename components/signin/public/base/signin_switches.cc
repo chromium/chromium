@@ -222,12 +222,6 @@ BASE_FEATURE(kEnableASWebAuthenticationSession,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables showing the enterprise dialog after every signin into a managed
-// account.
-BASE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin,
-             "ShowEnterpriseDialogForAllManagedAccountsSignin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableExtensionsExplicitBrowserSignin,
              "EnableExtensionsExplicitBrowserSignin",
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
