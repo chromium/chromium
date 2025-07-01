@@ -301,9 +301,7 @@ bool PrefetchBrowserInitiatedTriggersEnabled() {
 }
 
 size_t GetPrefetchDataPipeTeeBodySizeLimit() {
-  return std::max(
-      static_cast<size_t>(features::kPrefetchReusableBodySizeLimit.Get()),
-      features::kPrerender2FallbackBodySizeLimit.Get());
+  return static_cast<size_t>(features::kPrefetchReusableBodySizeLimit.Get());
 }
 
 bool UsePrefetchScheduler() {

@@ -18499,8 +18499,6 @@
                 {
                     "name": "Enabled_NoTimeout_Burst",
                     "params": {
-                        "kPrerender2FallbackBodySizeLimit": "4194304",
-                        "kPrerender2FallbackPrefetchReusablePolicy": "UseIfIsLikelyAheadOfPrerender",
                         "kPrerender2FallbackPrefetchSchedulerPolicy": "Burst",
                         "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout": "false"
                     },
