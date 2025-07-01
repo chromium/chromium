@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
@@ -84,6 +84,14 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
 
   glicWebClientPanelStateChanged(payload: {panelState: PanelState}): void {
     this.host.getPanelState?.().assignAndSignal(payload.panelState);
+  }
+
+  glicWebClientZeroStateSuggestionsChanged(payload: {
+    suggestions: ZeroStateSuggestionsV2,
+    options: ZeroStateSuggestionsOptions,
+  }): void {
+    this.host.getZeroStateSuggestionsObservable?.(payload.options)
+        .assignAndSignal(payload.suggestions);
   }
 
   glicWebClientCanAttachStateChanged(payload: {canAttach: boolean}): void {
@@ -197,6 +205,12 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private metrics: GlicBrowserHostMetricsImpl;
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
   pinnedTabs = ObservableValueImpl.withNoValue<TabData[]>();
+  private currentZeroStateSuggestionOptions: ZeroStateSuggestionsOptions = {
+    isFirstRun: false,
+    supportedTools: [],
+  };
+  private currentZeroStateObserver =
+      ObservableValueImpl.withNoValue<ZeroStateSuggestionsV2>();
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
     // TODO(harringtond): Ideally, we could ensure we only process requests from
@@ -276,6 +290,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
     if (!state.enableZeroStateSuggestions) {
       this.getZeroStateSuggestionsForFocusedTab = undefined;
+      this.getZeroStateSuggestionsObservable = undefined;
     }
 
     if (!state.enableClosedCaptioningFeature) {
@@ -610,6 +625,36 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       };
     }
     return zeroStateResult.suggestions;
+  }
+
+  private async zeroStateActiveSubscriptionStateChanged(
+      options: ZeroStateSuggestionsOptions, hasActiveSubscription: boolean) {
+    if (options !== this.currentZeroStateSuggestionOptions) {
+      // Dont send out of date updates.
+      return;
+    }
+    const zeroStateResult = await this.sender.requestWithResponse(
+        'glicBrowserGetZeroStateSuggestionsAndSubscribe', {
+          hasActiveSubscription: hasActiveSubscription,
+          options: options,
+        });
+    if (zeroStateResult.suggestions) {
+      this.currentZeroStateObserver?.assignAndSignal(
+          zeroStateResult.suggestions);
+    }
+  }
+
+  getZeroStateSuggestionsObservable?(options?: ZeroStateSuggestionsOptions):
+      ObservableValueImpl<ZeroStateSuggestionsV2> {
+    options = options ?? {
+      isFirstRun: false,
+      supportedTools: [],
+    };
+    this.currentZeroStateSuggestionOptions = options;
+    this.currentZeroStateObserver =
+        ObservableValueImpl.withNoValue<ZeroStateSuggestionsV2>(
+            this.zeroStateActiveSubscriptionStateChanged.bind(this, options));
+    return this.currentZeroStateObserver;
   }
 
   dropScrollToHighlight?(): void {

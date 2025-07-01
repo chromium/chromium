@@ -78,6 +78,7 @@ chromium-metrics-reviews@google.com.
     <variant name="GetContextFromTab"/>
     <variant name="GetOsMicrophonePermissionStatus"/>
     <variant name="GetUserProfileInfo"/>
+    <variant name="GetZeroStateSuggestions"/>
     <variant name="GetZeroStateSuggestionsForFocusedTab"/>
     <variant name="JournalClear"/>
     <variant name="JournalSnapshot"/>

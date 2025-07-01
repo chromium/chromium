@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -209,6 +210,9 @@ class GlicKeyedService : public KeyedService {
       base::MemoryPressureListener::MemoryPressureLevel level);
 
   Host& host() { return *host_; }
+  GlicZeroStateSuggestionsManager& zero_state_suggestions_manager() {
+    return *zero_state_suggestions_manager_;
+  }
   // Returns whether this process host is either the Glic FRE WebUI or the Glic
   // main WebUI.
   bool IsProcessHostForGlic(content::RenderProcessHost* process_host);
@@ -255,6 +259,8 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicActorController> actor_controller_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
   std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;
+  std::unique_ptr<GlicZeroStateSuggestionsManager>
+      zero_state_suggestions_manager_;
   base::OnceCallback<void()> preload_callback_;
 
   // Unowned

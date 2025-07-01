@@ -132,6 +132,11 @@ class Host {
     return primary_webui_state_;
   }
 
+  // Informs the host that the Zero State Suggestions have changed.
+  void NotifyZeroStateSuggestion(
+      std::optional<std::vector<std::string>> suggestions,
+      mojom::ZeroStateSuggestionsOptions options);
+
  private:
   GlicKeyedService& glic_service();
 

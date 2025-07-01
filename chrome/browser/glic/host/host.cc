@@ -297,4 +297,12 @@ void Host::WebUiStateChanged(GlicPageHandler* page_handler,
   }
 }
 
+void Host::NotifyZeroStateSuggestion(
+    std::optional<std::vector<std::string>> suggestions,
+    mojom::ZeroStateSuggestionsOptions options) {
+  if (primary_page_handler_) {
+    primary_page_handler_->ZeroStateSuggestionChanged(suggestions, options);
+  }
+}
+
 }  // namespace glic

@@ -377,6 +377,18 @@ struct ZeroStateSuggestions {
   url.mojom.Url tab_url;
 };
 
+// A list of suggestions for the currently pinned tabs.
+struct ZeroStateSuggestionsV2 {
+  // The list of suggestions to present to the user.
+  array<SuggestionContent> suggestions;
+};
+
+// The options associated with the current zero state suggestions.
+struct ZeroStateSuggestionsOptions {
+  bool is_first_run;
+  array<string> supported_tools;
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -648,6 +660,15 @@ interface WebClientHandler {
   // Get the status of the OS Microphone permission currently granted to Chrome.
   GetOsMicrophonePermissionStatus() => (bool enabled);
 
+  // If is_live==true this will return the zero state suggestions for the
+  // currently shared content. Suggestions will continue to emit via
+  // NotifyZeroStateSuggestionsChanged until this is called with the same
+  // options but with is_live == false.
+  [RuntimeFeature=glic.mojom.features.kZeroStateSuggestionsV2]
+  GetZeroStateSuggestionsAndSubscribe(bool is_live,
+                          ZeroStateSuggestionsOptions options) =>
+    (ZeroStateSuggestionsV2 zero_state_suggestions);
+
   // Returns zero-state suggestions from the currently active tab.
   GetZeroStateSuggestionsForFocusedTab(bool? is_first_run)
       => (ZeroStateSuggestions? suggestions);
@@ -812,6 +833,11 @@ interface WebClient {
   // Notify that the TabData for a pinned tab has changed.
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   NotifyPinnedTabDataChanged(TabData tab_data);
+
+  // Informs the client that the zero state suggestions have changed.
+  NotifyZeroStateSuggestionsChanged(
+    ZeroStateSuggestionsV2 suggestions,
+    ZeroStateSuggestionsOptions options);
 };
 
 // Information extracted from a tab.

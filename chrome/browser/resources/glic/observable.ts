@@ -32,19 +32,36 @@ export interface ObservableValueReadOnly<T> {
 export class ObservableValue<T> {
   private subscribers: Set<ObservableSubscription<T>> = new Set();
 
-  private constructor(private isSet: boolean, private value: T|undefined) {}
+  private constructor(
+      private isSet: boolean, private value: T|undefined,
+      private hasActiveSubscriptionCallback?:
+          (hasActiveSubscription: boolean) => void) {}
 
-  /** Create an ObservableValue which has an initial value. */
-  static withValue<T>(value: T) {
-    return new ObservableValue(true, value);
+  /**
+   * Create an ObservableValue which has an initial value. Optionally a
+   * `hasActiveSubscriptionCallback` can be added which will be called with
+   * `true` when this observable has its first subscriber and `false` when there
+   * are no longer any subscribers to this observable.
+   */
+  static withValue<T>(
+      value: T,
+      hasActiveSubscriptionCallback?:
+          (hasActiveSubscription: boolean) => void) {
+    return new ObservableValue(true, value, hasActiveSubscriptionCallback);
   }
 
   /**
    * Create an ObservableValue which has no initial value. Subscribers will not
    * be called until after assignAndSignal() is called the first time.
+   * Optionally a `hasActiveSubscriptionCallback` can be added which will be
+   * called with `true` when this observable has its first subscriber and
+   * false` when there are no longer any subscribers to this observable.
    */
-  static withNoValue<T>() {
-    return new ObservableValue<T>(false, undefined);
+  static withNoValue<T>(
+      hasActiveSubscriptionCallback?:
+          (hasActiveSubscription: boolean) => void) {
+    return new ObservableValue<T>(
+        false, undefined, hasActiveSubscriptionCallback);
   }
 
   assignAndSignal(v: T, force = false) {
@@ -71,10 +88,26 @@ export class ObservableValue<T> {
     return this.value;
   }
 
+  onUnsubscribe(sub: ObservableSubscription<T>) {
+    if (!this.subscribers) {
+      return;
+    }
+    if (this.subscribers.size === 0) {
+      return;
+    }
+
+    this.subscribers.delete(sub);
+    if (this.hasActiveSubscriptionCallback && this.subscribers.size === 0) {
+      this.hasActiveSubscriptionCallback(false);
+    }
+  }
+
   /** Receive updates for value changes. */
   subscribe(change: (newValue: T) => void): Subscriber {
-    const newSub = new ObservableSubscription(
-        change, (sub) => this.subscribers.delete(sub));
+    const newSub = new ObservableSubscription(change, this.onUnsubscribe);
+    if (this.hasActiveSubscriptionCallback && this.subscribers.size === 0) {
+      this.hasActiveSubscriptionCallback(true);
+    }
     this.subscribers.add(newSub);
     if (this.isSet) {
       change(this.value!);

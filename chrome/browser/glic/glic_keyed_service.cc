@@ -113,6 +113,11 @@ GlicKeyedService::GlicKeyedService(
                                                         /*use_for_fre=*/false)),
       occlusion_notifier_(
           std::make_unique<GlicOcclusionNotifier>(*window_controller_)),
+      zero_state_suggestions_manager_(
+          std::make_unique<GlicZeroStateSuggestionsManager>(
+              sharing_manager_.get(),
+              contextual_cueing_service,
+              host_.get())),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   host_->Initialize(window_controller_.get());

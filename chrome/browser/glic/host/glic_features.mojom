@@ -9,3 +9,8 @@ feature kGlicMultiTab {
   const string name = "GlicMultiTab";
   const bool default_state = false;
 };
+
+feature kZeroStateSuggestionsV2 {
+  const string name = "ZeroStateSuggestionsV2";
+  const bool default_state = false;
+};

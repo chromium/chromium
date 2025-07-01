@@ -527,8 +527,6 @@ export declare interface GlicBrowserHost {
   isManuallyResizing?(): ObservableValue<boolean>;
 
   /**
-   * @todo Not yet implemented. https://crbug.com/404617216
-   *
    * Returns the set of zero state suggestions for the currently focused tab
    * based on if the client is currently in it's is_first_run.
    * Callers should verify the current focused tab matches the
@@ -578,6 +576,17 @@ export declare interface GlicBrowserHost {
    * to chrome in order to attempt to pin.
    */
   getPinnedTabs?(): ObservableValue<TabData[]>;
+
+  /**
+   * Returns an observable unique to the supplied options that emits zero state
+   * suggestions for the currently shared context. The observer will continue
+   * to emit subsequent zero state suggestions until it has no more
+   * subscribers. Chrome will only maintain one zero state suggestion observer,
+   * so calling this again with different options will also cause the previous
+   * observer to stop emitting.
+   */
+  getZeroStateSuggestions?(options?: ZeroStateSuggestionsOptions):
+      ObservableValue<ZeroStateSuggestionsV2>;
 }
 /** Fields of interest from the system settings page. */
 export type OsPermissionType = 'media'|'geolocation';
@@ -1403,6 +1412,26 @@ export declare interface GlicApiBootMessage {
   glicApiSource: string;
 }
 
+/** Zero-state suggestions for the current tab context. */
+export declare interface ZeroStateSuggestionsV2 {
+  /**
+   * A collection of suggestions associated with current tab context. This may
+   * be empty.
+   */
+  suggestions: SuggestionContent[];
+}
+
+/**
+ * Options for ensuring chrome will create Zero State Suggestions for a
+ * specific webui context.
+ */
+export declare interface ZeroStateSuggestionsOptions {
+  /** If the suggestions will be used in a first run context. */
+  isFirstRun?: boolean;
+  /** The list of tools that are currently supported. */
+  supportedTools?: string[];
+}
+
 /** Zero-state suggestions for the current tab. */
 export declare interface ZeroStateSuggestions {
   /**
@@ -1462,6 +1491,8 @@ export interface BackwardsCompatibleTypes {
   openSettingsOptions: OpenSettingsOptions;
   osPermissionType: OsPermissionType;
   zeroStateSuggestions: ZeroStateSuggestions;
+  zeroStateSuggestionsV2: ZeroStateSuggestionsV2;
+  zeroStateSuggestionsOptions: ZeroStateSuggestionsOptions;
 }
 
 // Enums that should not be changed.
