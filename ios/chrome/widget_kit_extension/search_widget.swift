@@ -59,7 +59,9 @@ struct SearchWidgetEntryView: View {
       SearchWidgetEntryViewTemplate(
         destinationURL: destinationURL(url: WidgetConstants.SearchWidget.url, gaia: entry.gaiaID),
         imageName: "widget_chrome_logo",
-        title: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE",
+        title: entry.avatar != nil
+          ? "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_AVATAR_TITLE"
+          : "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE",
         accessibilityLabel: "IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL", entry: entry)
     }
   }

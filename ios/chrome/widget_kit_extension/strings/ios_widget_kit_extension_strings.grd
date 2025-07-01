@@ -286,6 +286,12 @@ passwords
         Search or
 type URL
       </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_AVATAR_TITLE" desc="Title for the Search Passwords widget. Should be the same as IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_TITLE but in one line. [CHAR_LIMIT=25][iOS only]" meaning="String that appears in the Search Passwords widget. Sentence-cased.">
+        Search passwords
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_AVATAR_TITLE" desc="Title for the search widget" meaning="String that appears in the Search widget. Should be the same as IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_TITLE but in one line. [CHAR_LIMIT=25][iOS only]">
+        Search or type URL
+      </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SELECT_ACCOUNT_LABEL" desc="String used for the change account action on configurable widgets [iOS only]" meaning="String that appears as title in the Edit widget ui, used to let the user chose which account they want to use on the widget [iOS only]">
             Account
       </message>
