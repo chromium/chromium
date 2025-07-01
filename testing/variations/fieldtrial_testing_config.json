@@ -20429,8 +20429,6 @@
     "RenderDocumentWithNavigationQueueing": [
         {
             "platforms": [
-                "android_weblayer",
-                "android",
                 "chromeos",
                 "fuchsia",
                 "ios",
@@ -20469,6 +20467,30 @@
                         "RenderDocumentCompositorReuse"
                     ]
                 },
+                {
+                    "name": "EnabledAllFramesWithQueueing",
+                    "params": {
+                        "level": "all-frames",
+                        "queueing_level": "full"
+                    },
+                    "enable_features": [
+                        "DelayLayerTreeViewDeletionOnLocalSwap",
+                        "QueueNavigationsWhileWaitingForCommit",
+                        "RenderDocument"
+                    ],
+                    "disable_features": [
+                        "RenderDocumentCompositorReuse"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RenderDocumentWithNavigationQueueing_Android": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
                 {
                     "name": "EnabledAllFramesWithQueueing",
                     "params": {
