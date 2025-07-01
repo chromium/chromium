@@ -2,48 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_deref.h"
+#include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
+#include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
-#include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/permissions/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/content_mock_cert_verifier.h"
-#include "net/dns/mock_host_resolver.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
 namespace {
 
-std::unique_ptr<net::test_server::HttpResponse> ServeSimpleHtmlPage(
-    const net::test_server::HttpRequest& request) {
-  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_OK);
-  http_response->set_content_type("text/html");
-  http_response->set_content(
-      "<!DOCTYPE html>"
-      "<html lang=\"en\">"
-      "<head><title>Test Page</title></head>"
-      "<body>A simple kiosk web page.</body>"
-      "</html>");
-
-  return http_response;
-}
-
 // Waits until the 'navigator.managed' JS object is defined.
 // Used in tests to prevent API calls before the test web page has loaded.
-void WaitForDeviceAttributesApiObject(content::WebContents* web_contents) {
+void WaitForDeviceAttributesApiObject(content::WebContents& web_contents) {
   ash::test::TestPredicateWaiter(
       base::BindRepeating(
           [](content::WebContents* web_contents) {
@@ -51,16 +36,16 @@ void WaitForDeviceAttributesApiObject(content::WebContents* web_contents) {
                                    "typeof navigator.managed !== 'undefined'")
                 .ExtractBool();
           },
-          web_contents))
+          &web_contents))
       .Wait();
 }
 
 content::EvalJsResult CallDeviceAttributesApi(
-    content::WebContents* web_contents,
+    content::WebContents& web_contents,
     const std::string& attribute_name) {
-  return content::EvalJs(
-      web_contents, base::ReplaceStringPlaceholders("navigator.managed.get$1()",
-                                                    {attribute_name}, nullptr));
+  return content::EvalJs(&web_contents, base::ReplaceStringPlaceholders(
+                                            "navigator.managed.get$1()",
+                                            {attribute_name}, nullptr));
 }
 
 constexpr std::array<const char*, 5> kAttributeNames = {
@@ -72,10 +57,13 @@ constexpr char kDeviceAnnotatedLocation[] = "kiosk_test_location";
 constexpr char kDeviceDirectoryApiId[] = "kiosk_test_directory_id";
 constexpr char kDeviceHostname[] = "kiosk_test_hostname";
 constexpr char kDeviceSerialNumber[] = "kiosk_test_serial_number";
-constexpr char kTrustedAppHost[] = "a.test";
-constexpr char kTrustedAppUrl[] = "*://a.test:*/";
-constexpr char kRandomAppHost[] = "b.test";
-constexpr char kRandomAppUrl[] = "*://b.test:*/";
+constexpr char kKioskOrigin[] = "https://kiosk.com";
+constexpr char kTrustedOrigin[] = "https://trusted.com";
+constexpr char kUntrustedOrigin[] = "https://untrusted.com";
+constexpr char kKioskAccountId[] = "kiosk@account";
+constexpr char kKioskPagePath[] = "title3.html";
+constexpr base::FilePath::StringViewType kPathToBeServedInWebApp =
+    FILE_PATH_LITERAL("chrome/test/data");
 
 constexpr std::array<const char*, 5> kExpectedAttributeValues = {
     kDeviceAnnotatedAssetId, kDeviceAnnotatedLocation, kDeviceDirectoryApiId,
@@ -94,65 +82,42 @@ constexpr char kNotTrustedOriginExpectedError[] =
 
 namespace ash {
 
-class WebKioskDeviceAttributesTest : public WebKioskBaseTest {
+using kiosk::test::WaitKioskLaunched;
+
+class WebKioskDeviceAttributesTest : public MixinBasedInProcessBrowserTest {
  public:
   WebKioskDeviceAttributesTest() {
-    EnableFeatureAndAllowlistKioskOrigin(kTrustedAppUrl);
+    EnableFeatureAndAllowlistKioskOrigin(kTrustedOrigin);
   }
 
   void SetUpOnMainThread() override {
-    InitAppServer();
-    SetAppInstallUrl(web_app_server_.base_url());
-
-    // Set up the HTTPS (!) server (embedded_test_server() is an HTTP server).
-    // Every hostname is handled by that server.
-    host_resolver()->AddRule("*", "127.0.0.1");
-    cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-
-    WebKioskBaseTest::SetUpOnMainThread();
-  }
-
-  void TearDown() override {
-    feature_list_.Reset();
-    WebKioskBaseTest::TearDown();
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(WaitKioskLaunched());
+    SelectFirstBrowser();
   }
 
  protected:
-  void InitAppServer() {
-    web_app_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-    web_app_server_.RegisterRequestHandler(
-        base::BindRepeating(&ServeSimpleHtmlPage));
-    ASSERT_TRUE(web_app_server_handle_ =
-                    web_app_server_.StartAndReturnHandle());
-  }
-
-  void SetDevicePolicy() {
-    device_policy().SetDefaultSigningKey();
-    device_policy().policy_data().set_annotated_asset_id(
+  void SetDeviceAttributes() {
+    auto policy_update =
+        kiosk_.device_state_mixin().RequestDevicePolicyUpdate();
+    policy_update->policy_data()->set_annotated_asset_id(
         kDeviceAnnotatedAssetId);
-    device_policy().policy_data().set_annotated_location(
+    policy_update->policy_data()->set_annotated_location(
         kDeviceAnnotatedLocation);
-    device_policy().policy_data().set_directory_api_id(kDeviceDirectoryApiId);
+    policy_update->policy_data()->set_directory_api_id(kDeviceDirectoryApiId);
     enterprise_management::NetworkHostnameProto* hostname_proto =
-        device_policy().payload().mutable_network_hostname();
+        policy_update->policy_payload()->mutable_network_hostname();
     hostname_proto->set_device_hostname_template(kDeviceHostname);
-    device_policy().Build();
-    policy_helper_.RefreshDevicePolicy();
-  }
 
-  void SetSerialNumber() {
+    // Set device serial number
     fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                   kDeviceSerialNumber);
   }
 
-  content::WebContents* GetKioskAppWebContents() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view ? browser_view->GetActiveWebContents() : nullptr;
-  }
-
-  void AllowDeviceAttributesForWebApp() {
-    AllowDeviceAttributesForOrigin(web_app_origin());
+  content::WebContents& GetKioskAppWebContents() {
+    BrowserView& browser_view =
+        CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser()));
+    return CHECK_DEREF(browser_view.GetActiveWebContents());
   }
 
   void AllowDeviceAttributesForOrigin(const std::string& origin) {
@@ -170,39 +135,32 @@ class WebKioskDeviceAttributesTest : public WebKioskBaseTest {
         feature_params);
   }
 
-  net::test_server::EmbeddedTestServer& web_app_server() {
-    return web_app_server_;
-  }
-
  private:
-  policy::DevicePolicyBuilder& device_policy() {
-    return *(policy_helper_.device_policy());
-  }
-
-  std::string web_app_origin() const {
-    return web_app_server_.GetOrigin().Serialize();
-  }
-
   base::test::ScopedFeatureList feature_list_;
-  content::ContentMockCertVerifier cert_verifier_;
-  net::test_server::EmbeddedTestServer web_app_server_{
-      net::EmbeddedTestServer::TYPE_HTTPS};
-  net::test_server::EmbeddedTestServerHandle web_app_server_handle_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  policy::DevicePolicyCrosTestHelper policy_helper_;
+
+  FakeOriginTestServerMixin kiosk_page_mixin_{&mixin_host_, GURL(kKioskOrigin),
+                                              kPathToBeServedInWebApp};
+  FakeOriginTestServerMixin trusted_page_mixin_{
+      &mixin_host_, GURL(kTrustedOrigin), kPathToBeServedInWebApp};
+  FakeOriginTestServerMixin untrusted_page_mixin_{
+      &mixin_host_, GURL(kUntrustedOrigin), kPathToBeServedInWebApp};
+  KioskMixin kiosk_{
+      &mixin_host_,
+      KioskMixin::Config{/*name=*/{},
+                         KioskMixin::AutoLaunchAccount{kKioskAccountId},
+                         {KioskMixin::WebAppOption(
+                             kKioskAccountId,
+                             GURL(kKioskOrigin).Resolve(kKioskPagePath))}}};
 };
 
 IN_PROC_BROWSER_TEST_F(WebKioskDeviceAttributesTest,
                        DisallowedOriginCantAccessAPI) {
-  InitializeRegularOnlineKiosk();
-  SelectFirstBrowser();
-
-  content::WebContents* web_contents = GetKioskAppWebContents();
-  ASSERT_NE(web_contents, nullptr);
+  content::WebContents& web_contents = GetKioskAppWebContents();
 
   WaitForDeviceAttributesApiObject(web_contents);
 
-  // All of the methods should be defined, but return the same error.
+  // All methods should return the same error.
   for (const std::string& attribute : kAttributeNames) {
     content::EvalJsResult result =
         CallDeviceAttributesApi(web_contents, attribute);
@@ -213,17 +171,12 @@ IN_PROC_BROWSER_TEST_F(WebKioskDeviceAttributesTest,
 
 IN_PROC_BROWSER_TEST_F(WebKioskDeviceAttributesTest,
                        AllowedOriginWithAttributesUnset) {
-  InitializeRegularOnlineKiosk();
-  SelectFirstBrowser();
-
-  content::WebContents* web_contents = GetKioskAppWebContents();
-  ASSERT_NE(web_contents, nullptr);
-
-  AllowDeviceAttributesForWebApp();
+  AllowDeviceAttributesForOrigin(kKioskOrigin);
+  content::WebContents& web_contents = GetKioskAppWebContents();
 
   WaitForDeviceAttributesApiObject(web_contents);
 
-  // All of the methods should be defined, return null and no error.
+  // All methods should return null and no error.
   for (const std::string& attribute : kAttributeNames) {
     content::EvalJsResult result =
         CallDeviceAttributesApi(web_contents, attribute);
@@ -234,21 +187,14 @@ IN_PROC_BROWSER_TEST_F(WebKioskDeviceAttributesTest,
 
 IN_PROC_BROWSER_TEST_F(WebKioskDeviceAttributesTest,
                        AllowedOriginWithAttributesSet) {
-  SetDevicePolicy();
-  SetSerialNumber();
+  SetDeviceAttributes();
+  AllowDeviceAttributesForOrigin(kKioskOrigin);
 
-  InitializeRegularOnlineKiosk();
-  SelectFirstBrowser();
-
-  content::WebContents* web_contents = GetKioskAppWebContents();
-  ASSERT_NE(web_contents, nullptr);
-
-  AllowDeviceAttributesForWebApp();
+  content::WebContents& web_contents = GetKioskAppWebContents();
 
   WaitForDeviceAttributesApiObject(web_contents);
 
-  // All of the methods should be defined and return the values that were set in
-  // the device policy.
+  // All methods should return the values that were set in the device policy.
   ASSERT_EQ(kAttributeNames.size(), kExpectedAttributeValues.size());
   for (size_t i = 0; i < kAttributeNames.size(); ++i) {
     EXPECT_EQ(kExpectedAttributeValues[i],
@@ -260,24 +206,16 @@ IN_PROC_BROWSER_TEST_F(WebKioskDeviceAttributesTest,
 IN_PROC_BROWSER_TEST_F(
     WebKioskDeviceAttributesTest,
     TrustedKioskOriginsCanAccessDeviceAttributesWhenAllowedByFeature) {
-  SetDevicePolicy();
-  SetSerialNumber();
+  SetDeviceAttributes();
+  AllowDeviceAttributesForOrigin(kTrustedOrigin);
 
-  InitializeRegularOnlineKiosk();
-  SelectFirstBrowser();
-
-  content::WebContents* web_contents = GetKioskAppWebContents();
-  ASSERT_NE(web_contents, nullptr);
-
-  GURL trusted_origin = web_app_server().GetURL(kTrustedAppHost, "/sample");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, trusted_origin));
-
-  AllowDeviceAttributesForOrigin(kTrustedAppUrl);
+  content::WebContents& web_contents = GetKioskAppWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      &web_contents, GURL(kTrustedOrigin).Resolve(kKioskPagePath)));
 
   WaitForDeviceAttributesApiObject(web_contents);
 
-  // All of the methods should be defined and return the values that were set in
-  // the device policy.
+  // All methods should return the values that were set in the device policy.
   ASSERT_EQ(kAttributeNames.size(), kExpectedAttributeValues.size());
   for (size_t i = 0; i < kAttributeNames.size(); ++i) {
     EXPECT_EQ(kExpectedAttributeValues[i],
@@ -289,23 +227,16 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebKioskDeviceAttributesTest,
     UntrustedKioskOriginsCannotAccessDeviceAttributesWhenAllowedByFeature) {
-  SetDevicePolicy();
-  SetSerialNumber();
+  SetDeviceAttributes();
+  AllowDeviceAttributesForOrigin(kTrustedOrigin);
 
-  InitializeRegularOnlineKiosk();
-  SelectFirstBrowser();
-
-  content::WebContents* web_contents = GetKioskAppWebContents();
-  ASSERT_NE(web_contents, nullptr);
-
-  GURL trusted_origin = web_app_server().GetURL(kRandomAppHost, "/sample");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, trusted_origin));
-
-  AllowDeviceAttributesForOrigin(kRandomAppUrl);
+  content::WebContents& web_contents = GetKioskAppWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      &web_contents, GURL(kUntrustedOrigin).Resolve(kKioskPagePath)));
 
   WaitForDeviceAttributesApiObject(web_contents);
 
-  // All of the methods should be defined, but return the same error.
+  // All methods should return the same error.
   ASSERT_EQ(kAttributeNames.size(), kExpectedAttributeValues.size());
   for (const std::string& attribute : kAttributeNames) {
     content::EvalJsResult result =
