@@ -38,13 +38,16 @@ import argparse
 import datetime
 import os
 
+from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
+from gpu_path_util import setup_testing_paths  # pylint: disable=unused-import
+
+# Must come after path setup.
+# pylint: disable=wrong-import-order
 from unexpected_passes_common import argument_parsing
 from unexpected_passes_common import builders
 from unexpected_passes_common import expectations
 from unexpected_passes_common import result_output
-
-from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
-from gpu_path_util import setup_testing_paths  # pylint: disable=unused-import
+# pylint: enable=wrong-import-order
 
 from gpu_tests import gpu_integration_test
 
