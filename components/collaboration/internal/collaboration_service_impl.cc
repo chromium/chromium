@@ -474,13 +474,6 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
     return CollaborationStatus::kDisabledForPolicy;
   }
 
-  // Disable for automotive users.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE &&
-      !base::FeatureList::IsEnabled(
-          data_sharing::features::kCollaborationAutomotive)) {
-    return CollaborationStatus::kDisabled;
-  }
-
   // TODO(haileywang): Support collaboration status updates.
   CollaborationStatus status = CollaborationStatus::kDisabled;
   if (base::FeatureList::IsEnabled(

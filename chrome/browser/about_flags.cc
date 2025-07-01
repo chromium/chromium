@@ -11289,11 +11289,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kDatasharingVariations,
                                     "Enabled")},
 
-    {"collaboration-automotive",
-     flag_descriptions::kCollaborationAutomotiveName,
-     flag_descriptions::kCollaborationAutomotiveDescription, kOsAll,
-     FEATURE_VALUE_TYPE(data_sharing::features::kCollaborationAutomotive)},
-
     {"collaboration-entreprise-v2",
      flag_descriptions::kCollaborationEntrepriseV2Name,
      flag_descriptions::kCollaborationEntrepriseV2Description, kOsAll,

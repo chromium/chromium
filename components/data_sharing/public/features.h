@@ -11,9 +11,6 @@
 
 namespace data_sharing::features {
 
-// Feature flag for enabling collaboration on automotive.
-BASE_DECLARE_FEATURE(kCollaborationAutomotive);
-
 // Feature flag for enabling collaboration in entreprise v2.
 BASE_DECLARE_FEATURE(kCollaborationEntrepriseV2);
 
