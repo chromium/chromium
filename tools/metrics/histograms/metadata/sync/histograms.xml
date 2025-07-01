@@ -939,7 +939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeCommitMessageHasDepletedQuota"
-    enum="SyncDataTypes" expires_after="2025-08-04">
+    enum="SyncDataTypes" expires_after="2026-08-04">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
