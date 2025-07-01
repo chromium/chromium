@@ -506,6 +506,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void StartRemoteCall(std::unique_ptr<InflightCall> call);
   void FinishRemoteCall(const InflightCall* call);
 
+  storage::ServiceWorkerStorage::StorageSharedBuffer& storage_shared_buffer() {
+    // storage_shared_buffer_  always exists.
+    return *storage_shared_buffer_;
+  }
+
   // A helper function to call a mojo remote call that will automatically be
   // reissued if the mojo::Remote becomes disconnected. To allow the call to be
   // dispatched multiple times, all arguments must be either be:
@@ -542,6 +547,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   // This is a direct communication channel between this ServiceWorkerRegistry
   // in the UI thread and the ServiceWorkerStorage in the thread pool.
+  // This must not be null.
   scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
       storage_shared_buffer_;
 

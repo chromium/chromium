@@ -227,9 +227,7 @@ void ServiceWorkerStorage::GetRegisteredStorageKeys(
   std::copy(registered_keys_.begin(), registered_keys_.end(),
             std::back_inserter(registered_keys));
 
-  if (storage_shared_buffer_) {
-    storage_shared_buffer_->PutRegisteredKeys(registered_keys);
-  }
+  storage_shared_buffer().PutRegisteredKeys(registered_keys);
 
   std::move(callback).Run(std::move(registered_keys));
 }
@@ -266,9 +264,7 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
   // Bypass database lookup when there is no stored registration.
   if (!base::Contains(registered_keys_, key)) {
     std::optional<std::vector<GURL>> scopes = std::vector<GURL>();
-    if (storage_shared_buffer_) {
-      storage_shared_buffer_->PutRegistrationScopes(key, *scopes);
-    }
+    storage_shared_buffer().PutRegistrationScopes(key, *scopes);
     std::move(callback).Run(
         /*data=*/nullptr, /*resources=*/nullptr, /*scopes=*/scopes,
         ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -1762,8 +1758,8 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
   if (match != blink::mojom::kInvalidServiceWorkerRegistrationId)
     status = database_->ReadRegistration(match, key, &data, resources.get());
 
-  if (return_scopes && scopes.has_value() && storage_shared_buffer_) {
-    storage_shared_buffer_->PutRegistrationScopes(key, *scopes);
+  if (return_scopes && scopes.has_value()) {
+    storage_shared_buffer().PutRegistrationScopes(key, *scopes);
   }
 
   std::move(callback).Run(std::move(data), std::move(resources), scopes,

@@ -369,8 +369,9 @@ class ServiceWorkerStorage {
   void GetPurgingResourceIdsForTest(ResourceIdsCallback callback);
   void GetPurgeableResourceIdsForTest(ResourceIdsCallback callback);
   void GetUncommittedResourceIdsForTest(ResourceIdsCallback callback);
-  scoped_refptr<StorageSharedBuffer>& storage_shared_buffer() {
-    return storage_shared_buffer_;
+  StorageSharedBuffer& storage_shared_buffer() {
+    // storage_shared_buffer_  always exists.
+    return *storage_shared_buffer_;
   }
 
  private:

@@ -468,14 +468,13 @@ void ServiceWorkerStorageControlImpl::DidFindRegistrationForClientUrl(
   DCHECK(resources);
   DCHECK(data);
 
-  if (storage_->storage_shared_buffer() &&
-      storage_->storage_shared_buffer()->enable_find_registration_result()) {
+  if (storage_->storage_shared_buffer().enable_find_registration_result()) {
     ResourceList copy_of_resources;
     copy_of_resources.reserve(resources->size());
     for (const mojom::ServiceWorkerResourceRecordPtr& res : *resources) {
       copy_of_resources.push_back(res.Clone());
     }
-    storage_->storage_shared_buffer()->PutFindRegistrationResult(
+    storage_->storage_shared_buffer().PutFindRegistrationResult(
         client_url, key,
         mojom::ServiceWorkerFindRegistrationResult::New(
             CreateLiveVersionReferenceRemote(data->version_id), data.Clone(),

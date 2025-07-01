@@ -353,15 +353,13 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
   // The following code implements a performance optimization: it retrieves the
   // registration scopes from the `ServiceWorkerStorage` in the thread pool
   // without waiting for `DidFindRegistrationForClientUrl()` to be called.
-  if (storage_shared_buffer_) {
-    for (const auto& [storage_key, scopes] :
-         storage_shared_buffer_->TakeRegistrationScopes()) {
-      // Although StorageSharedBuffer ignores the ordering of the
-      // FindRegistrationForClientUrl mojo calls, we believe this
-      // is fine since `registration_scope_cache_` is a large enough cache.
-      registration_scope_cache_.Put(
-          storage_key, std::set<GURL>(scopes.begin(), scopes.end()));
-    }
+  for (const auto& [storage_key, scopes] :
+       storage_shared_buffer().TakeRegistrationScopes()) {
+    // Although StorageSharedBuffer ignores the ordering of the
+    // FindRegistrationForClientUrl mojo calls, we believe this
+    // is fine since `registration_scope_cache_` is a large enough cache.
+    registration_scope_cache_.Put(storage_key,
+                                  std::set<GURL>(scopes.begin(), scopes.end()));
   }
   // `registration_scope_cache_` provides a full list of scope URLs for the
   // given blink::StorageKey if the matched entry exists. There are the
@@ -418,17 +416,15 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
     }
   }
 
-  if (storage_shared_buffer_) {
-    storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
-        storage_shared_buffer_->TakeFindRegistrationResult(client_url, key);
-    if (!preflight_result.is_null()) {
-      DidFindRegistrationForClientUrl(
-          client_url, key, trace_event_id, std::move(callback),
-          storage::mojom::ServiceWorkerDatabaseStatus::kOk,
-          std::move(preflight_result),
-          std::vector(scopes->begin(), scopes->end()));
-      return;
-    }
+  storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
+      storage_shared_buffer().TakeFindRegistrationResult(client_url, key);
+  if (!preflight_result.is_null()) {
+    DidFindRegistrationForClientUrl(
+        client_url, key, trace_event_id, std::move(callback),
+        storage::mojom::ServiceWorkerDatabaseStatus::kOk,
+        std::move(preflight_result),
+        std::vector(scopes->begin(), scopes->end()));
+    return;
   }
 
   if (base::FeatureList::IsEnabled(
@@ -1029,10 +1025,8 @@ void ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartupDeprecated(
       "ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartupDeprecated");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (storage_shared_buffer_) {
-    // Discard RegisteredKeys from `storage_shared_buffer_`.
-    storage_shared_buffer_->TakeRegisteredKeys();
-  }
+  // Discard RegisteredKeys from `storage_shared_buffer_`.
+  storage_shared_buffer().TakeRegisteredKeys();
 
   if (!registrations_initialized_) {
     SetRegisteredStorageKeys(storage_keys);
@@ -1069,9 +1063,9 @@ bool ServiceWorkerRegistry::MaybeHasRegistrationForStorageKey(
   // `storage_keys` from the `ServiceWorkerStorage` in the thread pool without
   // waiting for `DidGetRegisteredStorageKeys()` to be called. This can speed up
   // navigation during the browser startup phase.
-  if (!registrations_initialized_ && storage_shared_buffer_) {
+  if (!registrations_initialized_) {
     if (std::optional<std::vector<blink::StorageKey>> storage_keys =
-            storage_shared_buffer_->TakeRegisteredKeys()) {
+            storage_shared_buffer().TakeRegisteredKeys()) {
       SetRegisteredStorageKeys(*storage_keys);
     }
   }
@@ -1357,12 +1351,10 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
       TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
       TRACE_EVENT_FLAG_FLOW_IN);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Discard RegistrationScopes and FindRegistrationResult from
-  // storage_shared_buffer.
-  if (storage_shared_buffer_) {
-    storage_shared_buffer_->TakeRegistrationScopes();
-    storage_shared_buffer_->TakeFindRegistrationResult(client_url, key);
-  }
+  // Discard RegistrationScopes from storage_shared_buffer.
+  storage_shared_buffer().TakeRegistrationScopes();
+  // Discard FindRegistrationResult from storage_shared_buffer.
+  storage_shared_buffer().TakeFindRegistrationResult(client_url, key);
   if (database_status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       database_status !=
           storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {
