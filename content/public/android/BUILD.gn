@@ -436,7 +436,10 @@ android_library("content_full_java") {
   ]
 
   if (enable_screen_capture) {
-    sources += [ "java/src/org/chromium/content_public/browser/media/capture/ScreenCapture.java" ]
+    sources += [
+      "java/src/org/chromium/content_public/browser/media/capture/ImageHandler.java",
+      "java/src/org/chromium/content_public/browser/media/capture/ScreenCapture.java",
+    ]
     deps += [ "//third_party/androidx:androidx_activity_activity_java" ]
   }
 

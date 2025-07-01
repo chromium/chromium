@@ -11,15 +11,12 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
-import android.media.Image;
 import android.media.Image.Plane;
-import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.view.Surface;
 import android.view.WindowManager;
 
 import androidx.activity.result.ActivityResult;
@@ -41,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** See comments on `DesktopCapturerAndroid`. */
 @NullMarked
 @JNINamespace("content")
-public class ScreenCapture {
+public class ScreenCapture implements ImageHandler.Delegate {
     private static final String TAG = "ScreenCapture";
 
     private static class PickState {
@@ -54,7 +51,8 @@ public class ScreenCapture {
         }
     }
 
-    private static class CaptureState {
+    /** Holds the state required for screen capture. */
+    static class CaptureState {
         public final int width;
         public final int height;
         public final int dpi;
@@ -65,150 +63,6 @@ public class ScreenCapture {
             this.height = height;
             this.dpi = dpi;
             this.format = format;
-        }
-    }
-
-    private class ImageHandler implements ImageReader.OnImageAvailableListener {
-        @GuardedBy("mBackgroundLock")
-        final ImageReader mImageReader;
-
-        @GuardedBy("mBackgroundLock")
-        int mAcquiredImageCount;
-
-        @GuardedBy("mBackgroundLock")
-        boolean mClosing;
-
-        ImageHandler(CaptureState captureState) {
-            mImageReader =
-                    ImageReader.newInstance(
-                            captureState.width,
-                            captureState.height,
-                            captureState.format,
-                            /* maxImages= */ 2);
-            mImageReader.setOnImageAvailableListener(this, mBackgroundHandler);
-        }
-
-        Surface getSurface() {
-            synchronized (mBackgroundLock) {
-                return mImageReader.getSurface();
-            }
-        }
-
-        void close() {
-            synchronized (mBackgroundLock) {
-                // If we have no acquired images, then it's safe to close the ImageReader because
-                // we are guaranteed that the native side is not using any of those Images.
-                if (mAcquiredImageCount == 0) {
-                    closeNow();
-                } else {
-                    mClosing = true;
-                }
-            }
-        }
-
-        void closeNow() {
-            synchronized (mBackgroundLock) {
-                mImageReader.close();
-                mAcquiredImageCount = 0;
-                boolean removed = mImageHandlerQueue.remove(this);
-                assert removed;
-            }
-        }
-
-        @GuardedBy("mBackgroundLock")
-        private @Nullable Image maybeAcquireImage(ImageReader reader) {
-            assert mBackgroundThread.getLooper().isCurrentThread();
-            assert reader == mImageReader;
-            // If we have acquired the maximum number of images `acquireLatestImage`
-            // will print warning level logspam, so avoid
-            if (mAcquiredImageCount >= reader.getMaxImages()) return null;
-
-            try {
-                Image image = reader.acquireLatestImage();
-                if (image != null) mAcquiredImageCount++;
-                return image;
-            } catch (IllegalStateException ex) {
-                // This happens if we have acquired the maximum number of images without closing
-                // them. We will eventually close the images so this is not an error condition.
-            } catch (UnsupportedOperationException ex) {
-                // TODO(crbug.com/352187279): This can happen if the `PixelFormat` does not match.
-                // We should recreate the `ImageReader` with the correct `PixqelFormat` in this
-                // case.
-                throw ex;
-            }
-            return null;
-        }
-
-        private void releaseImage(ImageReader reader, Image image) {
-            assert mBackgroundThread.getLooper().isCurrentThread();
-
-            synchronized (mBackgroundLock) {
-                assert reader == mImageReader;
-
-                // If we recreate the ImageReader, we may get an old release here. The image will
-                // already have been closed since the ImageReader is closed, but it's safe to call
-                // close again here.
-                image.close();
-                mAcquiredImageCount--;
-                assert mAcquiredImageCount >= 0;
-
-                if (mClosing) {
-                    if (mAcquiredImageCount == 0) closeNow();
-                } else {
-                    // Now that we closed an image, we may be able to acquire a new image.
-                    onImageAvailable(reader);
-                }
-            }
-        }
-
-        @Override
-        public void onImageAvailable(ImageReader reader) {
-            assert mBackgroundThread.getLooper().isCurrentThread();
-
-            synchronized (mBackgroundLock) {
-                // If the native side was destroyed, then exit without calling JNI methods.
-                if (mNativeDesktopCapturerAndroid == 0) return;
-
-                // Note that we can't use `acquireLatestImage` here because we can't close older
-                // images until the C++ side is finished using them.
-                final Image image = maybeAcquireImage(reader);
-
-                // Don't close old `ImageHandler`s until we have a Image written to the new
-                // Image handler. This is to make sure that if the OS is still trying to write
-                // to an older Surface from `ImageReader` it can.
-                closeImageHandlersBefore(this);
-
-                // If we have not yet closed images, this may return null. We need to retry
-                // after closing an image.
-                if (image == null) return;
-
-                switch (image.getFormat()) {
-                    case PixelFormat.RGBA_8888:
-                        assert image.getPlanes().length == 1;
-                        final Plane plane = image.getPlanes()[0];
-                        final Rect cropRect = image.getCropRect();
-                        ScreenCaptureJni.get()
-                                .onRgbaFrameAvailable(
-                                        mNativeDesktopCapturerAndroid,
-                                        () -> {
-                                            assert mBackgroundHandler != null;
-                                            mBackgroundHandler.post(
-                                                    () -> releaseImage(reader, image));
-                                        },
-                                        image.getTimestamp(),
-                                        plane.getBuffer(),
-                                        plane.getPixelStride(),
-                                        plane.getRowStride(),
-                                        cropRect.left,
-                                        cropRect.top,
-                                        cropRect.right,
-                                        cropRect.bottom);
-                        break;
-                    default:
-                        throw new IllegalStateException(
-                                "Unexpected image format: " + image.getFormat());
-                }
-            }
         }
     }
 
@@ -410,7 +264,8 @@ public class ScreenCapture {
 
     @GuardedBy("mBackgroundLock")
     private ImageHandler createImageHandler(CaptureState captureState) {
-        final var imageHandler = new ImageHandler(captureState);
+        final var imageHandler =
+                new ImageHandler(captureState, this, assumeNonNull(mBackgroundHandler));
         mImageHandlerQueue.add(imageHandler);
         return imageHandler;
     }
@@ -419,6 +274,7 @@ public class ScreenCapture {
     private void closeImageHandlersBefore(ImageHandler imageHandler) {
         int idx = mImageHandlerQueue.indexOf(imageHandler);
         assert idx != -1;
+        // Iterate backwards since `close` can cause `ImageHandler` to be removed from the queue.
         for (int i = idx - 1; i >= 0; i--) {
             mImageHandlerQueue.get(i).close();
         }
@@ -455,6 +311,47 @@ public class ScreenCapture {
                         null);
     }
 
+    // ImageHandler.Delegate
+
+    @Override
+    public void onRgbaFrameAvailable(
+            ImageHandler imageHandler,
+            Runnable releaseCb,
+            long timestampNs,
+            Plane plane,
+            Rect cropRect) {
+        synchronized (mBackgroundLock) {
+            // If the native side was destroyed, then exit without calling JNI methods.
+            if (mNativeDesktopCapturerAndroid == 0) return;
+
+            // Don't close old `ImageHandler`s until we have a Image written to the new
+            // Image handler. This is to make sure that if the OS is still trying to write
+            // to an older Surface from `ImageReader` it can.
+            closeImageHandlersBefore(imageHandler);
+
+            ScreenCaptureJni.get()
+                    .onRgbaFrameAvailable(
+                            mNativeDesktopCapturerAndroid,
+                            releaseCb,
+                            timestampNs,
+                            plane.getBuffer(),
+                            plane.getPixelStride(),
+                            plane.getRowStride(),
+                            cropRect.left,
+                            cropRect.top,
+                            cropRect.right,
+                            cropRect.bottom);
+        }
+    }
+
+    @Override
+    public void onClose(ImageHandler imageHandler) {
+        synchronized (mBackgroundLock) {
+            boolean removed = mImageHandlerQueue.remove(imageHandler);
+            assert removed;
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onRgbaFrameAvailable(
@@ -466,8 +363,8 @@ public class ScreenCapture {
                 int rowStride,
                 int left,
                 int top,
-                int width,
-                int height);
+                int right,
+                int bottom);
 
         void onStop(long nativeDesktopCapturerAndroid);
     }
