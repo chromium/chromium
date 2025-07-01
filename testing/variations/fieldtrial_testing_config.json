@@ -889,7 +889,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AndroidSurfaceColorUpdate"
+                        "AndroidSurfaceColorUpdateVariant",
+                        "GridTabSwitcherSurfaceColorUpdateVariant"
                     ]
                 }
             ]
@@ -1011,33 +1012,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabStripLayoutOptimization"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AndroidThemeModule": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidThemeModule",
-                        "CpaSpecUpdate",
-                        "GridTabSwitcherSurfaceColorUpdate",
-                        "GridTabSwitcherUpdate",
-                        "TabletTabStripAnimation"
-                    ]
-                },
-                {
-                    "name": "Enabled_Gts",
-                    "enable_features": [
-                        "AndroidThemeModule",
-                        "GridTabSwitcherSurfaceColorUpdate",
-                        "GridTabSwitcherUpdate"
                     ]
                 }
             ]

@@ -573,8 +573,8 @@ BASE_FEATURE(kAndroidNativePagesInNewTab,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidProgressBarVisualUpdate,
-             "AndroidProgressBarVisualUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "AndroidProgressBarVisualUpdateVariant",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidComposeplate,
              "AndroidComposeplate",
@@ -597,15 +597,15 @@ BASE_FEATURE(kAndroidPdfAssistContent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabGroupsColorUpdateGM3,
-             "AndroidTabGroupsColorUpdateGM3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "AndroidTabGroupsColorUpdateGM3Variant",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch,
              "AndroidShowRestoreTabsPromoOnFREBypassedKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidSurfaceColorUpdate,
-             "AndroidSurfaceColorUpdate",
+             "AndroidSurfaceColorUpdateVariant",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabDeclutterArchiveAllButActiveTab,
@@ -645,8 +645,8 @@ BASE_FEATURE(kAndroidTabSkipSaveTabsKillswitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidThemeModule,
-             "AndroidThemeModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "AndroidThemeModuleVariant",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidToolbarScrollAblation,
              "AndroidToolbarScrollAblation",
@@ -808,8 +808,8 @@ BASE_FEATURE(kTabClosureMethodRefactor,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGridTabSwitcherUpdate,
-             "GridTabSwitcherUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "GridTabSwitcherUpdateVariant",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidPinnedTabs,
              "AndroidPinnedTabs",
@@ -916,8 +916,8 @@ BASE_FEATURE(kControlsVisibilityFromNavigations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCpaSpecUpdate,
-             "CpaSpecUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "CpaSpecUpdateVariant",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrossDeviceTabPaneAndroid,
              "CrossDeviceTabPaneAndroid",
@@ -1002,7 +1002,7 @@ BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGridTabSwitcherSurfaceColorUpdate,
-             "GridTabSwitcherSurfaceColorUpdate",
+             "GridTabSwitcherSurfaceColorUpdateVariant",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGroupNewTabWithParent,
@@ -1154,8 +1154,8 @@ BASE_FEATURE(kShowHomeButtonPolicyAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowNewTabAnimations,
-             "ShowNewTabAnimations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "ShowNewTabAnimationsVariant",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowTabListAnimations,
              "ShowTabListAnimations",
@@ -1268,8 +1268,8 @@ BASE_FEATURE(kTabGroupParityBottomSheetAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabletTabStripAnimation,
-             "TabletTabStripAnimation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "TabletTabStripAnimationVariant",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch,
              "TabFreezeOnUndoableClosureKillSwitch",
