@@ -15,7 +15,6 @@ namespace blink {
 CommandEvent::CommandEvent(const AtomicString& type,
                          const CommandEventInit* initializer)
     : Event(type, initializer) {
-  DCHECK(RuntimeEnabledFeatures::HTMLCommandAttributesEnabled());
   if (initializer->hasSource()) {
     source_ = initializer->source();
   }
@@ -30,7 +29,6 @@ CommandEvent::CommandEvent(const AtomicString& type,
                            Element* source)
     : Event(type, Bubbles::kNo, Cancelable::kYes, ComposedMode::kComposed),
       source_(source) {
-  DCHECK(RuntimeEnabledFeatures::HTMLCommandAttributesEnabled());
   command_ = command;
 }
 

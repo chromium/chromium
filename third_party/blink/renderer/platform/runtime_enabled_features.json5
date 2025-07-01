@@ -2497,21 +2497,12 @@
     // defaults) will work.
     {
       name: "HTMLCommandActionsV2",
-      depends_on: ["HTMLCommandAttributes"],
       status: "test",
     },
-    // Adds support for the `command` and `commandfor` attributes, as specified
-    // in the open-ui "Invokers" explainer.
-    // https://open-ui.org/components/invokers.explainer/
-    // This feature was shipped in M135 and can be removed in M137.
-    {
-      name: "HTMLCommandAttributes",
-      status: "stable",
-    },
     // Adds support for the 'request-close' command.
+    // https://open-ui.org/components/invokers.explainer/
     {
       name: "HTMLCommandRequestClose",
-      depends_on: ["HTMLCommandAttributes"],
       status: "stable",
     },
     {

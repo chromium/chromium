@@ -11,6 +11,6 @@
     [CEReactions] attribute boolean checked;
 
     // Command Invokers
-    [RuntimeEnabled=HTMLCommandAttributes, CEReactions, Reflect=commandfor] attribute Element? commandForElement;
-    [RuntimeEnabled=HTMLCommandAttributes, CEReactions] attribute DOMString command;
+    [CEReactions, Reflect=commandfor] attribute Element? commandForElement;
+    [CEReactions] attribute DOMString command;
 };

@@ -138,9 +138,8 @@ void HTMLButtonElement::ParseAttribute(
           UseCounter::Count(GetDocument(), WebFeature::kButtonTypeAttrInvalid);
         }
       }
-      if (RuntimeEnabledFeatures::HTMLCommandAttributesEnabled() &&
-          (FastHasAttribute(html_names::kCommandAttr) ||
-           FastHasAttribute(html_names::kCommandforAttr))) {
+      if (FastHasAttribute(html_names::kCommandAttr) ||
+          FastHasAttribute(html_names::kCommandforAttr)) {
         UseCounter::Count(
             GetDocument(),
             WebFeature::kButtonTypeAttrInvalidWithCommandOrCommandfor);
@@ -163,8 +162,7 @@ void HTMLButtonElement::ParseAttribute(
           WebFeature::kButtonTypeAttrInvalidWithCommandOrCommandfor);
     }
 
-    if (RuntimeEnabledFeatures::HTMLCommandAttributesEnabled() &&
-        !params.new_value.IsNull() && !type) {
+    if (!params.new_value.IsNull() && !type) {
       // https://html.spec.whatwg.org/multipage/form-elements.html#dom-button-type
       // Type, as reflected in the IDL, must be "button" if there are command
       // attributes without an explicit valid type attribute set.
@@ -187,10 +185,6 @@ void HTMLButtonElement::SetTypeInternal(Type type) {
 }
 
 Element* HTMLButtonElement::commandForElement() const {
-  if (!RuntimeEnabledFeatures::HTMLCommandAttributesEnabled()) {
-    return nullptr;
-  }
-
   if (!IsInTreeScope() || IsDisabledFormControl() ||
       (Form() && FastHasAttribute(html_names::kTypeAttr) && type_ == kSubmit)) {
     return nullptr;
@@ -205,7 +199,6 @@ void HTMLButtonElement::setCommand(const AtomicString& type) {
 }
 
 AtomicString HTMLButtonElement::command() const {
-  CHECK(RuntimeEnabledFeatures::HTMLCommandAttributesEnabled());
   const AtomicString& action = FastGetAttribute(html_names::kCommandAttr);
   CommandEventType type = GetCommandEventType(action);
   switch (type) {
@@ -330,8 +323,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     bool potentialCommand = (FastHasAttribute(html_names::kCommandforAttr) ||
                              FastHasAttribute(html_names::kCommandAttr));
     if (!IsDisabledFormControl()) {
-      if (Form() && RuntimeEnabledFeatures::HTMLCommandAttributesEnabled() &&
-          type_ == kButton) {
+      if (Form() && type_ == kButton) {
         if (!EqualIgnoringASCIICase(FastGetAttribute(html_names::kTypeAttr),
                                     "button")) {
           DCHECK(type_ == kButton);

@@ -2781,10 +2781,6 @@ AXObject* AXObject::GetPopoverTargetForInvoker() const {
 // attribute is a valid command b) not the next element in the DOM (depth first
 // search order), and c) either not a hint or a rich hint.
 AXObject* AXObject::GetCommandForElement() const {
-  if (!RuntimeEnabledFeatures::HTMLCommandAttributesEnabled()) {
-    return nullptr;
-  }
-
   auto* button_element = DynamicTo<HTMLButtonElement>(GetElement());
   if (!button_element) {
     return nullptr;
