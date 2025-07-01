@@ -16,6 +16,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace {
 
@@ -61,6 +62,10 @@ NativeWidgetType GetNativeWidgetTypeForInitParams(
 
   if (!params.child &&
       params.use_accelerated_widget_override.value_or(default_desktop_bubble)) {
+    return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+  }
+
+  if (params.delegate && params.delegate->use_desktop_widget_override()) {
     return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
   }
 

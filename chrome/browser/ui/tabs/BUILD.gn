@@ -578,6 +578,33 @@ if (!is_android) {
     }
   }
 
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = []
+
+    if (!is_chromeos) {
+      # ChromeOS does not use desktop widgets.
+      sources += [
+        "tab_dialog_manager_desktop_widget_uitest.cc",
+      ]
+    }
+
+    deps = [
+      ":tabs",
+      ":test_support",
+      "//base",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base:types",
+      "//ui/views",
+    ]
+  }
+
   source_set("unit_tests") {
     testonly = true
     sources = [

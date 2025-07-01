@@ -160,6 +160,10 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
            browser_view_layout_->browser_view_->browser();
   }
 
+  bool ShouldDialogBoundsConstrainedByHost() override {
+    return !base::FeatureList::IsEnabled(features::kTabModalUsesDesktopWidget);
+  }
+
   gfx::Size GetMaximumDialogSize() override {
     // Modals use NativeWidget and cannot be rendered beyond the browser
     // window boundaries. Restricting them to the browser window bottom

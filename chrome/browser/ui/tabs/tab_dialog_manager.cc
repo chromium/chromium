@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "ui/gfx/animation/animation.h"
@@ -242,6 +243,11 @@ std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
   DCHECK_EQ(ui::mojom::ModalType::kChild, delegate->GetModalType());
   views::Widget* host = GetHostWidget();
   CHECK(host);
+
+  if (base::FeatureList::IsEnabled(features::kTabModalUsesDesktopWidget)) {
+    delegate->set_use_desktop_widget_override(true);
+  }
+
   return base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
       delegate, gfx::NativeWindow(), host->GetNativeView()));
 }
