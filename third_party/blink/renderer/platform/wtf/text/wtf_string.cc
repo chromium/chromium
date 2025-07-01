@@ -441,7 +441,7 @@ String String::Make8BitFrom16BitSource(base::span<const UChar> source) {
   base::span<LChar> destination;
   String result = String::CreateUninitialized(length, destination);
 
-  CopyLCharsFromUCharSource(destination.data(), source.data(), length);
+  CopyLCharsFromUCharSource(destination, source);
 
   return result;
 }

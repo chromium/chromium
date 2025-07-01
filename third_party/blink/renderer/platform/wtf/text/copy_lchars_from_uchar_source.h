@@ -19,15 +19,11 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_COPY_LCHARS_FROM_UCHAR_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_COPY_LCHARS_FROM_UCHAR_SOURCE_H_
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -43,14 +39,14 @@
 
 namespace WTF {
 
-inline void CopyLCharsFromUCharSource(LChar* destination,
-                                      const UChar* source,
-                                      size_t length) {
+inline void CopyLCharsFromUCharSource(base::span<LChar> destination,
+                                      base::span<const UChar> source) {
+  size_t length = source.size();
+
 #if defined(ARCH_CPU_X86_FAMILY)
   const uintptr_t kMemoryAccessSize =
       16;  // Memory accesses on 16 byte (128 bit) alignment
   const uintptr_t kMemoryAccessMask = kMemoryAccessSize - 1;
-
   size_t i = 0;
   for (; i < length &&
          reinterpret_cast<uintptr_t>(&source[i]) & kMemoryAccessMask;
