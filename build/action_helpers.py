@@ -103,7 +103,8 @@ def write_depfile(depfile_path: str,
 
   path = pathlib.Path(depfile_path)
   path.parent.mkdir(parents=True, exist_ok=True)
-  path.write_text(''.join(sb))
+  with atomic_output(str(path), mode='w', encoding='utf-8') as w:
+    w.write(''.join(sb))
 
 
 def parse_gn_list(value):
