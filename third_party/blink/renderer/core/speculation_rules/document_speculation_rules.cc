@@ -773,10 +773,12 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   if (eagerness_set.Has(SpeculationEagerness::kModerate)) {
     UseCounter::Count(document, WebFeature::kSpeculationRulesEagernessModerate);
   }
-  // Record "immediate" as "eager" for historical reasons: see
-  // crbug.com/40287486
-  if (eagerness_set.Has(SpeculationEagerness::kImmediate)) {
+  if (eagerness_set.Has(SpeculationEagerness::kEager)) {
     UseCounter::Count(document, WebFeature::kSpeculationRulesEagernessEager);
+  }
+  if (eagerness_set.Has(SpeculationEagerness::kImmediate)) {
+    UseCounter::Count(document,
+                      WebFeature::kSpeculationRulesEagernessImmediate);
   }
 
   base::UmaHistogramEnumeration(

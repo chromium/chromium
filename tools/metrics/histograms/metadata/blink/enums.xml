@@ -5005,7 +5005,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4499" label="SpeculationRulesExplicitEagerness"/>
   <int value="4500" label="SpeculationRulesEagernessConservative"/>
   <int value="4501" label="SpeculationRulesEagernessModerate"/>
-  <int value="4502" label="SpeculationRulesEagernessEager"/>
+  <int value="4502" label="SpeculationRulesEagernessImmediate"/>
   <int value="4503" label="OBSOLETE_URLSetPortCheckOverflow"/>
   <int value="4504" label="V8Animation_RangeStart_AttributeGetter"/>
   <int value="4505" label="V8Animation_RangeStart_AttributeSetter"/>
@@ -6228,6 +6228,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5595" label="WebGPUFeatureLevelCompatibility"/>
   <int value="5596" label="OverscrollBehaviorOnNonScrollableScrollContainer"/>
   <int value="5597" label="InteractiveContentSummaryDescendant"/>
+  <int value="5598" label="SpeculationRulesEagernessEager"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
