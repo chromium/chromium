@@ -145,6 +145,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
   bubble_border->set_rounded_corners(gfx::RoundedCornersF(corner_radius));
+  bubble_border->set_avoid_shadow_overlap(true);
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
   GetBubbleFrameView()->SetBackgroundColor(background_color());
 
