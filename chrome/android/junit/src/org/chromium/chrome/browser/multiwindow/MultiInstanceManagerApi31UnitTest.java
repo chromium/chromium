@@ -1626,6 +1626,42 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(appTasks.get(1), never()).finishAndRemoveTask();
     }
 
+    @Test
+    public void triggerInstanceLimitDowngrade_MaxActiveOneInactive_NoTasksFinished() {
+        // Set initial instance limit and allocate ids for max instances.
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        mFakeTimeTestRule.advanceMillis(1);
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        mFakeTimeTestRule.advanceMillis(1);
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+
+        // Make mActivityTask57 inactive.
+        removeTaskOnRecentsScreen(mActivityTask57);
+
+        // Decrease instance limit.
+        MultiWindowUtils.setMaxInstancesForTesting(2);
+        // Simulate recreation of mActivityTask58 after instance limit downgrade. New allocation
+        // should result in not finishing any additional tasks since we don't have excess running
+        // tasks.
+        removeTaskOnRecentsScreen(mActivityTask58);
+        List<AppTask> appTasks = setupActivityManagerAppTasks(mActivityTask56);
+        allocInstanceIndex(2, mActivityTask58);
+
+        verify(appTasks.get(0), never()).finishAndRemoveTask();
+        assertNotEquals(
+                "Task map for LRU activity should not be updated.",
+                -1,
+                MultiInstanceManagerApi31.getTaskFromMap(0));
+        assertFalse(
+                "SharedPref for tracking downgrade should not be updated.",
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys
+                                        .MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
+                                false));
+    }
+
     private List<AppTask> setupActivityManagerAppTasks(Activity... activities) {
         List<AppTask> appTasks = new ArrayList<>();
         for (Activity activity : activities) {

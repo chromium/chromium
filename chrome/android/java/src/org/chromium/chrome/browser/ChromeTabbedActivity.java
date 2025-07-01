@@ -3206,6 +3206,13 @@ public class ChromeTabbedActivity extends ChromeActivity {
         return super.isStartedUpCorrectly(intent);
     }
 
+    /**
+     * @return The allocated windowId of the activity for testing purposes.
+     */
+    public int getWindowIdForTesting() {
+        return mWindowId;
+    }
+
     private void logIntentInfo(Intent intent) {
         var logMessage =
                 "Intent routed via ChromeLauncherActivity: "
