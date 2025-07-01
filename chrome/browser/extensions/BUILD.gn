@@ -898,6 +898,7 @@ source_set("extensions") {
       "//chrome/browser/prefs:util",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/reading_list",
+      "//chrome/browser/resource_coordinator",
       "//chrome/browser/search",
       "//chrome/browser/search/background",
       "//chrome/browser/search_engine_choice",
