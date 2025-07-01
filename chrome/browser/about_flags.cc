@@ -9824,11 +9824,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProjectorServerSideUsmDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kProjectorUseUSMForS3)},
 
-    {"projector-use-dvs-playback-endpoint",
-     flag_descriptions::kProjectorUseDVSPlaybackEndpointName,
-     flag_descriptions::kProjectorUseDVSPlaybackEndpointDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kProjectorUseDVSPlaybackEndpoint)},
-
     {"enable-annotator-mode", flag_descriptions::kAnnotatorModeName,
      flag_descriptions::kAnnotatorModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAnnotatorMode)},

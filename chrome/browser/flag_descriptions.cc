@@ -7694,12 +7694,6 @@ const char kProjectorServerSideUsmDescription[] =
     "Allows Screencast to use the latest model for server side speech "
     "recognition.";
 
-const char kProjectorUseDVSPlaybackEndpointName[] =
-    "Use DVS endpoint in the Screencast app";
-const char kProjectorUseDVSPlaybackEndpointDescription[] =
-    "Use the latest endpoint for retrieving playback urls in the Screencast "
-    "app.";
-
 const char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";
 const char kReleaseNotesNotificationAllChannelsDescription[] =
