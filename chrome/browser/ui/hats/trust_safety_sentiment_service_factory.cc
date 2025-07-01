@@ -3,11 +3,20 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 
+#include <iterator>
+
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/buildflags/buildflags.h"
+
+inline constexpr std::string kSurveyLocales[] = {"en", "en-AU", "en-CA",
+                                                 "en-GB", "en-US"};
 
 TrustSafetySentimentServiceFactory::TrustSafetySentimentServiceFactory()
     : ProfileKeyedServiceFactory(
@@ -47,6 +56,24 @@ void TrustSafetySentimentServiceFactory::ShutDownForTesting(
 std::unique_ptr<KeyedService>
 TrustSafetySentimentServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  // TrustSafetySentimentSurvey is conducted only for Windows, MacOS and Linux
+  // currently.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS))
+
+  // TrustSafetySentimentSurvey is conducted only in English currently.
+  const std::string& application_locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->Get();
+  CHECK(!application_locale.empty());
+  bool is_eligible_locale =
+      std::find(std::begin(kSurveyLocales), std::end(kSurveyLocales),
+                application_locale) != std::end(kSurveyLocales);
+  if (!is_eligible_locale) {
+    return nullptr;
+  }
+
+  // TrustSafetySentimentSurvey is meant for users that are in a regular (not
+  // incognito) mode.
   if (context->IsOffTheRecord() ||
       (!base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey) &&
        !base::FeatureList::IsEnabled(
@@ -68,4 +95,8 @@ TrustSafetySentimentServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<TrustSafetySentimentService>(profile);
+#else
+  return nullptr;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
+        // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS))
 }

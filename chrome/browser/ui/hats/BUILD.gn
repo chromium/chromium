@@ -59,6 +59,7 @@ source_set("impl") {
   deps += [
     ":hats",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/prefs",
     "//chrome/browser/privacy_sandbox/incognito:incognito_features",
@@ -68,6 +69,7 @@ source_set("impl") {
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
+    "//components/application_locale_storage",
     "//components/autofill/core/common:features",
     "//components/compose/core/browser:features",
     "//components/content_settings/core/browser",
@@ -113,8 +115,11 @@ if (!is_android) {
       "hats_helper_unittest.cc",
       "survey_config_unittest.cc",
       "trust_safety_sentiment_service_factory_unittest.cc",
-      "trust_safety_sentiment_service_unittest.cc",
     ]
+
+    if (is_win || is_mac || is_linux) {
+      sources += [ "trust_safety_sentiment_service_unittest.cc" ]
+    }
 
     deps = [
       ":hats",
