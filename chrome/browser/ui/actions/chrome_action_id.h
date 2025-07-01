@@ -531,6 +531,7 @@
   E(kActionSidePanelShowAssistant) \
   E(kActionSidePanelShowBookmarks, IDC_SHOW_BOOKMARK_SIDE_PANEL) \
   E(kActionSidePanelShowCustomizeChrome) \
+  E(kActionSidePanelShowCustomizeChromeFooter) \
   E(kActionSidePanelShowCustomizeChromeToolbar) \
   E(kActionSidePanelShowFeed) \
   E(kActionSidePanelShowHistoryCluster) \

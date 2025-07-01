@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
@@ -64,6 +65,7 @@
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -860,6 +862,26 @@ void BrowserActions::InitializeBrowserActions() {
               },
               base::Unretained(browser)))
           .SetActionId(actions::kActionPaste)
+          .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* side_panel_controller =
+                    browser->GetActiveTabInterface()
+                        ->GetTabFeatures()
+                        ->customize_chrome_side_panel_controller();
+                CHECK(side_panel_controller);
+
+                if (side_panel_controller->IsCustomizeChromeEntryAvailable()) {
+                  side_panel_controller->OpenSidePanel(
+                      SidePanelOpenTrigger::kAppMenu,
+                      CustomizeChromeSection::kFooter);
+                }
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionSidePanelShowCustomizeChromeFooter)
           .Build());
 
   AddListeners();

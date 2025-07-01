@@ -81,10 +81,8 @@ void FooterContextMenu::ExecuteCommand(int command_id, int event_flags) {
     case COMMAND_SHOW_CUSTOMIZE_CHROME: {
       new_tab_footer::RecordContextMenuClick(
           new_tab_footer::FooterContextMenuItem::kCustomizeChrome);
-      // TODO(crbug.com/427716642): Add action for scrolling directly to
-      // footer section.
       actions::ActionManager::Get()
-          .FindAction(kActionSidePanelShowCustomizeChrome,
+          .FindAction(kActionSidePanelShowCustomizeChromeFooter,
                       /*scope=*/browser_->GetActions()->root_action_item())
           ->InvokeAction(
               actions::ActionInvocationContext::Builder()

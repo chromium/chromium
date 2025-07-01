@@ -142,6 +142,9 @@ void CustomizeButtonsHandler::SetCustomizeChromeSidePanelVisible(
     case customize_buttons::mojom::CustomizeChromeSection::kToolbar:
       section_enum = CustomizeChromeSection::kToolbar;
       break;
+    case customize_buttons::mojom::CustomizeChromeSection::kFooter:
+      section_enum = CustomizeChromeSection::kFooter;
+      break;
   }
 
   SidePanelOpenTrigger trigger_enum;

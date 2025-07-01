@@ -38,6 +38,7 @@ const SECTION_TO_SELECTOR = {
   [CustomizeChromeSection.kAppearance]: '#appearance',
   [CustomizeChromeSection.kShortcuts]: '#shortcuts',
   [CustomizeChromeSection.kModules]: '#modules',
+  [CustomizeChromeSection.kFooter]: '#footer',
 };
 
 const CHANGE_CHROME_THEME_BUTTON_ELEMENT_ID =

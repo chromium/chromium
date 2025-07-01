@@ -256,6 +256,8 @@ class CustomizeButtonsHandlerBrowserTestWithParam
         return CustomizeChromeSection::kWallpaperSearch;
       case customize_buttons::mojom::CustomizeChromeSection::kToolbar:
         return CustomizeChromeSection::kToolbar;
+      case customize_buttons::mojom::CustomizeChromeSection::kFooter:
+        return CustomizeChromeSection::kFooter;
     }
   }
 

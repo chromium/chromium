@@ -200,6 +200,9 @@ void CustomizeChromePageHandler::ScrollToSection(
     case CustomizeChromeSection::kToolbar:
       mojo_section = side_panel::mojom::CustomizeChromeSection::kToolbar;
       break;
+    case CustomizeChromeSection::kFooter:
+      mojo_section = side_panel::mojom::CustomizeChromeSection::kFooter;
+      break;
   }
   page_->ScrollToSection(mojo_section);
 }
