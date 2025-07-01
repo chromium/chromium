@@ -27,6 +27,9 @@ class ClickToolRequest : public PageToolRequest {
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
+  ClickType GetClickType() const { return click_type_; }
+  ClickCount GetClickCount() const { return click_count_; }
+
   // ToolRequest
   std::string JournalEvent() const override;
 

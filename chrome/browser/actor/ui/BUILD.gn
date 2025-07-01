@@ -38,6 +38,7 @@ source_set("event_dispatcher") {
     ":ui_event_utils",
     ":variant_visitor",
     "//chrome/browser/actor:actor",
+    "//chrome/browser/actor/ui:ui",
   ]
 }
 
@@ -105,12 +106,23 @@ source_set("variant_visitor") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ui_event_debugstring_unittest.cc" ]
+  sources = [
+    "event_dispatcher_unittest.cc",
+    "ui_event_debugstring_unittest.cc",
+  ]
   deps = [
+    ":event_dispatcher",
+    ":test_support",
     ":ui_event_types",
     ":ui_event_utils",
+    "//chrome/browser/actor:actor",
+    "//chrome/browser/actor:impl",
+    "//chrome/browser/actor/ui:ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
     "//components/tabs:public",
     "//components/tabs:test_support",
+    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
