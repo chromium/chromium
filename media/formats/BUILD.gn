@@ -214,7 +214,6 @@ source_set("formats") {
     "hls/media_segment.h",
     "hls/multivariant_playlist.cc",
     "hls/multivariant_playlist.h",
-    "hls/parse_status.cc",
     "hls/parse_status.h",
     "hls/playlist.cc",
     "hls/playlist.h",

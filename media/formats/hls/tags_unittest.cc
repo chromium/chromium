@@ -57,9 +57,11 @@ void ErrorTest(std::optional<std::string_view> content,
                      : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag, variable_dict, sub_buffer);
   ASSERT_FALSE(result.has_value()) << from.ToString();
-  auto error = std::move(result).error();
-  EXPECT_EQ(error.code(), expected_status)
-      << "Actual Error: " << MediaSerializeForTesting(error) << "\n"
+  auto actual_error = std::move(result).error();
+  auto expected_error = ParseStatus{expected_status};
+  EXPECT_EQ(actual_error.code(), expected_status)
+      << "Expected Error: " << expected_error.message() << "\n"
+      << "Actual Error: " << MediaSerializeForTesting(actual_error) << "\n"
       << from.ToString();
 }
 
@@ -108,7 +110,7 @@ OkTestResult<T> OkTest(std::optional<std::string> content,
 // `line` must be a sample line containing this tag, and must end with a
 // newline. This DOES NOT parse the item content (only that the item content
 // matches what was expected), use `OkTest` and `ErrorTest` for that.
-void RunTagIdenficationTest(
+void RunTagIdentificationTest(
     TagName name,
     std::string_view line,
     std::optional<std::string_view> expected_content,
@@ -129,11 +131,11 @@ void RunTagIdenficationTest(
 }
 
 template <typename T>
-void RunTagIdenficationTest(
+void RunTagIdentificationTest(
     std::string_view line,
     std::optional<std::string_view> expected_content,
     const base::Location& from = base::Location::Current()) {
-  RunTagIdenficationTest(ToTagName(T::kName), line, expected_content, from);
+  RunTagIdentificationTest(ToTagName(T::kName), line, expected_content, from);
 }
 
 // Test helper for tags which are expected to have no content
@@ -209,12 +211,12 @@ TEST(HlsTagsTest, TagNameIdentity) {
 }
 
 TEST(HlsTagsTest, ParseM3uTag) {
-  RunTagIdenficationTest<M3uTag>("#EXTM3U\n", std::nullopt);
+  RunTagIdentificationTest<M3uTag>("#EXTM3U\n", std::nullopt);
   RunEmptyTagTest<M3uTag>();
 }
 
 TEST(HlsTagsTest, ParseXDefineTag) {
-  RunTagIdenficationTest<XDefineTag>(
+  RunTagIdentificationTest<XDefineTag>(
       "#EXT-X-DEFINE:NAME=\"FOO\",VALUE=\"Bar\",\n",
       "NAME=\"FOO\",VALUE=\"Bar\",");
 
@@ -274,20 +276,20 @@ TEST(HlsTagsTest, ParseXDefineTag) {
 }
 
 TEST(HlsTagsTest, ParseXIndependentSegmentsTag) {
-  RunTagIdenficationTest<XIndependentSegmentsTag>(
+  RunTagIdentificationTest<XIndependentSegmentsTag>(
       "#EXT-X-INDEPENDENT-SEGMENTS\n", std::nullopt);
   RunEmptyTagTest<XIndependentSegmentsTag>();
 }
 
 TEST(HlsTagsTest, ParseXStartTag) {
-  RunTagIdenficationTest(ToTagName(CommonTagName::kXStart),
-                         "#EXT-X-START:TIME-OFFSET=30,PRECISE=YES\n",
-                         "TIME-OFFSET=30,PRECISE=YES");
+  RunTagIdentificationTest(ToTagName(CommonTagName::kXStart),
+                           "#EXT-X-START:TIME-OFFSET=30,PRECISE=YES\n",
+                           "TIME-OFFSET=30,PRECISE=YES");
   // TODO(crbug.com/40057824): Implement the EXT-X-START tag.
 }
 
 TEST(HlsTagsTest, ParseXVersionTag) {
-  RunTagIdenficationTest<XVersionTag>("#EXT-X-VERSION:123\n", "123");
+  RunTagIdentificationTest<XVersionTag>("#EXT-X-VERSION:123\n", "123");
 
   // Test valid versions
   auto result = OkTest<XVersionTag>("1");
@@ -328,7 +330,7 @@ TEST(HlsTagsTest, ParseXVersionTag) {
 }
 
 TEST(HlsTagsTest, ParseXContentSteeringTag) {
-  RunTagIdenficationTest(
+  RunTagIdentificationTest(
       ToTagName(MultivariantPlaylistTagName::kXContentSteering),
       "#EXT-X-CONTENT-STEERING:SERVER-URI=\"https://google.com/"
       "manifest.json\"\n",
@@ -337,7 +339,7 @@ TEST(HlsTagsTest, ParseXContentSteeringTag) {
 }
 
 TEST(HlsTagsTest, ParseXIFrameStreamInfTag) {
-  RunTagIdenficationTest(
+  RunTagIdentificationTest(
       ToTagName(MultivariantPlaylistTagName::kXIFrameStreamInf),
       "#EXT-X-I-FRAME-STREAM-INF:URI=\"foo.m3u8\",BANDWIDTH=1000\n",
       "URI=\"foo.m3u8\",BANDWIDTH=1000");
@@ -345,7 +347,7 @@ TEST(HlsTagsTest, ParseXIFrameStreamInfTag) {
 }
 
 TEST(HlsTagsTest, ParseXMediaTag) {
-  RunTagIdenficationTest(
+  RunTagIdentificationTest(
       ToTagName(MultivariantPlaylistTagName::kXMedia),
       "#EXT-X-MEDIA:TYPE=VIDEO,URI=\"foo.m3u8\",GROUP-ID=\"HD\",NAME=\"Foo "
       "HD\"\n",
@@ -1062,7 +1064,7 @@ TEST(HlsTagsTest, ParseXMediaTag) {
 }
 
 TEST(HlsTagsTest, ParseXSessionDataTag) {
-  RunTagIdenficationTest(
+  RunTagIdentificationTest(
       ToTagName(MultivariantPlaylistTagName::kXSessionData),
       "#EXT-X-SESSION-DATA:DATA-ID=\"com.google.key\",VALUE=\"value\"\n",
       "DATA-ID=\"com.google.key\",VALUE=\"value\"");
@@ -1070,8 +1072,8 @@ TEST(HlsTagsTest, ParseXSessionDataTag) {
 }
 
 TEST(HlsTagsTest, ParseXSessionKeyTag) {
-  RunTagIdenficationTest<XSessionKeyTag>("#EXT-X-SESSION-KEY:METHOD=NONE\n",
-                                         "METHOD=NONE");
+  RunTagIdentificationTest<XSessionKeyTag>("#EXT-X-SESSION-KEY:METHOD=NONE\n",
+                                           "METHOD=NONE");
 
   VariableDictionary dict = CreateBasicDictionary();
   VariableDictionary::SubstitutionBuffer subs;
@@ -1141,7 +1143,7 @@ TEST(HlsTagsTest, ParseXSessionKeyTag) {
 }
 
 TEST(HlsTagsTest, ParseXStreamInfTag) {
-  RunTagIdenficationTest<XStreamInfTag>(
+  RunTagIdentificationTest<XStreamInfTag>(
       "#EXT-X-STREAM-INF:BANDWIDTH=1010,CODECS=\"foo,bar\"\n",
       "BANDWIDTH=1010,CODECS=\"foo,bar\"");
 
@@ -1293,7 +1295,7 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
 }
 
 TEST(HlsTagsTest, ParseInfTag) {
-  RunTagIdenficationTest<InfTag>("#EXTINF:123,\t\n", "123,\t");
+  RunTagIdentificationTest<InfTag>("#EXTINF:123,\t\n", "123,\t");
 
   // Test some valid tags
   auto result = OkTest<InfTag>("123,");
@@ -1343,12 +1345,12 @@ TEST(HlsTagsTest, ParseInfTag) {
 }
 
 TEST(HlsTagsTest, ParseXBitrateTag) {
-  RunTagIdenficationTest<XBitrateTag>("#EXT-X-BITRATE:3\n", "3");
+  RunTagIdentificationTest<XBitrateTag>("#EXT-X-BITRATE:3\n", "3");
   RunDecimalIntegerTagTest(&XBitrateTag::bitrate);
 }
 
 TEST(HlsTagsTest, ParseXByteRangeTag) {
-  RunTagIdenficationTest<XByteRangeTag>("#EXT-X-BYTERANGE:12@34\n", "12@34");
+  RunTagIdentificationTest<XByteRangeTag>("#EXT-X-BYTERANGE:12@34\n", "12@34");
 
   auto result = OkTest<XByteRangeTag>("12");
   EXPECT_EQ(result.tag.range.length, 12u);
@@ -1368,7 +1370,7 @@ TEST(HlsTagsTest, ParseXByteRangeTag) {
 }
 
 TEST(HlsTagsTest, ParseXDateRangeTag) {
-  RunTagIdenficationTest(
+  RunTagIdentificationTest(
       ToTagName(MediaPlaylistTagName::kXDateRange),
       "#EXT-X-DATERANGE:ID=\"ad\",START-DATE=\"2022-07-19T01:04:57+0000\"\n",
       "ID=\"ad\",START-DATE=\"2022-07-19T01:04:57+0000\"");
@@ -1376,35 +1378,35 @@ TEST(HlsTagsTest, ParseXDateRangeTag) {
 }
 
 TEST(HlsTagsTest, ParseXDiscontinuityTag) {
-  RunTagIdenficationTest<XDiscontinuityTag>("#EXT-X-DISCONTINUITY\n",
-                                            std::nullopt);
+  RunTagIdentificationTest<XDiscontinuityTag>("#EXT-X-DISCONTINUITY\n",
+                                              std::nullopt);
   RunEmptyTagTest<XDiscontinuityTag>();
 }
 
 TEST(HlsTagsTest, ParseXDiscontinuitySequenceTag) {
-  RunTagIdenficationTest<XDiscontinuitySequenceTag>(
+  RunTagIdentificationTest<XDiscontinuitySequenceTag>(
       "#EXT-X-DISCONTINUITY-SEQUENCE:3\n", "3");
   RunDecimalIntegerTagTest(&XDiscontinuitySequenceTag::number);
 }
 
 TEST(HlsTagsTest, ParseXEndListTag) {
-  RunTagIdenficationTest<XEndListTag>("#EXT-X-ENDLIST\n", std::nullopt);
+  RunTagIdentificationTest<XEndListTag>("#EXT-X-ENDLIST\n", std::nullopt);
   RunEmptyTagTest<XEndListTag>();
 }
 
 TEST(HlsTagsTest, ParseXGapTag) {
-  RunTagIdenficationTest<XGapTag>("#EXT-X-GAP\n", std::nullopt);
+  RunTagIdentificationTest<XGapTag>("#EXT-X-GAP\n", std::nullopt);
   RunEmptyTagTest<XGapTag>();
 }
 
 TEST(HlsTagsTest, ParseXIFramesOnlyTag) {
-  RunTagIdenficationTest<XIFramesOnlyTag>("#EXT-X-I-FRAMES-ONLY\n",
-                                          std::nullopt);
+  RunTagIdentificationTest<XIFramesOnlyTag>("#EXT-X-I-FRAMES-ONLY\n",
+                                            std::nullopt);
   RunEmptyTagTest<XIFramesOnlyTag>();
 }
 
 TEST(HlsTagsTest, ParseXKeyTag) {
-  RunTagIdenficationTest<XKeyTag>("#EXT-X-KEY:METHOD=NONE\n", "METHOD=NONE");
+  RunTagIdentificationTest<XKeyTag>("#EXT-X-KEY:METHOD=NONE\n", "METHOD=NONE");
 
   VariableDictionary dict = CreateBasicDictionary();
   VariableDictionary::SubstitutionBuffer subs;
@@ -1515,8 +1517,9 @@ TEST(HlsTagsTest, ParseXKeyTag) {
 }
 
 TEST(HlsTagsTest, ParseXMapTag) {
-  RunTagIdenficationTest<XMapTag>("#EXT-X-MAP:URI=\"foo.ts\",BYTERANGE=12@0\n",
-                                  "URI=\"foo.ts\",BYTERANGE=12@0");
+  RunTagIdentificationTest<XMapTag>(
+      "#EXT-X-MAP:URI=\"foo.ts\",BYTERANGE=12@0\n",
+      "URI=\"foo.ts\",BYTERANGE=12@0");
 
   VariableDictionary variable_dict = CreateBasicDictionary();
   EXPECT_TRUE(variable_dict.Insert(CreateVarName("ONE"), "1"));
@@ -1566,13 +1569,13 @@ TEST(HlsTagsTest, ParseXMapTag) {
 }
 
 TEST(HlsTagsTest, ParseXMediaSequenceTag) {
-  RunTagIdenficationTest<XMediaSequenceTag>("#EXT-X-MEDIA-SEQUENCE:3\n", "3");
+  RunTagIdentificationTest<XMediaSequenceTag>("#EXT-X-MEDIA-SEQUENCE:3\n", "3");
   RunDecimalIntegerTagTest(&XMediaSequenceTag::number);
 }
 
 TEST(HlsTagsTest, ParseXPartTag) {
-  RunTagIdenficationTest<XPartTag>("#EXT-X-PART:URI=\"foo.ts\",DURATION=1\n",
-                                   "URI=\"foo.ts\",DURATION=1");
+  RunTagIdentificationTest<XPartTag>("#EXT-X-PART:URI=\"foo.ts\",DURATION=1\n",
+                                     "URI=\"foo.ts\",DURATION=1");
 
   VariableDictionary variable_dict = CreateBasicDictionary();
   EXPECT_TRUE(variable_dict.Insert(CreateVarName("NUMBER"), "9"));
@@ -1686,8 +1689,8 @@ TEST(HlsTagsTest, ParseXPartTag) {
 }
 
 TEST(HlsTagsTest, ParseXPartInfTag) {
-  RunTagIdenficationTest<XPartInfTag>("#EXT-X-PART-INF:PART-TARGET=1.0\n",
-                                      "PART-TARGET=1.0");
+  RunTagIdentificationTest<XPartInfTag>("#EXT-X-PART-INF:PART-TARGET=1.0\n",
+                                        "PART-TARGET=1.0");
 
   // PART-TARGET is required, and must be a valid DecimalFloatingPoint
   ErrorTest<XPartInfTag>(std::nullopt, ParseStatusCode::kMalformedTag);
@@ -1722,9 +1725,10 @@ TEST(HlsTagsTest, ParseXPartInfTag) {
 }
 
 TEST(HlsTagsTest, ParseXPlaylistTypeTag) {
-  RunTagIdenficationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:VOD\n", "VOD");
-  RunTagIdenficationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:EVENT\n",
-                                           "EVENT");
+  RunTagIdentificationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:VOD\n",
+                                             "VOD");
+  RunTagIdentificationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:EVENT\n",
+                                             "EVENT");
 
   auto result = OkTest<XPlaylistTypeTag>("EVENT");
   EXPECT_EQ(result.tag.type, PlaylistType::kEvent);
@@ -1740,14 +1744,14 @@ TEST(HlsTagsTest, ParseXPlaylistTypeTag) {
 }
 
 TEST(HlsTagsTest, ParseXPreloadHintTag) {
-  RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXPreloadHint),
-                         "#EXT-X-PRELOAD-HINT:TYPE=PART,URI=\"foo.ts\"\n",
-                         "TYPE=PART,URI=\"foo.ts\"");
+  RunTagIdentificationTest(ToTagName(MediaPlaylistTagName::kXPreloadHint),
+                           "#EXT-X-PRELOAD-HINT:TYPE=PART,URI=\"foo.ts\"\n",
+                           "TYPE=PART,URI=\"foo.ts\"");
   // TODO(crbug.com/40057824): Implement the EXT-X-PRELOAD-HINT tag.
 }
 
 TEST(HlsTagsTest, ParseXProgramDateTimeTag) {
-  RunTagIdenficationTest(
+  RunTagIdentificationTest(
       ToTagName(MediaPlaylistTagName::kXProgramDateTime),
       "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.031+08:00\n",
       "2010-02-19T14:54:23.031+08:00");
@@ -1764,7 +1768,7 @@ TEST(HlsTagsTest, ParseXProgramDateTimeTag) {
 }
 
 TEST(HlsTagsTest, ParseXRenditionReportTag) {
-  RunTagIdenficationTest(
+  RunTagIdentificationTest(
       ToTagName(MediaPlaylistTagName::kXRenditionReport),
       "#EXT-X-RENDITION-REPORT:URI=\"foo.m3u8\",LAST-MSN=200\n",
       "URI=\"foo.m3u8\",LAST-MSN=200");
@@ -1807,7 +1811,7 @@ TEST(HlsTagsTest, ParseXRenditionReportTag) {
 }
 
 TEST(HlsTagsTest, ParseXServerControlTag) {
-  RunTagIdenficationTest<XServerControlTag>(
+  RunTagIdentificationTest<XServerControlTag>(
       "#EXT-X-SERVER-CONTROL:SKIP-UNTIL=10\n", "SKIP-UNTIL=10");
 
   // Tag requires content
@@ -1953,8 +1957,8 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
 }
 
 TEST(HlsTagsTest, ParseXSkipTag) {
-  RunTagIdenficationTest<XSkipTag>("#EXT-X-SKIP:SKIPPED-SEGMENTS=10\n",
-                                   "SKIPPED-SEGMENTS=10");
+  RunTagIdentificationTest<XSkipTag>("#EXT-X-SKIP:SKIPPED-SEGMENTS=10\n",
+                                     "SKIPPED-SEGMENTS=10");
 
   VariableDictionary variable_dict = CreateBasicDictionary();
   VariableDictionary::SubstitutionBuffer sub_buffer;
@@ -1997,8 +2001,8 @@ TEST(HlsTagsTest, ParseXSkipTag) {
 }
 
 TEST(HlsTagsTest, ParseXTargetDurationTag) {
-  RunTagIdenficationTest<XTargetDurationTag>("#EXT-X-TARGETDURATION:10\n",
-                                             "10");
+  RunTagIdentificationTest<XTargetDurationTag>("#EXT-X-TARGETDURATION:10\n",
+                                               "10");
 
   // Content must be a valid decimal-integer
   ErrorTest<XTargetDurationTag>(std::nullopt, ParseStatusCode::kMalformedTag);

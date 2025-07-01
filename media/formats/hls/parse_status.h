@@ -67,14 +67,74 @@ enum class ParseStatusCode : StatusCodeType {
   kUnsupportedEncryptionMethod = 51,
 };
 
+#define STRINGIFY_CODE(x) \
+  case Codes::x:          \
+    return #x
+
 struct ParseStatusTraits {
   using Codes = ParseStatusCode;
   static constexpr StatusGroupType Group() { return "hls::ParseStatus"; }
+
+  static constexpr std::string ReadableCodeName(Codes code) {
+    switch (code) {
+      STRINGIFY_CODE(kReachedEOF);
+      STRINGIFY_CODE(kInvalidEOL);
+      STRINGIFY_CODE(kMalformedTag);
+      STRINGIFY_CODE(kFailedToParseDecimalInteger);
+      STRINGIFY_CODE(kFailedToParseDecimalFloatingPoint);
+      STRINGIFY_CODE(kFailedToParseSignedDecimalFloatingPoint);
+      STRINGIFY_CODE(kFailedToParseDecimalResolution);
+      STRINGIFY_CODE(kFailedToParseQuotedString);
+      STRINGIFY_CODE(kFailedToParseByteRange);
+      STRINGIFY_CODE(kFailedToParseStableId);
+      STRINGIFY_CODE(kFailedToParseInstreamId);
+      STRINGIFY_CODE(kFailedToParseAudioChannels);
+      STRINGIFY_CODE(kFailedToParseHexadecimalString);
+      STRINGIFY_CODE(kInvalidPlaylistVersion);
+      STRINGIFY_CODE(kUnknownPlaylistType);
+      STRINGIFY_CODE(kMalformedAttributeList);
+      STRINGIFY_CODE(kAttributeListHasDuplicateNames);
+      STRINGIFY_CODE(kMalformedVariableName);
+      STRINGIFY_CODE(kInvalidUri);
+      STRINGIFY_CODE(kPlaylistMissingM3uTag);
+      STRINGIFY_CODE(kMediaPlaylistMissingTargetDuration);
+      STRINGIFY_CODE(kTargetDurationExceedsMax);
+      STRINGIFY_CODE(kMediaSegmentMissingInfTag);
+      STRINGIFY_CODE(kMediaSegmentExceedsTargetDuration);
+      STRINGIFY_CODE(kPlaylistHasDuplicateTags);
+      STRINGIFY_CODE(kPlaylistHasUnsupportedVersion);
+      STRINGIFY_CODE(kPlaylistHasVersionMismatch);
+      STRINGIFY_CODE(kMediaPlaylistHasMultivariantPlaylistTag);
+      STRINGIFY_CODE(kMultivariantPlaylistHasMediaPlaylistTag);
+      STRINGIFY_CODE(kVariableUndefined);
+      STRINGIFY_CODE(kVariableDefinedMultipleTimes);
+      STRINGIFY_CODE(kImportedVariableInParentlessPlaylist);
+      STRINGIFY_CODE(kImportedVariableUndefined);
+      STRINGIFY_CODE(kXStreamInfTagNotFollowedByUri);
+      STRINGIFY_CODE(kVariantMissingStreamInfTag);
+      STRINGIFY_CODE(kMediaSegmentBeforeMediaSequenceTag);
+      STRINGIFY_CODE(kMediaSegmentBeforeDiscontinuitySequenceTag);
+      STRINGIFY_CODE(kDiscontinuityTagBeforeDiscontinuitySequenceTag);
+      STRINGIFY_CODE(kByteRangeRequiresOffset);
+      STRINGIFY_CODE(kByteRangeInvalid);
+      STRINGIFY_CODE(kValueOverflowsTimeDelta);
+      STRINGIFY_CODE(kPlaylistOverflowsTimeDelta);
+      STRINGIFY_CODE(kSkipBoundaryTooLow);
+      STRINGIFY_CODE(kHoldBackDistanceTooLow);
+      STRINGIFY_CODE(kPartTargetDurationExceedsTargetDuration);
+      STRINGIFY_CODE(kPartHoldBackDistanceTooLow);
+      STRINGIFY_CODE(kPartInfTagWithoutPartHoldBack);
+      STRINGIFY_CODE(kPlaylistHasUnexpectedDeltaUpdate);
+      STRINGIFY_CODE(kRenditionGroupHasMultipleDefaultRenditions);
+      STRINGIFY_CODE(kRenditionGroupHasDuplicateRenditionNames);
+      STRINGIFY_CODE(kRenditionGroupDoesNotExist);
+      STRINGIFY_CODE(kUnsupportedEncryptionMethod);
+    }
+  }
 };
+#undef STRINGIFY_CODE
 
 using ParseStatus = TypedStatus<ParseStatusTraits>;
-
-MEDIA_EXPORT std::string_view ParseStatusCodeToString(ParseStatusCode code);
 
 }  // namespace media::hls
 
