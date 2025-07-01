@@ -270,6 +270,7 @@ const CGFloat kShareSymbolPointSize = 12.5;
   configuration.contentInsets =
       NSDirectionalEdgeInsetsMake(kShareVerticalInset, kShareHorizontalInset,
                                   kShareVerticalInset, kShareHorizontalInset);
+  configuration.titleLineBreakMode = NSLineBreakByClipping;
 
   UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   NSDictionary* attributes = @{NSFontAttributeName : font};
