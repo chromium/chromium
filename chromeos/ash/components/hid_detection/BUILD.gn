@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/bluetooth_config",
     "//chromeos/ash/services/bluetooth_config:test_support",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
+    "//components/session_manager/core",
     "//device/bluetooth:mocks",
     "//mojo/public/cpp/bindings",
     "//services/device/public/cpp/hid:hid",

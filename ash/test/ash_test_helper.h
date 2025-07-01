@@ -23,6 +23,7 @@
 #include "base/types/pass_key.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
+#include "components/session_manager/core/session_manager.h"
 #include "ui/aura/test/aura_test_helper.h"
 
 class BrowserWithTestWindowTest;
@@ -220,6 +221,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       std::make_unique<base::test::ScopedCommandLine>();
   std::unique_ptr<system::ScopedFakeStatisticsProvider> statistics_provider_ =
       std::make_unique<system::ScopedFakeStatisticsProvider>();
+  session_manager::SessionManager session_manager_;
   std::unique_ptr<TestPrefServiceProvider> prefs_provider_;
   std::unique_ptr<TestNotifierSettingsController>
       notifier_settings_controller_ =

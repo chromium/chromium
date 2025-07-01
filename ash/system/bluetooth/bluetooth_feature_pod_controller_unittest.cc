@@ -33,6 +33,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/session_manager/core/session_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
@@ -145,9 +146,9 @@ class BluetoothFeaturePodControllerTest
   }
 
   void LockScreen() {
-    bluetooth_config_test_helper()->session_manager()->SessionStarted();
-    bluetooth_config_test_helper()->session_manager()->SetSessionState(
-        session_manager::SessionState::LOCKED);
+    auto* session_manager = session_manager::SessionManager::Get();
+    session_manager->SessionStarted();
+    session_manager->SetSessionState(session_manager::SessionState::LOCKED);
     base::RunLoop().RunUntilIdle();
   }
 

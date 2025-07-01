@@ -5517,6 +5517,7 @@ static_library("test_support") {
     "//components/exo/wayland:ui_controls_protocol_stub",
     "//components/manta/proto",
     "//components/prefs:test_support",
+    "//components/session_manager/core",
     "//components/user_education/common",
     "//components/user_manager:user_manager",
     "//components/viz/test:test_support",

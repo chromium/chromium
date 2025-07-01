@@ -10,5 +10,6 @@ specific_include_rules = {
   ".*unittest\\.cc": [
     # Allows fake implementations.
     "+chromeos/ash/services/bluetooth_config",
+    "+components/session_manager/core/session_manager.h",
   ]
 }

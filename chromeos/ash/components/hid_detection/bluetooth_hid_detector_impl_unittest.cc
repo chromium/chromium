@@ -21,6 +21,7 @@
 #include "chromeos/ash/services/bluetooth_config/fake_discovery_session_manager.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
+#include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::hid_detection {
@@ -271,6 +272,8 @@ class BluetoothHidDetectorImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
+
+  session_manager::SessionManager session_manager_;
 
   std::vector<BluetoothDevicePropertiesPtr> unpaired_devices_;
   size_t num_devices_created_ = 0u;

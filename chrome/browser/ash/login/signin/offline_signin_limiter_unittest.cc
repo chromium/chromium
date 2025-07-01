@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/test/ash_test_helper.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/power_monitor_test.h"
@@ -26,6 +25,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -90,8 +90,7 @@ class OfflineSigninLimiterTest : public testing::Test {
 
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<user_manager::KnownUser> known_user_;
-  // `AshTestHelper` makes sure that `SessionManager` is set up in these tests.
-  ash::AshTestHelper ash_test_helper_;
+  std::optional<session_manager::SessionManager> session_manager_;
 };
 
 OfflineSigninLimiterTest::OfflineSigninLimiterTest() = default;
@@ -120,6 +119,7 @@ void OfflineSigninLimiterTest::CreateLimiter() {
 }
 
 void OfflineSigninLimiterTest::SetUp() {
+  session_manager_.emplace();
   fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   profile_ = std::make_unique<TestingProfile>();
   known_user_ = std::make_unique<user_manager::KnownUser>(local_state_.Get());
@@ -128,6 +128,8 @@ void OfflineSigninLimiterTest::SetUp() {
 void OfflineSigninLimiterTest::TearDown() {
   DestroyLimiter();
   profile_.reset();
+  session_manager_.reset();
+  fake_user_manager_.Reset();
 }
 
 FakeChromeUserManager* OfflineSigninLimiterTest::GetFakeChromeUserManager() {
