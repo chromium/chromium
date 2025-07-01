@@ -954,6 +954,10 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return IsIsolated(app_id);
   }
 
+  if (filter.is_policy_installed_iwa) {
+    return IsIsolated(app_id) && IsInstalledByPolicy(app_id);
+  }
+
   if (filter.is_crafted_app_) {
     return !IsDiyApp(app_id);
   }

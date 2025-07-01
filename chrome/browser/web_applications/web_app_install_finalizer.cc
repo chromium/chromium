@@ -398,14 +398,12 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
         web_app_info.isolated_web_app_version,
         options.iwa_options->integrity_block_data);
 
-    if (options.source == WebAppManagement::kIwaPolicy) {
       HostContentSettingsMap* const host_content_settings_map =
           HostContentSettingsMapFactory::GetForProfile(profile_);
 
       host_content_settings_map->SetContentSettingDefaultScope(
           web_app_info.scope, web_app_info.scope, ContentSettingsType::POPUPS,
           CONTENT_SETTING_ALLOW);
-    }
   }
 
   web_app->SetParentAppId(web_app_info.parent_app_id);

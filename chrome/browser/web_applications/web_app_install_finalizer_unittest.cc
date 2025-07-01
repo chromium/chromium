@@ -551,39 +551,17 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
                                            integrity_block_data)));
 }
 
-TEST_F(WebAppInstallFinalizerUnitTest,
-       PopUpContentSettingsGrantedForForceInstalledIwa) {
-  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
-      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
-          .BuildBundle();
-
-  const web_app::IsolatedWebAppUrlInfo url_info =
-      app->InstallWithSource(
-             profile(),
-             &web_app::IsolatedWebAppInstallSource::FromExternalPolicy)
-          .value();
-
-  HostContentSettingsMap* const host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-
-  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
-            host_content_settings_map->GetContentSetting(
-                url_info.origin().GetURL(), url_info.origin().GetURL(),
-                ContentSettingsType::POPUPS));
-}
-
-TEST_F(WebAppInstallFinalizerUnitTest, PopUpContentSettingsNotGrantedForIwa) {
+TEST_F(WebAppInstallFinalizerUnitTest, PopUpContentSettingsGrantedForIwa) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
           .BuildBundle();
   app->TrustSigningKey();
   const web_app::IsolatedWebAppUrlInfo url_info =
       app->InstallChecked(profile());
+  scoped_refptr<HostContentSettingsMap> host_content_settings_map(
+      HostContentSettingsMapFactory::GetForProfile(profile()));
 
-  HostContentSettingsMap* const host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-
-  EXPECT_EQ(ContentSetting::CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(
                 url_info.origin().GetURL(), url_info.origin().GetURL(),
                 ContentSettingsType::POPUPS));

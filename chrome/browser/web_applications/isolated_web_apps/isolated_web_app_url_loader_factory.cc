@@ -644,6 +644,7 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                      LogErrorAndFail(std::move(error),
                                      std::move(loader_client));
                    });
+
   auto location = IwaSourceWithMode::FromStorageLocation(
       profile_->GetPath(), iwa.isolation_data()->location());
 

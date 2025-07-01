@@ -42,6 +42,13 @@ WebAppFilter WebAppFilter::IsIsolatedApp() {
 }
 
 // static
+WebAppFilter WebAppFilter::PolicyInstalledIsolatedWebApp() {
+  WebAppFilter filter;
+  filter.is_policy_installed_iwa = true;
+  return filter;
+}
+
+// static
 WebAppFilter WebAppFilter::IsCraftedApp() {
   WebAppFilter filter;
   filter.is_crafted_app_ = true;

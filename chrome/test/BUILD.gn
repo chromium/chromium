@@ -5107,6 +5107,7 @@ if (!is_android) {
       allow_circular_includes_from +=
           [ "//chrome/browser/ui/lens:browser_tests" ]
       if (use_aura) {
+        sources += [ "../browser/web_applications/isolated_web_apps/window_management/multiple_web_contents_opened_service_browsertest.cc" ]
         deps += [ "//ui/aura:test_support" ]
       }
     }
