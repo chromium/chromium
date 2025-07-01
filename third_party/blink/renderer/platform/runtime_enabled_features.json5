@@ -1177,7 +1177,7 @@
     {
       // https://chromestatus.com/feature/5082469066604544
       name: "CSSCaretAnimation",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Need a feature entry

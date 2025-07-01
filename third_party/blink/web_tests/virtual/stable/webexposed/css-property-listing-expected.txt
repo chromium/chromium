@@ -127,6 +127,7 @@ All changes to this list should go through Blink's feature review process: http:
     break-inside
     buffered-rendering
     caption-side
+    caret-animation
     caret-color
     clear
     clip
