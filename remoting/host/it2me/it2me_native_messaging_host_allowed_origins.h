@@ -9,12 +9,11 @@
 namespace remoting {
 
 // The set of origins which are allowed to instantiate an It2Me host.
-// If you modify the list of allowed_origins, don't forget to update
-// remoting/host/it2me/com.google.chrome.remote_assistance.json.jinja2
-// to keep the two lists in sync.
+// LINT.IfChange(it2me_origins)
 inline constexpr const char* kIt2MeOrigins[] = {
     "chrome-extension://inomeogfingihgjfjlpeplalcfajhgai/",
-    "chrome-extension://hpodccmdligbeohchckkeajbfohibipg/"};
+    "chrome-extension://pbnaomcgbfiofkfobmlhmdobjchjkphi/"};
+// LINT.ThenChange(/remoting/host/BUILD.gn:extension_ids)
 
 // The name used to register the It2Me native message host.
 inline constexpr char kIt2MeNativeMessageHostName[] =

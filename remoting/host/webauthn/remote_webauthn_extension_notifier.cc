@@ -209,6 +209,7 @@ void RemoteWebAuthnExtensionNotifier::Core::WakeUpExtension() {
 const std::vector<base::FilePath::StringType>&
 RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds() {
   static const base::NoDestructor<std::vector<base::FilePath::StringType>> ids({
+      // LINT.IfChange(extension_ids)
       // Prod security key extension ID
       FILE_PATH_LITERAL("djjmngfglakhkhmgcfdmjalogilepkhd"),
 
@@ -220,11 +221,12 @@ RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds() {
   // forwarding.
 #if !defined(NDEBUG)
       // Dev security key extension ID
-      FILE_PATH_LITERAL("hfmpidnhglhndeamkbopljnclamhmnaj"),
+      FILE_PATH_LITERAL("kbapnajlciffffomeaphfpckfdcfopef"),
 
       // Dev companion extension ID
-      FILE_PATH_LITERAL("hpodccmdligbeohchckkeajbfohibipg"),
+      FILE_PATH_LITERAL("pbnaomcgbfiofkfobmlhmdobjchjkphi"),
 #endif
+      // LINT.ThenChange(/remoting/host/BUILD.gn:extension_ids)
   });
   return *ids;
 }

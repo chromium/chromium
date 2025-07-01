@@ -1011,6 +1011,31 @@ if (enable_me2me_host) {
       remote_webauthn_path = "/opt/google/chrome-remote-desktop/remote-webauthn"
     }
 
+    # LINT.IfChange(extension_ids)
+    if (is_debug) {
+      companion_extension_ids = [
+        "inomeogfingihgjfjlpeplalcfajhgai",  # prod
+        "pbnaomcgbfiofkfobmlhmdobjchjkphi",  # dev
+      ]
+      security_key_extension_ids = [
+        "djjmngfglakhkhmgcfdmjalogilepkhd",  # prod
+        "kbapnajlciffffomeaphfpckfdcfopef",  # dev
+      ]
+    } else {
+      companion_extension_ids = [
+        "inomeogfingihgjfjlpeplalcfajhgai",  # prod
+      ]
+      security_key_extension_ids = [
+        "djjmngfglakhkhmgcfdmjalogilepkhd",  # prod
+      ]
+    }
+
+    # LINT.ThenChange(/remoting/host/it2me/it2me_native_messaging_host_allowed_origins.h:it2me_origins, /remoting/host/webauthn/remote_webauthn_extension_notifier.cc:extension_ids)
+
+    companion_extension_ids_joined = string_join(",", companion_extension_ids)
+    security_key_extension_ids_joined =
+        string_join(",", security_key_extension_ids)
+
     script = "../tools/build/remoting_localize.py"
 
     sources = [
@@ -1032,6 +1057,10 @@ if (enable_me2me_host) {
       "IT2ME_HOST_PATH=$it2me_host_path",
       "--define",
       "REMOTE_WEBAUTHN_PATH=$remote_webauthn_path",
+      "--define_list",
+      "COMPANION_EXTENSION_IDS=$companion_extension_ids_joined",
+      "--define_list",
+      "SECURITY_KEY_EXTENSION_IDS=$security_key_extension_ids_joined",
       "--variables",
       rebase_path(branding_path, root_build_dir),
       "--template",
