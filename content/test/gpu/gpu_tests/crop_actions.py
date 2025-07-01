@@ -114,6 +114,8 @@ class NonWhiteContentCropAction(BaseCropAction):
       'SM-A236B',
       # Chromebooks using the Brya board.
       'Brya',
+      # Chromebooks using the Corsola board.
+      'Corsola',
   }
 
   def __init__(self, initial_crop: BaseCropAction | None = None):
