@@ -17,6 +17,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/intelligence/page_action_menu/ui",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

@@ -1,4 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/reader_mode/model/features.h",
   "+ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h",
+  "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
+  "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
 ]
