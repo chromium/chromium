@@ -288,13 +288,13 @@ void ShellContentRendererClient::RenderThreadStarted() {
 void ShellContentRendererClient::ExposeInterfacesToBrowser(
     mojo::BinderMap* binders) {
   binders->Add<mojom::TestService>(
-      &CreateRendererTestService,
+      base::BindRepeating(&CreateRendererTestService),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<mojom::PowerMonitorTest>(
-      &PowerMonitorTestImpl::MakeSelfOwnedReceiver,
+      base::BindRepeating(&PowerMonitorTestImpl::MakeSelfOwnedReceiver),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<mojom::MainFrameCounterTest>(
-      &MainFrameCounterTestImpl::Bind,
+      base::BindRepeating(&MainFrameCounterTestImpl::Bind),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<web_cache::mojom::WebCache>(
       base::BindRepeating(&web_cache::WebCacheImpl::BindReceiver,

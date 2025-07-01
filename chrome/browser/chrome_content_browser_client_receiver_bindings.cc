@@ -368,7 +368,8 @@ void ChromeContentBrowserClient::
         mojo::BinderMapWithContext<
             const content::ServiceWorkerVersionBaseInfo&>* map) {
 #if !BUILDFLAG(IS_ANDROID)
-  map->Add<blink::mojom::BadgeService>(&BindBadgeServiceForServiceWorker);
+  map->Add<blink::mojom::BadgeService>(
+      base::BindRepeating(&BindBadgeServiceForServiceWorker));
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

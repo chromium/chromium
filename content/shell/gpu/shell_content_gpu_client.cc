@@ -21,7 +21,7 @@ void ShellContentGpuClient::ExposeInterfacesToBrowser(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders) {
   binders->Add<mojom::PowerMonitorTest>(
-      &PowerMonitorTestImpl::MakeSelfOwnedReceiver,
+      base::BindRepeating(&PowerMonitorTestImpl::MakeSelfOwnedReceiver),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 

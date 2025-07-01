@@ -323,24 +323,23 @@ void ChromeContentClient::ExposeInterfacesToBrowser(
   // Sets up the client side of the multi-process heap profiler service.
   // TODO(crbug.com/40915258): Hook up chrome://memory-internals to the
   // in-process heap profiler, and delete this service.
-  binders
-      ->Add<heap_profiling::mojom::ProfilingClient>(
-
+  binders->Add<heap_profiling::mojom::ProfilingClient>(
+      base::BindRepeating(
           [](mojo::PendingReceiver<heap_profiling::mojom::ProfilingClient>
                  receiver) {
             static base::NoDestructor<heap_profiling::ProfilingClient>
                 profiling_client;
             profiling_client->BindToInterface(std::move(receiver));
-          },
-          io_task_runner);
+          }),
+      io_task_runner);
 
   // Sets up the simplified in-process heap profiler, if it's enabled.
   const auto* heap_profiler_controller =
       heap_profiling::HeapProfilerController::GetInstance();
   if (heap_profiler_controller && heap_profiler_controller->IsEnabled()) {
     binders->Add<heap_profiling::mojom::SnapshotController>(
-        &heap_profiling::ChildProcessSnapshotController::
-            CreateSelfOwnedReceiver,
+        base::BindRepeating(&heap_profiling::ChildProcessSnapshotController::
+                                CreateSelfOwnedReceiver),
         // ChildProcessSnapshotController calls into HeapProfilerController,
         // which can only be accessed on this sequence.
         base::SequencedTaskRunner::GetCurrentDefault());

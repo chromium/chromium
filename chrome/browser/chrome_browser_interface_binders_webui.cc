@@ -783,7 +783,7 @@ void PopulateChromeWebUIFrameBinders(
 
   // TODO(crbug.com/398926117): Create a generic mechanism for these interfaces.
   map->Add<metrics_reporter::mojom::PageMetricsHost>(
-      &BindMetricsReporterService);
+      base::BindRepeating(&BindMetricsReporterService));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

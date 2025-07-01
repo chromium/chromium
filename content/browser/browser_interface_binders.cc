@@ -807,7 +807,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   }
 
   map->Add<device::mojom::GamepadHapticsManager>(
-      &device::GamepadHapticsManager::Create);
+      base::BindRepeating(&device::GamepadHapticsManager::Create));
 
   map->Add<blink::mojom::GeolocationService>(base::BindRepeating(
       &RenderFrameHostImpl::GetGeolocationService, base::Unretained(host)));
@@ -921,7 +921,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
-  map->Add<device::mojom::GamepadMonitor>(&device::GamepadMonitor::Create);
+  map->Add<device::mojom::GamepadMonitor>(
+      base::BindRepeating(&device::GamepadMonitor::Create));
 
   map->Add<blink::mojom::WebSensorProvider>(base::BindRepeating(
       &RenderFrameHostImpl::GetSensorProvider, base::Unretained(host)));
@@ -933,7 +934,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       &RenderFrameHostImpl::CreatePaymentManager, base::Unretained(host)));
 
   map->Add<handwriting::mojom::HandwritingRecognitionService>(
-      &CreateHandwritingRecognitionService);
+      base::BindRepeating(&CreateHandwritingRecognitionService));
 
   if (base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
@@ -1072,12 +1073,13 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                           base::Unretained(host)));
 
   map->Add<shape_detection::mojom::BarcodeDetectionProvider>(
-      &BindBarcodeDetectionProvider);
+      base::BindRepeating(&BindBarcodeDetectionProvider));
 
   map->Add<shape_detection::mojom::FaceDetectionProvider>(
-      &BindFaceDetectionProvider);
+      base::BindRepeating(&BindFaceDetectionProvider));
 
-  map->Add<shape_detection::mojom::TextDetection>(&BindTextDetection);
+  map->Add<shape_detection::mojom::TextDetection>(
+      base::BindRepeating(&BindTextDetection));
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnableGpuBenchmarking)) {
@@ -1108,7 +1110,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  map->Add<blink::mojom::TextInputHost>(&BindTextInputHost);
+  map->Add<blink::mojom::TextInputHost>(
+      base::BindRepeating(&BindTextInputHost));
 #endif
 
   map->Add<blink::mojom::RenderAccessibilityHost>(
@@ -1175,63 +1178,69 @@ void PopulateBinderMapWithContext(
   // by blink.
   // This avoids renderer kills when no binder is found in the absence of the
   // production embedder (such as in tests).
-  map->Add<blink::mojom::NoStatePrefetchProcessor>(
-      &EmptyBinderForFrame<blink::mojom::NoStatePrefetchProcessor>);
-  map->Add<payments::mojom::PaymentRequest>(
-      &EmptyBinderForFrame<payments::mojom::PaymentRequest>);
-  map->Add<blink::mojom::AnchorElementMetricsHost>(
-      &EmptyBinderForFrame<blink::mojom::AnchorElementMetricsHost>);
-  map->Add<blink::mojom::CredentialManager>(
-      &EmptyBinderForFrame<blink::mojom::CredentialManager>);
-  map->Add<blink::mojom::LCPCriticalPathPredictorHost>(
-      &EmptyBinderForFrame<blink::mojom::LCPCriticalPathPredictorHost>);
+  map->Add<blink::mojom::NoStatePrefetchProcessor>(base::BindRepeating(
+      &EmptyBinderForFrame<blink::mojom::NoStatePrefetchProcessor>));
+  map->Add<payments::mojom::PaymentRequest>(base::BindRepeating(
+      &EmptyBinderForFrame<payments::mojom::PaymentRequest>));
+  map->Add<blink::mojom::AnchorElementMetricsHost>(base::BindRepeating(
+      &EmptyBinderForFrame<blink::mojom::AnchorElementMetricsHost>));
+  map->Add<blink::mojom::CredentialManager>(base::BindRepeating(
+      &EmptyBinderForFrame<blink::mojom::CredentialManager>));
+  map->Add<blink::mojom::LCPCriticalPathPredictorHost>(base::BindRepeating(
+      &EmptyBinderForFrame<blink::mojom::LCPCriticalPathPredictorHost>));
   if (base::FeatureList::IsEnabled(network::features::kBrowsingTopics) &&
       base::FeatureList::IsEnabled(
           blink::features::kBrowsingTopicsDocumentAPI)) {
     map->Add<blink::mojom::BrowsingTopicsDocumentService>(
-        &BrowsingTopicsDocumentHost::CreateMojoService);
+        base::BindRepeating(&BrowsingTopicsDocumentHost::CreateMojoService));
   }
 #if !BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::DirectSocketsService>(
-      &DirectSocketsServiceImpl::CreateForFrame);
-  map->Add<media::mojom::SpeechRecognitionContext>(
-      &EmptyBinderForFrame<media::mojom::SpeechRecognitionContext>);
+      base::BindRepeating(&DirectSocketsServiceImpl::CreateForFrame));
+  map->Add<media::mojom::SpeechRecognitionContext>(base::BindRepeating(
+      &EmptyBinderForFrame<media::mojom::SpeechRecognitionContext>));
   map->Add<media::mojom::SpeechRecognitionClientBrowserInterface>(
-      &EmptyBinderForFrame<
-          media::mojom::SpeechRecognitionClientBrowserInterface>);
-  map->Add<media::mojom::MediaFoundationRendererNotifier>(
-      &EmptyBinderForFrame<media::mojom::MediaFoundationRendererNotifier>);
-  map->Add<media::mojom::MediaPlayerObserverClient>(
-      &EmptyBinderForFrame<media::mojom::MediaPlayerObserverClient>);
+      base::BindRepeating(
+          &EmptyBinderForFrame<
+              media::mojom::SpeechRecognitionClientBrowserInterface>));
+  map->Add<media::mojom::MediaFoundationRendererNotifier>(base::BindRepeating(
+      &EmptyBinderForFrame<media::mojom::MediaFoundationRendererNotifier>));
+  map->Add<media::mojom::MediaPlayerObserverClient>(base::BindRepeating(
+      &EmptyBinderForFrame<media::mojom::MediaPlayerObserverClient>));
 #endif
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
-  map->Add<blink::mojom::UnhandledTapNotifier>(
-      &EmptyBinderForFrame<blink::mojom::UnhandledTapNotifier>);
+  map->Add<blink::mojom::UnhandledTapNotifier>(base::BindRepeating(
+      &EmptyBinderForFrame<blink::mojom::UnhandledTapNotifier>));
 #endif
 
   map->Add<blink::mojom::BackgroundFetchService>(
-      &BackgroundFetchServiceImpl::CreateForFrame);
-  map->Add<blink::mojom::ColorChooserFactory>(&BindColorChooserFactoryForFrame);
-  map->Add<blink::mojom::EyeDropperChooser>(&EyeDropperChooserImpl::Create);
+      base::BindRepeating(&BackgroundFetchServiceImpl::CreateForFrame));
+  map->Add<blink::mojom::ColorChooserFactory>(
+      base::BindRepeating(&BindColorChooserFactoryForFrame));
+  map->Add<blink::mojom::EyeDropperChooser>(
+      base::BindRepeating(&EyeDropperChooserImpl::Create));
   map->Add<blink::mojom::CookieStore>(
-      &CookieStoreManager::BindReceiverForFrame);
+      base::BindRepeating(&CookieStoreManager::BindReceiverForFrame));
   map->Add<blink::mojom::ContentIndexService>(
-      &ContentIndexServiceImpl::CreateForFrame);
+      base::BindRepeating(&ContentIndexServiceImpl::CreateForFrame));
   map->Add<blink::mojom::KeyboardLockService>(
-      &KeyboardLockServiceImpl::CreateMojoService);
+      base::BindRepeating(&KeyboardLockServiceImpl::CreateMojoService));
   if (base::FeatureList::IsEnabled(network::features::kInterestGroupStorage)) {
     map->Add<blink::mojom::AdAuctionService>(
-        &AdAuctionServiceImpl::CreateMojoService);
+        base::BindRepeating(&AdAuctionServiceImpl::CreateMojoService));
   }
-  map->Add<blink::mojom::MediaSessionService>(&MediaSessionServiceImpl::Create);
+  map->Add<blink::mojom::MediaSessionService>(
+      base::BindRepeating(&MediaSessionServiceImpl::Create));
   map->Add<blink::mojom::PictureInPictureService>(
-      &PictureInPictureServiceImpl::Create);
-  map->Add<blink::mojom::WakeLockService>(&WakeLockServiceImpl::Create);
+      base::BindRepeating(&PictureInPictureServiceImpl::Create));
+  map->Add<blink::mojom::WakeLockService>(
+      base::BindRepeating(&WakeLockServiceImpl::Create));
 #if BUILDFLAG(ENABLE_VR)
-  map->Add<device::mojom::VRService>(&VRServiceImpl::Create);
+  map->Add<device::mojom::VRService>(
+      base::BindRepeating(&VRServiceImpl::Create));
 #else
   map->Add<device::mojom::VRService>(
-      &EmptyBinderForFrame<device::mojom::VRService>);
+      base::BindRepeating(&EmptyBinderForFrame<device::mojom::VRService>));
 #endif
   RegisterWebUIControllerInterfaceBinder<
       private_aggregation_internals::mojom::Factory,
@@ -1254,46 +1263,52 @@ void PopulateBinderMapWithContext(
                                          WebXrInternalsUI>(map);
 #endif
 #if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS))
-  map->Add<blink::mojom::DateTimeChooser>(&BindDateTimeChooserForFrame);
+  map->Add<blink::mojom::DateTimeChooser>(
+      base::BindRepeating(&BindDateTimeChooserForFrame));
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  map->Add<blink::mojom::TextSuggestionHost>(&BindTextSuggestionHostForFrame);
-#else
   map->Add<blink::mojom::TextSuggestionHost>(
-      &EmptyBinderForFrame<blink::mojom::TextSuggestionHost>);
+      base::BindRepeating(&BindTextSuggestionHostForFrame));
+#else
+  map->Add<blink::mojom::TextSuggestionHost>(base::BindRepeating(
+      &EmptyBinderForFrame<blink::mojom::TextSuggestionHost>));
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  map->Add<blink::mojom::Authenticator>(
+  map->Add<blink::mojom::Authenticator>(base::BindRepeating(
       [](RenderFrameHost* host,
          mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
         static_cast<RenderFrameHostImpl*>(host)->GetWebAuthenticationService(
             std::move(receiver));
-      });
-  map->Add<blink::mojom::ClipboardHost>(&ClipboardHostImpl::Create);
-  map->Add<blink::mojom::SpeculationHost>(&SpeculationHostImpl::Bind);
+      }));
+  map->Add<blink::mojom::ClipboardHost>(
+      base::BindRepeating(&ClipboardHostImpl::Create));
+  map->Add<blink::mojom::SpeculationHost>(
+      base::BindRepeating(&SpeculationHostImpl::Bind));
   map->Add<blink::mojom::AnchorElementInteractionHost>(
-      &AnchorElementInteractionHostImpl::Create);
+      base::BindRepeating(&AnchorElementInteractionHostImpl::Create));
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kWebLockScreenApi)) {
-    map->Add<blink::mojom::LockScreenService>(&LockScreenServiceImpl::Create);
+    map->Add<blink::mojom::LockScreenService>(
+        base::BindRepeating(&LockScreenServiceImpl::Create));
   }
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
   map->Add<media::mojom::FuchsiaMediaCdmProvider>(
-      &FuchsiaMediaCdmProviderImpl::Bind);
+      base::BindRepeating(&FuchsiaMediaCdmProviderImpl::Bind));
 #endif
 
   map->Add<blink::mojom::OriginTrialStateHost>(
-      &OriginTrialStateHostImpl::Create);
-  map->Add<blink::mojom::StorageAccessHandle>(&StorageAccessHandle::Create);
+      base::BindRepeating(&OriginTrialStateHostImpl::Create));
+  map->Add<blink::mojom::StorageAccessHandle>(
+      base::BindRepeating(&StorageAccessHandle::Create));
 
-  map->Add<optimization_guide::mojom::ModelBroker>(
-      &EmptyBinderForFrame<optimization_guide::mojom::ModelBroker>);
+  map->Add<optimization_guide::mojom::ModelBroker>(base::BindRepeating(
+      &EmptyBinderForFrame<optimization_guide::mojom::ModelBroker>));
   if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(
-        &EmptyBinderForFrame<blink::mojom::AIManager>);
+        base::BindRepeating(&EmptyBinderForFrame<blink::mojom::AIManager>));
   }
 
   // This should be last to allow overrides of any interface.
@@ -1322,11 +1337,13 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
 
   // static binders
   map->Add<shape_detection::mojom::BarcodeDetectionProvider>(
-      &BindBarcodeDetectionProvider);
+      base::BindRepeating(&BindBarcodeDetectionProvider));
   map->Add<shape_detection::mojom::FaceDetectionProvider>(
-      &BindFaceDetectionProvider);
-  map->Add<shape_detection::mojom::TextDetection>(&BindTextDetection);
-  map->Add<ukm::mojom::UkmRecorderFactory>(&BindUkmRecorderFactory);
+      base::BindRepeating(&BindFaceDetectionProvider));
+  map->Add<shape_detection::mojom::TextDetection>(
+      base::BindRepeating(&BindTextDetection));
+  map->Add<ukm::mojom::UkmRecorderFactory>(
+      base::BindRepeating(&BindUkmRecorderFactory));
 
   // worker host binders
   // base::Unretained(host) is safe because the map is owned by
@@ -1503,11 +1520,13 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
 
   // static binders
   map->Add<shape_detection::mojom::BarcodeDetectionProvider>(
-      &BindBarcodeDetectionProvider);
+      base::BindRepeating(&BindBarcodeDetectionProvider));
   map->Add<shape_detection::mojom::FaceDetectionProvider>(
-      &BindFaceDetectionProvider);
-  map->Add<shape_detection::mojom::TextDetection>(&BindTextDetection);
-  map->Add<ukm::mojom::UkmRecorderFactory>(&BindUkmRecorderFactory);
+      base::BindRepeating(&BindFaceDetectionProvider));
+  map->Add<shape_detection::mojom::TextDetection>(
+      base::BindRepeating(&BindTextDetection));
+  map->Add<ukm::mojom::UkmRecorderFactory>(
+      base::BindRepeating(&BindUkmRecorderFactory));
 
   // worker host binders
   // base::Unretained(host) is safe because the map is owned by
@@ -1681,11 +1700,13 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
   map->Add<blink::mojom::FileUtilitiesHost>(
       base::BindRepeating(&BindFileUtilitiesHost, host));
   map->Add<shape_detection::mojom::BarcodeDetectionProvider>(
-      &BindBarcodeDetectionProvider);
+      base::BindRepeating(&BindBarcodeDetectionProvider));
   map->Add<shape_detection::mojom::FaceDetectionProvider>(
-      &BindFaceDetectionProvider);
-  map->Add<shape_detection::mojom::TextDetection>(&BindTextDetection);
-  map->Add<ukm::mojom::UkmRecorderFactory>(&BindUkmRecorderFactory);
+      base::BindRepeating(&BindFaceDetectionProvider));
+  map->Add<shape_detection::mojom::TextDetection>(
+      base::BindRepeating(&BindTextDetection));
+  map->Add<ukm::mojom::UkmRecorderFactory>(
+      base::BindRepeating(&BindUkmRecorderFactory));
 
   // worker host binders
   map->Add<blink::mojom::WebTransportConnector>(base::BindRepeating(
@@ -1777,9 +1798,9 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&BackgroundFetchServiceImpl::CreateForWorker,
                           host->GetNetworkIsolationKey()));
   map->Add<blink::mojom::ContentIndexService>(
-      &ContentIndexServiceImpl::CreateForWorker);
+      base::BindRepeating(&ContentIndexServiceImpl::CreateForWorker));
   map->Add<blink::mojom::CookieStore>(
-      &CookieStoreManager::BindReceiverForWorker);
+      base::BindRepeating(&CookieStoreManager::BindReceiverForWorker));
 
   // RenderProcessHost binders taking an origin
   map->Add<payments::mojom::PaymentManager>(BindServiceWorkerReceiverForOrigin(

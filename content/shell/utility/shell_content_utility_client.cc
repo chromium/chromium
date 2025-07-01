@@ -190,7 +190,7 @@ ShellContentUtilityClient::~ShellContentUtilityClient() = default;
 void ShellContentUtilityClient::ExposeInterfacesToBrowser(
     mojo::BinderMap* binders) {
   binders->Add<mojom::PowerMonitorTest>(
-      &PowerMonitorTestImpl::MakeSelfOwnedReceiver,
+      base::BindRepeating(&PowerMonitorTestImpl::MakeSelfOwnedReceiver),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (register_sandbox_status_helper_) {

@@ -12,5 +12,5 @@
 void PopulateFuchsiaFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
   map->Add<mojom::WebEngineMediaResourceProvider>(
-      &WebEngineMediaResourceProviderImpl::Bind);
+      base::BindRepeating(&WebEngineMediaResourceProviderImpl::Bind));
 }

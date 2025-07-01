@@ -100,13 +100,14 @@ void Binders::ExposeInterfacesToRendererProcess(
 
 void Binders::ExposeInterfacesToBrowserChildProcess(
     mojo::BinderMapWithContext<content::BrowserChildProcessHost*>* map) {
-  map->Add<mojom::ChildProcessCoordinationUnit>(
-      &BindChildProcessCoordinationUnitForBrowserChildProcessHost);
+  map->Add<mojom::ChildProcessCoordinationUnit>(base::BindRepeating(
+      &BindChildProcessCoordinationUnitForBrowserChildProcessHost));
 }
 
 void Binders::ExposeInterfacesToRenderFrame(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
-  map->Add<mojom::DocumentCoordinationUnit>(&BindDocumentCoordinationUnit);
+  map->Add<mojom::DocumentCoordinationUnit>(
+      base::BindRepeating(&BindDocumentCoordinationUnit));
 }
 
 }  // namespace performance_manager
