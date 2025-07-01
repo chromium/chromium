@@ -1970,7 +1970,7 @@ Your Google account may have other forms of browsing history like searches and a
         =1 {Unsubscribed from one unused site}
         other {Unsubscribed from # unused sites}}
       </message>
-      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed." meaning="This message informs about notification permissions having been revoked from one or more sites and explains that the user can review and manage [those notification permission revocations] by either clicking on this message or on the Review button below it.">
         {NUM_REVOKED_PERMISSIONS, plural,
         =1 {Chrome stopped notifications from this site. You can review and manage.}
         other {Chrome stopped notifications from these sites. You can review and manage.}}
