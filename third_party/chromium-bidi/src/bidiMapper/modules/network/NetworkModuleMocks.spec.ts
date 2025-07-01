@@ -210,7 +210,7 @@ export class MockCdpNetworkEvents {
       connectTiming: {requestTime: 2111.557593},
       clientSecurityState: {
         initiatorIsSecureContext: true,
-        initiatorIPAddressSpace: 'Local',
+        initiatorIPAddressSpace: 'Public',
         privateNetworkRequestPolicy: 'PreflightWarn',
       },
       siteHasCookieInOtherPartition: false,
@@ -235,7 +235,7 @@ export class MockCdpNetworkEvents {
         'Keep-Alive': 'timeout=5',
         'Content-Length': '0',
       },
-      resourceIPAddressSpace: 'Local',
+      resourceIPAddressSpace: 'Public',
       statusCode: 200,
       headersText:
         'HTTP/1.1 200 OK\r\nCache-Control: no-cache, no-store\r\nContent-Type: text/html; charset=utf-8\r\nDate: Fri, 19 Nov 2021 09:53:58 GMT\r\nConnection: keep-alive\r\nKeep-Alive: timeout=5\r\nContent-Length: 0\r\n\r\n',
@@ -252,7 +252,7 @@ export class MockCdpNetworkEvents {
         'Transfer-Encoding': 'chunked',
         location: this.url,
       },
-      resourceIPAddressSpace: 'Local',
+      resourceIPAddressSpace: 'Public',
       statusCode: 302,
       headersText:
         'HTTP/1.1 302 Found\r\nlocation: http://localhost:37363/empty.html\r\nDate: Mon, 15 Apr 2024 11:53:20 GMT\r\nConnection: keep-alive\r\nTransfer-Encoding: chunked\r\n\r\n',
