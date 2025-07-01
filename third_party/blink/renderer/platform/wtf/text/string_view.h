@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_VIEW_H_
 
+#include <any>
 #include <cstring>
 #include <type_traits>
 
@@ -197,9 +193,13 @@ class WTF_EXPORT StringView {
 
   UChar operator[](unsigned i) const {
     SECURITY_DCHECK(i < length());
-    if (Is8Bit())
-      return static_cast<const LChar*>(bytes_)[i];
-    return static_cast<const UChar*>(bytes_)[i];
+    // SAFETY: safe when i < length().
+    UNSAFE_BUFFERS({
+      if (Is8Bit()) {
+        return static_cast<const LChar*>(bytes_)[i];
+      }
+      return static_cast<const UChar*>(bytes_)[i];
+    })
   }
 
   // Use Span16() instead.
@@ -216,17 +216,20 @@ class WTF_EXPORT StringView {
 
   base::span<const LChar> Span8() const {
     DCHECK(Is8Bit());
-    return {static_cast<const LChar*>(bytes_), length_};
+    // SAFETY: bytes_ have length_ elements.
+    return UNSAFE_BUFFERS({static_cast<const LChar*>(bytes_), length_});
   }
 
   base::span<const UChar> Span16() const {
     DCHECK(!Is8Bit());
-    return {static_cast<const UChar*>(bytes_), length_};
+    // SAFETY: bytes_ have length_ elements.
+    return UNSAFE_BUFFERS({static_cast<const UChar*>(bytes_), length_});
   }
 
   base::span<const uint16_t> SpanUint16() const {
     DCHECK(!Is8Bit());
-    return {static_cast<const uint16_t*>(bytes_), length_};
+    // SAFETY: bytes_ have length_ elements.
+    return UNSAFE_BUFFERS({static_cast<const uint16_t*>(bytes_), length_});
   }
 
   // Returns the Unicode code point starting at the specified offset of this
@@ -246,8 +249,11 @@ class WTF_EXPORT StringView {
   const void* Bytes() const { return bytes_; }
 
   base::span<const uint8_t> RawByteSpan() const {
-    return {reinterpret_cast<const uint8_t*>(bytes_),
-            length_ * (Is8Bit() ? sizeof(LChar) : sizeof(UChar))};
+    if (Is8Bit()) {
+      return base::as_byte_span(Span8());
+    }
+
+    return base::as_byte_span(Span16());
   }
 
   // This is not named impl() like String because it has different semantics.
@@ -323,10 +329,14 @@ inline StringView::StringView(const StringView& view,
     : impl_(view.impl_), length_(length) {
   SECURITY_DCHECK(offset <= view.length());
   SECURITY_DCHECK(length <= view.length() - offset);
-  if (Is8Bit())
-    bytes_ = view.Characters8() + offset;
-  else
-    bytes_ = view.Characters16() + offset;
+  // SAFETY: Invariants are checked last two line.
+  UNSAFE_BUFFERS({
+    if (Is8Bit()) {
+      bytes_ = view.Characters8() + offset;
+    } else {
+      bytes_ = view.Characters16() + offset;
+    }
+  });
 }
 
 inline StringView::StringView(const StringImpl* impl) {
@@ -372,10 +382,14 @@ inline void StringView::Set(const StringImpl& impl,
   SECURITY_DCHECK(length <= impl.length() - offset);
   length_ = length;
   impl_ = const_cast<StringImpl*>(&impl);
-  if (impl.Is8Bit())
-    bytes_ = impl.Characters8() + offset;
-  else
-    bytes_ = impl.Characters16() + offset;
+  // SAFETY: Invariants are checked at beginning of this method.
+  UNSAFE_BUFFERS({
+    if (impl.Is8Bit()) {
+      bytes_ = impl.Characters8() + offset;
+    } else {
+      bytes_ = impl.Characters16() + offset;
+    }
+  });
 }
 
 // Unicode aware case insensitive string matching. Non-ASCII characters might
