@@ -74,6 +74,7 @@ if (!is_android) {
       "//chrome/browser:browser_process",
       "//chrome/browser:primitives",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/feature_engagement",
       "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",
