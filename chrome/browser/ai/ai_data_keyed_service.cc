@@ -781,7 +781,7 @@ bool AiDataKeyedService::IsExtensionAllowlistedForData(
                                        "abdciamfdmknaeggbnmafmbdfdmhfgfa",
                                        // https://issues.chromium.org/414437025
                                        "fiamdfnbelfkjlacoaeiclobkdmckaoa",
-                                       // Internal extension.
+                                       // https://issues.chromium.org/427296150
                                        "mofldjifenhadohlkkngamgbifiofbnd"});
   if (base::Contains(*kHardcodedAllowlistedExtensions, extension_id)) {
     return true;
@@ -832,7 +832,7 @@ bool AiDataKeyedService::IsExtensionAllowlistedForStable(
 
   // And the extension must be on this list.
   static const base::NoDestructor<std::vector<std::string>>
-      kStableChannelAllowlistedIds({// Internal extension
+      kStableChannelAllowlistedIds({// https://issues.chromium.org/427296150
                                     "mofldjifenhadohlkkngamgbifiofbnd"});
   return base::Contains(*kStableChannelAllowlistedIds, extension_id);
 }
