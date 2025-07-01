@@ -161,6 +161,8 @@ public class NewTabPageLayout extends LinearLayout
     private @Nullable ImageView mDseIconView;
     private final int mNtpSearchBoxTransitionStartOffset;
     private final int mNtpSearchBoxTopMarginWithoutLogo;
+    private final int mFakeSearchBoxStartPadding;
+    private final int mFakeSearchBoxStartPaddingWithDseLogo;
     private int mCurrentNtpFakeSearchBoxTransitionStartOffset;
 
     /** Constructor for inflating from XML. */
@@ -181,6 +183,12 @@ public class NewTabPageLayout extends LinearLayout
                 resources.getDimensionPixelSize(R.dimen.mvt_container_top_margin);
         mNtpSearchBoxTransitionStartOffset =
                 resources.getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset);
+
+        mFakeSearchBoxStartPadding =
+                resources.getDimensionPixelSize(R.dimen.fake_search_box_start_padding);
+        mFakeSearchBoxStartPaddingWithDseLogo =
+                resources.getDimensionPixelSize(
+                        R.dimen.fake_search_box_start_padding_with_dse_logo);
     }
 
     @Override
@@ -371,9 +379,7 @@ public class NewTabPageLayout extends LinearLayout
 
         if (isVisible) {
             mFakeSearchBoxLayout.setPaddingRelative(
-                    getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.fake_search_box_start_padding_with_dse_logo),
+                    mFakeSearchBoxStartPaddingWithDseLogo,
                     mFakeSearchBoxLayout.getPaddingTop(),
                     mFakeSearchBoxLayout.getPaddingEnd(),
                     mFakeSearchBoxLayout.getPaddingBottom());
@@ -381,7 +387,7 @@ public class NewTabPageLayout extends LinearLayout
                     R.style.TextAppearance_FakeSearchBoxTextMedium);
         } else {
             mFakeSearchBoxLayout.setPaddingRelative(
-                    getResources().getDimensionPixelSize(R.dimen.fake_search_box_start_padding),
+                    mFakeSearchBoxStartPadding,
                     mFakeSearchBoxLayout.getPaddingTop(),
                     mFakeSearchBoxLayout.getPaddingEnd(),
                     mFakeSearchBoxLayout.getPaddingBottom());
