@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Invalid or corrupt file</translation>
 <translation id="1040761927998636252">Unnamed bookmark for <ph name="URL" /></translation>
 <translation id="1041175011127912238">This page isn't responding</translation>
+<translation id="1041181446722933623">'<ph name="LOCAL_BOOKMARK" />' is saved only to this device. To use it on your other devices, save it to '<ph name="ACCOUNT_FOLDER" />' in your account.</translation>
 <translation id="1041263367839475438">Available devices</translation>
 <translation id="1041607257468256895">Manage website location permissions in Chrome</translation>
 <translation id="1042174272890264476">Your computer also comes with <ph name="SHORT_PRODUCT_NAME" />'s RLZ library built in. RLZ assigns a non-unique, non-personally identifiable tag to measure the searches and <ph name="SHORT_PRODUCT_NAME" /> usage driven by a particular promotional campaign. These labels sometimes appear in Google Search queries in <ph name="PRODUCT_NAME" />.</translation>
@@ -608,6 +609,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1418559532423038045">Removes <ph name="VM_NAME" /> from your <ph name="DEVICE_TYPE" />. This will delete all apps and data in the virtual machine!</translation>
 <translation id="1418882096915998312">Enterprise enrolment in progress</translation>
 <translation id="1418954524306642206">Browse to specify your printer PPD</translation>
+<translation id="1419086691207546433">Add extensions to stay organised, simplify tasks and enhance your browsing</translation>
 <translation id="1421334842435688311">Cellular Location Info</translation>
 <translation id="1421514190500081936">Please enter a reason for downloading this data:</translation>
 <translation id="1422159345171879700">Load Unsafe Scripts</translation>
@@ -1928,7 +1930,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2312219318583366810">Page URL</translation>
 <translation id="2314165183524574721">Current visibility setting is hidden</translation>
 <translation id="2314774579020744484">Language used when translating pages</translation>
-<translation id="2316090909467242775">Try this recovery password</translation>
 <translation id="2316129865977710310">No, thanks</translation>
 <translation id="2316433409811863464">App streaming</translation>
 <translation id="2316709634732130529">Use suggested password</translation>
@@ -3340,6 +3341,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3309330461362844500">Certificate profile ID</translation>
 <translation id="3310379801837527592">Join tab group with <ph name="OWNER_FIRST_NAME" /> and <ph name="NUM_OTHER_MEMBERS" /> other</translation>
 <translation id="331080746368555063">Private sites might include things like your company's intranet</translation>
+<translation id="3311007761540106761">System default</translation>
 <translation id="3311445899360743395">Data associated with this app may be removed from this device.</translation>
 <translation id="3312470654018965389">Configuring the Linux container</translation>
 <translation id="3312883087018430408">To search a specific site or part of Chrome, type its shortcut in the address bar, followed by your preferred keyboard shortcut. For example, to search only Bookmarks, type '@bookmarks', then press Tab or Space.</translation>
@@ -4053,7 +4055,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensions</translation>
 <translation id="3794792524918736965">Turn on Windows Hello</translation>
 <translation id="379509625511193653">Off</translation>
-<translation id="3795624560191557077">You recently changed a password found in a public data breach. In case of trouble, Google Password Manager can help you sign in.</translation>
 <translation id="3796215473395753611">alt + up arrow</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, use right arrow key to preview voice</translation>
 <translation id="3796648294839530037">Favourite Networks:</translation>
@@ -5875,7 +5876,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA Encryption</translation>
 <translation id="5090637338841444533">Not allowed to track your camera position</translation>
 <translation id="5091636240353511739">Show PIN</translation>
-<translation id="5093417502834168387">Trouble signing in? Try another way</translation>
 <translation id="5093477827231450397">List of sites that you blocked that you don't want suggesting ads to other sites</translation>
 <translation id="5093569275467863761">Incognito back-forward cached subframe: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">You can open and edit supported files with this app from the Files app or other apps. To control which files open this app by default, <ph name="BEGIN_LINK" />learn how to set default apps on your device<ph name="END_LINK" />.</translation>
@@ -7660,7 +7660,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6388577073199278153">Can't access your mobile account</translation>
 <translation id="6390020764191254941">Move Tab to New Window</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{None}=1{For <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> and 1 more}other{For <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> and {COUNT} more}}</translation>
-<translation id="6390533465682072118">Recovery</translation>
 <translation id="6391131092053186625">Your device IMEI is <ph name="IMEI_NUMBER" />. This number can be used to help activate service.</translation>
 <translation id="6393156038355142111">Suggest strong password</translation>
 <translation id="6393550101331051049">Allowed to show insecure content</translation>
@@ -7893,6 +7892,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6560151649238390891">Suggestion inserted</translation>
 <translation id="656065428026159829">See more</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">This file of type (<ph name="TYPE" />) can be dangerous. Only save this file if you trust <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Store system logs to the downloads directory.</translation>
 <translation id="656293578423618167">The file path or name is too long.  Please save with a shorter name or to another location.</translation>
 <translation id="6563002009564846727">View imported certificates from Windows</translation>
@@ -9697,6 +9697,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7830833461614351956">Copy <ph name="NUM_OF_FILES" /> files to <ph name="CLOUD_PROVIDER" /> to open?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Saved custom words will appear here</translation>
+<translation id="7834832693620032149">To share audio, share a tab or window instead</translation>
 <translation id="7836577093182643605">List of topics that you blocked that you don't want shared with sites</translation>
 <translation id="7836745198769390202">You currently have <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> and more. Your organisation will be able to see and manage this data</translation>
 <translation id="7836850009646241041">Try touching your security key again</translation>
@@ -10567,6 +10568,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8425213833346101688">Change</translation>
 <translation id="8425492902634685834">Pin to task bar</translation>
 <translation id="8425768983279799676">You can use your PIN to unlock your device.</translation>
+<translation id="8426697201161711396">Sign in to Chrome to get your passwords and more on all your devices</translation>
 <translation id="8427213022735114808">Dictation sends your voice to Google to allow voice typing in any text field.</translation>
 <translation id="8427292751741042100">embedded on any host</translation>
 <translation id="8428213095426709021">Settings</translation>
@@ -11304,6 +11306,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8940081510938872932">Your computer is doing too many things right now.  Try again later.</translation>
 <translation id="8940888110818450052">Sign-in options</translation>
 <translation id="8941173171815156065">Revoke the permission '<ph name="PERMISSION" />'</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> is sharing a window and audio.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> is off</translation>
 <translation id="894191600409472540">Create strong passwords</translation>
 <translation id="8942714513622077633">Cancel Microsoft 365 setup?</translation>

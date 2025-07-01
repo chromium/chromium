@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">فایل نامعتبر یا خراب است</translation>
 <translation id="1040761927998636252">نشانک بدون نام برای <ph name="URL" /></translation>
 <translation id="1041175011127912238">این صفحه پاسخ نمی‌دهد</translation>
+<translation id="1041181446722933623">‫«<ph name="LOCAL_BOOKMARK" />» فقط در این دستگاه ذخیره شده است. برای استفاده از آن در دستگاه‌های دیگرتان، آن را در «<ph name="ACCOUNT_FOLDER" />» در حسابتان ذخیره کنید.</translation>
 <translation id="1041263367839475438">دستگاه‌های در دسترس</translation>
 <translation id="1041607257468256895">‏مدیریت اجازه‌های مکان وب‌سایت در Chrome</translation>
 <translation id="1042174272890264476">‏‫همچنین کتابخانه RLZ‏ <ph name="SHORT_PRODUCT_NAME" /> از قبل بر روی رایانه شما نصب شده است. RLZ یک برچسب غیرمنحصر بفرد و غیرقابل‌شناسایی برای سنجش جستجوها و استفاده از <ph name="SHORT_PRODUCT_NAME" /> اختصاص می‌دهد که توسط یک کمپین تبلیغاتی خاص ارائه می‌شود. در بعضی مواقع در <ph name="PRODUCT_NAME" /> این برچسب‌ها در عباراتی که در جستجوی Goole جستجو می‌شوند نمایان می‌شوند.</translation>
@@ -609,6 +610,7 @@
 <translation id="1418559532423038045"><ph name="VM_NAME" /> را از <ph name="DEVICE_TYPE" /> شما برمی‌دارد. با این کار، همه برنامه‌ها و داده‌های موجود در ماشین مجازی حذف می‌شود!</translation>
 <translation id="1418882096915998312">‏ثبت‌نام در Enterprise درحال انجام است</translation>
 <translation id="1418954524306642206">‏در سیستم فایل مرور کنید و PPD چاپگرتان را تعیین کنید</translation>
+<translation id="1419086691207546433">با افزودن افزونه‌ها مرتب بمانید، وظایف را ساده کنید، و تجربه مرورتان را بهبود ببخشید</translation>
 <translation id="1421334842435688311">اطلاعات مکان شبکه تلفن همراه</translation>
 <translation id="1421514190500081936">لطفاً دلیلی برای بارگیری این داده وارد کنید:</translation>
 <translation id="1422159345171879700">بار کردن اسکریپت‌های ناامن</translation>
@@ -1925,7 +1927,6 @@
 <translation id="2312219318583366810">نشانی وب صفحه</translation>
 <translation id="2314165183524574721">تنظیم رؤیت‌پذیری کنونی «پنهان» است</translation>
 <translation id="2314774579020744484">زبان استفاده‌شده هنگام ترجمه صفحات</translation>
-<translation id="2316090909467242775">این گذرواژه بازیابی را امتحان کنید</translation>
 <translation id="2316129865977710310">نه متشکرم</translation>
 <translation id="2316433409811863464">جاری‌سازی برنامه</translation>
 <translation id="2316709634732130529">استفاده از گذرواژه پیشنهادی</translation>
@@ -3337,6 +3338,7 @@
 <translation id="3309330461362844500">شناسه نمایه گواهینامه</translation>
 <translation id="3310379801837527592">به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و <ph name="NUM_OTHER_MEMBERS" /> نفر دیگر بپیوندید</translation>
 <translation id="331080746368555063">سایت‌های خصوصی ممکن است شامل مواردی مثل اینترانت شرکت شما باشند</translation>
+<translation id="3311007761540106761">پیش‌فرض سیستم</translation>
 <translation id="3311445899360743395">داده‌های مرتبط با این برنامه ممکن است از این دستگاه پاک شود.</translation>
 <translation id="3312470654018965389">‏درحال پیکربندی محتوی Linux</translation>
 <translation id="3312883087018430408">‏برای جستجوی بخش یا سایتی خاص در Chrome، میان‌بر آن را در نوار نشانی تایپ کنید و به‌دنبال آن میان‌بر ترجیحی صفحه‌کلید را فشار دهید. برای مثال، برای اینکه فقط Bookmarks (نشانک‌ها) را جستجو کنید، «‎@bookmarks» را تایپ کنید و سپس کلید «جهش» یا «فاصله» را فشار دهید.</translation>
@@ -4050,7 +4052,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> افزونه</translation>
 <translation id="3794792524918736965">‏روشن کردن Windows Hello</translation>
 <translation id="379509625511193653">خاموش</translation>
-<translation id="3795624560191557077">‏اخیراً گذرواژه‌ای را تغییر داده‌اید که در سرقت عمومی اطلاعات شبکه پیدا شده است. درصورت بروز مشکل، «مدیر گذرواژه Google» می‌تواند به شما کمک کند به سیستم وارد شوید.</translation>
 <translation id="3796215473395753611">دگرساز + بالابر</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />، برای پیش‌دید کردن صدا از کلید راست‌بَر استفاده کنید</translation>
 <translation id="3796648294839530037">شبکه‌های دلخواه:</translation>
@@ -5872,7 +5873,6 @@
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 با رمزگذاری RSA</translation>
 <translation id="5090637338841444533">اجازه ندارد موقعیت دوربین را ردیابی کند</translation>
 <translation id="5091636240353511739">نمایش پین</translation>
-<translation id="5093417502834168387">برای وارد شدن به سیستم مشکل دارید؟ روش دیگری را امتحان کنید</translation>
 <translation id="5093477827231450397">فهرست سایت‌های مسدودشده‌ای که نمی‌خواهید آگهی به سایت‌های دیگر پیشنهاد دهند</translation>
 <translation id="5093569275467863761">قاب فرعی ناشناس ذخیره‌شده در حافظه پنهان عقب-جلو: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">‏می‌توانید فایل‌های پشتیبانی‌شده را با این برنامه ازطریق برنامه Files یا برنامه‌های دیگر باز کنید و ویرایش کنید. برای کنترل اینکه کدام فایل‌ها این برنامه را به‌طور پیش‌فرض باز کنند، <ph name="BEGIN_LINK" />با نحوه تنظیم برنامه‌های پیش‌فرض در دستگاه آشنا شوید<ph name="END_LINK" />.</translation>
@@ -7657,7 +7657,6 @@
 <translation id="6388577073199278153">نمی‌توانید به حساب تلفن همراهتان دسترسی داشته باشید</translation>
 <translation id="6390020764191254941">انتقال برگه به پنجره جدید</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{ناموجود}=1{برای <ph name="EXAMPLE_DOMAIN_1" />،‏ <ph name="EXAMPLE_DOMAIN_2" />، و ۱ دامنه دیگر}one{برای <ph name="EXAMPLE_DOMAIN_1" />،‏ <ph name="EXAMPLE_DOMAIN_2" />، و {COUNT} دامنه دیگر}other{برای <ph name="EXAMPLE_DOMAIN_1" />،‏ <ph name="EXAMPLE_DOMAIN_2" />، و {COUNT} دامنه دیگر}}</translation>
-<translation id="6390533465682072118">بازیابی</translation>
 <translation id="6391131092053186625">‏شماره IMEI دستگاهتان <ph name="IMEI_NUMBER" /> است. می‌توان از این شماره برای کمک به فعال‌سازی سرویس استفاده کرد.</translation>
 <translation id="6393156038355142111">پیشنهاد گذرواژه قوی</translation>
 <translation id="6393550101331051049">اجازه دارد محتوای ناامن را نشان دهد</translation>
@@ -7890,6 +7889,7 @@
 <translation id="6560151649238390891">پیشنهاد درج شد</translation>
 <translation id="656065428026159829">موارد بیشتر</translation>
 <translation id="6561726789132298588">Enter</translation>
+<translation id="6561877237303825108">‏این نوع فایل (‎<ph name="TYPE" />) می‌تواند خطرناک باشد. فقط اگر به <ph name="ORIGIN" /> اعتماد دارید آن را ذخیره کنید</translation>
 <translation id="6562117348069327379">گزارش‌های سیستم را در فهرست راهنمای «بارگیری‌ها» ذخیره کنید.</translation>
 <translation id="656293578423618167">مسیر یا نام فایل خیلی طولانی است. لطفاً با یک نام کوتاه‌تر یا در محل دیگری ذخیره کنید.</translation>
 <translation id="6563002009564846727">‏مشاهده گواهینامه‌های وارد شده از Windows</translation>
@@ -9695,6 +9695,7 @@
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> فایل برای باز شدن در <ph name="CLOUD_PROVIDER" /> کپی شود؟</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">کلمات سفارشی ذخیره‌شده در اینجا نشان داده خواهند شد</translation>
+<translation id="7834832693620032149">برای هم‌رسانی کردن صدا، زبانه یا پنجره‌ای را هم‌رسانی کنید</translation>
 <translation id="7836577093182643605">فهرست موضوعاتی که مسدود کرده‌اید و نمی‌خواهید با سایت‌ها هم‌رسانی شود</translation>
 <translation id="7836745198769390202">درحال‌حاضر <ph name="NUMBERED_ITEM_1" />، <ph name="NUMBERED_ITEM_2" />، و چند مورد دیگر دارید. سازمانتان می‌تواند این داده‌ها را ببیند و مدیریت کند</translation>
 <translation id="7836850009646241041">دوباره کلید امنیتی خود را لمس کنید</translation>
@@ -10565,6 +10566,7 @@
 <translation id="8425213833346101688">تغییر</translation>
 <translation id="8425492902634685834">کوچک کردن در نوار وظیفه</translation>
 <translation id="8425768983279799676">می‌توانید برای باز کردن قفل دستگاه، از پینتان استفاده کنید.</translation>
+<translation id="8426697201161711396">‏برای دریافت گذرواژه‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
 <translation id="8427213022735114808">‏با دیکته کردن، صدایتان به Google ارسال می‌شود تا بتوانید در هر فیلد نوشتاری تایپ صوتی انجام دهید.</translation>
 <translation id="8427292751741042100">جاسازی‌شده در هر میزبانی</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
@@ -11303,6 +11305,7 @@
 <translation id="8940081510938872932">رایانهٔ شما اکنون در حال انجام کارهای زیادی است. در فرصت دیگری دوباره سعی کنید.</translation>
 <translation id="8940888110818450052">گزینه‌های ورود به سیستم</translation>
 <translation id="8941173171815156065">لغو مجوز «<ph name="PERMISSION" />»</translation>
+<translation id="8941209844691374403">‫<ph name="APP_NAME" /> درحال هم‌رسانی پنجره و صدا است.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> خاموش است</translation>
 <translation id="894191600409472540">گذرواژه‌های قوی ایجاد کنید</translation>
 <translation id="8942714513622077633">‏راه‌اندازی Microsoft 365 لغو شود؟</translation>

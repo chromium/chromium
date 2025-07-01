@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Archivo no válido o dañado</translation>
 <translation id="1040761927998636252">Favorito sin nombre para <ph name="URL" /></translation>
 <translation id="1041175011127912238">Esta página no responde</translation>
+<translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />” solo se guarda en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en “<ph name="ACCOUNT_FOLDER" />” en tu cuenta.</translation>
 <translation id="1041263367839475438">Dispositivos disponibles</translation>
 <translation id="1041607257468256895">Administra los permisos de ubicación de sitios web en Chrome</translation>
 <translation id="1042174272890264476">Tu computadora también tiene la biblioteca RLZ de <ph name="SHORT_PRODUCT_NAME" /> incorporada. RLZ asigna una etiqueta identificable, no exclusiva y no personal para medir las búsquedas y el uso de <ph name="SHORT_PRODUCT_NAME" /> impulsados por una determinada campaña de promoción. Estas etiquetas aparecen a veces en las consultas de la Búsqueda de Google en <ph name="PRODUCT_NAME" />.</translation>
@@ -608,6 +609,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1418559532423038045">Quita <ph name="VM_NAME" /> de tu <ph name="DEVICE_TYPE" />. Esta acción borrará todas las apps y los datos de la máquina virtual.</translation>
 <translation id="1418882096915998312">Inscripción en Enterprise en progreso</translation>
 <translation id="1418954524306642206">Explora para indicar la ubicación del PPD de tu impresora</translation>
+<translation id="1419086691207546433">Agrega extensiones para mantener la organización, simplificar tareas y mejorar tu navegación</translation>
 <translation id="1421334842435688311">Información de ubicación del móvil</translation>
 <translation id="1421514190500081936">Ingresa un motivo para descargar estos datos:</translation>
 <translation id="1422159345171879700">Cargar secuencias de comandos inseguras</translation>
@@ -1912,7 +1914,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2312219318583366810">URL de la página</translation>
 <translation id="2314165183524574721">Se estableció la configuración de visibilidad actual en Oculta</translation>
 <translation id="2314774579020744484">El idioma que se usa cuando se traducen páginas</translation>
-<translation id="2316090909467242775">Prueba esta contraseña de recuperación</translation>
 <translation id="2316129865977710310">No, gracias</translation>
 <translation id="2316433409811863464">Transmisión de app</translation>
 <translation id="2316709634732130529">Usar la contraseña sugerida</translation>
@@ -3324,6 +3325,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3309330461362844500">ID del perfil del certificado</translation>
 <translation id="3310379801837527592">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> persona más</translation>
 <translation id="331080746368555063">Los sitios privados pueden incluir, por ejemplo, la intranet de tu empresa</translation>
+<translation id="3311007761540106761">Predeterminado del sistema</translation>
 <translation id="3311445899360743395">Es posible que los datos asociados a esta app se quiten de este dispositivo.</translation>
 <translation id="3312470654018965389">Configurando el contenedor de Linux</translation>
 <translation id="3312883087018430408">Si quieres realizar una búsqueda en un sitio específico o en una parte de Chrome, escribe el atajo correspondiente en la barra de direcciones seguido de la combinación de teclas que hayas elegido. Por ejemplo, para realizar una búsqueda solo en Favoritos, escribe "@bookmarks" y, luego, presiona Tab o la barra espaciadora.</translation>
@@ -4037,7 +4039,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensiones</translation>
 <translation id="3794792524918736965">Activa Windows Hello</translation>
 <translation id="379509625511193653">No</translation>
-<translation id="3795624560191557077">Cambiaste recientemente una contraseña que se encontró en una violación de la seguridad de los datos pública. En caso de problemas, el Administrador de contraseñas de Google puede ayudarte a acceder.</translation>
 <translation id="3796215473395753611">Alt + flecha hacia arriba</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, usa la tecla de flecha hacia la derecha para obtener una vista previa de la voz</translation>
 <translation id="3796648294839530037">Redes favoritas:</translation>
@@ -5859,7 +5860,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5088534251099454936">PKCS N. º 1, SHA-512 con encriptación RSA</translation>
 <translation id="5090637338841444533">No puede realizar un seguimiento de la posición de la cámara</translation>
 <translation id="5091636240353511739">Mostrar PIN</translation>
-<translation id="5093417502834168387">¿Tienes problemas para acceder? Prueba otro método</translation>
 <translation id="5093477827231450397">Lista de sitios que bloqueaste y no quieres que sugieran anuncios a otros sitios</translation>
 <translation id="5093569275467863761">Submarco de incógnito en la Memoria caché atrás/adelante: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Puedes abrir y editar los archivos compatibles con esta app desde la app de archivos o desde otras apps. A fin de controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
@@ -7644,7 +7644,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6388577073199278153">No se pudo acceder a tu cuenta móvil</translation>
 <translation id="6390020764191254941">Mueve la pestaña a una ventana nueva</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Ninguno}=1{Para <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> y 1 más}other{Para <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> y {COUNT} más}}</translation>
-<translation id="6390533465682072118">Recuperación</translation>
 <translation id="6391131092053186625">El IMEI de tu dispositivo es <ph name="IMEI_NUMBER" />. Este número se puede usar para activar el servicio.</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6393550101331051049">Puede mostrar contenido no seguro</translation>
@@ -10553,6 +10552,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8425492902634685834">Anclar a la barra de tareas</translation>
 <translation id="8425768983279799676">Puedes usar el PIN para desbloquear tu dispositivo.</translation>
+<translation id="8426697201161711396">Accede a tu cuenta en Chrome para obtener tus contraseñas y mucho más en todos tus dispositivos</translation>
 <translation id="8427213022735114808">Dictado envía tu voz a Google para habilitar el dictado por voz en cualquier campo de texto.</translation>
 <translation id="8427292751741042100">incorporada en cualquier host</translation>
 <translation id="8428213095426709021">Configuración</translation>

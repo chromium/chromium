@@ -1931,7 +1931,6 @@
 <translation id="2312219318583366810">URL ਪੰਨਾ</translation>
 <translation id="2314165183524574721">ਮੌਜੂਦਾ ਦਿਖਣਯੋਗਤਾ ਸੈਟਿੰਗ 'ਲੁਕੀ ਹੋਈ' 'ਤੇ ਸੈੱਟ ਹੈ</translation>
 <translation id="2314774579020744484">ਪੰਨਿਆਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਵੇਲੇ ਵਰਤੀ ਜਾਂਦੀ ਭਾਸ਼ਾ</translation>
-<translation id="2316090909467242775">ਇਸ ਰਿਕਵਰੀ ਪਾਸਵਰਡ ਨੂੰ ਅਜ਼ਮਾਓ</translation>
 <translation id="2316129865977710310">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="2316433409811863464">ਐਪ ਸਟ੍ਰੀਮਿੰਗ</translation>
 <translation id="2316709634732130529">ਸੁਝਾਇਆ ਪਾਸਵਰਡ ਵਰਤੋ</translation>
@@ -4058,7 +4057,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>
 <translation id="3794792524918736965">Windows Hello ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="379509625511193653">ਬੰਦ</translation>
-<translation id="3795624560191557077">ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਜਨਤਕ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਿਆ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ। ਸਮੱਸਿਆ ਹੋਣ ਦੀ ਸਥਿਤੀ ਵਿੱਚ, Google Password Manager ਸਾਈਨ-ਇਨ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3796215473395753611">alt + ਉੱਪਰ ਤੀਰ</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, ਅਵਾਜ਼ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖਣ ਲਈ ਸੱਜਾ ਤੀਰ ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="3796648294839530037">ਮਨਪਸੰਦ ਨੈਟਵਰਕ:</translation>
@@ -5879,7 +5877,6 @@
 <translation id="5088534251099454936">RSA ਐਨਕ੍ਰਿਪਸ਼ਨ ਨਾਲ PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5091636240353511739">ਪਿੰਨ ਦਿਖਾਓ</translation>
-<translation id="5093417502834168387">ਕੀ ਸਾਈਨ-ਇਨ ਕਰਨ ਵਿੱਚ ਸਮੱਸਿਆ ਆ ਰਹੀ ਹੈ? ਕੋਈ ਹੋਰ ਤਰੀਕਾ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="5093477827231450397">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਦੀ ਸੂਚੀ ਜੋ ਤੁਸੀਂ ਨਹੀਂ ਚਾਹੁੰਦੇ ਕਿ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨਾਂ ਸੰਬੰਧੀ ਸੁਝਾਅ ਦੇਣ</translation>
 <translation id="5093569275467863761">ਪੂਰੇ ਪੰਨੇ ਦੇ ਕੈਸ਼ੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਇਨਕੋਗਨਿਟੋ ਸਬਫ੍ਰੇਮ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ਤੁਸੀਂ ਆਪਣੇ ਫ਼ਾਈਲ ਐਪ ਜਾਂ ਹੋਰ ਐਪਾਂ ਤੋਂ ਇਸ ਐਪ ਨਾਲ ਸਮਰਥਿਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੇ ਹੋ। ਇਹ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਕਿ ਕਿਹੜੀਆਂ ਫ਼ਾਈਲਾਂ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਇਸ ਐਪ ਨੂੰ ਖੋਲ੍ਹਣ, ਇਸ ਲਈ <ph name="BEGIN_LINK" />ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ ਨੂੰ ਸੈੱਟ ਕਰਨ ਦਾ ਤਰੀਕਾ ਜਾਣੋ<ph name="END_LINK" />।</translation>
@@ -7664,7 +7661,6 @@
 <translation id="6388577073199278153">ਤੁਹਾਡੇ ਖਾਤੇ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ</translation>
 <translation id="6390020764191254941">ਟੈਬ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ਅਤੇ 1 ਹੋਰ ਲਈ}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ਅਤੇ {COUNT} ਹੋਰਾਂ ਲਈ}}</translation>
-<translation id="6390533465682072118">ਰਿਕਵਰੀ</translation>
 <translation id="6391131092053186625">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ IMEI ਨੰਬਰ <ph name="IMEI_NUMBER" /> ਹੈ। ਇਸ ਨੰਬਰ ਦੀ ਵਰਤੋਂ ਸੇਵਾ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="6393156038355142111">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਸੁਝਾਓ</translation>
 <translation id="6393550101331051049">ਅਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
@@ -7897,6 +7893,7 @@
 <translation id="6560151649238390891">ਸੁਝਾਅ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="656065428026159829">ਹੋਰ ਦੇਖੋ</translation>
 <translation id="6561726789132298588">ਦਰਜ ਕਰੋ</translation>
+<translation id="6561877237303825108">ਇਸ ਕਿਸਮ ਦੀ ਫ਼ਾਈਲ (<ph name="TYPE" />) ਖਤਰਨਾਕ ਹੋ ਸਕਦੀ ਹੈ। ਜੇ ਤੁਹਾਨੂੰ <ph name="ORIGIN" /> 'ਤੇ ਭਰੋਸਾ ਹੈ, ਤਾਂ ਹੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6562117348069327379">ਡਾਊਨਲੋਡ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਸਿਸਟਮ ਲੌਗਾਂ ਨੂੰ ਸਟੋਰ ਕਰੋ।</translation>
 <translation id="656293578423618167">ਫਾਈਲ ਪਾਥ ਜਾਂ ਨਾਮ ਬਹੁਤ ਜ਼ਿਆਦਾ ਵੱਡਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਛੋਟੇ ਨਾਮ ਨਾਲ ਜਾਂ ਦੂਜੇ ਨਿਰਧਾਰਿਤ ਟਿਕਾਣੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।</translation>
 <translation id="6563002009564846727">Windows ਤੋਂ ਆਯਾਤ ਕੀਤੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੇਖੋ</translation>
@@ -9702,6 +9699,7 @@
 <translation id="7830833461614351956">ਕੀ ਖੋਲ੍ਹਣ ਲਈ <ph name="NUM_OF_FILES" /> ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="CLOUD_PROVIDER" /> 'ਤੇ ਕਾਪੀ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">ਰੱਖਿਅਤ ਕੀਤੇ ਵਿਉਂਤਬੱਧ ਸ਼ਬਦ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ</translation>
+<translation id="7834832693620032149">ਆਡੀਓ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਇਸਦੀ ਬਜਾਏ ਕਿਸੇ ਟੈਬ ਜਾਂ ਵਿੰਡੋ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7836577093182643605">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੇ ਗਏ ਉਨ੍ਹਾਂ ਵਿਸ਼ਿਆਂ ਦੀ ਸੂਚੀ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਸਾਈਟਾਂ ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕਰਨਾ ਚਾਹੁੰਦੇ</translation>
 <translation id="7836745198769390202">ਫ਼ਿਲਹਾਲ ਤੁਹਾਡੇ ਕੋਲ <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਹੈ। ਤੁਹਾਡੀ ਸੰਸਥਾ ਇਸ ਡਾਟੇ ਨੂੰ ਦੇਖ ਸਕੇਗੀ ਅਤੇ ਉਸਦਾ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕੇਗੀ</translation>
 <translation id="7836850009646241041">ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਦੁਬਾਰਾ ਸਪਰਸ਼ ਕਰਕੇ ਦੇਖੋ</translation>
@@ -11310,6 +11308,7 @@
 <translation id="8940081510938872932">ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਹੁਣ ਕਈ ਚੀਜ਼ਾਂ ਕਰ ਰਿਹਾ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="8940888110818450052">ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਵਿਕਲਪ</translation>
 <translation id="8941173171815156065">ਅਨੁਮਤੀ '<ph name="PERMISSION" />' ਰੱਦ ਕਰੋ</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> ਵੱਲੋਂ ਵਿੰਡੋ ਅਤੇ ਆਡੀਓ ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> ਬੰਦ ਹੈ</translation>
 <translation id="894191600409472540">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਬਣਾਓ</translation>
 <translation id="8942714513622077633">ਕੀ Microsoft 365 ਦੇ ਸੈੱਟਅੱਪ ਨੂੰ ਰੱਦ ਕਰਨਾ ਹੈ?</translation>

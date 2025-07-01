@@ -326,6 +326,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="4882919381756638075">Os sites geralmente usam o microfone para recursos de comunicação, como chat por vídeo</translation>
 <translation id="4883854917563148705">Não é possível redefinir as configurações gerenciadas</translation>
 <translation id="4887024562049524730">Perguntar antes de permitir que sites usem seus dispositivos e dados de realidade virtual (recomendado)</translation>
+<translation id="4934780484581617878">Gerenciamento de janelas</translation>
 <translation id="4936863036653376783">Seus grupos vão aparecer na seção de grupos de guias em todos os seus dispositivos</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> não pode usar suas informações em</translation>
 <translation id="4953688446973710931">Quando essa configuração está ativada, os sites podem pedir o download automático de vários arquivos. Quando está desativada, os sites não podem fazer o download automático de vários arquivos.</translation>
@@ -583,6 +584,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="8067883171444229417">Assistir vídeo</translation>
 <translation id="8068648041423924542">Não foi possível selecionar certificado.</translation>
 <translation id="8077120325605624147">Qualquer site que você visitar poderá mostrar anúncios para você</translation>
+<translation id="80798452873915119">Os sites podem pedir para gerenciar janelas em todas as suas telas</translation>
 <translation id="8087000398470557479">Este conteúdo é de <ph name="DOMAIN_NAME" />, veiculado pelo Google.</translation>
 <translation id="8088603949666785339">Mais opções no <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Ver guias na lista de apps</translation>

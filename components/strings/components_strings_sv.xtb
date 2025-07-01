@@ -793,6 +793,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2310789833878085574">Spara och autofyll</translation>
 <translation id="2312234273148520048">Smakförstärkare och dressingar</translation>
 <translation id="2316087952091171402">Mindre än <ph name="UPPER_ESTIMATE" /> Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
+<translation id="2316090909467242775">Testa det här återställningslösenordet</translation>
 <translation id="2316159751672436664">Anpassa tillgänglighetsverktygen i inställningarna för ChromeOS</translation>
 <translation id="2316887270356262533">Frigör mindre än 1 MB. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> kräver användarnamn och lösenord.</translation>
@@ -1673,6 +1674,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tum)</translation>
 <translation id="3792826587784915501">Kult- och indiefilm</translation>
 <translation id="3793574014653384240">Antal och orsaker till krascher som har skett nyligen</translation>
+<translation id="3795624560191557077">Du har nyligen ändrat ett lösenord som har hittats i ett offentligt dataintrång. Om du har problem kan Google Lösenordshanterare hjälpa dig att logga in.</translation>
 <translation id="3799805948399000906">Teckensnitt begärt</translation>
 <translation id="3801297763951514916">Du besöker ofta</translation>
 <translation id="380329542618494757">Namn</translation>
@@ -1954,6 +1956,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="425582637250725228">Ändringar som du har gjort kanske inte sparas.</translation>
 <translation id="4258748452823770588">Felaktig signatur</translation>
 <translation id="4261046003697461417">Det går inte annotera i skyddade dokument</translation>
+<translation id="4265635050210404830">Dina stamkundskort</translation>
 <translation id="4265872034478892965">Beviljades av administratören</translation>
 <translation id="4269029136757623689">Hushållsfläktar</translation>
 <translation id="4269264543938335308">Badkläder</translation>
@@ -2229,6 +2232,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4754461935447132332">Tillåts inte för webbplatser som inte är säkra</translation>
 <translation id="4756388243121344051">&amp;Historik</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Koden är ogiltig</translation>
 <translation id="4757993714154412917">Du angav just ditt lösenord på en bedräglig webbplats. Du rekommenderas att kontrollera dina sparade lösenord i Chromium nu för att skydda dina konton.</translation>
 <translation id="4758311279753947758">Lägg till kontaktuppgifter</translation>
 <translation id="4761326898079498987">Granska för mer information</translation>
@@ -2294,6 +2298,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="486459320933704969">En förälder eller vårdnadshavare måste godkänna att du besöker webbplatsen</translation>
 <translation id="4864801646102013152">Hemrenovering</translation>
 <translation id="4866506163384898554">Tryck på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om du vill att markören ska visas</translation>
+<translation id="4868277513442568587">Uppdatera Chrome om du vill fortsätta använda dina delade flikgrupper</translation>
 <translation id="4873616204573862158">Glasögon</translation>
 <translation id="4873807733347502026">Låsa och använda musen</translation>
 <translation id="4876305945144899064">Inget användarnamn</translation>
@@ -2430,6 +2435,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5090647584136241764">Lägg till flikar med liknande produkter för att enkelt jämföra egenskaper som är viktiga för dig</translation>
 <translation id="5093232627742069661">Z-falsning</translation>
+<translation id="5093417502834168387">Har du problem med att logga in? Testa ett annat sätt.</translation>
 <translation id="5094747076828555589">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom Chromium inte litar på dess säkerhetscertifikat. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="5097099694988056070">Enhetsstatistik, till exempel processor- och RAM-användning</translation>
 <translation id="5097468150760963273">27 x 39 tum</translation>
@@ -3198,6 +3204,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6388060462449937608">Träningsutrustning och tillbehör</translation>
 <translation id="6389470377220713856">Namn på kort</translation>
 <translation id="6390200185239044127">Halv Z-falsning</translation>
+<translation id="6390533465682072118">Återställning</translation>
 <translation id="639068771471208680">Formulär i flera delar</translation>
 <translation id="6391700400718590966">Arbetsblad för användaruppgifter för säker betalning utan överensstämmande användaruppgifter är stängt</translation>
 <translation id="6392799395081100092">Papper (veläng)</translation>
@@ -3748,6 +3755,7 @@ Mer information.
 <translation id="7346048084945669753">Är anknuten:</translation>
 <translation id="7346062987309535530">Porslin och serviser</translation>
 <translation id="7346081071264046066">”svara ja på den här bröllopsinbjudan med entusiasm”</translation>
+<translation id="7347640536700429009">Namnet på kortet är ogiltigt</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7353601530677266744">Kommandorad</translation>
 <translation id="7359588939039777303">Annonser blockeras.</translation>

@@ -793,6 +793,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2310789833878085574">Salvesta ja täida automaatselt</translation>
 <translation id="2312234273148520048">Maitseained ja kastmed</translation>
 <translation id="2316087952091171402">Vähem kui <ph name="UPPER_ESTIMATE" />. Mõned saidid võivad teie järgmise külastuse ajal aeglasemalt laadida.</translation>
+<translation id="2316090909467242775">Proovige seda taasteparooli</translation>
 <translation id="2316159751672436664">Isikupärastage Chrome OS-i seadetes oma juurdepääsetavuse tööriistu</translation>
 <translation id="2316887270356262533">Vabastab alla 1 MB. Mõne saidi laadimine võib järgmisel külastusel rohkem aega võtta.</translation>
 <translation id="2317259163369394535">Domeen <ph name="DOMAIN" /> nõuab kasutajanime ja parooli.</translation>
@@ -1673,6 +1674,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> tolli)</translation>
 <translation id="3792826587784915501">Kultus- ja indie-filmid</translation>
 <translation id="3793574014653384240">Hiljutiste krahhide arv ja põhjused</translation>
+<translation id="3795624560191557077">Muutsite hiljuti avalikust andmetega seotud rikkumisest leitud parooli. Probleemide korral aitab Google'i paroolihaldur teil sisse logida.</translation>
 <translation id="3799805948399000906">Taotleti fonti</translation>
 <translation id="3801297763951514916">Külastate sageli</translation>
 <translation id="380329542618494757">Nimi</translation>
@@ -2433,6 +2435,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5089810972385038852">Osariik/Maakond</translation>
 <translation id="5090647584136241764">Lisage sarnaste toodetega vahelehti, et enda jaoks olulisi üksikasju hõlpsasti võrrelda</translation>
 <translation id="5093232627742069661">Z-kujuliselt volditud</translation>
+<translation id="5093417502834168387">Kas sisselogimisega on probleeme? Proovige mõnda muud võimalust</translation>
 <translation id="5094747076828555589">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, Chromium ei usalda selle turvasertifikaati. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="5097099694988056070">Seadme statistika, näiteks protsessori/muutmälu kasutus</translation>
 <translation id="5097468150760963273">27 × 39 tolli</translation>
@@ -3201,6 +3204,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6388060462449937608">Treeningseadmed ja -varustus</translation>
 <translation id="6389470377220713856">Nimi kaardil</translation>
 <translation id="6390200185239044127">Z-kujuliselt volditud poolleht</translation>
+<translation id="6390533465682072118">Taastamine</translation>
 <translation id="639068771471208680">Mitmeosaline vorm</translation>
 <translation id="6391700400718590966">Turvalise maksemandaadi leht selle kohta, et pole ühtegi sobivat mandaati, on suletud</translation>
 <translation id="6392799395081100092">Paber (pärgament)</translation>

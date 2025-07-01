@@ -165,6 +165,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
 <translation id="7452985128687107478">আপনার সবকটি ডিভাইস জুড়ে ট্যাব গ্রুপ অটোমেটিক সেভ এবং আপডেট হয়</translation>
 <translation id="747459581954555080">সকল পুনরুদ্ধার করুন</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি আইটেম}one{<ph name="TABS_COUNT_MANY" />টি আইটেম}other{<ph name="TABS_COUNT_MANY" />টি আইটেম}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি বেছে নেওয়া আইটেম ফিরিয়ে আনুন}one{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া আইটেম ফিরিয়ে আনুন}other{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া আইটেম ফিরিয়ে আনুন}}</translation>
 <translation id="753732157349120914">ট্যাব পাল্টানোর ফিচার</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-এর তরফ থেকে <ph name="REVIEWS_COUNT_ONE" />টি রিভিউ}one{Google-এর তরফ থেকে <ph name="REVIEWS_COUNT_MANY" />টি রিভিউ}other{Google-এর তরফ থেকে <ph name="REVIEWS_COUNT_MANY" />টি রিভিউ}}</translation>

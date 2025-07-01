@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">אפשר לפנות אל השולח/ת ולבקש קישור חדש</translation>
 <translation id="1013952917065545813">אפשר לחזור לפה כדי לפתוח כרטיסיות שסגרת לאחרונה</translation>
 <translation id="1016495303386450659">הפריט עודכן</translation>
+<translation id="1017735584092444011">הצגת מצב הקריאה</translation>
 <translation id="102916930470544692">מפתח גישה</translation>
 <translation id="1030376737535466765">פתיחה של מנהל הסיסמאות</translation>
 <translation id="1035980983510608210">אם סוגרים את כל הכרטיסיות, גם הכרטיסיות המוצמדות נסגרות.</translation>
@@ -1237,12 +1238,14 @@
 <translation id="6074656473835429958">קבלת התראות</translation>
 <translation id="607620096698446287">לא ניתן להעלות את <ph name="FILENAME" /> ‏(<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">יש הרשאת גישה למצלמה</translation>
+<translation id="607730456154980869">‏מקבלים תשובות מהר יותר בעזרת Gemini ב-Chrome</translation>
 <translation id="6078236141387574983">שינוי של גובה הגיליון</translation>
 <translation id="6084848228346514841">בחירת כרטיסיות</translation>
 <translation id="6089212833343035912">‏קוד אימות למנהל הסיסמאות של Google</translation>
 <translation id="6090760257419195752">אזהרות שנסגרו</translation>
 <translation id="6096965253650248286">נמצאו <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">נכנסת לחשבון בתור <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
+<translation id="610083648014322104">קבלת תשובות רלוונטיות על סמך התוכן של הדף הנוכחי</translation>
 <translation id="6103540626693881831">הצפנה במכשיר</translation>
 <translation id="611361228753138223">אתרים שביקרת בהם לאחרונה במכשיר הזה</translation>
 <translation id="611705554202268369">כדי להוסיף כרטיסייה לקבוצת כרטיסיות, לוחצים לחיצה ארוכה</translation>
@@ -1495,6 +1498,7 @@
 <translation id="6979737339423435258">משחר ההיסטוריה</translation>
 <translation id="6983306615164277634">אפשר גם ללחוץ לחיצה ארוכה על סרגל הכתובות כדי לשנות את המיקום.</translation>
 <translation id="6987201788018524855">תכונות מועילות שלא כדאי לפספס</translation>
+<translation id="6989636517316575338">שאלה לגבי דף כלשהו</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">מעקב אחר מחירים של מוצרים וקבלת התראות על ירידות במחיר באתרים</translation>
 <translation id="7004032350256606903">לפי דרישת הארגון שלך, עליך לגלוש באופן פרטי.
@@ -1696,6 +1700,7 @@
 <translation id="7863211248337747225">להורדת האפליקציה</translation>
 <translation id="7865127013871431856">אפשרויות תרגום</translation>
 <translation id="7866872729285243843">כדי שרשימת הקריאה תופיע בכל המכשירים שלך, עליך להפעיל את האפשרות 'רשימת קריאה' בהגדרות.</translation>
+<translation id="787364769771947486">הסתרת מצב הקריאה</translation>
 <translation id="7874107544081154809">מילוי אוטומטי של הטופס באמצעות <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">יש לך סיסמאות בשימוש חוזר.</translation>
 <translation id="7887174313503389866">סיור מודרך באמצעי הבקרה החשובים ביותר על פרטיות ואבטחה. לאפשרויות נוספות, יש לעבור להגדרות ספציפיות.</translation>
@@ -1752,6 +1757,7 @@
 <translation id="8058655154417507695">שנת תפוגה</translation>
 <translation id="8059533439631660104">מכווץ את הקטע.</translation>
 <translation id="8061584726507121204">היסטוריה</translation>
+<translation id="8069168488983557089">אפשר לקבל תובנות ומסקנות עיקריות שיעזרו לך להבין כל נושא</translation>
 <translation id="8069394452933076548">אפשר לבחור מתי כרטיסיות שלא השתמשו בהן לאחרונה יועברו לקטע הכרטיסיות הלא פעילות.</translation>
 <translation id="8073670137947914548">ההורדה הסתיימה</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>

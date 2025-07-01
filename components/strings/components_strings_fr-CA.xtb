@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">Enregistrer et remplir automatiquement</translation>
 <translation id="2312234273148520048">Condiments et vinaigrettes</translation>
 <translation id="2316087952091171402">Moins de <ph name="UPPER_ESTIMATE" />. Certains sites peuvent prendre plus de temps à charger lors de votre prochaine visite.</translation>
+<translation id="2316090909467242775">Essayez ce mot de passe de récupération</translation>
 <translation id="2316159751672436664">Personnalisez vos outils d'accessibilité dans les paramètres de Chrome OS</translation>
 <translation id="2316887270356262533">Libère moins de 1 Mo d'espace. Certains sites peuvent être plus longs à charger lors de votre prochaine visite.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiert un nom d'utilisateur et un mot de passe.</translation>
@@ -1673,6 +1674,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> po x <ph name="HEIGHT" /> po)</translation>
 <translation id="3792826587784915501">Films cultes et indépendants</translation>
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
+<translation id="3795624560191557077">Vous avez récemment modifié un mot de passe trouvé dans une violation de données publique. En cas de problème, le gestionnaire de mots de passe Google peut vous aider à vous connecter.</translation>
 <translation id="3799805948399000906">Police demandée</translation>
 <translation id="3801297763951514916">Vous visitez souvent cette page</translation>
 <translation id="380329542618494757">Nom</translation>
@@ -1954,6 +1956,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="425582637250725228">Il est possible que les modifications que vous avez effectuées ne soient pas enregistrées.</translation>
 <translation id="4258748452823770588">Signature incorrecte</translation>
 <translation id="4261046003697461417">Les documents protégés ne peuvent pas être annotés</translation>
+<translation id="4265635050210404830">Vos cartes de fidélité</translation>
 <translation id="4265872034478892965">Autorisée par votre administrateur</translation>
 <translation id="4269029136757623689">Ventilateurs résidentiels</translation>
 <translation id="4269264543938335308">Maillots de bain</translation>
@@ -2229,6 +2232,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4754461935447132332">Non autorisé pour les sites non sécurisés</translation>
 <translation id="4756388243121344051">&amp;Historique</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Le code est incorrect</translation>
 <translation id="4757993714154412917">Vous venez d'entrer votre mot de passe sur un site trompeur. Pour sécuriser vos comptes, Chromium vous recommande de vérifier vos mots de passe enregistrés.</translation>
 <translation id="4758311279753947758">Ajouter des coordonnées</translation>
 <translation id="4761326898079498987">Examinez la notification pour plus de détails</translation>
@@ -2294,6 +2298,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="486459320933704969">Un parent ou un tuteur doit indiquer que tu as l'autorisation de consulter ce site Web</translation>
 <translation id="4864801646102013152">Rénovation</translation>
 <translation id="4866506163384898554">Appuyez sur |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pour afficher votre curseur</translation>
+<translation id="4868277513442568587">Pour continuer à utiliser vos groupes d'onglets partagés, mettez à jour Chrome</translation>
 <translation id="4873616204573862158">Lunettes</translation>
 <translation id="4873807733347502026">verrouiller et utiliser votre souris.</translation>
 <translation id="4876305945144899064">Aucun nom d'utilisateur</translation>
@@ -2430,6 +2435,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5089810972385038852">État/province</translation>
 <translation id="5090647584136241764">Ajoutez des onglets avec des produits similaires pour comparer facilement les détails qui vous intéressent</translation>
 <translation id="5093232627742069661">Pli en Z</translation>
+<translation id="5093417502834168387">Problème lors de la connexion? Essayer autrement</translation>
 <translation id="5094747076828555589">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par Chromium. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="5097099694988056070">Statistiques relatives à l'appareil, comme l'utilisation du processeur ou de la mémoire vive</translation>
 <translation id="5097468150760963273">27 po x 39 po</translation>
@@ -3198,6 +3204,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6388060462449937608">Équipement et accessoires de conditionnement physique</translation>
 <translation id="6389470377220713856">Nom sur carte</translation>
 <translation id="6390200185239044127">Demi-feuille de pli en Z</translation>
+<translation id="6390533465682072118">Récupération</translation>
 <translation id="639068771471208680">Formulaire en plusieurs parties</translation>
 <translation id="6391700400718590966">L'authentifiant de paiement sécurisé ne correspond pas, la feuille d'authentification est fermée</translation>
 <translation id="6392799395081100092">Papier (vélin)</translation>
@@ -3747,6 +3754,7 @@ Détails supplémentaires :
 <translation id="7346048084945669753">Affilié :</translation>
 <translation id="7346062987309535530">Vaisselle</translation>
 <translation id="7346081071264046066">« acceptez cette invitation à un mariage avec enthousiasme »</translation>
+<translation id="7347640536700429009">Le nom figurant sur la carte n'est pas valide</translation>
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
 <translation id="7353601530677266744">Ligne de commande</translation>
 <translation id="7359588939039777303">Annonces bloquées.</translation>

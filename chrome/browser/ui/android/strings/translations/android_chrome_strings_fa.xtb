@@ -152,6 +152,7 @@
 <translation id="1671236975893690980">بارگیری معلق است…</translation>
 <translation id="1672586136351118594">دیگر نشان داده نشود</translation>
 <translation id="1680919990519905526">‏خرید محتوای تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">‏\u0020و پس‌از <ph name="MONTHS_ARCHIVED" /> ماه بسته می‌شوند</translation>
 <translation id="1687482373098770139">‏به‌زودی محتوای برگرفته از <ph name="SITE_NAME" /> و محتوای مربوط به آن را در «دنبال می‌کنید» خواهید دید. سایت‌ها و جستجوهایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شوند. هرزمان خواستید می‌توانید مواردی را که دنبال می‌کنید در تنظیمات مدیریت کنید.</translation>
 <translation id="1689333818294560261">نام مستعار</translation>
 <translation id="1696555181932908973">می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
@@ -352,6 +353,7 @@
 <translation id="2593272815202181319">قلم‌های با عرض ثابت</translation>
 <translation id="260403163289591229">دنبال می‌کنید</translation>
 <translation id="2604446170045642109">در تنظیمات، می‌توانید زمینه تاریک را برای سایت‌ها خاموش کنید.</translation>
+<translation id="2605017215201958293">با هوش مصنوعی به این صفحه گوش دهید</translation>
 <translation id="2607441479295509868">از سیستم خارج شده‌اید. برای استفاده از نشانک‌ها، گذرواژه‌ها، و دیگر اطلاعات ذخیره‌شده در حسابتان، دوباره به سیستم وارد شوید.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> شما را برای دسترسی به مورد هم‌رسانی‌شده دعوت کرده است.</translation>
 <translation id="2625189173221582860">گذرواژه کپی شد</translation>
@@ -876,6 +878,7 @@
 <translation id="496607651705915226">‏برای ذخیره و استفاده از گذرواژه‌های جدید در «حساب Google»، «خدمات Google Play» را به‌روز کنید</translation>
 <translation id="4971753085054504448">‏چیز دیگری را جستجو کنید یا برای دیدن نتایج بیشتر، سابقه کامل Chrome را باز کنید.</translation>
 <translation id="497421865427891073">جلو رفتن</translation>
+<translation id="497983151715419057">زبانه‌ها و گروه‌های غیرفعالتان را در اینجا بازبینی کنید</translation>
 <translation id="498624032394115435">هر کسی پیوند را داشته باشد می‌تواند همه برگه‌ها را ویرایش کند.</translation>
 <translation id="4987271110129728827">صفحه پیدا نشد. املای واژه‌های تایپ‌شده را بررسی کنید یا جستجوی وب انجام دهید.</translation>
 <translation id="4988526792673242964">صفحات</translation>
@@ -936,7 +939,6 @@
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5226378907213531272">هربار که از خودرو استفاده می‌کنید، باید قفل صفحه‌نمایش را باز کنید</translation>
 <translation id="5227554086496586518">برای دیدن نتایج جستجو تک‌ضرب بزنید</translation>
-<translation id="5229736206150093143">جدیدترین نتایج</translation>
 <translation id="5233638681132016545">زبانه جدید</translation>
 <translation id="5235196193381275927">هنگام ورود به سیستم مشکلی پیش آمد</translation>
 <translation id="5246093389635966745">میان‌بر ویرایش نوار ابزار</translation>
@@ -1064,6 +1066,7 @@
 <translation id="583281660410589416">ناشناس</translation>
 <translation id="5833984609253377421">هم‌رسانی پیوند</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842871376175639063">زبانه‌ها و گروه زبانه‌هایی که <ph name="DAYS_INACTIVE" /> روز استفاده نکرده‌اید به اینجا منتقل می‌شوند<ph name="AUTODELETE_SECTION" />. هرزمان بخواهید می‌توانید این گزینه را در <ph name="SETTINGS_TITLE" /> تغییر دهید.</translation>
 <translation id="5848257610304005265">‏فایل PDF با «<ph name="APP_NAME" />» باز شود؟</translation>
 <translation id="5849288995120328556">هم‌رسانی متوقف شود؟</translation>
 <translation id="5853623416121554550">مکث</translation>
@@ -1382,6 +1385,7 @@
 <translation id="7088681679121566888">‏Chrome به‌روز است</translation>
 <translation id="7106762743910369165">سازمانتان مرورگر را مدیریت می‌کند</translation>
 <translation id="7111394291981742152">‏‫Chrome به شما کمک می‌کند بر آگهی‌هایی که می‌بینید تسلط بیشتری داشته باشید و همچنین میزان اطلاعاتی را که سایت‌ها هنگام نمایش آگهی‌های شخصی‌سازی‌شده به شما درباره‌تان جمع‌آوری می‌کنند محدود می‌کند.</translation>
+<translation id="7115358764509798967">پیش‌فرض سیستم</translation>
 <translation id="7117485132243600300">محتوایی که دنبال می‌کنید و جستجوها و موضوع‌های پیشنهادی را مدیریت کنید</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{اجازه‌های ۱ سایت بررسی شد}one{اجازه‌های # سایت بررسی شد}other{اجازه‌های # سایت بررسی شد}}</translation>
 <translation id="7138678301420049075">دیگر</translation>
@@ -1431,6 +1435,7 @@
 <translation id="7304873321153398381">‏آفلاین. Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند.</translation>
 <translation id="7313188324932846546">برای تنظیم همگام‌سازی تک‌ضرب بزنید</translation>
 <translation id="7314734791127433392">بررسی گذرواژه‌ها امکان‌پذیر نیست</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{زبانه‌ها و گروه زبانه‌هایی که ۱ روز یا بیشتر استفاده نشده‌اند}one{زبانه‌ها و گروه زبانه‌هایی که # روز یا بیشتر استفاده نشده‌اند}other{زبانه‌ها و گروه زبانه‌هایی که # روز یا بیشتر استفاده نشده‌اند}}</translation>
 <translation id="7324354302972299151">‏ارسال درخواست «Do Not Track»</translation>
 <translation id="7333041109965360609">اشتراک اعلان‌ها لغو شد</translation>
 <translation id="7336259382292148213">اعلان‌ها مشکلی ندارد</translation>
@@ -1642,6 +1647,7 @@
 <translation id="8137562778192957619">‏لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه Google» ذخیره خواهد شد.</translation>
 <translation id="8152331954420209374">رفتن به «لنز»</translation>
 <translation id="8163820386638255770">‏برای ذخیره کردن گذرواژه‌ها در «حساب Google» خود و استفاده از آن‌ها، هویتتان را درستی‌سنجی کنید</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{‫(۱) مورد غیرفعال}one{‫(#) مورد غیرفعال}other{‫(#) مورد غیرفعال}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> فایل باقی مانده است</translation>
 <translation id="8190358571722158785">۱ روز باقی‌مانده است</translation>
 <translation id="8192765420340770300">برگ زیرین ورود به سیستم به‌صورت کامل باز شده است</translation>

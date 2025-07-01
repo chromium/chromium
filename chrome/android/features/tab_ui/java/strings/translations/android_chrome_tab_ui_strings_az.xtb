@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">Digər cihazlardan tab qruplarını avtomatik açın</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> tab son zamanlarda istifadə edilməyib. Onlar bağlansın?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> il əvvəl yaradıldı}other{<ph name="NUM_YEARS_MANY" /> il əvvəl yaradıldı}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Qeyri-aktiv tab və tab qrupları 1 ay sonra bağlanacaq}other{Qeyri-aktiv tab və tab qrupları <ph name="MONTH_COUNT_MANY" /> ay sonra bağlanacaq}}</translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
 <translation id="1197088940767939838">Narıncı</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> tabı olan <ph name="TITLE_OF_GROUP" /> qrupunu açın}other{<ph name="TAB_COUNT2" /> tabı olan <ph name="TITLE_OF_GROUP" /> qrupunu açın}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> tab qrupu seçimləri</translation>
+<translation id="1300188005269437765">Tablar və tab qruplarının avtomatik olaraq qeyri-aktiv bölməyə nə vaxt köçürüləcəyini seçin.</translation>
 <translation id="1329584516321524826">İndicə yenilənib</translation>
 <translation id="1340839264183302272">Qrupdan çıxın</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="CARD_LABEL" /> etiketi ilə <ph name="TABS_COUNT_ONE" /> tabdan ibarət paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}other{<ph name="CARD_LABEL" /> etiketi ilə <ph name="TABS_COUNT_MANY" /> tabdan ibarət paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab qruplaşdırıldı</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="1909810060368225529">Bildiriş: Bu paylaşılan Tab Qrupuna edilən dəyişikliklər hər kəsə görünür. Hər kəs paylaşılan tab qruplarınıza dəyişiklik edə bilər</translation>
+<translation id="1982637982196732906">Qeyri-aktiv bölməsinə köçürün</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> taba əlfəcin əlavə edin}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> taba əlfəcin əlavə edin}}</translation>
 <translation id="2055057176188061528">Tab qrupu seçin və ya yeni tab qrupu yaradın</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome qeyri-aktivlər bölməsində <ph name="AUTO_DELETE_DELAY_ONE" /> ay istifadə etmədiyiniz elementləri avtomatik bağlayır. Bunu indi və ya istənilən vaxt Ayarlarda söndürə bilərsiniz.}other{Chrome qeyri-aktivlər bölməsində <ph name="AUTO_DELETE_DELAY_MANY" /> ay istifadə etmədiyiniz elementləri avtomatik bağlayır. Bunu indi və ya istənilən vaxt Ayarlarda söndürə bilərsiniz.}}</translation>
 <translation id="2118649612461486615">Mağaza məlumatları</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsində yenidən aça bilərsiniz. Anonim tab əlçatan olmayacaq.}other{Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsində yenidən aça bilərsiniz. # anonim tab əlçatan olmayacaq.}}</translation>
 <translation id="2162620598375156287">İndi <ph name="SOURCE_WEBSITE" /> saytında <ph name="CURRENT_PRICE" /></translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">Qrup adına düzəliş edin</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Taba əlfəcin əlavə edin}other{Tablara əlfəcin əlavə edin}}</translation>
 <translation id="2359808026110333948">Davam edin</translation>
+<translation id="2371084566192454134">Tablar və tab qrupları</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab olan <ph name="TITLE_OF_GROUP" /> tab qrupunu yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan <ph name="TITLE_OF_GROUP" /> tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="2498435670446402865">Tab qrupu adını dəyişin</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" və "<ph name="TAB_GROUP_NAME_2" />" tab qrupları artıq əlçatan deyil</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabını yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="2569352796411618312">Təklif: <ph name="NUMBER_OF_TABS" /> tabel bu yaxınlarda istifadə edilməyib. Bağlansınlar?</translation>
 <translation id="257674075312929031">Qrup</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Tab qrupunu <ph name="TABS_COUNT_ONE" /> tab, <ph name="COLOR_NAME" /> rəngi ilə bərpa edin və açın.}other{Tab qrupunu <ph name="TABS_COUNT_MANY" /> tab, <ph name="COLOR_NAME" /> rəngi ilə bərpa edin və açın.}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq</translation>
 <translation id="266935134738038806">Sayta daxil olun</translation>
 <translation id="2671423594960767771">Qrupu paylaşın</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">reytinq</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabı qrupa əlavə edin}other{<ph name="TABS_COUNT_MANY" /> tabı qrupa əlavə edin}}</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 gün qeyri-aktiv olduqdan sonra}other{<ph name="DAY_COUNT_MANY" /> gün qeyri-aktiv olduqdan sonra}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> yeni tab}other{<ph name="MANY_ADDED" /> yeni tab}}</translation>
 <translation id="3613492231657284463">Qeyri-aktiv tablar dialoqunu gizlədin</translation>
 <translation id="3619255692378312441">Girişi idarə edin</translation>
@@ -94,6 +101,7 @@
 <translation id="4861953997778766866">Hər kəs paylaşılan tab qruplarınıza dəyişiklik edə bilər</translation>
 <translation id="4870911314065352661">Bütün tablar bağlansın?</translation>
 <translation id="4871719318659334896">Qrupu bağlayın</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> tab qrupunu <ph name="TABS_COUNT_ONE" /> tab, <ph name="COLOR_NAME" /> rəngi ilə bərpa edin və açın.}other{<ph name="TITLE_OF_GROUP" /> tab qrupunu <ph name="TABS_COUNT_MANY" /> tab, <ph name="COLOR_NAME" /> rəngi ilə bərpa edin və açın.}}</translation>
 <translation id="4881695831933465202">Açın</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Tabı bağlayın}other{Tabları bağlayın}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> qrup yaddaşda saxlanılıb (tablar bağlanacaq və qruplar silinəcək)</translation>
@@ -114,6 +122,7 @@
 <translation id="5627941783489838464">Tab yeniləməsi yoxdur</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> keçid}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> keçid}}</translation>
 <translation id="5746204836956568669">Daha sürətli işləmək üçün <ph name="NUMBER_OF_TABS" /> tab qruplaşdırılsın?</translation>
+<translation id="5773295109010386583">Qeyri-aktiv elementləri avtomatik bağlayın</translation>
 <translation id="58326064309361797">Tabları qruplaşdırmaq üçün sürüşdürün</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5972844218283131174">Bütün seçimləri silin</translation>
@@ -156,6 +165,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" tab qrupu artıq əlçatan deyil</translation>
 <translation id="7452985128687107478">Tab qrupları bütün cihazlarınızda avtomatik olaraq yaddaşda saxlanılır və güncəllənir</translation>
 <translation id="747459581954555080">Hamısını bərpa edin</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> element}other{<ph name="TABS_COUNT_MANY" /> element}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> elementi bərpa edin}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> elementi bərpa edin}}</translation>
 <translation id="753732157349120914">Tab Keçiricisi</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'dan <ph name="REVIEWS_COUNT_ONE" /> rəy}other{Google'dan <ph name="REVIEWS_COUNT_MANY" /> rəy}}</translation>

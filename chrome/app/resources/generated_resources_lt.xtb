@@ -1933,7 +1933,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2312219318583366810">Puslapio URL</translation>
 <translation id="2314165183524574721">Dabartinis matomumo nustatymas yra „Paslėpta“</translation>
 <translation id="2314774579020744484">Verčiant puslapius vartojama kalba</translation>
-<translation id="2316090909467242775">Išbandykite šį atkūrimo slaptažodį</translation>
 <translation id="2316129865977710310">Ne, ačiū</translation>
 <translation id="2316433409811863464">Programos srautinis perdavimas</translation>
 <translation id="2316709634732130529">Naudoti siūl. slapt.</translation>
@@ -4059,7 +4058,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> plėtin.</translation>
 <translation id="3794792524918736965">„Windows Hello“ įjungimas</translation>
 <translation id="379509625511193653">Išjungta</translation>
-<translation id="3795624560191557077">Neseniai pakeitėte slaptažodį, kuris buvo rastas viešajame duomenų saugos pažeidime. Kilus problemų, „Google“ slaptažodžių tvarkyklė gali padėti prisijungti.</translation>
 <translation id="3796215473395753611">„Alt“ + rodyklė aukštyn</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, naudokite rodyklės dešinėn klavišą, kad peržiūrėtumėte balsą</translation>
 <translation id="3796648294839530037">Mėgstamiausi tinklai:</translation>
@@ -5881,7 +5879,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5088534251099454936">PKCS Nr. 1 SHA-512 su RSA šifruote</translation>
 <translation id="5090637338841444533">Neleidžiama stebėti fotoaparato pozicijos</translation>
 <translation id="5091636240353511739">Rodyti PIN kodą</translation>
-<translation id="5093417502834168387">Nepavyksta prisijungti? Išbandykite kitą metodą</translation>
 <translation id="5093477827231450397">Svetainių, kurias užblokavote, kad nebūtų siūlomi skelbimai į kitas svetaines, sąrašas</translation>
 <translation id="5093569275467863761">Ilgalaikis viso antrinio inkognito rėmelio saugojimas talpykloje: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Galite atidaryti ir redaguoti palaikomus failus naudodami šią programą iš Failų programos ar kitų programų. Jei norite valdyti, kuriuos failus atidarant pagal numatytuosius nustatymus atidaroma ši programa, <ph name="BEGIN_LINK" />sužinokite, kaip nustatyti numatytąsias programas įrenginyje<ph name="END_LINK" />.</translation>
@@ -7667,7 +7664,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6388577073199278153">Paskyros mobiliesiems pasiekti nepavyko</translation>
 <translation id="6390020764191254941">Skirtuko perkėlimas į naują langą</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Nėra}=1{Skirta <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ir dar vienam domenui}one{Skirta <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ir dar {COUNT} domenui}few{Skirta <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ir dar {COUNT} domenams}many{Skirta <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ir dar {COUNT} domeno}other{Skirta <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ir dar {COUNT} domenų}}</translation>
-<translation id="6390533465682072118">Atkūrimas</translation>
 <translation id="6391131092053186625">Jūsų įrenginio IMEI yra <ph name="IMEI_NUMBER" />. Šį numerį galima naudoti suaktyvinant paslaugą.</translation>
 <translation id="6393156038355142111">Siūlyti sudėtingą slaptažodį</translation>
 <translation id="6393550101331051049">Leidžiama rodyti nesaugų turinį</translation>

@@ -187,6 +187,7 @@
 <translation id="1740650426894359238">Teisele profiilile lülitamine</translation>
 <translation id="1741219894094057085">Nutikell</translation>
 <translation id="1743244221910283364">Loobu muudatustest</translation>
+<translation id="1748975028205587434">Valige fail.</translation>
 <translation id="174998178145075354">{count,plural, =1{Klaviatuuri kohal on aadressi jaoks saadaval {count} valik.}other{Klaviatuuri kohal on aadressi jaoks saadaval {count} valikut.}}</translation>
 <translation id="1750238553597293878">Jätkake paroolide kasutamist Google'i kontol</translation>
 <translation id="17513872634828108">Avatud vahelehed</translation>
@@ -529,6 +530,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3119874402040566234">Teid logitakse välja ja sirvimisandmed kustutatakse</translation>
 <translation id="3124568093781685165">Paroolide jagamine perega</translation>
 <translation id="3130863904455712965">Ajalugu ja muu</translation>
+<translation id="3132584647087998639">Andmete importimine</translation>
 <translation id="313283613037595347">Looge uus inkognito vaheleht.</translation>
 <translation id="3136739222562075778">Sellel kaardil kuvatakse teie avatud vahekaartidel olevate toodete hinnalangused</translation>
 <translation id="3138611310073113613">Loobu valikust</translation>
@@ -1118,6 +1120,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="560322036295180549">Teie organisatsioon on välja lülitanud</translation>
 <translation id="5611398002774823980">Salvesta kontole</translation>
+<translation id="561269594905823128">Puudutage valikut <ph name="BEGIN_BOLD" />Select your file<ph name="END_BOLD" />.</translation>
 <translation id="5613297089029360427">Sordi uusimate järgi</translation>
 <translation id="5614553682702429503">Kas salvestada parool?</translation>
 <translation id="5619871095170816857">Sellel kaardil kuvatakse teie viimati kasutatud avatud vahekaart kõigis teie sünkroonitud seadmetes viimase 24 tunni jooksul.</translation>
@@ -1569,6 +1572,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7367530036083223701">Paroolihalduri vidinaga pääsete avakuval oma paroolidele turvaliselt juurde.</translation>
 <translation id="7369285139974632858">Lisa järjehoidjatesse</translation>
 <translation id="7380220816562673297">Praegu saate paroole jagada ainult pereliikmetega. <ph name="BEGIN_LINK" />Looge peregrupp<ph name="END_LINK" /> kuni kuue liikmega, et kasutada oma Google'i teenuseid ja tellimusi paremal moel.</translation>
+<translation id="7380698179418029202">Valige oma Safari eksportimiste <ph name="BEGIN_BOLD" />ZIP<ph name="END_BOLD" />-fail.</translation>
 <translation id="739101637685146669">Millise URL-i soovite järjehoidjatesse lisada?</translation>
 <translation id="7393747756726387725">Suumi sisse</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 sait}other{# saiti}}</translation>
@@ -1708,6 +1712,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7887552845761062935">Rohkemate valikute kuvamiseks topeltpuudutage ja hoidke all</translation>
 <translation id="7889910613639381518">Lihtne ja turvaline juurdepääs Google'i paroolihalduri vidinaga.</translation>
 <translation id="7899199123054742721">Märgi kõik mitteloetuks</translation>
+<translation id="7908957400505794782">Puudutage valikut <ph name="BEGIN_BOLD" />Done<ph name="END_BOLD" />.</translation>
 <translation id="7911190106180361398">Teie organisatsioon ei luba teil kõike sünkroonida.</translation>
 <translation id="792357691529995513">Ühtegi probleemi ei leitud</translation>
 <translation id="7925108652071887026">Andmete automaatne täitmine</translation>

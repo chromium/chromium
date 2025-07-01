@@ -35,6 +35,7 @@
 <translation id="141901961143729572">Ossza meg gondolatait</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni.}=1{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. Az inkognitó ablak nem fog újra megnyílni.}other{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-alkalmazások</translation>
+<translation id="1439793550875056299">A Chrome kitűzése</translation>
 <translation id="146866447420868597">Bejelentkezik a Chrome-ba?</translation>
 <translation id="1492280395845991349">Indítsa újra a Chrome frissítésének befejezéséhez</translation>
 <translation id="1497802159252041924">Telepítési hiba: <ph name="INSTALL_ERROR" /></translation>
@@ -353,6 +354,7 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Indítási hiba: normál felhasználóként futtassa a telepítőt, ne rendszergazdaként.</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
+<translation id="5600352656975192682">Tűzze ki a Chrome-ot a tálcára, hogy bármikor gyorsan hozzáférhessen</translation>
 <translation id="5602351063754773347">A Chrome az eltávolítását javasolja. <ph name="BEGIN_LINK" />További információ a támogatott bővítményekről.<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">A Chrome-profilokkal különválaszthatja minden Chrome-anyagát. Létrehozhat profilokat ismerőseinek és családtagjainak, vagy elkülönítheti egymástól a munkát és a szórakozást.</translation>
 <translation id="565744775970812598">A(z) <ph name="FILE_NAME" /> veszélyes lehet, ezért a Chrome letiltotta.</translation>

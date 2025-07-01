@@ -1930,7 +1930,6 @@
 <translation id="2312219318583366810">網頁網址</translation>
 <translation id="2314165183524574721">目前嘅分享設定係隱藏</translation>
 <translation id="2314774579020744484">翻譯網頁所使用的語言</translation>
-<translation id="2316090909467242775">試用此復原密碼</translation>
 <translation id="2316129865977710310">不用了，謝謝</translation>
 <translation id="2316433409811863464">應用程式串流</translation>
 <translation id="2316709634732130529">使用建議的密碼</translation>
@@ -4053,7 +4052,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 個擴充程式</translation>
 <translation id="3794792524918736965">開啟 Windows Hello</translation>
 <translation id="379509625511193653">關閉</translation>
-<translation id="3795624560191557077">你最近變更的密碼已在公開資料外洩事件中外洩。如果遇到問題，「Google 密碼管理工具」可協助你登入。</translation>
 <translation id="3796215473395753611">Alt 鍵 + 向上箭咀鍵</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />，用向右箭咀鍵預覽語音</translation>
 <translation id="3796648294839530037">常用的網絡：</translation>
@@ -5871,7 +5869,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 (使用 RSA 加密)</translation>
 <translation id="5090637338841444533">不允許追蹤攝錄機位置</translation>
 <translation id="5091636240353511739">顯示 PIN</translation>
-<translation id="5093417502834168387">登入時發生問題嗎？改用其他方式</translation>
 <translation id="5093477827231450397">您唔希望呢啲網站向其他網站建議廣告，因此已經封鎖咗嘅網站清單</translation>
 <translation id="5093569275467863761">向前/返回快取中的無痕子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">您可在「檔案」應用程式或其他應用程式中，透過此應用程式開啟及編輯支援的檔案。如要控制在此應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
@@ -7652,7 +7649,6 @@
 <translation id="6388577073199278153">無法存取您的流動裝置帳戶</translation>
 <translation id="6390020764191254941">把分頁移至新視窗</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{無}=1{適用於 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> 和另外 1 個網域}other{適用於 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> 和另外 {COUNT} 個網域}}</translation>
-<translation id="6390533465682072118">復原</translation>
 <translation id="6391131092053186625">你嘅裝置 IMEI 係 <ph name="IMEI_NUMBER" />。呢個數字可以用嚟啟用服務。</translation>
 <translation id="6393156038355142111">建議安全性強的密碼</translation>
 <translation id="6393550101331051049">已允許顯示不安全的內容</translation>
@@ -7885,6 +7881,7 @@
 <translation id="6560151649238390891">插入咗建議</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6561726789132298588">Enter 鍵</translation>
+<translation id="6561877237303825108">這類檔案 (<ph name="TYPE" />) 可能存在危險，請只在你信任 <ph name="ORIGIN" /> 的情況下才儲存檔案</translation>
 <translation id="6562117348069327379">將系統記錄儲存至「下載」目錄。</translation>
 <translation id="656293578423618167">檔案路徑或名稱太長。請選用較短的名稱或將其儲存至其他位置。</translation>
 <translation id="6563002009564846727">查看從 Windows 匯入的憑證</translation>
@@ -9686,6 +9683,7 @@
 <translation id="7830833461614351956">要將 <ph name="NUM_OF_FILES" /> 個檔案複製到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
 <translation id="7831754656372780761">「<ph name="TAB_TITLE" />」<ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">已儲存的自訂字詞將會在這裡顯示</translation>
+<translation id="7834832693620032149">如要分享音訊，請改為分享分頁或視窗</translation>
 <translation id="7836577093182643605">您唔希望系統同網站分享呢啲主題，因此已經封鎖咗嘅主題清單</translation>
 <translation id="7836745198769390202">目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />和其他項目，你的機構將可以查看和管理有關資料</translation>
 <translation id="7836850009646241041">請嘗試再次輕觸安全密鑰</translation>
@@ -11290,6 +11288,7 @@
 <translation id="8940081510938872932">您的電腦目前處理的項目太多。請稍後再試。</translation>
 <translation id="8940888110818450052">登入選項</translation>
 <translation id="8941173171815156065">撤銷「<ph name="PERMISSION" />」權限</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> 正在分享視窗和音訊。</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />已關閉</translation>
 <translation id="894191600409472540">建立安全度高的密碼</translation>
 <translation id="8942714513622077633">要取消設定 Microsoft 365 嗎？</translation>

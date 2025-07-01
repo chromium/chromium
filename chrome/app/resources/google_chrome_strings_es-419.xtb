@@ -35,6 +35,7 @@
 <translation id="141901961143729572">Comparte tu opinión</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales.}=1{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales. No se volverá a abrir la ventana de incógnito.}other{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales. No se volverán a abrir # ventanas de incógnito.}}</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
+<translation id="1439793550875056299">Fijar Chrome</translation>
 <translation id="146866447420868597">¿Quieres acceder a Chrome?</translation>
 <translation id="1492280395845991349">Reinicia para finalizar la actualización de Chrome</translation>
 <translation id="1497802159252041924">Error de instalación: <ph name="INSTALL_ERROR" /></translation>
@@ -353,6 +354,7 @@
 <translation id="5566025111015594046">Google Chrome (tráfico mDNS entrante)</translation>
 <translation id="5579324208890605088">Error de inicio: Ejecuta el instalador como usuario normal, no como administrador.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
+<translation id="5600352656975192682">Fija Chrome a la barra de tareas para acceder rápidamente en cualquier momento</translation>
 <translation id="5602351063754773347">Chrome te recomienda quitarla. <ph name="BEGIN_LINK" />Más información sobre las extensiones compatibles<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Con los perfiles de Chrome, puedes separar todo lo que tienes en Chrome. Crea perfiles para amigos y familiares, o diferencia el trabajo de la diversión.</translation>
 <translation id="565744775970812598">Chrome bloqueó <ph name="FILE_NAME" /> porque es posible que sea un archivo peligroso.</translation>

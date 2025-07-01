@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">अमान्‍य या खराब फ़ाइल</translation>
 <translation id="1040761927998636252"><ph name="URL" /> के लिए बिना नाम वाला बुकमार्क</translation>
 <translation id="1041175011127912238">इस पेज से जवाब नहीं मिल रहा है</translation>
+<translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />“ को सिर्फ़ इस डिवाइस में सेव किया गया है. अपने दूसरे डिवाइसों पर इसका इस्तेमाल करने के लिए, इसे अपने खाते में “<ph name="ACCOUNT_FOLDER" />” में सेव करें.</translation>
 <translation id="1041263367839475438">उपलब्ध डिवाइस</translation>
 <translation id="1041607257468256895">Chrome में वेबसाइट के लिए जगह की जानकारी की अनुमतियों को मैनेज करें</translation>
 <translation id="1042174272890264476">आपके कंप्यूटर में पहले से ही <ph name="SHORT_PRODUCT_NAME" /> की RLZ लाइब्रेरी होती है. किसी खास प्रचार कैंपेन में इस्तेमाल हुई खोजों और <ph name="SHORT_PRODUCT_NAME" /> के इस्तेमाल को मापने के लिए, RLZ एक बिना-विशिष्ट, बिना निजी तौर वाला टैग तय करता है. कभी-कभी ये लेबल <ph name="PRODUCT_NAME" /> में 'Google सर्च' क्वेरी में दिखाई देते हैं.</translation>
@@ -609,6 +610,7 @@
 <translation id="1418559532423038045">आपके <ph name="DEVICE_TYPE" /> से <ph name="VM_NAME" /> को हटाता है. ऐसा करने से, वर्चुअल मशीन में मौजूद डेटा और सभी ऐप्लिकेशन मिट जाएंगे!</translation>
 <translation id="1418882096915998312">Chrome Enterprise Upgrade की मदद से रजिस्टर किया जा रहा है</translation>
 <translation id="1418954524306642206">अपने प्रिंटर के PPD को सेट करने के लिए ब्राउज़ करें</translation>
+<translation id="1419086691207546433">व्यवस्थित रहने, कामों को आसान बनाने, और ब्राउज़िंग अनुभव को बेहतर बनाने के लिए एक्सटेंशन जोड़ें</translation>
 <translation id="1421334842435688311">मोबाइल नेटवर्क से जुड़ी जगह की जानकारी</translation>
 <translation id="1421514190500081936">कृपया इस डेटा को डाउनलोड करने की वजह बताएं:</translation>
 <translation id="1422159345171879700">असुरक्षित स्क्रिप्ट लोड करें</translation>
@@ -1929,7 +1931,6 @@
 <translation id="2312219318583366810">पेज का यूआरएल</translation>
 <translation id="2314165183524574721">'डिवाइस किसको दिखाई दे' सेटिंग अभी इस पर सेट है: छिपा हुआ</translation>
 <translation id="2314774579020744484">पेजों के अनुवाद के लिए इस्तेमाल की गई भाषा</translation>
-<translation id="2316090909467242775">यह रिकवरी पासवर्ड डालकर देखें</translation>
 <translation id="2316129865977710310">नहीं, रहने दें</translation>
 <translation id="2316433409811863464">ऐप्लिकेशन स्ट्रीमिंग</translation>
 <translation id="2316709634732130529">सुझाए गए पासवर्ड का इस्तेमाल करें</translation>
@@ -3341,6 +3342,7 @@
 <translation id="3309330461362844500">प्रमाणपत्र वाली प्रोफ़ाइल का आईडी</translation>
 <translation id="3310379801837527592"><ph name="OWNER_FIRST_NAME" /> और <ph name="NUM_OTHER_MEMBERS" /> अन्य व्यक्ति के साथ टैब ग्रुप में शामिल हों</translation>
 <translation id="331080746368555063">निजी साइटों में, आपकी कंपनी के इंट्रानेट जैसी चीज़ें शामिल हो सकती हैं</translation>
+<translation id="3311007761540106761">सिस्टम डिफ़ॉल्ट</translation>
 <translation id="3311445899360743395">इस ऐप्लिकेशन के डेटा को इस डिवाइस से हटाया जा सकता है.</translation>
 <translation id="3312470654018965389">Linux कंटेनर को कॉन्फ़िगर किया जा रहा है</translation>
 <translation id="3312883087018430408">किसी साइट या Chrome में उपलब्ध किसी विकल्प को खोजने के लिए, पता बार में उसका शॉर्टकट लिखें. इसके बाद, अपने हिसाब से कीबोर्ड शॉर्टकट दबाएं. उदाहरण के लिए, सिर्फ़ बुकमार्क खोजने के लिए "@bookmarks" लिखें. इसके बाद, Tab या Space दबाएं.</translation>
@@ -4054,7 +4056,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> एक्सटेंशन</translation>
 <translation id="3794792524918736965">Windows Hello चालू करें</translation>
 <translation id="379509625511193653">बंद है</translation>
-<translation id="3795624560191557077">आपने हाल ही में उस पासवर्ड को बदला जो सार्वजनिक तौर पर लीक हुआ था. अगर आपको नए पासवर्ड से साइन इन करने में समस्या आती है, तो Google Password Manager की मदद से साइन इन किया जा सकता है.</translation>
 <translation id="3796215473395753611">alt + अप ऐरो</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, आवाज़ सुनने के लिए, दाईं ओर ऐरो बटन का इस्तेमाल करें</translation>
 <translation id="3796648294839530037">पसंदीदा नेटवर्क:</translation>
@@ -5874,7 +5875,6 @@
 <translation id="5088534251099454936">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">कैमरे की स्थिति को ट्रैक करने की अनुमति नहीं है</translation>
 <translation id="5091636240353511739">पिन दिखाएं</translation>
-<translation id="5093417502834168387">साइन इन करने में समस्या आ रही है? कोई दूसरा तरीका आज़माएं</translation>
 <translation id="5093477827231450397">उन साइटों की सूची जिन्हें आपने ब्लॉक किया है और जिनसे आपको अन्य साइटों पर विज्ञापन के सुझाव नहीं चाहिए</translation>
 <translation id="5093569275467863761">बैक/फ़ॉरवर्ड कैश मेमोरी का गुप्त सबफ़्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">इस ऐप्लिकेशन में इस्तेमाल की जा सकने वाली फ़ाइलों को खोला जा सकता है और उनमें बदलाव किया जा सकता है. ऐसा, Files ऐप्लिकेशन या दूसरे ऐप्लिकेशन में किया जा सकता है. यह कंट्रोल करने के लिए कि कौनसी फ़ाइलें, डिफ़ॉल्ट तौर पर इस ऐप्लिकेशन में खुलेंगी, <ph name="BEGIN_LINK" />अपने डिवाइस पर डिफ़ॉल्ट ऐप्लिकेशन सेट करने का तरीका जानें<ph name="END_LINK" />.</translation>
@@ -7658,7 +7658,6 @@
 <translation id="6388577073199278153">आपके मोबाइल खाते को ऐक्सेस नहीं किया जा सका</translation>
 <translation id="6390020764191254941">टैब को नई विंडो पर ले जाएं</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{किसी के लिए भी नहीं}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, और 1 अन्य कंपनी के लिए}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, और {COUNT} अन्य कंपनी के लिए}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, और {COUNT} अन्य कंपनियों के लिए}}</translation>
-<translation id="6390533465682072118">रिकवरी</translation>
 <translation id="6391131092053186625">आपके डिवाइस का IMEI <ph name="IMEI_NUMBER" /> है. सेवा चालू करने के लिए, इस नंबर का इस्तेमाल किया जा सकता है.</translation>
 <translation id="6393156038355142111">मज़बूत पासवर्ड सुझाएं</translation>
 <translation id="6393550101331051049">असुरक्षित कॉन्टेंट दिखाने की अनुमति है</translation>
@@ -7891,6 +7890,7 @@
 <translation id="6560151649238390891">सुझाव डाला गया</translation>
 <translation id="656065428026159829">ज़्यादा देखें</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">इस तरह की फ़ाइल (<ph name="TYPE" />) खतरनाक हो सकती है. अगर आपको <ph name="ORIGIN" /> पर भरोसा है, तो ही इस फ़ाइल को सेव करें</translation>
 <translation id="6562117348069327379">सिस्टम लॉग, डाउनलोड डायरेक्ट्री में सेव करें.</translation>
 <translation id="656293578423618167">फ़ाइल पाथ या नाम बहुत बड़ा है.  कृपया छोटे नाम के साथ या किसी दूसरी जगह पर सेव करें.</translation>
 <translation id="6563002009564846727">Windows से इंपोर्ट किए गए सर्टिफ़िकेट देखें</translation>
@@ -9695,6 +9695,7 @@
 <translation id="7830833461614351956">क्या <ph name="NUM_OF_FILES" /> फ़ाइलों को खोलने के लिए, उन्हें <ph name="CLOUD_PROVIDER" /> पर कॉपी करना है?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">सेव किए गए कस्टम शब्द यहां दिखाई देंगे</translation>
+<translation id="7834832693620032149">ऑडियो शेयर करने के लिए, कोई टैब या विंडो शेयर करें</translation>
 <translation id="7836577093182643605">उन विषयों की सूची जिन्हें आपने ब्लॉक किया है और जिन्हें साइटों के साथ शेयर नहीं करना है</translation>
 <translation id="7836745198769390202">इसमें फ़िलहाल <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, और अन्य डेटा मौजूद है. आपका संगठन इस डेटा को देख और मैनेज कर पाएगा</translation>
 <translation id="7836850009646241041">अपनी सुरक्षा कुंजी को फिर से छुएं</translation>
@@ -10565,6 +10566,7 @@
 <translation id="8425213833346101688">बदलें</translation>
 <translation id="8425492902634685834">टास्कबार में पिन करें</translation>
 <translation id="8425768983279799676">आप अपने पिन का इस्तेमाल अपने डिवाइस को अनलॉक करने के लिए कर सकते हैं.</translation>
+<translation id="8426697201161711396">अपने सभी डिवाइसों पर पासवर्ड वगैरह का ऐक्सेस पाने के लिए, Chrome में साइन इन करें</translation>
 <translation id="8427213022735114808">'डिक्टेशन (आप जो बोलते हैं उसे लिखना)' सुविधा आपकी आवाज़ Google को भेजती है ताकि किसी भी लेख फ़ील्ड में बोलकर लिखा जा सके.</translation>
 <translation id="8427292751741042100">किसी भी होस्ट पर एम्बेड किया गया</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
@@ -11303,6 +11305,7 @@
 <translation id="8940081510938872932">आपका कंप्‍यूटर इस समय बहुत सी चीज़ें कर रहा है.  बाद में फिर से प्रयास करें.</translation>
 <translation id="8940888110818450052">साइन इन करने के विकल्प</translation>
 <translation id="8941173171815156065">अनुमति '<ph name="PERMISSION" />' को निरस्‍त करें</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> एक विंडो और ऑडियो शेयर कर रहा है.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> बंद है</translation>
 <translation id="894191600409472540">मज़बूत पासवर्ड बनाएं</translation>
 <translation id="8942714513622077633">क्या आपको Microsoft 365 का सेटअप रद्द करना है?</translation>

@@ -41,6 +41,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1547469039832541117">Ends the highlighted task.</translation>
 <translation id="1553461853655228091">Chromium needs permission to access your camera to create a 3D map of your surroundings</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{This extension is no longer supported. Chromium recommends that you remove it.}other{These extensions are no longer supported. Chromium recommends that you remove them.}}</translation>
+<translation id="1562320819937089394">Pin Chromium</translation>
 <translation id="1574377791422810894">Chromium's safety tools</translation>
 <translation id="1594928384848033697">Chromium wants to delete your Password Manager data. Type in your Windows password to allow this.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Your administrator requires that you relaunch Chromium to apply an update}=1{Your administrator requires that you relaunch Chromium to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}}</translation>
@@ -523,6 +524,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8010081455002666927">Auto-detect</translation>
 <translation id="8013436988911883588">Once Chromium has access, websites will be able to ask you for access.</translation>
+<translation id="8031714377769448844">Pin Chromium to your taskbar to get to it quickly at any time</translation>
 <translation id="80471789339884597">Thanks for installing. You must restart all your browsers before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Always show image search shortcut</translation>
 <translation id="8077498902115777962">Disable Chromium running in background for apps</translation>

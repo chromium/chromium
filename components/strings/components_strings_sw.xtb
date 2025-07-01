@@ -793,6 +793,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2310789833878085574">Hifadhi na ujaze kiotomatiki</translation>
 <translation id="2312234273148520048">Viungo na Kachumbari</translation>
 <translation id="2316087952091171402">Chini ya <ph name="UPPER_ESTIMATE" />. Huenda baadhi ya tovuti zikapakia polepole zaidi wakati mwingine utakapozitembelea.</translation>
+<translation id="2316090909467242775">Jaribu nenosiri hili la kurejesha akaunti</translation>
 <translation id="2316159751672436664">Weka mapendeleo ya zana zako za ufikivu katika mipangilio ya Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="2316887270356262533">Huongeza nafasi isiyozidi MB 1. Baadhi ya tovuti huenda zikapakia polepole zaidi utakapozivinjari tena.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> inahitaji jina la mtumiaji na nenosiri.</translation>
@@ -1673,6 +1674,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3792100426446126328"><ph name="NAME" /> (inchi <ph name="WIDTH" /> x <ph name="HEIGHT" />)</translation>
 <translation id="3792826587784915501">Filamu za Imani Fulani na Huru</translation>
 <translation id="3793574014653384240">Idadi na sababu za matukio ya hivi majuzi ya programu kuacha kufanya kazi</translation>
+<translation id="3795624560191557077">Ulibadilisha nenosiri hivi majuzi lililopatikana kwenye ufichuzi haramu wa data ya umma Iwapo utatatizika, Kidhibiti cha Manenosiri cha Google kinaweza kukusaidia kuingia katika akaunti.</translation>
 <translation id="3799805948399000906">Imeomba fonti</translation>
 <translation id="3801297763951514916">Unatembelea mara kwa mara</translation>
 <translation id="380329542618494757">Jina</translation>
@@ -1954,6 +1956,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="425582637250725228">Huenda mabadiliko uliyofanya hayatahifadhiwa.</translation>
 <translation id="4258748452823770588">Sahihi mbaya</translation>
 <translation id="4261046003697461417">Huwezi kuweka vidokezo kwenye hati zinazolindwa</translation>
+<translation id="4265635050210404830">Kadi zako za kutuza uaminifu</translation>
 <translation id="4265872034478892965">Imeruhusiwa na msimamizi wako</translation>
 <translation id="4269029136757623689">Feni za Nyumbani</translation>
 <translation id="4269264543938335308">Mavazi ya Kuogelea</translation>
@@ -2229,6 +2232,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4754461935447132332">Hairuhusiwi kwenye tovuti zisizo salama</translation>
 <translation id="4756388243121344051">&amp;Historia</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Msimbo si sahihi</translation>
 <translation id="4757993714154412917">Umeweka nenosiri lako kwenye tovuti ya kupotosha. Ili uimarishe usalama wa akaunti zako, Chromium inapendekeza ukague manenosiri uliyoyahifadhi.</translation>
 <translation id="4758311279753947758">Ongeza maelezo ya mawasiliano</translation>
 <translation id="4761326898079498987">Soma ili upate maelezo zaidi</translation>
@@ -2294,6 +2298,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="486459320933704969">Ni lazima mzazi au mlezi akuruhusu kutembelea tovuti hii</translation>
 <translation id="4864801646102013152">Uboreshaji wa Nyumba</translation>
 <translation id="4866506163384898554">Bonyeza |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ili kuonyesha kiteuzi chako</translation>
+<translation id="4868277513442568587">Ili uendelee kutumia vikundi vyako vya vichupo unavotumia na wengine, sasisha Chrome</translation>
 <translation id="4873616204573862158">Miwani</translation>
 <translation id="4873807733347502026">Kufunga na kutumia kipanya chako</translation>
 <translation id="4876305945144899064">Hakuna jina la mtumiaji</translation>
@@ -2430,6 +2435,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5089810972385038852">Jimbo</translation>
 <translation id="5090647584136241764">Ongeza vichupo vilivyo na bidhaa zinazofanana ili ulinganishe kwa urahisi maelezo ambayo ni muhimu kwako</translation>
 <translation id="5093232627742069661">Mkunjo wa Z</translation>
+<translation id="5093417502834168387">Je, unatatizika kuingia katika akaunti? Jaribu njia nyingine</translation>
 <translation id="5094747076828555589">Seva hii haikuweza kuthibitisha kuwa ni <ph name="DOMAIN" />; cheti chake cha usalama hakiaminiwi na Chromium. Hii inaweza kusababishwa na kusanidi kusikofaa au mvamizi kuingilia muunganisho wako.</translation>
 <translation id="5097099694988056070">Takwimu za kifaa kama vile matumizi ya CPU/RAM</translation>
 <translation id="5097468150760963273">Inchi 27 x 39</translation>
@@ -3198,6 +3204,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6388060462449937608">Vifaa na Vifuasi vya Mazoezi ya Mwili</translation>
 <translation id="6389470377220713856">Jina lilio kwenye Kadi</translation>
 <translation id="6390200185239044127">Mkunjo wa Z nusu</translation>
+<translation id="6390533465682072118">Kurejesha</translation>
 <translation id="639068771471208680">Fomu ya Sehemu Nyingi</translation>
 <translation id="6391700400718590966">Laha ya 'hakuna kitambulisho kinacholingana' imefungwa</translation>
 <translation id="6392799395081100092">Karatasi (Ya ngozi)</translation>
@@ -3746,6 +3753,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7346048084945669753">Ni mshirika:</translation>
 <translation id="7346062987309535530">Vyombo vya Kulia Chakula</translation>
 <translation id="7346081071264046066">"jibu ndiyo kwenye mwaliko huu wa sherehe za harusi ukiwa na furaha"</translation>
+<translation id="7347640536700429009">Jina lililo kwenye kadi si sahihi</translation>
 <translation id="7352651011704765696">Hitilafu fulani imetokea</translation>
 <translation id="7353601530677266744">Mbinu ya Amri</translation>
 <translation id="7359588939039777303">Matangazo yamezuiwa.</translation>

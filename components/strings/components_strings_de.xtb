@@ -793,6 +793,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2310789833878085574">Speichern und automatisch ausfüllen</translation>
 <translation id="2312234273148520048">Würzmittel und Dressings</translation>
 <translation id="2316087952091171402">Weniger als <ph name="UPPER_ESTIMATE" />. Einige Websites werden beim nächsten Besuch möglicherweise langsamer geladen.</translation>
+<translation id="2316090909467242775">Dieses Wiederherstellungspasswort ausprobieren</translation>
 <translation id="2316159751672436664">Bedienungshilfen in den Chrome OS-Einstellungen personalisieren</translation>
 <translation id="2316887270356262533">Es werden weniger als 1 MB Speicherplatz freigegeben. Manche Websites werden beim nächsten Öffnen eventuell langsamer geladen.</translation>
 <translation id="2317259163369394535">Für <ph name="DOMAIN" /> sind ein Nutzername und ein Passwort erforderlich.</translation>
@@ -1671,6 +1672,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />" × <ph name="HEIGHT" />")</translation>
 <translation id="3792826587784915501">Kultklassiker und Indie-Filme</translation>
 <translation id="3793574014653384240">Anzahl und Ursachen der kürzlich aufgetretenen Abstürze</translation>
+<translation id="3795624560191557077">Du hast vor Kurzem ein Passwort geändert, das in einer öffentlichen Datenpanne gefunden wurde. Bei Problemen kann der Google Passwortmanager dir bei der Anmeldung helfen.</translation>
 <translation id="3799805948399000906">Gewünschte Schriftart</translation>
 <translation id="3801297763951514916">Diese Seite besuchst du häufig</translation>
 <translation id="380329542618494757">Name</translation>
@@ -2431,6 +2433,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5090647584136241764">Füge Tabs mit ähnlichen Produkten hinzu, um die für dich wichtigen Details ganz einfach vergleichen zu können</translation>
 <translation id="5093232627742069661">Z-Faltung</translation>
+<translation id="5093417502834168387">Probleme bei der Anmeldung? Wähle eine andere Option.</translation>
 <translation id="5094747076828555589">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird von Chromium als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="5097099694988056070">Gerätestatistiken, z. B. CPU/RAM-Nutzung</translation>
 <translation id="5097468150760963273">27 x 39 Zoll</translation>
@@ -3199,6 +3202,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6388060462449937608">Fitnessausrüstung und ‑zubehör</translation>
 <translation id="6389470377220713856">Name auf Karte</translation>
 <translation id="6390200185239044127">Halbierte Z-Faltung</translation>
+<translation id="6390533465682072118">Wiederherstellung</translation>
 <translation id="639068771471208680">Mehrteiliges Formular</translation>
 <translation id="6391700400718590966">Sichere Anmeldedaten für Zahlungen – Tabellenblatt für nicht übereinstimmende sichere Anmeldedaten ist geschlossen</translation>
 <translation id="6392799395081100092">Papier (Pergament)</translation>
@@ -3750,7 +3754,7 @@ Weitere Details:
 <translation id="7346062987309535530">Essgeschirr</translation>
 <translation id="7346081071264046066">„Antworte voller Vorfreude mit „Ja“ auf diese Hochzeitseinladung“</translation>
 <translation id="7347640536700429009">Der Name auf der Karte ist ungültig</translation>
-<translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
+<translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
 <translation id="7353601530677266744">Befehlszeile</translation>
 <translation id="7359588939039777303">Werbung blockiert.</translation>
 <translation id="7360451453306104998">Wenn Google verfügbare Rabatte findet, werden sie an der Kasse angezeigt</translation>

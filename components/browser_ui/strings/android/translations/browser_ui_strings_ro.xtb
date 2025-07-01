@@ -326,6 +326,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4882919381756638075">Site-urile folosesc de obicei microfonul pentru opțiuni de comunicare, cum ar fi chatul video</translation>
 <translation id="4883854917563148705">Setările gestionate nu pot fi resetate</translation>
 <translation id="4887024562049524730">Întreabă înainte de a permite site-urilor să folosească dispozitivul de realitate virtuală și datele conexe (recomandat)</translation>
+<translation id="4934780484581617878">Gestionarea ferestrelor</translation>
 <translation id="4936863036653376783">Vei găsi grupurile în secțiunea Grup de file de pe toate dispozitivele</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> nu are permisiunea de a folosi informațiile tale pe</translation>
 <translation id="4953688446973710931">Când opțiunea este activată, site-urile pot solicita permisiunea de a descărca automat mai multe fișiere. Când opțiunea este dezactivată, site-urile nu pot descărca automat mai multe fișiere.</translation>
@@ -333,6 +334,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4972737347717125191">Site-urile pot solicita permisiunea de a folosi dispozitive de realitate virtuală și date conexe</translation>
 <translation id="497421865427891073">Înainte</translation>
 <translation id="4976702386844183910">Accesat ultima dată pe <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Află mai multe despre feedul Discover</translation>
 <translation id="4994033804516042629">Nu s-a găsit nicio persoană de contact</translation>
 <translation id="4996978546172906250">Trimite prin</translation>
 <translation id="5001526427543320409">Cookie-uri terță parte</translation>
@@ -582,6 +584,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8067883171444229417">Redă videoclipul</translation>
 <translation id="8068648041423924542">Certificatul nu poate fi selectat.</translation>
 <translation id="8077120325605624147">Orice site pe care îl accesezi îți poate afișa orice anunț</translation>
+<translation id="80798452873915119">Site-urile pot solicita permisiunea de a gestiona ferestre pe toate ecranele</translation>
 <translation id="8087000398470557479">Acest conținut provine de pe <ph name="DOMAIN_NAME" />, oferit de Google.</translation>
 <translation id="8088603949666785339">Mai multe opțiuni în <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Vezi filele în lista de aplicații</translation>

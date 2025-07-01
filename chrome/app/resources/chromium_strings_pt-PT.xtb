@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Termina a tarefa realçada.</translation>
 <translation id="1553461853655228091">O Chromium necessita de autorização de acesso à câmara para criar um mapa 3D do ambiente à sua volta.</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Esta extensão já não é suportada. O Chromium recomenda que a remova.}other{Estas extensões já não são suportadas. O Chromium recomenda que as remova.}}</translation>
+<translation id="1562320819937089394">Afixar Chromium</translation>
 <translation id="1574377791422810894">Ferramentas de segurança do Chromium</translation>
 <translation id="1594928384848033697">O Chromium quer eliminar os seus dados do Gestor de Palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização.}=1{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
@@ -521,6 +522,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8010081455002666927">Detetar automaticamente</translation>
 <translation id="8013436988911883588">Assim que o Chromium tiver acesso, os Websites poderão solicitar-lhe o acesso.</translation>
+<translation id="8031714377769448844">Afixe o Chromium à barra de tarefas para aceder rapidamente ao mesmo em qualquer altura</translation>
 <translation id="80471789339884597">Agradecemos a instalação. Tem de reiniciar todos os navegadores antes de usar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Mostrar sempre o atalho da pesquisa de imagens</translation>
 <translation id="8077498902115777962">Desativar a execução do Chromium em segundo plano para apps</translation>

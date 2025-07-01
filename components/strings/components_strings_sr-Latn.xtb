@@ -793,6 +793,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2310789833878085574">Sačuvaj i automatski popunjavaj</translation>
 <translation id="2312234273148520048">Začini i prelivi</translation>
 <translation id="2316087952091171402">Manje od <ph name="UPPER_ESTIMATE" />. Neki sajtovi mogu da se učitavaju sporije tokom sledeće posete.</translation>
+<translation id="2316090909467242775">Isprobajte ovu lozinku za oporavak</translation>
 <translation id="2316159751672436664">Personalizujte alatke za pristupačnost u podešavanjima Chrome OS-a</translation>
 <translation id="2316887270356262533">Oslobađa manje od 1 MB. Neki sajtovi će se možda sporije učitavati kad ih sledeći put posetite.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> zahteva korisničko ime i lozinku.</translation>
@@ -1673,6 +1674,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Kultni i indi filmovi</translation>
 <translation id="3793574014653384240">Broj nedavnih otkazivanja i razlozi</translation>
+<translation id="3795624560191557077">Nedavno ste promenili lozinku koja je pronađena u javnoj povredi podataka. U slučaju problema, Google menadžer lozinki može da vam pomogne da se prijavite.</translation>
 <translation id="3799805948399000906">Font je zatražen</translation>
 <translation id="3801297763951514916">Često posećujete</translation>
 <translation id="380329542618494757">Ime</translation>
@@ -2433,6 +2435,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5089810972385038852">Država</translation>
 <translation id="5090647584136241764">Dodajte kartice sa sličnim proizvodima da biste lako poredili detalje koji su vam važni</translation>
 <translation id="5093232627742069661">Presavijanje u obliku slova Z</translation>
+<translation id="5093417502834168387">Problemi sa prijavljivanjem? Probajte drugačije</translation>
 <translation id="5094747076828555589">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; Chromium nema poverenja u njegov bezbednosni sertifikat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="5097099694988056070">Statistički podaci o uređaju, poput iskorišćenosti procesora/RAM memorije</translation>
 <translation id="5097468150760963273">27×39 in</translation>
@@ -3200,6 +3203,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6388060462449937608">Oprema i dodaci za fitnes</translation>
 <translation id="6389470377220713856">Ime i prezime na kartici</translation>
 <translation id="6390200185239044127">Presavijanje polovine u obliku slova Z</translation>
+<translation id="6390533465682072118">Oporavak</translation>
 <translation id="639068771471208680">Oblik iz više delova</translation>
 <translation id="6391700400718590966">Zatvoreno je obaveštenje da nema akreditiva koji se podudaraju za bezbedno plaćanje</translation>
 <translation id="6392799395081100092">Papir (velum)</translation>

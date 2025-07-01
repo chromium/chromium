@@ -325,6 +325,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="4882919381756638075">Các trang web thường sử dụng micrô cho các tính năng giao tiếp như trò chuyện video</translation>
 <translation id="4883854917563148705">Bạn không thể đặt lại các tùy chọn cài đặt được quản lý</translation>
 <translation id="4887024562049524730">Hỏi ý bạn trước khi cho phép các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn (khuyên dùng)</translation>
+<translation id="4934780484581617878">Quản lý cửa sổ</translation>
 <translation id="4936863036653376783">Bạn sẽ thấy các nhóm trong mục nhóm thẻ trên tất cả các thiết bị của bạn</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> không được sử dụng thông tin của bạn</translation>
 <translation id="4953688446973710931">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu tự động tải nhiều tệp xuống. Khi bạn tắt tuỳ chọn này, các trang web không thể tự động tải nhiều tệp xuống.</translation>
@@ -582,6 +583,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8067883171444229417">Phát video</translation>
 <translation id="8068648041423924542">Không thể chọn chứng chỉ.</translation>
 <translation id="8077120325605624147">Mọi trang web bạn truy cập đều có thể hiện quảng cáo cho bạn</translation>
+<translation id="80798452873915119">Các trang web có thể yêu cầu quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
 <translation id="8087000398470557479">Nội dung này đến từ <ph name="DOMAIN_NAME" />, do Google phân phối.</translation>
 <translation id="8088603949666785339">Xem thêm lựa chọn khác trong <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Xem các thẻ trong danh sách ứng dụng</translation>

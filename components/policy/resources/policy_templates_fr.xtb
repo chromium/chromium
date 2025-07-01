@@ -134,6 +134,11 @@ Remarque : pour en savoir plus sur les règles d'atténuation des risques liés
 <translation id="1077675271127011209">Désactiver la création de rapports sur l'utilisation et les plantages</translation>
 <translation id="1079498696402787191">Utilisez la valeur par défaut pour les hachages autorisés lors de handshakes TLS.</translation>
 <translation id="1079801999187584280">Interdire l'utilisation des outils pour les développeurs</translation>
+<translation id="1081263326166769685">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> envoie à Google les métriques d'utilisation et les données de diagnostic, y compris les rapports d'erreur. Si cette règle est désactivée, ces métriques et ces données ne sont pas envoyées.
+
+Pour les appareils gérés, cette règle est activée par défaut et envoie les métriques à Google.
+
+Pour les appareils non gérés, l'utilisateur peut décider d'envoyer les métriques lorsque la règle n'est pas configurée.</translation>
 <translation id="1082802595100075771">Laisser les utilisateurs choisir s'ils veulent employer un service Google anonyme pour qu'une description soit ajoutée automatiquement aux images sans libellé</translation>
 <translation id="1084697375611053264">Spécifie la liste des domaines d'applis Web tiers autorisés à utiliser <ph name="DESK_API_NAME" /> pour contrôler les bureaux <ph name="PRODUCT_OS_NAME" />. Ces formats d'URL doivent respecter le format défini pour la propriété "matches" dans https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
 <translation id="1087057100912843460">Autoriser les mises à jour</translation>
@@ -268,9 +273,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
       Si cette règle n'est pas configurée, la connexion ne s'effectue pas automatiquement.</translation>
 <translation id="1193653806129988688">Empêcher les utilisateurs de profiter de leurs offres via le service d'enregistrement <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1197437816436565375">Vous ne pouvez pas forcer les applications Android à utiliser un proxy. Celles-ci disposent d'un sous-ensemble de paramètres proxy qu'elles peuvent choisir d'utiliser ou non. Pour en savoir plus, consultez la règle <ph name="PROXY_MODE_POLICY_NAME" />.</translation>
-<translation id="1198183996903759302">Si cette règle est définie sur "True" (ou que la règle <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> est définie sur "False") les pages Web ne peuvent pas accéder à l'API WebGL, et les plug-ins ne peuvent pas utiliser l'API Pepper 3D.
-
-      Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les pages Web peuvent accéder à l'API WebGL, et les plug-ins peuvent utiliser l'API Pepper 3D. Toutefois, il peut quand même être nécessaire d'ajouter des arguments de ligne de commande aux paramètres par défaut du navigateur pour utiliser ces API.</translation>
 <translation id="1198458955128279215">Utiliser le comportement par défaut selon le calendrier de déploiement des fonctionnalités</translation>
 <translation id="1202216683470826356">Afficher les fiches sur la page Nouvel onglet</translation>
 <translation id="1203676252390737801">Gestion des adresses IP WebRTC par URL</translation>
@@ -1466,15 +1468,6 @@ Cette règle est habituellement désactivée pour protéger les utilisateurs con
         Si cette règle est activée ou si elle n'est pas configurée, la mise à jour des applications Chrome Kiosk en cours de session sera autorisée.
         </translation>
 <translation id="2082205219176343977">Configurer la version Chrome minimale autorisée de l'appareil.</translation>
-<translation id="2083016623552073519">Activer la traduction instantanée de sous-titres. Les sous-titres seront envoyés à Google pour être traduits.
-
-Si cette règle est activée, la traduction instantanée sera toujours activée.
-
-Si cette règle est désactivée, la traduction instantanée sera toujours désactivée.
-
-Si vous définissez cette règle comme obligatoire, les utilisateurs ne pourront ni la modifier, ni l'ignorer.
-
-Si cette règle n'est pas définie, la traduction instantanée sera initialement désactivée, mais les utilisateurs pourront l'activer à tout moment.</translation>
 <translation id="20838788335877967">Désactiver les rapports sur les informations d'identification des utilisateurs</translation>
 <translation id="208566302163036794">Bloquer les fonctionnalités désactivées</translation>
 <translation id="2086040449830622332">Activer le bac à sable LPAC pour l'impression</translation>
@@ -2930,6 +2923,7 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
 <translation id="3112501357749061018">Liste des certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur, avec des contraintes ajoutées en dehors du certificat. Si aucune contrainte d'un certain type n'est présente, n'importe quel nom de ce type est autorisé.
 Les certificats doivent être encodés en base64. Vous devez spécifier au moins une contrainte pour chaque certificat.</translation>
+<translation id="3113283011165145080">Autoriser <ph name="PRODUCT_NAME" /> à décider</translation>
 <translation id="3118552207903834734">Autoriser l'utilisateur à configurer le nom d'hôte de son appareil</translation>
 <translation id="3122082892722698079">Contrôler l'utilisation des exceptions liées au contenu non sécurisé</translation>
 <translation id="3125472566440502628">Désactiver Sélectionner pour écouter</translation>
@@ -4842,6 +4836,7 @@ Un appareil est considéré comme géré s'il utilise une version d'entreprise d
 
       Si cette règle n'est pas configurée, l'utilisateur peut désactiver n'importe quel plug-in installé sur le système.</translation>
 <translation id="4549695018986780856">Manifest V2 est activé</translation>
+<translation id="4549729301485728119">La valeur par défaut est déterminée par d'autres facteurs</translation>
 <translation id="4554651132977135445">Mode de traitement du bouclage pour les règles relatives aux utilisateurs</translation>
 <translation id="4554991346503872538">Ne jamais proposer de traduction</translation>
 <translation id="4555850956567117258">Activer l'attestation à distance pour l'utilisateur</translation>
@@ -8873,6 +8868,11 @@ Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés e
 
       Les identifiants des types de connexion reconnus sont <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> et <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
 <translation id="7150722575502017208">Ne pas exiger que le nom de l'utilisateur local corresponde à celui du propriétaire de l'hôte d'accès à distance</translation>
+<translation id="7150775293604912624">Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> est autorisé à lire automatiquement du contenu multimédia. Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'est pas autorisé à lire automatiquement du contenu multimédia.
+
+Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> ne lit pas automatiquement ce type de contenu. Toutefois, pour certains formats d'URL, la règle <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" /> permet de modifier ce paramètre.
+
+Si <ph name="PRODUCT_NAME" /> est en cours d'utilisation lorsque le paramètre de cette règle change, la modification ne s'applique qu'aux nouveaux onglets ouverts.</translation>
 <translation id="7151366515472588710">Le client ne doit pas interpréter ces données et doit les transmettre textuellement. Le DMServer utilise policy_version pour vérifier que l'affichage du DMServer spécifié dans la règle correspond à celui de l'appareil Chrome OS.</translation>
 <translation id="7152640356717355643">Activer les rapports sur l'interface réseau de l'appareil</translation>
 <translation id="7153786895642570081">Cette règle contrôle l'activation de la fonctionnalité EphemeralNetworkPolicies.
@@ -10394,6 +10394,7 @@ Si cette règle n'est pas configurée, la commande par le visage est désactivé
           Si cette règle n'est pas définie, le comportement des règles plus spécifiques n'est pas modifié.</translation>
 <translation id="8350643689940867542">Désactiver les rapports sur les données des règles</translation>
 <translation id="835283681355955417">Signaler les détails sur les périphériques</translation>
+<translation id="8353189903603611009">Ne pas autoriser Chrome à lire automatiquement le contenu multimédia, sauf si l'URL est spécifiée dans la règle <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" /></translation>
 <translation id="8354001669131263433">À partir de M132, cette règle sera supprimée, ainsi que les API de plein écran avec préfixe spécifiques aux vidéos.
 
 Si la règle est définie sur <ph name="ENABLED_VALUE_NAME" />, les API de plein écran avec préfixe spécifiques aux vidéos (par exemple, Video.webkitEnterFullscreen()) peuvent être utilisées à partir de JavaScript.
@@ -10758,6 +10759,7 @@ Si cette règle n'est pas configurée, les utilisateurs ne peuvent pas jouer à 
           La valeur de la règle doit être indiquée en millisecondes.</translation>
 <translation id="8592363656632862875">Ne pas télécharger le modèle</translation>
 <translation id="859579553230883285">Désactivez le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> pour vos utilisateurs.</translation>
+<translation id="8596784129804979039">Utiliser la configuration par défaut pour le bac à sable du service réseau</translation>
 <translation id="8597758693275075382">Chaînes OEM SMBIOS à transmettre à la VM lors de l'installation. La liste vide est utilisée par défaut.</translation>
 <translation id="8598786284856179541">Activer les rapports sur les informations liées à la version</translation>
 <translation id="859937827887158048">Ne pas autoriser le téléchargement automatique de mises à jour peer-to-peer</translation>
@@ -11083,6 +11085,7 @@ Remarque : Cette règle n'a aucun effet si la règle DevicePowerBatteryCharging
 <translation id="8840243776706727185">Fonctionnalité NewBaseUrlInheritanceBehavior désactivée</translation>
 <translation id="8842208363354615697">Autoriser l'activation du mode HTTPS uniquement</translation>
 <translation id="8843331294082716286">Ne pas présenter l'invite <ph name="PRIVACY_SANDBOX_NAME" /> aux utilisateurs.</translation>
+<translation id="884855199714673326">Autorise l'hôte d'accès à distance à décider</translation>
 <translation id="885147810817138322">Proposer à l'utilisateur des recommandations de contenus multimédias</translation>
 <translation id="8852579753940989645">Activer la règle d'intégrité du code du moteur de rendu</translation>
 <translation id="8854571659927427063">Si cette règle est activée, les favoris enregistrés dans le précédent navigateur par défaut sont importés lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les favoris ne sont pas importés lors de la première exécution.

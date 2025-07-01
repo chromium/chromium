@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Савети за Chrome</translation>
 <translation id="1816835383954230954">Када је оптимизатор укључен, Chrome ради брже и функције које користе JavaScript би требало да раде како је предвиђено. Када је оптимизатор искључен, то смањује перформансе, али чини V8 отпорнијим на нападе.</translation>
 <translation id="1818308510395330587">Да бисте дозволили да <ph name="APP_NAME" /> користи ПР, укључите и камеру у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Доња табела за изглед странице нове картице</translation>
 <translation id="1887786770086287077">Приступ локацији је искључен за овај уређај. Укључите га у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Сајтови обично приступају фајловима и фолдерима на уређају да би вам биле доступне функције попут аутоматског чувања ставки на којима радите</translation>
 <translation id="1915307458270490472">Прекини везу</translation>
@@ -326,6 +327,7 @@
 <translation id="4882919381756638075">Сајтови обично користе микрофон за потребе функција за комуникацију попут видео чета</translation>
 <translation id="4883854917563148705">Подешавања којима се управља не могу да се ресетују</translation>
 <translation id="4887024562049524730">Пре него што дозволите сајтовима да користе уређај и податке виртуелне реалности приказује се упит (препоручено)</translation>
+<translation id="4934780484581617878">Управљање прозорима</translation>
 <translation id="4936863036653376783">Групе ћете пронаћи у одељку за групе картица на свим уређајима</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> је онемогућен да користи ваше податке на</translation>
 <translation id="4953688446973710931">Када је укључено, сајтови могу да траже да аутоматски преузимају више фајлова. Када је искључено, сајтови не могу аутоматски да преузимају више фајлова.</translation>
@@ -458,6 +460,7 @@
 <translation id="6398765197997659313">Изађи из режима целог екрана</translation>
 <translation id="640163077447496506">Истиче данас</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Колекције тема</translation>
 <translation id="6439114592976064011">Не дозвољава сајтовима да користе уређај и податке виртуелне реалности</translation>
 <translation id="6447842834002726250">Колачићи</translation>
 <translation id="6452138246455930388">Снижење на отвореној картици, са <ph name="OLD_PRICE" /> на <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -561,6 +564,7 @@
 <translation id="7791543448312431591">Додај</translation>
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7804248752222191302">Сајт користи камеру</translation>
+<translation id="7805832099057502789">Доња табела за изглед странице нове картице је отворена на целом екрану</translation>
 <translation id="7807060072011926525">Пружа Google</translation>
 <translation id="7815680994978050279">Опасно преузимање је блокирано</translation>
 <translation id="7835852323729233924">Репродукција медија</translation>
@@ -580,9 +584,11 @@
 <translation id="802154636333426148">Преузимање није успело</translation>
 <translation id="8042586301629853791">Сортирај према:</translation>
 <translation id="8051193500142930381">Функције којима је потребна камера неће радити</translation>
+<translation id="8056330801132235235">Подразумевано за Chrome</translation>
 <translation id="8067883171444229417">Пусти видео</translation>
 <translation id="8068648041423924542">Није могуће изабрати сертификат.</translation>
 <translation id="8077120325605624147">Сваки сајт који посетите може да вам прикаже било који оглас</translation>
+<translation id="80798452873915119">Сајтови могу да затраже да управљају прозорима на свим екранима</translation>
 <translation id="8087000398470557479">Овај садржај је са <ph name="DOMAIN_NAME" />, приказује Google.</translation>
 <translation id="8088603949666785339">Још опција у <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Картице приказа на листи апликација</translation>

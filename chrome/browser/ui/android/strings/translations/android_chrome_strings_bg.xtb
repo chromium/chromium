@@ -152,6 +152,7 @@
 <translation id="1671236975893690980">Предстои изтегляне…</translation>
 <translation id="1672586136351118594">Да не се показва отново</translation>
 <translation id="1680919990519905526">Пазар. с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">и се затварят след <ph name="MONTHS_ARCHIVED" /> месеца</translation>
 <translation id="1687482373098770139">Скоро в „Следено“ ще виждате съдържание от и за <ph name="SITE_NAME" />. Сайтовете и търсенията, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките по всяко време.</translation>
 <translation id="1689333818294560261">Псевдоним</translation>
 <translation id="1696555181932908973">Можете да изпробвате други начини за продължаване към <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -352,6 +353,7 @@
 <translation id="2593272815202181319">Непропорционален</translation>
 <translation id="260403163289591229">Следено</translation>
 <translation id="2604446170045642109">От настройките можете да изключите тъмната тема за сайтовете.</translation>
+<translation id="2605017215201958293">Слушане на тази страница с AI</translation>
 <translation id="2607441479295509868">Не сте в профила си. Влезте отново в него, за да използвате съответните отметки, пароли и др.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> ви покани да осъществите достъп до споделен елемент.</translation>
 <translation id="2625189173221582860">Паролата е копирана</translation>
@@ -876,6 +878,7 @@
 <translation id="496607651705915226">За да запазвате нови пароли в профила си в Google и да ги използвате, актуализирайте услугите за Google Play</translation>
 <translation id="4971753085054504448">Потърсете нещо друго или отворете пълната история на Chrome, за да видите още резултати.</translation>
 <translation id="497421865427891073">Преминаване напред</translation>
+<translation id="497983151715419057">Преглеждайте неактивните си раздели и групи оттук</translation>
 <translation id="498624032394115435">Всеки, който разполага с връзката, може да редактира всички раздели.</translation>
 <translation id="4987271110129728827">Страницата не е намерена. Проверете изписването или потърсете в мрежата.</translation>
 <translation id="4988526792673242964">Страници</translation>
@@ -936,7 +939,6 @@
 <translation id="5222676887888702881">Изход</translation>
 <translation id="5226378907213531272">Ще отключвате екрана си при всяко използване на автомобила</translation>
 <translation id="5227554086496586518">Докоснете, за да видите резултатите от търсенето</translation>
-<translation id="5229736206150093143">Най-новите резултати</translation>
 <translation id="5233638681132016545">Нов раздел</translation>
 <translation id="5235196193381275927">Нещо се обърка при влизането в профила</translation>
 <translation id="5246093389635966745">Редактиране на пряк път в лентата с инструменти</translation>
@@ -1064,6 +1066,7 @@
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5833984609253377421">Споделяне на връзката</translation>
 <translation id="5839058148541733625">Динозавърът в Chrome</translation>
+<translation id="5842871376175639063">Разделите и групите раздели, които не сте използвали от <ph name="DAYS_INACTIVE" /> дни, се преместват тук<ph name="AUTODELETE_SECTION" />. Можете да промените това по всяко време от „<ph name="SETTINGS_TITLE" />“.</translation>
 <translation id="5848257610304005265">Да се отвори ли PDF файлът чрез <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Да се спре ли споделянето?</translation>
 <translation id="5853623416121554550">на пауза</translation>
@@ -1382,6 +1385,7 @@
 <translation id="7088681679121566888">Chrome е актуален</translation>
 <translation id="7106762743910369165">Браузърът се управлява от организацията ви</translation>
 <translation id="7111394291981742152">Chrome ви дава повече контрол над рекламите, които виждате, и ограничава това, което сайтовете могат да научат за вас, когато ви показват персонализирани реклами.</translation>
+<translation id="7115358764509798967">Стандартно за системата</translation>
 <translation id="7117485132243600300">Управление на съдържанието, което следвате, и на предложените теми и търсения</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Прегледани са разрешенията за 1 сайт}other{Прегледани са разрешенията за # сайта}}</translation>
 <translation id="7138678301420049075">Друго</translation>
@@ -1431,6 +1435,7 @@
 <translation id="7304873321153398381">Офлайн сте. Chrome не може да провери паролите ви.</translation>
 <translation id="7313188324932846546">Докоснете за настройване на синхронизацията</translation>
 <translation id="7314734791127433392">Паролите не могат да бъдат проверени</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Разделите и групите раздели, които не са използвани от 1 или повече дни}other{Разделите и групите раздели, които не са използвани от # или повече дни}}</translation>
 <translation id="7324354302972299151">Изпращане на заявка Do Not Track</translation>
 <translation id="7333041109965360609">Отписахте се от известията</translation>
 <translation id="7336259382292148213">Всичко е наред с известията</translation>
@@ -1642,6 +1647,7 @@
 <translation id="8137562778192957619">Няма да е нужно да помните тази парола. Тя ще бъде запазена в Google Мениджър на пароли.</translation>
 <translation id="8152331954420209374">Към Обектив</translation>
 <translation id="8163820386638255770">Потвърдете, че сте вие, за да използвате и запазвате паролите в профила си в Google</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) неактивен елемент}other{(#) неактивни елемента}}</translation>
 <translation id="8186512483418048923">Остават <ph name="FILES" /> файла</translation>
 <translation id="8190358571722158785">Остава 1 ден</translation>
 <translation id="8192765420340770300">Долният лист за вход в профила е отворен на пълната височина</translation>

@@ -793,6 +793,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2310789833878085574">Saglabāt un automātiski aizpildīt</translation>
 <translation id="2312234273148520048">Piedevas un mērces</translation>
 <translation id="2316087952091171402">Mazāk nekā <ph name="UPPER_ESTIMATE" />. Dažas vietnes nākamā apmeklējuma laikā, iespējams, tiks ielādētas lēnāk.</translation>
+<translation id="2316090909467242775">Izmēģiniet šo atkopšanas paroli</translation>
 <translation id="2316159751672436664">Personalizēt pieejamības rīkus Chrome OS iestatījumos</translation>
 <translation id="2316887270356262533">Tiks atbrīvots mazāk nekā 1 MB. Dažas vietnes nākamajā apmeklējumā var ielādēt lēnāk.</translation>
 <translation id="2317259163369394535">Vietnē <ph name="DOMAIN" /> ir jāievada lietotājvārds un parole.</translation>
@@ -1672,6 +1673,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> collas)</translation>
 <translation id="3792826587784915501">Kulta un neatkarīgās (indie) filmas</translation>
 <translation id="3793574014653384240">Nesen notikušo avāriju skaits un cēloņi</translation>
+<translation id="3795624560191557077">Jūs nesen nomainījāt paroli, jo tā tika atklāta publiska datu aizsardzības pārkāpuma dēļ. Ja rodas problēmas, Google paroļu pārvaldnieks var palīdzēt jums pierakstīties.</translation>
 <translation id="3799805948399000906">Tika pieprasīts fonts</translation>
 <translation id="3801297763951514916">Jūs bieži apmeklējat</translation>
 <translation id="380329542618494757">Vārds, uzvārds</translation>
@@ -1952,6 +1954,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="425582637250725228">Veiktās izmaiņas, iespējams, netiks saglabātas.</translation>
 <translation id="4258748452823770588">Paraksts nav derīgs.</translation>
 <translation id="4261046003697461417">Aizsargātiem dokumentiem nevar pievienot piezīmes</translation>
+<translation id="4265635050210404830">Jūsu lojalitātes kartes</translation>
 <translation id="4265872034478892965">Atļāva jūsu administrators</translation>
 <translation id="4269029136757623689">Mājsaimniecības ventilatori</translation>
 <translation id="4269264543938335308">Peldkostīmi</translation>
@@ -2227,6 +2230,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4754461935447132332">Nav atļauts nedrošām vietnēm</translation>
 <translation id="4756388243121344051">Vēsture</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Kods nav derīgs</translation>
 <translation id="4757993714154412917">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium ieteikums jūsu kontu aizsardzībai: pārbaudiet saglabātās paroles.</translation>
 <translation id="4758311279753947758">Pievienot kontaktinformāciju</translation>
 <translation id="4761326898079498987">Skatiet plašāku informāciju</translation>
@@ -2292,6 +2296,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="486459320933704969">Kādam no vecākiem vai aizbildnim ir jāapstiprina, ka jūs varat apmeklēt šo vietni.</translation>
 <translation id="4864801646102013152">Mājokļa labiekārtošana</translation>
 <translation id="4866506163384898554">Nospiediet |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, lai parādītu kursoru.</translation>
+<translation id="4868277513442568587">Lai varētu turpināt izmantot kopīgotās ciļņu grupas, atjauniniet pārlūku Chrome</translation>
 <translation id="4873616204573862158">Brilles</translation>
 <translation id="4873807733347502026">Bloķēt un izmantot peli</translation>
 <translation id="4876305945144899064">Nav lietotājvārda</translation>
@@ -2428,6 +2433,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5089810972385038852">Štats</translation>
 <translation id="5090647584136241764">Pievienojiet cilnes ar līdzīgiem produktiem, lai ērti salīdzinātu sev svarīgo informāciju.</translation>
 <translation id="5093232627742069661">Z-veida locījums</translation>
+<translation id="5093417502834168387">Vai nevarat pierakstīties? Mēģiniet to izdarīt citā veidā.</translation>
 <translation id="5094747076828555589">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu Chromium sistēmā. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="5097099694988056070">Ierīces statistika, piemēram, CPU/RAM lietojums</translation>
 <translation id="5097468150760963273">27 x 39 collas</translation>
@@ -3196,6 +3202,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6388060462449937608">Fitnesa aprīkojums un piederumi</translation>
 <translation id="6389470377220713856">Vārds un uzvārds uz kartes</translation>
 <translation id="6390200185239044127">Z-veida locījums uz pusēm</translation>
+<translation id="6390533465682072118">Atkopšana</translation>
 <translation id="639068771471208680">Daudzdaļīga forma</translation>
 <translation id="6391700400718590966">Ir aizvērta lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
 <translation id="6392799395081100092">Papīrs (velīns)</translation>
@@ -3746,6 +3753,7 @@ Papildu informācija:
 <translation id="7346048084945669753">Ir saistīts:</translation>
 <translation id="7346062987309535530">Galda piederumi</translation>
 <translation id="7346081071264046066">“ar prieku sniegt apstiprinošu atbildi šim ielūgumam uz kāzām”</translation>
+<translation id="7347640536700429009">Uz kartes redzamais vārds un uzvārds nav derīgs</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
 <translation id="7353601530677266744">Komandrinda</translation>
 <translation id="7359588939039777303">Reklāmu rādīšana ir bloķēta.</translation>

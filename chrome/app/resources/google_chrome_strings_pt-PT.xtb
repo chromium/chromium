@@ -35,6 +35,7 @@
 <translation id="141901961143729572">Partilhe a sua opinião</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos.}=1{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. Não é possível reabrir a janela de navegação anónima.}other{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. Não é possível reabrir # janelas de navegação anónima.}}</translation>
 <translation id="1434626383986940139">Apps do Chrome para o Canary</translation>
+<translation id="1439793550875056299">Afixar Chrome</translation>
 <translation id="146866447420868597">Iniciar sessão no Chrome?</translation>
 <translation id="1492280395845991349">Reinicie para concluir a atualização do Chrome</translation>
 <translation id="1497802159252041924">Erro ao instalar: <ph name="INSTALL_ERROR" /></translation>
@@ -353,6 +354,7 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Erro de arranque: execute o instalador como um utilizador normal, não como administrador.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
+<translation id="5600352656975192682">Afixe o Chrome à barra de tarefas para aceder rapidamente ao mesmo em qualquer altura</translation>
 <translation id="5602351063754773347">O Chrome recomenda que a remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Com os perfis do Chrome, pode separar todos os seus itens do Chrome. Crie perfis para amigos e familiares ou separe o trabalho da diversão.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, por isso o Chrome bloqueou-o.</translation>

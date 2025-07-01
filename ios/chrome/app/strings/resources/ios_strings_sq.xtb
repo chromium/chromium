@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Kontakto me dërguesin për t'i kërkuar një lidhje të re</translation>
 <translation id="1013952917065545813">Mund të kthehesh përsëri këtu për të rihapur skedat që ke mbyllur së fundi</translation>
 <translation id="1016495303386450659">Elementi u përditësua</translation>
+<translation id="1017735584092444011">Shfaq "Modalitetin e leximit"</translation>
 <translation id="102916930470544692">Çelësi i kalimit</translation>
 <translation id="1030376737535466765">Hap "Menaxherin e fjalëkalimeve"</translation>
 <translation id="1035980983510608210">Mbyllja e të gjitha skedave do të mbyllë edhe skedat e gozhduara.</translation>
@@ -1237,12 +1238,14 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6074656473835429958">Merr njoftime</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) nuk mund të ngarkohej</translation>
 <translation id="6077126322656614846">Lejohet qasja te "Kamera"</translation>
+<translation id="607730456154980869">Merr përgjigje më shpejt me Gemini në Chrome</translation>
 <translation id="6078236141387574983">Rregullo përsëri lartësinë e fletës</translation>
 <translation id="6084848228346514841">Zgjidh skedat</translation>
 <translation id="6089212833343035912">Kodi PIN i "Menaxherit të fjalëkalimeve të Google"</translation>
 <translation id="6090760257419195752">Paralajmërimet e hequra</translation>
 <translation id="6096965253650248286">U gjetën: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Identifikuar si <ph name="USER_EMAIL" />. Hap cilësimet.</translation>
+<translation id="610083648014322104">Merr përgjigje të përshtatshme bazuar në përmbajtjet e faqes ku ndodhesh</translation>
 <translation id="6103540626693881831">Enkriptimi në pajisje</translation>
 <translation id="611361228753138223">Sajtet që ke vizituar së fundi në këtë pajisje</translation>
 <translation id="611705554202268369">Kryej një shtypje të gjatë për të shtuar te një grup skedash</translation>
@@ -1495,6 +1498,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
 <translation id="6983306615164277634">Mund të prekësh dhe të mbash shtypur shiritin e adresës për të ndryshuar pozicionin.</translation>
 <translation id="6987201788018524855">Eksploro veçoritë e dobishme që ke humbur</translation>
+<translation id="6989636517316575338">Pyet rreth çdo faqeje</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Monitoro çmimet e produkteve dhe merr sinjalizime kur ulet çmimi në ndonjë sajt</translation>
 <translation id="7004032350256606903">Organizata jote kërkon që të shfletosh në mënyrë private.
@@ -1696,6 +1700,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7863211248337747225">Merr aplikacionin</translation>
 <translation id="7865127013871431856">Opsionet e "Përkthe"</translation>
 <translation id="7866872729285243843">Për të marrë listën tënde të leximit në të gjitha pajisjet e tua, aktivizo "Listën e leximit" te cilësimet.</translation>
+<translation id="787364769771947486">Fshih "Modalitetin e leximit"</translation>
 <translation id="7874107544081154809">Plotëso automatikisht formularin me <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Ke fjalëkalime të ripërdorura.</translation>
 <translation id="7887174313503389866">Bëj një turne udhëzues për kontrollet kryesore të privatësisë dhe sigurisë. Për më shumë opsione, shko te cilësimet individuale.</translation>
@@ -1752,6 +1757,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8058655154417507695">Viti i skadimit</translation>
 <translation id="8059533439631660104">Mbyll seksionin.</translation>
 <translation id="8061584726507121204">Historiku</translation>
+<translation id="8069168488983557089">Merr pikat kryesore dhe statistikat që të ndihmojnë të kuptosh çdo temë</translation>
 <translation id="8069394452933076548">Zgjidh se kur zhvendosen te seksioni i skedave joaktive skedat që nuk janë përdorur së fundi.</translation>
 <translation id="8073670137947914548">Shkarkimi përfundoi</translation>
 <translation id="8076492880354921740">Skedat</translation>

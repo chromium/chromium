@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">Buka otomatis grup tab dari perangkat lain</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_YEARS_ONE" /> tahun lalu}other{Dibuat <ph name="NUM_YEARS_MANY" /> tahun lalu}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Tab dan grup yang tidak aktif akan ditutup setelah 1 bulan}other{Tab dan grup yang tidak aktif akan ditutup setelah <ph name="MONTH_COUNT_MANY" /> bulan}}</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1197088940767939838">Oranye</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Buka <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TAB_COUNT2" /> tab}other{Buka <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TAB_COUNT2" /> tab}}</translation>
 <translation id="1273910660700874265">Opsi grup tab <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1300188005269437765">Pilih kapan tab dan grup tab dipindahkan secara otomatis ke bagian tidak aktif.</translation>
 <translation id="1329584516321524826">Baru saja diupdate</translation>
 <translation id="1340839264183302272">Keluar dari grup</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab bersama <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />, dengan label <ph name="CARD_LABEL" />.}other{Luaskan grup tab bersama <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />, dengan label <ph name="CARD_LABEL" />.}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab dikelompokkan</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="1909810060368225529">Pemberitahuan: Perubahan pada Grup Tab bersama ini dapat dilihat oleh semua orang. Siapa saja dapat melakukan perubahan pada grup tab bersama Anda</translation>
+<translation id="1982637982196732906">Pindahkan ke bagian tidak aktif</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Bookmark <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="2055057176188061528">Pilih grup tab atau buat grup tab baru</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome otomatis menutup item di bagian tidak aktif yang tidak Anda gunakan selama <ph name="AUTO_DELETE_DELAY_ONE" /> bulan. Anda dapat menonaktifkan setelan ini sekarang atau kapan saja di Setelan.}other{Chrome otomatis menutup item di bagian tidak aktif yang tidak Anda gunakan selama <ph name="AUTO_DELETE_DELAY_MANY" /> bulan. Anda dapat menonaktifkan setelan ini sekarang atau kapan saja di Setelan.}}</translation>
 <translation id="2118649612461486615">Info toko</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. Tab Samaran Anda tidak akan tersedia.}other{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. # tab Samaran Anda tidak akan tersedia.}}</translation>
 <translation id="2162620598375156287">Sekarang <ph name="CURRENT_PRICE" /> di <ph name="SOURCE_WEBSITE" /></translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">Edit nama grup</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Bookmark tab}other{Bookmark tab}}</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
+<translation id="2371084566192454134">Tab dan grup tab</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Ciutkan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2498435670446402865">Ganti nama grup tab</translation>
 <translation id="2536366509642644298">Grup tab "<ph name="TAB_GROUP_NAME_1" />" dan "<ph name="TAB_GROUP_NAME_2" />" tidak lagi tersedia</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ciutkan <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2569352796411618312">Saran: <ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
 <translation id="257674075312929031">Grup</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Pulihkan dan buka grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Pulihkan dan buka grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Buka situs</translation>
 <translation id="2671423594960767771">Bagikan grup</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">rating</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Tambahkan <ph name="TABS_COUNT_ONE" /> tab ke grup}other{Tambahkan <ph name="TABS_COUNT_MANY" /> tab ke grup}}</translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{Setelah 1 hari tidak aktif}other{Setelah <ph name="DAY_COUNT_MANY" /> hari tidak aktif}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab baru}other{<ph name="MANY_ADDED" /> tab baru}}</translation>
 <translation id="3613492231657284463">Sembunyikan dialog tab tidak aktif</translation>
 <translation id="3619255692378312441">Kelola akses</translation>
@@ -94,6 +101,7 @@
 <translation id="4861953997778766866">Siapa saja dapat melakukan perubahan pada grup tab bersama Anda</translation>
 <translation id="4870911314065352661">Tutup semua tab?</translation>
 <translation id="4871719318659334896">Tutup grup</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Pulihkan dan buka grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Pulihkan dan buka grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Tutup tab}other{Tutup tab}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grup tersimpan (akan menutup tab dan menghapus grup)</translation>
@@ -114,6 +122,7 @@
 <translation id="5627941783489838464">Tidak ada pembaruan tab</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link dari Chrome}other{<ph name="TABS_COUNT_MANY" /> link dari Chrome}}</translation>
 <translation id="5746204836956568669">Kelompokkan <ph name="NUMBER_OF_TABS" /> tab agar dapat bekerja lebih cepat?</translation>
+<translation id="5773295109010386583">Tutup item tidak aktif secara otomatis</translation>
 <translation id="58326064309361797">Tarik tab untuk mengelompokkannya</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5972844218283131174">Batalkan semua pilihan</translation>
@@ -156,6 +165,7 @@
 <translation id="7369451074646620503">Grup tab "<ph name="TAB_GROUP_NAME" />" tidak lagi tersedia</translation>
 <translation id="7452985128687107478">Grup tab disimpan dan diperbarui otomatis di semua perangkat Anda</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item}other{<ph name="TABS_COUNT_MANY" /> item}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Pulihkan <ph name="TABS_COUNT_ONE" /> item yang dipilih}other{Pulihkan <ph name="TABS_COUNT_MANY" /> item yang dipilih}}</translation>
 <translation id="753732157349120914">Pengalih Tab</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> ulasan dari Google}other{<ph name="REVIEWS_COUNT_MANY" /> ulasan dari Google}}</translation>

@@ -326,6 +326,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="4882919381756638075">Parasti vietnēs mikrofons tiek izmantots, lai nodrošinātu noteiktas saziņas funkcijas, piemēram, video tērzēšanu.</translation>
 <translation id="4883854917563148705">Pārvaldītos iestatījumus nevar atiestatīt</translation>
 <translation id="4887024562049524730">Vaicāt, pirms atļaut vietnēm piekļūt jūsu virtuālās realitātes ierīcei un datiem (ieteicams)</translation>
+<translation id="4934780484581617878">Logu pārvaldība</translation>
 <translation id="4936863036653376783">Savas grupas varēsiet skatīt ciļņu grupu sadaļā visās savās ierīcēs.</translation>
 <translation id="4945443401464700059">Vietnei <ph name="SITE" /> ir liegts izmantot jūsu informāciju</translation>
 <translation id="4953688446973710931">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju automātiski lejupielādēt vairākus failus. Kad šis slēdzis ir izslēgts, vietnes nevar automātiski lejupielādēt vairākus failus.</translation>
@@ -333,6 +334,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="4972737347717125191">Atļaut vietnēm pieprasīt atļauju izmantot virtuālās realitātes ierīces un datus</translation>
 <translation id="497421865427891073">Doties uz priekšu</translation>
 <translation id="4976702386844183910">Pēdējoreiz apmeklēta: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Uzzināt vairāk par Discover plūsmu</translation>
 <translation id="4994033804516042629">Nav atrasta neviena kontaktpersona</translation>
 <translation id="4996978546172906250">Kopīgošanas veids:</translation>
 <translation id="5001526427543320409">Trešo pušu sīkfaili</translation>
@@ -582,6 +584,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="8067883171444229417">Atskaņot videoklipu</translation>
 <translation id="8068648041423924542">Nevar atlasīt sertifikātu.</translation>
 <translation id="8077120325605624147">Jebkurā jūsu apmeklētā vietnē var tikt rādītas jebkādas reklāmas</translation>
+<translation id="80798452873915119">Vietnes var pieprasīt atļauju pārvaldīt logus visos jūsu displejos</translation>
 <translation id="8087000398470557479">Šis saturs ir no vietnes <ph name="DOMAIN_NAME" />, ko nodrošina Google.</translation>
 <translation id="8088603949666785339">Vairāk opciju šeit: <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Ciļņu skatīšana lietotņu sarakstā</translation>

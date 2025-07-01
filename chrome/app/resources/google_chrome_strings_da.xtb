@@ -35,6 +35,7 @@
 <translation id="141901961143729572">Del dine tanker</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen.}=1{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. Dit inkognitovindue åbnes ikke igen.}one{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. # inkognitovindue åbnes ikke igen.}other{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
+<translation id="1439793550875056299">Fastgør Chrome</translation>
 <translation id="146866447420868597">Vil du logge ind i Chrome?</translation>
 <translation id="1492280395845991349">Genstart for at gennemføre Chrome-opdateringen</translation>
 <translation id="1497802159252041924">Installationsfejl: <ph name="INSTALL_ERROR" /></translation>
@@ -353,6 +354,7 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Opstartsfejl: Kør installationsprogrammet som almindelig bruger, ikke som administrator.</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
+<translation id="5600352656975192682">Fastgør Chrome til proceslinjen, så du hurtigt kan få adgang til den</translation>
 <translation id="5602351063754773347">Chrome anbefaler, at du fjerner den. <ph name="BEGIN_LINK" />Få flere oplysninger om understøttede udvidelser<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Du kan organisere alle dine ting i Chrome ved hjælp af Chrome-profiler. Opret profiler til venner og familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være skadelig, så Chrome har blokeret den.</translation>

@@ -793,6 +793,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2310789833878085574">Spremi i automatski popuni</translation>
 <translation id="2312234273148520048">Začini i umaci</translation>
 <translation id="2316087952091171402">Manje od <ph name="UPPER_ESTIMATE" />. Neke će se web-lokacije možda učitavati sporije prilikom vašeg sljedećeg posjeta.</translation>
+<translation id="2316090909467242775">Pokušajte unijeti ovu zaporku za oporavak</translation>
 <translation id="2316159751672436664">U postavkama Chrome OS-a prilagodite svoje alate za pristupačnost</translation>
 <translation id="2316887270356262533">Oslobodit će se manje od 1 MB. Neke bi se web-lokacije pri sljedećem otvaranju mogle sporije učitavati.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> zahtijeva korisničko ime i zaporku.</translation>
@@ -1672,6 +1673,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Kultni i nezavisni filmovi</translation>
 <translation id="3793574014653384240">Broj nedavnih rušenja i njihovi razlozi</translation>
+<translation id="3795624560191557077">Nedavno ste promijenili zaporku koja je pronađena u javnom neovlaštenom pristupu podacima. Ako imate poteškoća, Google upravitelj zaporki može vam pomoći s prijavom.</translation>
 <translation id="3799805948399000906">Zatraženi font</translation>
 <translation id="3801297763951514916">Često posjećujete</translation>
 <translation id="380329542618494757">Ime</translation>
@@ -1953,6 +1955,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="425582637250725228">Unesene promjene ne mogu se spremiti.</translation>
 <translation id="4258748452823770588">Potpis nije valjan</translation>
 <translation id="4261046003697461417">Dodavanje bilješke zaštićenim dokumentima nije moguće</translation>
+<translation id="4265635050210404830">Vaše kartice vjernosti</translation>
 <translation id="4265872034478892965">Dopustio administrator</translation>
 <translation id="4269029136757623689">Kućni ventilatori</translation>
 <translation id="4269264543938335308">Kupaći kostimi</translation>
@@ -2228,6 +2231,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4754461935447132332">Nije dopušteno za web-lokacije koje nisu sigurne</translation>
 <translation id="4756388243121344051">&amp;Povijest</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Kôd nije važeći</translation>
 <translation id="4757993714154412917">Upravo ste unijeli zaporku na obmanjujućoj web-lokaciji. Da bi zaštitio vaše račune, Chromium preporučuje da provjerite spremljene zaporke.</translation>
 <translation id="4758311279753947758">Dodaj pod. za kontakt</translation>
 <translation id="4761326898079498987">Pregledajte za više pojedinosti</translation>
@@ -2293,6 +2297,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="486459320933704969">Roditelj ili skrbnik mora ti dopustiti da posjetiš ovu web-lokaciju</translation>
 <translation id="4864801646102013152">Uređenje doma</translation>
 <translation id="4866506163384898554">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| da bi se prikazao pokazivač</translation>
+<translation id="4868277513442568587">Da biste nastavili upotrebljavati dijeljene grupe kartica, ažurirajte Chrome</translation>
 <translation id="4873616204573862158">Naočale</translation>
 <translation id="4873807733347502026">Zaključavanje i upotreba miša</translation>
 <translation id="4876305945144899064">Nema korisničkog imena</translation>
@@ -2429,6 +2434,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5089810972385038852">Savezna država</translation>
 <translation id="5090647584136241764">Dodajte kartice sa sličnim proizvodima da biste jednostavno usporedili pojedinosti koje su vam važne</translation>
 <translation id="5093232627742069661">Cik-cak presavijanje</translation>
+<translation id="5093417502834168387">Imate li probleme s prijavom? Pokušajte na neki drugi način</translation>
 <translation id="5094747076828555589">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; Chromium smatra da njegov sigurnosni certifikat nije pouzdan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
 <translation id="5097099694988056070">Statistika uređaja kao što je upotreba procesora/RAM-a</translation>
 <translation id="5097468150760963273">27 x 39 inča</translation>
@@ -3197,6 +3203,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6388060462449937608">Oprema i dodaci za fitnes</translation>
 <translation id="6389470377220713856">Ime na kartici</translation>
 <translation id="6390200185239044127">Cik-cak presavijanje napola</translation>
+<translation id="6390533465682072118">Oporavak</translation>
 <translation id="639068771471208680">Oblik u više dijelova</translation>
 <translation id="6391700400718590966">Zatvoren je list obavijesti da nema podudarnih vjerodajnica za sigurno plaćanje</translation>
 <translation id="6392799395081100092">Papir (vellum)</translation>
@@ -3747,6 +3754,7 @@ Dodatne pojedinosti:
 <translation id="7346048084945669753">Korisnik je povezan:</translation>
 <translation id="7346062987309535530">Pribor za jelo</translation>
 <translation id="7346081071264046066">"uzbuđeno odgovori 'Da' na pozivnicu za vjenčanje"</translation>
+<translation id="7347640536700429009">Ime na kartici nije važeće</translation>
 <translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="7353601530677266744">Naredbeni redak</translation>
 <translation id="7359588939039777303">Oglasi su blokirani.</translation>

@@ -37,6 +37,7 @@
 <translation id="141901961143729572">ሀሳቦችዎን ያጋሩ</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome ዝማኔን ጨርሷል። ልክ ዳግም እንዳስጀመሩ የቅርብ ጊዜውን ስሪት መጠቀም ይችላሉ። ከዚያም የአሁን ትሮችዎ ዳግም ይከፈታሉ።}=1{Chrome ዝማኔን ጨርሷል። ልክ ዳግም እንዳስጀመሩት የቅርብ ጊዜውን ስሪት መጠቀም ይችላሉ። ከዚያም የአሁን ትሮችዎ ዳግም ይከፈታሉ። የእርስዎ ማንነትን የማያሳውቅ መስኮት እንደገና አይከፈትም።}one{Chrome ዝማኔን ጨርሷል። ልክ ዳግም እንዳስጀመሩት የቅርብ ጊዜውን ስሪት መጠቀም ይችላሉ። ከዚያ የአሁን ትሮችዎ ዳግም ይከፈታሉ። የእርስዎ # ማንነትን የማያሳውቅ መስኮት እንደገና አይከፈትም።}other{Chrome ዝማኔን ጨርሷል። ልክ ዳግም እንዳስጀመሩት የቅርቡን ስሪት መጠቀም ይችላሉ። ከዚያ የአሁን ትሮችዎ ዳግም ይከፈታሉ። የእርስዎ # ማንነትን የማያሳውቁ መስኮቶች እንደገና አይከፈቱም።}}</translation>
 <translation id="1434626383986940139">የChrome Canary መተግበሪያዎች</translation>
+<translation id="1439793550875056299">Chromeን ፒን አድርግ</translation>
 <translation id="146866447420868597">ወደ CHROME ይግቡ?</translation>
 <translation id="1492280395845991349">የChrome ዝማኔን ለመጨረስ ዳግም ያስጀምሩ</translation>
 <translation id="1497802159252041924">የጭነት ስህተት፦ <ph name="INSTALL_ERROR" /></translation>
@@ -361,6 +362,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">የማስነሻ ስህተት፦ እባክዎ መጫኛውን እንደ አስተዳዳሪ ሳይሆን እንደ መደበኛ ተጠቃሚ ያሂዱ።</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
+<translation id="5600352656975192682">በማንኛውም ጊዜ በፍጥነት ወደ Chrome ለመሄድ ፒን ያድርጉት</translation>
 <translation id="5602351063754773347">Chrome እንዲያስወግዱት ይመክራል። <ph name="BEGIN_LINK" />ስለሚደገፉ ቅጥያዎች የበለጠ ይወቁ<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">በChromium መገለጫዎች ሁሉንም የChromium ነገሮችዎን መለየት ይችላሉ። ለጓደኞች እና ለቤተሰብ መገለጫዎችን ይፍጠሩ፣ ወይም በሥራ እና በመዝናኛ መካከል ይከፋፈሉ።</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> አደገኛ ሊሆን ስለሚችል Chrome አግዶታል።</translation>

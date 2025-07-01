@@ -152,6 +152,7 @@
 <translation id="1671236975893690980">正在等待下載…</translation>
 <translation id="1672586136351118594">不要再顯示</translation>
 <translation id="1680919990519905526">使用「Google 智能鏡頭」購買圖片<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">並在 <ph name="MONTHS_ARCHIVED" /> 個月後關閉</translation>
 <translation id="1687482373098770139">你即將會在「追蹤中」分頁看到「<ph name="SITE_NAME" />」的內容和簡介。你追蹤的網站和搜尋內容會儲存在 Google 帳戶中。隨時可前往設定管理追蹤項目。</translation>
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="1696555181932908973">你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
@@ -352,6 +353,7 @@
 <translation id="2593272815202181319">等寬</translation>
 <translation id="260403163289591229">追蹤中</translation>
 <translation id="2604446170045642109">您可在設定中關閉網站深色主題背景。</translation>
+<translation id="2605017215201958293">使用 AI 聆聽此頁的內容</translation>
 <translation id="2607441479295509868">已登出。重新登入即可使用帳戶中的書籤、密碼和其他資料。</translation>
 <translation id="2620314865574742210"><ph name="NAME" />邀請你存取共用項目。</translation>
 <translation id="2625189173221582860">已複製密碼</translation>
@@ -876,6 +878,7 @@
 <translation id="496607651705915226">如要在 Google 帳戶中儲存及使用新密碼，請更新 Google Play 服務。</translation>
 <translation id="4971753085054504448">請嘗試搜尋其他內容，或開啟完整 Chrome 記錄以查看更多結果。</translation>
 <translation id="497421865427891073">往前</translation>
+<translation id="497983151715419057">在此查看閒置分頁和群組</translation>
 <translation id="498624032394115435">任何擁有連結的人均可編輯所有分頁。</translation>
 <translation id="4987271110129728827">找不到該頁面。請檢查拼字，或嘗試執行網絡搜尋。</translation>
 <translation id="4988526792673242964">網頁</translation>
@@ -936,7 +939,6 @@
 <translation id="5222676887888702881">登出</translation>
 <translation id="5226378907213531272">每次使用汽車時都要解鎖螢幕</translation>
 <translation id="5227554086496586518">輕按以查看搜尋結果</translation>
-<translation id="5229736206150093143">最新搜尋結果</translation>
 <translation id="5233638681132016545">新分頁</translation>
 <translation id="5235196193381275927">登入時發生問題</translation>
 <translation id="5246093389635966745">編輯工具列捷徑</translation>
@@ -1064,6 +1066,7 @@
 <translation id="583281660410589416">不明</translation>
 <translation id="5833984609253377421">分享連結</translation>
 <translation id="5839058148541733625">Chrome 恐龍</translation>
+<translation id="5842871376175639063">閒置 <ph name="DAYS_INACTIVE" /> 天的分頁和分頁群組會移到這裡，<ph name="AUTODELETE_SECTION" />。你可隨時在「<ph name="SETTINGS_TITLE" />」中變更此設定。</translation>
 <translation id="5848257610304005265">要使用「<ph name="APP_NAME" />」開啟 PDF 嗎？</translation>
 <translation id="5849288995120328556">要停止分享嗎？</translation>
 <translation id="5853623416121554550">已暫停</translation>
@@ -1432,6 +1435,7 @@
 <translation id="7304873321153398381">離線。Chrome 無法檢查密碼。</translation>
 <translation id="7313188324932846546">輕按即可設定同步</translation>
 <translation id="7314734791127433392">無法檢查密碼</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{閒置 1 天或以上的分頁和分頁群組}other{閒置 # 天或以上的分頁和分頁群組}}</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
 <translation id="7333041109965360609">已取消訂閱通知</translation>
 <translation id="7336259382292148213">通知權限沒有問題</translation>
@@ -1643,6 +1647,7 @@
 <translation id="8137562778192957619">您不需記住此密碼。系統會將密碼儲存至「Google 密碼管理工具」。</translation>
 <translation id="8152331954420209374">前往「智能鏡頭」</translation>
 <translation id="8163820386638255770">如要將密碼儲存至 Google 帳戶及使用當中的密碼，請驗證身分。</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) 個閒置項目}other{(#) 個閒置項目}}</translation>
 <translation id="8186512483418048923">尚餘 <ph name="FILES" /> 個檔案</translation>
 <translation id="8190358571722158785">尚餘 1 天</translation>
 <translation id="8192765420340770300">登入頁底面板宜家顯示喺成個畫面</translation>

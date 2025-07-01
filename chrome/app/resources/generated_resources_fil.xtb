@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Di-wasto o sira ang file</translation>
 <translation id="1040761927998636252">Walang pangalang bookmark para sa <ph name="URL" /></translation>
 <translation id="1041175011127912238">Hindi tumutugon ang page na ito</translation>
+<translation id="1041181446722933623">Naka-save lang ang “<ph name="LOCAL_BOOKMARK" />” sa device na ito. Para magamit ito sa iba mo pang device, i-save ito sa “<ph name="ACCOUNT_FOLDER" />” sa iyong account.</translation>
 <translation id="1041263367839475438">Mga available na device</translation>
 <translation id="1041607257468256895">Pamahalaan ang mga pahintulot sa lokasyon sa website sa Chrome</translation>
 <translation id="1042174272890264476">Ang iyong computer ay may naka-built in din na RLZ library ng <ph name="SHORT_PRODUCT_NAME" />. Nagtatalaga ang RLZ ng hindi natatangi at hindi personal na nakakapagpakilalang tag upang sukatin ang mga paghahanap at paggamit ng <ph name="SHORT_PRODUCT_NAME" /> na nahimok ng isang partikular na kampanya sa pag-promote. Lumalabas minsan ang mga label na ito sa mga query sa Paghahanap sa Google sa <ph name="PRODUCT_NAME" />.</translation>
@@ -609,6 +610,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1418559532423038045">Aalisin ang <ph name="VM_NAME" /> sa iyong <ph name="DEVICE_TYPE" />. Ide-delete nito ang lahat ng app at data sa virtual machine!</translation>
 <translation id="1418882096915998312">Kasalukuyang nag-e-enroll sa Enterprise</translation>
 <translation id="1418954524306642206">Mag-browse para matukoy ang PPD ng iyong printer</translation>
+<translation id="1419086691207546433">Magdagdag ng mga extension para manatiling organisado, pasimplehin ang mga gawain, at pahusayin ang iyong pag-browse</translation>
 <translation id="1421334842435688311">Impormasyon ng Cellular Location</translation>
 <translation id="1421514190500081936">Maglagay ng dahilan sa pag-download ng data na ito:</translation>
 <translation id="1422159345171879700">I-load ang Mga Hindi Ligtas na Script</translation>
@@ -1929,7 +1931,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2312219318583366810">URL ng Page</translation>
 <translation id="2314165183524574721">Nakatago ang kasalukuyang setting ng visibility</translation>
 <translation id="2314774579020744484">Ginagamit na wika kapag nagsasalin ng mga page</translation>
-<translation id="2316090909467242775">Subukan ang password sa pag-recover na ito</translation>
 <translation id="2316129865977710310">Hindi, salamat</translation>
 <translation id="2316433409811863464">Streaming ng App</translation>
 <translation id="2316709634732130529">Gamitin ang Iminumungkahing Password</translation>
@@ -3341,6 +3342,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3309330461362844500">Profile ID ng Certificate</translation>
 <translation id="3310379801837527592">Sumali sa grupo ng tab kasama ni <ph name="OWNER_FIRST_NAME" /> at <ph name="NUM_OTHER_MEMBERS" /> pang iba</translation>
 <translation id="331080746368555063">Puwedeng magsama ang mga pribadong site ng mga bagay tulad ng intranet ng iyong kumpanya</translation>
+<translation id="3311007761540106761">Default ng system</translation>
 <translation id="3311445899360743395">Posibleng alisin sa device na ito ang data na nauugnay sa app na ito.</translation>
 <translation id="3312470654018965389">Kino-configure ang Linux container</translation>
 <translation id="3312883087018430408">Para maghanap sa partikular na site o bahagi ng Chrome, i-type ang shortcut nito sa address bar, kasunod ang iyong gustong keyboard shortcut. Halimbawa, para maghanap lang sa Mga Bookmark, i-type ang "@bookmarks," at pagkatapos ay pindutin ang Tab o Space.</translation>
@@ -4054,7 +4056,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> (na) extension</translation>
 <translation id="3794792524918736965">I-on ang Windows Hello</translation>
 <translation id="379509625511193653">Naka-off</translation>
-<translation id="3795624560191557077">Nagpalit ka kamakailan ng password na nakita sa isang pampublikong breach sa data. Kung magkakaproblema, matutulungan ka ng Google Password Manager na mag-sign in.</translation>
 <translation id="3796215473395753611">alt + pataas na arrow</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, gamitin ang pakanang arrow key para mag-preview ng boses</translation>
 <translation id="3796648294839530037">Mga Paboritong Network:</translation>
@@ -5876,7 +5877,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 na May RSA Encryption</translation>
 <translation id="5090637338841444533">Hindi pinapayagang i-track ang posisyon ng iyong camera</translation>
 <translation id="5091636240353511739">Ipakita ang PIN</translation>
-<translation id="5093417502834168387">Nagkakaproblema sa pag-sign in? Sumubok ng ibang paraan</translation>
 <translation id="5093477827231450397">Listahan ng mga site na na-block mo na ayaw mong magmungkahi ng mga ad sa iba pang site</translation>
 <translation id="5093569275467863761">Back/Forward Cached na Subframe ng Incognito: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Magagawa mong magbukas at mag-edit ng mga sinusuportahang file mula sa Files app o iba pang app gamit ang app na ito. Para kontrolin kung aling mga file ang magbubukas sa app na ito bilang default, <ph name="BEGIN_LINK" />alamin kung paano magtakda ng mga default na app sa iyong device<ph name="END_LINK" />.</translation>
@@ -7661,7 +7661,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6388577073199278153">Hindi ma-access ang iyong mobile account</translation>
 <translation id="6390020764191254941">Ilipat ang Tab sa Bagong Window</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Wala}=1{Para sa <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> at 1 pa}one{Para sa <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> at {COUNT} pa}other{Para sa <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> at {COUNT} pa}}</translation>
-<translation id="6390533465682072118">Pag-recover</translation>
 <translation id="6391131092053186625">Ang iyong device IMEI ay <ph name="IMEI_NUMBER" />. Puwedeng gamitin ang numerong ito para makatulong na ma-activate ang serbisyo.</translation>
 <translation id="6393156038355142111">Magmungkahi ng malakas na password</translation>
 <translation id="6393550101331051049">Pinapayagang magpakita ng hindi secure na content</translation>
@@ -10572,6 +10571,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8425213833346101688">Baguhin</translation>
 <translation id="8425492902634685834">I-pin sa Taskbar</translation>
 <translation id="8425768983279799676">Maaari mong gamitin ang iyong PIN para i-unlock ang iyong device.</translation>
+<translation id="8426697201161711396">Mag-sign in sa Chrome para makuha ang iyong mga password at higit pa sa lahat ng device mo</translation>
 <translation id="8427213022735114808">Ipinapadala ng Dictation ang iyong boses sa Google para mabigyang-daan ang voice-typing sa anumang field ng text.</translation>
 <translation id="8427292751741042100">naka-embed sa anumang host</translation>
 <translation id="8428213095426709021">Mga Setting</translation>

@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Ugyldig eller beskadiget fil</translation>
 <translation id="1040761927998636252">Unavngivet bogmærke for <ph name="URL" /></translation>
 <translation id="1041175011127912238">Denne side svarer ikke</translation>
+<translation id="1041181446722933623">"<ph name="LOCAL_BOOKMARK" />" gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den i "<ph name="ACCOUNT_FOLDER" />" på din konto.</translation>
 <translation id="1041263367839475438">Tilgængelige enheder</translation>
 <translation id="1041607257468256895">Administrer lokationstilladelser for websites i Chrome</translation>
 <translation id="1042174272890264476">Computeren leveres også med <ph name="SHORT_PRODUCT_NAME" />s RLZ-samling indbygget. RLZ tildeler et ikke-unikt, ikke-personligt identificerbart tag til at måle søgninger og <ph name="SHORT_PRODUCT_NAME" />-brug, der er drevet af en bestemt kampagne. Disse etiketter vises nogle gange i Googles søgeforespørgsler i <ph name="PRODUCT_NAME" />.</translation>
@@ -609,6 +610,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1418559532423038045">Fjerner <ph name="VM_NAME" /> fra din <ph name="DEVICE_TYPE" />. Dette sletter alle apps og data på den virtuelle maskine.</translation>
 <translation id="1418882096915998312">Tilmelding via Enterprise-opgraderingen er i gang</translation>
 <translation id="1418954524306642206">Gennemse for at angive PPD-filen for printeren</translation>
+<translation id="1419086691207546433">Tilføj udvidelser for at bevare overblikket, forenkle opgaver og forbedre din browseroplevelse</translation>
 <translation id="1421334842435688311">Oplysninger om mobillokation</translation>
 <translation id="1421514190500081936">Angiv en årsag til, at du vil downloade disse data:</translation>
 <translation id="1422159345171879700">Indlæs usikre scripts</translation>
@@ -1930,7 +1932,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2312219318583366810">Webadresse</translation>
 <translation id="2314165183524574721">Den aktuelle indstilling for synlighed er Skjult</translation>
 <translation id="2314774579020744484">Anvendt sprog ved oversættelse af sider</translation>
-<translation id="2316090909467242775">Prøv denne adgangskode til gendannelse</translation>
 <translation id="2316129865977710310">Nej tak</translation>
 <translation id="2316433409811863464">Appstreaming</translation>
 <translation id="2316709634732130529">Brug foreslået adgangskode</translation>
@@ -3342,6 +3343,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3309330461362844500">Certifikatprofilens id</translation>
 <translation id="3310379801837527592">Deltag i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og <ph name="NUM_OTHER_MEMBERS" /> anden</translation>
 <translation id="331080746368555063">Private websites kan f.eks. omfatte din virksomheds intranet</translation>
+<translation id="3311007761540106761">Systemstandard</translation>
 <translation id="3311445899360743395">Data, der er knyttet til denne app, bliver fjernet fra enheden.</translation>
 <translation id="3312470654018965389">Konfigurerer Linux-containeren</translation>
 <translation id="3312883087018430408">Hvis du vil søge på et bestemt website eller en del af Chrome, skal du angive genvejen til det i adresselinjen efterfulgt af din foretrukne tastaturgenvej. Du kan f.eks. angive "@bogmærker" og derefter trykke på Tab- eller mellemrumstasten for udelukkende at søge efter bogmærker.</translation>
@@ -4055,7 +4057,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> udvidelser</translation>
 <translation id="3794792524918736965">Aktivér Windows Hello</translation>
 <translation id="379509625511193653">Fra</translation>
-<translation id="3795624560191557077">Du har for nylig ændret en adgangskode, der blev lækket i forbindelse med et offentligt brud på datasikkerheden. Hvis du har problemer, kan Google Adgangskodeadministrator hjælpe dig med at logge ind.</translation>
 <translation id="3796215473395753611">Alt + pil op</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, brug højrepil til at høre et eksempel på stemmen</translation>
 <translation id="3796648294839530037">Favoritter netværk:</translation>
@@ -5877,7 +5878,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
 <translation id="5090637338841444533">Har ikke tilladelse til at spore din kameraposition</translation>
 <translation id="5091636240353511739">Vis pinkode</translation>
-<translation id="5093417502834168387">Har du problemer med at logge ind? Prøv en anden metode</translation>
 <translation id="5093477827231450397">Liste over websites, du har blokeret, som du ikke vil have skal foreslå annoncer på andre websites</translation>
 <translation id="5093569275467863761">Inkognito-underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Du kan åbne og redigere understøttede filer med denne app via appen Filer eller andre apps. Hvis du vil styre, hvilke filer der som standard skal åbnes i denne app, kan du <ph name="BEGIN_LINK" />se, hvordan du angiver standardapps på din enhed<ph name="END_LINK" />.</translation>
@@ -7662,7 +7662,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6388577073199278153">Det var ikke muligt at få adgang til din mobilkonto</translation>
 <translation id="6390020764191254941">Flyt fanen til et nyt vindue</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Ingen}=1{Til <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> og 1 anden}one{Til <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> og {COUNT} anden}other{Til <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> og {COUNT} andre}}</translation>
-<translation id="6390533465682072118">Gendannelse</translation>
 <translation id="6391131092053186625">Din enheds IMEI er <ph name="IMEI_NUMBER" />. Dette nummer kan bruges til at aktivere tjenesten.</translation>
 <translation id="6393156038355142111">Foreslå en stærk adgangskode</translation>
 <translation id="6393550101331051049">Har tilladelse til at vise usikkert indhold</translation>
@@ -7895,6 +7894,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6560151649238390891">Forslaget blev indsat</translation>
 <translation id="656065428026159829">Se mere</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Denne filtype (<ph name="TYPE" />) kan være skadelig. Gem kun denne fil, hvis du har tillid til <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Gem systemlogs i mappen Downloads.</translation>
 <translation id="656293578423618167">Filstien eller -navnet er for langt. Gem med et kortere navn eller på en anden placering.</translation>
 <translation id="6563002009564846727">Se importerede certifikater fra Windows</translation>
@@ -9700,6 +9700,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7830833461614351956">Vil du kopiere <ph name="NUM_OF_FILES" /> filer til <ph name="CLOUD_PROVIDER" />, så de kan åbnes?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Dine gemte tilføjelser til ordbogen vises her</translation>
+<translation id="7834832693620032149">Hvis du vil dele lyd, skal du dele en fane eller et vindue i stedet</translation>
 <translation id="7836577093182643605">Liste over emner, du har blokeret, som du ikke vil have delt med websites</translation>
 <translation id="7836745198769390202">Du har i øjeblikket <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> m.m. Din organisation kan se og administrere disse data</translation>
 <translation id="7836850009646241041">Prøv at trykke på din sikkerhedsnøgle igen</translation>
@@ -10570,6 +10571,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8425213833346101688">Skift</translation>
 <translation id="8425492902634685834">Fastgør til proceslinje</translation>
 <translation id="8425768983279799676">Du kan bruge pinkoden til at låse din enhed op.</translation>
+<translation id="8426697201161711396">Log ind i Chrome for at se dine adgangskoder m.m. på alle dine enheder</translation>
 <translation id="8427213022735114808">Diktering sender din stemme til Google, så du kan indtale tekst i alle tekstfelter.</translation>
 <translation id="8427292751741042100">indlejret på hvilken som helst host</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
@@ -11309,6 +11311,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8940081510938872932">Computeren foretager sig for mange ting i øjeblikket. Prøv igen senere.</translation>
 <translation id="8940888110818450052">Valgmuligheder for login</translation>
 <translation id="8941173171815156065">Tilbagekald tilladelsen "<ph name="PERMISSION" />"</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> deler et vindue og lyd.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> er slået fra</translation>
 <translation id="894191600409472540">Opret stærke adgangskoder</translation>
 <translation id="8942714513622077633">Vil du annullere konfigurationen af Microsoft 365?</translation>

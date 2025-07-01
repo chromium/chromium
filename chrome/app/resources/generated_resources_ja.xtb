@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">ファイルが無効であるか壊れています</translation>
 <translation id="1040761927998636252">「<ph name="URL" />」の名前のないブックマーク</translation>
 <translation id="1041175011127912238">このページは応答していません</translation>
+<translation id="1041181446722933623">「<ph name="LOCAL_BOOKMARK" />」は、このデバイスのみに保存されます。他のデバイスで使用するには、アカウントの「<ph name="ACCOUNT_FOLDER" />」に保存してください。</translation>
 <translation id="1041263367839475438">使用可能なデバイス</translation>
 <translation id="1041607257468256895">Chrome でのウェブサイトに対する位置情報の利用許可を管理する</translation>
 <translation id="1042174272890264476">お使いのパソコンには <ph name="SHORT_PRODUCT_NAME" /> の RLZ ライブラリも組み込まれています。RLZ は、個人を特定できないタグを割り当てて、特定の販促キャンペーンで生じた検索や <ph name="SHORT_PRODUCT_NAME" /> の利用状況を計測します。これらのラベルは <ph name="PRODUCT_NAME" /> で Google 検索キーワード内に表示されることがあります。</translation>
@@ -608,6 +609,7 @@
 <translation id="1418559532423038045"><ph name="DEVICE_TYPE" /> から <ph name="VM_NAME" /> を削除します。仮想マシン内のすべてのアプリとデータが削除されます。</translation>
 <translation id="1418882096915998312">Enterprise の登録中</translation>
 <translation id="1418954524306642206">プリンタの PPD を参照して指定します</translation>
+<translation id="1419086691207546433">拡張機能を追加して、情報を整理したり、タスクを簡素化したり、ブラウジング環境をカスタマイズしたりできます</translation>
 <translation id="1421334842435688311">モバイルの位置情報</translation>
 <translation id="1421514190500081936">このデータをダウンロードする理由を入力してください。</translation>
 <translation id="1422159345171879700">安全でないスクリプトを読み込む</translation>
@@ -1910,7 +1912,6 @@
 <translation id="2312219318583366810">ページの URL</translation>
 <translation id="2314165183524574721">現在の公開設定は非表示です</translation>
 <translation id="2314774579020744484">この言語を使用してページを翻訳します</translation>
-<translation id="2316090909467242775">この再設定パスワードをお試しください</translation>
 <translation id="2316129865977710310">今はしない</translation>
 <translation id="2316433409811863464">アプリ ストリーミング</translation>
 <translation id="2316709634732130529">推奨されたパスワードを使用</translation>
@@ -3319,6 +3320,7 @@
 <translation id="3309330461362844500">証明書プロファイル ID</translation>
 <translation id="3310379801837527592"><ph name="OWNER_FIRST_NAME" /> さんと他 <ph name="NUM_OTHER_MEMBERS" /> 人のタブグループに参加</translation>
 <translation id="331080746368555063">非公開サイトには、会社のイントラネットなどが含まれます</translation>
+<translation id="3311007761540106761">システムのデフォルト</translation>
 <translation id="3311445899360743395">このアプリに関連付けられているデータはこのデバイスから削除されます。</translation>
 <translation id="3312470654018965389">Linux コンテナを設定しています</translation>
 <translation id="3312883087018430408">特定のサイトや Chrome のセクションを検索するには、アドレスバーにそれらのショートカットを入力して、設定したキーボード ショートカットを押します。たとえばブックマークのみを検索する場合は、「@bookmarks」と入力して Tab または Space キーを押します。</translation>
@@ -4031,7 +4033,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 件の拡張機能</translation>
 <translation id="3794792524918736965">Windows Hello をオンにする</translation>
 <translation id="379509625511193653">オフ</translation>
-<translation id="3795624560191557077">一般に報告されているデータ侵害で検出されたパスワードを最近変更しました。問題が発生した場合は、Google パスワード マネージャーを使用してログインできます。</translation>
 <translation id="3796215473395753611">Alt+上矢印</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />、音声をプレビューするには右矢印キーを使用します</translation>
 <translation id="3796648294839530037">お気に入りのネットワーク:</translation>
@@ -5850,7 +5851,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 with RSA 暗号化</translation>
 <translation id="5090637338841444533">カメラ位置の追跡を許可しないサイト</translation>
 <translation id="5091636240353511739">PIN を表示</translation>
-<translation id="5093417502834168387">ログインできない場合は、別の方法を試すことができます</translation>
 <translation id="5093477827231450397">他のサイトに広告を提案しないようブロックしたウェブサイトのリスト</translation>
 <translation id="5093569275467863761">バックフォワード キャッシュのシークレット サブフレーム: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ファイルアプリからこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />デバイスでデフォルトのアプリを設定する方法<ph name="END_LINK" />をご確認ください。</translation>
@@ -7631,7 +7631,6 @@
 <translation id="6388577073199278153">モバイル アカウントにアクセスできません</translation>
 <translation id="6390020764191254941">タブを新しいウィンドウに移動</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{なし}=1{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />、他 1 個}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />、他 {COUNT} 個}}</translation>
-<translation id="6390533465682072118">再設定</translation>
 <translation id="6391131092053186625">デバイスの IMEI は <ph name="IMEI_NUMBER" /> です。この番号を使用して、サービスを有効にできます。</translation>
 <translation id="6393156038355142111">安全なパスワードを自動生成</translation>
 <translation id="6393550101331051049">安全でないコンテンツの表示を許可するサイト</translation>
@@ -7863,6 +7862,7 @@
 <translation id="6560151649238390891">候補を挿入しました</translation>
 <translation id="656065428026159829">もっと見る</translation>
 <translation id="6561726789132298588">Enter</translation>
+<translation id="6561877237303825108">このタイプのファイル（<ph name="TYPE" />）は危険な可能性があります。<ph name="ORIGIN" /> を信頼できる場合のみ、このファイルを保存してください</translation>
 <translation id="6562117348069327379">システムログをダウンロード ディレクトリに保存します。</translation>
 <translation id="656293578423618167">ファイルのパスまたは名前が長すぎます。名前を短くするか、別の場所に保存してください。</translation>
 <translation id="6563002009564846727">Windows からインポートした証明書を表示する</translation>
@@ -9665,6 +9665,7 @@
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> 個のファイルを <ph name="CLOUD_PROVIDER" /> にコピーして開きますか？</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">保存したカスタムの単語がここに表示されます</translation>
+<translation id="7834832693620032149">音声を共有するには、タブまたはウィンドウを共有してください</translation>
 <translation id="7836577093182643605">サイトと共有しないようブロックしたトピックのリスト</translation>
 <translation id="7836745198769390202">現在、<ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" /> などのデータがあります。組織はこのデータを確認、管理できます。</translation>
 <translation id="7836850009646241041">もう一度セキュリティ キーをタッチしてください</translation>
@@ -10535,6 +10536,7 @@
 <translation id="8425213833346101688">変更</translation>
 <translation id="8425492902634685834">タスクバーに固定</translation>
 <translation id="8425768983279799676">PIN を使用してデバイスのロックを解除できます。</translation>
+<translation id="8426697201161711396">Chrome にログインすると、お使いのすべてのデバイスでブックマークや設定などにアクセスできます</translation>
 <translation id="8427213022735114808">音声入力では、テキスト欄で音声入力できるように Google に音声を送信します。</translation>
 <translation id="8427292751741042100">ホストに埋め込まれたページ</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -11272,6 +11274,7 @@
 <translation id="8940081510938872932">お使いのパソコンは現在、多くの処理を実施しています。しばらくしてからもう一度お試しください。</translation>
 <translation id="8940888110818450052">ログイン オプション</translation>
 <translation id="8941173171815156065">権限「<ph name="PERMISSION" />」を取り消します</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> がウィンドウと音声を共有しています。</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> はオフになっています</translation>
 <translation id="894191600409472540">安全なパスワードを作成してください</translation>
 <translation id="8942714513622077633">Microsoft 365 のセットアップをキャンセルしますか？</translation>

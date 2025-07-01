@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Kết thúc tác vụ được làm nổi bật.</translation>
 <translation id="1553461853655228091">Chromium cần có quyền sử dụng máy ảnh của bạn để tạo bản đồ 3D về các khu vực xung quanh bạn</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Tiện ích này không còn được hỗ trợ nữa. Chromium khuyên bạn nên xoá tiện ích này.}other{Các tiện ích này không còn được hỗ trợ nữa. Chromium khuyên bạn nên xoá các tiện ích này.}}</translation>
+<translation id="1562320819937089394">Ghim Chromium</translation>
 <translation id="1574377791422810894">Công cụ đảm bảo an toàn của Chromium</translation>
 <translation id="1594928384848033697">Chromium muốn xoá dữ liệu của bạn trong Trình quản lý mật khẩu. Nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
@@ -145,7 +146,7 @@
 <translation id="2910007522516064972">Giới thiệu về &amp;Chromium</translation>
 <translation id="2915996080311180594">Khởi động lại sau</translation>
 <translation id="2928420929544864228">Đã cài đặt xong.</translation>
-<translation id="2933336679234709858">Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu Chromium vào Tài khoản Google của bạn.</translation>
+<translation id="2933336679234709858">Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chromium vào Tài khoản Google của bạn.</translation>
 <translation id="2945997411976714835">Lỗi cài đặt: Trình cài đặt không thể bắt đầu quá trình.</translation>
 <translation id="2970426615109535079">Tổ chức bạn quản lý Chromium</translation>
 <translation id="2977470724722393594">Chromium đã được cập nhật</translation>
@@ -521,6 +522,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="8010081455002666927">Tự động phát hiện</translation>
 <translation id="8013436988911883588">Sau khi Chromium có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.</translation>
+<translation id="8031714377769448844">Ghim Chromium vào thanh tác vụ để truy cập nhanh bất cứ lúc nào</translation>
 <translation id="80471789339884597">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại tất cả trình duyệt trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Luôn hiện lối tắt Tìm kiếm hình ảnh</translation>
 <translation id="8077498902115777962">Tắt Chromium đối với các ứng dụng chạy trong nền</translation>

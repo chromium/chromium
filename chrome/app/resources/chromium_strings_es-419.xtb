@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Finaliza la tarea destacada.</translation>
 <translation id="1553461853655228091">Chromium necesita permiso para acceder a la cámara a fin de crear un mapa 3D de tu entorno</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Esta extensión ya no es compatible. Chromium te recomienda quitarla.}other{Estas extensiones ya no son compatibles. Chromium te recomienda quitarlas.}}</translation>
+<translation id="1562320819937089394">Fijar Chromium</translation>
 <translation id="1574377791422810894">Herramientas de seguridad de Chromium</translation>
 <translation id="1594928384848033697">Chromium quiere borrar tus datos del Administrador de contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Tu administrador necesita que reinicies Chromium para aplicar una actualización}=1{Tu administrador necesita que reinicies Chromium para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{Tu administrador necesita que reinicies Chromium para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
@@ -515,6 +516,7 @@
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8010081455002666927">Detección automática</translation>
 <translation id="8013436988911883588">Una vez que Chromium tenga acceso, los sitios web podrán solicitarte acceso.</translation>
+<translation id="8031714377769448844">Fija Chromium a la barra de tareas para acceder rápidamente en cualquier momento</translation>
 <translation id="80471789339884597">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar todos los navegadores antes de usarlo.</translation>
 <translation id="8054112667659782652">Mostrar siempre el atajo de Búsqueda con imágenes</translation>
 <translation id="8077498902115777962">Inhabilitar la ejecución de Chromium en segundo plano para las apps</translation>

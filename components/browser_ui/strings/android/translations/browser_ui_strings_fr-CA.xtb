@@ -326,6 +326,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="4882919381756638075">Les sites utilisent généralement votre micro pour proposer des fonctionnalités de communication, comme le clavardage vidéo</translation>
 <translation id="4883854917563148705">Les paramètres gérés ne peuvent pas être réinitialisés</translation>
 <translation id="4887024562049524730">Demander avant d'autoriser les sites à utiliser votre appareil et vos données de réalité virtuelle (recommandé)</translation>
+<translation id="4934780484581617878">Gestion des fenêtres</translation>
 <translation id="4936863036653376783">Vous trouverez vos groupes dans la section des groupes d'onglets sur tous vos appareils</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> n'est pas autorisé à utiliser vos informations sur</translation>
 <translation id="4953688446973710931">Lorsque cette option est activée, les sites peuvent demander de télécharger automatiquement plusieurs fichiers. Lorsqu'elle est désactivée, les sites ne peuvent pas télécharger automatiquement plusieurs fichiers.</translation>
@@ -333,6 +334,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="4972737347717125191">Les sites peuvent demander à utiliser des données et des appareils de réalité virtuelle</translation>
 <translation id="497421865427891073">Avancer</translation>
 <translation id="4976702386844183910">Dernière visite : <ph name="DATE" /></translation>
+<translation id="4978178243417029856">En savoir plus sur le flux Découvertes</translation>
 <translation id="4994033804516042629">Aucun contact trouvé</translation>
 <translation id="4996978546172906250">Partager par</translation>
 <translation id="5001526427543320409">Témoins tiers</translation>
@@ -582,6 +584,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="8067883171444229417">Lire la vidéo</translation>
 <translation id="8068648041423924542">Impossible de sélectionner le certificat.</translation>
 <translation id="8077120325605624147">Tous les sites que vous visitez peuvent vous suggérer n’importe quelle annonce</translation>
+<translation id="80798452873915119">Les sites peuvent demander à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="8087000398470557479">Ce contenu provient de <ph name="DOMAIN_NAME" />, fourni par Google.</translation>
 <translation id="8088603949666785339">Plus d'options dans le <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Afficher les onglets dans votre liste d'applis</translation>

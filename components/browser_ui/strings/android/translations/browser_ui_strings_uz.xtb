@@ -69,6 +69,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="1799920918471566157">Chrome maslahatlari</translation>
 <translation id="1816835383954230954">Yoqilsa, Chrome tezroq ishlaydi va JavaScript ishlatadigan funksiyalar bexato ishlaydi. Yoqilmasa, unumdorlik pasayadi, ammo V8 hujumlarga yaxshiroq qarshilik qiladi.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> AR ishlatishi uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali kamerani yoqing.</translation>
+<translation id="1881806992065048905">Yangi varaq sahifasi dizayni quyi ekrani</translation>
 <translation id="1887786770086287077">Bu qurilmada Joylashuvni aniqlash xizmati yoqilmagan, uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>
 <translation id="1906181697255754968">Saytlar odatda yopilmagan ishlaringizni saqlash maqsadida qurilmangizdagi fayllar va jildlar bilan ishlaydi</translation>
 <translation id="1915307458270490472">Tugatish</translation>
@@ -326,6 +327,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="4882919381756638075">Saytlar odatda video chat kabi aloqa xizmatlarida mikrofondan foydalanadi</translation>
 <translation id="4883854917563148705">Boshqariladigan sozlamalarni oʻzgartirish imkonsiz</translation>
 <translation id="4887024562049524730">Saytlar virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishi oldidan ruxsat olsin (tavsiya etiladi)</translation>
+<translation id="4934780484581617878">Oyna boshqaruvi</translation>
 <translation id="4936863036653376783">Guruhlaringizni barcha qurilmalaringizda varaqlar guruhi boʻlimida topishingiz mumkin</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> shaxsiy maʼlumotlaringizdan foydalanishi bloklangan</translation>
 <translation id="4953688446973710931">Yoqilsa, saytlar avtomat tarzda bir nechta fayl yuklab olish uchun ruxsat soʻrashi mumkin Oʻchirilsa, yuklay olmaydi.</translation>
@@ -333,6 +335,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="4972737347717125191">Saytlar virtual reallik qurilmalari va axborotlardan foydalanishga ruxsat soʻray oladi</translation>
 <translation id="497421865427891073">Oldinga</translation>
 <translation id="4976702386844183910">Oxirgi tashrif: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Discover tasmasi haqida batafsil</translation>
 <translation id="4994033804516042629">Hech qanday kontakt topilmadi</translation>
 <translation id="4996978546172906250">Yuborish usuli</translation>
 <translation id="5001526427543320409">Tashqi cookie fayllar</translation>
@@ -457,6 +460,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
 <translation id="640163077447496506">Muddati bugun tugaydi</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Mavzullar termasi</translation>
 <translation id="6439114592976064011">Saytlarga virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishni taqiqlash</translation>
 <translation id="6447842834002726250">Cookie fayllari</translation>
 <translation id="6452138246455930388">Ochiq varaqda narx pasaydi: <ph name="OLD_PRICE" />dan <ph name="NEW_PRICE" />ga, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -560,6 +564,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="7791543448312431591">Qo‘shish</translation>
 <translation id="780301667611848630">Kerak emas</translation>
 <translation id="7804248752222191302">Sayt kameradan foydalanmoqda</translation>
+<translation id="7805832099057502789">Yangi varaq sahifasi dizayni quyi ekrani toʻliq hajmda ochildi</translation>
 <translation id="7807060072011926525">Google taqdim qilgan</translation>
 <translation id="7815680994978050279">Xavfli yuklanma bloklandi</translation>
 <translation id="7835852323729233924">Mediani ijro etish</translation>
@@ -579,9 +584,11 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
 <translation id="8042586301629853791">Saralash:</translation>
 <translation id="8051193500142930381">Kamera ishlatadigan funksiyalar ishlamaydi</translation>
+<translation id="8056330801132235235">Chrome (standart)</translation>
 <translation id="8067883171444229417">Videoni ijro qilish</translation>
 <translation id="8068648041423924542">Sertifikatni tanlab bo‘lmadi.</translation>
 <translation id="8077120325605624147">Siz ochgan har qanday sayt istalgan reklamani koʻrsatishi mumkin</translation>
+<translation id="80798452873915119">Saytlar barcha displeylaringizda oynalarni boshqarishni soʻrashi mumkin</translation>
 <translation id="8087000398470557479"><ph name="DOMAIN_NAME" /> sayti kontenti, Google tomonidan taqdim etildi.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />: boshqa amallar</translation>
 <translation id="8112925981674547014">Ilovalar roʻyxatida varaqlarni ochish</translation>

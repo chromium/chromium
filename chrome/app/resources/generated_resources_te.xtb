@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">ఫైల్ చెల్లదు లేదా పాడైంది</translation>
 <translation id="1040761927998636252"><ph name="URL" /> కోసం పేరులేని బుక్‌మార్క్</translation>
 <translation id="1041175011127912238">ఈ పేజీ ప్రతిస్పందించడం లేదు</translation>
+<translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />” ఈ డివైజ్‌‌లో మాత్రమే సేవ్ అవుతుంది. మీ ఇతర డివైజ్‌‌ల్లో దీన్ని ఉపయోగించడానికి, మీ ఖాతాలో దీన్ని "<ph name="ACCOUNT_FOLDER" />"లో సేవ్ చేయండి.</translation>
 <translation id="1041263367839475438">అందుబాటులో ఉన్న పరికరాలు</translation>
 <translation id="1041607257468256895">Chromeలో వెబ్‌సైట్ లొకేషన్ అనుమతులను మేనేజ్ చేయండి</translation>
 <translation id="1042174272890264476">మీ కంప్యూటర్‌‍లో కూడా <ph name="SHORT_PRODUCT_NAME" /> యొక్క అంతర్గత RLZ లైబ్రరీ ఉంటుంది. RLZ సెర్చ్‌లను మరియు నిర్దిష్ట ప్రమోషనల్ ప్రచారం ద్వారా ఉపయోగించబడిన <ph name="SHORT_PRODUCT_NAME" /> వినియోగాన్ని లెక్కించడానికి, ప్రత్యేకం కానటువంటి, వ్యక్తిగతంగా గుర్తించలేని ట్యాగ్‌ను సమర్పిస్తుంది. ఈ లేబుళ్లు కొన్నిసార్లు <ph name="PRODUCT_NAME" />లోని Google Search ప్రశ్నలలో కనిపిస్తాయి.</translation>
@@ -608,6 +609,7 @@
 <translation id="1418559532423038045">మీ <ph name="DEVICE_TYPE" /> నుండి <ph name="VM_NAME" />‌ని తొలగిస్తుంది. ఇది వర్చువల్ మెషిన్‌లోని అన్ని యాప్‌లు, డేటాను తొలగిస్తుంది!</translation>
 <translation id="1418882096915998312">Enterpriseను ఎన్‌రోల్ చేయడం ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="1418954524306642206">మీ ప్రింటర్ PPDని పేర్కొనడానికి బ్రౌజ్ చేయండి</translation>
+<translation id="1419086691207546433">క్రమ పద్ధతిలో పెట్టుకోవడానికి, టాస్క్‌లను సింప్లిఫై చేయడానికి, మీ బ్రౌజింగ్‌ను మెరుగుపరచడానికి ఎక్స్‌టెన్షన్‌లను జోడించండి</translation>
 <translation id="1421334842435688311">సెల్యులార్ లొకేషన్ సమాచారం</translation>
 <translation id="1421514190500081936">ఈ డేటాను డౌన్‌లోడ్ చేయడానికి దయచేసి కారణాన్ని ఎంటర్ చేయండి:</translation>
 <translation id="1422159345171879700">అసురక్షిత స్క్రిప్ట్‌లను లోడ్ చేయి</translation>
@@ -1926,7 +1928,6 @@
 <translation id="2312219318583366810">పేజీ URL</translation>
 <translation id="2314165183524574721">ప్రస్తుత విజిబిలిటీ సెట్టింగ్, 'దాచబడింది'గా సెట్ చేయబడింది</translation>
 <translation id="2314774579020744484">పేజీలను అనువదిస్తున్నప్పుడు ఉపయోగించే భాష</translation>
-<translation id="2316090909467242775">ఈ రికవరీ పాస్‌వర్డ్‌ను ట్రై చేయండి</translation>
 <translation id="2316129865977710310">వద్దు, ధన్యవాదాలు</translation>
 <translation id="2316433409811863464">యాప్ స్ట్రీమింగ్</translation>
 <translation id="2316709634732130529">సూచించిన పాస్‌వర్డ్‌ని ఉపయోగించండి</translation>
@@ -3338,6 +3339,7 @@
 <translation id="3309330461362844500">సర్టిఫికెట్ ప్రొఫైల్ ID</translation>
 <translation id="3310379801837527592"><ph name="OWNER_FIRST_NAME" />, ఇంకా మరో <ph name="NUM_OTHER_MEMBERS" /> వ్యక్తితో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి</translation>
 <translation id="331080746368555063">ప్రైవేట్ సైట్‌లలో మీ కంపెనీ ఇంట్రానెట్ వంటి విషయాలు ఉండవచ్చు</translation>
+<translation id="3311007761540106761">సిస్టమ్ ఆటోమేటిక్ సెట్టింగ్</translation>
 <translation id="3311445899360743395">ఈ యాప్‌తో అనుబంధించబడిన డేటా ఈ పరికరం నుండి తీసివేయబడవచ్చు.</translation>
 <translation id="3312470654018965389">Linux కంటెయినర్‌ను కాన్ఫిగర్ చేయడం జరుగుతోంది</translation>
 <translation id="3312883087018430408">నిర్దిష్ట సైట్ లేదా Chromeలో భాగాన్ని సెర్చ్ చేయడానికి, అడ్రస్ బార్‌లో సైట్ షార్ట్‌కట్‌ను టైప్ చేసి, ఆ తర్వాత మీ ప్రాధాన్య కీబోర్డ్ షార్ట్‌కట్‌ను టైప్ చేయండి. ఉదాహరణకు, Bookmarksను మాత్రమే సెర్చ్ చేయాలంటే, "@bookmarks" అని టైప్ చేసి, ఆపై Tab లేదా Spaceను నొక్కండి.</translation>
@@ -3506,7 +3508,7 @@
 <translation id="3434512374684753970">ఆడియో &amp; వీడియో</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" మీ <ph name="CODE_TYPE" />ని అభ్యర్థిస్తోంది</translation>
 <translation id="3435738964857648380">భద్రత</translation>
-<translation id="343578350365773421">కాగితం లేదు</translation>
+<translation id="343578350365773421">పేపర్ లేదు</translation>
 <translation id="3435896845095436175">ప్రారంభించండి</translation>
 <translation id="3437397693214267762">మీ Outlook క్యాలెండర్, SharePoint, OneDrive ఫైల్స్‌ను చూడండి</translation>
 <translation id="3438633801274389918">నింజా</translation>
@@ -4051,7 +4053,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ఎక్స్‌టెన్షన్‌లు</translation>
 <translation id="3794792524918736965">Windows Helloను ఆన్ చేయండి</translation>
 <translation id="379509625511193653">ఆఫ్ చేయబడి ఉంది</translation>
-<translation id="3795624560191557077">పబ్లిక్ డేటా ఉల్లంఘనలో బహిర్గతమైన పాస్‌వర్డ్‌ను మీరు ఇటీవల మార్చారు. సమస్యగా ఉంటే, సైన్ ఇన్ చేయడానికి Google Password Manager మీకు సహాయపడగలదు.</translation>
 <translation id="3796215473395753611">alt + పై వైపు బాణం గుర్తు</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, వాయిస్‌ను ప్రివ్యూ చేయడానికి కుడి వైపు బాణం గుర్తు కీని ఉపయోగించండి</translation>
 <translation id="3796648294839530037">ఇష్టమైన నెట్‌వర్క్‌లు:</translation>
@@ -5873,7 +5874,6 @@
 <translation id="5088534251099454936">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">మీ కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి అనుమతించబడలేదు</translation>
 <translation id="5091636240353511739">PINను చూడండి</translation>
-<translation id="5093417502834168387">సైన్ ఇన్ చేయడంలో సమస్య ఉందా? మరొక మార్గాన్ని ట్రై చేయండి</translation>
 <translation id="5093477827231450397">ఇతర సైట్‌లకు యాడ్‌లను సూచించకూడదు అనే ఉద్దేశ్యంతో మీరు బ్లాక్ చేసిన సైట్‌ల యొక్క లిస్ట్</translation>
 <translation id="5093569275467863761">అజ్ఞాత వెనుకకు-ముందుకు కాష్ సబ్‌ఫ్రేమ్: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">మీ Files యాప్ లేదా ఇతర యాప్‌ల నుండి ఈ యాప్‌తో, సపోర్ట్ ఉన్న ఫైల్స్‌ను మీరు తెరవవచ్చు, ఎడిట్ చేయవచ్చు. ఈ యాప్‌తో ఆటోమేటిక్‌గా ఏ ఫైల్స్ తెరుచుకోవాలి అనే దానిని కంట్రోల్ చేయడానికి, <ph name="BEGIN_LINK" />మీ పరికరంలో ఆటోమేటిక్ యాప్‌లను సెట్ చేయడం ఎలాగో తెలుసుకోండి<ph name="END_LINK" />.</translation>
@@ -7657,7 +7657,6 @@
 <translation id="6388577073199278153">మీ మొబైల్ ఖాతాను యాక్సెస్ చేయడం సాధ్యం కాదు</translation>
 <translation id="6390020764191254941">ట్యాబ్‌ను కొత్త విండోకు తరలించు</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{ఏవీ లేవు}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ఇంకా మరో 1 వెబ్‌సైట్ కోసం}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ఇంకా మరో {COUNT} వెబ్‌సైట్‌ల కోసం}}</translation>
-<translation id="6390533465682072118">రికవరీ</translation>
 <translation id="6391131092053186625">మీ పరికర IMEI <ph name="IMEI_NUMBER" />. సర్వీస్‌ను యాక్టివేట్ చేయడంలో సహాయపడటానికి ఈ నంబర్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="6393156038355142111">శక్తివంతమైన పాస్‌వర్డ్‌ని సూచించు</translation>
 <translation id="6393550101331051049">సురక్షితం కాని కంటెంట్‌ను చూపడానికి అనుమతించబడింది</translation>
@@ -10562,6 +10561,7 @@
 <translation id="8425213833346101688">మార్చండి</translation>
 <translation id="8425492902634685834">టాస్క్‌బార్‌కి పిన్ చేయి</translation>
 <translation id="8425768983279799676">మీరు మీ పిన్‌ని ఉపయోగించి మీ పరికరాన్ని అన్‌లాక్ చేయవచ్చు.</translation>
+<translation id="8426697201161711396">మీ డివైజ్‌‌లన్నింటిలో మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, మరిన్నింటిని పొందడానికి Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="8427213022735114808">మీరు రాయాలనుకునేది Googleకు చెబితే చాలు వెంటనే వచన రూపంలోకి మారుస్తుంది.</translation>
 <translation id="8427292751741042100">ఏదైనా హోస్ట్‌లో పొందుపరచబడింది</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>

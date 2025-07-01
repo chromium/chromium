@@ -38,6 +38,7 @@
 <translation id="1547469039832541117">Tiek pabeigts atzīmētais uzdevums.</translation>
 <translation id="1553461853655228091">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai, lai varētu izveidot jūsu apkārtnes 3D karti</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Šis paplašinājums vairs netiek atbalstīts. Chromium iesaka to noņemt.}zero{Šie paplašinājumi vairs netiek atbalstīti. Chromium iesaka tos noņemt.}one{Šie paplašinājumi vairs netiek atbalstīti. Chromium iesaka tos noņemt.}other{Šie paplašinājumi vairs netiek atbalstīti. Chromium iesaka tos noņemt.}}</translation>
+<translation id="1562320819937089394">Piespraust pārlūku Chromium</translation>
 <translation id="1574377791422810894">Chromium drošības rīki</translation>
 <translation id="1594928384848033697">Chromium pieprasa dzēst jūsu paroļu pārvaldnieka datus. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium.}=1{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
@@ -518,6 +519,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
 <translation id="8010081455002666927">Noteikt automātiski</translation>
 <translation id="8013436988911883588">Tiklīdz pārlūkam Chromium tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.</translation>
+<translation id="8031714377769448844">Piespraudiet pārlūku Chromium uzdevumu joslai, lai jebkurā laikā varētu tam ātri piekļūt.</translation>
 <translation id="80471789339884597">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē visas pārlūkprogrammas.</translation>
 <translation id="8054112667659782652">Vienmēr rādīt funkcijas Attēlu meklēšana saīsni</translation>
 <translation id="8077498902115777962">Atspējot Chromium darbību fonā lietotnēm</translation>

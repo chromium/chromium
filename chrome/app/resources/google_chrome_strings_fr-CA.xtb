@@ -37,6 +37,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="141901961143729572">Faites part de vos commentaires</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau.}=1{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. Votre fenêtre de navigation privée ne s'ouvrira pas à nouveau.}one{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. # fenêtre de navigation privée ne sera pas rouverte.}other{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1434626383986940139">Applications Google Chrome Canary</translation>
+<translation id="1439793550875056299">Épingler Chrome</translation>
 <translation id="146866447420868597">Se connecter à Chrome?</translation>
 <translation id="1492280395845991349">Relancer pour terminer la mise à jour de Chrome</translation>
 <translation id="1497802159252041924">Erreur d'installation : <ph name="INSTALL_ERROR" /></translation>
@@ -360,6 +361,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Erreur de démarrage : veuillez exécuter le programme d'installation en tant qu'utilisateur normal et non en tant qu'administrateur.</translation>
 <translation id="5596627076506792578">Autres options</translation>
+<translation id="5600352656975192682">Épinglez Chrome à votre barre des tâches pour y accéder rapidement à tout moment</translation>
 <translation id="5602351063754773347">Chrome vous recommande de la retirer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Avec les profils Chromium, vous pouvez séparer toutes vos données Chrome. Créez des profils pour vos amis et votre famille, ou pour dissocier travail et divertissement.</translation>
 <translation id="565744775970812598">Chrome a bloqué le fichier <ph name="FILE_NAME" />, car il peut être dangereux.</translation>

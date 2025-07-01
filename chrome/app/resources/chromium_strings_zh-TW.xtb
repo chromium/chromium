@@ -38,6 +38,7 @@
 <translation id="1547469039832541117">結束所選工作。</translation>
 <translation id="1553461853655228091">Chromium 需要取得攝影機權限，才能根據你的周遭環境建立 3D 地圖</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Chromium 不再支援這項擴充功能，建議你移除。}other{Chromium 不再支援這些擴充功能，建議你移除。}}</translation>
+<translation id="1562320819937089394">釘選 Chromium</translation>
 <translation id="1574377791422810894">Chromium 安全工具</translation>
 <translation id="1594928384848033697">Chromium 要刪除密碼管理工具資料。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{系統管理員要求你重新啟動 Chromium，以套用更新}=1{系統管理員要求你重新啟動 Chromium，以套用更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chromium，以套用更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
@@ -520,6 +521,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8010081455002666927">自動偵測</translation>
 <translation id="8013436988911883588">Chromium 取得存取權後，網站將可要求你授予存取權。</translation>
+<translation id="8031714377769448844">將 Chromium 釘選到工作列，隨時都能快速存取</translation>
 <translation id="80471789339884597">感謝你安裝本服務。你必須重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8054112667659782652">一律顯示「圖片搜尋」捷徑</translation>
 <translation id="8077498902115777962">停用 Chromium 在應用程式背景執行的功能</translation>

@@ -1917,7 +1917,6 @@
 <translation id="2312219318583366810">გვერდის URL</translation>
 <translation id="2314165183524574721">ხილვადობის პარამეტრად ამჟამად მითითებულია დამალული</translation>
 <translation id="2314774579020744484">გვერდების თარგმნისას გამოყენებული ენა</translation>
-<translation id="2316090909467242775">ცადეთ ეს სათადარიგო პაროლი</translation>
 <translation id="2316129865977710310">არა, გმადლობთ</translation>
 <translation id="2316433409811863464">აპის სტრიმინგი</translation>
 <translation id="2316709634732130529">შემოთავაზებული პაროლის გამოყენება</translation>
@@ -4043,7 +4042,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> გაფართოება</translation>
 <translation id="3794792524918736965">ჩართეთ Windows Hello</translation>
 <translation id="379509625511193653">გამორთული</translation>
-<translation id="3795624560191557077">თქვენ მიერ ახლახან შეცვლილი პაროლი აღმოჩნდა მონაცემთა საჯარო დარღვევაში. პრობლემის შემთხვევაში Google პაროლების მმართველი დაგეხმარებათ შესვლაში.</translation>
 <translation id="3796215473395753611">alt + ზემოთ მიმართული ისარი</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, მარჯვნივ მიმართული ისრიანი კლავიშის გამოყენებით წინასწარ შეამოწმეთ ხმა</translation>
 <translation id="3796648294839530037">რჩეული ქსელები:</translation>
@@ -5865,7 +5863,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512-ით RSA დაშიფვრა</translation>
 <translation id="5090637338841444533">თქვენი კამერის პოზიციისთვის თვალის მიდევნება დაუშვებელია</translation>
 <translation id="5091636240353511739">PIN-კოდის ჩვენება</translation>
-<translation id="5093417502834168387">პრობლემა გაქვთ შესვლისას? სხვა მეთოდით ცდა</translation>
 <translation id="5093477827231450397">თქვენ მიერ დაბლოკილი იმ საიტების სია, რომლებმაც არ გსურთ, სხვა საიტებს უკარნახოს რეკლამა</translation>
 <translation id="5093569275467863761">ქეშირებული ქვეფრეიმი უკან-წინ გადასვლის შესაძლებლობით: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ამ აპის მეშვეობით შეგიძლიათ გახსნათ და დაარედაქტიროთ მხარდაჭერილი ფაილები ფაილების აპიდან ან სხვა აპებიდან. იმისთვის, რომ გააკონტროლოთ, ნაგულისხმევად რომელმა ფაილებმა გახსნას ეს აპი, <ph name="BEGIN_LINK" />შეიტყვეთ, როგორ დააყენოთ ნაგულისხმევი აპები თქვენს მოწყობილობაზე<ph name="END_LINK" />.</translation>
@@ -7650,7 +7647,6 @@
 <translation id="6388577073199278153">თქვენს მობილურ ანგარიშზე წვდომას ვერ ხერხდება</translation>
 <translation id="6390020764191254941">ჩანართის ახალ ფანჯარაში გადატანა</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{არცერთი}=1{<ph name="EXAMPLE_DOMAIN_1" />-ის, <ph name="EXAMPLE_DOMAIN_2" />-ისა და 1 სხვისთვის}other{<ph name="EXAMPLE_DOMAIN_1" />-ის, <ph name="EXAMPLE_DOMAIN_2" />-ისა და {COUNT} სხვისთვის}}</translation>
-<translation id="6390533465682072118">აღდგენა</translation>
 <translation id="6391131092053186625">თქვენი მოწყობილობის IMEI არის <ph name="IMEI_NUMBER" />. აღნიშნული ნომერი დაგეხმარებათ სერვისის გააქტიურებაში.</translation>
 <translation id="6393156038355142111">ძლიერი პაროლის შემოთავაზება</translation>
 <translation id="6393550101331051049">დაუცველი კონტენტის ჩვენება დაშვებულია</translation>

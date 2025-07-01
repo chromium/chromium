@@ -37,6 +37,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="141901961143729572">Rhannwch eich meddyliau</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor.}=1{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich ffenestr Anhysbys yn ailagor.}two{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}few{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}many{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}other{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}}</translation>
 <translation id="1434626383986940139">Apiau Chrome Canary</translation>
+<translation id="1439793550875056299">Pinio Chrome</translation>
 <translation id="146866447420868597">Mewngofnodi i Chrome?</translation>
 <translation id="1492280395845991349">Ail-lansiwch i orffen diweddariad Chrome</translation>
 <translation id="1497802159252041924">Gwall gosod: <ph name="INSTALL_ERROR" /></translation>
@@ -361,6 +362,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Gwall cychwyn: rhedeg y gosodwr fel defnyddiwr arferol, nid fel gweinyddwr.</translation>
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
+<translation id="5600352656975192682">Pinio Chrome i'ch bar tasgau i'w gyrraedd yn gyflym unrhyw bryd</translation>
 <translation id="5602351063754773347">Mae Chrome yn argymell eich bod yn ei dynnu. <ph name="BEGIN_LINK" />Dysgu rhagor am estyniadau a gefnogir<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Gallwch wahanu eich holl bethau Chrome gyda phroffiliau Chrome. Creu proffiliau ar gyfer eich ffrindiau a'ch teulu, neu rannu rhwng gwaith a hwyl.</translation>
 <translation id="565744775970812598">Gallai <ph name="FILE_NAME" /> fod yn beryglus, felly mae Chrome wedi ei rwystro.</translation>

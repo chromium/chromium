@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">檔案無效或毀損</translation>
 <translation id="1040761927998636252"><ph name="URL" /> 的未命名書籤</translation>
 <translation id="1041175011127912238">這個網頁沒有回應</translation>
+<translation id="1041181446722933623">「<ph name="LOCAL_BOOKMARK" />」只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶的「<ph name="ACCOUNT_FOLDER" />」。</translation>
 <translation id="1041263367839475438">可用的裝置</translation>
 <translation id="1041607257468256895">在 Chrome 中管理網站位置存取權</translation>
 <translation id="1042174272890264476">你的電腦也內建了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 程式庫。RLZ 可指定非重複、非個人的可辨識標記，以評估特定宣傳廣告活動所提升的搜尋數與 <ph name="SHORT_PRODUCT_NAME" /> 使用量。這些標籤有時也會顯示在 <ph name="PRODUCT_NAME" /> 的 Google 搜尋查詢中。</translation>
@@ -608,6 +609,7 @@
 <translation id="1418559532423038045">從「<ph name="DEVICE_TYPE" />」移除 <ph name="VM_NAME" />。請注意，這麼做會刪除虛擬機器中的所有應用程式和資料！</translation>
 <translation id="1418882096915998312">正在進行 Enterprise 註冊作業</translation>
 <translation id="1418954524306642206">請瀏覽並指定印表機 PPD</translation>
+<translation id="1419086691207546433">新增擴充功能，保持井然有序、簡化工作及提升上網體驗</translation>
 <translation id="1421334842435688311">行動網路位置資訊</translation>
 <translation id="1421514190500081936">請提供下載這項資料的原因：</translation>
 <translation id="1422159345171879700">載入不安全的指令碼</translation>
@@ -1915,7 +1917,6 @@
 <translation id="2312219318583366810">網頁網址</translation>
 <translation id="2314165183524574721">目前的瀏覽權限設為「隱藏」</translation>
 <translation id="2314774579020744484">翻譯網頁內容所使用的語言</translation>
-<translation id="2316090909467242775">試試這組復原密碼</translation>
 <translation id="2316129865977710310">不，謝謝</translation>
 <translation id="2316433409811863464">應用程式串流</translation>
 <translation id="2316709634732130529">使用建議的密碼</translation>
@@ -3324,6 +3325,7 @@
 <translation id="3309330461362844500">憑證設定檔 ID</translation>
 <translation id="3310379801837527592">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人的分頁群組</translation>
 <translation id="331080746368555063">私人網站可能會包含貴公司的內部網路等項目</translation>
+<translation id="3311007761540106761">系統預設</translation>
 <translation id="3311445899360743395">系統可能會從這部裝置中移除與這個應用程式相關聯的資料。</translation>
 <translation id="3312470654018965389">正在設定 Linux 容器</translation>
 <translation id="3312883087018430408">如要搜尋特定網站或 Chrome，請在網址列輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。舉例來說，如果只要搜尋書籤，請輸入「@bookmarks」，然後按下 Tab 鍵或空白鍵。</translation>
@@ -4037,7 +4039,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 項擴充功能</translation>
 <translation id="3794792524918736965">開啟 Windows Hello</translation>
 <translation id="379509625511193653">關閉</translation>
-<translation id="3795624560191557077">你最近變更的密碼已在公開的資料侵害事件中外洩。如有問題，Google 密碼管理工具可協助你登入。</translation>
 <translation id="3796215473395753611">alt + 向上鍵</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />，點選播放按鈕可試聽語音</translation>
 <translation id="3796648294839530037">慣用的網路：</translation>
@@ -5857,7 +5858,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 (使用 RSA 加密)</translation>
 <translation id="5090637338841444533">不得追蹤攝影機位置</translation>
 <translation id="5091636240353511739">顯示 PIN 碼</translation>
-<translation id="5093417502834168387">登入時發生問題嗎？試試其他方法</translation>
 <translation id="5093477827231450397">這份網站封鎖清單列出了你不希望向其他網站提供廣告建議的網站</translation>
 <translation id="5093569275467863761">無痕模式往返快取子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">你可以在「檔案」應用程式或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
@@ -7637,7 +7637,6 @@
 <translation id="6388577073199278153">無法存取你的行動裝置帳戶</translation>
 <translation id="6390020764191254941">將分頁移到新視窗</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{無}=1{適用於 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> 和另外 1 個網域}other{適用於 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> 和另外 {COUNT} 個網域}}</translation>
-<translation id="6390533465682072118">復原</translation>
 <translation id="6391131092053186625">你的裝置 IMEI 是 <ph name="IMEI_NUMBER" />。這個編號可用於啟用服務。</translation>
 <translation id="6393156038355142111">建議高強度密碼</translation>
 <translation id="6393550101331051049">可以顯示不安全的內容</translation>
@@ -7870,6 +7869,7 @@
 <translation id="6560151649238390891">已插入建議項目</translation>
 <translation id="656065428026159829">顯示更多</translation>
 <translation id="6561726789132298588">Enter 鍵</translation>
+<translation id="6561877237303825108">這個類型的檔案 (<ph name="TYPE" />) 可能有危險。除非你信任 <ph name="ORIGIN" />，否則請勿儲存</translation>
 <translation id="6562117348069327379">將系統記錄儲存至「下載」目錄。</translation>
 <translation id="656293578423618167">檔案路徑或檔案名稱過長。請縮短檔案名稱或選擇其他儲存位置。</translation>
 <translation id="6563002009564846727">查看從 Windows 匯入的憑證</translation>
@@ -9673,6 +9673,7 @@
 <translation id="7830833461614351956">要將 <ph name="NUM_OF_FILES" /> 個檔案複製到「<ph name="CLOUD_PROVIDER" />」再開啟嗎？</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">你所儲存的自訂字詞會顯示在這裡</translation>
+<translation id="7834832693620032149">如要分享音訊，請改為分享分頁或視窗</translation>
 <translation id="7836577093182643605">這份主題封鎖清單列出了你不希望與其他網站分享的主題</translation>
 <translation id="7836745198769390202">你目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />及其他資料。貴機構將可查看及管理這些資料</translation>
 <translation id="7836850009646241041">請再次輕觸你的安全金鑰</translation>
@@ -10543,6 +10544,7 @@
 <translation id="8425213833346101688">變更</translation>
 <translation id="8425492902634685834">固定至工作列</translation>
 <translation id="8425768983279799676">你可以使用 PIN 碼將裝置解鎖。</translation>
+<translation id="8426697201161711396">只要登入 Chrome，即可在裝置上使用你的密碼和其他資料</translation>
 <translation id="8427213022735114808">語音輸入功能會將你的語音資料傳送給 Google，讓你使用自己的語音在任何文字欄位中輸入內容。</translation>
 <translation id="8427292751741042100">嵌入任何主機</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -11280,6 +11282,7 @@
 <translation id="8940081510938872932">目前電腦過於繁忙，請稍後再試。</translation>
 <translation id="8940888110818450052">登入選項</translation>
 <translation id="8941173171815156065">撤銷「<ph name="PERMISSION" />」權限</translation>
+<translation id="8941209844691374403">「<ph name="APP_NAME" />」正在分享視窗和音訊。</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />已關閉</translation>
 <translation id="894191600409472540">建立高強度密碼</translation>
 <translation id="8942714513622077633">要取消設定 Microsoft 365 嗎？</translation>

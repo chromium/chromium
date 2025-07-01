@@ -326,6 +326,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="4882919381756638075">Els llocs web solen utilitzar el micròfon per a funcions de comunicació com ara el xat de vídeo</translation>
 <translation id="4883854917563148705">Les opcions de configuració gestionades no es poden restablir</translation>
 <translation id="4887024562049524730">Pregunta abans de permetre que els llocs web utilitzin el teu dispositiu i les teves dades de realitat virtual (opció recomanada)</translation>
+<translation id="4934780484581617878">Gestió de finestres</translation>
 <translation id="4936863036653376783">Trobaràs els teus grups a la secció de grups de pestanyes de tots els teus dispositius</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> no pot utilitzar la teva informació a</translation>
 <translation id="4953688446973710931">Quan aquesta opció està activada, els llocs web poden demanar permís per baixar automàticament diversos fitxers. Quan aquesta opció està desactivada, els llocs web no poden baixar automàticament diversos fitxers.</translation>
@@ -333,6 +334,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="4972737347717125191">Els llocs web poden demanar permís per utilitzar dispositius i dades de realitat virtual</translation>
 <translation id="497421865427891073">Ves endavant</translation>
 <translation id="4976702386844183910">Darrera visita: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Més informació sobre el feed de Discover</translation>
 <translation id="4994033804516042629">No s'ha trobat cap contacte</translation>
 <translation id="4996978546172906250">Comparteix mitjançant</translation>
 <translation id="5001526427543320409">Galetes de tercers</translation>
@@ -582,6 +584,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="8067883171444229417">Reprodueix el vídeo</translation>
 <translation id="8068648041423924542">No es pot seleccionar el certificat.</translation>
 <translation id="8077120325605624147">Qualsevol lloc web que visitis pot mostrar-te qualsevol anunci</translation>
+<translation id="80798452873915119">Els llocs web poden demanar permís per gestionar finestres en totes les pantalles</translation>
 <translation id="8087000398470557479">Aquest contingut és del domini <ph name="DOMAIN_NAME" />, oferit per Google.</translation>
 <translation id="8088603949666785339">Més opcions a <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Mostra les pestanyes de la llista d'aplicacions</translation>

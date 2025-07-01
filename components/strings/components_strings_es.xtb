@@ -793,6 +793,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2310789833878085574">Guardar y autocompletar</translation>
 <translation id="2312234273148520048">Condimentos y aderezos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que los visites.</translation>
+<translation id="2316090909467242775">Prueba esta contraseña de recuperación</translation>
 <translation id="2316159751672436664">Personaliza las herramientas de accesibilidad desde la configuración de ChromeOS</translation>
 <translation id="2316887270356262533">Libera menos de 1 MB. Algunos sitios pueden tardar más en cargarse la próxima vez que accedas a ellos.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> necesita un nombre de usuario y una contraseña.</translation>
@@ -1673,6 +1674,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Películas de culto e independientes</translation>
 <translation id="3793574014653384240">La cantidad y las causas de los bloqueos que han ocurrido recientemente</translation>
+<translation id="3795624560191557077">Hace poco has cambiado una contraseña que se ha encontrado en una brecha de seguridad de datos públicos. Si tienes problemas, el Gestor de contraseñas de Google puede ayudarte a iniciar sesión.</translation>
 <translation id="3799805948399000906">Fuente solicitada</translation>
 <translation id="3801297763951514916">Lo visitas a menudo</translation>
 <translation id="380329542618494757">Nombre</translation>
@@ -1954,6 +1956,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="425582637250725228">Es posible que los cambios no se guarden.</translation>
 <translation id="4258748452823770588">Firma errónea</translation>
 <translation id="4261046003697461417">No se pueden añadir anotaciones a los documentos protegidos</translation>
+<translation id="4265635050210404830">Tus tarjetas de fidelización</translation>
 <translation id="4265872034478892965">Permitido por el administrador</translation>
 <translation id="4269029136757623689">Ventiladores de uso doméstico</translation>
 <translation id="4269264543938335308">Trajes de baño</translation>
@@ -2229,6 +2232,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4754461935447132332">No permitido en sitios no seguros</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">El código no es válido</translation>
 <translation id="4757993714154412917">Acabas de escribir tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chromium recomienda que compruebes las contraseñas que tengas guardadas.</translation>
 <translation id="4758311279753947758">Añadir información de contacto</translation>
 <translation id="4761326898079498987">Consultar más información</translation>
@@ -2294,6 +2298,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="486459320933704969">Tu padre, madre o tutor/a debe darte permiso para visitar este sitio web</translation>
 <translation id="4864801646102013152">Reformas del hogar</translation>
 <translation id="4866506163384898554">Pulsa |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para mostrar el cursor</translation>
+<translation id="4868277513442568587">Para seguir usando tus grupos de pestañas compartidas, actualiza Chrome</translation>
 <translation id="4873616204573862158">Gafas</translation>
 <translation id="4873807733347502026">Bloquear y usar tu ratón</translation>
 <translation id="4876305945144899064">Ningún nombre de usuario</translation>
@@ -2430,6 +2435,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5089810972385038852">Estado/provincia</translation>
 <translation id="5090647584136241764">Añade pestañas con productos similares para comparar fácilmente los detalles que te interesan</translation>
 <translation id="5093232627742069661">Plegado en Z</translation>
+<translation id="5093417502834168387">¿No puedes iniciar sesión? Prueba otra manera.</translation>
 <translation id="5094747076828555589">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, Chromium no confía en su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
 <translation id="5097099694988056070">Estadísticas del dispositivo, como uso de CPU y RAM</translation>
 <translation id="5097468150760963273">27x39 pulgadas</translation>
@@ -3198,6 +3204,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6388060462449937608">Ropa y accesorios para la actividad física</translation>
 <translation id="6389470377220713856">Nombre que aparece en la tarjeta</translation>
 <translation id="6390200185239044127">Plegado al medio en Z</translation>
+<translation id="6390533465682072118">Recuperación</translation>
 <translation id="639068771471208680">Formato de varias partes</translation>
 <translation id="6391700400718590966">Se ha cerrado la hoja de credenciales de pago seguro con una credencial que no coincide</translation>
 <translation id="6392799395081100092">Papel (vitela)</translation>
@@ -3748,6 +3755,7 @@ Más información:
 <translation id="7346048084945669753">Se ha afiliado:</translation>
 <translation id="7346062987309535530">Set de platos, vasos y otros utensilios</translation>
 <translation id="7346081071264046066">"responde sí a esta invitación de boda con emoción"</translation>
+<translation id="7347640536700429009">El nombre que aparece en la tarjeta no es válido</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7353601530677266744">Línea de comandos</translation>
 <translation id="7359588939039777303">Los anuncios están bloqueados.</translation>

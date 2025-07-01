@@ -793,6 +793,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2310789833878085574">Shrani in samodejno izpolni</translation>
 <translation id="2312234273148520048">Prelivi in dodatki</translation>
 <translation id="2316087952091171402">Manj kot <ph name="UPPER_ESTIMATE" />. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
+<translation id="2316090909467242775">Preizkusite to geslo za obnovitev</translation>
 <translation id="2316159751672436664">Osebno prilagajanje orodij za ljudi s posebnimi potrebami v nastavitvah sistema Chrome OS.</translation>
 <translation id="2316887270356262533">Sprosti manj kot 1 MB. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
 <translation id="2317259163369394535">Domena <ph name="DOMAIN" /> zahteva uporabniško ime in geslo.</translation>
@@ -1673,6 +1674,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> palcev)</translation>
 <translation id="3792826587784915501">Kultni in neodvisni filmi</translation>
 <translation id="3793574014653384240">Številke in vzroki razširitev, do katerih je prišlo nedavno</translation>
+<translation id="3795624560191557077">Nedavno ste spremenili geslo, najdeno v javni podatkovni kršitvi. Če imate težave, vam lahko Googlov upravitelj gesel pomaga pri prijavi.</translation>
 <translation id="3799805948399000906">Zahtevana pisava</translation>
 <translation id="3801297763951514916">Pogosto obiskujete</translation>
 <translation id="380329542618494757">Ime</translation>
@@ -1954,6 +1956,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="425582637250725228">Spremembe, ki ste jih naredili, morda niso shranjene.</translation>
 <translation id="4258748452823770588">Napačen podpis</translation>
 <translation id="4261046003697461417">Zaščitenim dokumentom ni mogoče dodajati pripisov</translation>
+<translation id="4265635050210404830">Vaše kartice zvestobe</translation>
 <translation id="4265872034478892965">Omogočil skrbnik</translation>
 <translation id="4269029136757623689">Hišni ventilatorji</translation>
 <translation id="4269264543938335308">Kopalke</translation>
@@ -2229,6 +2232,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4754461935447132332">Ni dovoljeno za spletna mesta, ki niso varna</translation>
 <translation id="4756388243121344051">&amp;Zgodovina</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Koda ni veljavna</translation>
 <translation id="4757993714154412917">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chromium zaradi zaščite računov priporoča, da preverite shranjena gesla.</translation>
 <translation id="4758311279753947758">Dodaj podatke za stik</translation>
 <translation id="4761326898079498987">Preglejte za več podrobnosti</translation>
@@ -2294,6 +2298,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="486459320933704969">Starš ali skrbnik mora potrditi, da lahko obiščeš to spletno mesto.</translation>
 <translation id="4864801646102013152">Prenova doma</translation>
 <translation id="4866506163384898554">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| za prikaz kazalca</translation>
+<translation id="4868277513442568587">Če želite še naprej uporabljati deljene skupine zavihkov, posodobite Chrome</translation>
 <translation id="4873616204573862158">Očala</translation>
 <translation id="4873807733347502026">Zakleniti in uporabiti miško</translation>
 <translation id="4876305945144899064">Ni uporabniškega imena</translation>
@@ -2430,6 +2435,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5089810972385038852">Država:</translation>
 <translation id="5090647584136241764">Dodajte zavihke s podobnimi izdelki, da boste preprosto primerjali podrobnosti, ki so za vas pomembne</translation>
 <translation id="5093232627742069661">Cikcakasto prepogibanje</translation>
+<translation id="5093417502834168387">Imate težave pri prijavi? Poskusite drugače.</translation>
 <translation id="5094747076828555589">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; Chromium ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="5097099694988056070">Statistični podatki naprave, kot je uporaba CPE-ja/RAM-a</translation>
 <translation id="5097468150760963273">27 x 39 palcev</translation>
@@ -3198,6 +3204,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6388060462449937608">Oprema in naprave za fitnes</translation>
 <translation id="6389470377220713856">Name on Card</translation>
 <translation id="6390200185239044127">Cikcakasto prepogibanje napol</translation>
+<translation id="6390533465682072118">Obnovitev</translation>
 <translation id="639068771471208680">Multi-Part Form</translation>
 <translation id="6391700400718590966">Preglednica za neujemanje poverilnic poverilnice za varno plačilo je zaprta</translation>
 <translation id="6392799395081100092">Paper (Vellum)</translation>
@@ -3748,6 +3755,7 @@ Dodatne podrobnosti:
 <translation id="7346048084945669753">Je povezan:</translation>
 <translation id="7346062987309535530">Jedilni pribor</translation>
 <translation id="7346081071264046066">»Odgovorite z da na to poročno vabilo z navdušenjem«</translation>
+<translation id="7347640536700429009">Ime na kartici ni veljavno</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
 <translation id="7353601530677266744">Ukazna vrstica</translation>
 <translation id="7359588939039777303">Oglasi blokirani.</translation>

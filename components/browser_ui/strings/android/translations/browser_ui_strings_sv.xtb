@@ -326,6 +326,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="4882919381756638075">Åtkomst till mikrofonen brukar kunna behövas för kommunikationsfunktioner på webbplatsen, t.ex. videochatt</translation>
 <translation id="4883854917563148705">Hanterade inställningar kan inte återställas</translation>
 <translation id="4887024562049524730">Fråga innan webbplatser tillåts att använda VR-enheter och VR-data (rekommenderas)</translation>
+<translation id="4934780484581617878">Fönsterhantering</translation>
 <translation id="4936863036653376783">Du hittar dina grupper i avsnittet Flikgrupper på alla dina enheter</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> har blockerats från att använda dina uppgifter på</translation>
 <translation id="4953688446973710931">När detta är aktiverat kan webbplatser be om att ladda ned flera filer automatiskt. När detta är inaktiverat får webbplatser inte ladda ned flera filer automatiskt.</translation>
@@ -333,6 +334,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="4972737347717125191">Webbplatser får begära tillstånd att använda VR-enheter och VR-data</translation>
 <translation id="497421865427891073">Fortsätt</translation>
 <translation id="4976702386844183910">Besöktes senast <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Läs mer om Förslag-flödet</translation>
 <translation id="4994033804516042629">Inga kontakter hittades</translation>
 <translation id="4996978546172906250">Dela via</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
@@ -582,6 +584,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="8067883171444229417">Spela upp video</translation>
 <translation id="8068648041423924542">Det går inte att välja certifikat.</translation>
 <translation id="8077120325605624147">Alla webbplatser du besöker kan visa alla annonser för dig</translation>
+<translation id="80798452873915119">Webbplatser kan begära att hantera fönster på alla skärmar</translation>
 <translation id="8087000398470557479">Innehållet kommer från <ph name="DOMAIN_NAME" /> via Google.</translation>
 <translation id="8088603949666785339">Fler alternativ i <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Visa flikar i applistan</translation>

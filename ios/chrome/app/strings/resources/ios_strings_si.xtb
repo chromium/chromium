@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">නව සබැඳියක් ඉල්ලා සිටීමට යවන්නා අමතන්න</translation>
 <translation id="1013952917065545813">ඔබ මෑතකදී වසා දැමූ ටැබ නැවත විවෘත කිරීමට ඔබට නැවත මෙහි පැමිණිය හැකිය</translation>
 <translation id="1016495303386450659">අයිතමය යාවත්කාලීන කරන ලදි</translation>
+<translation id="1017735584092444011">කියවීමේ ප්‍රකාරය පෙන්වන්න</translation>
 <translation id="102916930470544692">මුරයතුර</translation>
 <translation id="1030376737535466765">මුරපද කළමනාකරු විවෘත කරන්න</translation>
 <translation id="1035980983510608210">සියලු පටිති වැසීමෙන් අමුණන ලද පටිති ද වැසෙනු ඇත.</translation>
@@ -1237,12 +1238,14 @@
 <translation id="6074656473835429958">දැනුම්දීම් ලබා ගන්න</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) උඩුගත කළ නොහැකි විය</translation>
 <translation id="6077126322656614846">කැමරා ප්‍රවේශයට ඉඩ දෙන ලදී</translation>
+<translation id="607730456154980869">Chrome හි Gemini සමග වේගයෙන් පිළිතුරු ලබා ගන්න</translation>
 <translation id="6078236141387574983">පත්‍රයේ උස නැවත සකසන්න</translation>
 <translation id="6084848228346514841">ටැබ තෝරන්න</translation>
 <translation id="6089212833343035912">Google මුරපද කළමනාකරු PIN</translation>
 <translation id="6090760257419195752">ඉවත දැමූ අනතුරු ඇඟවීම්</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> හමු විය</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> ලෙස පුරනය වී ඇත. සැකසීම් විවෘත කරයි.</translation>
+<translation id="610083648014322104">ඔබ සිටින පිටුවේ අන්තර්ගතය මත පදනම්ව අදාළ පිළිතුරු ලබා ගන්න</translation>
 <translation id="6103540626693881831">උපාංගයේ සංකේතනය</translation>
 <translation id="611361228753138223">මෙම උපාංගයෙහි ඔබ මෑතක දී පිවිසි අඩවි</translation>
 <translation id="611705554202268369">පටිති සමූහයකට එක් කිරීමට දිගු ඔබන්න</translation>
@@ -1495,6 +1498,7 @@
 <translation id="6979737339423435258">සියලු කාලය තුළ</translation>
 <translation id="6983306615164277634">ඔබට ස්ථානය වෙනස් කිරීමට ලිපින තීරුව ස්පර්ශ කර අල්ලා සිටීමට ද හැකිය.</translation>
 <translation id="6987201788018524855">ඔබට මඟ හැරුණු ප්‍රයෝජනවත් විශේෂාංග ගවේෂණය කරන්න</translation>
+<translation id="6989636517316575338">ඕනෑම පිටුවක් ගැන විමසන්න</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">නිෂ්පාදනවල මිල ගණන් නිරීක්ෂණය කර ඕනෑම වෙබ් අඩවියක මිල පහත වැටෙන විට ඇඟවීම් ලබා ගන්න</translation>
 <translation id="7004032350256606903">ඔබගේ සංවිධානයට ඔබ පෞද්ගලිකව බ්‍රවුස් කිරීම අවශ්‍ය වේ.
@@ -1696,6 +1700,7 @@
 <translation id="7863211248337747225">යෙදුම ලබා ගන්න</translation>
 <translation id="7865127013871431856">පරිවර්තන විකල්ප</translation>
 <translation id="7866872729285243843">ඔබේ සියලු උපාංග මත ඔබේ කියවීම් ලැයිස්තුව ලබා ගැනීම සඳහා, සැකසීම් තුළ "කියවීමේ ලැයිස්තුව" ක්‍රියාත්මක කරන්න.</translation>
+<translation id="787364769771947486">කියවීමේ ප්‍රකාරය සඟවන්න</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> සමග පෝරමය ස්වයං පුරවන්න</translation>
 <translation id="7883882164760409935">ඔබ මුරපද නැවත භාවිතා කර ඇත.</translation>
 <translation id="7887174313503389866">ප්‍රධාන පෞද්ගලිකත්ව සහ ආරක්ෂක පාලන පිළිබඳ මාර්ගෝපදේශය සහිත චාරිකාවක් සිදු කරන්න. තවත් විකල්ප සඳහා, තනි සැකසීම් වෙත යන්න.</translation>
@@ -1752,6 +1757,7 @@
 <translation id="8058655154417507695">කල් ඉකුත් වන වසර</translation>
 <translation id="8059533439631660104">මෙම කොටස හකුළුවයි.</translation>
 <translation id="8061584726507121204">ඉතිහාසය</translation>
+<translation id="8069168488983557089">ඕනෑම මාතෘකාවක් තේරුම් ගැනීමට උපකාරී වන ප්‍රධාන කරුණු සහ ඇතුළාන්ත ලබා ගන්න</translation>
 <translation id="8069394452933076548">මෑතක දී භාවිතා නොකළ පටිති අක්‍රිය පටිති කොටස වෙත ගෙන යන්නේ කෙවිට දැයි තෝරා ගන්න.</translation>
 <translation id="8073670137947914548">බාගැනීම අවසන් වී ඇත</translation>
 <translation id="8076492880354921740">පටිති</translation>

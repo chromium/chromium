@@ -1915,7 +1915,6 @@
 <translation id="2312219318583366810">URL странице</translation>
 <translation id="2314165183524574721">Актуелно подешавање видљивости је: Скривено</translation>
 <translation id="2314774579020744484">Језик који се користи за превођење страница</translation>
-<translation id="2316090909467242775">Испробајте ову лозинку за опоравак</translation>
 <translation id="2316129865977710310">Не, хвала</translation>
 <translation id="2316433409811863464">Стримовање апликације</translation>
 <translation id="2316709634732130529">Користите предложену лозинку</translation>
@@ -4041,7 +4040,6 @@
 <translation id="3792973596468118484">Додатака: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3794792524918736965">Укључите Windows Hello</translation>
 <translation id="379509625511193653">Искључено</translation>
-<translation id="3795624560191557077">Недавно сте променили лозинку која је пронађена у јавној повреди података. У случају проблема, Google менаџер лозинки може да вам помогне да се пријавите.</translation>
 <translation id="3796215473395753611">alt + стрелица нагоре</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, користите тастер са стрелицом надесно да бисте преслушали глас</translation>
 <translation id="3796648294839530037">Омиљене мреже:</translation>
@@ -5863,7 +5861,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 са RSA шифровањем</translation>
 <translation id="5090637338841444533">Није им дозвољено да прате положај камере</translation>
 <translation id="5091636240353511739">Прикажи PIN</translation>
-<translation id="5093417502834168387">Проблеми са пријављивањем? Пробајте другачије</translation>
 <translation id="5093477827231450397">Листа сајтова које сте блокирали и за које не желите да предлажу огласе другим сајтовима</translation>
 <translation id="5093569275467863761">Цео кеширани подоквир без архивирања: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Помоћу ове апликације можете да отварате и мењате подржане фајлове из апликације Фајлови или других апликација. Да бисте контролисали који фајлови подразумевано отварају ову апликацију, <ph name="BEGIN_LINK" />сазнајте како да подесите подразумеване апликације на уређају<ph name="END_LINK" />.</translation>
@@ -7647,7 +7644,6 @@
 <translation id="6388577073199278153">Не можете да приступите налогу за мобилне уређаје</translation>
 <translation id="6390020764191254941">Премести картицу у нов прозор</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Ниједан}=1{За <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и још 1}one{За <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и још {COUNT}}few{За <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и још {COUNT}}other{За <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и још {COUNT}}}</translation>
-<translation id="6390533465682072118">Опоравак</translation>
 <translation id="6391131092053186625">IMEI уређаја је <ph name="IMEI_NUMBER" />. Помоћу овог броја можете да активирате услугу.</translation>
 <translation id="6393156038355142111">Предложи јаку лозинку</translation>
 <translation id="6393550101331051049">Дозвољено им је приказивање небезбедног садржаја</translation>

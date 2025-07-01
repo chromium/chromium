@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">儲存並自動填入</translation>
 <translation id="2312234273148520048">調味料和醬料</translation>
 <translation id="2316087952091171402">小於 <ph name="UPPER_ESTIMATE" />。下次瀏覽部分網站時，載入速度可能會變慢。</translation>
+<translation id="2316090909467242775">試用此復原密碼</translation>
 <translation id="2316159751672436664">在 Chrome OS 設定中個人化您的無障礙工具</translation>
 <translation id="2316887270356262533">釋出的快取不到 1 MB。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供使用者名稱和密碼。</translation>
@@ -1672,6 +1673,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋)</translation>
 <translation id="3792826587784915501">另類和獨立電影</translation>
 <translation id="3793574014653384240">最近發生的當機次數和原因</translation>
+<translation id="3795624560191557077">你最近變更的密碼已在公開資料外洩事件中外洩。如果遇到問題，「Google 密碼管理工具」可協助你登入。</translation>
 <translation id="3799805948399000906">要求的字型</translation>
 <translation id="3801297763951514916">你經常瀏覽</translation>
 <translation id="380329542618494757">名稱</translation>
@@ -1953,6 +1955,7 @@
 <translation id="425582637250725228">系統可能不會儲存您的變更。</translation>
 <translation id="4258748452823770588">簽名有誤</translation>
 <translation id="4261046003697461417">無法為受保護的文件加入註釋</translation>
+<translation id="4265635050210404830">你的會員卡</translation>
 <translation id="4265872034478892965">根據管理員的設定允許</translation>
 <translation id="4269029136757623689">家用風扇</translation>
 <translation id="4269264543938335308">泳衣</translation>
@@ -2228,6 +2231,7 @@
 <translation id="4754461935447132332">不允許用於不安全的網站</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">安全碼無效</translation>
 <translation id="4757993714154412917">您剛才在欺詐網站上輸入了密碼。為確保帳戶安全，Chromium 建議您檢查已儲存的密碼。</translation>
 <translation id="4758311279753947758">新增聯絡人資訊</translation>
 <translation id="4761326898079498987">查看以瞭解詳情</translation>
@@ -2293,6 +2297,7 @@
 <translation id="486459320933704969">您必須獲得家長或監護人許可，才能瀏覽此網站</translation>
 <translation id="4864801646102013152">居家俢繕</translation>
 <translation id="4866506163384898554">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可顯示游標</translation>
+<translation id="4868277513442568587">如要繼續使用共用分頁群組，請更新 Chrome</translation>
 <translation id="4873616204573862158">眼鏡</translation>
 <translation id="4873807733347502026">鎖定和使用滑鼠</translation>
 <translation id="4876305945144899064">沒有使用者名稱</translation>
@@ -2429,6 +2434,7 @@
 <translation id="5089810972385038852">州</translation>
 <translation id="5090647584136241764">加入類似產品分頁，輕鬆比較你認為重要的資料</translation>
 <translation id="5093232627742069661">風琴摺</translation>
+<translation id="5093417502834168387">登入時發生問題嗎？改用其他方式</translation>
 <translation id="5094747076828555589">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chromium 的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="5097099694988056070">CPU/RAM 使用情況等裝置統計資料</translation>
 <translation id="5097468150760963273">27 x 39 吋</translation>
@@ -3197,6 +3203,7 @@
 <translation id="6388060462449937608">健身器材和配件</translation>
 <translation id="6389470377220713856">持卡人姓名</translation>
 <translation id="6390200185239044127">風琴摺對摺</translation>
+<translation id="6390533465682072118">復原</translation>
 <translation id="639068771471208680">多部分表格</translation>
 <translation id="6391700400718590966">閂咗冇相符安全付款憑證工作表</translation>
 <translation id="6392799395081100092">紙 (牛皮紙)</translation>
@@ -3747,6 +3754,7 @@
 <translation id="7346048084945669753">是否已建立關聯：</translation>
 <translation id="7346062987309535530">餐具</translation>
 <translation id="7346081071264046066">「懷著興奮心情答應出席婚禮」</translation>
+<translation id="7347640536700429009">卡上的姓名無效</translation>
 <translation id="7352651011704765696">發生問題</translation>
 <translation id="7353601530677266744">命令列</translation>
 <translation id="7359588939039777303">已封鎖廣告。</translation>

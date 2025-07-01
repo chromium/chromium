@@ -37,6 +37,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="141901961143729572">I-share ang iyong mga naiisip</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Tapos na ang pag-update sa Chrome. Puwede mo nang gamitin ang pinakabagong bersyon sa sandaling maglunsad ka ulit. Pagkatapos ay bubukas ulit ang iyong mga kasalukuyang tab.}=1{Tapos na ang pag-update sa Chrome. Puwede mo nang gamitin ang pinakabagong bersyon sa sandaling maglunsad ka ulit. Pagkatapos ay bubukas ulit ang iyong mga kasalukuyang tab. Hindi bubukas ulit ang iyong Incognito window.}one{Tapos na ang pag-update sa Chrome. Puwede mo nang gamitin ang pinakabagong bersyon sa sandaling maglunsad ka ulit. Pagkatapos ay bubukas ulit ang iyong mga kasalukuyang tab. Hindi bubukas ulit ang iyong # Incognito window.}other{Tapos na ang pag-update sa Chrome. Puwede mo nang gamitin ang pinakabagong bersyon sa sandaling maglunsad ka ulit. Pagkatapos ay bubukas ulit ang iyong mga kasalukuyang tab. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
+<translation id="1439793550875056299">I-pin ang Chrome</translation>
 <translation id="146866447420868597">Mag-sign in sa Chrome?</translation>
 <translation id="1492280395845991349">Ilunsad ulit para tapusin ang pag-update sa Chrome</translation>
 <translation id="1497802159252041924">Error sa pag-install: <ph name="INSTALL_ERROR" /></translation>
@@ -361,6 +362,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Nagkaroon ng error sa startup: patakbuhin ang installer bilang karaniwang user, hindi bilang administrator.</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
+<translation id="5600352656975192682">I-pin ang Chrome sa iyong taskbar para mabilis itong mapuntahan anumang oras</translation>
 <translation id="5602351063754773347">Inirerekomenda ng Chrome na alisin mo ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa mga sinusuportahang extension<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Gamit ang mga profile sa Chrome, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chrome. Gumawa ng mga profile para sa mga kaibigan at kapamilya, o gumawa ng magkahiwalay na profile para sa trabaho at kasiyahan.</translation>
 <translation id="565744775970812598">Maaaring mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chrome.</translation>

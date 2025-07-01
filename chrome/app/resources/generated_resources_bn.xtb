@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">ভুল বা দূষিত ফাইল</translation>
 <translation id="1040761927998636252"><ph name="URL" />-এর জন্য নামহীন বুকমার্ক</translation>
 <translation id="1041175011127912238">এই পৃষ্ঠা সাড়া দিচ্ছে না</translation>
+<translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />” শুধুমাত্র এই ডিভাইসে সেভ করা আছে। এটি আপনার অন্য ডিভাইসে ব্যবহার করতে, নিজের “<ph name="ACCOUNT_FOLDER" />” অ্যাকাউন্টে সেভ করুন।</translation>
 <translation id="1041263367839475438">উপলভ্য ডিভাইস</translation>
 <translation id="1041607257468256895">Chrome-এ থেকে ওয়েবসাইটের জন্য লোকেশন সম্পর্কিত অনুমতি ম্যানেজ করুন</translation>
 <translation id="1042174272890264476">আপনার কম্পিউটারও <ph name="SHORT_PRODUCT_NAME" /> এর RLZ লাইব্রেরি বিল্ট ইনের সাথে আসে৷ RLZ সার্চগুলি পরিমাপ করার জন্য একটি সাধারণ, ব্যক্তিগতভাবে সনাক্তকরণযোগ্য নয় এমন ট্যাগ নির্ধারণ করে এবং <ph name="SHORT_PRODUCT_NAME" /> এর ব্যবহার একটি নির্দিষ্ট প্রচারাভিযানের মাধ্যমে চালিত হয়৷ এই লেবেলগুলি কখনো কখনো <ph name="PRODUCT_NAME" /> এ Google সার্চ ক্যোয়ারিগুলিতে প্রদর্শিত হয়৷</translation>
@@ -609,6 +610,7 @@
 <translation id="1418559532423038045">আপনার <ph name="DEVICE_TYPE" /> থেকে <ph name="VM_NAME" /> সরিয়ে দেয়। এটি ভার্চুয়াল মেশিনের সব অ্যাপ ও ডেটা মুছে দেবে!</translation>
 <translation id="1418882096915998312">Enterprise নথিভুক্ত করা হচ্ছে</translation>
 <translation id="1418954524306642206">প্রিন্টার PPD নির্দিষ্ট করতে ব্রাউজ করুন</translation>
+<translation id="1419086691207546433">নিজের কাজ সাজিয়ে রাখতে, টাস্ক সহজ ও নিজের ব্রাউজিং উন্নত করার জন্য এক্সটেনশন যোগ করুন</translation>
 <translation id="1421334842435688311">সেলুলার লোকেশন সংক্রান্ত তথ্য</translation>
 <translation id="1421514190500081936">এই ডেটা ডাউনলোড করার জন্য একটি কারণ লিখুন:</translation>
 <translation id="1422159345171879700">অসুরক্ষিত স্ক্রিপ্টগুলি লোড করুন</translation>
@@ -1929,7 +1931,6 @@
 <translation id="2312219318583366810">পৃষ্ঠার ইউআরএল</translation>
 <translation id="2314165183524574721">বর্তমানে 'ডিভাইসের দৃশ্যমানতা' সেটিং লুকানো রয়েছে</translation>
 <translation id="2314774579020744484">পৃষ্ঠা অনুবাদ করার সময় ব্যবহার করা ভাষা</translation>
-<translation id="2316090909467242775">এই রিকভারি পাসওয়ার্ড ব্যবহার করে দেখুন</translation>
 <translation id="2316129865977710310">না, ধন্যবাদ</translation>
 <translation id="2316433409811863464">অ্যাপ স্ট্রিমিং</translation>
 <translation id="2316709634732130529">সাজেস্ট করা পাসওয়ার্ড ব্যবহার করুন</translation>
@@ -3341,6 +3342,7 @@
 <translation id="3309330461362844500">সার্টিফিকেট প্রোফাইল আইডি</translation>
 <translation id="3310379801837527592"><ph name="OWNER_FIRST_NAME" /> এবং অন্য <ph name="NUM_OTHER_MEMBERS" /> জনের সাথে ট্যাব গ্রুপে যোগ দিন</translation>
 <translation id="331080746368555063">ব্যক্তিগত সাইটে আপনার কোম্পানির ইন্ট্রানেটের মতো জিনিস থাকতে পারে</translation>
+<translation id="3311007761540106761">সিস্টেম ডিফল্ট</translation>
 <translation id="3311445899360743395">এই অ্যাপের ডেটাও হয়ত ডিভাইস থেকে মুছে যাবে।</translation>
 <translation id="3312470654018965389">Linux কন্টেনার কনফিগার করা হচ্ছে</translation>
 <translation id="3312883087018430408">কোনও নির্দিষ্ট সাইট বা Chrome-এর কোনও অংশ খুঁজতে, অ্যাড্রেস বারে এটির শর্টকাট টাইপ করে আপনার পছন্দের কীবোর্ড শর্টকাট প্রেস করুন। যেমন, শুধুমাত্র বুকমার্ক খুঁজতে, "@bookmarks" টাইপ করুন, তারপর Tab বা Space কী প্রেস করুন।</translation>
@@ -4054,7 +4056,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" />টি এক্সটেনশন</translation>
 <translation id="3794792524918736965">Windows Hello চালু করুন</translation>
 <translation id="379509625511193653">বন্ধ করা আছে</translation>
-<translation id="3795624560191557077">সর্বজনীন ডেটার নিরাপত্তা লঙ্ঘনে পাওয়া গেছে এমন একটি পাসওয়ার্ড আপনি সম্প্রতি পরিবর্তন করেছেন। সমস্যার ক্ষেত্রে, Google Password Manager আপনাকে সাইন-ইন করার জন্য সাহায্য করতে পারে।</translation>
 <translation id="3796215473395753611">alt + ঊর্দ্ধমুখী তীরচিহ্ন</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, ভয়েস শোনার জন্য ডানদিকের তীরচিহ্ন ব্যবহার করুন</translation>
 <translation id="3796648294839530037">পছন্দসই নেটওয়ার্কগুলি:</translation>
@@ -5876,7 +5877,6 @@
 <translation id="5088534251099454936">RSA এনক্রিপশানের সাথে PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">আপনার ক্যামেরার পজিশন ট্র্যাক করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="5091636240353511739">পিন দেখুন</translation>
-<translation id="5093417502834168387">সাইন-ইন করতে সমস্যা হচ্ছে? অন্যভাবে চেষ্টা করে দেখুন</translation>
 <translation id="5093477827231450397">সেইসব সাইটের তালিকা যা আপনি ব্লক করেছেন এবং যার থেকে আপনি অন্য সাইটে বিজ্ঞাপনের সাজেশন চান না</translation>
 <translation id="5093569275467863761">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা ছদ্মবেশী সাবফ্রেম: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Files অ্যাপ বা অন্য অ্যাপ থেকে এই অ্যাপে কাজ করে এমন ফাইল খুলতে ও এডিট করতে পারবেন। ডিফল্ট হিসেবে কোন কোন ফাইল এই অ্যাপে খোলে তা নিয়ন্ত্রণ করতে, <ph name="BEGIN_LINK" />আপনার ডিভাইসে কীভাবে ডিফল্ট হিসেবে অ্যাপ সেট করবেন তা জানুন<ph name="END_LINK" />।</translation>
@@ -7662,7 +7662,6 @@
 <translation id="6388577073199278153">আপনার মোবাইল অ্যাকাউন্ট অ্যাক্সেস করা যাচ্ছে না</translation>
 <translation id="6390020764191254941">ট্যাবটি নতুন উইন্ডোতে খুলুন</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{কোনওটিই নয়}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ও আরও ১টির জন্য}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ও আরও {COUNT}টির জন্য}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ও আরও {COUNT}টির জন্য}}</translation>
-<translation id="6390533465682072118">রিকভারি</translation>
 <translation id="6391131092053186625">আপনার ডিভাইসের IMEI হল <ph name="IMEI_NUMBER" />। পরিষেবা চালু করার জন্য এই নম্বরগুলি ব্যবহার করা যেতে পারে।</translation>
 <translation id="6393156038355142111">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন</translation>
 <translation id="6393550101331051049">নিরাপদ নয় এমন কন্টেন্ট দেখানোর অনুমতি দেওয়া হয়েছে</translation>
@@ -10572,6 +10571,7 @@
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8425492902634685834">টাস্কবারে পিন করুন</translation>
 <translation id="8425768983279799676">আপনি পিন ব্যবহার করে ডিভাইস আনলক করতে পারেন।</translation>
+<translation id="8426697201161711396">আপনার সব ডিভাইসে পাসওয়ার্ড এবং আরও অনেক কিছু পেতে Chrome-এ সাইন-ইন করুন</translation>
 <translation id="8427213022735114808">যেকোনও টেক্সট ক্ষেত্রে ভয়েস টাইপিং করার অনুমতি দেওয়ার জন্য ডিকটেশন Google-কে আপনার ভয়েস পাঠায়।</translation>
 <translation id="8427292751741042100">অন্য কোনও হোস্টে এম্বেড করা হয়েছে</translation>
 <translation id="8428213095426709021">সেটিংস</translation>

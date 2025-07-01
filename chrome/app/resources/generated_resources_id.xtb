@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">File tidak valid atau rusak</translation>
 <translation id="1040761927998636252">Bookmark tanpa nama untuk <ph name="URL" /></translation>
 <translation id="1041175011127912238">Halaman ini tidak merespons</translation>
+<translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />” hanya disimpan di perangkat ini. Untuk menggunakannya di perangkat lain, simpan ke “<ph name="ACCOUNT_FOLDER" />” di akun Anda.</translation>
 <translation id="1041263367839475438">Perangkat yang tersedia</translation>
 <translation id="1041607257468256895">Kelola izin akses lokasi situs di Chrome</translation>
 <translation id="1042174272890264476">Komputer Anda juga dilengkapi dengan perpustakaan RLZ <ph name="SHORT_PRODUCT_NAME" /> yang tertanam di dalamnya. RLZ menetapkan tag tak unik dan tidak dapat diidentifikasi secara pribadi untuk mengukur penelusuran dan penggunaan <ph name="SHORT_PRODUCT_NAME" /> yang didorong oleh kampanye promosi tertentu. Biasanya label ini muncul di kueri Google Penelusuran di <ph name="PRODUCT_NAME" />.</translation>
@@ -608,6 +609,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1418559532423038045">Menghapus <ph name="VM_NAME" /> dari <ph name="DEVICE_TYPE" /> Anda. Tindakan ini akan menghapus semua aplikasi dan data di virtual machine tersebut.</translation>
 <translation id="1418882096915998312">Pendaftaran Enterprise sedang berlangsung</translation>
 <translation id="1418954524306642206">Jelajahi untuk menentukan PPD printer</translation>
+<translation id="1419086691207546433">Tambahkan ekstensi untuk tetap teratur, menyederhanakan tugas, dan meningkatkan pengalaman menjelajah Anda</translation>
 <translation id="1421334842435688311">Info Lokasi Seluler</translation>
 <translation id="1421514190500081936">Masukkan alasan untuk mendownload data ini:</translation>
 <translation id="1422159345171879700">Muat Skrip yang Tidak Aman</translation>
@@ -1928,7 +1930,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2312219318583366810">URL Halaman</translation>
 <translation id="2314165183524574721">Visibilitas saat ini disetel ke tersembunyi</translation>
 <translation id="2314774579020744484">Bahasa yang digunakan saat menerjemahkan halaman</translation>
-<translation id="2316090909467242775">Coba sandi pemulihan ini</translation>
 <translation id="2316129865977710310">Lain kali</translation>
 <translation id="2316433409811863464">Streaming Aplikasi</translation>
 <translation id="2316709634732130529">Gunakan Sandi yang Disarankan</translation>
@@ -3340,6 +3341,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3309330461362844500">ID Profil Sertifikat</translation>
 <translation id="3310379801837527592">Gabung ke grup tab dengan <ph name="OWNER_FIRST_NAME" /> dan <ph name="NUM_OTHER_MEMBERS" /> anggota lainnya</translation>
 <translation id="331080746368555063">Situs pribadi mungkin mencakup hal-hal seperti intranet perusahaan Anda</translation>
+<translation id="3311007761540106761">Default sistem</translation>
 <translation id="3311445899360743395">Data yang terkait dengan aplikasi ini dapat dihapus dari perangkat ini.</translation>
 <translation id="3312470654018965389">Mengonfigurasi penampung Linux</translation>
 <translation id="3312883087018430408">Untuk menelusuri situs tertentu atau bagian dari Chrome, ketik pintasannya di kolom URL, lalu tekan pintasan keyboard yang diinginkan. Misalnya, untuk hanya menelusuri Bookmark, ketik "@bookmark", lalu tekan Tab atau Spasi.</translation>
@@ -4053,7 +4055,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ekstensi</translation>
 <translation id="3794792524918736965">Aktifkan Windows Hello</translation>
 <translation id="379509625511193653">Nonaktif</translation>
-<translation id="3795624560191557077">Anda baru-baru ini mengubah sandi yang ditemukan dalam pelanggaran data publik. Jika terjadi masalah, Pengelola Sandi Google dapat membantu Anda login.</translation>
 <translation id="3796215473395753611">alt + panah atas</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, gunakan tombol panah kanan untuk mendengarkan pratinjau suara</translation>
 <translation id="3796648294839530037">Jaringan Favorit:</translation>
@@ -5875,7 +5876,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Dengan Enkripsi RSA</translation>
 <translation id="5090637338841444533">Tidak diizinkan melacak posisi kamera Anda</translation>
 <translation id="5091636240353511739">Tampilkan PIN</translation>
-<translation id="5093417502834168387">Mengalami masalah saat login? Coba cara lain</translation>
 <translation id="5093477827231450397">Daftar situs yang Anda blokir dan tidak diizinkan untuk memberikan saran iklan ke situs lain</translation>
 <translation id="5093569275467863761">Subframe Samaran yang Disimpan di Back/Forward Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Anda dapat membuka dan mengedit file yang didukung dengan aplikasi ini dari aplikasi File atau aplikasi lainnya. Untuk mengontrol file mana yang akan dibuka dengan aplikasi ini secara default, <ph name="BEGIN_LINK" />pelajari cara menyetel aplikasi default di perangkat Anda<ph name="END_LINK" />.</translation>
@@ -7660,7 +7660,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6388577073199278153">Tidak dapat mengakses akun seluler Anda</translation>
 <translation id="6390020764191254941">Pindahkan Tab ke Jendela Baru</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Tidak ada}=1{Untuk <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, dan 1 lainnya}other{Untuk <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, dan {COUNT} lainnya}}</translation>
-<translation id="6390533465682072118">Pemulihan</translation>
 <translation id="6391131092053186625">IMEI perangkat Anda adalah <ph name="IMEI_NUMBER" />. Nomor ini dapat digunakan untuk membantu mengaktifkan layanan.</translation>
 <translation id="6393156038355142111">Sarankan sandi yang kuat</translation>
 <translation id="6393550101331051049">Diizinkan menampilkan konten yang tidak aman</translation>
@@ -7893,6 +7892,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6560151649238390891">Saran disisipkan</translation>
 <translation id="656065428026159829">Lihat lebih banyak</translation>
 <translation id="6561726789132298588">masuk</translation>
+<translation id="6561877237303825108">File jenis (<ph name="TYPE" />) ini mungkin berbahaya. Hanya simpan file ini jika Anda memercayai <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Simpan log sistem ke direktori Download.</translation>
 <translation id="656293578423618167">Jalur atau nama file terlalu panjang. Simpan dengan nama yang lebih pendek atau ke lokasi lain.</translation>
 <translation id="6563002009564846727">Lihat sertifikat yang diimpor dari Windows</translation>
@@ -9696,6 +9696,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7830833461614351956">Salin <ph name="NUM_OF_FILES" /> file ke <ph name="CLOUD_PROVIDER" /> untuk dibuka?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Kata khusus yang disimpan akan muncul di sini</translation>
+<translation id="7834832693620032149">Untuk berbagi audio, bagikan tab atau jendela</translation>
 <translation id="7836577093182643605">Daftar topik yang Anda blokir dan tidak ingin dibagikan ke situs</translation>
 <translation id="7836745198769390202">Saat ini Anda memiliki <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, dan lainnya. Organisasi Anda akan dapat melihat dan mengelola data ini</translation>
 <translation id="7836850009646241041">Coba sentuh lagi kunci keamanan Anda</translation>
@@ -10566,6 +10567,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8425213833346101688">Ubah</translation>
 <translation id="8425492902634685834">Pasang Pin ke Taskbar</translation>
 <translation id="8425768983279799676">Anda dapat menggunakan PIN untuk membuka kunci perangkat.</translation>
+<translation id="8426697201161711396">Login ke Chrome untuk mendapatkan sandi dan lainnya di semua perangkat Anda</translation>
 <translation id="8427213022735114808">Fitur Pengetikan suara mengirimkan suara Anda ke Google untuk memungkinkan pengetikan menggunakan suara ke kolom teks.</translation>
 <translation id="8427292751741042100">disematkan di host mana saja</translation>
 <translation id="8428213095426709021">Setelan</translation>
@@ -11303,6 +11305,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8940081510938872932">Komputer Anda melakukan terlalu banyak hal saat ini. Coba lagi nanti.</translation>
 <translation id="8940888110818450052">Opsi login</translation>
 <translation id="8941173171815156065">Cabut izin '<ph name="PERMISSION" />'</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> membagikan jendela dan audio.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> nonaktif</translation>
 <translation id="894191600409472540">Buat sandi yang kuat</translation>
 <translation id="8942714513622077633">Batalkan penyiapan Microsoft 365?</translation>

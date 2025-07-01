@@ -152,6 +152,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1671236975893690980">Download pending...</translation>
 <translation id="1672586136351118594">Don‘t show again</translation>
 <translation id="1680919990519905526">Shop image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020and closed after <ph name="MONTHS_ARCHIVED" /> months</translation>
 <translation id="1687482373098770139">Soon, you'll see content from and about <ph name="SITE_NAME" /> in following. The websites and searches you follow are saved in your Google Account. You can manage your follows in settings at any time.</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1696555181932908973">You can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -352,6 +353,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="260403163289591229">Following</translation>
 <translation id="2604446170045642109">You can turn off Dark theme for sites in your settings.</translation>
+<translation id="2605017215201958293">Listen to this page with AI</translation>
 <translation id="2607441479295509868">Signed out. Sign back in to use the bookmarks, passwords and more in your account.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> invited you to access a shared item.</translation>
 <translation id="2625189173221582860">Password copied</translation>
@@ -876,6 +878,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="496607651705915226">To save and use new passwords in your Google Account, update Google Play services</translation>
 <translation id="4971753085054504448">Try searching for something else or open full Chrome history to see more results.</translation>
 <translation id="497421865427891073">go forward</translation>
+<translation id="497983151715419057">Review your inactive tabs and groups here</translation>
 <translation id="498624032394115435">Anyone with the link can edit all tabs.</translation>
 <translation id="4987271110129728827">Can’t find that page. Check your spelling or try a web search.</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -936,7 +939,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5226378907213531272">You’ll unlock your screen every time you use the car</translation>
 <translation id="5227554086496586518">Tap to see search results</translation>
-<translation id="5229736206150093143">Latest results</translation>
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5235196193381275927">Something went wrong during sign-in</translation>
 <translation id="5246093389635966745">Edit toolbar shortcut</translation>
@@ -1064,6 +1066,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5833984609253377421">Share link</translation>
 <translation id="5839058148541733625">Chrome dino</translation>
+<translation id="5842871376175639063">Tabs and tab groups that you haven't used for <ph name="DAYS_INACTIVE" /> days are moved here<ph name="AUTODELETE_SECTION" />. You can change this at any time in <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Open PDF with <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Stop sharing?</translation>
 <translation id="5853623416121554550">paused</translation>
@@ -1382,6 +1385,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7088681679121566888">Chrome is up to date</translation>
 <translation id="7106762743910369165">Your browser is managed by your organisation</translation>
 <translation id="7111394291981742152">Chrome gives you more control over the ads that you see and limits what sites can learn about you when they show you personalised ads.</translation>
+<translation id="7115358764509798967">System default</translation>
 <translation id="7117485132243600300">Manage content that you follow and suggested topics and searches</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Permissions reviewed for 1 site}other{Permissions reviewed for # sites}}</translation>
 <translation id="7138678301420049075">Other</translation>
@@ -1431,6 +1435,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7304873321153398381">Offline. Chrome can’t check your passwords.</translation>
 <translation id="7313188324932846546">Tap to set up sync</translation>
 <translation id="7314734791127433392">Can't check passwords</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Tabs and tab groups not used for 1 day or more}other{Tabs and tab groups not used for # days or more}}</translation>
 <translation id="7324354302972299151">Send a 'Do Not Track' request</translation>
 <translation id="7333041109965360609">Unsubscribed from notifications</translation>
 <translation id="7336259382292148213">Notifications look good</translation>
@@ -1642,6 +1647,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8137562778192957619">You won’t need to remember this password. It will be saved to Google Password Manager.</translation>
 <translation id="8152331954420209374">Go to Lens</translation>
 <translation id="8163820386638255770">To use and save passwords in your Google Account, verify that it's you</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) inactive item}other{(#) inactive items}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> files left</translation>
 <translation id="8190358571722158785">1 day left</translation>
 <translation id="8192765420340770300">Sign-in bottom sheet opened at full height</translation>

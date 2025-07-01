@@ -41,6 +41,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1547469039832541117">Završava istaknuti zadatak.</translation>
 <translation id="1553461853655228091">Chromiumu je potrebno odobrenje da pristupi kameri radi kreiranja 3D mape vašeg okruženja</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Ta ekstenzija više nije podržana. Chromium preporučuje da je uklonite.}one{Te ekstenzije više nisu podržane. Chromium preporučuje da ih uklonite.}few{Te ekstenzije više nisu podržane. Chromium preporučuje da ih uklonite.}other{Te ekstenzije više nisu podržane. Chromium preporučuje da ih uklonite.}}</translation>
+<translation id="1562320819937089394">Zakači Chromium</translation>
 <translation id="1574377791422810894">Chromiumovi sigurnosni alati</translation>
 <translation id="1594928384848033697">Chromium želi izbrisati vaše podatke iz Upravitelja lozinki. Unesite svoju lozinku za Windows da to dozvolite.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator traži da ponovo pokrenete Chromium radi primjene ažuriranja}=1{Administrator traži da ponovo pokrenete Chromium radi primjene ažuriranja. Vaš anonimni prozor se neće ponovo otvoriti.}one{Administrator traži da ponovo pokrenete Chromium radi primjene ažuriranja. Vaš # anonimni prozor se neće ponovo otvoriti.}few{Administrator traži da ponovo pokrenete Chromium radi primjene ažuriranja. Vaša # anonimna prozora se neće ponovo otvoriti.}other{Administrator traži da ponovo pokrenete Chromium radi primjene ažuriranja. Vaših # anonimnih prozora se neće ponovo otvoriti.}}</translation>
@@ -523,6 +524,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8010081455002666927">Automatsko otkrivanje</translation>
 <translation id="8013436988911883588">Kada Chromium dobije pristup, web lokacije će vam moći zatražiti pristup.</translation>
+<translation id="8031714377769448844">Zakačite Chromium u traku zadataka da mu brzo pristupite bilo kada</translation>
 <translation id="80471789339884597">Hvala što ste instalirali. Morate ponovo pokrenuti sve preglednike prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Uvijek prikaži prečicu pretraživanja pomoću slika</translation>
 <translation id="8077498902115777962">Onemogući pokretanje Chromiuma u pozadini za aplikacije</translation>

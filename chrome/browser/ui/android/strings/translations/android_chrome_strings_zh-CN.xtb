@@ -152,6 +152,7 @@
 <translation id="1671236975893690980">正在等待下载…</translation>
 <translation id="1672586136351118594">不再显示</translation>
 <translation id="1680919990519905526">使用 Google 智能镜头搜索图中商品信息<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">，并会在 <ph name="MONTHS_ARCHIVED" /> 个月后关闭</translation>
 <translation id="1687482373098770139">不久之后，您就会在“已关注”部分中看到来自<ph name="SITE_NAME" />及与其相关的内容。您关注的网站和搜索内容会保存在您的 Google 账号中。您可随时在设置中管理您关注的内容。</translation>
 <translation id="1689333818294560261">别名</translation>
 <translation id="1696555181932908973">您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
@@ -352,6 +353,7 @@
 <translation id="2593272815202181319">等宽</translation>
 <translation id="260403163289591229">已关注</translation>
 <translation id="2604446170045642109">您可在设置中为网站关闭深色主题。</translation>
+<translation id="2605017215201958293">利用 AI 聆听此网页的内容</translation>
 <translation id="2607441479295509868">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
 <translation id="2620314865574742210"><ph name="NAME" />邀请您访问分享的内容。</translation>
 <translation id="2625189173221582860">已复制密码</translation>
@@ -876,6 +878,7 @@
 <translation id="496607651705915226">若要将新密码保存到您的 Google 账号中并使用新密码，请更新 Google Play 服务</translation>
 <translation id="4971753085054504448">请尝试搜索其他内容，或打开完整的 Chrome 历史记录以查看更多结果。</translation>
 <translation id="497421865427891073">前进</translation>
+<translation id="497983151715419057">在此处查看闲置标签页和分组</translation>
 <translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
 <translation id="4987271110129728827">找不到这个页面。请检查拼写，或尝试进行网页搜索。</translation>
 <translation id="4988526792673242964">页面</translation>
@@ -936,7 +939,6 @@
 <translation id="5222676887888702881">退出</translation>
 <translation id="5226378907213531272">每次使用车载系统时，您都需要解锁屏幕</translation>
 <translation id="5227554086496586518">点按即可查看搜索结果</translation>
-<translation id="5229736206150093143">最新搜索结果</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5235196193381275927">登录期间出了点问题</translation>
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
@@ -1064,6 +1066,7 @@
 <translation id="583281660410589416">未知</translation>
 <translation id="5833984609253377421">分享链接</translation>
 <translation id="5839058148541733625">Chrome 恐龙</translation>
+<translation id="5842871376175639063">连续 <ph name="DAYS_INACTIVE" /> 天未使用的标签页和标签页分组会移至此处<ph name="AUTODELETE_SECTION" />。您随时可在“<ph name="SETTINGS_TITLE" />”中更改此设置。</translation>
 <translation id="5848257610304005265">要使用“<ph name="APP_NAME" />”打开 PDF 文件吗？</translation>
 <translation id="5849288995120328556">停止分享？</translation>
 <translation id="5853623416121554550">已暂停</translation>
@@ -1382,6 +1385,7 @@
 <translation id="7088681679121566888">Chrome 已是最新版本</translation>
 <translation id="7106762743910369165">您的浏览器由贵单位管理</translation>
 <translation id="7111394291981742152">在 Chrome 中，您可以更有效地控制自己看到的广告，并限制网站能根据哪些个人信息向您展示个性化广告。</translation>
+<translation id="7115358764509798967">系统默认设置</translation>
 <translation id="7117485132243600300">管理您关注的内容以及建议的主题和搜索查询</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{已审核 1 个网站的权限}other{已审核 # 个网站的权限}}</translation>
 <translation id="7138678301420049075">其他</translation>
@@ -1429,6 +1433,7 @@
 <translation id="7304873321153398381">设备已离线。Chrome 无法检查您的密码。</translation>
 <translation id="7313188324932846546">点按即可设置同步</translation>
 <translation id="7314734791127433392">无法检查密码</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{1 天或更长时间未使用的标签页和标签页分组}other{# 天或更长时间未使用的标签页和标签页分组}}</translation>
 <translation id="7324354302972299151">发送“Do Not Track”请求</translation>
 <translation id="7333041109965360609">已退订通知</translation>
 <translation id="7336259382292148213">通知权限正常</translation>
@@ -1640,6 +1645,7 @@
 <translation id="8137562778192957619">您不需要记住此密码。系统会将它保存到 Google 密码管理工具中。</translation>
 <translation id="8152331954420209374">开启智能镜头</translation>
 <translation id="8163820386638255770">如要将密码保存在您的 Google 账号中并使用这些密码，请验证是您本人在操作</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) 个闲置标签页}other{(#) 个闲置标签页}}</translation>
 <translation id="8186512483418048923">还剩 <ph name="FILES" /> 个文件</translation>
 <translation id="8190358571722158785">还剩 1 天</translation>
 <translation id="8192765420340770300">已打开用于选择登录账号的底部动作条，并以最大高度显示</translation>

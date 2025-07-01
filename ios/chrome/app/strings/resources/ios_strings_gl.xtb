@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Ponte en contacto con quen cha enviou para pedirlle que che mande outra</translation>
 <translation id="1013952917065545813">Podes volver aquí para abrir de novo as pestanas que pechaches recentemente</translation>
 <translation id="1016495303386450659">Actualizouse o elemento</translation>
+<translation id="1017735584092444011">Mostrar modo de lectura</translation>
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1030376737535466765">Abrir xestor de contrasinais</translation>
 <translation id="1035980983510608210">Ao pechar todas as pestanas, tamén se cerrarán as fixadas.</translation>
@@ -1237,12 +1238,14 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6074656473835429958">Recibe notificacións</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) non se puido cargar</translation>
 <translation id="6077126322656614846">Permítese o acceso á cámara</translation>
+<translation id="607730456154980869">Consigue respostas máis rápido con Gemini en Chrome</translation>
 <translation id="6078236141387574983">Reaxusta a altura da folla</translation>
 <translation id="6084848228346514841">Seleccionar pestanas</translation>
 <translation id="6089212833343035912">PIN do xestor de contrasinais de Google</translation>
 <translation id="6090760257419195752">Advertencias ignoradas</translation>
 <translation id="6096965253650248286">Rersultados atopados: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Tes a sesión iniciada como <ph name="USER_EMAIL" />. Abre a configuración.</translation>
+<translation id="610083648014322104">Recibe respostas relevantes en función do contido da páxina na que te atopes</translation>
 <translation id="6103540626693881831">Encriptación no dispositivo</translation>
 <translation id="611361228753138223">Sitios que visitaches ultimamente neste dispositivo</translation>
 <translation id="611705554202268369">Mantén premida a pestana para engadila a un grupo de pestanas</translation>
@@ -1495,6 +1498,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6979737339423435258">Desde sempre</translation>
 <translation id="6983306615164277634">Tamén podes manter premida a barra de enderezos para cambiar a posición.</translation>
 <translation id="6987201788018524855">Explora funcións útiles que non coñeces</translation>
+<translation id="6989636517316575338">Fai preguntas sobre calquera páxina</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Fai un seguimento dos prezos dos produtos e recibe alertas cando baixen en calquera sitio</translation>
 <translation id="7004032350256606903">A túa organización esixe que navegues de forma privada.
@@ -1696,6 +1700,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7863211248337747225">Descargar aplicación</translation>
 <translation id="7865127013871431856">Opcións do Tradutor</translation>
 <translation id="7866872729285243843">Para desfrutar da lista de lectura en todos os teus dispositivos, activa Lista de lectura na configuración.</translation>
+<translation id="787364769771947486">Ocultar modo de lectura</translation>
 <translation id="7874107544081154809">Autocompletar formulario con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Tes contrasinais reutilizados.</translation>
 <translation id="7887174313503389866">Realiza un percorrido guiado polos controis clave de privacidade e seguranza. Para obter máis opcións, vai á configuración individual.</translation>
@@ -1752,6 +1757,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8058655154417507695">Ano de caducidade</translation>
 <translation id="8059533439631660104">Contrae a sección.</translation>
 <translation id="8061584726507121204">Historial</translation>
+<translation id="8069168488983557089">Obtén puntos claves e estatísticas que che axudarán a entender calquera tema</translation>
 <translation id="8069394452933076548">Selecciona cando queres que as pestanas que non se usasen recentemente se movan á sección de pestanas inactivas.</translation>
 <translation id="8073670137947914548">A descarga finalizou</translation>
 <translation id="8076492880354921740">Pestanas</translation>

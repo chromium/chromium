@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Невалиден или повреден файл</translation>
 <translation id="1040761927998636252">Отметка без име за <ph name="URL" /></translation>
 <translation id="1041175011127912238">Страницата не реагира</translation>
+<translation id="1041181446722933623">Отметката „<ph name="LOCAL_BOOKMARK" />“ е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в „<ph name="ACCOUNT_FOLDER" />“ в профила си.</translation>
 <translation id="1041263367839475438">Налични устройства</translation>
 <translation id="1041607257468256895">Управление на разрешенията за достъп до местоположението за уебсайтове в Chrome</translation>
 <translation id="1042174272890264476">Компютърът ви също се предлага с библиотеката RLZ на <ph name="SHORT_PRODUCT_NAME" />, която е вградена. Тя задава неуникален и непозволяващ лично идентифициране маркер за измерване на търсенията и използването на <ph name="SHORT_PRODUCT_NAME" />, стимулирани от определена промоционална кампания. Тези етикети понякога се показват в заявките за търсене с Google в <ph name="PRODUCT_NAME" />.</translation>
@@ -608,6 +609,7 @@
 <translation id="1418559532423038045">Премахва <ph name="VM_NAME" /> от <ph name="DEVICE_TYPE" />. Всички приложения и данни във виртуалната машина ще бъдат изтрити.</translation>
 <translation id="1418882096915998312">Регистрирането посредством Enterprise е в ход</translation>
 <translation id="1418954524306642206">Преглед за посочване на PPD файла за принтера</translation>
+<translation id="1419086691207546433">Добавете разширения с цел организиране, опростяване на задачи и подобряване на сърфирането</translation>
 <translation id="1421334842435688311">Информация за местоположението от мобилната мрежа</translation>
 <translation id="1421514190500081936">Въведете причина за изтеглянето на тези данни:</translation>
 <translation id="1422159345171879700">Зареждане на опасните скриптове</translation>
@@ -1924,7 +1926,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2312219318583366810">URL адрес на страницата</translation>
 <translation id="2314165183524574721">Текущата настройка за видимост е „Скрито“</translation>
 <translation id="2314774579020744484">Език, който се използва при превод на страници</translation>
-<translation id="2316090909467242775">Изпробвайте тази парола за възстановяване</translation>
 <translation id="2316129865977710310">Не, благодаря</translation>
 <translation id="2316433409811863464">Поточно предаване на приложения</translation>
 <translation id="2316709634732130529">Ползване на предложената парола</translation>
@@ -3336,6 +3337,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3309330461362844500">Идент. № на профила на сертификата</translation>
 <translation id="3310379801837527592">Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /> и още <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="331080746368555063">Частните сайтове може да включват различни неща, като например интранет на компанията ви</translation>
+<translation id="3311007761540106761">Стандартно за системата</translation>
 <translation id="3311445899360743395">Данните, свързани с това приложение, може да бъдат премахнати от устройството.</translation>
 <translation id="3312470654018965389">Контейнерът за Linux се конфигурира</translation>
 <translation id="3312883087018430408">За да търсите в конкретен сайт или в част от Chrome, въведете съответния пряк път в адресната лента и натиснете предпочитаната от вас клавишна комбинация. Например за да търсите само в отметките, въведете @bookmarks и натиснете Tab или клавиша за интервал.</translation>
@@ -4049,7 +4051,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> разширения</translation>
 <translation id="3794792524918736965">Включване на Windows Hello</translation>
 <translation id="379509625511193653">Изключено</translation>
-<translation id="3795624560191557077">Наскоро променихте парола, която бе разкрита при публично нарушение на сигурността на данните. В случай на проблеми Google Мениджър на пароли може да ви помогне да влезете в профила си.</translation>
 <translation id="3796215473395753611">Alt + стрелката за нагоре</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />. За прослушване на гласа използвайте бутона със стрелка за надясно</translation>
 <translation id="3796648294839530037">Любими мрежи:</translation>
@@ -5872,7 +5873,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5088534251099454936">PKCS 1 SHA-512 с RSA шифроване</translation>
 <translation id="5090637338841444533">Сайтове без разрешение за проследяване на позицията на камерата ви</translation>
 <translation id="5091636240353511739">Показване на ПИН кода</translation>
-<translation id="5093417502834168387">Имате проблеми с влизането в профила? Изпробвайте друг начин</translation>
 <translation id="5093477827231450397">Списък със сайтовете, които сте блокирали и които не искате да предлагат реклами на други сайтове</translation>
 <translation id="5093569275467863761">Подрамка в режим „инкогнито“, съхранена в кеша за назад/напред: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">От „Файлове“ или други приложения можете да отваряте и редактирате поддържани файлове с това приложение. За да контролирате кои файлове да се отварят с него по подразбиране, <ph name="BEGIN_LINK" />научете как да зададете стандартни приложения на устройството си<ph name="END_LINK" />.</translation>
@@ -7658,7 +7658,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6388577073199278153">Нямате достъп до мобилния си профил</translation>
 <translation id="6390020764191254941">Преместване на раздела в нов прозорец</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Няма}=1{За <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и още 1}other{За <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и още {COUNT}}}</translation>
-<translation id="6390533465682072118">Възстановяване</translation>
 <translation id="6391131092053186625">IMEI номерът на устройството ви е <ph name="IMEI_NUMBER" />. Той може да се използва за активиране на услугата.</translation>
 <translation id="6393156038355142111">Предложение за надеждна парола</translation>
 <translation id="6393550101331051049">Сайтове с разрешение за показване на незащитено съдържание</translation>
@@ -7891,6 +7890,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6560151649238390891">Предложението бе вмъкнато</translation>
 <translation id="656065428026159829">Вижте още</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Този тип файл (<ph name="TYPE" />) може да е опасен. Запазете го само ако имате доверие на <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Запазване на системните регистрационни файлове в директорията „Изтегляния“.</translation>
 <translation id="656293578423618167">Пътят или името на файла са твърде дълги.  Моля, запазете файла с по-кратко име или на друго място.</translation>
 <translation id="6563002009564846727">Преглед на сертификатите, импортирани от Windows</translation>
@@ -9695,6 +9695,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7830833461614351956">Искате ли да копирате <ph name="NUM_OF_FILES" /> файла в <ph name="CLOUD_PROVIDER" />, за да ги отворите?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Тук ще се покажат запазените персонализирани думи</translation>
+<translation id="7834832693620032149">За да споделите звук, трябва да споделите раздел или прозорец</translation>
 <translation id="7836577093182643605">Списък с темите, които сте блокирали и които не искате да споделяте със сайтовете</translation>
 <translation id="7836745198769390202">Понастоящем имате <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> и др. Организацията ви ще може да вижда и управлява тези данни</translation>
 <translation id="7836850009646241041">Докоснете отново ключа си за сигурност</translation>
@@ -10565,6 +10566,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8425213833346101688">Промяна</translation>
 <translation id="8425492902634685834">Фиксиране в лентата на задачите</translation>
 <translation id="8425768983279799676">Можете да използвате ПИН кода си, за да отключвате устройството си.</translation>
+<translation id="8426697201161711396">Влезте в профила си в Chrome, за да получите паролите си и др. на всичките си устройства</translation>
 <translation id="8427213022735114808">Функцията за диктуване изпраща гласа ви до Google, за да даде възможност за гласово въвеждане във всяко текстово поле.</translation>
 <translation id="8427292751741042100">вградена в който и да е хост</translation>
 <translation id="8428213095426709021">Настройки</translation>
@@ -11302,6 +11304,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8940081510938872932">Компютърът ви извършва твърде много неща в момента.  Опитайте отново по-късно.</translation>
 <translation id="8940888110818450052">Опции за влизане в профила</translation>
 <translation id="8941173171815156065">Отмяна на разрешението „<ph name="PERMISSION" />“</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> споделя прозорец и звук.</translation>
 <translation id="8941688920560496412">Устройството <ph name="DEVICE_NAME" /> е изключено</translation>
 <translation id="894191600409472540">Създавайте надеждни пароли</translation>
 <translation id="8942714513622077633">Да се анулира ли настройването на Microsoft 365?</translation>

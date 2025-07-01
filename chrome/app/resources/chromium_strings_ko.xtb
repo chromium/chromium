@@ -40,6 +40,7 @@
 <translation id="1547469039832541117">강조 표시된 작업을 종료합니다.</translation>
 <translation id="1553461853655228091">Chromium에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않습니다. Chromium에서는 삭제할 것을 권장합니다.}other{이 확장 프로그램은 더 이상 지원되지 않습니다. Chromium에서는 삭제할 것을 권장합니다.}}</translation>
+<translation id="1562320819937089394">Chromium 고정</translation>
 <translation id="1574377791422810894">Chromium의 안전 도구</translation>
 <translation id="1594928384848033697">Chromium에서 비밀번호 관리자 데이터를 삭제하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
@@ -522,6 +523,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8010081455002666927">자동 감지</translation>
 <translation id="8013436988911883588">Chromium에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.</translation>
+<translation id="8031714377769448844">언제든지 빠르게 액세스할 수 있도록 Chromium을 작업 표시줄에 고정하세요.</translation>
 <translation id="80471789339884597">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 모든 브라우저를 다시 시작해야 합니다.</translation>
 <translation id="8054112667659782652">이미지 검색 바로가기 항상 표시</translation>
 <translation id="8077498902115777962">앱에서 백그라운드 실행 중인 Chromium 사용 중지</translation>

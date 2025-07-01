@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Befejezi a kiemelt feladatot.</translation>
 <translation id="1553461853655228091">A Chromiumnak engedélyre van szüksége a kamerájához való hozzáféréshez annak érdekében, hogy 3D-s térképet készíthessen az Ön környezetéről.</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Ez a bővítmény már nem támogatott. A Chromium az eltávolítását javasolja}other{Ezek a bővítmények már nem támogatottak. A Chromium az eltávolításukat javasolja}}</translation>
+<translation id="1562320819937089394">A Chromium kitűzése</translation>
 <translation id="1574377791422810894">A Chromium biztonsági eszközei</translation>
 <translation id="1594928384848033697">A Chromium törölni szeretné a Jelszókezelőhöz tartozó adatait. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához.}=1{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
@@ -519,6 +520,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8004582292198964060">Böngésző</translation>
 <translation id="8010081455002666927">Automatikus felismerés</translation>
 <translation id="8013436988911883588">Miután hozzáférést biztosított a Chromiumnak, a webhelyek is hozzáférést kérhetnek.</translation>
+<translation id="8031714377769448844">Tűzze ki a Chromiumot a tálcára, hogy bármikor gyorsan hozzáférhessen</translation>
 <translation id="80471789339884597">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt minden böngészőt újra kell indítania.</translation>
 <translation id="8054112667659782652">A Képkereső parancsikonja mindig jelenjen meg</translation>
 <translation id="8077498902115777962">A Chromium háttérben való futtatásának letiltása az alkalmazásoknál</translation>

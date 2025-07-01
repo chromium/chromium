@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Communiquez avec l'expéditeur pour demander un nouveau lien.</translation>
 <translation id="1013952917065545813">Vous pouvez revenir ici plus tard pour rouvrir les onglets que vous avez fermés récemment</translation>
 <translation id="1016495303386450659">Élément mis à jour</translation>
+<translation id="1017735584092444011">Afficher le mode Lecture</translation>
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1030376737535466765">Ouvrir le gestionnaire de mots de passe</translation>
 <translation id="1035980983510608210">La fermeture de tous les onglets fermera également les onglets épinglés.</translation>
@@ -1237,12 +1238,14 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6074656473835429958">Recevoir des notifications</translation>
 <translation id="607620096698446287">Impossible de téléverser <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Accès à l'appareil photo autorisé</translation>
+<translation id="607730456154980869">Obtenez des réponses plus rapidement avec Gemini dans Chrome</translation>
 <translation id="6078236141387574983">Ajuster la hauteur de la feuille</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
 <translation id="6089212833343035912">NIP du gestionnaire de mots de passe Google</translation>
 <translation id="6090760257419195752">Avertissements ignorés</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> trouvé(s)</translation>
 <translation id="6100617279104942061">Connecté en tant que <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
+<translation id="610083648014322104">Obtenez des réponses pertinentes en fonction du contenu de la page sur laquelle vous vous trouvez</translation>
 <translation id="6103540626693881831">Chiffrement sur l'appareil</translation>
 <translation id="611361228753138223">Sites que vous avez visités récemment sur cet appareil</translation>
 <translation id="611705554202268369">Maintenir le doigt sur l'onglet pour l'ajouter à un groupe d'onglets</translation>
@@ -1495,6 +1498,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6979737339423435258">Toutes les périodes</translation>
 <translation id="6983306615164277634">Vous pouvez également maintenir votre doigt sur la barre d'adresse pour modifier la position.</translation>
 <translation id="6987201788018524855">Découvrez des fonctionnalités utiles que vous avez manquées</translation>
+<translation id="6989636517316575338">Posez une question à propos de n'importe quelle page</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Suivez les prix des produits et recevez des alertes lorsque le prix baisse sur n'importe quel site</translation>
 <translation id="7004032350256606903">Votre organisation vous demande de naviguer en mode privé.
@@ -1696,6 +1700,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7863211248337747225">Télécharger l'appli</translation>
 <translation id="7865127013871431856">Options de traduction</translation>
 <translation id="7866872729285243843">Pour obtenir votre Liste de lecture sur tous vos appareils, activez « Liste de lecture » dans les paramètres.</translation>
+<translation id="787364769771947486">Masquer le mode Lecture</translation>
 <translation id="7874107544081154809">Remplir automatiquement le formulaire avec <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Vous avez des mots de passe réutilisés.</translation>
 <translation id="7887174313503389866">Suivez une visite guidée des principaux paramètres de confidentialité et de sécurité. Pour plus d'options, accédez aux paramètres individuels.</translation>
@@ -1752,6 +1757,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8058655154417507695">Année d'expiration</translation>
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8061584726507121204">Historique</translation>
+<translation id="8069168488983557089">Obtenez des informations et des points clés qui vous aident à comprendre n'importe quel sujet</translation>
 <translation id="8069394452933076548">Choisir quand les onglets qui n'ont pas été utilisés récemment sont déplacés vers la section des onglets inactifs.</translation>
 <translation id="8073670137947914548">Téléchargement terminé</translation>
 <translation id="8076492880354921740">Onglets</translation>

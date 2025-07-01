@@ -152,6 +152,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1671236975893690980">Descarga pendiente…</translation>
 <translation id="1672586136351118594">No volver a mostrar</translation>
 <translation id="1680919990519905526">Comprar imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020y se cerrarán después de <ph name="MONTHS_ARCHIVED" /> meses</translation>
 <translation id="1687482373098770139">Pronto verás contenido de <ph name="SITE_NAME" /> y sobre el canal en Siguiendo. Los sitios y las búsquedas que sigues se guardan en tu cuenta de Google. Puedes gestionar lo que sigues en la configuración en cualquier momento.</translation>
 <translation id="1689333818294560261">Apodo</translation>
 <translation id="1696555181932908973">Puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -352,6 +353,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2593272815202181319">Monoespaciado</translation>
 <translation id="260403163289591229">Siguiendo</translation>
 <translation id="2604446170045642109">Puedes desactivar el tema oscuro para los sitios en tus ajustes.</translation>
+<translation id="2605017215201958293">Escucha esta página con la IA</translation>
 <translation id="2607441479295509868">Se ha cerrado la sesión. Vuelve a iniciarla para usar los marcadores, las contraseñas y más en tu cuenta.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> te ha invitado a acceder a un elemento compartido.</translation>
 <translation id="2625189173221582860">Se ha copiado la contraseña</translation>
@@ -876,6 +878,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="496607651705915226">Para guardar y usar nuevas contraseñas en tu cuenta de Google, actualiza Servicios de Google Play</translation>
 <translation id="4971753085054504448">Prueba con otra búsqueda o abre el historial completo de Chrome para ver más resultados.</translation>
 <translation id="497421865427891073">Avanzar</translation>
+<translation id="497983151715419057">Revisa tus pestañas y grupos inactivos aquí</translation>
 <translation id="498624032394115435">Cualquier persona que tenga el enlace puede editar todas las pestañas.</translation>
 <translation id="4987271110129728827">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a hacer una búsqueda web.</translation>
 <translation id="4988526792673242964">Páginas</translation>
@@ -936,7 +939,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5226378907213531272">Tendrás que desbloquear la pantalla cada vez que uses el coche</translation>
 <translation id="5227554086496586518">Toca para ver los resultados de búsqueda</translation>
-<translation id="5229736206150093143">Últimos resultados</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5235196193381275927">No se ha podido iniciar la sesión</translation>
 <translation id="5246093389635966745">Editar combinación de teclas de la barra de herramientas</translation>
@@ -1064,6 +1066,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5833984609253377421">Compartir enlace</translation>
 <translation id="5839058148541733625">El dinosaurio de Chrome</translation>
+<translation id="5842871376175639063">Las pestañas y los grupos de pestañas que no hayas usado durante <ph name="DAYS_INACTIVE" /> días se moverán aquí<ph name="AUTODELETE_SECTION" />. Puedes cambiar esta opción en cualquier momento en <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">¿Abrir PDF con <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">¿Dejar de compartir?</translation>
 <translation id="5853623416121554550">en pausa</translation>
@@ -1382,6 +1385,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7088681679121566888">Chrome está actualizado</translation>
 <translation id="7106762743910369165">Tu organización es la encargada de gestionar tu navegador</translation>
 <translation id="7111394291981742152">Chrome te ofrece más control sobre los anuncios que ves y limita la información que los sitios pueden obtener sobre ti cuando te muestran anuncios personalizados</translation>
+<translation id="7115358764509798967">Predeterminado del sistema</translation>
 <translation id="7117485132243600300">Gestiona el contenido que sigues y los temas y las búsquedas sugeridos</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Permisos revisados de 1 sitio}other{Permisos revisados de # sitios}}</translation>
 <translation id="7138678301420049075">Otro</translation>
@@ -1431,6 +1435,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7304873321153398381">Sin conexión. Chrome no puede comprobar tus contraseñas.</translation>
 <translation id="7313188324932846546">Toca para configurar la sincronización</translation>
 <translation id="7314734791127433392">No se pueden comprobar las contraseñas</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Pestañas y grupos de pestañas que no se han usado durante 1 día o más}other{Pestañas y grupos de pestañas que no se han usado durante # días o más}}</translation>
 <translation id="7324354302972299151">Enviar una solicitud "Do Not Track"</translation>
 <translation id="7333041109965360609">Has anulado tu suscripción a las notificaciones</translation>
 <translation id="7336259382292148213">Las notificaciones están bien</translation>
@@ -1642,6 +1647,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8137562778192957619">No tendrás que recordar esta contraseña. Se guardará en el Gestor de contraseñas de Google.</translation>
 <translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8163820386638255770">Para usar y guardar contraseñas en tu cuenta de Google, verifica tu identidad</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) elemento inactivo}other{(#) elementos inactivos}}</translation>
 <translation id="8186512483418048923">Archivos restantes: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Queda 1 día</translation>
 <translation id="8192765420340770300">Hoja inferior de inicio de sesión abierta a altura completa</translation>

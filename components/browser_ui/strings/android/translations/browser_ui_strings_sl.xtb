@@ -69,6 +69,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="1799920918471566157">Nasveti za Chrome</translation>
 <translation id="1816835383954230954">Če je vklopljeno, Chrome deluje hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno. Če je izklopljeno, se zmanjša učinkovitost delovanja, vendar je mehanizem V8 odpornejši proti napadom.</translation>
 <translation id="1818308510395330587">Če želite aplikaciji <ph name="APP_NAME" /> dovoliti uporabo razširjene resničnosti, prav tako vklopite fotoaparat v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Razdelek na dnu zaslona za videz strani »Nov zavihek«</translation>
 <translation id="1887786770086287077">Dostop do lokacije je izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Spletna mesta običajno dostopajo do datotek in map v vaši napravi zaradi funkcij, kot je samodejno shranjevanje vašega dela.</translation>
 <translation id="1915307458270490472">Prekini</translation>
@@ -326,6 +327,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="4882919381756638075">Spletna mesta običajno uporabljajo mikrofon za komunikacijske funkcije, kot je videoklepet.</translation>
 <translation id="4883854917563148705">Upravljanih nastavitev ni mogoče ponastaviti</translation>
 <translation id="4887024562049524730">Vprašaj, preden se spletnim mestom dovoli uporaba naprav in podatkov za navidezno resničnost (priporočeno)</translation>
+<translation id="4934780484581617878">Upravljanje oken</translation>
 <translation id="4936863036653376783">Skupine najdete v razdelku skupine zavihkov v vseh napravah</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> ne sme uporabljati vaših podatkov na</translation>
 <translation id="4953688446973710931">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo samodejni prenos več datotek. Če je ta možnost izklopljena, spletna mesta ne smejo samodejno prenesti več datotek.</translation>
@@ -333,6 +335,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="4972737347717125191">Spletna mesta lahko zahtevajo uporabo naprav in podatkov za navidezno resničnost</translation>
 <translation id="497421865427891073">Pojdi naprej</translation>
 <translation id="4976702386844183910">Nazadnje obiskano: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Preberite več o viru Odkrivanje</translation>
 <translation id="4994033804516042629">Ni najdenih stikov</translation>
 <translation id="4996978546172906250">Skupna raba prek</translation>
 <translation id="5001526427543320409">Piškotki tretjih oseb</translation>
@@ -457,6 +460,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
 <translation id="640163077447496506">Poteče danes</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Tematske zbirke</translation>
 <translation id="6439114592976064011">Spletnim mestom prepreči spremljanje naprave in podatkov za navidezno resničnost</translation>
 <translation id="6447842834002726250">Piškotki</translation>
 <translation id="6452138246455930388">Znižanje cene na odprtem zavihku s cene <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -560,6 +564,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Spletno mesto uporablja kamero</translation>
+<translation id="7805832099057502789">Razdelek na dnu zaslona za videz strani »Nov zavihek« je odprt pri polni višini</translation>
 <translation id="7807060072011926525">Zagotavlja Google</translation>
 <translation id="7815680994978050279">Nevaren prenos je bil blokiran</translation>
 <translation id="7835852323729233924">Predvajanje predstavnosti</translation>
@@ -579,9 +584,11 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8042586301629853791">Razvrsti po:</translation>
 <translation id="8051193500142930381">Funkcije, ki potrebujejo kamero, ne bodo delovale</translation>
+<translation id="8056330801132235235">Privzeto za Chrome</translation>
 <translation id="8067883171444229417">Predvajanje videa</translation>
 <translation id="8068648041423924542">Izbira potrdila ni mogoča</translation>
 <translation id="8077120325605624147">Vsa spletna mesta, ki jih obiščete, vam lahko prikazujejo kateri koli oglas.</translation>
+<translation id="80798452873915119">Spletna mesta lahko zahtevajo upravljanje oken na vseh zaslonih.</translation>
 <translation id="8087000398470557479">Ta vsebina je iz domene <ph name="DOMAIN_NAME" /> in jo prikazuje Google.</translation>
 <translation id="8088603949666785339">Več možnosti v pasici <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Ogled zavihkov na seznamu aplikacij</translation>

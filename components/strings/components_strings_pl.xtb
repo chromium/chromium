@@ -793,6 +793,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2310789833878085574">Zapisz i automatycznie uzupełniaj</translation>
 <translation id="2312234273148520048">Przyprawy i sosy</translation>
 <translation id="2316087952091171402">Mniej niż <ph name="UPPER_ESTIMATE" />. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
+<translation id="2316090909467242775">Wypróbuj to hasło przywracania</translation>
 <translation id="2316159751672436664">Spersonalizuj narzędzia ułatwień dostępu w ustawieniach Chrome OS</translation>
 <translation id="2316887270356262533">Zwolni się mniej niż 1 MB. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> wymaga nazwy użytkownika i hasła.</translation>
@@ -1673,6 +1674,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" /> (cale)</translation>
 <translation id="3792826587784915501">Kultowe filmy i kino niezależne</translation>
 <translation id="3793574014653384240">Liczba i przyczyny niedawnych awarii</translation>
+<translation id="3795624560191557077">Ostatnio zmieniono hasło, które zostało ujawnione w wyniku naruszenia bezpieczeństwa danych. W razie problemów z logowaniem skorzystaj z pomocy Menedżera haseł Google.</translation>
 <translation id="3799805948399000906">Zażądano czcionki</translation>
 <translation id="3801297763951514916">Często odwiedzasz</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
@@ -2433,6 +2435,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5089810972385038852">Stan</translation>
 <translation id="5090647584136241764">Dodaj karty z podobnymi produktami, żeby łatwo porównać ważne szczegóły</translation>
 <translation id="5093232627742069661">Składanie typu Z</translation>
+<translation id="5093417502834168387">Problem z logowaniem? Wypróbuj inny sposób</translation>
 <translation id="5094747076828555589">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w Chromium. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="5097099694988056070">Statystyki na temat sprzętu, np. użycie procesora czy pamięci RAM</translation>
 <translation id="5097468150760963273">27 x 39 cali</translation>
@@ -3201,6 +3204,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6388060462449937608">Sprzęt i akcesoria do fitnessu</translation>
 <translation id="6389470377220713856">Imię i nazwisko na karcie</translation>
 <translation id="6390200185239044127">Składanie w połowie, a następnie składanie typu Z</translation>
+<translation id="6390533465682072118">Przywracanie</translation>
 <translation id="639068771471208680">Format wieloczęściowy</translation>
 <translation id="6391700400718590966">Arkusz dotyczący braku pasujących danych uwierzytelniających na potrzeby bezpiecznych płatności jest zamknięty</translation>
 <translation id="6392799395081100092">Papier (Vellum)</translation>

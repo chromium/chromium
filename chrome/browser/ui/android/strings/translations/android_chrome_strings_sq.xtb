@@ -152,6 +152,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1671236975893690980">Shkarkimi në pritje...</translation>
 <translation id="1672586136351118594">Mos e shfaq përsëri</translation>
 <translation id="1680919990519905526">Bli imazhe me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020dhe mbyllen pas <ph name="MONTHS_ARCHIVED" /> muajsh</translation>
 <translation id="1687482373098770139">Së shpejti, do të shohësh përmbajtje nga <ph name="SITE_NAME" /> dhe në lidhje me të te "Ndjekjet". Sajtet dhe kërkimet që ndjek ruhen në "Llogarinë tënde të Google". Mund t'i menaxhosh ndjekjet te cilësimet në çdo kohë.</translation>
 <translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="1696555181932908973">Mund të provosh mënyra të tjera për të vazhduar në <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -352,6 +353,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2593272815202181319">Me hapësirë fikse</translation>
 <translation id="260403163289591229">Po ndjek</translation>
 <translation id="2604446170045642109">Mund ta çaktivizosh temën e errët për sajtet te cilësimet.</translation>
+<translation id="2605017215201958293">Dëgjo këtë faqe me IA-në</translation>
 <translation id="2607441479295509868">Ke dalë. Identifikohu përsëri për të përdorur faqeshënuesit, fjalëkalimet etj. në llogarinë tënde.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> të ftoi që të kesh qasje në një artikull të ndarë.</translation>
 <translation id="2625189173221582860">Fjalëkalimi u kopjua</translation>
@@ -876,6 +878,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="496607651705915226">Për të ruajtur dhe përdorur fjalëkalimet e reja në "Llogarinë tënde të Google", përditëso shërbimet e Google Play</translation>
 <translation id="4971753085054504448">Provo të kërkosh diçka tjetër ose të hapësh historikun e plotë të Chrome për të parë më shumë rezultate.</translation>
 <translation id="497421865427891073">Vazhdo përpara</translation>
+<translation id="497983151715419057">Rishiko skedat dhe grupet joaktive këtu</translation>
 <translation id="498624032394115435">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat.</translation>
 <translation id="4987271110129728827">Faqja nuk mund të gjendet. Kontrollo drejtshkrimin ose provo të kërkosh në ueb.</translation>
 <translation id="4988526792673242964">Faqet</translation>
@@ -936,7 +939,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5226378907213531272">Do ta shkyçësh ekranin sa herë që përdor makinën</translation>
 <translation id="5227554086496586518">Trokit për të parë rezultatet e kërkimit</translation>
-<translation id="5229736206150093143">Rezultatet më të fundit</translation>
 <translation id="5233638681132016545">Skedë e re</translation>
 <translation id="5235196193381275927">Ndodhi një gabim gjatë identifikimit</translation>
 <translation id="5246093389635966745">Shkurtorja e modifikimit të shiritit të veglave</translation>
@@ -1064,6 +1066,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5833984609253377421">Ndaj lidhjen</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842871376175639063">Skedat dhe grupet e skedave që nuk ke përdorur për <ph name="DAYS_INACTIVE" /> ditë zhvendosen këtu<ph name="AUTODELETE_SECTION" />. Këtë mund ta ndryshosh në çdo kohë te "<ph name="SETTINGS_TITLE" />".</translation>
 <translation id="5848257610304005265">Të hapet skedari PDF me aplikacionin "<ph name="APP_NAME" />"?</translation>
 <translation id="5849288995120328556">Të ndalohet ndarja?</translation>
 <translation id="5853623416121554550">në pauzë</translation>
@@ -1382,6 +1385,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7088681679121566888">Chrome është i përditësuar</translation>
 <translation id="7106762743910369165">Shfletuesi yt menaxhohet nga organizata jote</translation>
 <translation id="7111394291981742152">Chrome të jep më shumë kontroll mbi reklamat që shikon ti dhe kufizon ato që sajtet mund të mësojnë për ty kur të shfaqin reklama të personalizuara.</translation>
+<translation id="7115358764509798967">Parazgjedhja e sistemit</translation>
 <translation id="7117485132243600300">Menaxho përmbajtjet që ndjek dhe temat e kërkimet e sugjeruara</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Lejet u rishikuan për 1 sajt}other{Lejet u rishikuan për # sajte}}</translation>
 <translation id="7138678301420049075">Tjetër</translation>
@@ -1431,6 +1435,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7304873321153398381">Offline. Chrome nuk mund t'i kontrollojë fjalëkalimet e tua.</translation>
 <translation id="7313188324932846546">Trokit për të konfiguruar sinkronizimin</translation>
 <translation id="7314734791127433392">Fjalëkalimet nuk mund të kontrollohen</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Skedat dhe grupet e skedave që nuk janë përdorur për 1 ose më shumë ditë}other{Skedat dhe grupet e skedave që nuk janë përdorur për # ose më shumë ditë}}</translation>
 <translation id="7324354302972299151">Dërgo një kërkesë "Do Not Track"</translation>
 <translation id="7333041109965360609">U çabonove nga njoftimet</translation>
 <translation id="7336259382292148213">Njoftimet duken mirë</translation>
@@ -1642,6 +1647,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8137562778192957619">Nuk është nevoja ta kujtosh këtë fjalëkalim. Ai do të ruhet te "Menaxheri i fjalëkalimeve i Google".</translation>
 <translation id="8152331954420209374">Shko te "Lentja"</translation>
 <translation id="8163820386638255770">Për të përdorur dhe për të ruajtur fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) artikull joaktiv}other{(#) artikuj joaktivë}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> skedarë të mbetur</translation>
 <translation id="8190358571722158785">1 ditë e mbetur</translation>
 <translation id="8192765420340770300">Fleta e poshtme e identifikimit u hap në lartësi të plotë</translation>

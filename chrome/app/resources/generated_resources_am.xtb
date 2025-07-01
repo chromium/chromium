@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">ልክ ያልሆነ ወይም የተበላሸ ፋይል</translation>
 <translation id="1040761927998636252">ያልተሰየመ ዕልባት ለ<ph name="URL" /></translation>
 <translation id="1041175011127912238">ይህ ግጽ ምላሽ እየሰጠ አይደለም</translation>
+<translation id="1041181446722933623">«<ph name="LOCAL_BOOKMARK" />» በዚሀ መሣሪያ ላይ ብቻ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በመለያዎ «<ph name="ACCOUNT_FOLDER" />» ውስጥ ያስቀምጡት።</translation>
 <translation id="1041263367839475438">የሚገኙ መሣሪያዎች</translation>
 <translation id="1041607257468256895">የድር ጣቢያ የአካባቢ ፈቃዶችን በChrome ውስጥ ያስተዳድሩ</translation>
 <translation id="1042174272890264476">እንዲሁም ኮምፒውተርዎ የ<ph name="SHORT_PRODUCT_NAME" /> RLZ ቤተ-ፍርግም አብሮ ተሰርቶለት ነው የሚመጣው። RLZ ፍለጋዎችን እና በአንድ የተወሰነ የማስተዋወቂያ ዘመቻ የሚነዳ የ<ph name="SHORT_PRODUCT_NAME" /> አጠቃቀምን ለመለካት ልዩ ያልሆነ፣ በግል ሊለይ የማይችል መለያ ይመድባል። እነዚህ መለያ ስሞች አንዳንድ ጊዜ በ<ph name="PRODUCT_NAME" /> የGoogle ፍለጋ መጠይቆች ላይ ይታያሉ።</translation>
@@ -609,6 +610,7 @@
 <translation id="1418559532423038045">ከእርስዎ <ph name="DEVICE_TYPE" /> <ph name="VM_NAME" /> ያስወግዳል። ይህ በምናባዊ ማሽን ውስጥ ያሉትን ሁሉንም መተግበሪያዎች እና ውሂብ ይሰርዛል!</translation>
 <translation id="1418882096915998312">የድርጅት ምዝገባው በሂደት ላይ ነው</translation>
 <translation id="1418954524306642206">የእርስዎን አታሚ PPD ለመጥቀስ አሰሳ ያድርጉ</translation>
+<translation id="1419086691207546433">እንደተደራጁ ለመቆየት፣ ተግባራትን ለማጠናቀቅ እና አሰሳዎን ለማሻሻል ቅጥያዎችን ያክሉ</translation>
 <translation id="1421334842435688311">የተንቀሳቃሽ ስልክ አካባቢ መረጃ</translation>
 <translation id="1421514190500081936">እባክዎ ይህን ውሂብ የሚያወርዱበትን ምክንያት ያስገቡ፦</translation>
 <translation id="1422159345171879700">ደህንነታቸው አስተማማኝ ያልሆኑ ስክሪፕቶችን ጫን</translation>
@@ -1924,7 +1926,6 @@
 <translation id="2312219318583366810">የገጽ ዩ.አር.ኤል.</translation>
 <translation id="2314165183524574721">የአሁኑ የታይነት ቅንብር ተደብቋል</translation>
 <translation id="2314774579020744484">ገጾችን ሲተረጎሙ ጥቅም ላይ የዋለ ቋንቋ</translation>
-<translation id="2316090909467242775">ይህን የመልሶ ማግኛ የይለፍ ቃል ይሞክሩ</translation>
 <translation id="2316129865977710310">አይ፣ አመሰግናለሁ</translation>
 <translation id="2316433409811863464">የመተግበሪያ ዥረት መልቀቅ</translation>
 <translation id="2316709634732130529">የተጠቆመውን የይለፍ ቃል ይጠቀሙ</translation>
@@ -3336,6 +3337,7 @@
 <translation id="3309330461362844500">የእውቅና ማረጋገጫ መገለጫ መታወቂያ</translation>
 <translation id="3310379801837527592">ከ<ph name="OWNER_FIRST_NAME" /> እና <ph name="NUM_OTHER_MEMBERS" /> ሌላ ጋር የትር ቡድን ይቀላቀላሉ</translation>
 <translation id="331080746368555063">የግል ጣቢያዎች እንደ የድርጅትዎን ውስጠ መረብ ያሉ ነገሮችን ሊያካትቱ ይችላሉ</translation>
+<translation id="3311007761540106761">የሥርዓት ነባሪ</translation>
 <translation id="3311445899360743395">ከዚህ መተግበሪያ ጋር የተጎዳኘ ውሂብ ከዚህ መሣሪያ ላይ ሊወገድ ይችላል።</translation>
 <translation id="3312470654018965389">የLinux መያዣውን በማዋቀር ላይ</translation>
 <translation id="3312883087018430408">አንድን የተወሰነ ጣቢያ ወይም የChrome ክፍል ለመፈለግ የእርስዎን ተመራጭ የቁልፍ ሰሌዳ አቋራጭን በማስከተል በአድራሻ አሞሌው ውስጥ አቋራጩን ይተይቡ። ለምሳሌ ዕልባቶችን ብቻ ለመፈለግ «@bookmarks» ብለው ይተይቡ፣ ከዚያ ትር ወይም ክፍተትን ይጫኑ።</translation>
@@ -4049,7 +4051,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ቅጥያዎች</translation>
 <translation id="3794792524918736965">Windows Helloን ያብሩ</translation>
 <translation id="379509625511193653">ጠፍቷል</translation>
-<translation id="3795624560191557077">በይፋዊ የውሂብ ጥሰት ውስጥ የተገኘ የይለፍ ቃልን በቅርብ ጊዜ ለውጠዋል። ችግር ካጋጠመ Google የይለፍ ቃል አስተዳዳሪ በመለያ እንዲገቡ ሊያግዝዎት ይችላል።</translation>
 <translation id="3796215473395753611">alt + የላይ ቀስት</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />፣ ድምፅን ቀድሞ ለማሳየት ቁልፍ የቀኝ ቀስትን ይጠቀሙ</translation>
 <translation id="3796648294839530037">ተወዳጅ አውታረ መረቦች፦</translation>
@@ -5869,7 +5870,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 ከRSA ምስጠራ ጋር</translation>
 <translation id="5090637338841444533">የካሜራዎን አቀማመጥ ለመከታተል አልተፈቀደም</translation>
 <translation id="5091636240353511739">ፒን አሳይ</translation>
-<translation id="5093417502834168387">በመግባት ላይ ችግር አጋጠመዎት? ሌላ መንገድ ይሞክሩ</translation>
 <translation id="5093477827231450397">ለሌላ ጣቢያዎች ማስታወቂያዎች እንዲጠቁሙ የማይፈልጓቸው ያገዷቸው ጣቢያዎች ዝርዝር</translation>
 <translation id="5093569275467863761">ማንነት የማያሳውቅ የጀርባ/ፊት መሸጎጫ ንዑስ ክፈፍ፦ <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ከፋይሎች መተግበሪያው ወይም ከሌሎች መተግበሪያዎች ሆነው የሚደገፉ ፋይሎችን በዚህ መተግበሪያ መክፈት እና ማርትዕ ይችላሉ። የትኛዎቹ ፋይሎች ይህን መተግበሪያ በነባሪነት እንደሚከፍቱ ለመቆጣጠር <ph name="BEGIN_LINK" />ነባሪ መተግበሪያዎችን በመሣሪያዎ ላይ እንዴት ማቀናበር እንደሚችሉ ይወቁ<ph name="END_LINK" />።</translation>
@@ -7654,7 +7654,6 @@
 <translation id="6388577073199278153">የተንቀሳቃሽ ስልክ መለያዎን መድረስ አልተቻለም</translation>
 <translation id="6390020764191254941">ትር ወደ አዲስ መስኮት ውሰድ</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{ምንም}=1{ለ<ph name="EXAMPLE_DOMAIN_1" />፣ <ph name="EXAMPLE_DOMAIN_2" /> እና 1 ተጨማሪ}one{ለ<ph name="EXAMPLE_DOMAIN_1" />፣ <ph name="EXAMPLE_DOMAIN_2" /> እና {COUNT} ተጨማሪ}other{ለ<ph name="EXAMPLE_DOMAIN_1" />፣ <ph name="EXAMPLE_DOMAIN_2" /> እና {COUNT} ተጨማሪ}}</translation>
-<translation id="6390533465682072118">መልሶ ማግኘት</translation>
 <translation id="6391131092053186625">የመሣሪያዎ IMEI <ph name="IMEI_NUMBER" /> ነው ይህ ቁጥር አገልግሎትን ለማግበር እንዲያግዝ ሥራ ላይ መዋል ይችላል።</translation>
 <translation id="6393156038355142111">ጠንካራ የይለፍ ቃል ጠቁም</translation>
 <translation id="6393550101331051049">ደህንነቱ ያልተጠበቀ ይዘት ለማሳየት ተፈቅዷል</translation>
@@ -7887,6 +7886,7 @@
 <translation id="6560151649238390891">የአስተያየት ጥቆማ ገብቷል</translation>
 <translation id="656065428026159829">ተጨማሪ ይመልከቱ</translation>
 <translation id="6561726789132298588">ያስገቡ</translation>
+<translation id="6561877237303825108">የዚህ የፋይል ዓይነት (<ph name="TYPE" />) አደገኛ ሊሆን ይችላል። <ph name="ORIGIN" />ን የሚያምኑት ከሆነ ብቻ ይህን ፋይል ያስቀምጡ</translation>
 <translation id="6562117348069327379">የስርዓት ምዝግብ ማስታወሻዎችን ወደ የውርዶች ማውጫ ያከማቹ።</translation>
 <translation id="656293578423618167">የፋይል ዱካው ወይም ስሙ በጣም ረጅም ነው። እባክዎ ባጠረ ስም ወይም ሌላ ቦታ ላይ ያስቀምጡ።</translation>
 <translation id="6563002009564846727">ከWindows የመጡ የዕውቅና ማረጋገጫዎችን አሳይ</translation>
@@ -9693,6 +9693,7 @@
 <translation id="7830833461614351956">ለመክፈት <ph name="NUM_OF_FILES" /> ፋይሎች <ph name="CLOUD_PROVIDER" /> ይቀዱ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">የተቀመጡ ብጁ ቃላት እዚህ ይታያሉ</translation>
+<translation id="7834832693620032149">ኦዲዮን ለማጋራት በምትኩ አንድን ትር ወይም መስኮት ያጋሩ</translation>
 <translation id="7836577093182643605">ለጣቢያዎች እንዲጋሩ የማይፈልጓቸው ያገዷቸው ርዕሶች ዝርዝር</translation>
 <translation id="7836745198769390202">በአሁኑ ጊዜ <ph name="NUMBERED_ITEM_1" />፣ <ph name="NUMBERED_ITEM_2" /> እና ሌሎችም አሉዎት። ድርጅትዎ ይህን ውሂን ማየት እና ማስተዳደር ይችላል</translation>
 <translation id="7836850009646241041">የደህንነት ቁልፍዎን ዳግም ለመንካት ይሞክሩ</translation>
@@ -10568,6 +10569,7 @@ nil</translation>
 <translation id="8425213833346101688">ለውጥ</translation>
 <translation id="8425492902634685834">ከተግባር አሞሌ ጋር አጣብቅ</translation>
 <translation id="8425768983279799676">መሣሪያዎን ለመክፈት የእርስዎን ፒን መጠቀም ይችላሉ።</translation>
+<translation id="8426697201161711396">በሁሉም መሣሪያዎችዎ ላይ የይለፍ ቃላትዎን እና ሌሎችንም ለማግኘት ወደ Chrome በመለያ ይግቡ</translation>
 <translation id="8427213022735114808">በቃል ማስጻፍ በማንኛውም የጽሑፍ መስክ ውስጥ የድምጽ ትየባን ለመፍቀድ ድምጽዎን ወደ Google ይልካል።</translation>
 <translation id="8427292751741042100">በማንኛውም አስተናጋጅ ላይ ተከትቷል</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
@@ -11306,6 +11308,7 @@ nil</translation>
 <translation id="8940081510938872932">ኮምፒውተርዎ አሁን በጣም ብዙ ነገሮችን እየሰራ ነው። ቀይተው እንደገና ይምክሩ።</translation>
 <translation id="8940888110818450052">በመለያ የመግቢያ አማራጮች</translation>
 <translation id="8941173171815156065">ፈቃድ «<ph name="PERMISSION" />»ን ሻር</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> መስኮት እና ኦዲዮ በማጋራት ላይ ነው።</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> ጠፍቷል</translation>
 <translation id="894191600409472540">ጠንካራ የይለፍ ቃላትን ይፍጠሩ</translation>
 <translation id="8942714513622077633">የMicrosoft 365 ውቅረት ይቅር?</translation>

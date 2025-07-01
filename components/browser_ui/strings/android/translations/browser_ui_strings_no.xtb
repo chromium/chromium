@@ -69,6 +69,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1816835383954230954">Når bryteren er på, kjører Chrome raskere, og funksjoner som bruker JavaScript, skal fungere som tilsiktet. Når bryteren er av, reduseres ytelsen, men V8 blir mer motstandsdyktig mot angrep.</translation>
 <translation id="1818308510395330587">For å la <ph name="APP_NAME" /> bruke AR, slå på kameraet i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" /> også.</translation>
+<translation id="1881806992065048905">Feltet nederst for utseende på Ny fane-side</translation>
 <translation id="1887786770086287077">Posisjonstilgang er slått av for denne enheten. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Nettsteder bruker vanligvis filer og mapper på enheten din for å kunne tilby funksjoner som å lagre arbeidet ditt automatisk</translation>
 <translation id="1915307458270490472">Legg på</translation>
@@ -326,6 +327,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="4882919381756638075">Nettsteder bruker vanligvis mikrofonen din for å kunne tilby kommunikasjonsfunksjoner, som videochat</translation>
 <translation id="4883854917563148705">Administrerte innstillinger kan ikke tilbakestilles</translation>
 <translation id="4887024562049524730">Spør før nettsteder får bruke virtuell virkelighet-enheten din eller -dataene dine (anbefales)</translation>
+<translation id="4934780484581617878">Vindusadministrering</translation>
 <translation id="4936863036653376783">Du finner gruppene dine i fanegruppedelen på alle enhetene dine</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> er blokkert fra å bruke informasjonen din på</translation>
 <translation id="4953688446973710931">Når dette er på, kan nettsteder be om å få laste ned flere filer automatisk. Når dette er av, kan ikke nettsteder laste ned flere filer automatisk.</translation>
@@ -333,6 +335,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="4972737347717125191">Nettsteder kan be om å få bruke virtuell virkelighet-enheter og -data</translation>
 <translation id="497421865427891073">Gå til neste</translation>
 <translation id="4976702386844183910">Sist besøkt <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Finn ut mer om Discover-feeden</translation>
 <translation id="4994033804516042629">Fant ingen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
 <translation id="5001526427543320409">Tredjeparts informasjonskapsler</translation>
@@ -457,6 +460,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="6398765197997659313">Avslutt fullskjerm</translation>
 <translation id="640163077447496506">Utløper i dag</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Temasamlinger</translation>
 <translation id="6439114592976064011">Blokkér nettsteder fra å bruke virtuell virkelighet-enheten din og -dataene dine</translation>
 <translation id="6447842834002726250">Informasjonskapsler</translation>
 <translation id="6452138246455930388">Avslag på den åpne fanen din, fra <ph name="OLD_PRICE" /> til <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -560,6 +564,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="7791543448312431591">Legg til</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7804248752222191302">Et nettsted bruker kameraet ditt</translation>
+<translation id="7805832099057502789">Nytt faneområde som er åpnet i bunnarket vises med full høyde</translation>
 <translation id="7807060072011926525">Levert av Google</translation>
 <translation id="7815680994978050279">En farlig nedlasting er blokkert</translation>
 <translation id="7835852323729233924">Spiller av medier</translation>
@@ -579,9 +584,11 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
 <translation id="8042586301629853791">Sorter etter:</translation>
 <translation id="8051193500142930381">Funksjoner som krever kamera, kommer ikke til å virke</translation>
+<translation id="8056330801132235235">Standard Chrome</translation>
 <translation id="8067883171444229417">Spill av videoen</translation>
 <translation id="8068648041423924542">Kan ikke velge sertifikat.</translation>
 <translation id="8077120325605624147">Alle nettsteder du besøker, kan vise deg alle slags annonser</translation>
+<translation id="80798452873915119">Nettsteder kan be om å få administrere vinduer på alle skjermene dine</translation>
 <translation id="8087000398470557479">Dette innholdet er fra <ph name="DOMAIN_NAME" /> og er levert av Google.</translation>
 <translation id="8088603949666785339">Flere alternativer i <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Vis faner på applisten</translation>

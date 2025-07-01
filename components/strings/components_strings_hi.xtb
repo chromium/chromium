@@ -794,6 +794,7 @@
 <translation id="2310789833878085574">सेव करें और ऑटोमैटिक भरने की सुविधा चालू करें</translation>
 <translation id="2312234273148520048">चटनी और ड्रेसिंग</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> से कम. अगली बार जब आप कुछ साइटों पर जाएं, तो हो सकता है कि उन्हें लोड होने में थोड़ा ज़्यादा समय लगे.</translation>
+<translation id="2316090909467242775">यह रिकवरी पासवर्ड डालकर देखें</translation>
 <translation id="2316159751672436664">ChromeOS की सेटिंग में सुलभता टूल को अपने हिसाब से बनाएं</translation>
 <translation id="2316887270356262533">1 MB से भी कम जगह खाली करता है. जब आप अगली बार विज़िट करेंगे तो, कुछ साइटें लोड होने में ज़्यादा समय ले सकती हैं.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> के लिए उपयोगकर्ता नाम और पासवर्ड आवश्यक है.</translation>
@@ -1673,6 +1674,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इंच)</translation>
 <translation id="3792826587784915501">कल्ट और इंडी (आम फ़िल्मों से हटकर) फ़िल्में</translation>
 <translation id="3793574014653384240">हाल ही में बंद होने की संख्या और वजहें</translation>
+<translation id="3795624560191557077">आपने हाल ही में उस पासवर्ड को बदला जो सार्वजनिक तौर पर लीक हुआ था. अगर आपको नए पासवर्ड से साइन इन करने में समस्या आती है, तो Google Password Manager की मदद से साइन इन किया जा सकता है.</translation>
 <translation id="3799805948399000906">फ़ॉन्ट का अनुरोध किया गया</translation>
 <translation id="3801297763951514916">आपके डिवाइस पर अक्सर खोला जाने वाला टैब</translation>
 <translation id="380329542618494757">नाम</translation>
@@ -1954,6 +1956,7 @@
 <translation id="425582637250725228">हो सकता है कि किए गए बदलाव सेव ना हों.</translation>
 <translation id="4258748452823770588">खराब हस्ताक्षर</translation>
 <translation id="4261046003697461417">सुरक्षित दस्तावेज़ों को एनोटेट नहीं किया जा सकता</translation>
+<translation id="4265635050210404830">आपके लॉयल्टी कार्ड</translation>
 <translation id="4265872034478892965">आपके व्यवस्थापक ने अनुमति दी है</translation>
 <translation id="4269029136757623689">घरेलू पंखे</translation>
 <translation id="4269264543938335308">तैराकी के लिए कपड़े</translation>
@@ -2229,6 +2232,7 @@
 <translation id="4754461935447132332">सिर्फ़ सुरक्षित साइटों को ही अनुमति है</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">कोड अमान्य है</translation>
 <translation id="4757993714154412917">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. अपने खातों को सुरक्षित करने के लिए, Chromium का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="4758311279753947758">संपर्क जानकारी जोड़ें</translation>
 <translation id="4761326898079498987">ज़्यादा जानकारी के लिए समीक्षा करें</translation>
@@ -2294,6 +2298,7 @@
 <translation id="486459320933704969">इस वेबसाइट पर जाने के लिए, आपके पास अपने माता-पिता या अभिभावक की अनुमति होनी चाहिए</translation>
 <translation id="4864801646102013152">होम इंप्रूवमेंट</translation>
 <translation id="4866506163384898554">अपना कर्सर दिखाने के लिए, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| को दबाएं</translation>
+<translation id="4868277513442568587">शेयर किए गए टैब ग्रुप का इस्तेमाल जारी रखने के लिए, Chrome को अपडेट करें</translation>
 <translation id="4873616204573862158">चश्मे और सनग्लास</translation>
 <translation id="4873807733347502026">अपने माउस को लॉक करें और उसका इस्तेमाल करें</translation>
 <translation id="4876305945144899064">कोई उपयोगकर्ता नाम नहीं</translation>
@@ -2430,6 +2435,7 @@
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090647584136241764">मिलते-जुलते प्रॉडक्ट वाले टैब जोड़ें, ताकि आप आसानी से उस जानकारी की तुलना कर पाएं जो आपके लिए अहम है</translation>
 <translation id="5093232627742069661">ज़ी-फ़ोल्ड</translation>
+<translation id="5093417502834168387">साइन इन करने में समस्या आ रही है? कोई दूसरा तरीका आज़माएं</translation>
 <translation id="5094747076828555589">यह सर्वर यह नहीं प्रमाणित कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र Chromium द्वारा विश्वसनीय नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="5097099694988056070">डिवाइस के आंकड़े जैसे कि सीपीयू (CPU)/RAM का इस्तेमाल</translation>
 <translation id="5097468150760963273">27 x 39 इंच</translation>
@@ -3198,6 +3204,7 @@
 <translation id="6388060462449937608">फ़िटनेस इक्विपमेंट और ऐक्सेसरी</translation>
 <translation id="6389470377220713856">कार्ड पर नाम</translation>
 <translation id="6390200185239044127">ज़ी-फ़ोल्ड हाल्फ़</translation>
+<translation id="6390533465682072118">रिकवरी</translation>
 <translation id="639068771471208680">मल्टी-पार्ट फ़ॉर्म</translation>
 <translation id="6391700400718590966">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट बंद है</translation>
 <translation id="6392799395081100092">पेपर (वेलम)</translation>
@@ -3748,6 +3755,7 @@
 <translation id="7346048084945669753">जुड़ा हुआ है या नहीं:</translation>
 <translation id="7346062987309535530">खाने के बर्तन</translation>
 <translation id="7346081071264046066">"शादी के इस न्योते का जश्न मनाने के लिए, 'हां' में जवाब दें"</translation>
+<translation id="7347640536700429009">कार्ड पर मौजूद नाम अमान्य है</translation>
 <translation id="7352651011704765696">कुछ गलत हुआ</translation>
 <translation id="7353601530677266744">कमांड लाइन</translation>
 <translation id="7359588939039777303">विज्ञापन ब्लॉक हैं.</translation>

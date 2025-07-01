@@ -165,6 +165,7 @@
 <translation id="7369451074646620503">El grupo "<ph name="TAB_GROUP_NAME" />" ya no está disponible</translation>
 <translation id="7452985128687107478">Los grupos de pestañas se guardan y actualizan automáticamente en todos tus dispositivos</translation>
 <translation id="747459581954555080">Restaurar todo</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elemento}other{<ph name="TABS_COUNT_MANY" /> elementos}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Restablecer <ph name="TABS_COUNT_ONE" /> elemento seleccionado}other{Restablecer <ph name="TABS_COUNT_MANY" /> elementos seleccionados}}</translation>
 <translation id="753732157349120914">Alternador de pestañas</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> opinión de Google}other{<ph name="REVIEWS_COUNT_MANY" /> opiniones de Google}}</translation>

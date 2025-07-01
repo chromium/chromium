@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">El archivo no es válido o está dañado</translation>
 <translation id="1040761927998636252">Marcador sin nombre de <ph name="URL" /></translation>
 <translation id="1041175011127912238">La página no responde</translation>
+<translation id="1041181446722933623">"<ph name="LOCAL_BOOKMARK" />" solo se guarda en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en "<ph name="ACCOUNT_FOLDER" />" en tu cuenta.</translation>
 <translation id="1041263367839475438">Dispositivos disponibles</translation>
 <translation id="1041607257468256895">Gestionar los permisos de ubicación de sitios web en Chrome</translation>
 <translation id="1042174272890264476">El ordenador también incluye la biblioteca RLZ de <ph name="SHORT_PRODUCT_NAME" />. RLZ asigna una etiqueta identificable, no exclusiva y no personal para medir las búsquedas y el uso de <ph name="SHORT_PRODUCT_NAME" /> derivados de una determinada campaña promocional. Estas etiquetas aparecen a veces en las consultas de la Búsqueda de Google realizadas en <ph name="PRODUCT_NAME" />.</translation>
@@ -608,6 +609,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1418559532423038045">Quita <ph name="VM_NAME" /> de tu <ph name="DEVICE_TYPE" />. Se eliminarán todas las aplicaciones y datos de la máquina virtual.</translation>
 <translation id="1418882096915998312">Registro de Licencia de Chrome Enterprise en curso</translation>
 <translation id="1418954524306642206">Navega y selecciona el archivo PPD de tu impresora</translation>
+<translation id="1419086691207546433">Añade extensiones para mantener el orden, simplificar tareas y mejorar la navegación</translation>
 <translation id="1421334842435688311">Información de ubicación móvil</translation>
 <translation id="1421514190500081936">Introduce un motivo para descargar estos datos:</translation>
 <translation id="1422159345171879700">Cargar secuencias de comandos no seguras</translation>
@@ -1916,7 +1918,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2312219318583366810">URL de la página</translation>
 <translation id="2314165183524574721">El ajuste de visibilidad actual es oculto</translation>
 <translation id="2314774579020744484">Idioma utilizado al traducir páginas</translation>
-<translation id="2316090909467242775">Prueba esta contraseña de recuperación</translation>
 <translation id="2316129865977710310">No, gracias</translation>
 <translation id="2316433409811863464">Streaming de aplicaciones</translation>
 <translation id="2316709634732130529">Usar contraseña sugerida</translation>
@@ -3328,6 +3329,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3309330461362844500">ID de perfil del certificado</translation>
 <translation id="3310379801837527592">Unirte al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> persona más</translation>
 <translation id="331080746368555063">Puede que los sitios privados incluyan cosas como la intranet de tu empresa</translation>
+<translation id="3311007761540106761">Predeterminado del sistema</translation>
 <translation id="3311445899360743395">Los datos asociados a la aplicación se eliminarán de este dispositivo.</translation>
 <translation id="3312470654018965389">Configurando el contenedor de Linux</translation>
 <translation id="3312883087018430408">Para buscar en un sitio o parte de Chrome en concreto, escribe su atajo en la barra de direcciones y, después, pulsa tu atajo de teclado preferido. Por ejemplo, para buscar solo marcadores, escribe "@bookmarks" y, a continuación, pulsa el tabulador o la barra espaciadora.</translation>
@@ -4041,7 +4043,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensiones</translation>
 <translation id="3794792524918736965">Activa Windows Hello</translation>
 <translation id="379509625511193653">Desactivado</translation>
-<translation id="3795624560191557077">Hace poco has cambiado una contraseña que se ha encontrado en una brecha de seguridad de datos públicos. Si tienes problemas, el Gestor de contraseñas de Google puede ayudarte a iniciar sesión.</translation>
 <translation id="3796215473395753611">Alt + flecha hacia arriba</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, usa la tecla de la flecha hacia la derecha para escuchar una muestra de la voz</translation>
 <translation id="3796648294839530037">Redes favoritas:</translation>
@@ -5861,7 +5862,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 con cifrado RSA</translation>
 <translation id="5090637338841444533">No puede monitorizar la posición de la cámara</translation>
 <translation id="5091636240353511739">Mostrar PIN</translation>
-<translation id="5093417502834168387">¿No puedes iniciar sesión? Prueba otra manera.</translation>
 <translation id="5093477827231450397">Lista de sitios que has bloqueado y que no quieres que sugieran anuncios a otros sitios</translation>
 <translation id="5093569275467863761">Submarco de incógnito almacenado en la caché de páginas completas: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Puedes abrir y editar archivos compatibles con esta aplicación desde la aplicación Archivos u otras aplicaciones. Para controlar qué archivos se abren con esta aplicación de forma predeterminada, <ph name="BEGIN_LINK" />consulta cómo establecer aplicaciones predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
@@ -7645,7 +7645,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6388577073199278153">No se puede acceder a tu cuenta móvil</translation>
 <translation id="6390020764191254941">Mover pestaña a ventana nueva</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Ninguno}=1{De <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> y 1 más}other{De <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> y {COUNT} más}}</translation>
-<translation id="6390533465682072118">Recuperación</translation>
 <translation id="6391131092053186625">El IMEI de tu dispositivo es <ph name="IMEI_NUMBER" />. Este número se puede usar para activar el servicio.</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6393550101331051049">Puede mostrar contenido no seguro</translation>
@@ -7878,6 +7877,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6560151649238390891">Sugerencia insertada</translation>
 <translation id="656065428026159829">Ver más</translation>
 <translation id="6561726789132298588">intro</translation>
+<translation id="6561877237303825108">Este archivo de tipo <ph name="TYPE" /> puede ser peligroso. Guarda este archivo solo si confías en <ph name="ORIGIN" />.</translation>
 <translation id="6562117348069327379">Almacena registros del sistema en el directorio Descargas.</translation>
 <translation id="656293578423618167">La ruta o el nombre del archivo es demasiado largo. Especifica un nombre más corto o guarda el archivo en otra ubicación.</translation>
 <translation id="6563002009564846727">Ver certificados importados desde Windows</translation>
@@ -9682,6 +9682,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7830833461614351956">¿Copiar <ph name="NUM_OF_FILES" /> archivos a <ph name="CLOUD_PROVIDER" /> para abrirlos?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Las palabras personalizadas guardadas aparecerán aquí</translation>
+<translation id="7834832693620032149">Para compartir audio, comparte una pestaña o una ventana</translation>
 <translation id="7836577093182643605">Lista de temas que has bloqueado y que no quieres que se compartan con los sitios</translation>
 <translation id="7836745198769390202">Actualmente tienes <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> y más. Tu organización podrá ver y gestionar estos datos.</translation>
 <translation id="7836850009646241041">Vuelve a tocar tu llave de seguridad</translation>
@@ -10552,6 +10553,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8425492902634685834">Fijar a barra de tareas</translation>
 <translation id="8425768983279799676">Puedes usar el PIN para desbloquear tu dispositivo.</translation>
+<translation id="8426697201161711396">Inicia sesión en Chrome para sincronizar tus contraseñas y más en todos tus dispositivos.</translation>
 <translation id="8427213022735114808">Dictado envía tu voz a Google para que puedas usar Escribir por voz en cualquier campo de texto.</translation>
 <translation id="8427292751741042100">insertado en otro host</translation>
 <translation id="8428213095426709021">Configuración</translation>
@@ -11289,6 +11291,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8940081510938872932">Tu ordenador está ocupado en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="8940888110818450052">Opciones de inicio de sesión</translation>
 <translation id="8941173171815156065">Revocar el permiso <ph name="PERMISSION" /></translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> está compartiendo una ventana y audio.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> está desactivada</translation>
 <translation id="894191600409472540">Crea contraseñas seguras</translation>
 <translation id="8942714513622077633">¿Cancelar configuración de Microsoft 365?</translation>

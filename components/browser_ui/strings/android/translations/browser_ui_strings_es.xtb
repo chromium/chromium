@@ -326,6 +326,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="4882919381756638075">Los sitios suelen acceder al micrófono para utilizarlo en funciones relacionadas con la comunicación, como el chat de vídeo.</translation>
 <translation id="4883854917563148705">No se pueden restablecer los ajustes gestionados</translation>
 <translation id="4887024562049524730">Preguntar antes de permitir que los sitios usen tu dispositivo y tus datos de realidad virtual (recomendado)</translation>
+<translation id="4934780484581617878">Gestión de ventanas</translation>
 <translation id="4936863036653376783">Encontrarás tus grupos en la sección de grupos de pestañas de todos tus dispositivos</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> no puede usar tu información en</translation>
 <translation id="4953688446973710931">Cuando esta opción está activada, los sitios pueden solicitar permiso para descargar varios archivos automáticamente. Si está desactivada, los sitios no pueden descargar varios archivos automáticamente.</translation>
@@ -333,6 +334,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="4972737347717125191">Los sitios pueden solicitar permiso para utilizar datos y dispositivos de realidad virtual</translation>
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Más información sobre el feed de Discover</translation>
 <translation id="4994033804516042629">No se han encontrado contactos</translation>
 <translation id="4996978546172906250">Compartir a través de</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
@@ -582,6 +584,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8067883171444229417">Reproducir vídeo</translation>
 <translation id="8068648041423924542">No se puede seleccionar el certificado.</translation>
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>
+<translation id="80798452873915119">Los sitios pueden solicitar permiso para gestionar las ventanas en todas tus pantallas</translation>
 <translation id="8087000398470557479">Este contenido procede de <ph name="DOMAIN_NAME" />, publicado por Google.</translation>
 <translation id="8088603949666785339">Más opciones en el <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Ver pestañas en tu lista de aplicaciones</translation>

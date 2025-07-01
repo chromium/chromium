@@ -136,6 +136,11 @@ Nota: Obtén más información sobre las políticas de mitigación de procesos (
 <translation id="1077675271127011209">Inhabilitar informes de uso y datos relacionados con fallas</translation>
 <translation id="1079498696402787191">Usar el valor predeterminado para los hashes permitidos en los protocolos de enlace TLS</translation>
 <translation id="1079801999187584280">No permitir el uso de las Herramientas para desarrolladores</translation>
+<translation id="1081263326166769685">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> informará a Google sobre las métricas de uso y los datos de diagnóstico, incluidos los informes de fallas. Si inhabilitas la política, se desactivarán los informes sobre datos de diagnóstico y métricas.
+
+Para dispositivos administrados, esta política está habilitada de forma predeterminada y envía métricas a Google.
+
+Para dispositivos no administrados, el usuario puede tomar la decisión de enviar las métricas cuando no se establece la política.</translation>
 <translation id="1082802595100075771">Permite que los usuarios usen un servicio anónimo de Google para obtener descripciones automáticas de las imágenes sin etiquetar</translation>
 <translation id="1084697375611053264">Especifica la lista de dominios de apps web de terceros que pueden usar <ph name="DESK_API_NAME" /> para controlar los escritorios de <ph name="PRODUCT_OS_NAME" />. Estos patrones de URL deben seguir el formato definido para la propiedad "coincidencias" en https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
 <translation id="1087057100912843460">Permitir las actualizaciones</translation>
@@ -270,9 +275,6 @@ Para obtener más información sobre el manejo de datos de las funciones potenci
       Si no estableces la política, el acceso no será automático.</translation>
 <translation id="1193653806129988688">No permitir que los usuarios canjeen ofertas a través del Registro de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1197437816436565375">No puedes obligar a las apps de Android a usar un proxy. Las apps de Android tienen a su disposición un subgrupo de opciones de configuración de proxy que pueden respetar de forma voluntaria. Para obtener más información, consulta la política <ph name="PROXY_MODE_POLICY_NAME" />.</translation>
-<translation id="1198183996903759302">Si estableces la política como verdadera (o estableces <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> como falsa), las páginas web no podrán acceder a la API de WebGL, y los complementos no podrán usar la API de Pepper 3D.
-
-      Si la estableces como falsa o no la estableces, los sitios web podrán usar la API de WebGL y los complementos podrán usar la API de Pepper 3D, pero es posible que la configuración predeterminada del navegador aún requiera que los argumentos de línea de comandos utilicen estas API.</translation>
 <translation id="1198458955128279215">Usar el comportamiento predeterminado del plan de lanzamiento de funciones</translation>
 <translation id="1202216683470826356">Muestra tarjetas en la página Nueva pestaña</translation>
 <translation id="1203676252390737801">Procesamiento de IP de WebRTC por URL</translation>
@@ -1535,15 +1537,6 @@ Esta política suele estar inhabilitada para ofrecer protección frente al phish
         Si habilitas la política o no la estableces, se podrán actualizar las apps de Chrome para kiosco durante la sesión.
         </translation>
 <translation id="2082205219176343977">Configura la versión mínima permitida de Chrome para el dispositivo.</translation>
-<translation id="2083016623552073519">Habilita la traducción de subtítulos instantáneos. Los subtítulos se enviarán a Google para su traducción.
-
-Si habilitas esta política, la función Traducción instantánea estará siempre activada.
-
-Si la inhabilitas, la Traducción instantánea siempre estará desactivada.
-
-Si la estableces como obligatoria, los usuarios no podrán cambiarla ni anularla.
-
-Si no la estableces, la Traducción instantánea estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="20838788335877967">Inhabilitar la generación de informes sobre la identificación de usuarios</translation>
 <translation id="208566302163036794">Bloquea las funciones inhabilitadas</translation>
 <translation id="2086040449830622332">Habilitar la zona de pruebas de impresión de LPAC</translation>
@@ -3062,6 +3055,7 @@ Esta política es temporal y se quitará en el futuro.</translation>
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Esta política solo establece coincidencias basadas en el origen; por lo tanto, se ignoran todas las rutas de acceso que se incluyan en el patrón de URL.</translation>
 <translation id="3112501357749061018">Una lista de certificados TLS en los que debe confiar <ph name="PRODUCT_NAME" /> para la autenticación del servidor, con restricciones agregadas fuera del certificado. Si no hay ninguna restricción de un tipo determinado, se permite cualquier nombre de ese tipo.
 Los certificados deben estar codificados en base64. Se debe especificar al menos una restricción para cada certificado.</translation>
+<translation id="3113283011165145080">Permitir que <ph name="PRODUCT_NAME" /> decida</translation>
 <translation id="3118552207903834734">Permitir que el usuario configure el nombre de host de su dispositivo</translation>
 <translation id="3122082892722698079">Controla el uso de excepciones de contenido no seguro</translation>
 <translation id="3125472566440502628">Inhabilitar Seleccionar para pronunciar</translation>
@@ -5044,6 +5038,7 @@ Un dispositivo se considera administrado si se utiliza una versión empresarial 
 
       Si no se configura esta política, el usuario podrá inhabilitar cualquier complemento instalado en el sistema.</translation>
 <translation id="4549695018986780856">Habilitar Manifest v2</translation>
+<translation id="4549729301485728119">El valor predeterminado se determina en función de otros factores</translation>
 <translation id="4554651132977135445">Modo de procesamiento de bucle invertido de la política del usuario</translation>
 <translation id="4554991346503872538">Nunca ofrecer la traducción</translation>
 <translation id="4555850956567117258">Habilita la atestación remota para el usuario.</translation>
@@ -9262,6 +9257,11 @@ Si se inhabilita esta política, las contraseñas no se recordarán nunca y se q
 
       Los identificadores de tipos de conexión son <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> y <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
 <translation id="7150722575502017208">No solicitar correspondencia entre el usuario local y el propietario del host de acceso remoto</translation>
+<translation id="7150775293604912624">Si estableces la política como verdadera, <ph name="PRODUCT_NAME" /> podrá reproducir contenido multimedia de forma automática. Si estableces la política como falsa, <ph name="PRODUCT_NAME" /> dejará de reproducir contenido multimedia de forma automática.
+
+Si no estableces esta política, <ph name="PRODUCT_NAME" /> no reproducirá contenido multimedia de forma automática. Sin embargo, para ciertos patrones de URL, podrás usar la política <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" /> para cambiar esta configuración.
+
+Si esta política cambia mientras se ejecuta <ph name="PRODUCT_NAME" />, el cambio solo se aplicará a las pestañas que se abran a partir de ese momento.</translation>
 <translation id="7151366515472588710">El cliente no debe interpretar estos datos, sino reenviarlos exactamente como los recibió. El DMServer usa policy_version para verificar que sus definiciones de las políticas coincidan con las del dispositivo con ChromeOS.</translation>
 <translation id="7152640356717355643">Habilitar los informes de la interfaz de red del dispositivo</translation>
 <translation id="7153786895642570081">Esta política controla la habilitación de la función EphemeralNetworkPolicies.
@@ -10863,6 +10863,7 @@ Si no la estableces, el control con gestos faciales estará inicialmente inhabil
           Si no se configura, no se verá afectado el comportamiento de las políticas más específicas.</translation>
 <translation id="8350643689940867542">Inhabilitar la generación de informes con los datos sobre la política</translation>
 <translation id="835283681355955417">Informar datos sobre los periféricos</translation>
+<translation id="8353189903603611009">No permitir que Chrome reproduzca contenido multimedia de forma automática, a menos que la URL se especifique en la política <ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" /></translation>
 <translation id="8354001669131263433">A partir de M132, se quitará esta política, junto con las APIs de pantalla completa con prefijo de video.
 
 Si estableces la política como <ph name="ENABLED_VALUE_NAME" />, se podrán usar las APIs de pantalla completa con prefijo de video (p. ej., Video.webkitEnterFullscreen()) desde JavaScript.
@@ -11255,6 +11256,7 @@ Si no la estableces, los usuarios no podrán jugar al juego en el <ph name="PROD
           El valor de la política debe especificarse en milisegundos.</translation>
 <translation id="8592363656632862875">No descargar el modelo</translation>
 <translation id="859579553230883285">Inhabilitar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> para anuncios sugeridos por el sitio para los usuarios</translation>
+<translation id="8596784129804979039">Utilizar la configuración predeterminada para la zona de pruebas del servicio de red</translation>
 <translation id="8597758693275075382">Los strings OEM SMB que se pasarán a la VM durante la instalación. La configuración predeterminada es la lista vacía.</translation>
 <translation id="8598786284856179541">Habilitar la generación de informes sobre la versión</translation>
 <translation id="859937827887158048">No permitir descargas de actualizaciones automáticas entre pares</translation>
@@ -11595,6 +11597,7 @@ Nota: Esta política no tiene efecto si se establece DevicePowerBatteryChargingO
 <translation id="8840243776706727185">Inhabilitar la función NewBaseUrlInheritanceBehavior</translation>
 <translation id="8842208363354615697">Permitir que se habilite el modo solo HTTPS</translation>
 <translation id="8843331294082716286">No mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> a los usuarios</translation>
+<translation id="884855199714673326">Permite que el host de acceso remoto decida</translation>
 <translation id="885147810817138322">Muestra recomendaciones de contenido multimedia para el usuario</translation>
 <translation id="8852579753940989645">Habilitar la integridad del código del renderizador</translation>
 <translation id="8854571659927427063">Si habilitas la política, se importarán los favoritos del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importará ningún favorito en la primera ejecución.

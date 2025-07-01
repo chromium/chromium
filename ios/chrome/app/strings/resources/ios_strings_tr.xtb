@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Yeni bir bağlantı istemek için bağlantıyı gönderen kişiyle iletişime geçin</translation>
 <translation id="1013952917065545813">En son kapattığınız sekmeleri yeniden açmak için buraya geri gelebilirsiniz</translation>
 <translation id="1016495303386450659">Öğe güncellendi</translation>
+<translation id="1017735584092444011">Okuma Modu'nu Göster</translation>
 <translation id="102916930470544692">Geçiş anahtarı</translation>
 <translation id="1030376737535466765">Şifre Yöneticisi'ni açın</translation>
 <translation id="1035980983510608210">Tüm sekmelerin kapatılması, sabit sekmelerin de kapanmasına neden olur.</translation>
@@ -1237,12 +1238,14 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6074656473835429958">Bildirim alın</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) yüklenemedi</translation>
 <translation id="6077126322656614846">Kamera erişimine izin veriliyor</translation>
+<translation id="607730456154980869">Chrome'da Gemini ile daha hızlı yanıt alın</translation>
 <translation id="6078236141387574983">Sayfanın yüksekliğini yeniden ayarlayın</translation>
 <translation id="6084848228346514841">Sekme Seçin</translation>
 <translation id="6089212833343035912">Google Şifre Yöneticisi PIN'i</translation>
 <translation id="6090760257419195752">Yok sayılan uyarılar</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> bulundu</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> olarak oturum açtınız. Ayarları açar.</translation>
+<translation id="610083648014322104">Görüntülediğiniz sayfanın içeriğine göre alakalı yanıtlar alın</translation>
 <translation id="6103540626693881831">Cihaz Üzerinde Şifreleme</translation>
 <translation id="611361228753138223">Bu cihazda son zamanlarda ziyaret ettiğiniz siteler</translation>
 <translation id="611705554202268369">Sekme grubuna eklemek için uzun basın</translation>
@@ -1495,6 +1498,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="6979737339423435258">Tüm zamanlar</translation>
 <translation id="6983306615164277634">Konumu değiştirmek için adres çubuğuna dokunup basılı da tutabilirsiniz.</translation>
 <translation id="6987201788018524855">Kaçırdığınız faydalı özellikleri keşfedin</translation>
+<translation id="6989636517316575338">İstediğiniz sayfa hakkında soru sorun</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Ürün fiyatlarını takip edin ve herhangi bir sitede fiyat düştüğünde uyarı alın</translation>
 <translation id="7004032350256606903">Kuruluşunuz, gizli olarak göz atmanızı zorunlu tutuyor.
@@ -1696,6 +1700,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7863211248337747225">Uygulamayı indir</translation>
 <translation id="7865127013871431856">Çeviri seçenekleri</translation>
 <translation id="7866872729285243843">Okuma Listenizi tüm cihazlarınızda almak için ayarlarda "Okuma Listesi"ni açın.</translation>
+<translation id="787364769771947486">Okuma Modu'nu gizle</translation>
 <translation id="7874107544081154809">Formu <ph name="CELL_ACCESSIBILITY_LABEL" /> ile otomatik doldur</translation>
 <translation id="7883882164760409935">Yeniden kullanılan şifreleriniz var.</translation>
 <translation id="7887174313503389866">Önemli gizlilik ve güvenlik kontrolleriyle ilgili rehberli tura katılın. Daha fazla seçenek için bağımsız ayarlara gidin.</translation>
@@ -1752,6 +1757,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8058655154417507695">Son kullanım tarihinin yılı</translation>
 <translation id="8059533439631660104">Bölümü daraltır.</translation>
 <translation id="8061584726507121204">Geçmiş</translation>
+<translation id="8069168488983557089">Her konuyu anlamanıza yardımcı olacak önemli bilgilere ve analizlere ulaşın</translation>
 <translation id="8069394452933076548">Yakın zamanda kullanılmayan sekmelerin, etkin olmayan sekmeler bölümüne ne zaman taşınacağı seçin.</translation>
 <translation id="8073670137947914548">İndirme tamamlandı</translation>
 <translation id="8076492880354921740">Sekmeler</translation>

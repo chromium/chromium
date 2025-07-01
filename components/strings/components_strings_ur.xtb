@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">محفوظ کریں اور آٹو فل کریں</translation>
 <translation id="2312234273148520048">مصالحہ جات اور سجاوٹیں</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> سے کم۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
+<translation id="2316090909467242775">اس بازیابی پاس ورڈ کو آزمائیں</translation>
 <translation id="2316159751672436664">‏ChromeOS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="2316887270356262533">‏MB 1 سے کم بچت ہوتی ہے۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> کو ایک صارف نام اور پاس ورڈ درکار ہے۔</translation>
@@ -1674,6 +1675,7 @@
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> انچ)</translation>
 <translation id="3792826587784915501">مخصوص پسند کی اور انڈی فلمیں</translation>
 <translation id="3793574014653384240">حال ہی میں ہونے والے کریشز کی تعداد اور اسباب</translation>
+<translation id="3795624560191557077">‏آپ نے حال ہی میں عوامی ڈیٹا کی خلاف ورزی میں پایا جانے والا پاس ورڈ تبدیل کیا ہے۔ دشواری کی صورت میں، Google پاس ورڈ مینیجر سائن ان کرنے میں آپ کی مدد کر سکتا ہے۔</translation>
 <translation id="3799805948399000906">فونٹ کی درخواست کی گئی</translation>
 <translation id="3801297763951514916">آپ اکثر ملاحظہ کرتے ہیں</translation>
 <translation id="380329542618494757">نام</translation>
@@ -2434,6 +2436,7 @@
 <translation id="5089810972385038852">ریاست</translation>
 <translation id="5090647584136241764">اپنے لیے اہم تفصیلات کا آسانی سے موازنہ کرنے کی خاطر ملتے جلتے پروڈکٹس والے ٹیبز شامل کریں</translation>
 <translation id="5093232627742069661">‏Z-فولڈ</translation>
+<translation id="5093417502834168387">سائن ان کرنے میں پریشانی؟ دوسرا طریقہ آزمائیں</translation>
 <translation id="5094747076828555589">‏یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کے سیکیورٹی سرٹیفکیٹ پر Chromium کو بھروسہ نہیں ہے۔ یہ غلط کنفیگرییشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="5097099694988056070">‏CPU/RAM کے استعمال جیسے آلے کے اعداد و شمار</translation>
 <translation id="5097468150760963273">‏‎27 x 39 انچ</translation>
@@ -3203,6 +3206,7 @@
 <translation id="6388060462449937608">تندرستی کے ساز و سامان اور لوازمات</translation>
 <translation id="6389470377220713856">کارڈ پر نام</translation>
 <translation id="6390200185239044127">‏نصف Z-فولڈ</translation>
+<translation id="6390533465682072118">بازیابی</translation>
 <translation id="639068771471208680">ملٹی پارٹ فارم</translation>
 <translation id="6391700400718590966">ادائیگی کی اسناد محفوظ کریں کوئی مماثل اسناد نہیں کی شیٹ بند ہے</translation>
 <translation id="6392799395081100092">کاغذ (ویلم)</translation>

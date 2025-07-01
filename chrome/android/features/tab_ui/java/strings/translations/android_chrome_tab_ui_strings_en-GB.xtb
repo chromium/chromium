@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">Automatically open tab groups from other devices</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Created <ph name="NUM_YEARS_ONE" /> year ago}other{Created <ph name="NUM_YEARS_MANY" /> years ago}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Inactive tabs and groups will be closed after 1 month}other{Inactive tabs and groups will be closed after <ph name="MONTH_COUNT_MANY" /> months}}</translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Open <ph name="TITLE_OF_GROUP" /> with <ph name="TAB_COUNT2" /> tab}other{Open <ph name="TITLE_OF_GROUP" /> with <ph name="TAB_COUNT2" /> tabs}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> tab group options</translation>
+<translation id="1300188005269437765">Choose when tabs and tab groups are automatically moved to the inactive section.</translation>
 <translation id="1329584516321524826">Updated just now</translation>
 <translation id="1340839264183302272">Leave group</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Expand shared <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />, with label <ph name="CARD_LABEL" />.}other{Expand shared <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />, with label <ph name="CARD_LABEL" />.}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab grouped</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="1909810060368225529">Notice: Changes to this shared tab group are visible to everyone. Everyone can make changes to your shared tab groups</translation>
+<translation id="1982637982196732906">Move to inactive section</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> selected tab}other{Bookmark <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
 <translation id="2055057176188061528">Select tab group or create new tab group</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome automatically closes items in the inactive section that you haven't used in <ph name="AUTO_DELETE_DELAY_ONE" /> month. You can turn this off now or at any time in Settings.}other{Chrome automatically closes items in the inactive section that you haven't used in <ph name="AUTO_DELETE_DELAY_MANY" /> months. You can turn this off now or at any time in Settings.}}</translation>
 <translation id="2118649612461486615">Shop info</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your Incognito tab won't be available.}other{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your # Incognito tabs won't be available.}}</translation>
 <translation id="2162620598375156287">Now <ph name="CURRENT_PRICE" /> on <ph name="SOURCE_WEBSITE" /></translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">Edit group name</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Bookmark tab}other{Bookmark tabs}}</translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="2371084566192454134">Tabs and tab groups</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="2498435670446402865">Rename tab group</translation>
 <translation id="2536366509642644298">'<ph name="TAB_GROUP_NAME_1" />' and '<ph name="TAB_GROUP_NAME_2" />' tab groups no longer available</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Collapse <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="2569352796411618312">Suggestion: <ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
 <translation id="257674075312929031">Group</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Restore and open tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Restore and open tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Visit site</translation>
 <translation id="2671423594960767771">Share group</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">rating</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Add <ph name="TABS_COUNT_ONE" /> tab to group}other{Add <ph name="TABS_COUNT_MANY" /> tabs to group}}</translation>
 <translation id="3328308545011660196">Suggestion: <ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{After 1 day inactive}other{After <ph name="DAY_COUNT_MANY" /> days inactive}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> new tab}other{<ph name="MANY_ADDED" /> new tabs}}</translation>
 <translation id="3613492231657284463">Hide inactive tabs dialogue</translation>
 <translation id="3619255692378312441">Manage access</translation>
@@ -94,6 +101,7 @@
 <translation id="4861953997778766866">Everyone can make changes to your shared tab groups</translation>
 <translation id="4870911314065352661">Close all tabs?</translation>
 <translation id="4871719318659334896">Close group</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Restore and open <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Restore and open <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Close tab}other{Close tabs}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> groups saved (will close tabs and delete groups)</translation>
@@ -114,6 +122,7 @@
 <translation id="5627941783489838464">No tab updates</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link from Chrome}other{<ph name="TABS_COUNT_MANY" /> links from Chrome}}</translation>
 <translation id="5746204836956568669">Group <ph name="NUMBER_OF_TABS" /> tabs to work faster?</translation>
+<translation id="5773295109010386583">Automatically close inactive items</translation>
 <translation id="58326064309361797">Drag tabs to group them</translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5972844218283131174">Deselect all</translation>
@@ -156,6 +165,7 @@
 <translation id="7369451074646620503">'<ph name="TAB_GROUP_NAME" />' tab group no longer available</translation>
 <translation id="7452985128687107478">Tab groups automatically save and update across all your devices</translation>
 <translation id="747459581954555080">Restore all</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item}other{<ph name="TABS_COUNT_MANY" /> items}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Restore <ph name="TABS_COUNT_ONE" /> selected item}other{Restore <ph name="TABS_COUNT_MANY" /> selected items}}</translation>
 <translation id="753732157349120914">Tab Switcher</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> review from Google}other{<ph name="REVIEWS_COUNT_MANY" /> reviews from Google}}</translation>

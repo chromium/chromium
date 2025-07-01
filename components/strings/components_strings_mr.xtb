@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">सेव्ह करा आणि ऑटोफिल करा</translation>
 <translation id="2312234273148520048">मसाले आणि ड्रेसिंग</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> पेक्षा कमी. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी हळू लोड होऊ शकतात.</translation>
+<translation id="2316090909467242775">हा रिकव्हरी पासवर्ड वापरून पहा</translation>
 <translation id="2316159751672436664">ChromeOS सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करा</translation>
 <translation id="2316887270356262533">१ MB पेक्षा कमी जागा मोकळी करते. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी धीम्या गतीने लोड होऊ शकतात.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> साठी वापरकर्ता नाव आणि पासवर्ड आवश्यक आहेत.</translation>
@@ -1672,6 +1673,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इं)</translation>
 <translation id="3792826587784915501">कल्ट आणि इंडी चित्रपट</translation>
 <translation id="3793574014653384240">अलीकडे झालेल्या क्रॅशची संख्या आणि कारणे</translation>
+<translation id="3795624560191557077">तुम्ही अलीकडेच सार्वजनिक डेटा भंगामध्ये आढळलेला पासवर्ड बदलला आहे. समस्या असल्यास, Google Password Manager हे तुम्हाला साइन इन करण्यात मदत करू शकते.</translation>
 <translation id="3799805948399000906">फॉन्टची विनंती केली</translation>
 <translation id="3801297763951514916">तुम्ही अनेकदा भेट देता</translation>
 <translation id="380329542618494757">नाव</translation>
@@ -2432,6 +2434,7 @@
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090647584136241764">तुमच्यासाठी महत्त्वाच्या असलेल्या तपशिलांची सहजपणे तुलना करण्यासाठी समान उत्पादने असलेले टॅब जोडा</translation>
 <translation id="5093232627742069661">Z-फोल्ड</translation>
+<translation id="5093417502834168387">साइन इन करण्यात समस्या आहे का? दुसरी पद्धत वापरून पहा</translation>
 <translation id="5094747076828555589">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट Chromium द्वारे विश्वसनीय नाही. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="5097099694988056070">CPU/RAM वापर यासारखी डिव्हाइस आकडेवारी</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
@@ -3201,6 +3204,7 @@
 <translation id="6388060462449937608">फिटनेस उपकरणे आणि ॲक्सेसरी</translation>
 <translation id="6389470377220713856">कार्डवरील नाव</translation>
 <translation id="6390200185239044127">Z-फोल्ड हाफ</translation>
+<translation id="6390533465682072118">रिकव्हरी</translation>
 <translation id="639068771471208680">मल्टी-पार्ट फॉर्म</translation>
 <translation id="6391700400718590966">सुरक्षित पेमेंट क्रेडेंशियल याची जुळणारे कोणतेही क्रेडेंशियल नाही ही शीट बंद केली आहे</translation>
 <translation id="6392799395081100092">पेपर (वेलम)</translation>

@@ -187,6 +187,7 @@
 <translation id="1740650426894359238">Pređite na drugi profil</translation>
 <translation id="1741219894094057085">Pametan sat</translation>
 <translation id="1743244221910283364">Odbaci promene</translation>
+<translation id="1748975028205587434">Izaberite fajl</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opcija za adresu je dostupna iznad tastature.}one{{count} opcija za adresu je dostupna iznad tastature.}few{{count} opcije za adresu su dostupne iznad tastature.}other{{count} opcija za adresu je dostupno iznad tastature.}}</translation>
 <translation id="1750238553597293878">Nastavite da koristite lozinke na Google nalogu</translation>
 <translation id="17513872634828108">Otvorene kartice</translation>
@@ -529,6 +530,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3119874402040566234">Odjavićete se i podaci pregledanja će biti izbrisani</translation>
 <translation id="3124568093781685165">Delite lozinke sa porodicom</translation>
 <translation id="3130863904455712965">Istorija i drugo</translation>
+<translation id="3132584647087998639">Uvezite podatke</translation>
 <translation id="313283613037595347">Napravi novu karticu bez arhiviranja.</translation>
 <translation id="3136739222562075778">Ova kartica prikazuje padove cena za proizvode na otvorenim karticama</translation>
 <translation id="3138611310073113613">Odbaci izbor</translation>
@@ -1118,6 +1120,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="560322036295180549">Isključila je organizacija</translation>
 <translation id="5611398002774823980">Sačuvaj na nalogu</translation>
+<translation id="561269594905823128">Dodirnite <ph name="BEGIN_BOLD" />Izaberi fajl<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sortiraj prema najnovijem</translation>
 <translation id="5614553682702429503">Želite li da sačuvate lozinku?</translation>
 <translation id="5619871095170816857">Ova kartica prikazuje poslednju korišćenu otvorenu karticu na svim sinhronizovanim uređajima u poslednja 24 sata.</translation>
@@ -1569,6 +1572,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7367530036083223701">Bezbedno pristupajte lozinkama sa početnog ekrana pomoću vidžeta Menadžer lozinki.</translation>
 <translation id="7369285139974632858">Dodavanje u obeleživače</translation>
 <translation id="7380220816562673297">Za sada lozinke možete da delite samo sa članovima porodice. <ph name="BEGIN_LINK" />Napravite grupu za porodicu<ph name="END_LINK" /> sa najviše 6 članova i dobijte više iz proizvoda i pretplata u svim Google uslugama.</translation>
+<translation id="7380698179418029202">Izaberite <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> fajl za Safari izvoz</translation>
 <translation id="739101637685146669">Koji URL želite da obeležite?</translation>
 <translation id="7393747756726387725">Uvećajte</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 sajt}one{# sajt}few{# sajta}other{# sajtova}}</translation>
@@ -1708,6 +1712,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7887552845761062935">Dvaput dodirnite i zadržite da biste otvorili još opcija</translation>
 <translation id="7889910613639381518">Lak i bezbedan pristup pomoću vidžeta Google menadžer lozinki.</translation>
 <translation id="7899199123054742721">Označi sve kao nepročitano</translation>
+<translation id="7908957400505794782">Dodirnite <ph name="BEGIN_BOLD" />Gotovo<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">Organizacija ne dozvoljava da sinhronizujete sve.</translation>
 <translation id="792357691529995513">Nije pronađen nijedan problem</translation>
 <translation id="7925108652071887026">Podaci Automatskog popunjavanja</translation>

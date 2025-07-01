@@ -69,6 +69,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="1799920918471566157">Saveti za Chrome</translation>
 <translation id="1816835383954230954">Kada je optimizator uključen, Chrome radi brže i funkcije koje koriste JavaScript bi trebalo da rade kako je predviđeno. Kada je optimizator isključen, to smanjuje performanse, ali čini V8 otpornijim na napade.</translation>
 <translation id="1818308510395330587">Da biste dozvolili da <ph name="APP_NAME" /> koristi PR, uključite i kameru u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Donja tabela za izgled stranice nove kartice</translation>
 <translation id="1887786770086287077">Pristup lokaciji je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sajtovi obično pristupaju fajlovima i folderima na uređaju da bi vam bile dostupne funkcije poput automatskog čuvanja stavki na kojima radite</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
@@ -326,6 +327,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="4882919381756638075">Sajtovi obično koriste mikrofon za potrebe funkcija za komunikaciju poput video četa</translation>
 <translation id="4883854917563148705">Podešavanja kojima se upravlja ne mogu da se resetuju</translation>
 <translation id="4887024562049524730">Pre nego što dozvolite sajtovima da koriste uređaj i podatke virtuelne realnosti prikazuje se upit (preporučeno)</translation>
+<translation id="4934780484581617878">Upravljanje prozorima</translation>
 <translation id="4936863036653376783">Grupe ćete pronaći u odeljku za grupe kartica na svim uređajima</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> je onemogućen da koristi vaše podatke na</translation>
 <translation id="4953688446973710931">Kada je uključeno, sajtovi mogu da traže da automatski preuzimaju više fajlova. Kada je isključeno, sajtovi ne mogu automatski da preuzimaju više fajlova.</translation>
@@ -458,6 +460,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
 <translation id="640163077447496506">Ističe danas</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Kolekcije tema</translation>
 <translation id="6439114592976064011">Ne dozvoljava sajtovima da koriste uređaj i podatke virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6452138246455930388">Sniženje na otvorenoj kartici, sa <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -561,6 +564,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Sajt koristi kameru</translation>
+<translation id="7805832099057502789">Donja tabela za izgled stranice nove kartice je otvorena na celom ekranu</translation>
 <translation id="7807060072011926525">Pruža Google</translation>
 <translation id="7815680994978050279">Opasno preuzimanje je blokirano</translation>
 <translation id="7835852323729233924">Reprodukcija medija</translation>
@@ -580,9 +584,11 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8042586301629853791">Sortiraj prema:</translation>
 <translation id="8051193500142930381">Funkcije kojima je potrebna kamera neće raditi</translation>
+<translation id="8056330801132235235">Podrazumevano za Chrome</translation>
 <translation id="8067883171444229417">Pusti video</translation>
 <translation id="8068648041423924542">Nije moguće izabrati sertifikat.</translation>
 <translation id="8077120325605624147">Svaki sajt koji posetite može da vam prikaže bilo koji oglas</translation>
+<translation id="80798452873915119">Sajtovi mogu da zatraže da upravljaju prozorima na svim ekranima</translation>
 <translation id="8087000398470557479">Ovaj sadržaj je sa <ph name="DOMAIN_NAME" />, prikazuje Google.</translation>
 <translation id="8088603949666785339">Još opcija u <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Kartice prikaza na listi aplikacija</translation>

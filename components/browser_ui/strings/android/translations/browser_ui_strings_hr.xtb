@@ -326,6 +326,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="4882919381756638075">Web-lokacije obično upotrebljavaju mikrofon za komunikacijske značajke poput videochata</translation>
 <translation id="4883854917563148705">Upravljane postavke ne mogu se vratiti na zadano</translation>
 <translation id="4887024562049524730">Web-lokacije moraju tražiti dopuštenje za upotrebu uređaja i podataka virtualne stvarnosti (preporučeno)</translation>
+<translation id="4934780484581617878">Upravljanje prozorima</translation>
 <translation id="4936863036653376783">Grupe ćete pronaći u odjeljku grupe kartica na svim svojim uređajima</translation>
 <translation id="4945443401464700059">Web-lokacija <ph name="SITE" /> ne smije upotrebljavati vaše podatke na sljedećim web-lokacijama:</translation>
 <translation id="4953688446973710931">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za automatsko preuzimanje više datoteka. Kad je ta postavka isključena, web-lokacije ne mogu automatski preuzimati više datoteka.</translation>
@@ -333,6 +334,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="4972737347717125191">Web-lokacije mogu tražiti dopuštenje za upotrebu uređaja i podataka virtualne stvarnosti</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
 <translation id="4976702386844183910">Posljednji posjet bio je <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Saznajte više o feedu Discovera</translation>
 <translation id="4994033804516042629">Nije pronađen nijedan kontakt</translation>
 <translation id="4996978546172906250">Dijeli putem</translation>
 <translation id="5001526427543320409">Kolačići trećih strana</translation>
@@ -582,6 +584,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
 <translation id="8068648041423924542">Ne može se odabrati certifikat.</translation>
 <translation id="8077120325605624147">Svaka web-lokacija koju posjetite može vam prikazati bilo koji oglas</translation>
+<translation id="80798452873915119">Web-lokacije mogu tražiti dopuštenje za upravljanje prozorima na svim zaslonima</translation>
 <translation id="8087000398470557479">Sadržaj potječe s domene <ph name="DOMAIN_NAME" />, a omogućuje ga Google.</translation>
 <translation id="8088603949666785339">Više opcija u <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Pregledajte kartice na popisu aplikacija</translation>

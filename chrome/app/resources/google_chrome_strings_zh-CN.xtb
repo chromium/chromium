@@ -35,6 +35,7 @@
 <translation id="141901961143729572">分享您的想法</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页。}=1{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页，但不会重新打开您的无痕式窗口。}other{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页，但不会重新打开您的 # 个无痕式窗口。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 应用</translation>
+<translation id="1439793550875056299">固定 Chrome</translation>
 <translation id="146866447420868597">登录 Chrome？</translation>
 <translation id="1492280395845991349">重新启动即可完成 Chrome 更新</translation>
 <translation id="1497802159252041924">安装时出错：<ph name="INSTALL_ERROR" /></translation>
@@ -352,6 +353,7 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5596627076506792578">更多选项</translation>
+<translation id="5600352656975192682">将 Chrome 固定到任务栏，即可随时快速访问</translation>
 <translation id="5602351063754773347">Chrome 建议您移除它。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">通过使用不同的 Chrome 个人资料，您可以将各种 Chrome 信息分开，例如为朋友和家人创建专属个人资料，或是将工作和娱乐分开。</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能存在危险，因此 Chrome 已将其拦截。</translation>

@@ -326,6 +326,7 @@
 <translation id="4882919381756638075">网站通常会使用您的麦克风以实现通信功能（例如视频聊天）</translation>
 <translation id="4883854917563148705">无法重置受管理的设置</translation>
 <translation id="4887024562049524730">需先询问，得到许可后才允许网站使用您的虚拟现实设备和数据（推荐）</translation>
+<translation id="4934780484581617878">窗口管理</translation>
 <translation id="4936863036653376783">您可以在所有设备的“标签页分组”部分找到您的分组</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> 已被禁止使用您在以下网站上的信息</translation>
 <translation id="4953688446973710931">开启此设置后，网站可以请求自动下载多个文件。关闭此设置后，网站无法自动下载多个文件。</translation>
@@ -333,6 +334,7 @@
 <translation id="4972737347717125191">网站可以请求使用虚拟现实设备和数据</translation>
 <translation id="497421865427891073">前进</translation>
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
+<translation id="4978178243417029856">详细了解探索信息流</translation>
 <translation id="4994033804516042629">找不到任何联系人</translation>
 <translation id="4996978546172906250">分享方式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
@@ -582,6 +584,7 @@
 <translation id="8067883171444229417">播放视频</translation>
 <translation id="8068648041423924542">无法选择证书。</translation>
 <translation id="8077120325605624147">您访问的任何网站都可向您展示任何广告</translation>
+<translation id="80798452873915119">网站可以询问能否管理您的所有显示屏上的窗口</translation>
 <translation id="8087000398470557479">此内容来自 <ph name="DOMAIN_NAME" />（由 Google 提供）。</translation>
 <translation id="8088603949666785339">“<ph name="BANNER_TITLE" />”中的更多选项</translation>
 <translation id="8112925981674547014">查看应用列表中的标签页</translation>

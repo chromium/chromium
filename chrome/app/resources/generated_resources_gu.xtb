@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">અમાન્ય અથવા દૂષિત ફાઇલ</translation>
 <translation id="1040761927998636252"><ph name="URL" /> માટે અનામાંકિત બુકમાર્ક</translation>
 <translation id="1041175011127912238">આ પેજ પ્રતિભાવ આપી રહ્યું નથી</translation>
+<translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />“ માત્ર આ ડિવાઇસ પર સાચવવામાં આવ્યું છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા એકાઉન્ટમાં “<ph name="ACCOUNT_FOLDER" />” સાચવો.</translation>
 <translation id="1041263367839475438">ઉપલબ્ધ ડિવાઇસ</translation>
 <translation id="1041607257468256895">Chromeમાં વેબસાઇટના લોકેશનની પરવાનગીઓને મેનેજ કરો</translation>
 <translation id="1042174272890264476">તમારા કમ્પ્યુટરની સાથે <ph name="SHORT_PRODUCT_NAME" /> ની RLZ લાઇબ્રેરી બિલ્ટ ઇન પણ આવે છે. RLZ વિશેષ પ્રચારાત્મક ઝુંબેશ દ્વારા ચલાવવામાં આવતી શોધ અને <ph name="SHORT_PRODUCT_NAME" /> ઉપયોગને માપવા માટે બિન-અદ્વિતીય, બિન-વ્યક્તિગત રીતે ઓળખી શકાય તેવા ટૅગ સોંપે છે. આ લેબલ કેટલીકવાર <ph name="PRODUCT_NAME" />માં Google Search ક્વેરીમાં દેખાય છે.</translation>
@@ -609,6 +610,7 @@
 <translation id="1418559532423038045">તમારા <ph name="DEVICE_TYPE" />માંથી <ph name="VM_NAME" /> કાઢી નાખે છે. આમ કરવાથી, વર્ચ્યુઅલ મશીનમાંથી તમામ ઍપ અને ડેટા ડિલીટ થઈ જશે!</translation>
 <translation id="1418882096915998312">Enterpriseની નોંધણીની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="1418954524306642206">તમારા પ્રિન્ટરની PPD ફાઇલનો ઉલ્લેખ કરવા માટે બ્રાઉઝ કરો</translation>
+<translation id="1419086691207546433">સુવ્યવસ્થિત રહેવા, કાર્યોને સરળ બનાવવા અને તમારા બ્રાઉઝિંગને બહેતર બનાવવા માટે એક્સ્ટેન્શન ઉમેરો</translation>
 <translation id="1421334842435688311">સેલ્યુલર લોકેશન માહિતી</translation>
 <translation id="1421514190500081936">કૃપા કરીને આ ડેટા ડાઉનલોડ કરવાનું કારણ દાખલ કરો:</translation>
 <translation id="1422159345171879700">અસુરક્ષિત સ્ક્રિપ્ટ લોડ કરો</translation>
@@ -1913,7 +1915,6 @@
 <translation id="2312219318583366810">પેજનું URL</translation>
 <translation id="2314165183524574721">હાલના સેટિંગ અનુસાર કોઈ જોઈ શકતું નથી</translation>
 <translation id="2314774579020744484">પેજનો અનુવાદ કરતી વખતે ઉપયોગમાં લેવાયેલી ભાષા</translation>
-<translation id="2316090909467242775">આ રિકવરીનો પાસવર્ડ અજમાવી જુઓ</translation>
 <translation id="2316129865977710310">નહીં, આભાર</translation>
 <translation id="2316433409811863464">ઍપ સ્ટ્રીમિંગ</translation>
 <translation id="2316709634732130529">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો</translation>
@@ -3325,6 +3326,7 @@
 <translation id="3309330461362844500">પ્રમાણપત્ર પ્રોફાઇલનું ID</translation>
 <translation id="3310379801837527592"><ph name="OWNER_FIRST_NAME" /> અને અન્ય <ph name="NUM_OTHER_MEMBERS" /> વ્યક્તિ સાથે ટૅબના ગ્રૂપમાં જોડાઓ</translation>
 <translation id="331080746368555063">ખાનગી સાઇટમાં તમારી કંપનીના ઇન્ટ્રાનેટ જેવી વસ્તુઓ શામેલ હોઈ શકે છે</translation>
+<translation id="3311007761540106761">સિસ્ટમ ડિફૉલ્ટ</translation>
 <translation id="3311445899360743395">આ ઍપ સાથે સંકળાયેલા ડેટાને આ ડિવાઇસમાંથી દૂર કરવામાં આવશે.</translation>
 <translation id="3312470654018965389">Linux કન્ટેનરની ગોઠવણી કરી રહ્યાં છીએ</translation>
 <translation id="3312883087018430408">કોઈ ચોક્કસ સાઇટમાં કે Chromeના ભાગમાં શોધવા માટે, ઍડ્રેસ બારમાં તેનો શૉર્ટકટ અને તે પછી તમારી પસંદગીનો કીબોર્ડ શૉર્ટકટ ટાઇપ કરો. ઉદાહરણ તરીકે, માત્ર બુકમાર્ક શોધવા માટે, "@bookmarks" ટાઇપ કરો, ત્યાર પછી Tab અથવા Space કી દબાવો.</translation>
@@ -4038,7 +4040,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> એક્સ્ટેન્શન</translation>
 <translation id="3794792524918736965">Windows Hello ચાલુ કરો</translation>
 <translation id="379509625511193653">બંધ</translation>
-<translation id="3795624560191557077">તમે તાજેતરમાં બદલાવેલો પાસવર્ડ કોઈ સાર્વજનિક ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. કોઈ સમસ્યા આવે ત્યારે Google Password Manager તમને સાઇન ઇન કરવામાં મદદ કરી શકે છે.</translation>
 <translation id="3796215473395753611">alt + ઉપરની ઍરો કી</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, વૉઇસનો પ્રીવ્યૂ કરવા માટે જમણી ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="3796648294839530037">મનપસંદ નેટવર્ક્સ:</translation>
@@ -5860,7 +5861,6 @@
 <translation id="5088534251099454936">RSA એન્ક્રિપ્શનવાળું PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">તમારા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવાની મંજૂરી નથી</translation>
 <translation id="5091636240353511739">પિન બતાવો</translation>
-<translation id="5093417502834168387">સાઇન ઇન કરવામાં સમસ્યા આવી? બીજી રીત અજમાવી જુઓ</translation>
 <translation id="5093477827231450397">તમે બ્લૉક કરેલી એવી સાઇટની સૂચિ કે જે અન્ય સાઇટને જાહેરાતો સૂચવે એવું તમે ઇચ્છતા નથી</translation>
 <translation id="5093569275467863761">બૅક/ફૉરવર્ડ કૅશ મેમરીમાં સ્ટોર કરેલી છૂપી સબફ્રેમ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">તમે Files ઍપ અથવા અન્ય ઍપમાં, આ ઍપ વડે સપોર્ટેડ ફાઇલો ખોલી શકો છો અને તેમાં ફેરફાર કરી શકો છો. આ ઍપમાં ડિફૉલ્ટ તરીકે ખોલવામાં આવે તેવી ફાઇલોને નિયંત્રિત કરવા માટે, <ph name="BEGIN_LINK" />તમારા ડિવાઇસ પર ડિફૉલ્ટ ઍપને સેટ કરવાની રીત વિશે જાણો<ph name="END_LINK" />.</translation>
@@ -7647,7 +7647,6 @@ USB ડિવાઇસ</translation>
 <translation id="6388577073199278153">તમારું મોબાઇલ એકાઉન્ટ ઍક્સેસ કરી શકતા નથી</translation>
 <translation id="6390020764191254941">ટૅબને નવી વિંડોમાં ખસેડો</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{એકપણ નહીં}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> અને વધુ 1 માટે}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> અને વધુ {COUNT} માટે}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> અને વધુ {COUNT} માટે}}</translation>
-<translation id="6390533465682072118">રિકવરી</translation>
 <translation id="6391131092053186625">તમારા ડિવાઇસનું IMEI <ph name="IMEI_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ થઈ શકે છે.</translation>
 <translation id="6393156038355142111">સશક્ત પાસવર્ડ સૂચવો</translation>
 <translation id="6393550101331051049">અસુરક્ષિત કન્ટેન્ટ બતાવવાની મંજૂરી છે</translation>
@@ -10552,6 +10551,7 @@ USB ડિવાઇસ</translation>
 <translation id="8425213833346101688">બદલો</translation>
 <translation id="8425492902634685834">ટાસ્કબારમાં પિન કરો</translation>
 <translation id="8425768983279799676">તમે તમારા ડિવાઇસને અનલૉક કરવા માટે તમારા પિનનો ઉપયોગ કરી શકો છો.</translation>
+<translation id="8426697201161711396">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ અને બીજુ ઘણું મેળવવા માટે Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="8427213022735114808">કોઈપણ ટેક્સ્ટ ફીલ્ડમાં અવાજ ટાઇપ કરવાને મંજૂરી આપવા માટે, શ્રુતલેખન Googleને તમારો અવાજ મોકલે છે.</translation>
 <translation id="8427292751741042100">કોઈ પણ હોસ્ટ પર એમ્બેડ કરેલ</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>

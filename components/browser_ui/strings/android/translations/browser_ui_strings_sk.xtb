@@ -326,6 +326,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="4882919381756638075">Weby zvyčajne používajú váš mikrofón, aby mohli poskytovať komunikačné funkcie, ako sú videohovory</translation>
 <translation id="4883854917563148705">Spravované nastavenia sa nedajú resetovať</translation>
 <translation id="4887024562049524730">Pýtať sa, či chcete povoliť webu používať zariadenie a dáta pre virtuálnu realitu (odporúčané)</translation>
+<translation id="4934780484581617878">Správa okien</translation>
 <translation id="4936863036653376783">Skupiny nájdete v sekcii skupín kariet vo všetkých svojich zariadeniach</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> má zablokované používanie vašich informácií na webe</translation>
 <translation id="4953688446973710931">Keď je táto možnosť zapnutá, weby môžu žiadať o automatické sťahovanie viacerých súborov. Keď je táto možnosť vypnutá, weby nemôžu automaticky stiahnuť viacero súborov.</translation>
@@ -583,6 +584,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="8067883171444229417">Prehrať video</translation>
 <translation id="8068648041423924542">Nedá sa vybrať certifikát</translation>
 <translation id="8077120325605624147">Všetky weby, ktoré navštívite, vám môžu zobrazovať ľubovoľné reklamy</translation>
+<translation id="80798452873915119">Weby môžu žiadať o povolenie spravovať okná na všetkých obrazovkách</translation>
 <translation id="8087000398470557479">Tento obsah pochádza z domény <ph name="DOMAIN_NAME" /> a bol doručený Googlom.</translation>
 <translation id="8088603949666785339">Ďalšie možnosti nájdete v banneri <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Zobrazovať karty v zozname aplikácií</translation>

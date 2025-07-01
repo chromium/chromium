@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">አስቀምጥ እና ራስ-ሙላ</translation>
 <translation id="2312234273148520048">ማጣፈጫዎች እና ቅመሞች</translation>
 <translation id="2316087952091171402">ከ<ph name="UPPER_ESTIMATE" /> ያነሰ። አንዳንድ ጣቢያዎች በሚቀጥለው ጉብኝትዎ ላይ ይበልጥ ቀስ ብለው ሊጭኑ ይችላሉ።</translation>
+<translation id="2316090909467242775">ይህን የመልሶ ማግኛ የይለፍ ቃል ይሞክሩ</translation>
 <translation id="2316159751672436664">በChromeOS ቅንብሮች ውስጥ የተደራሽነት መሣሪያዎችዎን ግላዊነት ያላብሱ</translation>
 <translation id="2316887270356262533">እስከ 1 ሜባ ቦታ ድረስ ያስለቅቃል። አንዳንድ ጣቢያዎች በሚቀጥለው ጉብኝትዎ ላይ ይበልጥ በዝግታ ሊጫኑ ይችላሉ።</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> የተጠቃሚ ስም እና የይለፍ ቃል ያስፈልገዋል።</translation>
@@ -1672,6 +1673,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ኢንች)</translation>
 <translation id="3792826587784915501">የአምልኮ እና ኢንዲ ፊልሞች</translation>
 <translation id="3793574014653384240">በቅርቡ ያጋጠሙ ብልሽቶች ብዛት እና ምክንያታቸው</translation>
+<translation id="3795624560191557077">በይፋዊ የውሂብ ጥሰት ውስጥ የተገኘ የይለፍ ቃልን በቅርብ ጊዜ ለውጠዋል። ችግር ካጋጠመ Google የይለፍ ቃል አስተዳዳሪ በመለያ እንዲገቡ ሊያግዝዎት ይችላል።</translation>
 <translation id="3799805948399000906">ቅርጸ-ቁምፊ ተጠይቋል</translation>
 <translation id="3801297763951514916">እርስዎ አብዛኛውን ጊዜ የሚጎበኙት</translation>
 <translation id="380329542618494757">ስም</translation>
@@ -1953,6 +1955,7 @@
 <translation id="425582637250725228">ያደረጓቸው ለውጦች ላይቀመጡ ይችላሉ።</translation>
 <translation id="4258748452823770588">መጥፎ ፊርማ</translation>
 <translation id="4261046003697461417">ጥበቃ የሚደረግላቸው ሰነዶች ሊብራሩ አይችሉም</translation>
+<translation id="4265635050210404830">የእርስዎ የታማኝነት ካርዶች</translation>
 <translation id="4265872034478892965">በእርስዎ አስተዳዳሪ የተፈቀደ</translation>
 <translation id="4269029136757623689">የቤት ውስጥ ማራገቢያዎች</translation>
 <translation id="4269264543938335308">የዋና ልብስ</translation>
@@ -2228,6 +2231,7 @@
 <translation id="4754461935447132332">ደህንነት ለሌላቸው ጣቢያዎች አይፈቀድም</translation>
 <translation id="4756388243121344051">&amp;ታሪክ</translation>
 <translation id="4756501505996488486">ፒአርሲ 16ኬ</translation>
+<translation id="4757740693289347881">ኮድ ልክ ያልሆነ ነው</translation>
 <translation id="4757993714154412917">አሁን የይለፍ ቃልዎን በአንድ አታላይ ጣቢያ ላይ አስገብተዋል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ Chromium የተቀመጡ ይለፍ ቃላትዎን መፈተሽ ይመክራል።</translation>
 <translation id="4758311279753947758">የእውቂያ መረጃን ያክሉ</translation>
 <translation id="4761326898079498987">ለተጨማሪ ዝርዝሮች ይገምግሙ</translation>
@@ -2293,6 +2297,7 @@
 <translation id="486459320933704969">ወላጅ ወይም አሳዳጊ ይህን ድር ጣቢያ ቢጎበኙ ምንም ችግር የለውም ማለት አለባቸው</translation>
 <translation id="4864801646102013152">የቤት ማሻሻያ</translation>
 <translation id="4866506163384898554">የእርስዎን ጠቋሚ ለማሳየት |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ይጫኑ</translation>
+<translation id="4868277513442568587">የተጋሩ የትር ቡድኖችዎን መጠቀም ለመቀጠል፣ Chromeን ያዘምኑ</translation>
 <translation id="4873616204573862158">የአይን አላባሽ</translation>
 <translation id="4873807733347502026">የመዳፊት መቆለፊያ እና አጠቃቀም</translation>
 <translation id="4876305945144899064">ምንም የተጠቃሚ ስም የለም</translation>
@@ -2429,6 +2434,7 @@
 <translation id="5089810972385038852">ግዛት</translation>
 <translation id="5090647584136241764">እርስዎ የሚያስፈልጉዎትን ዝርዝሮች በቀላሉ ለማነጻጸር ተመሳሳይ ምርቶች ያሏቸው ትሮችን ያክሉ</translation>
 <translation id="5093232627742069661">Z-እጥፋት</translation>
+<translation id="5093417502834168387">በመግባት ላይ ችግር አጋጠመዎት? ሌላ መንገድ ይሞክሩ</translation>
 <translation id="5094747076828555589">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በChromium የሚታመን አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="5097099694988056070">እንደ የሲፒዩ/ራም አጠቃቀም ያለ የመሣሪያ ስታቲስቲክስ</translation>
 <translation id="5097468150760963273">27 x 39 ኢንች</translation>
@@ -3197,6 +3203,7 @@
 <translation id="6388060462449937608">የአካል ብቃት መሣሪያዎች እና መለዋወጫዎች</translation>
 <translation id="6389470377220713856">በካርድ ላይ ያለ ስም</translation>
 <translation id="6390200185239044127">Z-እጥፋት ግማሽ</translation>
+<translation id="6390533465682072118">መልሶ ማግኘት</translation>
 <translation id="639068771471208680">ባለ ብዙ አካል ቅጽ</translation>
 <translation id="6391700400718590966">ደህንነቱ የተጠበቀ የመግቢያ ማስረጃ ምንም ተዛማጅ የመግቢያ ማስረጃ ሉህ አልተዘጋም</translation>
 <translation id="6392799395081100092">ወረቀት (ቬለም)</translation>
@@ -3747,6 +3754,7 @@
 <translation id="7346048084945669753">ከዚህ ጋር ግንኙነት አለው፦</translation>
 <translation id="7346062987309535530">መመገቢያ እቃዎች</translation>
 <translation id="7346081071264046066">«ይህን የሰርግ ግብዣ በደስታ አዎ ብለው መልስ ይስጡ»</translation>
+<translation id="7347640536700429009">በካርዱ ላይ ያለው ስም ልክ ያልሆነ ነው</translation>
 <translation id="7352651011704765696">የሆነ ችግር ተፈጥሯል</translation>
 <translation id="7353601530677266744">የትእዛዝ መስመር</translation>
 <translation id="7359588939039777303">ማስታወቂያዎች ታግደዋል።</translation>

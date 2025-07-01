@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">‏نکته‌های Chrome</translation>
 <translation id="1816835383954230954">‏وقتی روشن باشد، Chrome سریع‌تر اجرا می‌شود و ویژگی‌هایی که از جاوا اسکریپت استفاده می‌کنند باید طبق طراحی کار کنند. وقتی خاموش باشد، عملکرد کاهش می‌یابد اما V8 دربرابر حملات مقاوم‌تر می‌شود.</translation>
 <translation id="1818308510395330587">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید از AR استفاده کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
+<translation id="1881806992065048905">برگ زیرین نمایش صفحه زبانه جدید</translation>
 <translation id="1887786770086287077">‏دسترسی به مکان برای این دستگاه خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="1906181697255754968">سایت‌ها معمولاً برای ارائه ویژگی‌هایی مانند ذخیره خودکار به فایل‌ها و پوشه‌های دستگاه دسترسی می‌یابند</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
@@ -326,6 +327,7 @@
 <translation id="4882919381756638075">سایت‌ها معمولاً از میکروفون برای ارائه ویژگی‌های ارتباطی، مانند گپ تصویری، استفاده می‌کنند</translation>
 <translation id="4883854917563148705">تنظیمات مدیریت‌شده بازنشانی نشدند</translation>
 <translation id="4887024562049524730">قبل‌از اینکه به سایت‌ها اجازه دسترسی به دستگاه و داده‌های واقعیت مجازی دهید سؤال شود (توصیه می‌شود)</translation>
+<translation id="4934780484581617878">مدیریت پنجره</translation>
 <translation id="4936863036653376783">گروه‌هایتان را در بخش گروه برگه در همه دستگاه‌هایتان پیدا خواهید کرد</translation>
 <translation id="4945443401464700059">‫<ph name="SITE" /> نمی‌تواند از اطلاعات شما در سایت‌های زیر استفاده کند:</translation>
 <translation id="4953688446973710931">هرگاه روشن باشد، سایت‌ها می‌توانند بارگیری خودکار چندین فایل را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌تواند به‌طور خودکار چندین فایل را بارگیری کنند.</translation>
@@ -333,6 +335,7 @@
 <translation id="4972737347717125191">سایت‌ها می‌توانند استفاده از داده‌ها و دستگاه‌های واقعیت مجازی را درخواست کنند</translation>
 <translation id="497421865427891073">جلو رفتن</translation>
 <translation id="4976702386844183910">آخرین بازدید: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">درباره «فید یافته‌ها» بیشتر بدانید</translation>
 <translation id="4994033804516042629">مخاطبی پیدا نشد</translation>
 <translation id="4996978546172906250">اشتراک‌گذاری از طریق</translation>
 <translation id="5001526427543320409">کوکی‌های طرف سوم</translation>
@@ -457,6 +460,7 @@
 <translation id="6398765197997659313">خروج از حالت تمام صفحه</translation>
 <translation id="640163077447496506">امروز منقضی می‌شود</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">مجموعه‌های زمینه</translation>
 <translation id="6439114592976064011">دسترسی سایت‌ها به دستگاه و داده‌های واقعیت مجازی مسدود شود</translation>
 <translation id="6447842834002726250">کوکی‌ها</translation>
 <translation id="6452138246455930388">کاهش قیمت در برگه باز، از <ph name="OLD_PRICE" /> به <ph name="NEW_PRICE" />، <ph name="PRODUCT_NAME" />، <ph name="DOMAIN_NAME" /></translation>
@@ -560,6 +564,7 @@
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7804248752222191302">سایتی درحال استفاده از دوربینتان است</translation>
+<translation id="7805832099057502789">برگ زیرین نمایش صفحه زبانه جدید به‌صورت کامل باز شده است</translation>
 <translation id="7807060072011926525">‏ارائه از Google</translation>
 <translation id="7815680994978050279">بارگیری خطرناک مسدود شد</translation>
 <translation id="7835852323729233924">درحال پخش رسانه</translation>
@@ -579,9 +584,11 @@
 <translation id="802154636333426148">بارگیری نشد</translation>
 <translation id="8042586301629853791">مرتب‌سازی براساس:</translation>
 <translation id="8051193500142930381">ویژگی‌هایی که به دوربین نیاز دارند کار نخواهند کرد</translation>
+<translation id="8056330801132235235">‏پیش‌فرض Chrome</translation>
 <translation id="8067883171444229417">پخش ویدیو</translation>
 <translation id="8068648041423924542">انتخاب گواهی ممکن نیست.</translation>
 <translation id="8077120325605624147">هر سایتی که بازدید کنید می‌تواند هر نوع آگهی را به شما نمایش دهد</translation>
+<translation id="80798452873915119">سایت‌ها می‌توانند درخواست کنند پنجره‌های همه نمایشگرهایتان را مدیریت کنند</translation>
 <translation id="8087000398470557479">‏این محتوا از <ph name="DOMAIN_NAME" /> است و توسط Google ارائه می‌شود.</translation>
 <translation id="8088603949666785339">گزینه‌های بیشتر در <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">مشاهده کردن برگه‌ها در فهرست برنامه</translation>

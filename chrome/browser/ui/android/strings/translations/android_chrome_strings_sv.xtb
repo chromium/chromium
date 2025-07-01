@@ -152,6 +152,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1671236975893690980">Nedladdning väntar …</translation>
 <translation id="1672586136351118594">Visa inte igen</translation>
 <translation id="1680919990519905526">Köp bild med Google Lens <ph name="BEGIN_NEW" />Nytt<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020och stängs efter <ph name="MONTHS_ARCHIVED" /> månader</translation>
 <translation id="1687482373098770139">Snart visas innehåll från och om <ph name="SITE_NAME" /> i Följer. Webbplatser och sökningar du följer sparas i ditt Google-konto. Du kan när som helst hantera vad du följer i inställningarna.</translation>
 <translation id="1689333818294560261">Kortnamn</translation>
 <translation id="1696555181932908973">Du kan testa andra sätt att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -352,6 +353,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="260403163289591229">Följer</translation>
 <translation id="2604446170045642109">Du kan stänga av mörkt tema för webbplatser i inställningarna.</translation>
+<translation id="2605017215201958293">Lyssna på den här sidan med AI</translation>
 <translation id="2607441479295509868">Utloggad. Logga in igen om du vill använda bokmärken, lösenord med mera i kontot.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> har bjudit in dig att få åtkomst till ett delat objekt.</translation>
 <translation id="2625189173221582860">Lösenordet har kopierats</translation>
@@ -877,6 +879,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="496607651705915226">Uppdatera Google Play-tjänsterna om du vill spara och använda nya lösenord i Google-kontot</translation>
 <translation id="4971753085054504448">Testa att söka efter något annat eller öppna hela Chrome-historiken om du vill visa fler resultat.</translation>
 <translation id="497421865427891073">Fortsätt</translation>
+<translation id="497983151715419057">Granska dina inaktiva flikar och grupper här</translation>
 <translation id="498624032394115435">Alla som har länken kan redigera alla flikar.</translation>
 <translation id="4987271110129728827">Sidan hittades inte. Kontrollera stavningen eller testa att söka på webben.</translation>
 <translation id="4988526792673242964">Sidor</translation>
@@ -937,7 +940,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5226378907213531272">Du låser upp skärmen varje gång du använder bilen</translation>
 <translation id="5227554086496586518">Tryck för att visa sökresultat</translation>
-<translation id="5229736206150093143">Senaste resultat</translation>
 <translation id="5233638681132016545">Ny flik</translation>
 <translation id="5235196193381275927">Något gick fel vid inloggningen</translation>
 <translation id="5246093389635966745">Redigera genväg i verktygsfältet</translation>
@@ -1065,6 +1067,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5833984609253377421">Dela länk</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842871376175639063">Flikar och flikgrupper som du inte har använt på <ph name="DAYS_INACTIVE" /> dagar flyttas hit<ph name="AUTODELETE_SECTION" />. Du kan när som helst ändra detta i <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Vill du öppna PDF-filen med <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Vill du sluta dela?</translation>
 <translation id="5853623416121554550">pausad</translation>
@@ -1383,6 +1386,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7088681679121566888">Chrome har uppdaterats</translation>
 <translation id="7106762743910369165">Webbläsaren hanteras av din organisation</translation>
 <translation id="7111394291981742152">Chrome ger dig större kontroll över annonserna du ser och begränsar vilken information webbplatser kan få om dig när de visar anpassade annonser.</translation>
+<translation id="7115358764509798967">Systemets standardinställning</translation>
 <translation id="7117485132243600300">Hantera innehåll som du följer och föreslagna ämnen och sökningar</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Behörigheter har granskats för 1 webbplats}other{Behörigheter har granskats för # webbplatser}}</translation>
 <translation id="7138678301420049075">Övrigt</translation>
@@ -1432,6 +1436,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7304873321153398381">Offline. Chrome kan inte kontrollera dina lösenord.</translation>
 <translation id="7313188324932846546">Tryck för att konfigurera synkronisering</translation>
 <translation id="7314734791127433392">Det går inte att kontrollera lösenorden</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Flikar och flikgrupper som inte har använts på minst 1 dag}other{Flikar och flikgrupper som inte har använts på # dagar eller mer}}</translation>
 <translation id="7324354302972299151">Skicka en Do Not Track-begäran</translation>
 <translation id="7333041109965360609">Du har slutat prenumerera på aviseringar</translation>
 <translation id="7336259382292148213">Aviseringar ser bra ut</translation>
@@ -1643,6 +1648,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8137562778192957619">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering.</translation>
 <translation id="8152331954420209374">Öppna Lens</translation>
 <translation id="8163820386638255770">Verifiera din identitet om du vill använda och spara lösenord i Google-kontot</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) inaktivt objekt}other{(#) inaktiva objekt}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer återstår</translation>
 <translation id="8190358571722158785">1 dag kvar</translation>
 <translation id="8192765420340770300">Arket för inloggning på nedre delen av skärmen har öppnats över hela skärmen</translation>

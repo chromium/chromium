@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">Abrir automaticamente grupos de pestanas doutros dispositivos</translation>
 <translation id="1075622780330595106">Ultimamente non se utilizaron <ph name="NUMBER_OF_TABS" /> das túas pestanas. Queres pechalas?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creouse hai <ph name="NUM_YEARS_ONE" /> ano}other{Creouse hai <ph name="NUM_YEARS_MANY" /> anos}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{As pestanas e grupos inactivos pecharanse pasado un mes}other{As pestanas e grupos inactivos pecharanse pasados <ph name="MONTH_COUNT_MANY" /> meses}}</translation>
 <translation id="1173894706177603556">Cambiar o nome</translation>
 <translation id="1197088940767939838">Laranxa</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Abrir <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT2" /> pestana}other{Abrir <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT2" /> pestanas}}</translation>
 <translation id="1273910660700874265">Opcións do grupo de pestanas <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1300188005269437765">Escolle cando queres que as pestanas e grupos de pestanas se movan automaticamente á sección de elementos inactivos.</translation>
 <translation id="1329584516321524826">Actualizouse agora mesmo</translation>
 <translation id="1340839264183302272">Saír do grupo</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Despregar o grupo de pestanas compartido <ph name="TITLE_OF_GROUP" /> de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana e a etiqueta <ph name="CARD_LABEL" />.}other{Despregar o grupo de pestanas compartido <ph name="TITLE_OF_GROUP" /> de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas e a etiqueta <ph name="CARD_LABEL" />.}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> pestana agrupada</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
 <translation id="1909810060368225529">Aviso: Todo o mundo poderá ver os cambios neste grupo de pestanas compartido. Todos os membros do grupo poden facer cambios nos grupos de pestanas compartidos</translation>
+<translation id="1982637982196732906">Mover á sección de elementos inactivos</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Engadir <ph name="TABS_COUNT_ONE" /> pestana seleccionada aos marcadores}other{Engadir <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas aos marcadores}}</translation>
 <translation id="2055057176188061528">Seleccionar un grupo de pestanas ou crear un</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome pechará automaticamente os elementos da sección de elementos inactivos que leves sen usar <ph name="AUTO_DELETE_DELAY_ONE" /> mes. Podes desactivar esta opción agora ou en calquera momento en Configuración.}other{Chrome pechará automaticamente os elementos da sección de pestanas inactivas que leves sen usar <ph name="AUTO_DELETE_DELAY_MANY" /> meses. Podes desactivar esta opción agora ou en calquera momento en Configuración.}}</translation>
 <translation id="2118649612461486615">Información da tenda</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas. A pestana do modo de incógnito non estará dispoñible.}other{As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas. As # pestanas do modo de incógnito non estarán dispoñibles.}}</translation>
 <translation id="2162620598375156287">Agora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">Editar nome do grupo</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Engadir pestana aos marcadores}other{Engadir pestanas aos marcadores}}</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2371084566192454134">Pestanas e grupos de pestanas</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Contraer o grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestana.}other{Contraer o grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="2498435670446402865">Cambiar o nome do grupo</translation>
 <translation id="2536366509642644298">Os grupos de pestanas "<ph name="TAB_GROUP_NAME_1" />" e "<ph name="TAB_GROUP_NAME_2" />" xa non están dispoñibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestana.}other{Contraer grupo de pestanas con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="2569352796411618312">Suxestión: <ph name="NUMBER_OF_TABS" /> das pestanas que tes abertas levan sen utilizarse un bo anaco. Queres pechalas?</translation>
 <translation id="257674075312929031">Grupo</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Restaurar e abrir o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Restaurar e abrir o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="2662028055331606429">Valoración: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar sitio</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">valoración</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Engadir <ph name="TABS_COUNT_ONE" /> pestana ao grupo}other{Engadir <ph name="TABS_COUNT_MANY" /> pestanas ao grupo}}</translation>
 <translation id="3328308545011660196">Suxestión: Hai <ph name="NUMBER_OF_TABS" /> pestanas que parecen relacionadas. Queres agrupalas?</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{Despois de 1 día sen actividade}other{Despois de <ph name="DAY_COUNT_MANY" /> días sen actividade}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana nova}other{<ph name="MANY_ADDED" /> pestanas novas}}</translation>
 <translation id="3613492231657284463">Ocultar o cadro de diálogo de pestanas inactivas</translation>
 <translation id="3619255692378312441">Xestionar o acceso</translation>
@@ -94,6 +101,7 @@
 <translation id="4861953997778766866">Todos os membros do grupo poden facer cambios nos grupos de pestanas compartidos</translation>
 <translation id="4870911314065352661">Queres pechar todas as pestanas?</translation>
 <translation id="4871719318659334896">Pechar grupo</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Restaurar e abrir o grupo de pestanas "<ph name="TITLE_OF_GROUP" />" de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Restaurar e abrir o grupo de pestanas "<ph name="TITLE_OF_GROUP" />" de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Pechar pestana}other{Pechar pestanas}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grupos gardados (pecharanse as pestanas e eliminaranse os grupos)</translation>
@@ -114,6 +122,7 @@
 <translation id="5627941783489838464">Non hai actualizacións de pestanas</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ligazón de Chrome}other{<ph name="TABS_COUNT_MANY" /> ligazóns de Chrome}}</translation>
 <translation id="5746204836956568669">Queres agrupar <ph name="NUMBER_OF_TABS" /> pestanas para traballar máis rápido?</translation>
+<translation id="5773295109010386583">Pechar automaticamente elementos inactivos</translation>
 <translation id="58326064309361797">Arrastra as pestanas para agrupalas</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5972844218283131174">Anular toda a selección</translation>
@@ -156,6 +165,7 @@
 <translation id="7369451074646620503">O grupo "<ph name="TAB_GROUP_NAME" />" xa non está dispoñible</translation>
 <translation id="7452985128687107478">Os grupos de pestanas gárdanse e actualízanse automaticamente en todos os dispositivos</translation>
 <translation id="747459581954555080">Restablecer todo</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elemento}other{<ph name="TABS_COUNT_MANY" /> elementos}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Restaurar <ph name="TABS_COUNT_ONE" /> elemento seleccionado}other{Restaurar <ph name="TABS_COUNT_MANY" /> elementos seleccionados}}</translation>
 <translation id="753732157349120914">Selector de pestanas</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recensión procedente de Google}other{<ph name="REVIEWS_COUNT_MANY" /> recensións procedentes de Google}}</translation>

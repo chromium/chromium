@@ -273,9 +273,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
       Ist die Richtlinie nicht konfiguriert, findet keine automatische Anmeldung statt.</translation>
 <translation id="1193653806129988688">Verhindern, dass Nutzer Angebote über die <ph name="PRODUCT_OS_NAME" />-Registrierung einlösen</translation>
 <translation id="1197437816436565375">Android-Apps können nicht zur Verwendung eines Proxys gezwungen werden. Ein Teil der Proxyeinstellungen ist für Android-Apps verfügbar und kann auf freiwilliger Basis übernommen werden. Weitere Informationen findest du in der Richtlinie "<ph name="PROXY_MODE_POLICY_NAME" />".</translation>
-<translation id="1198183996903759302">Wenn die Richtlinie auf "True" (oder <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> auf "False") gesetzt ist, können Webseiten nicht auf die WebGL API zugreifen und Plug-ins die Pepper 3D API nicht verwenden.
-
-      Wenn sie auf "False" gesetzt oder nicht konfiguriert ist, können Webseiten die WebGL API und Plug-ins die Pepper 3D API nutzen, doch bei den Standardeinstellungen des Browsers kann es weiterhin erforderlich sein, dass zur Verwendung dieser APIs Argumente über die Befehlszeile eingegeben werden müssen.</translation>
 <translation id="1198458955128279215">Standardverhalten des Funktions-Roll-out-Plans verwenden.</translation>
 <translation id="1202216683470826356">Karten auf der „Neuer Tab“-Seite anzeigen</translation>
 <translation id="1203676252390737801">WebRTC per URL-IP-Handling</translation>
@@ -1471,15 +1468,6 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
         Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Kiosk-Chrome-Apps innerhalb der Sitzung aktualisiert werden.
         </translation>
 <translation id="2082205219176343977">Konfiguriere die für das Gerät erforderliche Mindestversion von Chrome.</translation>
-<translation id="2083016623552073519">Übersetzung von automatischen Untertiteln aktivieren. Die Untertitel werden zur Übersetzung an Google gesendet.
-
-Wenn diese Richtlinie aktiviert ist, ist die Funktion „Live-Übersetzung“ immer aktiviert.
-
-Ist diese Richtlinie deaktiviert, ist die Funktion „Live-Übersetzung“ immer deaktiviert.
-
-Wird diese Richtlinie als verbindlich konfiguriert, kann sie vom Nutzer nicht geändert oder überschrieben werden.
-
-Ist die Richtlinie nicht konfiguriert, ist die Funktion „Live-Übersetzung“ anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="20838788335877967">Erfassen personenbezogener Daten deaktivieren</translation>
 <translation id="208566302163036794">Deaktivierte Funktionen sperren</translation>
 <translation id="2086040449830622332">LPAC-Sandbox für Druckdienste aktivieren</translation>

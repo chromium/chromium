@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Új link kéréséhez felveheti a kapcsolatot a küldővel</translation>
 <translation id="1013952917065545813">Ide visszatérve újra megnyithatja a nemrég bezárt lapokat</translation>
 <translation id="1016495303386450659">Elem frissítve</translation>
+<translation id="1017735584092444011">Olvasási mód megjelenítése</translation>
 <translation id="102916930470544692">Azonosítókulcs</translation>
 <translation id="1030376737535466765">Jelszókezelő megnyitása</translation>
 <translation id="1035980983510608210">Az összes lap bezárásával a rögzített lapok is bezáródnak.</translation>
@@ -1237,12 +1238,14 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6074656473835429958">Értesítések kérése</translation>
 <translation id="607620096698446287">A(z) <ph name="FILENAME" /> (<ph name="FILESIZE" />) feltöltése nem sikerült</translation>
 <translation id="6077126322656614846">Kamera-hozzáférés engedélyezve</translation>
+<translation id="607730456154980869">Gyorsabban kaphat válaszokat a Gemini a Chrome-ban segítségével</translation>
 <translation id="6078236141387574983">A lap magasságának újrabeállítása</translation>
 <translation id="6084848228346514841">Lapok kiválasztása</translation>
 <translation id="6089212833343035912">A Google Jelszókezelő PIN-kódja</translation>
 <translation id="6090760257419195752">Elvetett figyelmeztetések</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> észlelve</translation>
 <translation id="6100617279104942061">Bejelentkezve a következőként: <ph name="USER_EMAIL" />. Megnyitja a beállításokat.</translation>
+<translation id="610083648014322104">Releváns válaszokat kaphat az aktuális oldal tartalmának megfelelően</translation>
 <translation id="6103540626693881831">Eszközalapú titkosítás</translation>
 <translation id="611361228753138223">Az ezen az eszközön nemrégiben felkeresett webhelyek</translation>
 <translation id="611705554202268369">Lapcsoporthoz való hozzáadáshoz nyomja meg hosszan</translation>
@@ -1495,6 +1498,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="6979737339423435258">Mindenkori</translation>
 <translation id="6983306615164277634">A pozíció módosítására lehetőség van a címsáv lenyomva tartásával is.</translation>
 <translation id="6987201788018524855">Fedezzen fel hasznos funkciókat, amelyek eddig elkerülték a figyelmét</translation>
+<translation id="6989636517316575338">Bármelyik oldalra vonatkozóan feltehet kérdést</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Nyomon követheti a termékek árát, és értesítést kaphat, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="7004032350256606903">Szervezete privát böngészés használatát követeli meg.
@@ -1696,6 +1700,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7863211248337747225">Alkalmazás letöltése</translation>
 <translation id="7865127013871431856">Fordítási beállítások</translation>
 <translation id="7866872729285243843">Ha az összes eszközén szeretné elérni az olvasólistát, kapcsolja be a beállítások között az „Olvasólista” funkciót.</translation>
+<translation id="787364769771947486">Olvasási mód elrejtése</translation>
 <translation id="7874107544081154809">Űrlap automatikus kitöltése a következővel: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Több helyen is felhasználja bizonyos jelszavait.</translation>
 <translation id="7887174313503389866">Tekintse meg a legfontosabb adatvédelmi és biztonsági beállítások bemutatóját. További lehetőségekért lépjen az egyes beállításokhoz.</translation>
@@ -1752,6 +1757,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8058655154417507695">Lejárat éve</translation>
 <translation id="8059533439631660104">Összecsukja a panelt.</translation>
 <translation id="8061584726507121204">Előzmények</translation>
+<translation id="8069168488983557089">A legfontosabb tudnivalók és statisztikák segítségével bármilyen témát megérthet</translation>
 <translation id="8069394452933076548">Válassza ki, hogy mikor kerüljenek a legutóbb nem használt lapok az inaktív lapok szakaszba.</translation>
 <translation id="8073670137947914548">Sikeres letöltés</translation>
 <translation id="8076492880354921740">Lapok</translation>

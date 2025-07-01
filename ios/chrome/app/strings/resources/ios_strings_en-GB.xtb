@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Contact the sender to ask for a new link</translation>
 <translation id="1013952917065545813">You can come back here to reopen tabs that you've recently closed</translation>
 <translation id="1016495303386450659">Item updated</translation>
+<translation id="1017735584092444011">Show Reading Mode</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Open Password Manager</translation>
 <translation id="1035980983510608210">Closing all tabs will close pinned tabs as well.</translation>
@@ -1237,12 +1238,14 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6074656473835429958">Get notifications</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) could not be uploaded</translation>
 <translation id="6077126322656614846">Camera access allowed</translation>
+<translation id="607730456154980869">Get answers faster with Gemini in Chrome</translation>
 <translation id="6078236141387574983">Readjust the height of the sheet</translation>
 <translation id="6084848228346514841">Select tabs</translation>
 <translation id="6089212833343035912">Google Password Manager PIN</translation>
 <translation id="6090760257419195752">Dismissed warnings</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> found</translation>
 <translation id="6100617279104942061">Signed in as <ph name="USER_EMAIL" />. Opens settings.</translation>
+<translation id="610083648014322104">Get relevant answers based on the content of the page that you're on</translation>
 <translation id="6103540626693881831">On-device encryption</translation>
 <translation id="611361228753138223">Sites that you've visited lately on this device</translation>
 <translation id="611705554202268369">Long press to add to a tab group</translation>
@@ -1495,6 +1498,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6979737339423435258">All time</translation>
 <translation id="6983306615164277634">You can also touch and hold the address bar to change the position.</translation>
 <translation id="6987201788018524855">Explore helpful features that you've missed</translation>
+<translation id="6989636517316575338">Ask about any page</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Track prices of products and get alerts when the price drops on any site</translation>
 <translation id="7004032350256606903">Your organisation requires you to browse privately.
@@ -1696,6 +1700,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7863211248337747225">Get the app</translation>
 <translation id="7865127013871431856">Translate options</translation>
 <translation id="7866872729285243843">To get your reading list on all your devices, turn on 'Reading list' in Settings.</translation>
+<translation id="787364769771947486">Hide Reading Mode</translation>
 <translation id="7874107544081154809">Autofill form with <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">You have reused passwords.</translation>
 <translation id="7887174313503389866">Take a guided tour of key privacy and security controls. For more options, go to individual settings.</translation>
@@ -1752,6 +1757,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8058655154417507695">Expiry year</translation>
 <translation id="8059533439631660104">Collapses the section.</translation>
 <translation id="8061584726507121204">History</translation>
+<translation id="8069168488983557089">Get key takeaways and insights that help you understand any topic</translation>
 <translation id="8069394452933076548">Choose when tabs that haven't been used recently are moved to the inactive tabs section.</translation>
 <translation id="8073670137947914548">Download finished</translation>
 <translation id="8076492880354921740">Tabs</translation>

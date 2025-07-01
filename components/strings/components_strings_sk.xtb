@@ -793,6 +793,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2310789833878085574">Uložiť a automaticky dopĺňať</translation>
 <translation id="2312234273148520048">Prísady do jedál a dresingy</translation>
 <translation id="2316087952091171402">Menej ako <ph name="UPPER_ESTIMATE" />. Pri vašej ďalšej návšteve sa môžu niektoré weby načítať pomalšie.</translation>
+<translation id="2316090909467242775">Vyskúšajte toto heslo na obnovenie</translation>
 <translation id="2316159751672436664">Prispôsobiť nástroje dostupnosti v nastaveniach systému Chrome OS</translation>
 <translation id="2316887270356262533">Uvoľní menej ako 1 MB. Niektoré weby sa môžu pri ďalšej návšteve načítať pomalšie.</translation>
 <translation id="2317259163369394535">Doména <ph name="DOMAIN" /> vyžaduje používateľské meno a heslo.</translation>
@@ -1669,6 +1670,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> palcov)</translation>
 <translation id="3792826587784915501">Kultové a indie filmy</translation>
 <translation id="3793574014653384240">Počty a príčiny nedávnych zrútení</translation>
+<translation id="3795624560191557077">Nedávno ste zmenili heslo, ktoré bolo odhalené pri verejnom porušení ochrany údajov. Ak budete mať problémy, Správca hesiel Google vám pomôže prihlásiť sa.</translation>
 <translation id="3799805948399000906">Písmo bolo vyžiadané</translation>
 <translation id="3801297763951514916">Často navštevujete</translation>
 <translation id="380329542618494757">Meno</translation>
@@ -2429,6 +2431,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5089810972385038852">Štát</translation>
 <translation id="5090647584136241764">Pridajte karty s podobnými výrobkami a jednoducho porovnávajte podrobnosti, na ktorých vám záleží</translation>
 <translation id="5093232627742069661">Záhyb v tvare písmena Z</translation>
+<translation id="5093417502834168387">Máte problém prihlásiť sa? Skúsiť iný spôsob.</translation>
 <translation id="5094747076828555589">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" />, Chromium nedôveruje jej bezpečnostnému certifikátu. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie zachytil útočník.</translation>
 <translation id="5097099694988056070">Štatistiky zariadenia, ako napríklad využitie procesora alebo pamäte RAM</translation>
 <translation id="5097468150760963273">27 × 39 palcov</translation>
@@ -3196,6 +3199,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6388060462449937608">Vybavenie a príslušenstvo na cvičenie</translation>
 <translation id="6389470377220713856">Meno na karte</translation>
 <translation id="6390200185239044127">Záhyb v tvare písmena Z v polovici</translation>
+<translation id="6390533465682072118">Obnovenie</translation>
 <translation id="639068771471208680">Viacdielny formulár</translation>
 <translation id="6391700400718590966">Hárok s nezodpovedajúcim poverením pre prihlasovací údaj zabezpečenej platby je zavretý</translation>
 <translation id="6392799395081100092">Papier (velín)</translation>

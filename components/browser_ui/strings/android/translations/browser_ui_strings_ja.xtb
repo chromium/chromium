@@ -326,6 +326,7 @@
 <translation id="4882919381756638075">多くのサイトは、ビデオチャットなどの通信機能にマイクを使用します。</translation>
 <translation id="4883854917563148705">管理者による設定はリセットできません</translation>
 <translation id="4887024562049524730">サイトにバーチャル リアリティ デバイスとデータの使用を許可する前に確認する（推奨）</translation>
+<translation id="4934780484581617878">ウィンドウ管理</translation>
 <translation id="4936863036653376783">グループは、お使いのすべてのデバイスのタブグループ セクションに表示されます</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> は次のサイトであなたの情報を使用できません</translation>
 <translation id="4953688446973710931">オンにすると、サイトは複数のファイルの自動ダウンロードを要求できます。オフにすると、サイトは複数のファイルを自動ダウンロードできません。</translation>
@@ -333,6 +334,7 @@
 <translation id="4972737347717125191">サイトがバーチャル リアリティ デバイスとデータの使用を要求できるようにする</translation>
 <translation id="497421865427891073">次に進む</translation>
 <translation id="4976702386844183910">最終アクセス日: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Discover フィードの詳細を確認する</translation>
 <translation id="4994033804516042629">連絡先が見つかりませんでした</translation>
 <translation id="4996978546172906250">共有方法</translation>
 <translation id="5001526427543320409">サードパーティ Cookie</translation>
@@ -582,6 +584,7 @@
 <translation id="8067883171444229417">動画を再生します</translation>
 <translation id="8068648041423924542">証明書を選択できません</translation>
 <translation id="8077120325605624147">アクセスしたすべてのサイトであらゆる広告の表示が許可されます</translation>
+<translation id="80798452873915119">全ディスプレイのウィンドウ管理をリクエストすることをサイトに許可する</translation>
 <translation id="8087000398470557479"><ph name="DOMAIN_NAME" /> のコンテンツを Google から配信しています。</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> のその他のオプション</translation>
 <translation id="8112925981674547014">アプリリストにタブを表示</translation>

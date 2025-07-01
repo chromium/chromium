@@ -273,9 +273,6 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
       Als je het beleid niet instelt, wordt er niet automatisch ingelogd.</translation>
 <translation id="1193653806129988688">Niet toestaan dat gebruikers aanbiedingen inwisselen via <ph name="PRODUCT_OS_NAME" />-registratie</translation>
 <translation id="1197437816436565375">Je kunt Android-apps niet dwingen een proxy te gebruiken. Er is een subset met proxyinstellingen beschikbaar voor Android-apps. Deze kunnen ze op vrijwillige basis respecteren. Zie het beleid <ph name="PROXY_MODE_POLICY_NAME" /> voor meer informatie.</translation>
-<translation id="1198183996903759302">Als je het beleid instelt op True (of <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> instelt op False), hebben webpagina's geen toegang tot de WebGL API en kunnen plug-ins de Pepper 3D API niet gebruiken.
-
-      Als je het beleid instelt op False of niet instelt, kunnen webpagina's de WebGL API gebruiken en kunnen plug-ins de Pepper 3D API gebruiken, maar kan in de standaardinstellingen van de browser nog steeds zijn ingesteld dat er opdrachtregelargumenten nodig zijn om deze API's te gebruiken.</translation>
 <translation id="1198458955128279215">Standaardgedrag van het functie-uitrolplan gebruiken</translation>
 <translation id="1202216683470826356">Kaarten tonen op de pagina Nieuw tabblad</translation>
 <translation id="1203676252390737801">IP-verwerking per URL voor WebRTC</translation>
@@ -1471,15 +1468,6 @@ Dit beleid wordt meestal niet toegepast als beveiliging tegen phishing.</transla
         Als je het beleid toepast of niet instelt, kunnen Chrome-kiosk-apps in de sessie worden geüpdatet.
         </translation>
 <translation id="2082205219176343977">Configureer de minimaal toegestane Chrome-versie voor het apparaat.</translation>
-<translation id="2083016623552073519">Zet vertaling van live ondertiteling aan. Ondertiteling wordt naar Google gestuurd voor vertaling.
-
-Als je dit beleid toepast, staat Live vertalen altijd aan.
-
-Als je dit beleid niet toepast, staat Live Translate altijd uit.
-
-Als je dit beleid als verplicht instelt, kunnen gebruikers de instelling niet wijzigen of overschrijven.
-
-Als je dit beleid niet instelt, staat Live vertalen in eerste instantie uit, maar kan de gebruiker deze functie altijd aanzetten.</translation>
 <translation id="20838788335877967">Rapportage van informatie over gebruikersidentificatie uitzetten</translation>
 <translation id="208566302163036794">Uitgezette functies blokkeren</translation>
 <translation id="2086040449830622332">LPAC-sandbox afdrukken aanzetten</translation>

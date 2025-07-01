@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Буруу эсвэл алдаатай файл</translation>
 <translation id="1040761927998636252"><ph name="URL" />-н нэргүй хавчуурга</translation>
 <translation id="1041175011127912238">Энэ хуудас хариу өгөхгүй байна</translation>
+<translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />“-г зөвхөн энэ төхөөрөмжид хадгалсан. Үүнийг бусад төхөөрөмж дээрээ ашиглахын тулд бүртгэлийнхээ “<ph name="ACCOUNT_FOLDER" />”-д хадгална уу.</translation>
 <translation id="1041263367839475438">Боломжтой байгаа төхөөрөмжүүд</translation>
 <translation id="1041607257468256895">Chrome-д вебсайтьн байршлын зөвшөөрлүүдийг удирдах</translation>
 <translation id="1042174272890264476">Таны компьютер мөн <ph name="SHORT_PRODUCT_NAME" />-ын RLZ программын мэдээллийн сантай байдаг.  RLZ нь тодорхой кампанит ажлаар удирдуулсан хайлтууд болон <ph name="SHORT_PRODUCT_NAME" />-ын хэрэглээг хэмжих онцгой бус, мөн хувийн бус, тодорхойлох боломжтой цонхнуудыг ажиллуулдаг. Эдгээр хаягууд нь заримдаа <ph name="PRODUCT_NAME" /> дахь Google Хайлтын асуултуудад харагддаг.</translation>
@@ -608,6 +609,7 @@
 <translation id="1418559532423038045"><ph name="VM_NAME" />-г таны <ph name="DEVICE_TYPE" />-с хасна. Энэ нь виртуал машины бүх апп болон өгөгдлийг устгана!</translation>
 <translation id="1418882096915998312">Enterprise-н бүртгэл явагдаж байна</translation>
 <translation id="1418954524306642206">Хэвлэгчийнхээ PPD-г тодорхойлохын тулд үзнэ үү</translation>
+<translation id="1419086691207546433">Цэгцтэй байх, ажлыг хялбаршуулах, үзэх явцаа сайжруулахын тулд өргөтгөл нэмнэ үү</translation>
 <translation id="1421334842435688311">Үүрэн холбооны байршлын мэдээлэл</translation>
 <translation id="1421514190500081936">Энэ өгөгдлийг татах шалтгаан оруулна уу:</translation>
 <translation id="1422159345171879700">Аюултай скриптийг ачааллах</translation>
@@ -1924,7 +1926,6 @@
 <translation id="2312219318583366810">Хуудасны URL</translation>
 <translation id="2314165183524574721">Одоогийн харагдцын тохиргоог нуусан байна</translation>
 <translation id="2314774579020744484">Хуудсыг орчуулахад ашигладаг хэл</translation>
-<translation id="2316090909467242775">Энэ сэргээх нууц үгийг туршиж үзнэ үү</translation>
 <translation id="2316129865977710310">Үгүй ээ, баярлалаа</translation>
 <translation id="2316433409811863464">Аппын стриминг</translation>
 <translation id="2316709634732130529">Санал болгосон нууц үгийг ашиглах</translation>
@@ -3336,6 +3337,7 @@
 <translation id="3309330461362844500">Гэрчилгээний профайлын ID</translation>
 <translation id="3310379801837527592"><ph name="OWNER_FIRST_NAME" /> болон өөр <ph name="NUM_OTHER_MEMBERS" /> хүний байгаа табын бүлэгт нэгдэх</translation>
 <translation id="331080746368555063">Хувийн сайтууд танай компанийн дотоод сүлжээ зэрэг зүйлсийг багтааж магадгүй</translation>
+<translation id="3311007761540106761">Системийн өгөгдмөл</translation>
 <translation id="3311445899360743395">Энэ апптай холбоотой өгөгдлийг энэ төхөөрөмжөөс устгаж болзошгүй.</translation>
 <translation id="3312470654018965389">Linux агуулагчийг тохируулж байна</translation>
 <translation id="3312883087018430408">Тодорхой сайт эсвэл Chrome-н хэсгийг хайхын тулд хаяг оруулах хэсэгт түүний товчлолын араас сонгосон товчлуурын шууд холбоосоо бичнэ үү. Жишээлбэл, зөвхөн Хавчуургыг хайхын тулд "@хавчуурга" гэж бичээд, дараа нь Tab эсвэл Space дээр дарна уу.</translation>
@@ -4049,7 +4051,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> өргөтгөл</translation>
 <translation id="3794792524918736965">Windows Hello-г асаана уу</translation>
 <translation id="379509625511193653">Унтраалттай</translation>
-<translation id="3795624560191557077">Та олон нийтийн өгөгдлийн зөрчлөөс олдсон нууц үгийг саяхан өөрчилсөн. Асуудал гарсан тохиолдолд Google Нууц үгний менежер танд нэвтрэхэд туслах боломжтой.</translation>
 <translation id="3796215473395753611">alt + дээш сум</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, дуу хоолойг урьдчилан сонсохын тулд баруун суман товчийг ашиглана уу</translation>
 <translation id="3796648294839530037">Таалагддаг Сүлжээ:</translation>
@@ -5870,7 +5871,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA Encryption</translation>
 <translation id="5090637338841444533">Таны камерын байрлалыг хянахыг зөвшөөрөөгүй</translation>
 <translation id="5091636240353511739">ПИН харуулах</translation>
-<translation id="5093417502834168387">Нэвтрэхэд асуудалтай байна уу? Өөр аргаар оролдож үзэх</translation>
 <translation id="5093477827231450397">Таны бусад сайтад зар санал болгохыг хүсэхгүй байгаа блоклосон сайтуудын жагсаалт</translation>
 <translation id="5093569275467863761">Нууцлалтай Back/Forward Cache хийсэн дэд хүрээ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Та Files аппаас энэ аппаар эсвэл бусад аппаар дэмжигдсэн файлуудыг нээх болон засах боломжтой. Энэ аппад өгөгдмөлөөр аль файлуудыг нээхийг хянахын тулд <ph name="BEGIN_LINK" />төхөөрөмж дээрээ өгөгдмөл аппуудыг хэрхэн тохируулах талаар мэдэж авна уу<ph name="END_LINK" />.</translation>
@@ -7655,7 +7655,6 @@
 <translation id="6388577073199278153">Таны мобайл бүртгэлд хандаж чадсангүй</translation>
 <translation id="6390020764191254941">Табыг шинэ цонх руу зөөх</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Байхгүй}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> болон өөр 1 вебсайтад}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> болон өөр {COUNT} вебсайтад}}</translation>
-<translation id="6390533465682072118">Сэргээх</translation>
 <translation id="6391131092053186625">Таны төхөөрөмжийн IMEI нь <ph name="IMEI_NUMBER" /> юм. Энэ дугаарыг үйлчилгээг идэвхжүүлэхэд туслахад ашиглах боломжтой.</translation>
 <translation id="6393156038355142111">Сайн нууц үг санал болгох</translation>
 <translation id="6393550101331051049">Аюултай контент харуулахыг зөвшөөрсөн</translation>
@@ -7888,6 +7887,7 @@
 <translation id="6560151649238390891">Зөвлөмжийг оруулсан</translation>
 <translation id="656065428026159829">Дэлгэрэнгүй үзэх</translation>
 <translation id="6561726789132298588">Оруул</translation>
+<translation id="6561877237303825108">Энэ төрлийн файл (<ph name="TYPE" />) аюултай байж болзошгүй. Та зөвхөн <ph name="ORIGIN" />-д итгэдэг тохиолдолд энэ файлыг хадгална уу</translation>
 <translation id="6562117348069327379">Системийн логуудыг Татаж авсан файлын лавлахад хадгална.</translation>
 <translation id="656293578423618167">Файлын зам эсвэл нэр нь хэтэрхий урт байна. Илүү богино нэрээр эсвэл өөр газарт хадгална уу.</translation>
 <translation id="6563002009564846727">Windows-с импорт хийсэн сертификатыг харах</translation>
@@ -9690,6 +9690,7 @@
 <translation id="7830833461614351956">Нээхийн тулд <ph name="NUM_OF_FILES" /> файлыг <ph name="CLOUD_PROVIDER" /> руу хуулах уу?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Тохируулсан үгс энд харагдана</translation>
+<translation id="7834832693620032149">Аудио хуваалцахын тулд оронд нь таб эсвэл цонх хуваалцана уу</translation>
 <translation id="7836577093182643605">Таны сайтуудтай хуваалцахыг хүсэхгүй байгаа блоклосон сэдвүүдийн жагсаалт</translation>
 <translation id="7836745198769390202">Танд одоогоор <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> болон бусад зүйл байна. Танай байгууллага энэ өгөгдлийг харах, удирдах боломжтой болно</translation>
 <translation id="7836850009646241041">Аюулгүй байдлын түлхүүртээ дахин хүрээд үзнэ үү</translation>
@@ -10558,6 +10559,7 @@
 <translation id="8425213833346101688">Өөрчлөлт</translation>
 <translation id="8425492902634685834">Taskbar-ыг эхэнд байрлуулах</translation>
 <translation id="8425768983279799676">Та төхөөрөмжийнхөө түгжээг тайлахын тулд ПИН кодоо ашиглаж болно.</translation>
+<translation id="8426697201161711396">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="8427213022735114808">Диктафон дуу хоолойгоор дурын текстийн талбарт бичихийг зөвшөөрөхийн тулд таны дуу хоолойг Google-д илгээдэг.</translation>
 <translation id="8427292751741042100">бүх хостод оруулсан</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
@@ -11293,6 +11295,7 @@
 <translation id="8940081510938872932">Таны компьютер яг одоо дэндүү олон зүйлийг ажиллуулж байна. Та дараа дахин оролдоно уу.</translation>
 <translation id="8940888110818450052">Нэвтрэх сонголт</translation>
 <translation id="8941173171815156065">Зөвшөөрлийг "<ph name="PERMISSION" />" хүчингүй болго</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> цонх, аудио хуваалцаж байна.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> унтраалттай байна</translation>
 <translation id="894191600409472540">Сайн нууц үгнүүд үүсгэнэ үү</translation>
 <translation id="8942714513622077633">Microsoft 365-н тохируулгыг цуцлах уу?</translation>

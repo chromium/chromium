@@ -1919,7 +1919,6 @@
 <translation id="2312219318583366810">‏صفحہ کا URL</translation>
 <translation id="2314165183524574721">موجودہ نظر آنے کی ترتیب پوشیدہ ہے</translation>
 <translation id="2314774579020744484">صفحات کا ترجمہ کرتے وقت استعمال کی جانے والی زبان</translation>
-<translation id="2316090909467242775">اس بازیابی پاس ورڈ کو آزمائیں</translation>
 <translation id="2316129865977710310">نہیں، شکریہ</translation>
 <translation id="2316433409811863464">ایپ کی سلسلہ بندی</translation>
 <translation id="2316709634732130529">تجویز کردہ پاس ورڈ استعمال کریں</translation>
@@ -4043,7 +4042,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ایکسٹینشنز</translation>
 <translation id="3794792524918736965">‏Windows Hello کو آن کریں</translation>
 <translation id="379509625511193653">آف</translation>
-<translation id="3795624560191557077">‏آپ نے حال ہی میں عوامی ڈیٹا کی خلاف ورزی میں پایا جانے والا پاس ورڈ تبدیل کیا ہے۔ دشواری کی صورت میں، Google پاس ورڈ مینیجر سائن ان کرنے میں آپ کی مدد کر سکتا ہے۔</translation>
 <translation id="3796215473395753611">‏alt + اوپر تیر کا نشان</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />، پیش منظر آواز کیلئے دائیں تیر کے نشان کی کلید استعمال کریں</translation>
 <translation id="3796648294839530037">پسندیدہ نیٹ ورکس:</translation>
@@ -5864,7 +5862,6 @@
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 مع RSA مرموز کاری</translation>
 <translation id="5090637338841444533">آپ کے کیمرا کی پوزیشن کو ٹریک کرنے کی اجازت نہیں ہے</translation>
 <translation id="5091636240353511739">‏‫PIN دکھائیں</translation>
-<translation id="5093417502834168387">سائن ان کرنے میں پریشانی؟ دوسرا طریقہ آزمائیں</translation>
 <translation id="5093477827231450397">آپ کی مسدود کردہ سائٹس کی فہرست جن سے آپ نہیں چاہتے ہیں کہ وہ دوسری سائٹس پر اشتہارات تجویز کرے</translation>
 <translation id="5093569275467863761">بیک/فارورڈ کیش کردہ پوشیدگی کا سب فریم: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">آپ اس ایپ کے ساتھ فائلز کی ایپس یا دیگر ایپس سے تعاون یافتہ فائلز کو کھول اور ان میں ترمیم کر سکتے ہیں۔ جو فائلز بطور ڈیفالٹ اس ایپ کو کھولتی ہیں انہیں کنٹرول کرنے کے لیے، <ph name="BEGIN_LINK" />جانیں کہ اپنے آلے پر ڈیفالٹ ایپس کیسے سیٹ کریں<ph name="END_LINK" />۔</translation>
@@ -7647,7 +7644,6 @@
 <translation id="6388577073199278153">اپنے موبائل اکاؤنٹ تک رسائی حاصل نہیں کر سکتے</translation>
 <translation id="6390020764191254941">ٹیب کو نئی ونڈو میں منتقل کریں</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{کوئی نہیں}=1{<ph name="EXAMPLE_DOMAIN_1" />، <ph name="EXAMPLE_DOMAIN_2" /> اور 1 مزید کے لیے}other{<ph name="EXAMPLE_DOMAIN_1" />،<ph name="EXAMPLE_DOMAIN_2" /> اور {COUNT} مزید کے لیے}}</translation>
-<translation id="6390533465682072118">بازیابی</translation>
 <translation id="6391131092053186625">‏آپ کے آلے کی IMEI <ph name="IMEI_NUMBER" /> ہے۔ سروس کو فعال کرنے میں مدد کے لیے اس نمبر کا استعمال کیا جا سکتا ہے۔</translation>
 <translation id="6393156038355142111">مضبوط پاس ورڈ تجویز کریں</translation>
 <translation id="6393550101331051049">غیر محفوظ مواد دکھانے کی اجازت ہے</translation>

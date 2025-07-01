@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome शी संबंधित टिपा</translation>
 <translation id="1816835383954230954">सुरू असताना, Chrome अधिक जलद रन होते आणि JavaScript वापरणारी वैशिष्ट्ये डिझाइन केल्यानुसार कार्य करतात. बंद असताना, हे परफॉर्मन्स कमी करते, पण हल्ल्यांविरुद्ध V8 ला अधिक रोधक बनवते.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ला AR वापरू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" />मध्ये कॅमेरादेखील सुरू करा.</translation>
+<translation id="1881806992065048905">नवीन टॅब पेज स्वरूपाच्या तळाशी असलेली शीट</translation>
 <translation id="1887786770086287077">या डिव्हाइसाठी स्थान अ‍ॅक्सेस बंद आहे, <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="1906181697255754968">तुमचे काम आपोआप सेव्ह करणे यासारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर अ‍ॅक्सेस करतात</translation>
 <translation id="1915307458270490472">बंद करा</translation>
@@ -326,6 +327,7 @@
 <translation id="4882919381756638075">व्हिडिओ चॅटिंगसारख्या संवाद वैशिष्ट्यांसाठी साइट सामान्यपणे तुमचा मायक्रोफोन वापरतात</translation>
 <translation id="4883854917563148705">व्यवस्थापित केलेल्या सेटिंग्ज रीसेट करता येत नाहीत</translation>
 <translation id="4887024562049524730">साइटना तुमचे आभासी वास्तविकता डिव्हाइस आणि डेटा वापरू देण्यापूर्वी विचारा (शिफारस केलेले)</translation>
+<translation id="4934780484581617878">विंडो व्यवस्थापन</translation>
 <translation id="4936863036653376783">तुम्हाला तुमच्या सर्व डिव्हाइसवर टॅब गट विभागामध्ये तुमचे गट दिसतील</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> यावर तुमची माहिती वापरण्यापासून ब्लॉक केले आहे</translation>
 <translation id="4953688446973710931">सुरू असताना, साइट एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची विनंती करू शकतात. बंद असताना, साइट एकाहून अधिक फाइल आपोआप डाउनलोड करू शकत नाहीत.</translation>
@@ -458,6 +460,7 @@
 <translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
 <translation id="640163077447496506">आज एक्स्पायर होईल</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">थीम संग्रह</translation>
 <translation id="6439114592976064011">साइटना तुमचे आभासी वास्तविकता डिव्हाइस आणि डेटा वापरण्यापासून ब्लॉक करा</translation>
 <translation id="6447842834002726250">कुकीज</translation>
 <translation id="6452138246455930388">तुमच्या उघड्या असलेल्या टॅबवरील किमतीमध्ये <ph name="OLD_PRICE" /> वरून <ph name="NEW_PRICE" /> वर घट झाली आहे, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -561,6 +564,7 @@
 <translation id="7791543448312431591">जोडा</translation>
 <translation id="780301667611848630">नाही, नको</translation>
 <translation id="7804248752222191302">साइट तुमचा कॅमेरा वापरत आहे</translation>
+<translation id="7805832099057502789">नवीन टॅब पेज स्वरूपाच्या तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="7807060072011926525">Google द्वारे पुरवलेली</translation>
 <translation id="7815680994978050279">धोकादायक डाउनलोड ब्लॉक केले</translation>
 <translation id="7835852323729233924">मीडिया प्ले करत आहे</translation>
@@ -580,9 +584,11 @@
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
 <translation id="8042586301629853791">यानुसार क्रमाने लावा:</translation>
 <translation id="8051193500142930381">कॅमेर्‍याची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
+<translation id="8056330801132235235">Chrome डीफॉल्ट</translation>
 <translation id="8067883171444229417">व्हिडिओ प्ले करा</translation>
 <translation id="8068648041423924542">सर्टिफिकेट निवडण्यास अक्षम.</translation>
 <translation id="8077120325605624147">तुम्ही भेट देता ती कोणतीही साइट तुम्हाला कोणतीही जाहिरात दाखवू शकते</translation>
+<translation id="80798452873915119">साइट तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची विनंती करू शकतात</translation>
 <translation id="8087000398470557479">Google ने वितरित केलेली ही आशय, <ph name="DOMAIN_NAME" /> मधील आहे.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> मध्ये आणखी पर्याय</translation>
 <translation id="8112925981674547014">तुमच्या अ‍ॅप सूचीमध्ये टॅब पहा</translation>

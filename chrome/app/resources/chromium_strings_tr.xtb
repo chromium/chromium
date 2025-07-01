@@ -38,6 +38,7 @@
 <translation id="1547469039832541117">Vurgulanan görevi sonlandırır.</translation>
 <translation id="1553461853655228091">Çevrenizin 3D haritasını oluşturmak için Chromium'un kameranıza erişim iznine ihtiyacı var</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Bu uzantı artık desteklenmiyor. Chromium bunu kaldırmanızı öneriyor.}other{Bu uzantılar artık desteklenmiyor. Chromium bunları kaldırmanızı öneriyor}}</translation>
+<translation id="1562320819937089394">Chromium'u sabitle</translation>
 <translation id="1574377791422810894">Chromium'un güvenlik araçları</translation>
 <translation id="1594928384848033697">Chromium, Şifre Yöneticisi verilerinizi silmek istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor}=1{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
@@ -518,6 +519,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8004582292198964060">Tarayıcı</translation>
 <translation id="8010081455002666927">Otomatik algıla</translation>
 <translation id="8013436988911883588">Chromium erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
+<translation id="8031714377769448844">Chromium'a istediğiniz zaman hızlıca erişmek için görev çubuğunuza sabitleyin</translation>
 <translation id="80471789339884597">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tüm tarayıcılarınızı yeniden başlatmanız gerekir.</translation>
 <translation id="8054112667659782652">Görsel Arama kısayolunu her zaman göster</translation>
 <translation id="8077498902115777962">Uygulamalar için Chromium'un arka planda çalışmasını devre dışı bırak</translation>

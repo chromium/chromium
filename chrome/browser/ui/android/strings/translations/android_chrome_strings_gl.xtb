@@ -152,6 +152,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1671236975893690980">Descarga pendente…</translation>
 <translation id="1672586136351118594">Non mostrar outra vez</translation>
 <translation id="1680919990519905526">Comprar imaxe con Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020e pecharanse pasados <ph name="MONTHS_ARCHIVED" /> meses</translation>
 <translation id="1687482373098770139">Pronto verás contido do sitio <ph name="SITE_NAME" /> e sobre el en Seguindo. Os sitios e as buscas que segues gárdanse na túa Conta de Google. Para xestionar o que segues, accede cando queiras á configuración.</translation>
 <translation id="1689333818294560261">Alcume</translation>
 <translation id="1696555181932908973">Podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -352,6 +353,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2593272815202181319">Monoespazado</translation>
 <translation id="260403163289591229">Seguindo</translation>
 <translation id="2604446170045642109">Podes desactivar o tema escuro para os sitios na configuración.</translation>
+<translation id="2605017215201958293">Escoita esta páxina coa IA</translation>
 <translation id="2607441479295509868">Pechouse a sesión. Volve iniciar sesión para usar os marcadores, os contrasinais e moito máis na túa conta.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> invitoute a acceder ao elemento compartido.</translation>
 <translation id="2625189173221582860">Copiouse o contrasinal</translation>
@@ -876,6 +878,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="496607651705915226">Para gardar e usar contrasinais novos na túa Conta de Google, actualiza os servizos de Google Play</translation>
 <translation id="4971753085054504448">Proba a buscar outra cousa ou abre todo o historial de Chrome para ver máis resultados.</translation>
 <translation id="497421865427891073">Avanzar</translation>
+<translation id="497983151715419057">Revisa as pestanas e grupos de pestanas inactivos</translation>
 <translation id="498624032394115435">Calquera persoa que teña a ligazón poderá editar todas as pestanas.</translation>
 <translation id="4987271110129728827">Non se puido atopar esa páxina. Comproba que escribises ben a consulta ou proba a realizar unha busca web.</translation>
 <translation id="4988526792673242964">Páxinas</translation>
@@ -936,7 +939,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5226378907213531272">Terás que desbloquear a pantalla cada vez que uses o coche</translation>
 <translation id="5227554086496586518">Toca para ver os resultados da busca</translation>
-<translation id="5229736206150093143">Últimos resultados</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="5235196193381275927">Produciuse un erro ao iniciar sesión</translation>
 <translation id="5246093389635966745">Editar atallo da barra de ferramentas</translation>
@@ -1064,6 +1066,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="583281660410589416">Descoñecido</translation>
 <translation id="5833984609253377421">Compartir ligazón</translation>
 <translation id="5839058148541733625">O dinosauro de Chrome</translation>
+<translation id="5842871376175639063">As pestanas e grupos de pestanas que non se usen durante <ph name="DAYS_INACTIVE" /> días moveranse aquí<ph name="AUTODELETE_SECTION" />. Podes cambiar esta opción cando queiras en <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Queres abrir o PDF con <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Queres deixar de compartir o grupo?</translation>
 <translation id="5853623416121554550">en pausa</translation>
@@ -1382,6 +1385,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7088681679121566888">Chrome está actualizado</translation>
 <translation id="7106762743910369165">A túa organización xestiona o teu navegador</translation>
 <translation id="7111394291981742152">Chrome ofréceche máis control sobre os anuncios que ves e limita a información que os sitios poden obter sobre ti cando che mostran anuncios personalizados.</translation>
+<translation id="7115358764509798967">Opción predeterminada do sistema</translation>
 <translation id="7117485132243600300">Xestiona o contido que segues e as buscas e os temas suxeridos</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Revisáronse os permisos de 1 sitio}other{Revisáronse os permisos de # sitios}}</translation>
 <translation id="7138678301420049075">Outros</translation>
@@ -1431,6 +1435,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7304873321153398381">Estás sen conexión. Chrome non puido comprobar os teus contrasinais.</translation>
 <translation id="7313188324932846546">Toca para configurar a sincronización</translation>
 <translation id="7314734791127433392">Non se puideron comprobar os contrasinais</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Pestanas e grupos de pestanas que leven sen usarse 1 día ou máis}other{Pestanas e grupos de pestanas que leven sen usarse # días ou máis}}</translation>
 <translation id="7324354302972299151">Enviar unha solicitude Do Not Track</translation>
 <translation id="7333041109965360609">Cancelaches a subscrición ás notificacións</translation>
 <translation id="7336259382292148213">Todo en orde coas notificacións</translation>
@@ -1642,6 +1647,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8137562778192957619">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google.</translation>
 <translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8163820386638255770">Para usar e gardar os contrasinais na túa Conta de Google, verifica a túa identidade</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) elemento inactivo}other{(#) elementos inactivos}}</translation>
 <translation id="8186512483418048923">Quedan <ph name="FILES" /> ficheiros</translation>
 <translation id="8190358571722158785">Queda 1 día</translation>
 <translation id="8192765420340770300">Panel inferior de inicio de sesión aberto a pantalla completa</translation>

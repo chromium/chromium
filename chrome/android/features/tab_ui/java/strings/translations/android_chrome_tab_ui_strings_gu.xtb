@@ -165,6 +165,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" ટૅબનું ગ્રૂપ હવે ઉપલબ્ધ નથી</translation>
 <translation id="7452985128687107478">ટૅબના ગ્રૂપ તમારા બધા ડિવાઇસ પર ઑટોમૅટિક રીતે સાચવવામાં અને અપડેટ કરવામાં આવે છે</translation>
 <translation id="747459581954555080">બધુ પુનર્પ્રાપ્ત કરો</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> આઇટમ}one{<ph name="TABS_COUNT_MANY" /> આઇટમ}other{<ph name="TABS_COUNT_MANY" /> આઇટમ}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> આઇટમ રિસ્ટોર કરો}one{પસંદ કરેલ <ph name="TABS_COUNT_MANY" /> આઇટમ રિસ્ટોર કરો}other{પસંદ કરેલ <ph name="TABS_COUNT_MANY" /> આઇટમ રિસ્ટોર કરો}}</translation>
 <translation id="753732157349120914">ટૅબ સ્વિચર</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google તરફથી <ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ}one{Google તરફથી <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}other{Google તરફથી <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}}</translation>

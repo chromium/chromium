@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Finalitza la tasca destacada.</translation>
 <translation id="1553461853655228091">Chromium necessita permís per accedir a la càmera i poder crear un mapa 3D del teu entorn</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Aquesta extensió ja no s'admet. Chromium et recomana que la suprimeixis.}other{Aquestes extensions ja no s'admeten. Chromium et recomana que les suprimeixis.}}</translation>
+<translation id="1562320819937089394">Fixa Chromium</translation>
 <translation id="1574377791422810894">Eines de seguretat de Chromium</translation>
 <translation id="1594928384848033697">Chromium vol suprimir les dades del gestor de contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{L'administrador necessita que reiniciïs Chromium per aplicar una actualització}=1{L'administrador necessita que reiniciïs Chromium per aplicar una actualització. La finestra d'incògnit no es tornarà a obrir.}other{L'administrador necessita que reiniciïs Chromium per aplicar una actualització. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
@@ -521,6 +522,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8010081455002666927">Detecta automàticament</translation>
 <translation id="8013436988911883588">Un cop Chromium tingui accés, els llocs web et podran demanar accés.</translation>
+<translation id="8031714377769448844">Fixa Chromium a la barra de tasques per accedir-hi ràpidament en qualsevol moment</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Mostra sempre la drecera de la cerca d'imatges</translation>
 <translation id="8077498902115777962">Desactiva l'execució de Chromium en segon pla per a les aplicacions</translation>

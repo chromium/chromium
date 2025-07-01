@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Kontakta avsändaren och be om en ny länk</translation>
 <translation id="1013952917065545813">Du kan återkomma hit och öppna nyligen stängda flikar</translation>
 <translation id="1016495303386450659">Bokmärket har uppdaterats</translation>
+<translation id="1017735584092444011">Visa läsläget</translation>
 <translation id="102916930470544692">Nyckel</translation>
 <translation id="1030376737535466765">Öppna Lösenordshantering</translation>
 <translation id="1035980983510608210">Om du stänger alla flikar stängs även fästa flikar.</translation>
@@ -1237,12 +1238,14 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6074656473835429958">Få aviseringar</translation>
 <translation id="607620096698446287">Det gick inte att ladda upp <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Kameraåtkomst har tillåtits</translation>
+<translation id="607730456154980869">Få svar snabbare med Gemini i Chrome</translation>
 <translation id="6078236141387574983">Justera arkhöjden igen</translation>
 <translation id="6084848228346514841">Välj flikar</translation>
 <translation id="6089212833343035912">Pinkod för Google Lösenordshantering</translation>
 <translation id="6090760257419195752">Ignorerade varningar</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> hittades</translation>
 <translation id="6100617279104942061">Inloggad som <ph name="USER_EMAIL" />. Öppnar inställningarna.</translation>
+<translation id="610083648014322104">Få relevanta svar baserat på innehållet på sidan du besöker</translation>
 <translation id="6103540626693881831">Kryptering på enheten</translation>
 <translation id="611361228753138223">Webbplatser som du har besökt nyligen på den här enheten</translation>
 <translation id="611705554202268369">Tryck länge för att lägga till i en flikgrupp</translation>
@@ -1495,6 +1498,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6979737339423435258">Sedan start</translation>
 <translation id="6983306615164277634">Du kan också trycka länge på adressfältet om du vill ändra placeringen.</translation>
 <translation id="6987201788018524855">Utforska användbara funktioner som du har missat</translation>
+<translation id="6989636517316575338">Fråga om valfri sida</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Bevaka priser på produkter och få aviseringar när priset sänks på en webbplats</translation>
 <translation id="7004032350256606903">Organisationen kräver att du surfar privat.
@@ -1696,6 +1700,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7863211248337747225">Skaffa appen</translation>
 <translation id="7865127013871431856">Översättningsalternativ</translation>
 <translation id="7866872729285243843">Aktivera Läslista i inställningarna om du vill få tillgång till din läslista på alla dina enheter.</translation>
+<translation id="787364769771947486">Dölj läsläget</translation>
 <translation id="7874107544081154809">Autofyll formulär med <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Du har återanvända lösenord.</translation>
 <translation id="7887174313503389866">Få en guidad rundtur av viktiga integritets- och säkerhetskontroller. Öppna de enskilda inställningarna för att se fler alternativ.</translation>
@@ -1752,6 +1757,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8058655154417507695">Utgångsår</translation>
 <translation id="8059533439631660104">Komprimera avsnittet.</translation>
 <translation id="8061584726507121204">Historik</translation>
+<translation id="8069168488983557089">Få viktiga insikter som hjälper dig att förstå alla ämnen</translation>
 <translation id="8069394452933076548">Välj när flikar som inte har använts nyligen ska flyttas till avsnittet för inaktiva flikar.</translation>
 <translation id="8073670137947914548">Nedladdningen är klar</translation>
 <translation id="8076492880354921740">Flikar</translation>

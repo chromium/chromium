@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">Сақтау және автоматты түрде толтыру</translation>
 <translation id="2312234273148520048">Дәмдеуіштер мен тұздықтар</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />-тан аз. Келесі жолы кейбір сайттар баяу жүктелуі мүмкін.</translation>
+<translation id="2316090909467242775">Осы қалпына келтіру құпия сөзін пайдаланып көріңіз.</translation>
 <translation id="2316159751672436664">ChromeOS параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру</translation>
 <translation id="2316887270356262533">1 MБ аз орын босатады. Кейбір сайттар келесі кіргенде баяуырақ жүктелуі мүмкін.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> пайдаланушы аты мен құпия сөзді қажет етеді.</translation>
@@ -1672,6 +1673,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> дюйм)</translation>
 <translation id="3792826587784915501">Культ және инди фильмдері</translation>
 <translation id="3793574014653384240">Жақында болған бұзылудың сандары мен себептері</translation>
+<translation id="3795624560191557077">Баршаға ашық қолды болған деректерден табылған құпия сөзіңізді жақында өзгерттіңіз. Қиындық туындаса, Google Password Manager аккаунтқа кіруге көмектесе алады.</translation>
 <translation id="3799805948399000906">Қаріп сұралды</translation>
 <translation id="3801297763951514916">Жиі кіресіз</translation>
 <translation id="380329542618494757">Аты</translation>
@@ -1953,6 +1955,7 @@
 <translation id="425582637250725228">Енгізілген өзгертулер сақталмауы мүмкін.</translation>
 <translation id="4258748452823770588">Қолтаңба жарамсыз</translation>
 <translation id="4261046003697461417">Қорғалған құжаттарға аннотация қосу мүмкін емес.</translation>
+<translation id="4265635050210404830">Тұрақты клиент карталарыңыз</translation>
 <translation id="4265872034478892965">Әкімші рұқсат берген</translation>
 <translation id="4269029136757623689">Тұмыстық желдеткіштер</translation>
 <translation id="4269264543938335308">Жүзуге арналған киім</translation>
@@ -2228,6 +2231,7 @@
 <translation id="4754461935447132332">Қауіпсіз емес сайттар үшін рұқсат етілмеген.</translation>
 <translation id="4756388243121344051">&amp;Тарих</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Код жарамсыз.</translation>
 <translation id="4757993714154412917">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Аккаунттарыңызды қорғау үшін Chromium сақталған құпия сөздеріңізді тексеруді ұсынады.</translation>
 <translation id="4758311279753947758">Контакт ақпаратын қосу</translation>
 <translation id="4761326898079498987">Қосымша мәліметтерді қарап шығу</translation>
@@ -2293,6 +2297,7 @@
 <translation id="486459320933704969">Ата-ана немесе қамқоршы бұл веб-сайтқа кіре алатыныңызды хабарлауы керек.</translation>
 <translation id="4864801646102013152">Үй жөндеу</translation>
 <translation id="4866506163384898554">Курсорды көрсету үшін |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| пернелерін басыңыз.</translation>
+<translation id="4868277513442568587">Ортақ қойындылар топтарын пайдалануды жалғастыру үшін Chrome-ды жаңартыңыз.</translation>
 <translation id="4873616204573862158">Көзілдірік</translation>
 <translation id="4873807733347502026">Тінтуіріңізді құлыптап пайдалану</translation>
 <translation id="4876305945144899064">Пайдаланушы аты жоқ</translation>
@@ -2429,6 +2434,7 @@
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090647584136241764">Ұқсас өнімдері бар қойындыларды қосып, маңызды мәліметтерді салыстырыңыз.</translation>
 <translation id="5093232627742069661">Z тәрізді бүктеу</translation>
+<translation id="5093417502834168387">Аккаунтқа кіру кезінде қиындық туындады ма? Басқа жолмен кіріп көріңіз.</translation>
 <translation id="5094747076828555589">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатына Chromium сенім артпайды. Бұған қате конфигурация немесе қаскүнемнің байланысты тоқтатуы себеп болуы мүмкін.</translation>
 <translation id="5097099694988056070">CPU/RAM пайдалануы сияқты құрылғы статистикасы</translation>
 <translation id="5097468150760963273">27 x 39 дюйм</translation>
@@ -3197,6 +3203,7 @@
 <translation id="6388060462449937608">Фитнес жабдығы және аксессуарлары</translation>
 <translation id="6389470377220713856">Картадағы атау</translation>
 <translation id="6390200185239044127">Z тәрізді жартылай бүктеу</translation>
+<translation id="6390533465682072118">Қалпына келтіру</translation>
 <translation id="639068771471208680">Көпбөлікті үлгі</translation>
 <translation id="6391700400718590966">Қауіпсіз төлемге арналған деректердің сәйкес келмейтіндігі көрсетілген парақ жабылды.</translation>
 <translation id="6392799395081100092">Қағаз (пергамент)</translation>
@@ -3746,6 +3753,7 @@
 <translation id="7346048084945669753">үлестес пайдаланушы:</translation>
 <translation id="7346062987309535530">Ыдыс-аяқ</translation>
 <translation id="7346081071264046066">"бұл тойға шақыруға қуанған эмоджимен "иә" деп жауап беру"</translation>
+<translation id="7347640536700429009">Картадағы аты-жөні жарамсыз.</translation>
 <translation id="7352651011704765696">Бірнәрсе дұрыс емес</translation>
 <translation id="7353601530677266744">Пәрмен жолы</translation>
 <translation id="7359588939039777303">Жарнамалар бөгелді.</translation>

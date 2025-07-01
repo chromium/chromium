@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">O ficheiro non é válido ou está danado</translation>
 <translation id="1040761927998636252">Marcador sen nome para <ph name="URL" /></translation>
 <translation id="1041175011127912238">Esta páxina non responde</translation>
+<translation id="1041181446722933623">O marcador <ph name="LOCAL_BOOKMARK" /> está gardado só neste dispositivo. Para usalo noutros aparellos, gárdao no cartafol "<ph name="ACCOUNT_FOLDER" />" da túa conta.</translation>
 <translation id="1041263367839475438">Dispositivos dispoñibles</translation>
 <translation id="1041607257468256895">Xestionar os permisos de localización dos sitios web en Chrome</translation>
 <translation id="1042174272890264476">O ordenador tamén inclúe a biblioteca de <ph name="SHORT_PRODUCT_NAME" />. RLZ asigna unha etiqueta que non é exclusiva e sen identificación persoal para medir as buscas e o uso de <ph name="SHORT_PRODUCT_NAME" /> derivados dunha determinada campaña promocional. En ocasións estas etiquetas aparecen nas consultas de Busca de Google en <ph name="PRODUCT_NAME" />.</translation>
@@ -608,6 +609,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1418559532423038045">Quita <ph name="VM_NAME" /> do dispositivo (<ph name="DEVICE_TYPE" />). Se o fas, eliminaranse todas as aplicacións e datos da máquina virtual.</translation>
 <translation id="1418882096915998312">Inscrición en Enterprise en curso</translation>
 <translation id="1418954524306642206">Busca un ficheiro para especificar o PPD da impresora</translation>
+<translation id="1419086691207546433">Engade extensións para organizarte, simplificar tarefas e mellorar a navegación</translation>
 <translation id="1421334842435688311">Información sobre a localización do móbil</translation>
 <translation id="1421514190500081936">Indica un motivo para descargar estes datos:</translation>
 <translation id="1422159345171879700">Cargar scripts non seguros</translation>
@@ -1914,7 +1916,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2312219318583366810">URL da páxina</translation>
 <translation id="2314165183524574721">Visibilidade actual configurada como Oculto</translation>
 <translation id="2314774579020744484">Idioma que se usa ao traducir páxinas</translation>
-<translation id="2316090909467242775">Proba este contrasinal de recuperación</translation>
 <translation id="2316129865977710310">Non, grazas</translation>
 <translation id="2316433409811863464">Emisión da aplicación</translation>
 <translation id="2316709634732130529">Utilizar contrasinal suxerido</translation>
@@ -3326,6 +3327,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3309330461362844500">Identificador do perfil do certificado</translation>
 <translation id="3310379801837527592">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUM_OTHER_MEMBERS" /> persoa máis</translation>
 <translation id="331080746368555063">Os sitios privados poden incluír, por exemplo, a intranet da túa empresa</translation>
+<translation id="3311007761540106761">Opción predeterminada do sistema</translation>
 <translation id="3311445899360743395">Os datos asociados a esta aplicación pódense quitar deste dispositivo.</translation>
 <translation id="3312470654018965389">Configurando o contedor de Linux</translation>
 <translation id="3312883087018430408">Para realizar buscas nunha parte ou sitio específico de Chrome, escribe o seu atallo na barra de enderezos, seguido do atallo de teclado que prefiras. Por exemplo, para facer buscas só en Marcadores, escribe "@marcadores" e despois preme Tabulador ou Espazo.</translation>
@@ -4042,7 +4044,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensións</translation>
 <translation id="3794792524918736965">Activar Windows Hello</translation>
 <translation id="379509625511193653">Non</translation>
-<translation id="3795624560191557077">Recentemente cambiaches un contrasinal que se atopou nunha violación da seguranza dos datos pública. Se tes problemas, o xestor de contrasinais de Google pode axudarche a iniciar sesión.</translation>
 <translation id="3796215473395753611">alt + frecha arriba</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, usa a Frecha dereita para oír unha mostra da voz</translation>
 <translation id="3796648294839530037">Redes favoritas:</translation>
@@ -5864,7 +5865,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5088534251099454936">PKCS n.º 1 SHA-512 con cifrado RSA</translation>
 <translation id="5090637338841444533">Permiso denegado para facer un seguimento da posición da cámara</translation>
 <translation id="5091636240353511739">Mostrar o PIN</translation>
-<translation id="5093417502834168387">Tes problemas para iniciar sesión? Proba con outro método</translation>
 <translation id="5093477827231450397">Lista de sitios que bloqueaches e que non queres que lles suxiran anuncios a outros sitios</translation>
 <translation id="5093569275467863761">Submarco de incógnito almacenado na memoria caché de páxinas anteriores e seguintes: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Podes abrir e editar ficheiros compatibles con esta aplicación desde Ficheiros ou outras aplicacións. Para controlar os ficheiros que se abren nesta aplicación de forma predeterminada, consulta <ph name="BEGIN_LINK" />como definir aplicacións predeterminadas no teu dispositivo<ph name="END_LINK" />.</translation>
@@ -7646,7 +7646,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6388577073199278153">Non se puido acceder á conta do teu operador móbil</translation>
 <translation id="6390020764191254941">Mover pestana a ventá nova</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Para ningún sitio}=1{Para <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> e 1 sitio máis}other{Para <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> e {COUNT} sitios máis}}</translation>
-<translation id="6390533465682072118">Recuperación</translation>
 <translation id="6391131092053186625">O IMEI do dispositivo é <ph name="IMEI_NUMBER" />. Este número pode usarse para axudar a activar o servizo.</translation>
 <translation id="6393156038355142111">Suxerir contrasinal seguro</translation>
 <translation id="6393550101331051049">Permiso concedido para mostrar contido inseguro</translation>
@@ -7879,6 +7878,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6560151649238390891">Púxose a suxestión</translation>
 <translation id="656065428026159829">Ver máis</translation>
 <translation id="6561726789132298588">intro</translation>
+<translation id="6561877237303825108">Este tipo de ficheiro (<ph name="TYPE" />) pode ser perigoso. Gárdao soamente se confías en <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Almacena os rexistros do sistema no directorio Descargas.</translation>
 <translation id="656293578423618167">A ruta ou o nome do ficheiro é demasiado longo. Gárdao con outro nome máis curto ou noutra localización.</translation>
 <translation id="6563002009564846727">Ver os certificados importados de Windows</translation>
@@ -9682,6 +9682,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7830833461614351956">Queres copiar <ph name="NUM_OF_FILES" /> ficheiros en <ph name="CLOUD_PROVIDER" /> para abrilos?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">As palabras personalizadas gardadas aparecerán aquí</translation>
+<translation id="7834832693620032149">Para compartir o audio, o mellor é que compartas unha pestana ou pantalla</translation>
 <translation id="7836577093182643605">Lista de temas que bloqueaches e que non queres compartir cos sitios</translation>
 <translation id="7836745198769390202">Actualmente tes, entre outras cousas, <ph name="NUMBERED_ITEM_1" /> e <ph name="NUMBERED_ITEM_2" />. A túa organización poderá ver e xestionar estes datos</translation>
 <translation id="7836850009646241041">Proba a tocar de novo a túa chave de seguranza</translation>
@@ -10551,6 +10552,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8425492902634685834">Ancorar na barra de tarefas</translation>
 <translation id="8425768983279799676">Podes utilizar o teu PIN para desbloquear o dispositivo.</translation>
+<translation id="8426697201161711396">Inicia sesión en Chrome para ter os contrasinais, entre outras cousas, en todos os teus dispositivos</translation>
 <translation id="8427213022735114808">O Ditado envía a túa voz a Google para que poidas usar a escritura por voz en calquera campo de texto.</translation>
 <translation id="8427292751741042100">páxina inserida en calquera host</translation>
 <translation id="8428213095426709021">Configuración</translation>
@@ -11288,6 +11290,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8940081510938872932">O teu ordenador está levando a cabo demasiadas accións neste momento. Téntao de novo máis tarde.</translation>
 <translation id="8940888110818450052">Opcións de inicio de sesión</translation>
 <translation id="8941173171815156065">Revogar o permiso "<ph name="PERMISSION" />"</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> está compartindo unha ventá ou audio.</translation>
 <translation id="8941688920560496412">O dispositivo <ph name="DEVICE_NAME" /> está desactivado</translation>
 <translation id="894191600409472540">Crea contrasinais seguros</translation>
 <translation id="8942714513622077633">Queres cancelar a configuración de Microsoft 365?</translation>

@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">ໄຟລ໌ເສຍຫາຍ ຫຼື ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="1040761927998636252">ບຸກມາກທີ່ບໍ່ມີຊື່ສຳລັບ <ph name="URL" /></translation>
 <translation id="1041175011127912238">ໜ້ານີ້ບໍ່ຕອບສະໜອງ</translation>
+<translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />“ ຈະບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນອື່ນໆຂອງທ່ານ, ໃຫ້ບັນທຶກໄປໃສ່ “<ph name="ACCOUNT_FOLDER" />” ໃນບັນຊີຂອງທ່ານ.</translation>
 <translation id="1041263367839475438">ອຸປະກອນທີ່ໃຊ້ໄດ້</translation>
 <translation id="1041607257468256895">ຈັດການການອະນຸຍາດສະຖານທີ່ຂອງເວັບໄຊໃນ Chrome</translation>
 <translation id="1042174272890264476">ຄອມພິວເຕີຂອງທ່ານຍັງມາພ້ອມກັບຄັງເກັບມ້ຽນ RLZ ຂອງ <ph name="SHORT_PRODUCT_NAME" /> ມາກັບເຄື່ອງ. RLZ ມອບໝາຍໃຫ້ແທັກສາມາດລະບຸໄດ້ບໍ່ເປັນເອກະລັກ, ບໍ່ເປັນສ່ວນຕົວ ເພື່ອວັດແທກການຄົ້ນຫາ ແລະການໃຊ້ <ph name="SHORT_PRODUCT_NAME" /> ຂັບເຄື່ອນໂດຍການໂຄສະນາສະເພາະ. ບາງຄັ້ງສະຫຼາກເຫຼົ່ານີ້ປະກົດຂຶ້ນຢູ່ໃນການສອບຖາມການຄົ້ນຫາ Google ຢູ່ໃນ <ph name="PRODUCT_NAME" />.</translation>
@@ -608,6 +609,7 @@
 <translation id="1418559532423038045">ລຶບ <ph name="VM_NAME" /> ອອກຈາກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ການດຳເນີນການນີ້ຈະລຶບແອັບ ແລະ ຂໍ້ມູນທັງໝົດໃນເຄື່ອງສະເໝືອນ!</translation>
 <translation id="1418882096915998312">ກຳລັງລົງທະບຽນອົງກອນຢູ່</translation>
 <translation id="1418954524306642206">ເລື່ອນເບິ່ງເພື່ອລະບຸ PPD ເຄື່ອງພິມຂອງທ່ານ</translation>
+<translation id="1419086691207546433">ເພີ່ມສ່ວນຂະຫຍາຍເພື່ອຈັດລະບຽບ, ຫຼຸດຄວາມຊັບຊ້ອນຂອງໜ້າວຽກ ແລະ ປັບປຸງການທ່ອງເວັບຂອງທ່ານໃຫ້ດີຂຶ້ນ</translation>
 <translation id="1421334842435688311">ຂໍ້ມູນສະຖານທີ່ມືຖື</translation>
 <translation id="1421514190500081936">ກະລຸນາລະບຸເຫດຜົນສຳລັບການດາວໂຫຼດຂໍ້ມູນນີ້:</translation>
 <translation id="1422159345171879700">ໂຫຼດສະຄຣິບທີ່ບໍ່ປອດໄພ</translation>
@@ -1927,7 +1929,6 @@
 <translation id="2312219318583366810">URL ຂອງໜ້າ</translation>
 <translation id="2314165183524574721">ການຕັ້ງຄ່າການສະແດງໃນປັດຈຸບັນແມ່ນເຊື່ອງໄວ້</translation>
 <translation id="2314774579020744484">ພາສາທີ່ໃຊ້ເມື່ອແປໜ້າຕ່າງໆ</translation>
-<translation id="2316090909467242775">ລອງໃຊ້ລະຫັດຜ່ານການກູ້ຄືນນີ້</translation>
 <translation id="2316129865977710310">ບໍ່​, ​ຂອບ​ໃຈ</translation>
 <translation id="2316433409811863464">ການສະຕຣີມແອັບ</translation>
 <translation id="2316709634732130529">ໃຊ້ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
@@ -3339,6 +3340,7 @@
 <translation id="3309330461362844500">ID ໂປຣໄຟລ໌ໃບຮັບຮອງ</translation>
 <translation id="3310379801837527592">ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /> ແລະ ອີກ <ph name="NUM_OTHER_MEMBERS" /> ຄົນ</translation>
 <translation id="331080746368555063">ເວັບໄຊສ່ວນຕົວອາດຮວມມີສິ່ງຕ່າງໆ ເຊັ່ນ: ອິນທຣາເນັດຂອງບໍລິສັດຂອງທ່ານ</translation>
+<translation id="3311007761540106761">ຄ່າເລີ່ມຕົ້ນຂອງລະບົບ</translation>
 <translation id="3311445899360743395">ຂໍ້ມູນທີ່ເຊື່ອມໂຍງກັບແອັບນີ້ອາດຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
 <translation id="3312470654018965389">ກຳລັງຕັ້ງຄ່າກ່ອງບັນຈຸ Linux ຢູ່</translation>
 <translation id="3312883087018430408">ເພື່ອຊອກຫາເວັບໄຊສະເພາະໃດໜຶ່ງ ຫຼື ບາງສ່ວນຂອງ Chrome, ໃຫ້ພິມທາງລັດຂອງມັນໃສ່ໃນແຖບທີ່ຢູ່, ຕາມດ້ວຍຄີລັດທີ່ທ່ານຕ້ອງການ. ຕົວຢ່າງ: ເພື່ອຊອກຫາ Bookmarks ຢ່າງດຽວ, ໃຫ້ພິມ "@bookmarks", ຈາກນັ້ນກົດແຖບ ຫຼື ຍະຫວ່າງ.</translation>
@@ -4052,7 +4054,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ສ່ວນຂະຫຍາຍ</translation>
 <translation id="3794792524918736965">ເປີດ Windows Hello</translation>
 <translation id="379509625511193653">ປິດ</translation>
-<translation id="3795624560191557077">ເມື່ອບໍ່ດົນມານີ້ທ່ານໄດ້ປ່ຽນລະຫັດຜ່ານທີ່ພົບເຫັນຢູ່ໃນການລະເມີດຂໍ້ມູນສາທາລະນະ. ໃນກໍລະນີທີ່ມີບັນຫາ, ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດຊ່ວຍທ່ານເຂົ້າສູ່ລະບົບໄດ້.</translation>
 <translation id="3796215473395753611">Alt + ລູກສອນຂຶ້ນ</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, ໃຊ້ປຸ່ມລູກສອນຂວາເພື່ອຟັງຕົວຢ່າງສຽງ</translation>
 <translation id="3796648294839530037">ເຄືອ​ຂ່າຍ​ທີ່​ມັກ:</translation>
@@ -5874,7 +5875,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
 <translation id="5090637338841444533">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ຕິດຕາມຕຳແໜ່ງກ້ອງຂອງທ່ານ</translation>
 <translation id="5091636240353511739">ສະແດງ PIN</translation>
-<translation id="5093417502834168387">ມີບັນຫາການເຂົ້າສູ່ລະບົບບໍ? ລອງວິທີອື່ນ</translation>
 <translation id="5093477827231450397">ລາຍຊື່ຂອງເວັບໄຊທີ່ທ່ານບລັອກ ແລະ ບໍ່ຕ້ອງການໃຫ້ແນະນຳໂຄສະນາໃຫ້ເວັບໄຊອື່ນ</translation>
 <translation id="5093569275467863761">ເຟຣມບ່ອຍແຄສຍ້ອນຫຼັງແບບບໍ່ເປີດເຜີຍຕົວຕົນ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ທ່ານສາມາດເປີດ ແລະ ແກ້ໄຂໄຟລ໌ທີ່ຮອງຮັບໄດ້ດ້ວຍແອັບນີ້ຈາກແອັບ Files ຫຼື ແອັບອື່ນ. ເພື່ອຄວບຄຸມວ່າໄຟລ໌ໃດເປີດແອັບນີ້ແບບເລີ່ມຕົ້ນ, <ph name="BEGIN_LINK" />ໃຫ້ສຶກສາວິທີຕັ້ງແອັບເລີ່ມຕົ້ນຢູ່ອຸປະກອນຂອງທ່ານ<ph name="END_LINK" />.</translation>
@@ -7658,7 +7658,6 @@
 <translation id="6388577073199278153">ບໍ່ສາມາດເຂົ້າເຖິງບັນຊີມືຖືຂອງທ່ານ</translation>
 <translation id="6390020764191254941">ຍ້າຍແຖບໄປໜ້າຈໍໃໝ່</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{ບໍ່ມີ}=1{ສຳລັບ <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ແລະ ອີກ 1 ໂດເມນ}other{ສຳລັບ <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ແລະ ອີກ {COUNT} ໂດເມນ}}</translation>
-<translation id="6390533465682072118">ການກູ້ຄືນ</translation>
 <translation id="6391131092053186625">IMEI ອຸປະກອນຂອງທ່ານແມ່ນ <ph name="IMEI_NUMBER" />. ໝາຍເລກນີ້ສາມາດຖືກນຳໃຊ້ເພື່ອຊ່ວຍເປີດການນຳໃຊ້ບໍລິການໄດ້.</translation>
 <translation id="6393156038355142111">ແນະນຳລະຫັດຜ່ານທີ່ຄາດເດົາໄດ້ຍາກ</translation>
 <translation id="6393550101331051049">ໄດ້ຮັບອະນຸຍາດໃຫ້ສະແດງເນື້ອຫາທີ່ບໍ່ປອດໄພ</translation>
@@ -10563,6 +10562,7 @@
 <translation id="8425213833346101688">ປ່ຽນ​ແປງ</translation>
 <translation id="8425492902634685834">ປັກໝຸດໃສ່ແຖບໜ້າວຽກ</translation>
 <translation id="8425768983279799676">ທ່ານສາມາດໃຊ້ PIN ຂອງທ່ານເພື່ອປົດລັອກອຸປະກອນຂອງທ່ານໄດ້.</translation>
+<translation id="8426697201161711396">ເຂົ້າສູ່ລະບົບ Chrome ເພື່ອຮັບລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ.</translation>
 <translation id="8427213022735114808">ການຂຽນຕາມຄຳບອກສົ່ງສຽງຂອງທ່ານໃຫ້ Google ເພື່ອອະນຸຍາດການພິມດ້ວຍສຽງໃນຊ່ອງໃສ່ຂໍ້ຄວາມຕ່າງໆ.</translation>
 <translation id="8427292751741042100">ຝັງຕິດໃນແມ່ຂ່າຍໃດກໍໄດ້</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>

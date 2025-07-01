@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Pyydä uutta linkkiä lähettäjältä</translation>
 <translation id="1013952917065545813">Voit palata tähän avataksesi uudelleen äskettäin sulkemasi välilehdet</translation>
 <translation id="1016495303386450659">Kohde päivitettiin</translation>
+<translation id="1017735584092444011">Näytä lukutila</translation>
 <translation id="102916930470544692">Avainkoodi</translation>
 <translation id="1030376737535466765">Avaa Salasanat</translation>
 <translation id="1035980983510608210">Jos suljet kaikki välilehdet, myös kiinnitetyt välilehdet suljetaan.</translation>
@@ -186,6 +187,7 @@
 <translation id="1740650426894359238">Vaihda toiseen profiiliin</translation>
 <translation id="1741219894094057085">Älykello</translation>
 <translation id="1743244221910283364">Hylkää muutokset</translation>
+<translation id="1748975028205587434">Valitse tiedosto</translation>
 <translation id="174998178145075354">{count,plural, =1{Näppäimistön yläpuolella on saatavilla {count} osoitevaihtoehto.}other{Näppäimistön yläpuolella on saatavilla {count} osoitevaihtoehtoa.}}</translation>
 <translation id="1750238553597293878">Jatka Google-tilisi salasanojen käyttöä</translation>
 <translation id="17513872634828108">Avoimet välilehdet</translation>
@@ -528,6 +530,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3119874402040566234">Sinut kirjataan ulos ja selausdata poistetaan</translation>
 <translation id="3124568093781685165">Jaa salasanasi perheellesi</translation>
 <translation id="3130863904455712965">Historia ja muita</translation>
+<translation id="3132584647087998639">Tuo dataa</translation>
 <translation id="313283613037595347">Luo uusi incognito-välilehti.</translation>
 <translation id="3136739222562075778">Kortissa näkyvät avoimilla välilehdillä olevien tuotteiden hinnanalennukset</translation>
 <translation id="3138611310073113613">Hylkää valinta</translation>
@@ -1117,6 +1120,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="560322036295180549">Organisaatiosi on laittanut tämän pois päältä</translation>
 <translation id="5611398002774823980">Tallenna tilille</translation>
+<translation id="561269594905823128">Napauta <ph name="BEGIN_BOLD" />Valitse tiedosto<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Lajittele viimeisimmät ensimmäisiksi</translation>
 <translation id="5614553682702429503">Tallennetaanko salasana?</translation>
 <translation id="5619871095170816857">Tästä kortista näet viimeksi käyttämäsi avoimen välilehden kaikilla synkronoiduilla laitteillasi viimeisten 24 tunnin ajalta.</translation>
@@ -1568,6 +1572,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7367530036083223701">Salasanat-widgetillä pääset salasanoihisi turvallisesti aloitusnäytöltä.</translation>
 <translation id="7369285139974632858">Lisää kirjanmerkkeihin</translation>
 <translation id="7380220816562673297">Tällä hetkellä voit jakaa salasanoja vain perheenjäsenillesi. <ph name="BEGIN_LINK" />Luo perheryhmä<ph name="END_LINK" />, jossa on enintään kuusi jäsentä, niin voitte hyödyntää Googlen tuotteita ja tilauksia paremmin.</translation>
+<translation id="7380698179418029202">Valitse Safari-viennin <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" />-tiedosto</translation>
 <translation id="739101637685146669">Minkä URL-osoitteen haluat lisätä kirjanmerkkeihin?</translation>
 <translation id="7393747756726387725">Lähennä</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 sivusto}other{# sivustoa}}</translation>
@@ -1699,6 +1704,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7863211248337747225">Lataa sovellus</translation>
 <translation id="7865127013871431856">Käännösasetukset</translation>
 <translation id="7866872729285243843">Jos haluat käyttää lukulistaa kaikilla laitteillasi, laita Lukulista päälle asetuksista.</translation>
+<translation id="787364769771947486">Piilota lukutila</translation>
 <translation id="7874107544081154809">Täytä lomake automaattisesti: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Olet käyttänyt salasanoja uudelleen.</translation>
 <translation id="7887174313503389866">Osallistu tärkeimpien yksityisyys‑ ja turvallisuusasetusten esittelyyn. Lisää vaihtoehtoja yksittäisissä asetuksissa.</translation>
@@ -1706,6 +1712,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7887552845761062935">Avaa lisää vaihtoehtoja kaksoisnapauttamalla ja koskettamalla pitkään</translation>
 <translation id="7889910613639381518">Helppo ja suojattu pääsy Google Salasanat ‑widgetillä</translation>
 <translation id="7899199123054742721">Merkitse kaikki lukemattomiksi</translation>
+<translation id="7908957400505794782">Napauta <ph name="BEGIN_BOLD" />Valmis<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">Organisaatiosi ei salli sinun synkronoida kaikkea.</translation>
 <translation id="792357691529995513">Ongelmia ei havaittu</translation>
 <translation id="7925108652071887026">Tietojen automaattinen täyttö</translation>

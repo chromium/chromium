@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Kontakt afsenderen for at bede om et nyt link</translation>
 <translation id="1013952917065545813">Du kan vende tilbage hertil for at åbne dine senest lukkede faner igen</translation>
 <translation id="1016495303386450659">Elementet blev opdateret</translation>
+<translation id="1017735584092444011">Vis Læsetilstand</translation>
 <translation id="102916930470544692">Adgangsnøgle</translation>
 <translation id="1030376737535466765">Åbn Adgangskodeadministrator</translation>
 <translation id="1035980983510608210">Hvis du lukker alle faner, lukkes de fastgjorte faner også.</translation>
@@ -1237,12 +1238,14 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6074656473835429958">Få notifikationer</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) kunne ikke uploades</translation>
 <translation id="6077126322656614846">Der er givet adgang til kameraet</translation>
+<translation id="607730456154980869">Få svar hurtigere med Gemini i Chrome</translation>
 <translation id="6078236141387574983">Juster regnearkets højde</translation>
 <translation id="6084848228346514841">Vælg faner</translation>
 <translation id="6089212833343035912">Pinkode til Google Adgangskodeadministrator</translation>
 <translation id="6090760257419195752">Lukkede advarsler</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> blev fundet</translation>
 <translation id="6100617279104942061">Logget ind som <ph name="USER_EMAIL" />. Åbner indstillinger.</translation>
+<translation id="610083648014322104">Få relevante svar baseret på indholdet på den side, du er på</translation>
 <translation id="6103540626693881831">Kryptering på enheden</translation>
 <translation id="611361228753138223">Websites, du har besøgt for nylig på denne enhed</translation>
 <translation id="611705554202268369">Foretag et langt tryk for at føje til en fanegruppe</translation>
@@ -1495,6 +1498,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6979737339423435258">Al tid</translation>
 <translation id="6983306615164277634">Du kan også holde fingeren nede på adresselinjen for at ændre placeringen.</translation>
 <translation id="6987201788018524855">Se nyttige funktioner, du er gået glip af</translation>
+<translation id="6989636517316575338">Stil spørgsmål om en hvilken som helst side</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Overvåg priser på produkter, og få underretninger, når prisen falder på et website</translation>
 <translation id="7004032350256606903">Din organisation kræver, at du bruger privat browsing.
@@ -1696,6 +1700,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7863211248337747225">Hent appen</translation>
 <translation id="7865127013871431856">Valgmuligheder for oversættelse</translation>
 <translation id="7866872729285243843">Du kan få adgang til din læseliste på alle dine enheder ved at aktivere "læseliste" i indstillingerne.</translation>
+<translation id="787364769771947486">Skjul Læsetilstand</translation>
 <translation id="7874107544081154809">Udfyld automatisk formularen med <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Du har genbrugt adgangskoder.</translation>
 <translation id="7887174313503389866">Få en rundvisning i vigtige privatlivs- og sikkerhedsindstillinger. Gå til de individuelle indstillinger for at se flere valgmuligheder.</translation>
@@ -1752,6 +1757,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8058655154417507695">Udløbsår</translation>
 <translation id="8059533439631660104">Skjuler sektionen.</translation>
 <translation id="8061584726507121204">Historik</translation>
+<translation id="8069168488983557089">Få vigtig indsigt, der hjælper dig med at forstå et hvilket som helst emne</translation>
 <translation id="8069394452933076548">Vælg, hvornår faner, der ikke er blevet brugt for nylig, skal flyttes til sektionen for inaktive faner.</translation>
 <translation id="8073670137947914548">Downloaden er fuldført</translation>
 <translation id="8076492880354921740">Faner</translation>

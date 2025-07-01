@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">Башка түзмөктөрдөгү өтмөк топторун автоматтык түрдө ачуу</translation>
 <translation id="1075622780330595106">Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> жыл мурун түзүлдү}other{<ph name="NUM_YEARS_MANY" /> жыл мурун түзүлдү}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Жигерсиз өтмөктөр жана өтмөк топтору 1 айдын ичинде жабылат}other{Жигерсиз өтмөктөр жана өтмөк топтору <ph name="MONTH_COUNT_MANY" /> айдын ичинде жабылат}}</translation>
 <translation id="1173894706177603556">Атын өзгөртүү</translation>
 <translation id="1197088940767939838">Кызгылт сары</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> өтмөк менен <ph name="TITLE_OF_GROUP" /> ачыңыз}other{<ph name="TAB_COUNT2" /> өтмөк менен <ph name="TITLE_OF_GROUP" /> ачыңыз}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобунун параметрлери</translation>
+<translation id="1300188005269437765">Өтмөк жана өтмөк топтору жигерсиз бөлүмүнө качан автоматтык түрдө кошуларын тандаңыз.</translation>
 <translation id="1329584516321524826">Жаңы эле жаңырды</translation>
 <translation id="1340839264183302272">Топтон чыгуу</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> жалпы өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />, энбелгиси: <ph name="CARD_LABEL" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> жалпы өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />, энбелгиси: <ph name="CARD_LABEL" />.}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> өтмөк топтолду</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк}other{<ph name="TABS_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="1909810060368225529">Эскертүү: Бул бөлүшүлгөн өтмөктөр тобуна киргизилген өзгөрүүлөр баарына көрүнөт. Бөлүшүлгөн өтмөк топторуна баары өзгөртүү киргизе алышат</translation>
+<translation id="1982637982196732906">Жигерсиз бөлүмүнө жылдырыңыз</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> тандалган өтмөктү кыстаруу}other{<ph name="TABS_COUNT_MANY" /> тандалган өтмөктү кыстаруу}}</translation>
 <translation id="2055057176188061528">Өтмөктөр тобун тандап же жаңы өтмөктөр тобун түзүңүз</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome жигерсиз бөлүмүндөгү <ph name="AUTO_DELETE_DELAY_ONE" /> айдан бери колдонулбаган өтмөктөрдү автоматтык түрдө жабат. Муну азыр же каалаган убакта жөндөөлөрдөн өчүрө аласыз.}other{Chrome жигерсиз бөлүмүндөгү <ph name="AUTO_DELETE_DELAY_MANY" /> айдан бери колдонулбаган өтмөктөрдү автоматтык түрдө жабат. Муну азыр же каалаган убакта жөндөөлөрдөн өчүрө аласыз.}}</translation>
 <translation id="2118649612461486615">Дүкөн жөнүндө маалымат</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот. Жашыруун өтмөк жеткиликсиз болот.}other{Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот. # жашыруун өтмөк жеткиликсиз болот.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтында эми <ph name="CURRENT_PRICE" /></translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">Топтун аталышын өзгөртүү</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Кыстарылган өтмөк}other{Кыстарылган өтмөктөр}}</translation>
 <translation id="2359808026110333948">Улантуу</translation>
+<translation id="2371084566192454134">Өтмөктөр жана өтмөктөр тобу</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жыйыштыруу.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жыйыштыруу.}}</translation>
 <translation id="2498435670446402865">Өтмөктөр тобунун аталышын өзгөртүү</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" жана "<ph name="TAB_GROUP_NAME_2" />" өтмөктөр топтору мындан ары жеткиликсиз</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк жыйыштырылсын.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобу жыйыштырылсын.}}</translation>
 <translation id="2569352796411618312">Сунуш: Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
 <translation id="257674075312929031">Топ</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөгү бар <ph name="COLOR_NAME" /> түстүү өтмөктөр тобун калыбына келтирип, ачыңыз.}other{<ph name="TABS_COUNT_MANY" /> өтмөгү бар <ph name="COLOR_NAME" /> түстүү өтмөктөр тобун калыбына келтирип, ачыңыз.}}</translation>
 <translation id="2662028055331606429">Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Сайтка баш багуу</translation>
 <translation id="2671423594960767771">Топту бөлүшүү</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">рейтинг</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктү топко кошуу}other{<ph name="TABS_COUNT_MANY" /> өтмөктү топто кошуу}}</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 күндөн бери жигерсиз болсо}other{<ph name="DAY_COUNT_MANY" /> күндөн бери жигерсиз болсо}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> жаңы өтмөк}other{<ph name="MANY_ADDED" /> жаңы өтмөк}}</translation>
 <translation id="3613492231657284463">Жигерсиз өтмөктөр диалогун жашыруу</translation>
 <translation id="3619255692378312441">Кирүү мүмкүнчүлүгүн тескөө</translation>
@@ -94,6 +101,7 @@
 <translation id="4861953997778766866">Бөлүшүлгөн өтмөк топторуна баары өзгөртүү киргизе алышат</translation>
 <translation id="4870911314065352661">Бардык өтмөктөр жабылсынбы?</translation>
 <translation id="4871719318659334896">Топту жабуу</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөгү бар <ph name="COLOR_NAME" /> түстүү <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун калыбына келтирип, ачыңыз.}other{<ph name="TABS_COUNT_MANY" /> өтмөгү бар <ph name="COLOR_NAME" /> түстүү <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун калыбына келтирип, ачыңыз.}}</translation>
 <translation id="4881695831933465202">Ачуу</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Өтмөктү жабуу}other{Өтмөктөрдү жабуу}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> топтору сакталды (өтмөктөр жабылып, топтор өчүрүлөт)</translation>
@@ -114,6 +122,7 @@
 <translation id="5627941783489838464">Өтмөктөрдө жаңыртуу жок</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'дон <ph name="TABS_COUNT_ONE" /> шилтеме}other{Chrome'дон <ph name="TABS_COUNT_MANY" /> шилтеме}}</translation>
 <translation id="5746204836956568669">Тезирээк иштөө үчүн <ph name="NUMBER_OF_TABS" /> өтмөктү топтоштурасызбы?</translation>
+<translation id="5773295109010386583">Жигерсиз өтмөктөр автоматтык түрдө жабылсын</translation>
 <translation id="58326064309361797">Топтоо үчүн өтмөктөрдү сүйрөп келиңиз</translation>
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5972844218283131174">Баарын тандоодон чыгаруу</translation>
@@ -156,6 +165,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" өтмөктөр тобу мындан ары жеткиликсиз</translation>
 <translation id="7452985128687107478">Өтмөк топтору автоматтык түрдө сакталып, бардык түзмөктөрдө жаңыртылат</translation>
 <translation id="747459581954555080">Баарын калыбына келтирүү</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> нерсе}other{<ph name="TABS_COUNT_MANY" /> нерсе}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү калыбына келтирүү}other{Тандалган<ph name="TABS_COUNT_MANY" />өтмөктү калыбына келтирүү}}</translation>
 <translation id="753732157349120914">Өтмөк которуштургуч</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'да жазылган <ph name="REVIEWS_COUNT_ONE" /> сын-пикир}other{Google'да жазылган <ph name="REVIEWS_COUNT_MANY" /> сын-пикир}}</translation>

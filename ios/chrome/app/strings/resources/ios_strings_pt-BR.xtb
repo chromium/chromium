@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Entre em contato com o remetente para pedir um novo link</translation>
 <translation id="1013952917065545813">Você pode voltar aqui para abrir guias fechadas recentemente</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
+<translation id="1017735584092444011">Mostrar Modo de Leitura</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030376737535466765">Abra o Gerenciador de senhas</translation>
 <translation id="1035980983510608210">Ao fechar todas as guias, as fixadas também vão ser fechadas.</translation>
@@ -829,7 +830,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4430277756566635951">Seleção atual: <ph name="EMAIL" />. Escolha uma conta.</translation>
 <translation id="4430505936695785931">Acesse as senhas salvas em outros apps</translation>
 <translation id="4431224949908513835">Selecione uma forma de pagamento para preencher.</translation>
-<translation id="4442550905108052454">Abra as <ph name="BEGIN_BOLD" />Configurações<ph name="END_BOLD" />.</translation>
+<translation id="4442550905108052454">Abra as <ph name="BEGIN_BOLD" />Configurações<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Mais opções de <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Deslize a borda da tela para voltar ou avançar.</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
@@ -1193,7 +1194,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5888889603768021126">Login feito com</translation>
 <translation id="5889333064153755823">Excluir dados de navegação</translation>
 <translation id="5896576662943111387">Desenvolvido para iOS</translation>
-<translation id="5897749768294722429">Para voltar rapidamente aos sites visitados, sincronize as guias e o histórico.</translation>
+<translation id="5897749768294722429">Sincronize o histórico e as guias para acessar rapidamente os sites visitados.</translation>
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Para compartilhar com pessoas próximas, permita que elas leiam esse QR code com a câmera ou um app adequado</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nova guia}one{{count} nova guia}other{{count} novas guias}}</translation>
@@ -1662,7 +1663,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7712361583414030698">Mostrando a versão off-line</translation>
 <translation id="7719038820139380048">Faça login para acessar conteúdo com base nos seus interesses.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item salvo na sua Conta do Google {email}}one{Item salvo na sua Conta do Google {email}}other{Itens salvos na sua Conta do Google {email}}}</translation>
-<translation id="7729458878441927652">Para conferir as guias dos seus outros dispositivos, sincronize-as com o histórico.</translation>
+<translation id="7729458878441927652">Para ver as guias dos seus outros dispositivos, sincronize-as com o histórico.</translation>
 <translation id="7730020510075123961">Não, juntar dados</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Somente neste dispositivo.</translation>
 <translation id="7744192722284567281">Encontrada em uma violação de dados</translation>
@@ -1699,6 +1700,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7863211248337747225">Instalar o app</translation>
 <translation id="7865127013871431856">Opções do Tradutor</translation>
 <translation id="7866872729285243843">Para ter sua Lista de leitura em todos os seus dispositivos, ative esse recurso nas Configurações.</translation>
+<translation id="787364769771947486">Ocultar Modo de Leitura</translation>
 <translation id="7874107544081154809">Preencher formulário automaticamente com <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Você tem senhas reutilizadas.</translation>
 <translation id="7887174313503389866">Faça um tour guiado sobre os principais controles de privacidade e segurança. Para acessar mais opções, acesse as configurações individuais.</translation>

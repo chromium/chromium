@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome વિશે ટિપ</translation>
 <translation id="1816835383954230954">ચાલુ હોય, ત્યારે Chrome વધુ ઝડપથી કામ કરે છે અને JavaScriptનો ઉપયોગ કરતી સુવિધાઓ ડિઝાઇન પ્રમાણે કામ કરવી જોઈએ. બંધ હોય, ત્યારે આ પર્ફોર્મન્સ ઘટાડે છે પરંતુ V8ને અટૅક સામે વધુ પ્રતિરોધક બનાવે છે.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />ને ARનો વપરાશ કરવા દેવા માટે, <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માંથી પણ કૅમેરા ચાલુ કરો.</translation>
+<translation id="1881806992065048905">નવા ટૅબ પેજ દેખાવની બોટમ શીટ</translation>
 <translation id="1887786770086287077">આ ઉપકરણ માટે સ્થાન ઍક્સેસ બંધ છે. તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
 <translation id="1906181697255754968">તમારું કાર્ય ઑટોમૅટિક રીતે સાચવવા જેવી સુવિધાઓ માટે, સાઇટ તમારા ડિવાઇસ પર ફાઇલોને અને ફોલ્ડરોને ઍક્સેસ કરી શકે છે</translation>
 <translation id="1915307458270490472">સમાપ્ત કરો</translation>
@@ -326,6 +327,7 @@
 <translation id="4882919381756638075">વીડિયો ચૅટ કરવા જેવી સંદેશાવ્યવહારની સુવિધા માટે, સાઇટ સામાન્ય રીતે તમારા માઇક્રોફોનનો ઉપયોગ કરે છે</translation>
 <translation id="4883854917563148705">મેનેજ કરવામાં આવેલા સેટિંગને રીસેટ કરી શકાતા નથી</translation>
 <translation id="4887024562049524730">કોઈ સાઇટને તમારું વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરવાની મંજૂરી આપતા પહેલાં પૂછો (સુઝાવ આપેલો છે)</translation>
+<translation id="4934780484581617878">વિન્ડો મેનેજમેન્ટ</translation>
 <translation id="4936863036653376783">તમે તમારા બધા ડિવાઇસ પર ટૅબના ગ્રૂપના વિભાગમાં તમારા ગ્રૂપ શોધી શકશો</translation>
 <translation id="4945443401464700059"><ph name="SITE" />ને તમારી માહિતીનો ઉપયોગ આના પર કરવાથી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="4953688446973710931">ચાલુ હોય ત્યારે, સાઇટ એક કરતાં વધુ ફાઇલો ડાઉનલોડ કરવાનું પૂછી શકે છે. બંધ હોય ત્યારે, સાઇટ એક કરતાં વધુ ફાઇલો ડાઉનલોડ કરી શકતી નથી.</translation>
@@ -458,6 +460,7 @@
 <translation id="6398765197997659313">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
 <translation id="640163077447496506">આજે સમાપ્ત થાય છે</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">થીમના સંગ્રહો</translation>
 <translation id="6439114592976064011">સાઇટને તમારું વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરવાથી બ્લૉક કરો</translation>
 <translation id="6447842834002726250">કૂકીઝ</translation>
 <translation id="6452138246455930388">તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો, <ph name="OLD_PRICE" />માંથી <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -561,6 +564,7 @@
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="780301667611848630">ના, આભાર</translation>
 <translation id="7804248752222191302">કોઈ સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
+<translation id="7805832099057502789">નવા ટૅબ પેજ દેખાવની બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવી</translation>
 <translation id="7807060072011926525">Google દ્વારા પ્રદાન કરાયેલું</translation>
 <translation id="7815680994978050279">જોખમી ડાઉનલોડને અવરોધ્યું</translation>
 <translation id="7835852323729233924">મીડિયા ચલાવી રહ્યાં છીએ</translation>
@@ -580,9 +584,11 @@
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
 <translation id="8042586301629853791">આ પ્રમાણે સૉર્ટ કરો:</translation>
 <translation id="8051193500142930381">કૅમેરાની આવશ્યકતા હોય તેવી સુવિધાઓ કાર્ય નહીં કરે</translation>
+<translation id="8056330801132235235">Chrome ડિફૉલ્ટ</translation>
 <translation id="8067883171444229417">વીડિયો ચલાવો</translation>
 <translation id="8068648041423924542">પ્રમાણપત્ર પસંદ કરવામાં અસમર્થ.</translation>
 <translation id="8077120325605624147">તમે મુલાકાત લો છો તેવી કોઈપણ સાઇટ તમને કોઈપણ જાહેરાત બતાવી શકે છે</translation>
+<translation id="80798452873915119">સાઇટ તમારા બધા ડિસ્પ્લે પર વિન્ડો મેનેજ કરવા માટે કહી શકે છે</translation>
 <translation id="8087000398470557479">આ કન્ટેન્ટ <ph name="DOMAIN_NAME" /> માંથી, Google દ્વારા વિતરિત કરેલ છે.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />માં વધુ વિકલ્પો</translation>
 <translation id="8112925981674547014">તમારી ઍપની સૂચિમાં ટૅબ જુઓ</translation>

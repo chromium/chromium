@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Ֆայլն անվավեր է կամ վնասված</translation>
 <translation id="1040761927998636252">Անանուն էջանիշ <ph name="URL" /> կայքի համար</translation>
 <translation id="1041175011127912238">Էջը չի արձագանքում</translation>
+<translation id="1041181446722933623">«<ph name="LOCAL_BOOKMARK" />» էջանիշը պահվում է միայն այս սարքում։ Էջանիշը ձեր մյուս սարքերում օգտագործելու համար այն պահեք «<ph name="ACCOUNT_FOLDER" />» պանակում՝ ձեր հաշվում։</translation>
 <translation id="1041263367839475438">Հասանելի սարքեր</translation>
 <translation id="1041607257468256895">Կառավարել տեղորոշման թույլտվությունները կայքերի համար Chrome-ում</translation>
 <translation id="1042174272890264476">Ձեր համակարգչում նաև առկա է <ph name="SHORT_PRODUCT_NAME" />-ի ներկառուցված RLZ գրադարանը: RLZ-ը նշանակում է ոչ եզակի, անձը չնույնացնող ներդիր` որոնումների և <ph name="SHORT_PRODUCT_NAME" />-ի օգտագործման չափումների համար՝ նախագծված հատուկ գովազդային արշավի կողմից: Այս պիտակները երբեմն ցուցադրվում են Google որոնման հարցումների մեջ <ph name="PRODUCT_NAME" />-ում:</translation>
@@ -610,6 +611,7 @@
 <translation id="1418559532423038045">Հեռացնում է <ph name="VM_NAME" /> վիրտուալ մեքենան ձեր <ph name="DEVICE_TYPE" /> սարքից։ Վիրտուալ մեքենայի բոլոր հավելվածներն ու տվյալները կջնջվեն։</translation>
 <translation id="1418882096915998312">Chrome Enterprise լիցենզիայի գրանցումն ընթացքի մեջ է</translation>
 <translation id="1418954524306642206">Ընտրել տպիչի PPD ֆայլ</translation>
+<translation id="1419086691207546433">Ավելացրեք ընդլայնումներ՝ ամեն ինչ կազմակերպված պահելու, առաջադրանքների կատարումը հեշտացնելու, ինչպես նաև դիտարկիչում աշխատելն ավելի հարմար դարձնելու համար</translation>
 <translation id="1421334842435688311">Տեղադրության մասին տեղեկություններ բջջային ցանցում</translation>
 <translation id="1421514190500081936">Նշեք, թե որն է այս տվյալները ներբեռնելու պատճառը՝</translation>
 <translation id="1422159345171879700">Բեռնել վտանգավոր հրահանգաշարերը</translation>
@@ -1917,7 +1919,6 @@
 <translation id="2312219318583366810">Էջի URL</translation>
 <translation id="2314165183524574721">Տեսանելիության ընթացիկ կարգավորումը՝ «Թաքցված»</translation>
 <translation id="2314774579020744484">Լեզուն, որն օգտագործվում է էջերը թարգմանելու համար</translation>
-<translation id="2316090909467242775">Փորձեք վերականգնման այս գաղտնաբառը</translation>
 <translation id="2316129865977710310">Ոչ</translation>
 <translation id="2316433409811863464">Հավելվածի հեռարձակում</translation>
 <translation id="2316709634732130529">Օգտագործել առաջարկված գաղտնաբառը</translation>
@@ -3325,6 +3326,7 @@
 <translation id="3309330461362844500">Հավաստագրման պրոֆիլի ID-ն</translation>
 <translation id="3310379801837527592">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUM_OTHER_MEMBERS" /> օգտատեր</translation>
 <translation id="331080746368555063">Անձնական կայքերը պետք է ներառեն, օրինակ, ձեր ընկերության ինտրանետը</translation>
+<translation id="3311007761540106761">Կանխադրված</translation>
 <translation id="3311445899360743395">Այս հավելվածին առնչվող տվյալները կարող են հեռացվել այս սարքից:</translation>
 <translation id="3312470654018965389">Լինուքսի կոնտեյները կարգավորվում է</translation>
 <translation id="3312883087018430408">Որոշակի կայքում կամ Chrome-ի որևէ բաժնում որոնում կատարելու համար հասցեագոտում մուտքագրեք համապատասխան դյուրանցումը, ապա՝ ձեր նախընտրած ստեղնային դյուրանցումը։ Օրինակ՝ միայն էջանիշներում որոնելու համար մուտքագրեք @bookmarks, ապա սեղմեք Tab կամ բացատի ստեղնը։</translation>
@@ -4038,7 +4040,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ընդլայնում</translation>
 <translation id="3794792524918736965">Միացրեք Windows Hello-ն</translation>
 <translation id="379509625511193653">Անջատված է</translation>
-<translation id="3795624560191557077">Վերջերս դուք փոխել եք գաղտնաբառը, որը բացահայտվել էր տվյալների հրապարակային արտահոսքի արդյունքում։ Խնդիրների դեպքում Google գաղտնաբառերի կառավարիչը կօգնի ձեզ մուտք գործել հաշիվ։</translation>
 <translation id="3796215473395753611">alt + վերև սլաք</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, աջ սլաքի միջոցով լսեք ձայնը</translation>
 <translation id="3796648294839530037">Ընտրյալ ցանցեր՝</translation>
@@ -5860,7 +5861,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512՝ RSA գաղտնագրումով</translation>
 <translation id="5090637338841444533">Չի թույլատրվում հետագծել ձեր տեսախցիկի դիրքը</translation>
 <translation id="5091636240353511739">Ցուցադրել PIN կոդը</translation>
-<translation id="5093417502834168387">Չի՞ հաջողվում մուտք գործել հաշիվ։ Փորձեք մեկ այլ եղանակ</translation>
 <translation id="5093477827231450397">Արգելափակված կայքերը, որոնց արգելված է գովազդ առաջարկել այլ կայքերի</translation>
 <translation id="5093569275467863761">Հետադարձ քեշի ենթաշրջանակ ինկոգնիտո ռեժիմում՝ <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Դուք կարող եք բացել և փոփոխել աջակցվող ֆայլերն այս հավելվածի միջոցով Ֆայլեր հավելվածից կամ այլ հավելվածներից։ <ph name="BEGIN_LINK" />Այս էջում<ph name="END_LINK" /> կարող եք իմանալ, թե ինչպես ձեր սարքում կանխադրված հավելվածներ սահմանել և նշել, թե որ ֆայլերը պետք է ըստ կանխադրման բացվեն տվյալ հավելվածով։</translation>
@@ -7641,7 +7641,6 @@
 <translation id="6388577073199278153">Չհաջողվեց մուտք գործել հաշիվ բջջային սարքում</translation>
 <translation id="6390020764191254941">Բացել ներդիրը նոր պատուհանում</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Մուտքի բանալիներ չկան}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ու ևս 1 կայքի համար}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ու ևս {COUNT} կայքի համար}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ու ևս {COUNT} կայքի համար}}</translation>
-<translation id="6390533465682072118">Վերականգնում</translation>
 <translation id="6391131092053186625">Ձեր սարքի IMEI կոդն է՝ <ph name="IMEI_NUMBER" />։ Դրա միջոցով կարող եք ակտիվացնել ծառայությունը։</translation>
 <translation id="6393156038355142111">Ստեղծել հուսալի գաղտնաբառ…</translation>
 <translation id="6393550101331051049">Թույլատրվում է ցուցադրել վտանգավոր բովանդակություն</translation>
@@ -7874,6 +7873,7 @@
 <translation id="6560151649238390891">Առաջարկը զետեղվեց</translation>
 <translation id="656065428026159829">Տեսնել ավելին</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Այս (<ph name="TYPE" />) տեսակի ֆայլը կարող է վտանգավոր լինել։ Պահեք այն, միայն եթե վստահում եք <ph name="ORIGIN" /> կայքին</translation>
 <translation id="6562117348069327379">Պահել համակարգի մատյանները «Ներբեռնումներ» գրացուցակում։</translation>
 <translation id="656293578423618167">Ֆայլի ուղին կամ անունը չափազանց երկար է: Տվեք ավելի կարճ անուն կամ պահեք այլ տեղում:</translation>
 <translation id="6563002009564846727">Դիտել Windows-ից ներմուծված հավաստագրերը</translation>
@@ -9678,6 +9678,7 @@
 <translation id="7830833461614351956">Պատճենե՞լ <ph name="NUM_OF_FILES" /> ֆայլ <ph name="CLOUD_PROVIDER" />-ում՝ բացելու համար</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Պահված հատուկ բառերը կցուցադրվեն այստեղ</translation>
+<translation id="7834832693620032149">Աուդիո բովանդակությամբ կիսվելու համար հասանելի դարձրեք ներդիրը կամ պատուհանը</translation>
 <translation id="7836577093182643605">Արգելափակված թեմաները, որոնցով չեք ցանկանում կիսվել կայքերի հետ</translation>
 <translation id="7836745198769390202">Այս պահին ունեք <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> և ավելին։ Ձեր կազմակերպությունը կկարողանա տեսնել և կառավարել այս տվյալները</translation>
 <translation id="7836850009646241041">Փորձեք նորից հպել անվտանգության ձեր բանալուն</translation>
@@ -10547,6 +10548,7 @@
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8425492902634685834">Ամրացնել խնդրագոտուն</translation>
 <translation id="8425768983279799676">Դուք կարող եք օգտագործել ձեր PIN կոդը՝ ձեր սարքն ապակողպելու համար:</translation>
+<translation id="8426697201161711396">Մուտք գործեք Chrome՝ ձեր գաղտնաբառերն ու մյուս կարգավորումները բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="8427213022735114808">Թելադրելու գործառույթն ուղարկում է ձեր ձայնը Google-ին, ինչը թույլ է տալիս թելադրելով լրացնել տեքստային դաշտերը։</translation>
 <translation id="8427292751741042100">ներկառուցված է ցանկացած խնամորդում</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
@@ -11285,6 +11287,7 @@
 <translation id="8940081510938872932">Ձեր համակարգիչը ծանրաբեռնված է: Փորձեք ավելի ուշ:</translation>
 <translation id="8940888110818450052">Մուտքի տարբերակներ</translation>
 <translation id="8941173171815156065">Հետ կանչել «<ph name="PERMISSION" />» թույլտվությունը</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> հավելվածը ցուցադրում է պատուհան և հեռարձակում ձայնը։</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />ն անջատված է</translation>
 <translation id="894191600409472540">Ստեղծեք հուսալի գաղտնաբառեր</translation>
 <translation id="8942714513622077633">Չեղարկե՞լ Microsoft 365-ի կարգավորումը</translation>

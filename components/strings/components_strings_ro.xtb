@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">Salvează și completează automat</translation>
 <translation id="2312234273148520048">Condimente și sosuri</translation>
 <translation id="2316087952091171402">Mai puțin de <ph name="UPPER_ESTIMATE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea vizită.</translation>
+<translation id="2316090909467242775">Încearcă această parolă de recuperare</translation>
 <translation id="2316159751672436664">Personalizează instrumentele de accesibilitate în setările sistemului de operare Chrome</translation>
 <translation id="2316887270356262533">Eliberează mai puțin de 1 MB. Este posibil ca unele site-uri să se încarce mai lent la următoarea accesare.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> necesită un nume de utilizator și o parolă.</translation>
@@ -1673,6 +1674,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Filme cult și indie</translation>
 <translation id="3793574014653384240">Numărul și cauzele blocărilor apărute recent</translation>
+<translation id="3795624560191557077">Ai schimbat recent o parolă găsită într-o încălcare a securității datelor publice. În caz de probleme, Managerul de parole Google te poate ajuta să te conectezi.</translation>
 <translation id="3799805948399000906">Font solicitat</translation>
 <translation id="3801297763951514916">Accesezi des</translation>
 <translation id="380329542618494757">Nume</translation>
@@ -1954,6 +1956,7 @@
 <translation id="425582637250725228">Este posibil ca modificările să nu se salveze.</translation>
 <translation id="4258748452823770588">Semnătură greșită</translation>
 <translation id="4261046003697461417">Nu se pot face adnotări în documentele protejate</translation>
+<translation id="4265635050210404830">Cardurile tale de fidelitate</translation>
 <translation id="4265872034478892965">Permisă de administrator</translation>
 <translation id="4269029136757623689">Ventilatoare pentru casă</translation>
 <translation id="4269264543938335308">Costume de baie</translation>
@@ -2229,6 +2232,7 @@
 <translation id="4754461935447132332">Nu sunt permise pentru site-uri nesecurizate</translation>
 <translation id="4756388243121344051">&amp;Istoric</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Codul este nevalid</translation>
 <translation id="4757993714154412917">Ai introdus parola pe un site înșelător. Pentru a-ți proteja conturile, Chromium recomandă să verifici parolele salvate.</translation>
 <translation id="4758311279753947758">Adaugă informații de contact</translation>
 <translation id="4761326898079498987">Consultă pentru mai multe detalii</translation>
@@ -2294,6 +2298,7 @@
 <translation id="486459320933704969">Părintele sau tutorele trebuie să spună că poți accesa acest site</translation>
 <translation id="4864801646102013152">Renovarea casei</translation>
 <translation id="4866506163384898554">Apasă pe |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pentru a afișa cursorul</translation>
+<translation id="4868277513442568587">Pentru a folosi în continuare grupurile de file comune, actualizează Chrome</translation>
 <translation id="4873616204573862158">Ochelari de vedere și de soare</translation>
 <translation id="4873807733347502026">Blocarea și utilizarea mouse-ului</translation>
 <translation id="4876305945144899064">Niciun nume de utilizator</translation>
@@ -2430,6 +2435,7 @@
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5090647584136241764">Adaugă file cu produse similare pentru a compara ușor detaliile importante pentru tine</translation>
 <translation id="5093232627742069661">Îndoire în Z</translation>
+<translation id="5093417502834168387">Probleme la conectare? Încearcă altă metodă</translation>
 <translation id="5094747076828555589">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; Chromium nu consideră că certificatul său de securitate este de încredere. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="5097099694988056070">Statistici privind dispozitivul, cum ar fi utilizarea CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
@@ -3198,6 +3204,7 @@
 <translation id="6388060462449937608">Accesorii și echipament pentru fitness</translation>
 <translation id="6389470377220713856">Nume de pe card</translation>
 <translation id="6390200185239044127">Îndoire în Z la jumătate</translation>
+<translation id="6390533465682072118">Recuperare</translation>
 <translation id="639068771471208680">Multi-Part Form</translation>
 <translation id="6391700400718590966">Foaia „Datele de conectare pentru plăți securizate nu corespund datelor de conectare” este închisă</translation>
 <translation id="6392799395081100092">Hârtie (Vellum)</translation>
@@ -3748,6 +3755,7 @@ Detalii suplimentare:
 <translation id="7346048084945669753">Este afiliat:</translation>
 <translation id="7346062987309535530">Vase de servit masa</translation>
 <translation id="7346081071264046066">„răspunde entuziast cu da la această invitație la nuntă”</translation>
+<translation id="7347640536700429009">Numele de pe card nu este valid</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="7353601530677266744">Linie de comandă</translation>
 <translation id="7359588939039777303">Anunțurile au fost blocate.</translation>

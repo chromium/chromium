@@ -793,6 +793,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2310789833878085574">Gem og udfyld automatisk</translation>
 <translation id="2312234273148520048">Krydderier og dressinger</translation>
 <translation id="2316087952091171402">Mindre end <ph name="UPPER_ESTIMATE" />. Nogle websites indlæses muligvis langsommere, næste gang du besøger dem.</translation>
+<translation id="2316090909467242775">Prøv denne adgangskode til gendannelse</translation>
 <translation id="2316159751672436664">Tilpas dine hjælpefunktioner i ChromeOS-indstillingerne</translation>
 <translation id="2316887270356262533">Frigiver over 1 MB. Nogle websites indlæses muligvis langsommere under dit næste besøg.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> kræver et brugernavn og en adgangskode.</translation>
@@ -1673,6 +1674,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer)</translation>
 <translation id="3792826587784915501">Kult- og indiefilm</translation>
 <translation id="3793574014653384240">Antallene af og årsagerne til de nedbrud, der opstod for nylig</translation>
+<translation id="3795624560191557077">Du har for nylig ændret en adgangskode, der blev lækket i forbindelse med et offentligt brud på datasikkerheden. Hvis du har problemer, kan Google Adgangskodeadministrator hjælpe dig med at logge ind.</translation>
 <translation id="3799805948399000906">Der blev anmodet om skrifttype</translation>
 <translation id="3801297763951514916">Du besøger ofte dette indhold</translation>
 <translation id="380329542618494757">Navn</translation>
@@ -1954,6 +1956,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="425582637250725228">Ændringer, du har foretaget, gemmes muligvis ikke.</translation>
 <translation id="4258748452823770588">Forkert signatur</translation>
 <translation id="4261046003697461417">Beskyttede dokumenter kan ikke annoteres</translation>
+<translation id="4265635050210404830">Dine loyalitetskort</translation>
 <translation id="4265872034478892965">Tilladt af din administrator</translation>
 <translation id="4269029136757623689">Ventilatorer til privat brug</translation>
 <translation id="4269264543938335308">Badetøj</translation>
@@ -2229,6 +2232,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4754461935447132332">Ikke tilladt på websites, der ikke er sikre</translation>
 <translation id="4756388243121344051">&amp;Historik</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Koden er ugyldig</translation>
 <translation id="4757993714154412917">Du har lige angivet din adgangskode på et vildledende website. Chromium anbefaler, at du tjekker dine gemte adgangskoder for at sikre dine konti.</translation>
 <translation id="4758311279753947758">Tilføj kontaktoplysninger</translation>
 <translation id="4761326898079498987">Gennemgå for at få flere oplysninger</translation>
@@ -2294,6 +2298,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="486459320933704969">En forælder eller værge skal godkende, at du må besøge dette website</translation>
 <translation id="4864801646102013152">Boligforbedring</translation>
 <translation id="4866506163384898554">Tryk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for at se din markør</translation>
+<translation id="4868277513442568587">Opdater Chrome for at fortsætte med at bruge dine delte fanegrupper</translation>
 <translation id="4873616204573862158">Briller</translation>
 <translation id="4873807733347502026">Lås og brug din mus</translation>
 <translation id="4876305945144899064">Intet brugernavn</translation>
@@ -2430,6 +2435,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5090647584136241764">Tilføj faner med lignende produkter, så du nemt kan sammenligne de oplysninger, du skal bruge</translation>
 <translation id="5093232627742069661">Z-fals</translation>
+<translation id="5093417502834168387">Har du problemer med at logge ind? Prøv en anden metode</translation>
 <translation id="5094747076828555589">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da Chromium ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="5097099694988056070">Enhedsstatistik som f.eks. CPU/RAM-forbrug</translation>
 <translation id="5097468150760963273">27 x 39 tommer</translation>
@@ -3198,6 +3204,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6388060462449937608">Fitnessudstyr og tilbehør</translation>
 <translation id="6389470377220713856">Navn på kort</translation>
 <translation id="6390200185239044127">Z-fals halvt</translation>
+<translation id="6390533465682072118">Gendannelse</translation>
 <translation id="639068771471208680">Formular i flere dele</translation>
 <translation id="6391700400718590966">Regneark uden matchende loginoplysninger til sikker betaling er lukket</translation>
 <translation id="6392799395081100092">Papir (pergament)</translation>
@@ -3748,6 +3755,7 @@ Yderligere oplysninger:
 <translation id="7346048084945669753">Er tilknyttet:</translation>
 <translation id="7346062987309535530">Service</translation>
 <translation id="7346081071264046066">"Svar ja til denne bryllupsinvitation med begejstring"</translation>
+<translation id="7347640536700429009">Navnet på kortet er ugyldigt</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
 <translation id="7353601530677266744">Kommandolinje</translation>
 <translation id="7359588939039777303">Annoncer er blokeret.</translation>

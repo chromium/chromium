@@ -326,6 +326,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="4882919381756638075">Websites bruger normalt din mikrofon til kommunikationsformål såsom videochat</translation>
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
+<translation id="4934780484581617878">Vinduesstyring</translation>
 <translation id="4936863036653376783">Du finder dine grupper i sektionen for fanegrupper på alle dine enheder</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> er blokeret, så det ikke kan bruge dine oplysninger på</translation>
 <translation id="4953688446973710931">Når dette er slået til, kan websites anmode om tilladelse til automatisk at downloade flere filer. Når dette er slået fra, kan websites ikke downloade flere filer automatisk.</translation>
@@ -333,6 +334,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="4972737347717125191">Websites kan anmode om tilladelse til at bruge virtual reality-enheder og -data</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Få flere oplysninger om Discover-feedet</translation>
 <translation id="4994033804516042629">Der blev ikke fundet nogen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
@@ -582,6 +584,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8067883171444229417">Afspil video</translation>
 <translation id="8068648041423924542">Certifikatet kunne ikke vælges.</translation>
 <translation id="8077120325605624147">Ethvert website, du besøger, kan vise dig en hvilken som helst annonce</translation>
+<translation id="80798452873915119">Websites kan anmode om tilladelse til at administrere vinduer på alle dine skærme</translation>
 <translation id="8087000398470557479">Dette indhold er fra <ph name="DOMAIN_NAME" />, som leveres af Google.</translation>
 <translation id="8088603949666785339">Flere valgmuligheder i <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Se faner på din appliste</translation>

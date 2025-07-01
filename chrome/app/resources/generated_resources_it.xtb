@@ -1917,7 +1917,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2312219318583366810">URL della pagina</translation>
 <translation id="2314165183524574721">L'attuale impostazione di visibilità è Nascosto</translation>
 <translation id="2314774579020744484">Lingua usata per la traduzione delle pagine</translation>
-<translation id="2316090909467242775">Prova questa password di recupero</translation>
 <translation id="2316129865977710310">No, grazie</translation>
 <translation id="2316433409811863464">Streaming di app</translation>
 <translation id="2316709634732130529">Utilizza la password suggerita</translation>
@@ -4043,7 +4042,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> estensioni</translation>
 <translation id="3794792524918736965">Attiva Windows Hello</translation>
 <translation id="379509625511193653">Off</translation>
-<translation id="3795624560191557077">Di recente hai modificato una password compromessa nell'ambito di una violazione dei dati pubblici. In caso di problemi, Gestore delle password di Google può aiutarti ad accedere.</translation>
 <translation id="3796215473395753611">Alt + Freccia su</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, usa il tasto Freccia destra per ascoltare l'anteprima della voce</translation>
 <translation id="3796648294839530037">Reti preferite:</translation>
@@ -5864,7 +5862,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 con crittografia RSA</translation>
 <translation id="5090637338841444533">Non possono monitorare la posizione della videocamera</translation>
 <translation id="5091636240353511739">Mostra il PIN</translation>
-<translation id="5093417502834168387">Hai problemi di accesso? Prova un altro metodo</translation>
 <translation id="5093477827231450397">Elenco di siti che hai bloccato e che non vuoi che suggeriscano annunci ad altri siti</translation>
 <translation id="5093569275467863761">Frame secondario in incognito memorizzato nella cache back-forward: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Puoi aprire e modificare i file supportati con questa app dall'app File o con altre app. Per stabilire quali file aprire per impostazione predefinita in questa app, <ph name="BEGIN_LINK" />scopri come impostare app predefinite sul dispositivo<ph name="END_LINK" />.</translation>
@@ -7646,7 +7643,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6388577073199278153">Impossibile accedere al tuo account per dispositivi mobili</translation>
 <translation id="6390020764191254941">Sposta scheda in una nuova finestra</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Nessuna}=1{Per <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> e 1 altra}other{Per <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> e altre {COUNT}}}</translation>
-<translation id="6390533465682072118">Recupero</translation>
 <translation id="6391131092053186625">Il codice IMEI del tuo dispositivo è <ph name="IMEI_NUMBER" />. Questo numero può essere utilizzato per attivare il servizio.</translation>
 <translation id="6393156038355142111">Suggerisci password efficace</translation>
 <translation id="6393550101331051049">Possono mostrare contenuti non sicuri</translation>

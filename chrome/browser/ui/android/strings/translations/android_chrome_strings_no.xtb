@@ -152,6 +152,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1671236975893690980">Nedlasting venter</translation>
 <translation id="1672586136351118594">Ikke vis igjen</translation>
 <translation id="1680919990519905526">Handle bildet med Google Lens <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020og stengt etter <ph name="MONTHS_ARCHIVED" /> måneder</translation>
 <translation id="1687482373098770139">Snart ser du innhold fra og om <ph name="SITE_NAME" /> i Følger. Nettstedene og søkene du følger, lagres i Google-kontoen din. Du kan når som helst administrere det du følger, i innstillingene.</translation>
 <translation id="1689333818294560261">Kallenavn</translation>
 <translation id="1696555181932908973">Du kan prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
@@ -352,6 +353,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="260403163289591229">Følger</translation>
 <translation id="2604446170045642109">Du kan slå av mørkt tema for nettsteder i innstillingene.</translation>
+<translation id="2605017215201958293">Lytt til denne siden med AI</translation>
 <translation id="2607441479295509868">Logget av. Logg på igjen for å bruke blant annet bokmerkene og passordene i kontoen din.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> har invitert deg til å få tilgang til et delt element.</translation>
 <translation id="2625189173221582860">Passordet er kopiert</translation>
@@ -876,6 +878,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="496607651705915226">For å lagre og bruke nye passord i Google-kontoen din, oppdater Google Play-tjenester</translation>
 <translation id="4971753085054504448">Prøv å søke etter noe annet eller åpne hele Chrome-loggen for å se flere resultater.</translation>
 <translation id="497421865427891073">Gå til neste</translation>
+<translation id="497983151715419057">Gjennomgå de inaktive fanene og gruppene dine her</translation>
 <translation id="498624032394115435">Alle som har linken, kan redigere alle faner.</translation>
 <translation id="4987271110129728827">Finner ikke den siden. Kontroller stavemåten, eller prøv et søk på nettet.</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -936,7 +939,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="5226378907213531272">Du låser opp skjermen hver gang du bruker bilen</translation>
 <translation id="5227554086496586518">Trykk for å se søkeresultater</translation>
-<translation id="5229736206150093143">Siste resultater</translation>
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5235196193381275927">Noe gikk galt under pålogging</translation>
 <translation id="5246093389635966745">Rediger snarvei på verktøyraden</translation>
@@ -1064,6 +1066,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5833984609253377421">Del en link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842871376175639063">Faner og fanegrupper du ikke har brukt på <ph name="DAYS_INACTIVE" /> dager, flyttes hit<ph name="AUTODELETE_SECTION" />. Du kan når som helst endre dette i <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Vil du åpne PDF-filen med <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Vil du slutte å dele?</translation>
 <translation id="5853623416121554550">på pause</translation>
@@ -1382,6 +1385,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7088681679121566888">Chrome er oppdatert</translation>
 <translation id="7106762743910369165">Nettleseren administreres av organisasjonen din</translation>
 <translation id="7111394291981742152">Med Chrome får du mer kontroll over annonsene du ser, og du begrenser hvilke ting nettsteder kan finne ut om deg når de viser deg personlig tilpassede annonser.</translation>
+<translation id="7115358764509798967">Systemstandard</translation>
 <translation id="7117485132243600300">Administrer innholdet du følger og foreslåtte emner og søk</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Tillatelsene er gjennomgått for 1 nettsted}other{Tillatelsene er gjennomgått for # nettsteder}}</translation>
 <translation id="7138678301420049075">Annet</translation>
@@ -1431,6 +1435,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7304873321153398381">Uten nett. Chrome kan ikke sjekke passordene dine.</translation>
 <translation id="7313188324932846546">Trykk for å konfigurere synkronisering</translation>
 <translation id="7314734791127433392">Kan ikke sjekke passordene</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Faner og fanegrupper som ikke er brukt på 1 dag eller mer}other{Faner og fanegrupper som ikke er brukt på # dager eller mer}}</translation>
 <translation id="7324354302972299151">Send en «Do Not Track»-forespørsel</translation>
 <translation id="7333041109965360609">Du har meldt deg av varsler</translation>
 <translation id="7336259382292148213">Varsler ser bra ut</translation>
@@ -1642,6 +1647,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8137562778192957619">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring.</translation>
 <translation id="8152331954420209374">Gå til Lens</translation>
 <translation id="8163820386638255770">For å bruke og lagre passord i Google-kontoen din, bekreft at det er deg</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) inaktivt element}other{(#) inaktive elementer}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer gjenstår</translation>
 <translation id="8190358571722158785">1 dag igjen</translation>
 <translation id="8192765420340770300">Påloggingsfeltet nederst er åpnet i full høyde</translation>

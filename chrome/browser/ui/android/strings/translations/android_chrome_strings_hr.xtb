@@ -152,6 +152,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1671236975893690980">Preuzimanje na čekanju…</translation>
 <translation id="1672586136351118594">Ne prikazuj ponovo</translation>
 <translation id="1680919990519905526">Kupi pomoću Objektiva <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020i zatvorene nakon ovoliko mjeseci: <ph name="MONTHS_ARCHIVED" /></translation>
 <translation id="1687482373098770139">Uskoro će se na kartici Praćeno prikazivati sadržaj s web-lokacije <ph name="SITE_NAME" /> i informacije o toj web-lokaciji. Web-lokacije i pretraživanja koja pratite spremaju se na vaš Google račun. Praćenim stavkama možete upravljati u postavkama kad god želite.</translation>
 <translation id="1689333818294560261">Nadimak</translation>
 <translation id="1696555181932908973">Možete isprobati druge načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -352,6 +353,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2593272815202181319">Ravnomjerno raspoređeno</translation>
 <translation id="260403163289591229">Praćeno</translation>
 <translation id="2604446170045642109">Tamnu temu za web-lokacije možete isključiti u postavkama.</translation>
+<translation id="2605017215201958293">Poslušajte ovu stranicu pomoću AI-ja</translation>
 <translation id="2607441479295509868">Odjavljeno. Ponovno se prijavite kako biste vidjeli oznake, zaporke i ostalo na svom računu.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> vas poziva da pristupite dijeljenoj stavci.</translation>
 <translation id="2625189173221582860">Zaporka je kopirana</translation>
@@ -876,6 +878,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="496607651705915226">Da biste spremali i upotrebljavali nove zaporke na Google računu, ažurirajte usluge za Google Play.</translation>
 <translation id="4971753085054504448">Pokušajte potražiti nešto drugo ili otvorite cijelu povijest u Chromeu da biste vidjeli više rezultata.</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
+<translation id="497983151715419057">Ovdje pregledajte svoje neaktivne kartice i grupe</translation>
 <translation id="498624032394115435">Svatko s vezom može uređivati sve kartice.</translation>
 <translation id="4987271110129728827">Nije moguće pronaći stranicu. Provjerite jeste li točno napisali ili pretražite web.</translation>
 <translation id="4988526792673242964">Stranice</translation>
@@ -936,7 +939,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5226378907213531272">Otključat ćete zaslon pri svakoj upotrebi automobila</translation>
 <translation id="5227554086496586518">Dodirnite da biste vidjeli rezultate pretraživanja</translation>
-<translation id="5229736206150093143">Najnoviji rezultati</translation>
 <translation id="5233638681132016545">Nova kartica</translation>
 <translation id="5235196193381275927">Došlo je do pogreške tijekom prijave</translation>
 <translation id="5246093389635966745">Uređivanje prečaca alatne trake</translation>
@@ -1064,6 +1066,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5833984609253377421">Dijeli vezu</translation>
 <translation id="5839058148541733625">Dinosaur na Chromeu</translation>
+<translation id="5842871376175639063">Kartice i grupe kartica koje niste upotrebljavali <ph name="DAYS_INACTIVE" /> dan/dana premještaju se ovdje:<ph name="AUTODELETE_SECTION" />. To uvijek možete promijeniti u odjeljku <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Želite li PDF otvoriti u aplikaciji <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Želite li zaustaviti dijeljenje?</translation>
 <translation id="5853623416121554550">pauzirano</translation>
@@ -1382,6 +1385,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7088681679121566888">Chrome je ažuriran</translation>
 <translation id="7106762743910369165">Vašim preglednikom upravlja vaša organizacija</translation>
 <translation id="7111394291981742152">Chrome vam pruža veću kontrolu nad oglasima koji vam se prikazuju i ograničava ono što web-lokacije mogu saznati o vama kad vam prikazuju personalizirane oglase.</translation>
+<translation id="7115358764509798967">Zadane postavke sustava</translation>
 <translation id="7117485132243600300">Upravljajte sadržajem koji pratite i predloženim temama i pretraživanjima</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Pregledana su dopuštenja za jednu web-lokaciju}one{Pregledana su dopuštenja za # web-lokaciju}few{Pregledana su dopuštenja za # web-lokacije}other{Pregledana su dopuštenja za # web-lokacija}}</translation>
 <translation id="7138678301420049075">Ostalo</translation>
@@ -1431,6 +1435,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7304873321153398381">Offline. Chrome ne može provjeriti vaše zaporke.</translation>
 <translation id="7313188324932846546">Dodirnite da biste postavili sinkronizaciju</translation>
 <translation id="7314734791127433392">Provjera zaporki nije uspjela</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Kartice i grupe kartica koje se ne upotrebljavaju jedan dan ili dulje}one{Kartice i grupe kartica koje se ne upotrebljavaju # dan ili dulje}few{Kartice i grupe kartica koje se ne upotrebljavaju # dana ili dulje}other{Kartice i grupe kartica koje se ne upotrebljavaju # dana ili dulje}}</translation>
 <translation id="7324354302972299151">Slanje zahtjeva "Do Not Track"</translation>
 <translation id="7333041109965360609">Otkazana je pretplata na obavijesti</translation>
 <translation id="7336259382292148213">Obavijesti izgledaju dobro</translation>
@@ -1642,6 +1647,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8137562778192957619">Nećete morati pamtiti tu zaporku. Spremit će se u Google upravitelj zaporki.</translation>
 <translation id="8152331954420209374">Otvori Objektiv</translation>
 <translation id="8163820386638255770">Da biste upotrebljavali i spremali zaporke spremljene na vašem Google računu, potvrdite svoj identitet</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) neaktivna stavka}one{(#) neaktivna stavka}few{(#) neaktivne stavke}other{(#) neaktivnih stavki}}</translation>
 <translation id="8186512483418048923">Preostalo datoteka: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Još 1 dan</translation>
 <translation id="8192765420340770300">Donja tablica za prijavu otvorena u punoj visini</translation>

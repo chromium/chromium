@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Sazinieties ar nosūtītāju un lūdziet jaunu saiti.</translation>
 <translation id="1013952917065545813">Varat atgriezties šeit, lai atkārtoti atvērtu nesen aizvērtās cilnes.</translation>
 <translation id="1016495303386450659">Vienums atjaunināts</translation>
+<translation id="1017735584092444011">Rādīt lasīšanas režīmu</translation>
 <translation id="102916930470544692">Piekļuves atslēga</translation>
 <translation id="1030376737535466765">Atvērt Paroļu pārvaldnieku</translation>
 <translation id="1035980983510608210">Aizverot visas cilnes, tiks aizvērtas arī piespraustās cilnes.</translation>
@@ -1237,12 +1238,14 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6074656473835429958">Paziņojumu saņemšana</translation>
 <translation id="607620096698446287">Nevarēja augšupielādēt failu “<ph name="FILENAME" />” (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Piekļuve kamerai ir atļauta</translation>
+<translation id="607730456154980869">Iegūstiet atbildes ātrāk, izmantojot Gemini pārlūkā Chrome</translation>
 <translation id="6078236141387574983">Atkārtoti pielāgot lapas augstumu</translation>
 <translation id="6084848228346514841">Atlasīt cilnes</translation>
 <translation id="6089212833343035912">Google paroļu pārvaldnieka PIN</translation>
 <translation id="6090760257419195752">Noraidītie brīdinājumi</translation>
 <translation id="6096965253650248286">Atrasta(-as) <ph name="COUNT" /> cilne(-es)</translation>
 <translation id="6100617279104942061">Pierakstījies kā <ph name="USER_EMAIL" />. Tiek atvērti iestatījumi.</translation>
+<translation id="610083648014322104">Varat saņemt atvērtās lapas saturam atbilstošas atbildes</translation>
 <translation id="6103540626693881831">Šifrēšana ierīcē</translation>
 <translation id="611361228753138223">Vietnes, kuras nesen apmeklējāt šajā ierīcē</translation>
 <translation id="611705554202268369">Nospiediet un turiet, lai pievienotu cilni grupai</translation>
@@ -1495,6 +1498,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6979737339423435258">Visā periodā</translation>
 <translation id="6983306615164277634">Varat arī pieskarties adreses joslai un turēt to, lai mainītu tās pozīciju.</translation>
 <translation id="6987201788018524855">Izpētiet noderīgas funkcijas, kuras neesat pamanījis</translation>
+<translation id="6989636517316575338">Uzdodiet jautājumus par jebkuru lapu</translation>
 <translation id="6990519590575500580">Sāciet FaceTime zvanu</translation>
 <translation id="6998251471716094661">Izsekojiet produktu cenām un saņemiet brīdinājumus, kad jebkurā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="7004032350256606903">Saskaņā ar jūsu organizācijas politiku tīmeklis ir jāpārlūko privāti.
@@ -1696,6 +1700,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7863211248337747225">Iegūt lietotni</translation>
 <translation id="7865127013871431856">Tulkotāja opcijas</translation>
 <translation id="7866872729285243843">Lai lasīšanas saraksts būtu pieejams visās jūsu ierīcēs, iestatījumos ieslēdziet slēdzi “Lasīšanas saraksts”.</translation>
+<translation id="787364769771947486">Paslēpt lasīšanas režīmu</translation>
 <translation id="7874107544081154809">Automātiski aizpildīt veidlapu, izmantojot šādus datus: “<ph name="CELL_ACCESSIBILITY_LABEL" />”</translation>
 <translation id="7883882164760409935">Jums ir atkārtoti izmantotas paroles.</translation>
 <translation id="7887174313503389866">Izmantojiet svarīgāko konfidencialitātes un drošības vadīklu ceļvedi. Papildu opcijas skatiet atsevišķos iestatījumos.</translation>
@@ -1752,6 +1757,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8058655154417507695">Derīguma termiņa gads</translation>
 <translation id="8059533439631660104">Sakļauj sadaļu.</translation>
 <translation id="8061584726507121204">Vēsture</translation>
+<translation id="8069168488983557089">Varat iegūt galvenos secinājumus un ieskatus, kas palīdzēs jums izprast jebkuru tēmu</translation>
 <translation id="8069394452933076548">Izvēlieties, kad uz neaktīvo ciļņu sadaļu tiek pārvietotas cilnes, kas pēdējā laikā nav izmantotas.</translation>
 <translation id="8073670137947914548">Lejupielāde ir pabeigta</translation>
 <translation id="8076492880354921740">Cilnes</translation>

@@ -1914,7 +1914,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2312219318583366810">Seiten-URL</translation>
 <translation id="2314165183524574721">Die aktuelle Sichtbarkeitseinstellung ist "Verborgen"</translation>
 <translation id="2314774579020744484">Sprache, in die Seiten übersetzt werden sollen</translation>
-<translation id="2316090909467242775">Dieses Wiederherstellungspasswort ausprobieren</translation>
 <translation id="2316129865977710310">Nein, danke</translation>
 <translation id="2316433409811863464">App-Streaming</translation>
 <translation id="2316709634732130529">Vorgeschlagenes Passwort verwenden</translation>
@@ -4038,7 +4037,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> Erweiterungen</translation>
 <translation id="3794792524918736965">Windows Hello aktivieren</translation>
 <translation id="379509625511193653">Aus</translation>
-<translation id="3795624560191557077">Du hast vor Kurzem ein Passwort geändert, das in einer öffentlichen Datenpanne gefunden wurde. Bei Problemen kann der Google Passwortmanager dir bei der Anmeldung helfen.</translation>
 <translation id="3796215473395753611">Alt + Aufwärtspfeil</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, drücke die rechte Pfeiltaste, um dir die Stimme anzuhören</translation>
 <translation id="3796648294839530037">Bevorzugte Netzwerke:</translation>
@@ -5859,7 +5857,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5088534251099454936">PKCS #1 SHA-512 mit RSA-Verschlüsselung</translation>
 <translation id="5090637338841444533">Dürfen meine Kameraposition nicht erfassen</translation>
 <translation id="5091636240353511739">PIN anzeigen</translation>
-<translation id="5093417502834168387">Probleme bei der Anmeldung? Wähle eine andere Option.</translation>
 <translation id="5093477827231450397">Liste der Websites, die du blockiert hast und die anderen Websites keine Werbung vorschlagen dürfen</translation>
 <translation id="5093569275467863761">Inkognito-Subframe im Back-Forward-Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Du kannst unterstützte Dateien mit dieser App aus „Dateien“ oder anderen Apps öffnen und bearbeiten. Wenn du festlegen möchtest, welche Dateien standardmäßig in dieser App geöffnet werden sollen, <ph name="BEGIN_LINK" />lies diesen Artikel<ph name="END_LINK" />. Darin erfährst du, wie du Standard-Apps auf deinem Gerät einrichtest.</translation>
@@ -7640,7 +7637,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6388577073199278153">Zugriff auf mobiles Konto nicht möglich</translation>
 <translation id="6390020764191254941">Tab in ein neues Fenster verschieben</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Keine}=1{Für <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> und 1 weitere Domain}other{Für <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> und {COUNT} weitere Domains}}</translation>
-<translation id="6390533465682072118">Wiederherstellung</translation>
 <translation id="6391131092053186625">Die Geräte-IMEI lautet <ph name="IMEI_NUMBER" />. Diese Nummer kann zur Aktivierung des Diensts verwendet werden.</translation>
 <translation id="6393156038355142111">Starkes Passwort vorschlagen</translation>
 <translation id="6393550101331051049">Unsichere Inhalte dürfen angezeigt werden</translation>
@@ -8967,7 +8963,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7348920948593871738">Kamera wurde in den Mac-Systemeinstellungen deaktiviert</translation>
 <translation id="7349010927677336670">Flüssige Wiedergabe</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} Passwort ist nur auf diesem Gerät gespeichert}other{{COUNT} Passwörter sind nur auf diesem Gerät gespeichert}}</translation>
-<translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
+<translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
 <translation id="7353261921908507769">Deine Kontakte können Daten mit dir teilen, wenn sie in der Nähe sind. Die Übertragung beginnt erst, nachdem du die Einladung angenommen hast.</translation>
 <translation id="7353432112255316844">Identität bestätigen</translation>
 <translation id="735361434055555355">Linux wird installiert…</translation>

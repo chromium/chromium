@@ -326,6 +326,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="4882919381756638075">Weby obvykle používají mikrofon ke komunikačním funkcím, jako je videohovor</translation>
 <translation id="4883854917563148705">Spravovaná nastavení nelze resetovat</translation>
 <translation id="4887024562049524730">Předtím, než webům bude povoleno použít zařízení a data pro virtuální realitu, se zeptat (doporučeno)</translation>
+<translation id="4934780484581617878">Správa oken</translation>
 <translation id="4936863036653376783">Skupiny najdete v sekci skupin karet an všech svých zařízeních</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> má zablokováno používání vašich údajů na</translation>
 <translation id="4953688446973710931">Když je tato možnost zapnutá, weby mohou žádat o automatické stažení více souborů. Když je vypnutá, weby nemohou stahovat automaticky více souborů.</translation>
@@ -333,6 +334,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="4972737347717125191">Weby mohou požádat o použití zařízení a dat pro virtuální realitu</translation>
 <translation id="497421865427891073">Vpřed</translation>
 <translation id="4976702386844183910">Naposledy navštíveno <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Další informace o feedu Objevit</translation>
 <translation id="4994033804516042629">Nebyly nalezeny žádné kontakty</translation>
 <translation id="4996978546172906250">Sdílet prostřednictvím</translation>
 <translation id="5001526427543320409">Soubory cookie třetích stran</translation>
@@ -582,6 +584,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="8067883171444229417">Přehrát video</translation>
 <translation id="8068648041423924542">Certifikát nelze vybrat.</translation>
 <translation id="8077120325605624147">Kterýkoliv web, který navštívíte, vám může zobrazit jakoukoliv reklamu</translation>
+<translation id="80798452873915119">Weby mohou žádat o správu oken na všech obrazovkách</translation>
 <translation id="8087000398470557479">Tento obsah pochází z domény <ph name="DOMAIN_NAME" />. Poskytováno společností Google.</translation>
 <translation id="8088603949666785339">Další možnosti v <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Zobrazení karet v seznamu aplikací</translation>

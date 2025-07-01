@@ -187,6 +187,7 @@
 <translation id="1740650426894359238">दुसऱ्या प्रोफाइलवर स्विच करा</translation>
 <translation id="1741219894094057085">स्‍मार्ट वॉच</translation>
 <translation id="1743244221910283364">बदल काढून टाका</translation>
+<translation id="1748975028205587434">तुमची फाइल निवडा</translation>
 <translation id="174998178145075354">{count,plural, =1{तुमच्या कीबोर्डच्या वरती पत्त्याचा {count} पर्याय उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती पत्त्याचे {count} पर्याय उपलब्ध आहेत.}}</translation>
 <translation id="1750238553597293878">तुमच्या Google खाते मधील पासवर्ड वापरणे सुरू ठेवा</translation>
 <translation id="17513872634828108">उघडे टॅब</translation>
@@ -529,6 +530,7 @@
 <translation id="3119874402040566234">तुम्हाला साइन आउट केले जाईल आणि ब्राउझिंग डेटा हटवला जाईल</translation>
 <translation id="3124568093781685165">तुमच्या कुटुंबासोबत तुमचे पासवर्ड शेअर करा</translation>
 <translation id="3130863904455712965">इतिहास आणि आणखी बरेच काही</translation>
+<translation id="3132584647087998639">तुमचा डेटा इंपोर्ट करा</translation>
 <translation id="313283613037595347">नवीन गुप्त टॅब तयार करा.</translation>
 <translation id="3136739222562075778">तुमच्या उघड्या टॅबमधील उत्पादनांच्या किमतीतील घट या कार्डवर दाखवली आहे</translation>
 <translation id="3138611310073113613">निवड काढून टाका</translation>
@@ -1118,6 +1120,7 @@
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="560322036295180549">तुमच्या संस्थेने बंद केले</translation>
 <translation id="5611398002774823980">खात्यामध्ये सेव्ह करा</translation>
+<translation id="561269594905823128"><ph name="BEGIN_BOLD" />तुमची फाइल निवडा<ph name="END_BOLD" /> वर टॅप करा</translation>
 <translation id="5613297089029360427">नवीनतम यानुसार क्रमाने लावा</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
 <translation id="5619871095170816857">हे कार्ड तुम्ही मागील २४ तासांमध्ये तुमच्या सर्व सिंक केलेल्या डिव्हाइसवर शेवटचा उघडलेला टॅब दाखवते.</translation>
@@ -1570,6 +1573,7 @@
 <translation id="7367530036083223701">Password Manager विजेट वापरून होम स्क्रीनवरून तुमचे पासवर्ड सुरक्षितपणे ॲक्सेस करा.</translation>
 <translation id="7369285139974632858">बुकमार्कमध्ये जोडा</translation>
 <translation id="7380220816562673297">सध्या, तुम्ही फक्त कुटुंब सदस्यांसह पासवर्ड शेअर करू शकता. कमाल ६ सदस्यांसोबत <ph name="BEGIN_LINK" />कुटुंब गट तयार करणे<ph name="END_LINK" /> हे करा आणि संपूर्ण Google वर तुमच्या उत्पादनांचा व सदस्यत्वांचा पुरेपूर वापर करा.</translation>
+<translation id="7380698179418029202">तुमच्या Safari एक्सपोर्टची <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> फाइल निवडा</translation>
 <translation id="739101637685146669">तुम्हाला कोणती URL बुकमार्क करायची आहे?</translation>
 <translation id="7393747756726387725">झूम इन करा</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{१ साइट}other{# साइट}}</translation>
@@ -1709,6 +1713,7 @@
 <translation id="7887552845761062935">आणखी पर्यायांसाठी दोनदा टॅप करून धरून ठेवा</translation>
 <translation id="7889910613639381518">Google Password Manager विजेटसह सुरक्षित आणि सहज अ‍ॅक्सेस.</translation>
 <translation id="7899199123054742721">वाचलेल्या अशी खूण करा</translation>
+<translation id="7908957400505794782"><ph name="BEGIN_BOLD" />पूर्ण झाले<ph name="END_BOLD" /> वर टॅप करा</translation>
 <translation id="7911190106180361398">तुमची संस्था तुम्हाला सर्व गोष्टी सिंक करण्याची परवानगी देत नाही.</translation>
 <translation id="792357691529995513">कोणत्याही समस्या आढळल्या नाहीत</translation>
 <translation id="7925108652071887026">स्वयं-भरण डेटा</translation>

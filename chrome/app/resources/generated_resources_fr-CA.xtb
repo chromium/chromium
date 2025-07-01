@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Fichier non valide ou corrompu</translation>
 <translation id="1040761927998636252">Favori sans nom pour <ph name="URL" /></translation>
 <translation id="1041175011127912238">Cette page ne répond pas</translation>
+<translation id="1041181446722933623">« <ph name="LOCAL_BOOKMARK" /> » est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte « <ph name="ACCOUNT_FOLDER" /> ».</translation>
 <translation id="1041263367839475438">Appareils accessibles</translation>
 <translation id="1041607257468256895">Gérer les autorisations de localisation du site Web dans Chrome</translation>
 <translation id="1042174272890264476">Votre ordinateur est fourni avec la bibliothèque RLZ de <ph name="SHORT_PRODUCT_NAME" />. RLZ attribue une étiquette non unique et qui ne permet pas d'identifier des internautes afin de mesurer les recherches et l'utilisation de <ph name="SHORT_PRODUCT_NAME" /> générées par une campagne de promotion particulière. Ces étiquettes s'affichent parfois dans les requêtes de recherche Google dans <ph name="PRODUCT_NAME" />.</translation>
@@ -609,6 +610,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1418559532423038045">Retire <ph name="VM_NAME" /> de votre <ph name="DEVICE_TYPE" />. Toutes les applications et les données de la machine virtuelle seront ainsi supprimées!</translation>
 <translation id="1418882096915998312">Inscription à Enterprise en cours…</translation>
 <translation id="1418954524306642206">Naviguez pour sélectionner le fichier PPD de votre imprimante</translation>
+<translation id="1419086691207546433">Ajoutez des extensions pour rester organisé, simplifier des tâches et améliorer votre navigation</translation>
 <translation id="1421334842435688311">Renseignements sur la localisation cellulaire</translation>
 <translation id="1421514190500081936">Veuillez entrer la raison pour laquelle vous téléchargez ces données :</translation>
 <translation id="1422159345171879700">Charger des scripts non sécurisés</translation>
@@ -1916,7 +1918,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2312219318583366810">URL de la page</translation>
 <translation id="2314165183524574721">Le paramètre de visibilité actuelle est réglé à caché</translation>
 <translation id="2314774579020744484">Langue utilisée pour la traduction des pages</translation>
-<translation id="2316090909467242775">Essayez ce mot de passe de récupération</translation>
 <translation id="2316129865977710310">Non merci</translation>
 <translation id="2316433409811863464">Diffusion d'application</translation>
 <translation id="2316709634732130529">Utiliser le mot de passe suggéré</translation>
@@ -3330,6 +3331,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3309330461362844500">Identifiant de profil du certificat</translation>
 <translation id="3310379801837527592">Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUM_OTHER_MEMBERS" /> autre</translation>
 <translation id="331080746368555063">Les sites privés peuvent inclure des éléments comme l'intranet de votre entreprise</translation>
+<translation id="3311007761540106761">Paramètre système par défaut</translation>
 <translation id="3311445899360743395">Les données associées à cette application pourraient être supprimées de cet appareil.</translation>
 <translation id="3312470654018965389">Configuration du conteneur Linux en cours…</translation>
 <translation id="3312883087018430408">Pour rechercher un site ou une partie de Chrome en particulier, entrez son raccourci dans la barre d'adresse, suivi de votre raccourci-clavier favori. Par exemple, pour effectuer une recherche uniquement dans Favoris, entrez « @favoris », puis appuyez sur la touche Tabulation ou sur la barre d'espacement.</translation>
@@ -4043,7 +4045,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensions</translation>
 <translation id="3794792524918736965">Activer Windows Hello</translation>
 <translation id="379509625511193653">Désactivé</translation>
-<translation id="3795624560191557077">Vous avez récemment modifié un mot de passe trouvé dans une violation de données publique. En cas de problème, le gestionnaire de mots de passe Google peut vous aider à vous connecter.</translation>
 <translation id="3796215473395753611">alt+flèche vers le haut</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, utilisez la flèche vers la droite pour entendre un aperçu de la voix</translation>
 <translation id="3796648294839530037">Réseaux favoris :</translation>
@@ -5864,7 +5865,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 avec chiffrement RSA</translation>
 <translation id="5090637338841444533">Non autorisés à suivre la position de votre caméra</translation>
 <translation id="5091636240353511739">Afficher le NIP</translation>
-<translation id="5093417502834168387">Problème lors de la connexion? Essayer autrement</translation>
 <translation id="5093477827231450397">Liste des sites bloqués pour ne pas qu'ils suggèrent des annonces à d'autres sites</translation>
 <translation id="5093569275467863761">Sous-cadre de navigation privée de la mise en cache complète bidirectionnelle : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Vous pouvez ouvrir et modifier les fichiers pris en charge avec cette application à partir de l'application Fichiers ou d'autres applications. Pour contrôler quels fichiers ouvrent cette application par défaut, <ph name="BEGIN_LINK" />découvrez comment définir des applications par défaut sur votre appareil<ph name="END_LINK" />.</translation>
@@ -7648,7 +7648,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6388577073199278153">Impossible d'accéder au compte de votre appareil mobile</translation>
 <translation id="6390020764191254941">Déplacer l'onglet vers une nouvelle fenêtre</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Aucun}=1{Pour <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> et 1 autre}one{Pour <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> et {COUNT} autre}other{Pour <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> et {COUNT} autres}}</translation>
-<translation id="6390533465682072118">Récupération</translation>
 <translation id="6391131092053186625">L'IMEI de votre appareil est <ph name="IMEI_NUMBER" />. Ce numéro peut être utilisé pour aider à activer le service.</translation>
 <translation id="6393156038355142111">Suggérer un mot de passe fort</translation>
 <translation id="6393550101331051049">Autorisés à afficher le contenu non sécurisé</translation>
@@ -7881,6 +7880,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6560151649238390891">Suggestion insérée</translation>
 <translation id="656065428026159829">En voir plus</translation>
 <translation id="6561726789132298588">entrée</translation>
+<translation id="6561877237303825108">Ce fichier de type (<ph name="TYPE" />) peut être dangereux. N'enregistrez ce fichier que si vous faites confiance à <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Stocker les journaux système dans le répertoire Téléchargements.</translation>
 <translation id="656293578423618167">Le chemin d'accès ou le nom du fichier est trop long. Veuillez raccourcir le nom ou enregistrer le fichier à un autre endroit.</translation>
 <translation id="6563002009564846727">Afficher les certificats importés de Windows</translation>
@@ -9686,6 +9686,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7830833461614351956">Copier <ph name="NUM_OF_FILES" /> fichiers vers <ph name="CLOUD_PROVIDER" /> pour les ouvrir?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
+<translation id="7834832693620032149">Pour partager l'audio, partagez plutôt un onglet ou un écran</translation>
 <translation id="7836577093182643605">Liste des sujets bloqués que vous ne souhaitez pas partager avec les sites</translation>
 <translation id="7836745198769390202">Vous avez actuellement <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> et autres. Votre organisation pourra voir et gérer ces données.</translation>
 <translation id="7836850009646241041">Essayez de toucher votre clé de sécurité à nouveau</translation>
@@ -10555,6 +10556,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8425492902634685834">Épingler à la barre des tâches.</translation>
 <translation id="8425768983279799676">Vous pouvez utiliser votre NIP pour déverrouiller votre appareil.</translation>
+<translation id="8426697201161711396">Connectez-vous à Chrome pour synchroniser vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="8427213022735114808">La fonction de dictée envoie votre voix à Google pour autoriser la saisie vocale dans n'importe quel champ de texte.</translation>
 <translation id="8427292751741042100">intégrée à n'importe quel hôte</translation>
 <translation id="8428213095426709021">Paramètres</translation>
@@ -11292,6 +11294,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8940081510938872932">Votre ordinateur traite actuellement trop de tâches en même temps. Veuillez réessayer plus tard.</translation>
 <translation id="8940888110818450052">Options de connexion</translation>
 <translation id="8941173171815156065">Révoquer l'autorisation « <ph name="PERMISSION" /> »</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> partage une fenêtre et du son.</translation>
 <translation id="8941688920560496412">Le réseau <ph name="DEVICE_NAME" /> est désactivé</translation>
 <translation id="894191600409472540">Créez des mots de passe forts</translation>
 <translation id="8942714513622077633">Annuler la configuration de Microsoft 365?</translation>

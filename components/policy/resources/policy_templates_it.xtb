@@ -274,9 +274,6 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
       Se non viene configurata, non è possibile effettuare l'accesso automatico.</translation>
 <translation id="1193653806129988688">Impedisci agli utenti di utilizzare le offerte tramite la registrazione a <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1197437816436565375">Non puoi forzare le app Android a utilizzare un proxy. Un sottoinsieme di impostazioni relative al proxy viene messo a disposizione delle app Android, che possono decidere volontariamente se rispettarlo o meno. Consulta la norma <ph name="PROXY_MODE_POLICY_NAME" /> per ulteriori dettagli.</translation>
-<translation id="1198183996903759302">Se la policy è impostata su true (o se <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> è impostata su false), le pagine web non possono accedere all'API WebGL e i plug-in non possono usare l'API Pepper 3D.
-
-      Se la policy è impostata su false o non viene configurata, le pagine web possono usare l'API WebGL e i plug-in possono usare l'API Pepper 3D, ma le impostazioni predefinite del browser potrebbero comunque richiedere argomenti della riga di comando per usare queste API.</translation>
 <translation id="1198458955128279215">Utilizza il comportamento predefinito del piano di implementazione delle funzionalità.</translation>
 <translation id="1202216683470826356">Mostra schede nella pagina Nuova scheda</translation>
 <translation id="1203676252390737801">Gestione dell'IP di WebRTC per URL</translation>
@@ -1531,15 +1528,6 @@ In genere, questa policy è disattivata per difendere gli utenti da tentativi di
         Se la policy viene impostata su Enabled o se non viene configurata, l'aggiornamento delle app kiosk di Chrome all'interno della sessione sarà consentito.
         </translation>
 <translation id="2082205219176343977">Configura la versione minima di Chrome consentita per il dispositivo.</translation>
-<translation id="2083016623552073519">Attiva la traduzione dei sottotitoli in tempo reale. I sottotitoli codificati verranno inviati a Google per essere tradotti.
-
-Se questa policy viene attivata, Traduzione dal Vivo sarà sempre attivata.
-
-Se viene disattivata, Traduzione dal Vivo sarà sempre disattivata.
-
-Se configuri questa policy come obbligatoria, gli utenti non potranno modificarla o eseguire il relativo override.
-
-Se questa policy non viene configurata, inizialmente Traduzione dal Vivo sarà disattivata, ma l'utente potrà attivarla in qualsiasi momento.</translation>
 <translation id="20838788335877967">Disattiva la generazione di report sulle informazioni di identificazione dell'utente</translation>
 <translation id="208566302163036794">Blocca le funzionalità disattivate</translation>
 <translation id="2086040449830622332">Attiva sandbox LPAC di stampa</translation>

@@ -326,6 +326,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="4882919381756638075">Web lokacije obično koriste mikrofon za funkcije komuniciranja kao što je video chat</translation>
 <translation id="4883854917563148705">Upravljane postavke se ne mogu poništiti</translation>
 <translation id="4887024562049524730">Web lokacije moraju tražiti dozvolu za korištenje uređaja i podataka virtuelne realnosti (preporučeno)</translation>
+<translation id="4934780484581617878">Upravljanje prozorima</translation>
 <translation id="4936863036653376783">Pronaći ćete grupe u odjeljku grupa kartica na svim svojim uređajima</translation>
 <translation id="4945443401464700059">Blokirali ste da web lokacija <ph name="SITE" /> koristi informacije o vama na</translation>
 <translation id="4953688446973710931">Kada je postavka uključena, web lokacije mogu zatražiti da automatski preuzimaju više fajlova. Kada je postavka isključena, web lokacije ne mogu automatski preuzimati više fajlova.</translation>
@@ -583,6 +584,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
 <translation id="8068648041423924542">Nije moguće odabrati potvrdu.</translation>
 <translation id="8077120325605624147">Bilo koja web lokacija koju posjetite vam može prikazivati bilo koje oglase</translation>
+<translation id="80798452873915119">Web lokacije mogu pitati da upravljaju prozorima na svim mojim ekranima</translation>
 <translation id="8087000398470557479">Ovaj sadržaj je iz domene <ph name="DOMAIN_NAME" />, a isporučio ga je Google.</translation>
 <translation id="8088603949666785339">Više opcija u baneru <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Prikaži kartice na listi aplikacija</translation>

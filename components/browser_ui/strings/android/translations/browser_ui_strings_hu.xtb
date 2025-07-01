@@ -326,6 +326,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="4882919381756638075">A webhelyek általában kommunikációs szolgáltatások (például videocsevegés) biztosítása érdekében férnek hozzá a mikrofonhoz</translation>
 <translation id="4883854917563148705">A kezelt beállításokat nem lehet visszaállítani</translation>
 <translation id="4887024562049524730">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára a virtuálisvalóság-eszközök és -adatok használatát (ajánlott)</translation>
+<translation id="4934780484581617878">Ablakkezelés</translation>
 <translation id="4936863036653376783">A csoportokat megtalálja az összes eszközén a lapcsoportok szakaszban</translation>
 <translation id="4945443401464700059">A(z) <ph name="SITE" /> számára le van tiltva az Ön adatainak felhasználása itt:</translation>
 <translation id="4953688446973710931">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek több fájl automatikus letöltésére. Ha ki van kapcsolva, a webhelyek nem tölthetnek le automatikusan több fájlt.</translation>
@@ -333,6 +334,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="4972737347717125191">A webhelyek hozzáférést kérhetnek a virtuálisvalóság-eszközökhöz és -adatokhoz</translation>
 <translation id="497421865427891073">Előrelépés</translation>
 <translation id="4976702386844183910">Utolsó látogatás: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">További információ a Discover-feedről</translation>
 <translation id="4994033804516042629">Nem találhatók névjegyek</translation>
 <translation id="4996978546172906250">Megosztás itt:</translation>
 <translation id="5001526427543320409">Harmadik felektől származó cookie-k</translation>
@@ -582,6 +584,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="8067883171444229417">Videó lejátszása</translation>
 <translation id="8068648041423924542">A tanúsítvány kiválasztása nem sikerült.</translation>
 <translation id="8077120325605624147">Bármely felkeresett webhely bármilyen hirdetést megjeleníthet Önnek</translation>
+<translation id="80798452873915119">A webhelyek engedélyt kérhetnek arra, hogy az összes képernyőn kezeljék az ablakokat</translation>
 <translation id="8087000398470557479">Ez a Google által megjelenített tartalom a(z) <ph name="DOMAIN_NAME" /> domainről származik.</translation>
 <translation id="8088603949666785339">További lehetőségek itt: <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Nézetlapok az alkalmazáslistában</translation>

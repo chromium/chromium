@@ -38,6 +38,7 @@
 <translation id="1547469039832541117">结束突出显示的任务。</translation>
 <translation id="1553461853655228091">Chromium 需要获得相应权限，才能使用您的摄像头为您的周边环境创建 3D 地图</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{此扩展程序已不再受支持。Chromium 建议您移除它。}other{这些扩展程序已不再受支持。Chromium 建议您移除它们。}}</translation>
+<translation id="1562320819937089394">固定 Chromium</translation>
 <translation id="1574377791422810894">Chromium 的安全工具</translation>
 <translation id="1594928384848033697">Chromium 想要删除您的密码管理工具数据。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{您的管理员要求您重新启动 Chromium 以应用一项更新}=1{您的管理员要求您重新启动 Chromium 以应用一项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chromium 以应用一项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
@@ -520,6 +521,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8010081455002666927">自动检测</translation>
 <translation id="8013436988911883588">一旦 Chromium 获得了使用权限，网站便能请求您向其授予使用权限。</translation>
+<translation id="8031714377769448844">将 Chromium 固定到任务栏，即可随时快速访问</translation>
 <translation id="80471789339884597">感谢您完成安装。您必须重启所有浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8054112667659782652">始终显示图片搜索快捷方式</translation>
 <translation id="8077498902115777962">为应用停用 Chromium 后台运行功能</translation>

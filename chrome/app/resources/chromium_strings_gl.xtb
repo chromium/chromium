@@ -41,6 +41,7 @@
 <translation id="1547469039832541117">Finaliza a tarefa destacada.</translation>
 <translation id="1553461853655228091">Chromium necesita permiso de acceso á cámara co fin de crear un mapa 3D do que te rodea</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Xa non se admite esta extensión. Chromium recomenda que a quites.}other{Xa non se admiten estas extensións. Chromium recomenda que as quites.}}</translation>
+<translation id="1562320819937089394">Fixar Chromium</translation>
 <translation id="1574377791422810894">Ferramentas de seguranza de Chromium</translation>
 <translation id="1594928384848033697">Chromium quere eliminar os datos do xestor de contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{O teu administrador require que reinicies Chromium para aplicar unha actualización}=1{O teu administrador require que reinicies Chromium para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador require que reinicies Chromium para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
@@ -523,6 +524,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8010081455002666927">Detectar automaticamente</translation>
 <translation id="8013436988911883588">Unha vez que Chromium teña acceso, os sitios web poderán solicitalo tamén.</translation>
+<translation id="8031714377769448844">Fixa Chromium na barra de tarefas para acceder máis rápido en calquera momento</translation>
 <translation id="80471789339884597">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar todos os teus navegadores.</translation>
 <translation id="8054112667659782652">Mostrar sempre atallo da busca de imaxes</translation>
 <translation id="8077498902115777962">Desactivar execución de Chromium en segundo plano para as aplicacións</translation>

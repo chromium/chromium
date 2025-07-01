@@ -793,6 +793,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2310789833878085574">Salva e compila automaticamente</translation>
 <translation id="2312234273148520048">Salse e condimenti</translation>
 <translation id="2316087952091171402">Meno di <ph name="UPPER_ESTIMATE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
+<translation id="2316090909467242775">Prova questa password di recupero</translation>
 <translation id="2316159751672436664">Personalizza i tuoi strumenti di accessibilità nelle impostazioni di ChromeOS</translation>
 <translation id="2316887270356262533">Consente di liberare meno di 1 MB. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> richiede un nome utente e una password.</translation>
@@ -1670,6 +1671,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Film cult e indie</translation>
 <translation id="3793574014653384240">Numero e cause degli arresti anomali che si sono verificati di recente</translation>
+<translation id="3795624560191557077">Di recente hai modificato una password compromessa nell'ambito di una violazione dei dati pubblici. In caso di problemi, Gestore delle password di Google può aiutarti ad accedere.</translation>
 <translation id="3799805948399000906">Nome carattere richiesto</translation>
 <translation id="3801297763951514916">Visiti spesso questa pagina</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -2430,6 +2432,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5089810972385038852">Stato</translation>
 <translation id="5090647584136241764">Aggiungi schede con prodotti simili per confrontare facilmente i dettagli che ti interessano</translation>
 <translation id="5093232627742069661">Piegatura a Z standard</translation>
+<translation id="5093417502834168387">Hai problemi di accesso? Prova un altro metodo</translation>
 <translation id="5094747076828555589">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile da Chromium. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="5097099694988056070">Statistiche del dispositivo quali l'utilizzo di CPU/RAM</translation>
 <translation id="5097468150760963273">68,5 × 99 cm</translation>
@@ -3197,6 +3200,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6388060462449937608">Attrezzature e accessori per il fitness</translation>
 <translation id="6389470377220713856">Nome sulla carta</translation>
 <translation id="6390200185239044127">Piegatura a Z a metà</translation>
+<translation id="6390533465682072118">Recupero</translation>
 <translation id="639068771471208680">Formulario in più parti</translation>
 <translation id="6391700400718590966">Le credenziali per il pagamento sicuro non corrispondono: riquadro inferiore chiuso</translation>
 <translation id="6392799395081100092">Carta (pergamena)</translation>

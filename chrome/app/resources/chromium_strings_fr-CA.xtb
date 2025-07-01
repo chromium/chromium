@@ -40,6 +40,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1547469039832541117">Termine la tâche mise en évidence.</translation>
 <translation id="1553461853655228091">Chromium a besoin de votre autorisation pour accéder à votre appareil photo afin de créer une carte 3D de votre environnement</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Cette extension n'est plus prise en charge. Chromium vous recommande de la retirer.}one{Cette extension n'est plus prise en charge. Chromium vous recommande de la retirer.}other{Ces extensions ne sont plus prises en charge. Chromium vous recommande de les retirer.}}</translation>
+<translation id="1562320819937089394">Épingler Chromium</translation>
 <translation id="1574377791422810894">Les outils de sécurité de Chromium</translation>
 <translation id="1594928384848033697">Chromium souhaite supprimer vos données du gestionnaire de mots de passe. Tapez votre mot de passe Windows pour autoriser la suppression.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Votre administrateur exige que vous relanciez Chromium pour appliquer une mise à jour}=1{Votre administrateur exige que vous relanciez Chromium pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Votre administrateur exige que vous relanciez Chromium pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Votre administrateur exige que vous relanciez Chromium pour appliquer une mise à jour. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
@@ -522,6 +523,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8010081455002666927">Détection automatique</translation>
 <translation id="8013436988911883588">Lorsque Chromium y aura accès, les sites Web pourront vous demander l'accès.</translation>
+<translation id="8031714377769448844">Épinglez Chromium à votre barre des tâches pour y accéder rapidement à tout moment</translation>
 <translation id="80471789339884597">Merci pour l'installation. Vous devez redémarrer tous vos navigateurs avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Toujours afficher le raccourci de la recherche d'images</translation>
 <translation id="8077498902115777962">Désactiver l'exécution de Chromium en arrière-plan pour les applis</translation>

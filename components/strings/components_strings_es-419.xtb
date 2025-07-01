@@ -793,6 +793,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2310789833878085574">Guardar y autocompletar</translation>
 <translation id="2312234273148520048">Condimentos y aderezos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Es posible que algunos sitios tarden más en cargar cuando vuelvas a visitarlos.</translation>
+<translation id="2316090909467242775">Prueba esta contraseña de recuperación</translation>
 <translation id="2316159751672436664">Personaliza tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
 <translation id="2316887270356262533">Esta acción libera menos de 1 MB. Es posible que algunos sitios se carguen más lento en tu próxima visita.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiere un nombre de usuario y una contraseña.</translation>
@@ -1674,6 +1675,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Películas independientes y de culto</translation>
 <translation id="3793574014653384240">Cantidad de errores que se produjeron recientemente y sus causas</translation>
+<translation id="3795624560191557077">Cambiaste recientemente una contraseña que se encontró en una violación de la seguridad de los datos pública. En caso de problemas, el Administrador de contraseñas de Google puede ayudarte a acceder.</translation>
 <translation id="3799805948399000906">Se necesita la fuente</translation>
 <translation id="3801297763951514916">Visitas con frecuencia</translation>
 <translation id="380329542618494757">Nombre</translation>
@@ -2434,6 +2436,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090647584136241764">Agrega pestañas con productos similares para comparar fácilmente los detalles que te interesan</translation>
 <translation id="5093232627742069661">Plegado en Z</translation>
+<translation id="5093417502834168387">¿Tienes problemas para acceder? Prueba otro método</translation>
 <translation id="5094747076828555589">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; Chromium no confía en el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="5097099694988056070">Estadísticas del dispositivo, como el uso de CPU/RAM</translation>
 <translation id="5097468150760963273">68.58 × 99.06 cm</translation>
@@ -3202,6 +3205,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6388060462449937608">Equipo y accesorios para hacer ejercicio</translation>
 <translation id="6389470377220713856">Nombre en tarj.</translation>
 <translation id="6390200185239044127">Plegado en Z a la mitad</translation>
+<translation id="6390533465682072118">Recuperación</translation>
 <translation id="639068771471208680">Formulario continuo</translation>
 <translation id="6391700400718590966">Se cerró la hoja inferior que indicaba que las credenciales de pago seguro no coinciden</translation>
 <translation id="6392799395081100092">Papel (pergamino)</translation>
@@ -3283,7 +3287,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6505072878288254563">Traduciendo</translation>
 <translation id="6506959208958864820">Sobre</translation>
 <translation id="6507117483253822672">Escribe con más confianza en cualquier lugar de la Web</translation>
-<translation id="6508722015517270189">Reinicia Chrome.</translation>
+<translation id="6508722015517270189">Reiniciar Chrome</translation>
 <translation id="6513005815064132016">Puede solicitar permiso para registrar la posición de la cámara</translation>
 <translation id="6516242269547757923">Paga en Chrome sin usar la app de tu banco</translation>
 <translation id="6517596291481585650">Advertencia: Esta política no se combinó según la política porque no es una lista.</translation>

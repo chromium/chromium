@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Încheie activitatea evidențiată.</translation>
 <translation id="1553461853655228091">Chromium are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Extensia nu mai este acceptată. Chromium recomandă să o elimini.}few{Aceste extensii nu mai sunt acceptate. Chromium recomandă să le elimini.}other{Aceste extensii nu mai sunt acceptate. Chromium recomandă să le elimini.}}</translation>
+<translation id="1562320819937089394">Fixează Chromium</translation>
 <translation id="1574377791422810894">Instrumentele de siguranță din Chromium</translation>
 <translation id="1594928384848033697">Chromium dorește să șteargă datele din Managerul de parole. Introdu parola Windows pentru a permite acest lucru.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
@@ -521,6 +522,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8010081455002666927">Detectare automată</translation>
 <translation id="8013436988911883588">Odată ce Chromium are acces, site-urile web îți vor putea solicita accesul.</translation>
+<translation id="8031714377769448844">Fixează Chromium în bara de activități pentru a-l accesa rapid oricând</translation>
 <translation id="80471789339884597">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești toate browserele.</translation>
 <translation id="8054112667659782652">Afișează întotdeauna comanda rapidă pentru Căutarea de imagini</translation>
 <translation id="8077498902115777962">Dezactivează rularea Chromium în fundal pentru aplicații</translation>

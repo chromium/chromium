@@ -187,6 +187,7 @@
 <translation id="1740650426894359238">Preklop na drug profil</translation>
 <translation id="1741219894094057085">Pametna ura</translation>
 <translation id="1743244221910283364">Zavrzi spremembe</translation>
+<translation id="1748975028205587434">Izberite datoteko</translation>
 <translation id="174998178145075354">{count,plural, =1{Nad tipkovnico je na voljo {count} možnost za naslov.}one{Nad tipkovnico je na voljo {count} možnost za naslov.}two{Nad tipkovnico sta na voljo {count} možnosti za naslov.}few{Nad tipkovnico so na voljo {count} možnosti za naslov.}other{Nad tipkovnico je na voljo {count} možnosti za naslov.}}</translation>
 <translation id="1750238553597293878">Še naprej uporabljajte gesla v računu Google</translation>
 <translation id="17513872634828108">Odprti zavihki</translation>
@@ -529,6 +530,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3119874402040566234">Odjavljeni boste in podatki brskanja bodo izbrisani</translation>
 <translation id="3124568093781685165">Delite gesla z družinskimi člani</translation>
 <translation id="3130863904455712965">Zgodovina in drugo</translation>
+<translation id="3132584647087998639">Uvozite svoje podatke</translation>
 <translation id="313283613037595347">Ustvarjanje novega anonimnega zavihka</translation>
 <translation id="3136739222562075778">Ta kartica prikazuje znižanja cen za izdelke v odprtih zavihkih</translation>
 <translation id="3138611310073113613">Zavrzi izbiro</translation>
@@ -1118,6 +1120,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="560322036295180549">Izklopila organizacija.</translation>
 <translation id="5611398002774823980">Shrani v račun</translation>
+<translation id="561269594905823128">Dotaknite se možnosti <ph name="BEGIN_BOLD" />Izbira datoteke<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Razvrsti glede na najnovejše</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
 <translation id="5619871095170816857">Na tej kartici je prikazan nazadnje uporabljen odprti zavihek v vseh sinhroniziranih napravah v zadnjih 24 urah.</translation>
@@ -1238,12 +1241,14 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6074656473835429958">Prejemanje obvestil</translation>
 <translation id="607620096698446287">Datoteke <ph name="FILENAME" /> (<ph name="FILESIZE" />) ni bilo mogoče naložiti</translation>
 <translation id="6077126322656614846">Dostop do kamere je odobren.</translation>
+<translation id="607730456154980869">Hitreje pridobite odgovore z Geminijem v Chromu</translation>
 <translation id="6078236141387574983">Vnovična prilagoditev višine lista</translation>
 <translation id="6084848228346514841">Izbira zavihkov</translation>
 <translation id="6089212833343035912">Koda PIN za Googlovega upravitelja gesel</translation>
 <translation id="6090760257419195752">Opuščena opozorila</translation>
 <translation id="6096965253650248286">Št. najdenih: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Prijavljen kot <ph name="USER_EMAIL" />. Odpre nastavitve.</translation>
+<translation id="610083648014322104">Pridobite ustrezne odgovore na podlagi vsebine strani, na kateri ste</translation>
 <translation id="6103540626693881831">Šifriranje v napravi</translation>
 <translation id="611361228753138223">Spletna mesta, ki ste jih nedavno obiskali v tej napravi</translation>
 <translation id="611705554202268369">Pridržite, če želite dodati skupini zavihkov</translation>
@@ -1496,6 +1501,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6979737339423435258">Od začetka</translation>
 <translation id="6983306615164277634">Položaj lahko spremenite tudi tako, da se dotaknete naslovne vrstice in jo pridržite.</translation>
 <translation id="6987201788018524855">Raziščite uporabne funkcije, ki ste jih spregledali</translation>
+<translation id="6989636517316575338">Vprašajte o poljubni strani</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Spremljajte cene izdelkov in prejemajte opozorila, ko se cena zniža na katerem koli spletnem mestu</translation>
 <translation id="7004032350256606903">Vaša organizacija zahteva, da brskate zasebno.
@@ -1566,6 +1572,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7367530036083223701">S pripomočkom Upravitelj gesel varno dostopajte do gesel na začetnem zaslonu.</translation>
 <translation id="7369285139974632858">Dodajanje med zaznamke</translation>
 <translation id="7380220816562673297">Za zdaj lahko gesla delite samo z družinskimi člani. <ph name="BEGIN_LINK" />Ustvarite skupino družinskih članov<ph name="END_LINK" />, v kateri je do 6 članov, ter še bolje izkoristite svoje izdelke in naročnine v Googlu.</translation>
+<translation id="7380698179418029202">Izberite datoteko <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> za izvoz iz Safarija</translation>
 <translation id="739101637685146669">Kateri URL želite dodati med zaznamke?</translation>
 <translation id="7393747756726387725">Povečanje</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 spletno mesto}one{# spletno mesto}two{# spletni mesti}few{# spletna mesta}other{# spletnih mest}}</translation>
@@ -1705,6 +1712,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7887552845761062935">Dvakrat se dotaknite in pridržite, če želite odpreti več možnosti</translation>
 <translation id="7889910613639381518">Preprost in varen dostop s pripomočkom Googlovega upravitelja gesel.</translation>
 <translation id="7899199123054742721">Označi vse kot neprebrano</translation>
+<translation id="7908957400505794782">Dotaknite se <ph name="BEGIN_BOLD" />Končano<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">Vaša organizacija vam ne dovoli sinhronizirati vsega.</translation>
 <translation id="792357691529995513">Najdena ni bila nobena težava</translation>
 <translation id="7925108652071887026">Samodejno izpolnjevanje podatkov</translation>
@@ -1754,6 +1762,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8058655154417507695">Leto poteka</translation>
 <translation id="8059533439631660104">Strni razdelek.</translation>
 <translation id="8061584726507121204">Zgodovina</translation>
+<translation id="8069168488983557089">Pridobite ključne informacije in vpoglede, ki vam pomagajo razumeti katero koli temo</translation>
 <translation id="8069394452933076548">Izberite, kdaj se zavihki, ki niso bili nedavno uporabljeni, premaknejo v razdelek neaktivnih zavihkov.</translation>
 <translation id="8073670137947914548">Prenos je končan</translation>
 <translation id="8076492880354921740">Zavihki</translation>

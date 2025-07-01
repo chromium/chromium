@@ -37,6 +37,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="141901961143729572">Partekatu burutazioak</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira.}=1{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira. Ezkutuko moduko leihoa ez da irekiko berriro.}other{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira. Ezkutuko moduko # leihoak ez dira irekiko berriro.}}</translation>
 <translation id="1434626383986940139">Chrome Canary aplikazioak</translation>
+<translation id="1439793550875056299">Ainguratu Chrome</translation>
 <translation id="146866447420868597">Chrome-n saioa hasi nahi duzu?</translation>
 <translation id="1492280395845991349">Chrome eguneratzen amaitzeko, exekuta ezazu berriro</translation>
 <translation id="1497802159252041924">Instalazio-errorea: <ph name="INSTALL_ERROR" /></translation>
@@ -360,6 +361,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Abiarazte-errorea: exekutatu instalatzailea erabiltzaile arrunt gisa, ez administratzaile gisa.</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
+<translation id="5600352656975192682">Ainguratu Chrome zereginen barran, hura bizkor atzitzeko edonoiz</translation>
 <translation id="5602351063754773347">Kentzea gomendatzen dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu onartzen diren luzapenei buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Chrome-ko profilekin, Chrome-n dituzun gauza guztiak bereiz ditzakezu. Sortu profilak lagunentzat eta familiako kideentzat, edo banandu gauza pertsonalak eta lanekoak.</translation>
 <translation id="565744775970812598">Baliteke <ph name="FILE_NAME" /> arriskutsua izatea; horregatik, blokeatu egin du Chrome-k.</translation>

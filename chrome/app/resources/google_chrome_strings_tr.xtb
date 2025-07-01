@@ -35,6 +35,7 @@
 <translation id="141901961143729572">Düşüncelerinizi paylaşın</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır.}=1{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır. Gizli pencereniz yeniden açılmayacak.}other{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır. # gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Uygulamaları</translation>
+<translation id="1439793550875056299">Chrome'u sabitle</translation>
 <translation id="146866447420868597">Chrome'da oturum açmak istiyor musunuz?</translation>
 <translation id="1492280395845991349">Chrome güncellemesini tamamlamak için yeniden başlatın</translation>
 <translation id="1497802159252041924">Yükleme hatası: <ph name="INSTALL_ERROR" /></translation>
@@ -354,6 +355,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Başlatma hatası: Lütfen yükleyiciyi yönetici olarak değil, normal bir kullanıcı olarak çalıştırın.</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
+<translation id="5600352656975192682">Chrome'a istediğiniz zaman hızlıca erişmek için görev çubuğunuza sabitleyin</translation>
 <translation id="5602351063754773347">Chrome, bu dosyayı kaldırmanızı önerir. <ph name="BEGIN_LINK" />Desteklenen uzantılar hakkında daha fazla bilgi edinin.<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Chrome profilleri ile tüm Chrome öğelerinizi ayırabilirsiniz. Arkadaşlar ve aile için profil oluşturun veya iş ile eğlenceyi ayırın.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> tehlikeli olabileceği için Chrome tarafından engellendi.</translation>

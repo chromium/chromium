@@ -1919,7 +1919,6 @@
 <translation id="2312219318583366810">URL страницы</translation>
 <translation id="2314165183524574721">Ваше устройство скрыто от других пользователей</translation>
 <translation id="2314774579020744484">Язык, который используется при переводе страниц</translation>
-<translation id="2316090909467242775">Попробуйте этот пароль для восстановления</translation>
 <translation id="2316129865977710310">Нет, спасибо</translation>
 <translation id="2316433409811863464">Стриминг приложений</translation>
 <translation id="2316709634732130529">Использовать предложенный пароль</translation>
@@ -4045,7 +4044,6 @@
 <translation id="3792973596468118484">Расширений: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3794792524918736965">Включите Windows Hello</translation>
 <translation id="379509625511193653">Отключено</translation>
-<translation id="3795624560191557077">Недавно вы изменили пароль, оказавшийся в открытом доступе из-за утечки данных. В случае проблем Google Менеджер паролей поможет войти в аккаунт.</translation>
 <translation id="3796215473395753611">Alt + Стрелка вверх</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, нажмите клавишу со стрелкой вправо, чтобы прослушать голос</translation>
 <translation id="3796648294839530037">Избранные сети:</translation>
@@ -5866,7 +5864,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 с шифрованием RSA</translation>
 <translation id="5090637338841444533">Запретить сайтам отслеживать положение камеры</translation>
 <translation id="5091636240353511739">Показать PIN-код</translation>
-<translation id="5093417502834168387">Не получается войти в аккаунт? Попробуйте другой способ</translation>
 <translation id="5093477827231450397">Список заблокированных сайтов, которым запрещено предлагать рекламу для других сайтов</translation>
 <translation id="5093569275467863761">Субфрейм возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Вы можете открывать и редактировать поддерживаемые файлы в этом приложении из Google Файлов и других приложений. Указать, какие типы файлов по умолчанию будут открываться в этом приложении, можно в <ph name="BEGIN_LINK" />настройках приложений по умолчанию на устройстве<ph name="END_LINK" />.</translation>
@@ -7651,7 +7648,6 @@
 <translation id="6388577073199278153">Не удалось войти в аккаунт на мобильном устройстве</translation>
 <translation id="6390020764191254941">Открыть вкладку в новом окне</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Нет сайтов.}=1{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и ещё одного сайта.}one{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и ещё {COUNT} сайта.}few{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и ещё {COUNT} сайтов.}many{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и ещё {COUNT} сайтов.}other{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и ещё {COUNT} сайта.}}</translation>
-<translation id="6390533465682072118">Пароль для восстановления</translation>
 <translation id="6391131092053186625">IMEI-код вашего устройства – <ph name="IMEI_NUMBER" />. Его можно использовать для активации сервиса.</translation>
 <translation id="6393156038355142111">Сгенерировать надежный пароль</translation>
 <translation id="6393550101331051049">Разрешить сайтам показывать небезопасный контент</translation>
@@ -7884,6 +7880,7 @@
 <translation id="6560151649238390891">Вставлено предложенное</translation>
 <translation id="656065428026159829">Ещё</translation>
 <translation id="6561726789132298588">Войти</translation>
+<translation id="6561877237303825108">Этот файл с расширением <ph name="TYPE" /> может быть опасен. Не сохраняйте его, если не доверяете источнику "<ph name="ORIGIN" />".</translation>
 <translation id="6562117348069327379">Системные журналы будут сохраняться в каталоге "Скачанные файлы".</translation>
 <translation id="656293578423618167">Слишком длинное название файла или путь к нему. Выберите другое название или каталог.</translation>
 <translation id="6563002009564846727">Посмотреть сертификаты, импортированные из Windows</translation>
@@ -9693,6 +9690,7 @@
 <translation id="7830833461614351956">Скопировать файлы (<ph name="NUM_OF_FILES" />) в сервис "<ph name="CLOUD_PROVIDER" />" перед открытием?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Здесь появятся сохраненные специальные слова</translation>
+<translation id="7834832693620032149">Чтобы транслировать аудио, начните демонстрацию вкладки или окна.</translation>
 <translation id="7836577093182643605">Список заблокированных тем, которые не передаются сайтам</translation>
 <translation id="7836745198769390202">В вашем профиле есть <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> и другие данные. Организация сможет просматривать их и управлять ими.</translation>
 <translation id="7836850009646241041">Прикоснитесь к сканеру отпечатков пальцев на электронном ключе ещё раз.</translation>
@@ -11304,6 +11302,7 @@
 <translation id="8940081510938872932">В данный момент выполняется слишком много процессов. Повторите попытку позже.</translation>
 <translation id="8940888110818450052">Варианты входа</translation>
 <translation id="8941173171815156065">Отозвать разрешение "<ph name="PERMISSION" />"</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> демонстрирует окно и транслирует аудио.</translation>
 <translation id="8941688920560496412">Устройство "<ph name="DEVICE_NAME" />" отключено</translation>
 <translation id="894191600409472540">Создайте надежные пароли</translation>
 <translation id="8942714513622077633">Отменить настройку Microsoft 365?</translation>

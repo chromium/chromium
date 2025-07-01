@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Nevažeći ili oštećen fajl</translation>
 <translation id="1040761927998636252">Oznaka bez naziva za <ph name="URL" /></translation>
 <translation id="1041175011127912238">Ova stranica ne reagira</translation>
+<translation id="1041181446722933623">Oznaka "<ph name="LOCAL_BOOKMARK" />" je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, sačuvajte je u folderu "<ph name="ACCOUNT_FOLDER" />" na računu.</translation>
 <translation id="1041263367839475438">Dostupni uređaji</translation>
 <translation id="1041607257468256895">Upravljajte odobrenjima za lokaciju za web lokacije u Chromeu</translation>
 <translation id="1042174272890264476">Vaš računar također ima ugrađenu RLZ biblioteku proizvoda <ph name="SHORT_PRODUCT_NAME" />. RLZ dodjeljuje nejedinstvenu oznaku koja ne može poslužiti za ličnu identifikaciju za mjerenje pretraživanja i korištenje proizvoda <ph name="SHORT_PRODUCT_NAME" /> do kojeg je došlo putem određene promotivne kampanje. Te oznake se nekada pojavljuju u upitima Google Pretraživanja u proizvodu <ph name="PRODUCT_NAME" />.</translation>
@@ -610,6 +611,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1418559532423038045">Uklanjanje virtuelne mašine <ph name="VM_NAME" /> s vašeg uređaja <ph name="DEVICE_TYPE" />. Ovim će se izbrisati sve aplikacije i podaci u virtuelnoj mašini!</translation>
 <translation id="1418882096915998312">Prijava preduzeća je u toku</translation>
 <translation id="1418954524306642206">Pregledajte da navedete PPD štampača</translation>
+<translation id="1419086691207546433">Dodajte ekstenzije da se organizirate, pojednostavite zadatke i poboljšate pregledanje</translation>
 <translation id="1421334842435688311">Informacije o lokaciji mobilne mreže</translation>
 <translation id="1421514190500081936">Unesite razlog za preuzimanja ovih podataka:</translation>
 <translation id="1422159345171879700">Učitaj nesigurne skripte</translation>
@@ -1927,7 +1929,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2312219318583366810">URL stranice</translation>
 <translation id="2314165183524574721">Trenutna postavka vidljivosti je Skriveno</translation>
 <translation id="2314774579020744484">Jezik koji se koristi prilikom prevođenja stranica</translation>
-<translation id="2316090909467242775">Pokušajte s ovom lozinkom za oporavak</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
 <translation id="2316433409811863464">Prenos aplikacije</translation>
 <translation id="2316709634732130529">Koristi predloženu lozinku</translation>
@@ -3339,6 +3340,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3309330461362844500">ID profila certifikata</translation>
 <translation id="3310379801837527592">Pridružite se grupi kartica koju koriste <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUM_OTHER_MEMBERS" /> osoba</translation>
 <translation id="331080746368555063">Privatne web lokacije mogu uključivati stvari kao što je intranet vaše kompanije</translation>
+<translation id="3311007761540106761">Sistemski zadano</translation>
 <translation id="3311445899360743395">Podaci koji su povezani s ovom aplikacijom se mogu ukloniti s ovog uređaja.</translation>
 <translation id="3312470654018965389">Konfiguriranje spremnika Linuxa</translation>
 <translation id="3312883087018430408">Da pretražite određenu web lokaciju ili dio Chromea, unesite prečicu tog sadržaja na traci za adresu, a zatim svoju željenu prečicu na tastaturi. Naprimjer, da pretražite samo Oznake, unesite "@oznake", a zatim pritisnite tipku Tab ili tipku za razmak.</translation>
@@ -4052,7 +4054,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ekstenzija</translation>
 <translation id="3794792524918736965">Uključite Windows Hello</translation>
 <translation id="379509625511193653">Isključeno</translation>
-<translation id="3795624560191557077">Nedavno ste promijenili lozinku pronađenu u javnom narušavanju podataka. U slučaju problema vam Google upravitelj lozinki može pomoći da se prijavite.</translation>
 <translation id="3796215473395753611">Alt i strelica nagore</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, reproduciranje glasa pritiskom na tipku sa strelicom udesno</translation>
 <translation id="3796648294839530037">Omiljene mreže:</translation>
@@ -5874,7 +5875,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 sa RSA šifriranjem</translation>
 <translation id="5090637338841444533">Nije dozvoljeno praćenje položaja vaše kamere</translation>
 <translation id="5091636240353511739">Prikaz PIN-a</translation>
-<translation id="5093417502834168387">Imate li poteškoće s prijavom? Pokušajte na drugi način</translation>
 <translation id="5093477827231450397">Lista web lokacija koje ste blokirali za koje ne želite da predlažu oglase drugim web lokacijama</translation>
 <translation id="5093569275467863761">Keširana verzija cijele stranice anonimnog načina rada za podokvir: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Možete otvoriti i uređivati podržane fajlove pomoću ove aplikaciju u aplikaciji Files ili u drugim aplikacijama. Da kontrolirate koji fajlovi zadano otvaraju ovu aplikaciju, <ph name="BEGIN_LINK" />saznajte kako postaviti zadane aplikacije na svom uređaju<ph name="END_LINK" />.</translation>
@@ -7659,7 +7659,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6388577073199278153">Nije moguće pristupiti mobilnom računu</translation>
 <translation id="6390020764191254941">Premjesti karticu u novi prozor</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Ništa}=1{Za <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> i još 1}one{Za <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> i još {COUNT}}few{Za <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> i još {COUNT}}other{Za <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> i još {COUNT}}}</translation>
-<translation id="6390533465682072118">Oporavak</translation>
 <translation id="6391131092053186625">IMEI uređaja je <ph name="IMEI_NUMBER" />. Ovaj broj može pomoći prilikom aktiviranja usluge.</translation>
 <translation id="6393156038355142111">Predloži jaku lozinku</translation>
 <translation id="6393550101331051049">Dozvoljeno je prikazivanje nesigurnog sadržaja</translation>
@@ -10572,6 +10571,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8425213833346101688">Izmijeni</translation>
 <translation id="8425492902634685834">Zakači na programsku traku</translation>
 <translation id="8425768983279799676">Možete koristiti PIN da otključate uređaj.</translation>
+<translation id="8426697201161711396">Prijavite se u Chrome da dobijete lozinke i druge stavke na svim svojim uređajima</translation>
 <translation id="8427213022735114808">Diktiranje šalje vaš glas Googleu kako bi se omogućilo pisanje govorom u bilo kojoj rubrici za tekst.</translation>
 <translation id="8427292751741042100">ugrađeno na bilo kojem host računaru</translation>
 <translation id="8428213095426709021">Postavke</translation>

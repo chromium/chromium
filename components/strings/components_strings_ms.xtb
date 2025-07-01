@@ -793,6 +793,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2310789833878085574">Simpan dan autolengkap</translation>
 <translation id="2312234273148520048">Perencah &amp; Sos</translation>
 <translation id="2316087952091171402">Kurang daripada <ph name="UPPER_ESTIMATE" />. Sesetengah laman mungkin dimuatkan dengan lebih perlahan pada lawatan anda yang seterusnya.</translation>
+<translation id="2316090909467242775">Cuba kata laluan pemulihan ini</translation>
 <translation id="2316159751672436664">Peribadikan alatan kebolehaksesan anda dalam tetapan Chrome OS</translation>
 <translation id="2316887270356262533">Mengosongkan kurang daripada 1 MB. Sesetengah tapak mungkin dimuatkan dengan lebih perlahan pada lawatan anda yang seterusnya.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> memerlukan nama pengguna dan kata laluan.</translation>
@@ -1674,6 +1675,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Filem Kultus &amp; Indie</translation>
 <translation id="3793574014653384240">Bilangan dan punca ranap sistem yang berlaku baru-baru ini</translation>
+<translation id="3795624560191557077">Baru-baru ini anda telah menukar kata laluan yang ditemukan dalam pelanggaran data umum. Sekiranya terdapat masalah, Google Password Manager boleh membantu anda log masuk.</translation>
 <translation id="3799805948399000906">Fon diminta</translation>
 <translation id="3801297763951514916">Sering anda lawati</translation>
 <translation id="380329542618494757">Nama</translation>
@@ -2434,6 +2436,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5089810972385038852">Negeri</translation>
 <translation id="5090647584136241764">Tambahkan tab dengan produk yang sama untuk membandingkan butiran yang penting bagi anda dengan mudah</translation>
 <translation id="5093232627742069661">Lipatan Z</translation>
+<translation id="5093417502834168387">Menghadapi masalah log masuk? Cuba cara lain</translation>
 <translation id="5094747076828555589">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh Chromium. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
 <translation id="5097099694988056070">Statistik peranti seperti penggunaan CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
@@ -3202,6 +3205,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6388060462449937608">Peralatan &amp; Aksesori Kecergasan</translation>
 <translation id="6389470377220713856">Nama pada Kad</translation>
 <translation id="6390200185239044127">Lipat dua Z</translation>
+<translation id="6390533465682072118">Pemulihan</translation>
 <translation id="639068771471208680">Borang Berbilang Bahagian</translation>
 <translation id="6391700400718590966">Bukti kelayakan pembayaran selamat tiada helaian bukti kelayakan yang sepadan ditutup</translation>
 <translation id="6392799395081100092">Kertas (Velum)</translation>

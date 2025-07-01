@@ -326,6 +326,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="4882919381756638075">Sites usually use your microphone for communication features like video chatting</translation>
 <translation id="4883854917563148705">Managed settings cannot be reset</translation>
 <translation id="4887024562049524730">Ask before allowing sites to use your virtual reality device and data (recommended)</translation>
+<translation id="4934780484581617878">Window management</translation>
 <translation id="4936863036653376783">You'll find your groups in the tab group section across all your devices</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> is blocked from using your information on</translation>
 <translation id="4953688446973710931">When on, sites can ask to download multiple files automatically. When off, sites can't download multiple files automatically.</translation>
@@ -333,6 +334,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="4972737347717125191">Sites can ask to use virtual reality devices and data</translation>
 <translation id="497421865427891073">go forward</translation>
 <translation id="4976702386844183910">Last visited <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Learn more about Discover feed</translation>
 <translation id="4994033804516042629">No contacts found</translation>
 <translation id="4996978546172906250">Share via</translation>
 <translation id="5001526427543320409">Third-party cookies</translation>
@@ -582,6 +584,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8067883171444229417">Play video</translation>
 <translation id="8068648041423924542">Unable to select certificate.</translation>
 <translation id="8077120325605624147">Any site that you visit can show any ad to you</translation>
+<translation id="80798452873915119">Sites can ask to manage windows on all your displays</translation>
 <translation id="8087000398470557479">This content is from <ph name="DOMAIN_NAME" />, delivered by Google.</translation>
 <translation id="8088603949666785339">More options in the <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">View tabs in your app list</translation>

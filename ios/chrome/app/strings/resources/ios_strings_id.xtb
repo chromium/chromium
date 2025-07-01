@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Hubungi pengirim untuk meminta link baru</translation>
 <translation id="1013952917065545813">Anda dapat kembali ke sini untuk membuka kembali tab yang baru saja Anda tutup</translation>
 <translation id="1016495303386450659">Item diperbarui</translation>
+<translation id="1017735584092444011">Tampilkan Mode Baca</translation>
 <translation id="102916930470544692">Kunci sandi</translation>
 <translation id="1030376737535466765">Buka Pengelola Sandi</translation>
 <translation id="1035980983510608210">Menutup semua tab juga akan menutup tab tersemat.</translation>
@@ -1237,12 +1238,14 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6074656473835429958">Dapatkan notifikasi</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) tidak dapat diupload</translation>
 <translation id="6077126322656614846">Akses Kamera diizinkan</translation>
+<translation id="607730456154980869">Dapatkan jawaban lebih cepat dengan Gemini di Chrome</translation>
 <translation id="6078236141387574983">Sesuaikan kembali tinggi sheet</translation>
 <translation id="6084848228346514841">Pilih Tab</translation>
 <translation id="6089212833343035912">PIN Pengelola Sandi Google</translation>
 <translation id="6090760257419195752">Peringatan yang ditolak</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> ditemukan</translation>
 <translation id="6100617279104942061">Login sebagai <ph name="USER_EMAIL" />. Membuka setelan.</translation>
+<translation id="610083648014322104">Dapatkan jawaban yang relevan berdasarkan konten halaman yang sedang Anda buka</translation>
 <translation id="6103540626693881831">Enkripsi di Perangkat</translation>
 <translation id="611361228753138223">Situs yang Anda buka baru-baru ini di perangkat ini</translation>
 <translation id="611705554202268369">Tekan lama untuk menambahkan ke grup tab</translation>
@@ -1495,6 +1498,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6979737339423435258">Semua</translation>
 <translation id="6983306615164277634">Anda juga dapat menyentuh lama kolom URL untuk mengubah posisi.</translation>
 <translation id="6987201788018524855">Jelajahi fitur bermanfaat yang mungkin Anda lewatkan</translation>
+<translation id="6989636517316575338">Tanya tentang halaman apa pun</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Pantau harga produk dan dapatkan notifikasi saat ada penurunan harga di situs mana pun</translation>
 <translation id="7004032350256606903">Organisasi mengharuskan Anda menjelajah secara pribadi.
@@ -1696,6 +1700,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7863211248337747225">Dapatkan aplikasi</translation>
 <translation id="7865127013871431856">Opsi Terjemahan</translation>
 <translation id="7866872729285243843">Untuk mendapatkan daftar bacaan di semua perangkat, aktifkan "Daftar Bacaan" di setelan.</translation>
+<translation id="787364769771947486">Sembunyikan Mode Baca</translation>
 <translation id="7874107544081154809">Isi otomatis formulir dengan <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Anda memiliki sandi yang digunakan ulang.</translation>
 <translation id="7887174313503389866">Lihat tur terpandu tentang kontrol privasi dan keamanan utama. Untuk opsi lainnya, buka masing-masing setelan.</translation>
@@ -1752,6 +1757,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8058655154417507695">Tahun akhir masa berlaku</translation>
 <translation id="8059533439631660104">Ciutkan bagian.</translation>
 <translation id="8061584726507121204">Histori</translation>
+<translation id="8069168488983557089">Dapatkan insight poin-poin penting yang membantu Anda memahami topik apa pun</translation>
 <translation id="8069394452933076548">Pilih kapan tab yang tidak digunakan baru-baru ini dipindahkan ke bagian tab tidak aktif.</translation>
 <translation id="8073670137947914548">Download selesai</translation>
 <translation id="8076492880354921740">Tab</translation>

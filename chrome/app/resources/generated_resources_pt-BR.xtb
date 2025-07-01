@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Arquivo inválido ou corrompido</translation>
 <translation id="1040761927998636252">Favorito sem nome para <ph name="URL" /></translation>
 <translation id="1041175011127912238">Esta página não está respondendo</translation>
+<translation id="1041181446722933623">O favorito "<ph name="LOCAL_BOOKMARK" />" foi salvo apenas neste dispositivo. Salve em "<ph name="ACCOUNT_FOLDER" />" para usar em outros aparelhos.</translation>
 <translation id="1041263367839475438">Dispositivos disponíveis</translation>
 <translation id="1041607257468256895">Gerenciar permissões de localização de sites no Chrome</translation>
 <translation id="1042174272890264476">Seu computador já vem com a biblioteca RLZ do <ph name="SHORT_PRODUCT_NAME" /> integrada. O RLZ atribui uma tag não exclusiva e sem identificação pessoal para medir as pesquisas e o uso do <ph name="SHORT_PRODUCT_NAME" /> gerados por uma campanha promocional específica. Esses marcadores às vezes aparecem em consultas da Pesquisa Google no <ph name="PRODUCT_NAME" />.</translation>
@@ -609,6 +610,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1418559532423038045">Remove a <ph name="VM_NAME" /> do <ph name="DEVICE_TYPE" />. Isso exclui todos os apps e dados da máquina virtual.</translation>
 <translation id="1418882096915998312">Registro no Enterprise em andamento</translation>
 <translation id="1418954524306642206">Encontre o PPD da impressora para especificá-lo</translation>
+<translation id="1419086691207546433">Adicione extensões para manter a organização, facilitar tarefas e melhorar a navegação</translation>
 <translation id="1421334842435688311">Informações do local da rede celular</translation>
 <translation id="1421514190500081936">Informe um motivo para fazer o download desses dados:</translation>
 <translation id="1422159345171879700">Carregar scripts não seguros</translation>
@@ -1929,7 +1931,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2312219318583366810">URL da página</translation>
 <translation id="2314165183524574721">A configuração de visibilidade atual é: oculto</translation>
 <translation id="2314774579020744484">Idioma usado ao traduzir páginas</translation>
-<translation id="2316090909467242775">Tente usar esta senha de recuperação</translation>
 <translation id="2316129865977710310">Não.</translation>
 <translation id="2316433409811863464">Espelhamento de app</translation>
 <translation id="2316709634732130529">Usar senha sugerida</translation>
@@ -3340,6 +3341,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3309330461362844500">ID do perfil de certificado</translation>
 <translation id="3310379801837527592">Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /> e mais <ph name="NUM_OTHER_MEMBERS" /> pessoa</translation>
 <translation id="331080746368555063">Sites particulares podem incluir, por exemplo, a intranet da sua empresa</translation>
+<translation id="3311007761540106761">Padrão do sistema</translation>
 <translation id="3311445899360743395">Os dados associados a esse app poderão ser removidos deste dispositivo.</translation>
 <translation id="3312470654018965389">Configurando o contêiner Linux</translation>
 <translation id="3312883087018430408">Para pesquisar em um site específico ou em uma parte do Chrome, digite o atalho dele na barra de endereço, seguido da tecla de atalho da sua preferência. Por exemplo, para pesquisar apenas nos Favoritos, digite "@favoritos" e depois pressione Tab ou a barra de espaço.</translation>
@@ -4054,7 +4056,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensões</translation>
 <translation id="3794792524918736965">Ative o Windows Hello</translation>
 <translation id="379509625511193653">Desativado</translation>
-<translation id="3795624560191557077">Você mudou recentemente uma senha encontrada em uma violação de dados pública. Em caso de problemas, o Gerenciador de senhas do Google pode ajudar você a fazer login.</translation>
 <translation id="3796215473395753611">alt + seta para cima</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />. Use a seta para a direita para ouvir uma prévia da voz</translation>
 <translation id="3796648294839530037">Redes favoritas:</translation>
@@ -5876,7 +5877,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 com criptografia RSA</translation>
 <translation id="5090637338841444533">Bloquear o monitoramento da posição da câmera</translation>
 <translation id="5091636240353511739">Mostrar PIN</translation>
-<translation id="5093417502834168387">Problema para fazer login? Tente de outro jeito</translation>
 <translation id="5093477827231450397">Lista de sites bloqueados que você não quer que sugiram anúncios para outros sites</translation>
 <translation id="5093569275467863761">Subframe de navegação anônima salvo em cache de avanço e retorno: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Com este app, é possível abrir e editar arquivos com suporte usando o app Arquivos ou outros. Para controlar quais arquivos são abertos nesse app por padrão, <ph name="BEGIN_LINK" />aprenda a definir os apps padrão no seu dispositivo<ph name="END_LINK" />.</translation>
@@ -7662,7 +7662,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6388577073199278153">Não é possível acessar sua conta para dispositivos móveis</translation>
 <translation id="6390020764191254941">Mover guia para uma nova janela</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Nenhum}=1{Para <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> e mais 1}one{Para <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> e mais {COUNT}}other{Para <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> e mais {COUNT}}}</translation>
-<translation id="6390533465682072118">Recuperação</translation>
 <translation id="6391131092053186625">O IMEI do dispositivo é <ph name="IMEI_NUMBER" />. Esse número pode ser usado para ativar o serviço.</translation>
 <translation id="6393156038355142111">Sugerir senha forte</translation>
 <translation id="6393550101331051049">Permitir a exibição de conteúdo não seguro</translation>
@@ -10573,6 +10572,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8425213833346101688">Alterar</translation>
 <translation id="8425492902634685834">Fixar na barra de tarefas</translation>
 <translation id="8425768983279799676">Você pode usar o PIN para desbloquear seu dispositivo.</translation>
+<translation id="8426697201161711396">Faça login no Chrome para ver suas senhas e muito mais em todos os seus dispositivos</translation>
 <translation id="8427213022735114808">O ditado envia sua voz para o Google e permite Digitação por Voz em qualquer campo de texto.</translation>
 <translation id="8427292751741042100">incorporado em qualquer host</translation>
 <translation id="8428213095426709021">Configurações</translation>

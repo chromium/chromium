@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Tệp lỗi hoặc không hợp lệ</translation>
 <translation id="1040761927998636252">Dấu trang chưa có tên cho <ph name="URL" /></translation>
 <translation id="1041175011127912238">Trang này hiện không phản hồi</translation>
+<translation id="1041181446722933623">"<ph name="LOCAL_BOOKMARK" />" chỉ được lưu vào thiết bị này. Để sử dụng dấu trang này trên các thiết bị khác, hãy lưu dấu trang vào "<ph name="ACCOUNT_FOLDER" />" trong tài khoản của bạn.</translation>
 <translation id="1041263367839475438">Thiết bị hiện có</translation>
 <translation id="1041607257468256895">Quản lý quyền truy cập thông tin vị trí của trang web trong Chrome</translation>
 <translation id="1042174272890264476">Máy tính của bạn cũng đi kèm với thư viện RLZ của <ph name="SHORT_PRODUCT_NAME" /> được tích hợp sẵn. RLZ chỉ định thẻ không thể nhận dạng cá nhân, không duy nhất để đo lường các tìm kiếm và mức độ sử dụng <ph name="SHORT_PRODUCT_NAME" /> mà một chiến dịch quảng cáo cụ thể mang lại. Đôi khi các nhãn này xuất hiện trong truy vấn Google Tìm kiếm trong <ph name="PRODUCT_NAME" />.</translation>
@@ -608,6 +609,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1418559532423038045">Xoá <ph name="VM_NAME" /> khỏi <ph name="DEVICE_TYPE" /> của bạn. Tất cả ứng dụng và dữ liệu trong máy ảo này sẽ bị xoá theo!</translation>
 <translation id="1418882096915998312">Đang trong quá trình đăng ký Bản nâng cấp Enterprise</translation>
 <translation id="1418954524306642206">Duyệt qua để chỉ định tệp PPD của máy in</translation>
+<translation id="1419086691207546433">Thêm tiện ích để sắp xếp ngăn nắp, đơn giản hoá nhiệm vụ và cải thiện trải nghiệm duyệt web</translation>
 <translation id="1421334842435688311">Thông tin vị trí từ mạng di động</translation>
 <translation id="1421514190500081936">Vui lòng nhập lý do bạn cần tải dữ liệu này xuống:</translation>
 <translation id="1422159345171879700">Tải tập lệnh không an toàn</translation>
@@ -1928,7 +1930,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2312219318583366810">URL của trang</translation>
 <translation id="2314165183524574721">Tùy chọn hiển thị hiện tại là ẩn</translation>
 <translation id="2314774579020744484">Ngôn ngữ được dùng khi dịch trang</translation>
-<translation id="2316090909467242775">Thử dùng mật khẩu khôi phục này</translation>
 <translation id="2316129865977710310">Không, cảm ơn</translation>
 <translation id="2316433409811863464">Truyền phát ứng dụng</translation>
 <translation id="2316709634732130529">Sử dụng mật khẩu đề xuất</translation>
@@ -3340,6 +3341,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3309330461362844500">Mã hồ sơ chứng chỉ</translation>
 <translation id="3310379801837527592">Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /> và <ph name="NUM_OTHER_MEMBERS" /> người khác</translation>
 <translation id="331080746368555063">Các trang web riêng tư có thể bao gồm những nội dung như mạng nội bộ của công ty bạn</translation>
+<translation id="3311007761540106761">Theo giá trị mặc định của hệ thống</translation>
 <translation id="3311445899360743395">Dữ liệu liên quan đến ứng dụng này có thể bị xóa khỏi thiết bị.</translation>
 <translation id="3312470654018965389">Đang định cấu hình vùng chứa Linux</translation>
 <translation id="3312883087018430408">Để tìm kiếm một trang web cụ thể hoặc một phần của Chrome, hãy nhập lối tắt của trang web hoặc phần đó vào thanh địa chỉ, sau đó là phím tắt ưu tiên của bạn. Ví dụ: để chỉ tìm kiếm Dấu trang, hãy nhập "@bookmarks", rồi nhấn phím Tab hoặc phím cách.</translation>
@@ -4053,7 +4055,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> tiện ích</translation>
 <translation id="3794792524918736965">Bật Windows Hello</translation>
 <translation id="379509625511193653">Đang tắt</translation>
-<translation id="3795624560191557077">Bạn mới thay đổi một mật khẩu được tìm thấy trong một sự cố rò rỉ dữ liệu công khai. Trong trường hợp bạn gặp sự cố, Trình quản lý mật khẩu của Google có thể giúp bạn đăng nhập.</translation>
 <translation id="3796215473395753611">alt + mũi tên lên</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, dùng phím mũi tên phải để nghe thử giọng</translation>
 <translation id="3796648294839530037">Mạng yêu thích:</translation>
@@ -5875,7 +5876,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5088534251099454936">PKCS #1 SHA-512 Với Mã hóa RSA</translation>
 <translation id="5090637338841444533">Không được phép theo dõi vị trí máy ảnh của bạn</translation>
 <translation id="5091636240353511739">Hiện mã PIN</translation>
-<translation id="5093417502834168387">Bạn gặp sự cố khi đăng nhập? Thử cách khác</translation>
 <translation id="5093477827231450397">Danh sách trang web bạn không cho phép đề xuất quảng cáo cho các trang web khác</translation>
 <translation id="5093569275467863761">Khung phụ ẩn danh lưu trong bộ nhớ đệm cho thao tác tiến/lùi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Bạn có thể dùng ứng dụng này trên ứng dụng Files hoặc các ứng dụng khác để mở và chỉnh sửa các tệp được hỗ trợ. Để kiểm soát loại tệp mở được ứng dụng này theo mặc định, hãy <ph name="BEGIN_LINK" />tìm hiểu cách đặt ứng dụng mặc định trên thiết bị<ph name="END_LINK" />.</translation>
@@ -7660,7 +7660,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6388577073199278153">Không thể truy cập tài khoản trên thiết bị di động của bạn</translation>
 <translation id="6390020764191254941">Di chuyển thẻ sang cửa sổ mới</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Không có}=1{Cho <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> và 1 trang web khác}other{Cho <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> và {COUNT} trang web khác}}</translation>
-<translation id="6390533465682072118">Khôi phục</translation>
 <translation id="6391131092053186625">Số IMEI thiết bị của bạn là <ph name="IMEI_NUMBER" />. Số này có thể được dùng để giúp kích hoạt dịch vụ.</translation>
 <translation id="6393156038355142111">Đề xuất mật khẩu mạnh</translation>
 <translation id="6393550101331051049">Được phép hiển thị nội dung không an toàn</translation>
@@ -10571,6 +10570,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8425492902634685834">Ghim lên thanh tác vụ</translation>
 <translation id="8425768983279799676">Bạn có thể sử dụng mã PIN để mở khóa thiết bị của mình.</translation>
+<translation id="8426697201161711396">Đăng nhập vào Chrome để nhận mật khẩu và nhiều nội dung khác trên tất cả các thiết bị của bạn</translation>
 <translation id="8427213022735114808">Tính năng nhập bằng giọng nói gửi giọng nói của bạn tới Google để cho phép nhập liệu bằng giọng nói vào bất kỳ trường văn bản nào.</translation>
 <translation id="8427292751741042100">được nhúng trên bất kỳ máy chủ nào</translation>
 <translation id="8428213095426709021">Cài đặt</translation>

@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Virheellinen tai korruptoitunut tiedosto</translation>
 <translation id="1040761927998636252">Nimetön kirjanmerkki: <ph name="URL" /></translation>
 <translation id="1041175011127912238">Sivu ei vastaa</translation>
+<translation id="1041181446722933623">"<ph name="LOCAL_BOOKMARK" />" tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se tilillesi tähän kansioon: <ph name="ACCOUNT_FOLDER" />.</translation>
 <translation id="1041263367839475438">Käytettävissä olevat laitteet</translation>
 <translation id="1041607257468256895">Verkkosivustojen sijaintilupien hallinta Chromessa</translation>
 <translation id="1042174272890264476"><ph name="SHORT_PRODUCT_NAME" /> sisältää sisäänrakennetun RLZ-kirjaston. RLZ tuottaa ei-yksilöivän tagin, jolla voidaan mitata tietyn kampanjan aiheuttamia hakuja ja tuotteen <ph name="SHORT_PRODUCT_NAME" /> käyttöä. <ph name="PRODUCT_NAME" /> näyttää ajoittain näitä tunnisteita Google-hakujen kyselyissä.</translation>
@@ -608,6 +609,7 @@
 <translation id="1418559532423038045"><ph name="VM_NAME" /> poistetaan täältä: <ph name="DEVICE_TYPE" />. Kaikki virtuaalikoneen sovellukset ja data poistetaan.</translation>
 <translation id="1418882096915998312">Enterpriseen rekisteröityminen käynnissä</translation>
 <translation id="1418954524306642206">Valitse tulostimen PPD:n määritys</translation>
+<translation id="1419086691207546433">Lisää laajennuksia, joiden avulla voit pitää asiat järjestyksessä, yksinkertaistaa tehtäviä ja parantaa selauskokemusta</translation>
 <translation id="1421334842435688311">Mobiilisijaintitiedot</translation>
 <translation id="1421514190500081936">Kerro, miksi lataat tätä dataa:</translation>
 <translation id="1422159345171879700">Lataa suojaamattomat skriptit</translation>
@@ -1927,7 +1929,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2312219318583366810">Sivun URL-osoite</translation>
 <translation id="2314165183524574721">Näkyvyysasetus on piilotettu</translation>
 <translation id="2314774579020744484">Kieli, jolle sivuja käännetään</translation>
-<translation id="2316090909467242775">Kokeile tätä palautussalasanaa</translation>
 <translation id="2316129865977710310">Ei kiitos</translation>
 <translation id="2316433409811863464">Sovellusten striimaus</translation>
 <translation id="2316709634732130529">Käytä salasanaehdotusta</translation>
@@ -3339,6 +3340,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3309330461362844500">Varmenneprofiilin tunnus</translation>
 <translation id="3310379801837527592">Liity välilehtiryhmään, jossa <ph name="OWNER_FIRST_NAME" /> on ja <ph name="NUM_OTHER_MEMBERS" /> muu</translation>
 <translation id="331080746368555063">Yksityisiä sivustoja voivat olla esimerkiksi yrityksen intranet</translation>
+<translation id="3311007761540106761">Järjestelmän oletusarvo</translation>
 <translation id="3311445899360743395">Tähän sovellukseen liittyvä data saatetaan poistaa tältä laitteelta.</translation>
 <translation id="3312470654018965389">Määritetään Linux-säilöä</translation>
 <translation id="3312883087018430408">Etsi tiettyä sivustoa tai Chromen osaa kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi pikanäppäintä. Hae esimerkiksi kirjanmerkeistä kirjoittamalla "@bookmarks" ja painamalla sarkainta tai välilyöntiä.</translation>
@@ -4052,7 +4054,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> laajennusta</translation>
 <translation id="3794792524918736965">Laita Windows Hello päälle</translation>
 <translation id="379509625511193653">Pois päältä</translation>
-<translation id="3795624560191557077">Olet äskettäin vaihtanut salasanan, joka löytyi julkisesta tietosuojaloukkauksesta. Jos sinulla on ongelmia, Google Salasanat voi auttaa sinua kirjautumaan sisään.</translation>
 <translation id="3796215473395753611">Alt + ylänuoli</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, esikuuntele ääntä oikean nuolinäppäimen avulla</translation>
 <translation id="3796648294839530037">Suosikkiverkot:</translation>
@@ -5871,7 +5872,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 ja RSA-salaus</translation>
 <translation id="5090637338841444533">Kameran asennon seuraaminen kielletty</translation>
 <translation id="5091636240353511739">Näytä PIN-koodi</translation>
-<translation id="5093417502834168387">Ongelmia kirjautumisessa? Kokeile toista tapaa</translation>
 <translation id="5093477827231450397">Estämäsi sivustot, joiden et halua ehdottavan mainoksia muille sivustoille</translation>
 <translation id="5093569275467863761">Siirtymisvälimuistissa oleva incognito-alakehys: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Tällä sovelluksella voit avata ja muokata tuettuja tiedostoja Tiedostot-sovelluksesta tai muista sovelluksista. Jos haluat valita, mitkä tiedostot avautuvat oletuksena tässä sovelluksessa, <ph name="BEGIN_LINK" />lue lisää oletussovelluksen valitsemisesta laitteella<ph name="END_LINK" />.</translation>
@@ -7656,7 +7656,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6388577073199278153">Ei pääsyä mobiilitilille</translation>
 <translation id="6390020764191254941">Siirrä välilehti uuteen ikkunaan</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Ei yhtään}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ja 1 muu}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ja {COUNT} muuta}}</translation>
-<translation id="6390533465682072118">Palautus</translation>
 <translation id="6391131092053186625">Laitteesi IMEI-koodi on <ph name="IMEI_NUMBER" />. Numeroa voi käyttää palvelun aktivointiin.</translation>
 <translation id="6393156038355142111">Ehdota vahvaa salasanaa</translation>
 <translation id="6393550101331051049">Suojaamattoman sisällön näyttäminen sallittu</translation>
@@ -10564,6 +10563,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8425213833346101688">Vaihda</translation>
 <translation id="8425492902634685834">Kiinnitä tehtäväpalkkiin</translation>
 <translation id="8425768983279799676">Voit avata laitteen lukituksen PIN-koodilla.</translation>
+<translation id="8426697201161711396">Kirjaudu sisään Chromeen, jotta voit salasanojasi ja muita asetuksiasi kaikilla laitteillasi</translation>
 <translation id="8427213022735114808">Sanelu lähettää äänesi Googlelle, jotta puhekirjoitus on mahdollista kaikissa tekstikentissä.</translation>
 <translation id="8427292751741042100">verkkopalveluun upotettu</translation>
 <translation id="8428213095426709021">Asetukset</translation>

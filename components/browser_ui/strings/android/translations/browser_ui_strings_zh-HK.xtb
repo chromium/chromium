@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1816835383954230954">啟用之後可以提高 Chrome 執行速度，用 JavaScript 嘅功能應該會正常運作。閂咗之後效能會降低，不過 V8 防範攻擊嘅能力會提高。</translation>
 <translation id="1818308510395330587">如要讓 <ph name="APP_NAME" /> 使用 AR，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
+<translation id="1881806992065048905">新分頁外觀頁底面板</translation>
 <translation id="1887786770086287077">此裝置的位置資訊存取權已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="1906181697255754968">網站通常會存取裝置上的檔案和資料夾，以提供自動儲存作業等功能</translation>
 <translation id="1915307458270490472">結束通話</translation>
@@ -326,6 +327,7 @@
 <translation id="4882919381756638075">網站通常會使用麥克風來提供視像通訊等通訊功能</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">在允許網站使用您的虛擬實境裝置和資料前先詢問您 (建議)</translation>
+<translation id="4934780484581617878">視窗管理</translation>
 <translation id="4936863036653376783">你可在「分頁群組」部分中查看所有裝置中的群組</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> 已被封鎖，無法在以下位置使用你的資料：</translation>
 <translation id="4953688446973710931">開咗之後，網站可以要求自動下載多個檔案。閂咗之後，網站唔可以自動下載多個檔案。</translation>
@@ -333,6 +335,7 @@
 <translation id="4972737347717125191">網站可要求使用虛擬實境﻿裝置和資料</translation>
 <translation id="497421865427891073">往前</translation>
 <translation id="4976702386844183910">上次瀏覽日期：<ph name="DATE" /></translation>
+<translation id="4978178243417029856">進一步了解「探索」動態消息</translation>
 <translation id="4994033804516042629">找不到任何聯絡人</translation>
 <translation id="4996978546172906250">共用方式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
@@ -457,6 +460,7 @@
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="640163077447496506">今天到期</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">主題系列</translation>
 <translation id="6439114592976064011">禁止網站使用您的虛擬實境裝置和資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">開咗嘅分頁有商品減價，由 <ph name="OLD_PRICE" /> 減到 <ph name="NEW_PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN_NAME" /></translation>
@@ -560,6 +564,7 @@
 <translation id="7791543448312431591">新增</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804248752222191302">有網站正在使用您的相機</translation>
+<translation id="7805832099057502789">新分頁外觀頁底面板宜家顯示喺成個畫面</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7815680994978050279">已封鎖危險的下載項目</translation>
 <translation id="7835852323729233924">正在播放媒體</translation>
@@ -579,9 +584,11 @@
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8042586301629853791">排序方式：</translation>
 <translation id="8051193500142930381">需要攝錄機的功能將無法運作</translation>
+<translation id="8056330801132235235">Chrome 預設值</translation>
 <translation id="8067883171444229417">播放影片</translation>
 <translation id="8068648041423924542">無法選擇憑證。</translation>
 <translation id="8077120325605624147">您瀏覽的網站都可向您顯示所有廣告</translation>
+<translation id="80798452873915119">網站可以要求在您所有的顯示屏上管理視窗</translation>
 <translation id="8087000398470557479">此內容來自 <ph name="DOMAIN_NAME" />，由 Google 提供。</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />嘅其他選項</translation>
 <translation id="8112925981674547014">在應用程式清單中查看分頁</translation>

@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">برای درخواست پیوند جدید، با فرستنده تماس بگیرید</translation>
 <translation id="1013952917065545813">می‌توانید به اینجا برگردید و برگه‌هایی را که اخیراً بسته‌اید مجدداً باز کنید</translation>
 <translation id="1016495303386450659">مورد به‌روز شد</translation>
+<translation id="1017735584092444011">نشان دادن «حالت خواندن»</translation>
 <translation id="102916930470544692">گذرکلید</translation>
 <translation id="1030376737535466765">باز کردن «مدیر گذرواژه»</translation>
 <translation id="1035980983510608210">با بستن همه برگه‌ها، برگه‌های سنجاق‌شده نیز بسته خواهند شد.</translation>
@@ -186,6 +187,7 @@
 <translation id="1740650426894359238">رفتن به نمایه‌ای دیگر</translation>
 <translation id="1741219894094057085">ساعت هوشمند</translation>
 <translation id="1743244221910283364">صرف‌نظر کردن از تغییرات</translation>
+<translation id="1748975028205587434">انتخاب فایل</translation>
 <translation id="174998178145075354">{count,plural, =1{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}one{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}other{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}}</translation>
 <translation id="1750238553597293878">‏همچنان از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="17513872634828108">بازکردن برگه‌ها</translation>
@@ -528,6 +530,7 @@
 <translation id="3119874402040566234">از سیستم خارج خواهید شد و داده‌های مرور حذف خواهد شد</translation>
 <translation id="3124568093781685165">گذرواژه‌هایتان را با خانواده‌تان هم‌رسانی کنید</translation>
 <translation id="3130863904455712965">سابقه و موارد بیشتر</translation>
+<translation id="3132584647087998639">وارد کردن داده‌ها</translation>
 <translation id="313283613037595347">ایجاد «برگه ناشناس» جدید</translation>
 <translation id="3136739222562075778">این کارت کاهش قیمت محصولات در برگه‌های باز شما را نشان می‌دهد</translation>
 <translation id="3138611310073113613">صرف‌نظر کردن از انتخاب</translation>
@@ -1117,6 +1120,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="560322036295180549">سازمانتان آن را خاموش کرده است.</translation>
 <translation id="5611398002774823980">ذخیره در حساب</translation>
+<translation id="561269594905823128">روی <ph name="BEGIN_BOLD" />انتخاب فایل<ph name="END_BOLD" /> تک‌ضرب بزنید.</translation>
 <translation id="5613297089029360427">مرتب کردن براساس جدیدترین</translation>
 <translation id="5614553682702429503">گذرواژه ذخیره شود؟</translation>
 <translation id="5619871095170816857">این کارت آخرین برگه باز استفاده‌شده در تمام دستگاه‌های همگام‌سازی‌شده مربوط به ۲۴ ساعت اخیر را نشان می‌دهد.</translation>
@@ -1237,12 +1241,14 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6074656473835429958">دریافت اعلان</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) بارگذاری نشد</translation>
 <translation id="6077126322656614846">دسترسی به دوربین مجاز شد</translation>
+<translation id="607730456154980869">‏با «Gemini در Chrome»، پاسخ‌ها را سریع‌تر دریافت کنید</translation>
 <translation id="6078236141387574983">تنظیم مجدد ارتفاع برگه</translation>
 <translation id="6084848228346514841">انتخاب برگه‌ها</translation>
 <translation id="6089212833343035912">‏پین «مدیر گذرواژه Google»</translation>
 <translation id="6090760257419195752">هشدارهای ردشده</translation>
 <translation id="6096965253650248286">‫<ph name="COUNT" /> برگه پیدا شد</translation>
 <translation id="6100617279104942061">به‌عنوان <ph name="USER_EMAIL" /> به سیستم وارد شده‌اید. تنظیمات را باز می‌کند.</translation>
+<translation id="610083648014322104">پاسخ‌های مربوط براساس محتوای صفحه‌ای که در آن هستید دریافت کنید</translation>
 <translation id="6103540626693881831">رمزگذاری درون‌دستگاهی</translation>
 <translation id="611361228753138223">سایت‌هایی که اخیراً در این دستگاه بازدید کرده‌اید</translation>
 <translation id="611705554202268369">برای افزودن به گروه زبانه‌ها، فشار طولانی دهید</translation>
@@ -1495,6 +1501,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
 <translation id="6983306615164277634">برای تغییر موقعیت نوار نشانی، همچنین می‌توانید آن را لمس کنید و نگه دارید.</translation>
 <translation id="6987201788018524855">ویژگی‌های مفیدی را که ازدست داده‌اید کاوش کنید</translation>
+<translation id="6989636517316575338">درباره هر صفحه‌ای سؤال بپرسید</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">قیمت محصولات را پیگیری کنید و برای کاهش قیمت در هر سایتی هشدار دریافت کنید</translation>
 <translation id="7004032350256606903">سازمانتان از شما می‌خواهد به‌طور خصوصی مرور کنید.
@@ -1565,6 +1572,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7367530036083223701">با ابزاره «مدیر گذرواژه»، به‌طور ایمن ازطریق صفحه اصلی به گذرواژه‌هایتان دسترسی پیدا کنید.</translation>
 <translation id="7369285139974632858">افزودن به نشانک‌ها</translation>
 <translation id="7380220816562673297">‏درحال‌حاضر، می‌توانید گذرواژه‌ها را فقط با اعضای خانواده هم‌رسانی کنید. <ph name="BEGIN_LINK" />گروه خانواده‌ای با حداکثر ۶ عضو ایجاد کنید<ph name="END_LINK" /> و بهره بیشتری از محصولات و اشتراک‌ها در Google ببرید.</translation>
+<translation id="7380698179418029202">‏فایل <ph name="BEGIN_BOLD" />‎.zip<ph name="END_BOLD" /> صادرشده از Safari را انتخاب کنید</translation>
 <translation id="739101637685146669">کدام نشانی وب را می‌خواهید نشانک‌گذاری کنید؟</translation>
 <translation id="7393747756726387725">زوم‌پیش کردن</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{‫۱ سایت}one{‫# سایت}other{‫# سایت}}</translation>
@@ -1696,6 +1704,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7863211248337747225">دریافت کردن برنامه</translation>
 <translation id="7865127013871431856">گزینه‌های ترجمه</translation>
 <translation id="7866872729285243843">برای دریافت فهرست خواندن در همه دستگاه‌هایتان، «فهرست خواندن» را در تنظیمات روشن کنید.</translation>
+<translation id="787364769771947486">پنهان کردن «حالت خواندن»</translation>
 <translation id="7874107544081154809">تکمیل خودکار فرم با <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">چند گذرواژه دوباره‌استفاده‌شده دارید.</translation>
 <translation id="7887174313503389866">در گشت با راهنمای مربوط به کنترل‌های اصلی امنیت و حریم خصوصی شرکت کنید. برای گزینه‌های بیشتر، به‌طور جداگانه به هر تنظیم بروید.</translation>
@@ -1703,6 +1712,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7887552845761062935">برای باز کردن گزینه‌های بیشتر، دو تک‌ضرب بزنید و نگه دارید</translation>
 <translation id="7889910613639381518">‏دسترسی آسان و ایمن با ابزاره «مدیر گذرواژه Google».</translation>
 <translation id="7899199123054742721">علامت‌گذاری همه به‌عنوان خوانده‌نشده</translation>
+<translation id="7908957400505794782">روی <ph name="BEGIN_BOLD" />تمام<ph name="END_BOLD" /> بزنید</translation>
 <translation id="7911190106180361398">سازمانتان به شما اجازه نمی‌دهد همه چیز را همگام‌سازی کنید.</translation>
 <translation id="792357691529995513">مشکلی پیدا نشد</translation>
 <translation id="7925108652071887026">داده‌های تکمیل خودکار</translation>
@@ -1752,6 +1762,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8058655154417507695">سال انقضا</translation>
 <translation id="8059533439631660104">بخش را کوچک می‌کند.</translation>
 <translation id="8061584726507121204">سابقه</translation>
+<translation id="8069168488983557089">بینش‌ها و نکات کلیدی را که در درک هر موضوعی به شما کمک می‌کنند دریافت کنید</translation>
 <translation id="8069394452933076548">انتخاب کنید برگه‌هایی که اخیراً از آن‌ها استفاده نشده است چه‌موقع به بخش برگه غیرفعال منتقل شوند.</translation>
 <translation id="8073670137947914548">بارگیری به پایان رسید</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>

@@ -152,6 +152,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1671236975893690980">Čakanje na prenos …</translation>
 <translation id="1672586136351118594">Tega ne prikaži več</translation>
 <translation id="1680919990519905526">Kupi z Googlom Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020in zaprti po toliko mesecih: <ph name="MONTHS_ARCHIVED" /></translation>
 <translation id="1687482373098770139">Kmalu bo v razdelku »Spremljano« prikazana vsebina iz vira <ph name="SITE_NAME" /> in o njem. Spletna mesta in iskanja, ki jih spremljate, se shranjujejo v računu Google. Tisto, kar spremljate, lahko kadar koli upravljate v nastavitvah.</translation>
 <translation id="1689333818294560261">Vzdevek</translation>
 <translation id="1696555181932908973">Na <ph name="SITE_ETLD_PLUS_ONE" /> lahko poskusite nadaljevati na druge načine.</translation>
@@ -352,6 +353,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2593272815202181319">Stalna širina</translation>
 <translation id="260403163289591229">Spremljano</translation>
 <translation id="2604446170045642109">V nastavitvah lahko izklopite temno temo za spletna mesta.</translation>
+<translation id="2605017215201958293">Poslušanje te strani z umetno inteligenco</translation>
 <translation id="2607441479295509868">Odjavljeni ste. Znova se prijavite, če želite uporabljati zaznamke, gesla in drugo v računu.</translation>
 <translation id="2620314865574742210">Oseba <ph name="NAME" /> vas je povabila, da dostopate do deljenega elementa.</translation>
 <translation id="2625189173221582860">Geslo kopirano</translation>
@@ -876,6 +878,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="496607651705915226">Če želite v računu Google shraniti in uporabljati nova gesla, posodobite storitve Google Play</translation>
 <translation id="4971753085054504448">Poskusite poiskati nekaj drugega ali odprite celotno zgodovino uporabe Chroma, da si ogledate več rezultatov.</translation>
 <translation id="497421865427891073">Pojdi naprej</translation>
+<translation id="497983151715419057">Tukaj preglejte neaktivne zavihke in skupine</translation>
 <translation id="498624032394115435">Vsi s povezavo lahko urejajo vse zavihke.</translation>
 <translation id="4987271110129728827">Te strani ni mogoče najti. Preverite črkovanje ali poskusite spletno iskanje.</translation>
 <translation id="4988526792673242964">Strani</translation>
@@ -936,7 +939,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5226378907213531272">Pri vsaki uporabi avtomobila boste odklenili zaslon</translation>
 <translation id="5227554086496586518">Dotaknite se, če želite prikazati rezultate iskanja</translation>
-<translation id="5229736206150093143">Najnovejši rezultati</translation>
 <translation id="5233638681132016545">Nov zavihek</translation>
 <translation id="5235196193381275927">Med prijavo je prišlo do težave.</translation>
 <translation id="5246093389635966745">Urejanje bližnjice orodne vrstice</translation>
@@ -1064,6 +1066,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="583281660410589416">Neznano</translation>
 <translation id="5833984609253377421">Deli povezavo z drugimi</translation>
 <translation id="5839058148541733625">Dino za Chrome</translation>
+<translation id="5842871376175639063">Zavihki in skupine zavihkov, ki jih niste uporabljali toliko dni: <ph name="DAYS_INACTIVE" />, so premaknjeni sem<ph name="AUTODELETE_SECTION" />. To lahko kadar koli spremenite tu: <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Želite odpreti PDF z aplikacijo <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Želite ustaviti deljenje?</translation>
 <translation id="5853623416121554550">začasno ustavljeno</translation>
@@ -1432,6 +1435,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7304873321153398381">Brez povezave. Chrome ne more preveriti vaših gesel.</translation>
 <translation id="7313188324932846546">Dotaknite se, če želite nastaviti sinhronizacijo.</translation>
 <translation id="7314734791127433392">Gesel ni mogoče preveriti</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Zavihki in skupine zavihkov, ki jih niste uporabljali 1 dan ali več}one{Zavihki in skupine zavihkov, ki jih niste uporabljali # dan ali več}two{Zavihki in skupine zavihkov, ki jih niste uporabljali # dneva ali več}few{Zavihki in skupine zavihkov, ki jih niste uporabljali # dni ali več}other{Zavihki in skupine zavihkov, ki jih niste uporabljali # dni ali več}}</translation>
 <translation id="7324354302972299151">Pošlji zahtevo »Do Not Track«</translation>
 <translation id="7333041109965360609">Odjavljeni ste od prejemanja obvestil</translation>
 <translation id="7336259382292148213">Obvestila so videti v redu</translation>
@@ -1643,6 +1647,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8137562778192957619">Tega gesla si vam ne bo treba zapomniti. Shranjeno bo v Googlovem upravitelju gesel.</translation>
 <translation id="8152331954420209374">Odpiranje Lensa</translation>
 <translation id="8163820386638255770">Če želite v računu Google uporabljati in shranjevati gesla, potrdite, da ste to vi</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) neaktiven element}one{(#) neaktiven element}two{(#) neaktivna elementa}few{(#) neaktivni elementi}other{(#) neaktivnih elementov}}</translation>
 <translation id="8186512483418048923">Še toliko datotek: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Še 1 dan</translation>
 <translation id="8192765420340770300">Razdelek na dnu zaslona za prijavo je odprt pri polni višini</translation>

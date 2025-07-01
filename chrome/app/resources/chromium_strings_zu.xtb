@@ -40,6 +40,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1547469039832541117">Ivala umsebenzi ogqanyisiwe.</translation>
 <translation id="1553461853655228091">I-Chromium idinga imvume yokufinyelela kwikhamera yakho ukudala imephu engu-3D yendawo yakho ekuzungezile</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Lesi sandiso asisasekelwa. IChromium incoma ukuthi usisuse.}one{Lezi zandiso azisasekelwa. IChromium incoma ukuthi uzisuse.}other{Lezi zandiso azisasekelwa. IChromium incoma ukuthi uzisuse.}}</translation>
+<translation id="1562320819937089394">Phina iChromium</translation>
 <translation id="1574377791422810894">Amathuluzi okuphepha e-Chromium</translation>
 <translation id="1594928384848033697">IChromium ifuna ukusula idatha Yesiphathi sakho Sephasiwedi. Thayipha iphasiwedi yakho yeWindows ukuze uvumele lokhu.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Umlawuli wakho udinga ukuthi uqalise kabusha i-Chromium ukuze kusetshenziswe isibuyekezo}=1{Umlawuli wakho udinga ukuthi uqalise kabusha i-Chromium ukuze kusetshenziswe isibuyekezo. Iwindi lakho le-Incognito ngeke liphinde livuleke.}one{Umlawuli wakho udinga ukuthi uqalise kabusha i-Chromium ukuze kusetshenziswe isibuyekezo. Amawindi akho angu-# e-Incognito ngeke aze aphinde avuleke.}other{Umlawuli wakho udinga ukuthi uqalise kabusha i-Chromium ukuze kusetshenziswe isibuyekezo. Amawindi akho angu-# e-Incognito ngeke aze aphinde avuleke.}}</translation>
@@ -522,6 +523,7 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="8004582292198964060">Isiphequluli</translation>
 <translation id="8010081455002666927">Thola ngokuzenzakalela</translation>
 <translation id="8013436988911883588">Uma i-Chromium inokufinyelela, amawebhusayithi azokwazi ukukucela ukufinyelela.</translation>
+<translation id="8031714377769448844">Phina iChromium ku-taskbar yakho ukuze ufike kuyo ngokushesha noma nini</translation>
 <translation id="80471789339884597">Siyabonga ngokufaka. Kufanele uqalise kabusha wonke amabhrawuza akho ngaphambi kokusebenzisa i-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Bonisa Isinqamuleli Sokusesha Umfanekiso Njalo</translation>
 <translation id="8077498902115777962">Vala iChromium esebenza ngemuva kuma-app</translation>

@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Wasiliana na aliyekituma akupe kiungo kipya</translation>
 <translation id="1013952917065545813">Unaweza kurudi hapa ili ufungue tena vichupo ambavyo ulifunga hivi majuzi</translation>
 <translation id="1016495303386450659">Umesasisha kipengee</translation>
+<translation id="1017735584092444011">Onyesha Hali ya Kusoma</translation>
 <translation id="102916930470544692">Ufunguo wa siri</translation>
 <translation id="1030376737535466765">Fungua Kidhibiti cha Manenosiri</translation>
 <translation id="1035980983510608210">Kufunga vichupo vyote kutafunga vichupo vilivyobandikwa pia.</translation>
@@ -1237,12 +1238,14 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6074656473835429958">Pokea arifa</translation>
 <translation id="607620096698446287">Imeshindwa kupakia <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Ufikiaji wa Kamera umeruhusiwa</translation>
+<translation id="607730456154980869">Pata majibu haraka ukitumia Gemini kwenye Chrome</translation>
 <translation id="6078236141387574983">Rekebisha urefu wa laha</translation>
 <translation id="6084848228346514841">Chagua Vichupo</translation>
 <translation id="6089212833343035912">PIN ya Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="6090760257419195752">Maonyo uliyoondoa</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> vimepatikana</translation>
 <translation id="6100617279104942061">Umeingia katika akaunti ukitumia <ph name="USER_EMAIL" />. Inafungua mipangilio.</translation>
+<translation id="610083648014322104">Pata majibu yanayolingana na maudhui ya ukurasa ulioko</translation>
 <translation id="6103540626693881831">Usimbaji Fiche Kwenye Kifaa</translation>
 <translation id="611361228753138223">Tovuti ulizotembelea hivi majuzi kwenye kifaa hiki</translation>
 <translation id="611705554202268369">Bonyeza kwa muda mrefu ili uweke kwenye kikundi cha vichupo</translation>
@@ -1495,6 +1498,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6979737339423435258">Wakati wote</translation>
 <translation id="6983306615164277634">Unaweza pia kugusa na kushikilia sehemu ya anwani ili ubadilishe nafasi.</translation>
 <translation id="6987201788018524855">Gundua vipengele muhimu ulivyokosa</translation>
+<translation id="6989636517316575338">Uliza kuhusu ukurasa wowote</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Fuatilia bei za bidhaa na upate arifa bei inaposhuka kwenye tovuti yoyote</translation>
 <translation id="7004032350256606903">Shirika lako linahitaji uvinjari kwa faragha.
@@ -1696,6 +1700,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7863211248337747225">Weka programu kwenye kifaa</translation>
 <translation id="7865127013871431856">Chaguo za tafsiri</translation>
 <translation id="7866872729285243843">Ili upate orodha yako ya kusoma kwenye vifaa vyako vyote, washa kipengele cha "Orodha ya Kusoma" katika mipangilio.</translation>
+<translation id="787364769771947486">Ficha Hali ya Kusoma</translation>
 <translation id="7874107544081154809">Jaza fomu kiotomatiki kwa kuweka <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Una manenosiri yaliyotumiwa kwingine.</translation>
 <translation id="7887174313503389866">Kagua vidhibiti muhimu vya faragha na usalama kwa kutumia mwongozo. Kwa chaguo zaidi, nenda kwenye mipangilio mahususi.</translation>
@@ -1752,6 +1757,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8058655154417507695">Mwaka wa kuisha kwa muda wa matumizi</translation>
 <translation id="8059533439631660104">Hukunja sehemu.</translation>
 <translation id="8061584726507121204">Historia</translation>
+<translation id="8069168488983557089">Pata maarifa na mambo muhimu yanayokusaidia kuelewa mada yoyote</translation>
 <translation id="8069394452933076548">Chagua wakati ambao vichupo ambavyo havijatumika hivi karibuni vinahamishiwa kwenye sehemu ya vichupo ambavyo havitumiki.</translation>
 <translation id="8073670137947914548">Imemaliza kupakua</translation>
 <translation id="8076492880354921740">Vichupo</translation>

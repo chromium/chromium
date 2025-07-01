@@ -187,6 +187,7 @@
 <translation id="1740650426894359238">دوسری پروفائل پر سوئچ کریں</translation>
 <translation id="1741219894094057085">اسمارٹ گھڑی</translation>
 <translation id="1743244221910283364">تبدیلیاں مسترد کریں</translation>
+<translation id="1748975028205587434">اپنی فائل منتخب کریں</translation>
 <translation id="174998178145075354">{count,plural, =1{آپ کے کی بورڈ کے اوپر پتے کے لیے {count} اختیار دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر پتے کے لیے {count} اختیارات دستیاب ہیں۔}}</translation>
 <translation id="1750238553597293878">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کرتے رہیں</translation>
 <translation id="17513872634828108">کھلے ٹیبز</translation>
@@ -529,6 +530,7 @@
 <translation id="3119874402040566234">آپ سائن آؤٹ ہو جائیں گے اور براؤزنگ ڈیٹا کو حذف کر دیا جائے گا</translation>
 <translation id="3124568093781685165">اپنے پاس ورڈز اپنی فیملی کے ساتھ اشتراک کریں</translation>
 <translation id="3130863904455712965">سرگزشت اور مزید</translation>
+<translation id="3132584647087998639">اپنا ڈیٹا درآمد کریں</translation>
 <translation id="313283613037595347">نیا پوشیدگی ٹیب بنائیں۔</translation>
 <translation id="3136739222562075778">یہ کارڈ آپ کے کھلے ٹیبز میں پروڈکٹس کی قیمتوں میں کمی کو ظاہر کرتا ہے</translation>
 <translation id="3138611310073113613">انتخاب کو مسترد کریں</translation>
@@ -1118,6 +1120,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="560322036295180549">آپ کی تنظیم کے ذریعے اف کر دیا گیا</translation>
 <translation id="5611398002774823980">اکاؤنٹ میں محفوظ کریں</translation>
+<translation id="561269594905823128"><ph name="BEGIN_BOLD" />اپنی فائل منتخب کریں<ph name="END_BOLD" /> پر تھپتھپائیں</translation>
 <translation id="5613297089029360427">تازہ ترین کے لحاظ سے ترتیب دیں</translation>
 <translation id="5614553682702429503">پاس ورڈ کو محفوظ کریں؟</translation>
 <translation id="5619871095170816857">یہ کارڈ پچھلے 24 گھنٹوں کے اندر آپ کے تمام مطابقت پذیر آلات پر آپ کا آخری استعمال شدہ کھلا ہوا ٹیب دکھاتا ہے۔</translation>
@@ -1569,6 +1572,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7367530036083223701">پاس ورڈ مینیجر ویجیٹ کی مدد سے ہوم اسکرین سے اپنے پاس ورڈز تک محفوظ طریقے سے رسائی حاصل کریں۔</translation>
 <translation id="7369285139974632858">بُک مارکس میں شامل کریں</translation>
 <translation id="7380220816562673297">‏ابھی کے لیے، آپ صرف فیملی ممبرز کے ساتھ پاس ورڈز کا اشتراک کر سکتے ہیں۔ 6 اراکین تک کا <ph name="BEGIN_LINK" />ایک فیملی گروپ بنائیں<ph name="END_LINK" /> اور Google پر اپنے پروڈکٹس اور سبسکرپشنز سے مزید حاصل کریں۔</translation>
+<translation id="7380698179418029202">‏اپنی Safari ایکسپورٹ <ph name="BEGIN_BOLD" />‎.zip<ph name="END_BOLD" /> فائل منتخب کریں</translation>
 <translation id="739101637685146669">‏آپ کس URL کو بک مارک کرنا چاہیں گے؟</translation>
 <translation id="7393747756726387725">زوم ان کریں</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 سائٹ}other{# سائٹس}}</translation>
@@ -1708,6 +1712,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7887552845761062935">مزید اختیارات کھولنے کے لیے دو بار تھپتھپائیں اور دبائے رکھیں</translation>
 <translation id="7889910613639381518">‏Google پاس ورڈ مینیجر ویجیٹ کی مدد سے آسان اور محفوظ رسائی۔</translation>
 <translation id="7899199123054742721">سبھی کو بغیر پڑھا ہوا کے بطور نشان کریں</translation>
+<translation id="7908957400505794782"><ph name="BEGIN_BOLD" />ہوگیا<ph name="END_BOLD" /> پر تھپتھپائیں</translation>
 <translation id="7911190106180361398">آپ کی تنظیم آپ کے لیے ہر چیز کی مطابقت پذیری کرنے کی اجازت نہیں دیتی ہے۔</translation>
 <translation id="792357691529995513">کوئی مسئلہ نہیں ملا</translation>
 <translation id="7925108652071887026">آٹو فل ڈیٹا</translation>

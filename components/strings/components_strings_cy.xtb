@@ -793,6 +793,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2310789833878085574">Cadw ac awtolenwi</translation>
 <translation id="2312234273148520048">Cynfennau a Dresin</translation>
 <translation id="2316087952091171402">Llai na <ph name="UPPER_ESTIMATE" />. Mae'n bosib y bydd rhai gwefannau yn llwytho'n fwy araf ar eich ymweliad nesaf.</translation>
+<translation id="2316090909467242775">Rhowch gynnig ar y cyfrinair adfer hwn</translation>
 <translation id="2316159751672436664">Personoleiddio'ch offer hygyrchedd yng ngosodiadau ChromeOS</translation>
 <translation id="2316887270356262533">Yn creu llai nag 1 MB. Mae'n bosib y bydd rhai gwefannau yn llwytho'n arafach ar eich ymweliad nesaf.</translation>
 <translation id="2317259163369394535">Mae <ph name="DOMAIN" /> yn gofyn am enw defnyddiwr a chyfrinair.</translation>
@@ -1673,6 +1674,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> modfedd)</translation>
 <translation id="3792826587784915501">Ffilmiau Cwlt ac Indie</translation>
 <translation id="3793574014653384240">Niferoedd ac achosion y toriadau sydd wedi digwydd yn ddiweddar</translation>
+<translation id="3795624560191557077">Yn ddiweddar, fe wnaethoch chi newid cyfrinair a ganfuwyd mewn achos o dor data cyhoeddus. Mewn achos o drafferth, gall Rheolwr Cyfrinair Google eich helpu i fewngofnodi.</translation>
 <translation id="3799805948399000906">Y ffont a geisiwyd</translation>
 <translation id="3801297763951514916">Rydych yn ymweld yn aml</translation>
 <translation id="380329542618494757">Enw</translation>
@@ -2433,6 +2435,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5089810972385038852">Talaith</translation>
 <translation id="5090647584136241764">Ychwanegu tabiau gyda chynhyrchion tebyg i gymharu'r manylion sy'n bwysig i chi yn hawdd</translation>
 <translation id="5093232627742069661">Plyg Z</translation>
+<translation id="5093417502834168387">Cael trafferth wrth fewngofnodi? Rhowch gynnig ar ffordd arall</translation>
 <translation id="5094747076828555589">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; nid yw Chromium yn ymddiried yn ei dystysgrif ddiogelwch. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
 <translation id="5097099694988056070">Ystadegau'r ddyfais megis defnydd o CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 modfedd</translation>
@@ -3201,6 +3204,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6388060462449937608">Offer Ffitrwydd ac Ategolion</translation>
 <translation id="6389470377220713856">Enw ar y Cerdyn</translation>
 <translation id="6390200185239044127">Hanner Plyg Z</translation>
+<translation id="6390533465682072118">Adferiad</translation>
 <translation id="639068771471208680">Ffurf Aml-Ran</translation>
 <translation id="6391700400718590966">Mae dalen dim manylion sy'n cyfateb y prosiect manylion talu diogel ar gau</translation>
 <translation id="6392799395081100092">Papur (Felwm)</translation>

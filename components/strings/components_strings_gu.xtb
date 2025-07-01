@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">સાચવો અને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="2312234273148520048">વ્યંજનો અને રાયતું</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> કરતાં ઓછું. તમારી આગલી મુલાકાત વખતે કેટલીક સાઇટ વધુ ધીમે લોડ થાય એમ બની શકે છે.</translation>
+<translation id="2316090909467242775">આ રિકવરીનો પાસવર્ડ અજમાવી જુઓ</translation>
 <translation id="2316159751672436664">ChromeOS સેટિંગમાં જઈને તમારા ઍક્સેસિબિલિટીના ટૂલને મનગમતા બનાવો</translation>
 <translation id="2316887270356262533">1 MB કરતાં ઓછું ખાલી કરે છે. તમારી આગલી મુલાકાત સમયે કેટલીક સાઇટ વધુ ધીમે લોડ થઈ શકે છે.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> માટે વપરાશકર્તાનામ અને પાસવર્ડ આવશ્યક છે.</translation>
@@ -1673,6 +1674,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ઇંચ)</translation>
 <translation id="3792826587784915501">કલ્ટ અને ઇન્ડી મૂવી</translation>
 <translation id="3793574014653384240">તાજેતરના અકસ્માતોની સંખ્યા અને કારણો</translation>
+<translation id="3795624560191557077">તમે તાજેતરમાં બદલાવેલો પાસવર્ડ કોઈ સાર્વજનિક ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. કોઈ સમસ્યા આવે ત્યારે Google Password Manager તમને સાઇન ઇન કરવામાં મદદ કરી શકે છે.</translation>
 <translation id="3799805948399000906">ફોન્ટની વિનંતી કરી</translation>
 <translation id="3801297763951514916">તમે વારંવાર મુલાકાત લો છો</translation>
 <translation id="380329542618494757">નામ</translation>
@@ -2433,6 +2435,7 @@
 <translation id="5089810972385038852">રાજ્ય</translation>
 <translation id="5090647584136241764">તમારા માટે મહત્ત્વની હોય તેવી વિગતોની સરળતાથી તુલના કરવા માટે સમાન પ્રોડક્ટ ધરાવતા ટૅબ ઉમેરો</translation>
 <translation id="5093232627742069661">Z-ફોલ્ડ</translation>
+<translation id="5093417502834168387">સાઇન ઇન કરવામાં સમસ્યા આવી? બીજી રીત અજમાવી જુઓ</translation>
 <translation id="5094747076828555589">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર Chromium દ્વારા વિશ્વસનીય નથી. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="5097099694988056070">CPU/RAM વપરાશ જેવા ડિવાઇસ આંકડા</translation>
 <translation id="5097468150760963273">27 x 39 ઇંચ</translation>
@@ -3201,6 +3204,7 @@
 <translation id="6388060462449937608">ફિટનેસનું સાધન અને ઍક્સેસરી</translation>
 <translation id="6389470377220713856">કાર્ડ પરનું નામ</translation>
 <translation id="6390200185239044127">અડધું Z-ફોલ્ડ</translation>
+<translation id="6390533465682072118">રિકવરી</translation>
 <translation id="639068771471208680">એક કરતા વધુ ભાગમાં ફોર્મ</translation>
 <translation id="6391700400718590966">ચુકવણીની સુરક્ષિત લૉગ ઇન વિગત, મેળ ખાતી લૉગ ઇન વિગતની કોઈપણ શીટ બંધ કરવામાં આવી નથી</translation>
 <translation id="6392799395081100092">પેપર (હસ્તલિખિત)</translation>

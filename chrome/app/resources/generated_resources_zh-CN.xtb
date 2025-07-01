@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">文件无效或已损坏</translation>
 <translation id="1040761927998636252"><ph name="URL" /> 的未命名书签</translation>
 <translation id="1041175011127912238">该页面未响应</translation>
+<translation id="1041181446722933623">“<ph name="LOCAL_BOOKMARK" />”仅会保存到此设备上。若要在其他设备上使用，请将其保存到“<ph name="ACCOUNT_FOLDER" />”。</translation>
 <translation id="1041263367839475438">可用的设备</translation>
 <translation id="1041607257468256895">在 Chrome 中管理网站位置信息权限</translation>
 <translation id="1042174272890264476">您的计算机还内置了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 库。RLZ 会指定非唯一、非个人身份识别代码来衡量某推广活动所带来的搜索量和 <ph name="SHORT_PRODUCT_NAME" /> 使用量。这些标签有时会显示在 <ph name="PRODUCT_NAME" /> 的 Google 搜索查询中。</translation>
@@ -608,6 +609,7 @@
 <translation id="1418559532423038045">从 <ph name="DEVICE_TYPE" /> 中移除 <ph name="VM_NAME" />。此操作会删除虚拟机中的所有应用和数据！</translation>
 <translation id="1418882096915998312">正在注册企业版</translation>
 <translation id="1418954524306642206">浏览以指定您的打印机 PPD</translation>
+<translation id="1419086691207546433">添加扩展程序，保持井然有序、简化任务并增强浏览体验</translation>
 <translation id="1421334842435688311">移动网络位置信息</translation>
 <translation id="1421514190500081936">请输入下载此数据的原因：</translation>
 <translation id="1422159345171879700">加载不安全的脚本</translation>
@@ -1908,7 +1910,6 @@
 <translation id="2312219318583366810">网页网址</translation>
 <translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
 <translation id="2314774579020744484">翻译页面时使用的语言</translation>
-<translation id="2316090909467242775">请尝试使用此恢复密码</translation>
 <translation id="2316129865977710310">不用了，谢谢</translation>
 <translation id="2316433409811863464">应用串流</translation>
 <translation id="2316709634732130529">使用建议的密码</translation>
@@ -3317,6 +3318,7 @@
 <translation id="3309330461362844500">证书 ID</translation>
 <translation id="3310379801837527592">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的标签页分组</translation>
 <translation id="331080746368555063">私密网站可能包括公司内网等</translation>
+<translation id="3311007761540106761">系统默认设置</translation>
 <translation id="3311445899360743395">系统可能会从此设备上移除与该应用相关的数据。</translation>
 <translation id="3312470654018965389">正在配置 Linux 容器</translation>
 <translation id="3312883087018430408">若要在某一特定网站或 Chrome 的某个部分中进行搜索，请先在地址栏中输入相应的快捷字词，然后按您的首选键盘快捷键。例如，若要仅在“书签”部分中进行搜索，请先输入“@bookmarks”，然后按 Tab 键或空格键。</translation>
@@ -4030,7 +4032,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 个扩展程序</translation>
 <translation id="3794792524918736965">开启 Windows Hello</translation>
 <translation id="379509625511193653">已关闭</translation>
-<translation id="3795624560191557077">您最近更改了遭遇公开数据泄露的密码。如果您遇到问题，Google 密码管理工具可以帮助您登录。</translation>
 <translation id="3796215473395753611">alt + 向上键</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />，点按播放按钮可试听语音</translation>
 <translation id="3796648294839530037">收藏的网络：</translation>
@@ -5850,7 +5851,6 @@
 <translation id="5088534251099454936">PKCS #1，带有 RSA 加密的 SHA-512</translation>
 <translation id="5090637338841444533">不允许跟踪您的摄像头位置</translation>
 <translation id="5091636240353511739">显示 PIN 码</translation>
-<translation id="5093417502834168387">无法登录？请试试其他方式</translation>
 <translation id="5093477827231450397">网站列表，这些网站已被您屏蔽，因为您不想让它们向其他网站建议广告</translation>
 <translation id="5093569275467863761">无痕式往返缓存版子框架：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">您可以在“文件”应用或其他应用中，使用此应用打开和编辑支持的文件。若要控制哪些文件默认打开此应用，请<ph name="BEGIN_LINK" />了解如何在设备上设置默认应用<ph name="END_LINK" />。</translation>
@@ -7631,7 +7631,6 @@
 <translation id="6388577073199278153">无法访问您的移动账号</translation>
 <translation id="6390020764191254941">将标签页移至新窗口</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{无}=1{适用于 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> 和另外 1 个网域}other{适用于 <ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> 和另外 {COUNT} 个网域}}</translation>
-<translation id="6390533465682072118">恢复</translation>
 <translation id="6391131092053186625">您的设备 IMEI 为 <ph name="IMEI_NUMBER" />。此号码可用于帮助激活服务。</translation>
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6393550101331051049">允许显示不安全内容</translation>
@@ -7864,6 +7863,7 @@
 <translation id="6560151649238390891">已插入建议</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6561726789132298588">Enter</translation>
+<translation id="6561877237303825108">此文件类型 (<ph name="TYPE" />) 可能存在危险。请仅在您信任 <ph name="ORIGIN" /> 的情况下保存此文件</translation>
 <translation id="6562117348069327379">将系统日志存储到“下载内容”目录中。</translation>
 <translation id="656293578423618167">该文件的路径或名称过长。请以较短的名称保存或保存到其他位置。</translation>
 <translation id="6563002009564846727">查看从 Windows 导入的证书</translation>
@@ -9668,6 +9668,7 @@
 <translation id="7830833461614351956">将 <ph name="NUM_OF_FILES" /> 个文件复制到 <ph name="CLOUD_PROVIDER" />后再打开？</translation>
 <translation id="7831754656372780761">“<ph name="TAB_TITLE" />”<ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">已保存的自定义字词将显示在这里</translation>
+<translation id="7834832693620032149">如需共享音频，请改为共享标签页或窗口</translation>
 <translation id="7836577093182643605">主题列表，这些主题已被您屏蔽，因为您不想将它们分享给网站</translation>
 <translation id="7836745198769390202">您目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />和其他一些数据。您的组织将能够查看和管理这些数据</translation>
 <translation id="7836850009646241041">请再次尝试轻触您的安全密钥</translation>
@@ -10538,6 +10539,7 @@
 <translation id="8425213833346101688">更改</translation>
 <translation id="8425492902634685834">固定在任务栏上</translation>
 <translation id="8425768983279799676">您可以使用 PIN 码来解锁您的设备。</translation>
+<translation id="8426697201161711396">登录 Chrome 即可获取您在所有设备上保存的密码等</translation>
 <translation id="8427213022735114808">语音输入功能会将您的语音内容发送给 Google，以便能在任何文本字段中进行语音输入。</translation>
 <translation id="8427292751741042100">嵌入到任何主机上</translation>
 <translation id="8428213095426709021">设置</translation>
@@ -11275,6 +11277,7 @@
 <translation id="8940081510938872932">计算机当前处理的内容过多。请稍后重试。</translation>
 <translation id="8940888110818450052">登录选项</translation>
 <translation id="8941173171815156065">撤消“<ph name="PERMISSION" />”权限</translation>
+<translation id="8941209844691374403">“<ph name="APP_NAME" />”正在共享窗口和音频。</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />处于关闭状态</translation>
 <translation id="894191600409472540">创建安全系数高的密码</translation>
 <translation id="8942714513622077633">取消 Microsoft 365 设置？</translation>

@@ -37,6 +37,7 @@
 <translation id="141901961143729572">Comparte o que pensas</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Actualizouse Chrome. Podes usar a versión máis recente tan pronto como o reinicies. Despois volverán abrirse as pestanas actuais.}=1{Actualizouse Chrome. Cando reinicies o dispositivo, xa podes usar a versión máis recente. Despois volverán abrirse as pestanas actuais. A ventá do modo de incógnito non se volverá abrir.}other{Actualizouse Chrome. Cando reinicies o dispositivo, xa podes usar a versión máis recente. Despois volverán abrirse as pestanas actuais. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="1434626383986940139">Aplicacións de Chrome Canary</translation>
+<translation id="1439793550875056299">Fixar Chrome</translation>
 <translation id="146866447420868597">Queres iniciar sesión en Chrome?</translation>
 <translation id="1492280395845991349">Reiniciar para completar a actualización de Chrome</translation>
 <translation id="1497802159252041924">Erro de instalación: <ph name="INSTALL_ERROR" /></translation>
@@ -361,6 +362,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Produciuse un erro de inicio do sistema: Executa o instalador como un usuario normal, non como persoa administradora.</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
+<translation id="5600352656975192682">Fixa Chrome na barra de tarefas para acceder rapidamente en calquera momento</translation>
 <translation id="5602351063754773347">Chrome recomenda que a quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Cos perfís de Chrome podes separar todo o contido que teñas neste navegador. Crea perfís para os amigos e a familia ou ben crea un para o traballo e outro para o lecer.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, así que Chrome bloqueouno.</translation>

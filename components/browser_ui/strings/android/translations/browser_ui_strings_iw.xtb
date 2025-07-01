@@ -327,6 +327,7 @@
 <translation id="4882919381756638075">אתרים משתמשים בדרך כלל במיקרופון של המכשיר כדי לתמוך בתכונות תקשורת כמו וידאו צ'אט</translation>
 <translation id="4883854917563148705">לא ניתן לאפס הגדרות מנוהלות</translation>
 <translation id="4887024562049524730">תוצג שאלה לפני מתן הרשאה לאתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה שלך (מומלץ)</translation>
+<translation id="4934780484581617878">ניהול החלונות</translation>
 <translation id="4936863036653376783">הקבוצות שלך יופיעו בקטע 'קבוצת כרטיסיות' בכל המכשירים</translation>
 <translation id="4945443401464700059">לאתר <ph name="SITE" /> אין אפשרות להשתמש במידע שלך בכתובות הבאות</translation>
 <translation id="4953688446973710931">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להוריד מספר קבצים באופן אוטומטי. כשהאפשרות מושבתת, אתרים לא יכולים להוריד מספר קבצים באופן אוטומטי.</translation>
@@ -334,6 +335,7 @@
 <translation id="4972737347717125191">אתרים יכולים לבקש הרשאה להשתמש בנתונים ובמכשירים של מציאות מדומה</translation>
 <translation id="497421865427891073">ניווט קדימה</translation>
 <translation id="4976702386844183910">הכניסה האחרונה: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">‏מידע נוסף על פיד Discover</translation>
 <translation id="4994033804516042629">לא נמצאו אנשי קשר</translation>
 <translation id="4996978546172906250">שיתוף באמצעות</translation>
 <translation id="5001526427543320409">‏קובצי cookie של צד שלישי</translation>
@@ -583,6 +585,7 @@
 <translation id="8067883171444229417">הפעלת הסרטון</translation>
 <translation id="8068648041423924542">אין אפשרות לבחור אישור.</translation>
 <translation id="8077120325605624147">לכל אתר שבו מבקרים יש הרשאה להציג כל מודעה</translation>
+<translation id="80798452873915119">אתרים יכולים לבקש הרשאה לנהל את החלונות בכל המסכים</translation>
 <translation id="8087000398470557479">‏התוכן הזה הוא מ-<ph name="DOMAIN_NAME" />, ומוגש על-ידי Google.</translation>
 <translation id="8088603949666785339">אפשרויות נוספות ב<ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">הצגת הכרטיסיות ברשימת האפליקציות</translation>

@@ -37,6 +37,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Ažuriranje Chromea je završeno. Možete koristiti najnoviju verziju čim ponovo pokrenete. Nakon toga trenutne kartice će se ponovo otvoriti.}=1{Ažuriranje Chromea je završeno. Možete koristiti najnoviju verziju čim ponovo pokrenete. Nakon toga trenutne kartice će se ponovo otvoriti. Anonimni prozor se neće ponovo otvoriti.}one{Ažuriranje Chromea je završeno. Možete koristiti najnoviju verziju čim ponovo pokrenete. Nakon toga trenutne kartice će se ponovo otvoriti. # anonimni prozor se neće ponovo otvoriti.}few{Ažuriranje Chromea je završeno. Možete koristiti najnoviju verziju čim ponovo pokrenete. Nakon toga trenutne kartice će se ponovo otvoriti. # anonimna prozora se neće ponovo otvoriti.}other{Ažuriranje Chromea je završeno. Možete koristiti najnoviju verziju čim ponovo pokrenete. Nakon toga trenutne kartice će se ponovo otvoriti. # anonimnih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="1434626383986940139">Aplikacije Chrome Canary</translation>
+<translation id="1439793550875056299">Zakači Chrome</translation>
 <translation id="146866447420868597">Prijaviti se u Chrome?</translation>
 <translation id="1492280395845991349">Pokrenite ponovo da završite ažuriranje Chromea</translation>
 <translation id="1497802159252041924">Greška prilikom instaliranja: <ph name="INSTALL_ERROR" /></translation>
@@ -361,6 +362,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Došlo je do greške prilikom pokretanja. Pokrenite alat za instaliranje kao obični korisnik, a ne kao administrator.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
+<translation id="5600352656975192682">Zakačite Chrome u traku zadataka da mu brzo pristupite bilo kada</translation>
 <translation id="5602351063754773347">Chrome vam preporučuje da je uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim ekstenzijama<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Pomoću Chrome profila možete odvojiti sve svoje sadržaje u Chromeu. Kreirajte profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
 <translation id="565744775970812598">Fajl <ph name="FILE_NAME" /> može biti opasan, pa ga je Chrome blokirao.</translation>

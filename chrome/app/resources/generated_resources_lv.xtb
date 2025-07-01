@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Nederīgs vai bojāts fails</translation>
 <translation id="1040761927998636252">Grāmatzīme bez nosaukuma vietrādim URL <ph name="URL" /></translation>
 <translation id="1041175011127912238">Šī lapa nereaģē</translation>
+<translation id="1041181446722933623">Grāmatzīme “<ph name="LOCAL_BOOKMARK" />” ir saglabāta tikai šajā ierīcē. Lai šo grāmatzīmi izmantotu citās ierīcēs, saglabājiet to mapē “<ph name="ACCOUNT_FOLDER" />” savā kontā.</translation>
 <translation id="1041263367839475438">Pieejamās ierīces</translation>
 <translation id="1041607257468256895">Vietņu atrašanās vietas atļauju pārvaldība pārlūkā Chrome</translation>
 <translation id="1042174272890264476">Jūsu datorā ir iebūvēta arī pārlūka <ph name="SHORT_PRODUCT_NAME" /> RLZ bibliotēka. RLZ piešķir neunikālu, personu neidentificējošu atzīmi, lai novērtētu noteiktas reklāmas kampaņas ietvaros ievadītos meklēšanas vienumus un pārlūka <ph name="SHORT_PRODUCT_NAME" /> lietojumu. Šīs atzīmes pārlūkā <ph name="PRODUCT_NAME" /> dažkārt tiek rādītas Google meklēšanas vaicājumos.</translation>
@@ -610,6 +611,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1418559532423038045">Virtuālā mašīna <ph name="VM_NAME" /> tiks noņemta no šīs ierīces: <ph name="DEVICE_TYPE" />. Tādējādi tiks dzēstas visas lietotnes un dati virtuālajā mašīnā.</translation>
 <translation id="1418882096915998312">Notiek reģistrēšanās Enterprise versijai</translation>
 <translation id="1418954524306642206">Pārlūkot, lai noteiktu printera PPD</translation>
+<translation id="1419086691207546433">Pievienojiet paplašinājumus, lai organizētu darbu, vienkāršotu uzdevumus un uzlabotu pārlūkošanu.</translation>
 <translation id="1421334842435688311">Atrašanās vietas informācija, balstoties uz mobilajiem datiem</translation>
 <translation id="1421514190500081936">Lūdzu, norādiet iemeslu šo datu lejupielādei:</translation>
 <translation id="1422159345171879700">Ielādēt nedrošos skriptus</translation>
@@ -1917,7 +1919,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2312219318583366810">Lapas URL</translation>
 <translation id="2314165183524574721">Pašreizējais redzamības iestatījums ir “Paslēpta”.</translation>
 <translation id="2314774579020744484">Lapu tulkošanai izmantotā valoda</translation>
-<translation id="2316090909467242775">Izmēģiniet šo atkopšanas paroli</translation>
 <translation id="2316129865977710310">Nē, paldies</translation>
 <translation id="2316433409811863464">Lietotņu straumēšana</translation>
 <translation id="2316709634732130529">Izmantot ieteikto paroli</translation>
@@ -3327,6 +3328,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3309330461362844500">Sertifikāta profila ID</translation>
 <translation id="3310379801837527592">Pievienošanās ciļņu grupai, ko izmanto <ph name="OWNER_FIRST_NAME" /> un <ph name="NUM_OTHER_MEMBERS" /> cits dalībnieks</translation>
 <translation id="331080746368555063">Privātas vietnes var būt, piemēram, jūsu uzņēmuma iekštīkls.</translation>
+<translation id="3311007761540106761">Sistēmas noklusējums</translation>
 <translation id="3311445899360743395">Ar šo lietotni saistītie dati var tikt noņemti no šīs ierīces.</translation>
 <translation id="3312470654018965389">Notiek Linux konteinera konfigurēšana</translation>
 <translation id="3312883087018430408">Lai meklētu saturu konkrētā vietnē vai Chrome sadaļā, adreses joslā ievadiet vietnes vai pārlūka sadaļas saīsni un pēc tam nospiediet izvēlēto īsinājumtaustiņu. Piemēram, lai meklētu saturu tikai grāmatzīmēs, ievadiet “@bookmarks” un pēc tam nospiediet tabulēšanas vai atstarpes taustiņu.</translation>
@@ -4040,7 +4042,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3792973596468118484">Paplašinājumu skaits: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3794792524918736965">Tehnoloģijas Windows Hello ieslēgšana</translation>
 <translation id="379509625511193653">Izslēgts</translation>
-<translation id="3795624560191557077">Jūs nesen nomainījāt paroli, jo tā tika atklāta publiska datu aizsardzības pārkāpuma dēļ. Ja rodas problēmas, Google paroļu pārvaldnieks var palīdzēt jums pierakstīties.</translation>
 <translation id="3796215473395753611">Alt + augšupvērstā bultiņa</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, lai priekšskatītu balsi, izmantojiet labās bultiņas taustiņu</translation>
 <translation id="3796648294839530037">Izlases tīkli:</translation>
@@ -5862,7 +5863,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5088534251099454936">PKCS #1 SHA-512 ar RSA šifrējumu</translation>
 <translation id="5090637338841444533">Nedrīkst izsekot kameras pozīciju</translation>
 <translation id="5091636240353511739">Rādīt PIN</translation>
-<translation id="5093417502834168387">Vai nevarat pierakstīties? Mēģiniet to izdarīt citā veidā.</translation>
 <translation id="5093477827231450397">Jūsu bloķēto vietņu saraksts, kurās nevēlaties, lai tiktu ieteiktas reklāmas citām vietnēm</translation>
 <translation id="5093569275467863761">Pilnīgas saglabāšanas kešatmiņā saglabātais inkognito apakšrāmis: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Izmantojot šo lietotni, varat atvērt un rediģēt atbalstītus failus no lietotnes Faili vai citām lietotnēm. Lai pārvaldītu, kurus failus pēc noklusējuma atvērt šajā lietotnē, <ph name="BEGIN_LINK" />uzziniet, kā ierīcē iestatīt noklusējuma lietotnes<ph name="END_LINK" />.</translation>
@@ -7643,7 +7643,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6388577073199278153">Nevar piekļūt jūsu mobilo sakaru kontam</translation>
 <translation id="6390020764191254941">Pārvietot cilni uz jaunu logu</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Nav}=1{Vietnēm <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> un vēl 1 vietnei}zero{Vietnēm <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> un vēl {COUNT} vietnēm}one{Vietnēm <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> un vēl {COUNT} vietnei}other{Vietnēm <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> un vēl {COUNT} vietnēm}}</translation>
-<translation id="6390533465682072118">Atkopšana</translation>
 <translation id="6391131092053186625">Jūsu ierīces IMEI ir <ph name="IMEI_NUMBER" />. Šo numuru var izmantot, lai aktivizētu pakalpojumu.</translation>
 <translation id="6393156038355142111">Ieteikt drošu paroli</translation>
 <translation id="6393550101331051049">Drīkst rādīt nedrošu saturu</translation>
@@ -7876,6 +7875,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6560151649238390891">Ieteikums ievietots</translation>
 <translation id="656065428026159829">Skatīt vairāk</translation>
 <translation id="6561726789132298588">Ievadīt</translation>
+<translation id="6561877237303825108">Šis faila tips (<ph name="TYPE" />) var būt bīstams. Saglabājiet šo failu tikai tad, ja uzticaties vietnei <ph name="ORIGIN" />.</translation>
 <translation id="6562117348069327379">Glabājiet sistēmas žurnālus katalogā Lejupielādes.</translation>
 <translation id="656293578423618167">Faila ceļš vai nosaukums ir pārāk garš. Saglabājiet ar īsāku nosaukumu vai citā atrašanās vietā.</translation>
 <translation id="6563002009564846727">Skatīt no operētājsistēmas Windows importētos sertifikātus</translation>
@@ -9683,6 +9683,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7830833461614351956">Vai kopēt <ph name="NUM_OF_FILES" /> failu(-us) uz pakalpojumu <ph name="CLOUD_PROVIDER" />, lai tos atvērtu?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Šeit tiks parādīti saglabātie pielāgotie vārdi.</translation>
+<translation id="7834832693620032149">Lai kopīgotu audio, kopīgojiet cilni vai logu</translation>
 <translation id="7836577093182643605">Jūsu bloķēto tēmu saraksts, ko nevēlaties kopīgot ar vietnēm</translation>
 <translation id="7836745198769390202">Pašlaik jums ir <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> un citi dati. Jūsu organizācija varēs skatīt un pārvaldīt šos datus.</translation>
 <translation id="7836850009646241041">Vēlreiz pieskarieties drošības atslēgai.</translation>
@@ -10553,6 +10554,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8425213833346101688">Mainīt</translation>
 <translation id="8425492902634685834">Piespraust pie uzdevumjoslas</translation>
 <translation id="8425768983279799676">Varat izmantot PIN kodu, lai atbloķētu savu ierīci.</translation>
+<translation id="8426697201161711396">Pierakstieties pārlūkā Chrome, lai iegūtu savas paroles un citu saturu visās savās ierīcēs.</translation>
 <translation id="8427213022735114808">Diktēšanas funkcija nosūta jūsu balss datus Google serveriem, lai atļautu rakstīšanu ar balsi jebkurā teksta laukā.</translation>
 <translation id="8427292751741042100">iegulta jebkurā vietnē</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
@@ -11292,6 +11294,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8940081510938872932">Šobrīd jūsu dators izpilda pārāk daudz darbību. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="8940888110818450052">Pierakstīšanās opcijas</translation>
 <translation id="8941173171815156065">Atsaukt atļauju “<ph name="PERMISSION" />”</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> kopīgo logu un audio.</translation>
 <translation id="8941688920560496412">Ierīce (<ph name="DEVICE_NAME" />) ir izslēgta</translation>
 <translation id="894191600409472540">Izveidojiet drošas paroles</translation>
 <translation id="8942714513622077633">Vai atcelt Microsoft 365 iestatīšanu?</translation>

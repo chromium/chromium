@@ -6,10 +6,12 @@
 <translation id="1063300264396686489">Fungua kiotomatiki vichupo vya vikundi kwenye vifaa vingine</translation>
 <translation id="1075622780330595106">Hujatumia vichupo vyako <ph name="NUMBER_OF_TABS" /> hivi karibuni. Je, tuvifunge?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Kiliundwa mwaka <ph name="NUM_YEARS_ONE" /> uliopita}other{Kiliundwa miaka <ph name="NUM_YEARS_MANY" /> iliyopita}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Vichupo na vikundi vya vichupo visivyotumika vitafungwa baada ya mwezi 1}other{Vichupo na vikundi vya vichupo visivyotumika vitafungwa baada ya miezi <ph name="MONTH_COUNT_MANY" />}}</translation>
 <translation id="1173894706177603556">Ipe jina jipya</translation>
 <translation id="1197088940767939838">Rangi ya machungwa</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Fungua <ph name="TITLE_OF_GROUP" /> yenye kichupo <ph name="TAB_COUNT2" />}other{Fungua <ph name="TITLE_OF_GROUP" /> yenye vichupo <ph name="TAB_COUNT2" />}}</translation>
 <translation id="1273910660700874265">Chaguo za kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1300188005269437765">Chagua wakati ambapo vichupo na vikundi vya vichupo vitahamishiwa kiotomatiki kwenye sehemu ya visivyotumika.</translation>
 <translation id="1329584516321524826">Imesasishwa sasa hivi</translation>
 <translation id="1340839264183302272">Ondoka kwenye kikundi</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" /> kilicho na kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" /> na lebo ya <ph name="CARD_LABEL" />.}other{Panua kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" /> kilicho na vichupo <ph name="TABS_COUNT_MANY" />, vya rangi ya <ph name="COLOR_NAME" /> na lebo ya <ph name="CARD_LABEL" />.}}</translation>
@@ -29,8 +31,10 @@
 <translation id="1828808367831369073">Kichupo <ph name="TABS_COUNT_ONE" /> kimewekwa kwenye kikundi</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" />}other{Vichupo <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="1909810060368225529">Ilani: Kila mtu anaweza kuona mabadiliko kwenye Kikundi cha Vichupo cha pamoja. Kila mtu anaweza kubadilisha vikundi vyako vya vichupo vya pamoja</translation>
+<translation id="1982637982196732906">Hamishia kwenye sehemu ya visivyotumika</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Alamisha kichupo <ph name="TABS_COUNT_ONE" /> kilichochaguliwa}other{Alamisha vichupo <ph name="TABS_COUNT_MANY" /> vilivyochaguliwa}}</translation>
 <translation id="2055057176188061528">Chagua kikundi cha vichupo au uanzishe kikundi kipya cha vichupo</translation>
+<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome hufunga vipengee kiotomatiki katika sehemu ya vipengee visivyotumika ambavyo hujatumia kwa mwezi <ph name="AUTO_DELETE_DELAY_ONE" />. Unaweza kuzima hili sasa au wakati wowote katika Mipangilio.}other{Chrome hufunga vipengee kiotomatiki katika sehemu ya vipengee visivyotumika ambavyo hujatumia kwa miezi <ph name="AUTO_DELETE_DELAY_MANY" />. Unaweza kuzima hili sasa au wakati wowote katika Mipangilio.}}</translation>
 <translation id="2118649612461486615">Maelezo ya duka</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Vichupo na vikundi ulivyofunga vinaweza kufunguliwa upya katika sehemu ya Vichupo vya hivi karibuni na sehemu ya Vikundi vya vichupo. Kichupo chako cha Faragha hakitapatikana.}other{Vichupo na vikundi ulivyofunga vinaweza kufunguliwa upya katika sehemu ya Vichupo vya hivi karibuni na sehemu ya Vikundi vya vichupo. Vichupo vyako # vya Faragha havitapatikana.}}</translation>
 <translation id="2162620598375156287">Bei ya sasa ni <ph name="CURRENT_PRICE" /> kwenye <ph name="SOURCE_WEBSITE" /></translation>
@@ -39,12 +43,14 @@
 <translation id="2277224997687551299">Badilisha jina la kikundi</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Alamisha kichupo}other{Alamisha vichupo}}</translation>
 <translation id="2359808026110333948">Endelea</translation>
+<translation id="2371084566192454134">Vichupo na vikundi vya vichupo</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Kunja kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye kichupo <ph name="TABS_COUNT_ONE" />.}other{Kunja kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2498435670446402865">Badilisha jina la kikundi cha vichupo</translation>
 <translation id="2536366509642644298">Vikundi vya vichupo vya "<ph name="TAB_GROUP_NAME_1" />" na "<ph name="TAB_GROUP_NAME_2" />" havipatikani tena</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Kunja kichupo <ph name="TABS_COUNT_ONE" />.}other{Kunja kikundi chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2569352796411618312">Pendekezo: Hujatumia vichupo <ph name="NUMBER_OF_TABS" /> hivi majuzi. Ungependa tuvifunge?</translation>
 <translation id="257674075312929031">Kikundi</translation>
+<translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Rejesha kisha ufungue kikundi cha vichupo kilicho na kichupo <ph name="TABS_COUNT_ONE" />, rangi ya <ph name="COLOR_NAME" />.}other{Rejesha kisha ufungue kikundi cha vichupo kilicho na vichupo <ph name="TABS_COUNT_MANY" />, rangi ya <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Imekadiriwa alama <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Tembelea tovuti</translation>
 <translation id="2671423594960767771">Shiriki kikundi</translation>
@@ -65,6 +71,7 @@
 <translation id="3194464645767632461">ukadiriaji</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Weka kichupo <ph name="TABS_COUNT_ONE" /> kwenye kikundi}other{Weka vichupo <ph name="TABS_COUNT_MANY" /> kwenye kikundi}}</translation>
 <translation id="3328308545011660196">Pendekezo: Vichupo <ph name="NUMBER_OF_TABS" /> vinaonekana kuwa vinahusiana. Ungependa kuvipanga pamoja?</translation>
+<translation id="3330595302841061275">{DAY_COUNT,plural, =1{Baada ya kutotumiwa kwa siku 1}other{Baada ya kutotumiwa kwa siku <ph name="DAY_COUNT_MANY" />}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{Kichupo <ph name="ONE_ADDED" /> kipya}other{Vichupo <ph name="MANY_ADDED" /> vipya}}</translation>
 <translation id="3613492231657284463">Ficha kidirisha cha vichupo visivyotumika</translation>
 <translation id="3619255692378312441">Kudhibiti uwezo wa kufikia</translation>
@@ -94,6 +101,7 @@
 <translation id="4861953997778766866">Kila mtu anaweza kubadilisha vikundi vyako vya vichupo vya pamoja</translation>
 <translation id="4870911314065352661">Unataka kufunga vichupo vyote?</translation>
 <translation id="4871719318659334896">Funga kikundi</translation>
+<translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Rejesha kisha ufungue kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> kilicho na kichupo <ph name="TABS_COUNT_ONE" />, rangi ya <ph name="COLOR_NAME" />.}other{Rejesha kisha ufungue kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> kilicho na vichupo <ph name="TABS_COUNT_MANY" />, rangi ya <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Fungua</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Funga kichupo}other{Funga vichupo}}</translation>
 <translation id="4908147833782857886">Vikundi vya <ph name="USER_EMAIL" /> vimehifadhiwa (itafunga vichupo na kufuta vikundi)</translation>
@@ -114,6 +122,7 @@
 <translation id="5627941783489838464">Hakuna masasisho ya vichupo</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Kiungo <ph name="TABS_COUNT_ONE" /> kutoka Chrome}other{Viungo <ph name="TABS_COUNT_MANY" /> kutoka Chrome}}</translation>
 <translation id="5746204836956568669">Ungependa kupanga vichupo <ph name="NUMBER_OF_TABS" /> katika vikundi ili vifanye kazi haraka?</translation>
+<translation id="5773295109010386583">Funga kiotomatiki vipengee visivyotumika</translation>
 <translation id="58326064309361797">Buruta vichupo ili uviweke katika kikundi</translation>
 <translation id="5901630391730855834">Manjano</translation>
 <translation id="5972844218283131174">Acha kuchagua zote</translation>
@@ -156,6 +165,7 @@
 <translation id="7369451074646620503">Kikundi cha vichupo cha "<ph name="TAB_GROUP_NAME" />" hakipatikani tena</translation>
 <translation id="7452985128687107478">Vikundi vya vichupo huhifadhiwa na kusasishwa kiotomatiki kwenye vifaa vyako vyote</translation>
 <translation id="747459581954555080">Rejesha zote</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{Kipengee <ph name="TABS_COUNT_ONE" />}other{Vipengee <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Rejesha kipengee <ph name="TABS_COUNT_ONE" /> ulichochagua}other{Rejesha vipengee <ph name="TABS_COUNT_MANY" /> ulivyochagua}}</translation>
 <translation id="753732157349120914">Kibadilishaji cha Vichupo</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Maoni <ph name="REVIEWS_COUNT_ONE" /> kutoka Google}other{Maoni <ph name="REVIEWS_COUNT_MANY" /> kutoka Google}}</translation>

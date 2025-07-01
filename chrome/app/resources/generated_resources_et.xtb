@@ -1921,7 +1921,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2312219318583366810">Lehe URL</translation>
 <translation id="2314165183524574721">Praegune nähtavuse seade on Peidetud</translation>
 <translation id="2314774579020744484">Lehtede tõlkimiseks kasutatav keel</translation>
-<translation id="2316090909467242775">Proovige seda taasteparooli</translation>
 <translation id="2316129865977710310">Ei, aitäh</translation>
 <translation id="2316433409811863464">Rakenduse voogesitus</translation>
 <translation id="2316709634732130529">Kasuta soovitatud parooli</translation>
@@ -4047,7 +4046,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> laiendust</translation>
 <translation id="3794792524918736965">Lülitage sisse Windows Hello</translation>
 <translation id="379509625511193653">Väljas</translation>
-<translation id="3795624560191557077">Muutsite hiljuti avalikust andmetega seotud rikkumisest leitud parooli. Probleemide korral aitab Google'i paroolihaldur teil sisse logida.</translation>
 <translation id="3796215473395753611">alt + ülesnool</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, kasutage hääle eelkuulamiseks paremnooleklahvi</translation>
 <translation id="3796648294839530037">Lemmikvõrgud:</translation>
@@ -5869,7 +5867,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5088534251099454936">PKCS 1 SHA-512 koos RSA krüpteerimisega</translation>
 <translation id="5090637338841444533">Pole lubatud jälgida teie kaamera asendit</translation>
 <translation id="5091636240353511739">Kuva PIN-kood</translation>
-<translation id="5093417502834168387">Kas sisselogimisega on probleeme? Proovige mõnda muud võimalust</translation>
 <translation id="5093477827231450397">Loend blokeeritud saitidest, mille puhul te ei soovi lubada muudele saitidele reklaamide soovitamist</translation>
 <translation id="5093569275467863761">Vahemälu tagasi-edasiliikumiseks inkognito alamraamis: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Võite toetatud faile avada ja redigeerida selle rakendusega rakenduse Failid või muude rakenduste kaudu. Selle haldamiseks, millised failid vaikimisi selles rakenduses avatakse, <ph name="BEGIN_LINK" />vaadake, kuidas oma seadmes vaikerakendusi seadistada<ph name="END_LINK" />.</translation>
@@ -7654,7 +7651,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6388577073199278153">Teie mobiilikontole ei pääse juurde</translation>
 <translation id="6390020764191254941">Vahelehe teisaldamine uude aknasse</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Mitte ühegi saidi jaoks}=1{Saitide <ph name="EXAMPLE_DOMAIN_1" /> ja <ph name="EXAMPLE_DOMAIN_2" /> ning veel 1 jaoks}other{Saitide <ph name="EXAMPLE_DOMAIN_1" /> ja <ph name="EXAMPLE_DOMAIN_2" /> ning veel {COUNT} jaoks}}</translation>
-<translation id="6390533465682072118">Taastamine</translation>
 <translation id="6391131092053186625">Teie seadme IMEI on <ph name="IMEI_NUMBER" />. See number on abiks teenuse aktiveerimisel.</translation>
 <translation id="6393156038355142111">Soovita tugevat parooli</translation>
 <translation id="6393550101331051049">Lubatud kuvada ebaturvalist sisu</translation>

@@ -69,6 +69,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="1799920918471566157">Vinkkejä Chromen käyttöön</translation>
 <translation id="1816835383954230954">Kun tämä on päällä, Chrome toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti. Kun tämä on poissa päältä, suorituskyky on rajoitettu, mutta V8 on suojatumpi hyökkäyksiä vastaan.</translation>
 <translation id="1818308510395330587">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi käyttää AR:ää.</translation>
+<translation id="1881806992065048905">Uusi välilehti ‐sivun ulkoasun alapaneeli</translation>
 <translation id="1887786770086287077">Sijainti on pois päältä tällä laitteella. Voit laittaa sen päälle <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sivustot käyttävät yleensä laitteesi tiedostoja ja kansioita tallentaakseen muutoksia automaattisesti ja tehdäkseen muuta vastaavaa</translation>
 <translation id="1915307458270490472">Katkaise puhelu</translation>
@@ -326,6 +327,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4882919381756638075">Sivustot käyttävät mikrofonia yleensä kommunikaatio-ominaisuuksiin, kuten videopuheluihin</translation>
 <translation id="4883854917563148705">Ylläpidettyjä asetuksia ei voi nollata</translation>
 <translation id="4887024562049524730">Kysy, saavatko sivustot käyttää virtuaalitodellisuuslaitteitasi ja ‑dataasi (suositus)</translation>
+<translation id="4934780484581617878">Ikkunoiden hallinnointi</translation>
 <translation id="4936863036653376783">Löydät ryhmäsi välilehtiryhmäosiosta kaikilla laitteillasi</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> ei saa käyttää tietojasi näillä sivustoilla:</translation>
 <translation id="4953688446973710931">Kun tämä on päällä, sivustot voivat pyytää lupaa ladata useita tiedostoja automaattisesti. Kun tämä on pois päältä, sivustot eivät voi ladata useita tiedostoja automaattisesti.</translation>
@@ -458,6 +460,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="640163077447496506">Vanhenee tänään</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Teemakokoelmat</translation>
 <translation id="6439114592976064011">Estä sivustoja käyttämästä virtuaalitodellisuuslaitteitasi ja ‑dataasi</translation>
 <translation id="6447842834002726250">Evästeet</translation>
 <translation id="6452138246455930388">Hinnanalennus avoimella välilehdellä, vanha hinta <ph name="OLD_PRICE" />, nyt <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -561,6 +564,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7791543448312431591">Lisää</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7804248752222191302">Sivusto käyttää kameraasi</translation>
+<translation id="7805832099057502789">Uusi välilehti ‐sivun ulkoasun alapaneeli avattu koko näytölle</translation>
 <translation id="7807060072011926525">Googlen tarjoama</translation>
 <translation id="7815680994978050279">Vaarallinen lataus estettiin</translation>
 <translation id="7835852323729233924">Toistetaan mediaa</translation>
@@ -580,9 +584,11 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="802154636333426148">Lataus epäonnistui.</translation>
 <translation id="8042586301629853791">Lajitteluperuste:</translation>
 <translation id="8051193500142930381">Kameraa edellyttävät ominaisuudet eivät enää toimi</translation>
+<translation id="8056330801132235235">Chromen oletusasetus</translation>
 <translation id="8067883171444229417">Toista video</translation>
 <translation id="8068648041423924542">Varmenteen valinta epäonnistui</translation>
 <translation id="8077120325605624147">Kaikki avamaasi sivustot voivat näyttää mitä tahansa mainoksia</translation>
+<translation id="80798452873915119">Sivustot voivat pyytää lupaa hallinnoida ikkunoita kaikilla näytöillä</translation>
 <translation id="8087000398470557479">Google on toimittanut tämän sisällön osoitteesta <ph name="DOMAIN_NAME" />.</translation>
 <translation id="8088603949666785339">Lisää vaihtoehtoja: <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Näytä välilehdet sovelluslistassa</translation>

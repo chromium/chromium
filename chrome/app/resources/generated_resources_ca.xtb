@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Fitxer no vàlid o malmès</translation>
 <translation id="1040761927998636252">Adreça d'interès sense nom per a <ph name="URL" /></translation>
 <translation id="1041175011127912238">Aquesta pàgina no respon</translation>
+<translation id="1041181446722933623">L'adreça d'interès "<ph name="LOCAL_BOOKMARK" />" només es desa en aquest dispositiu. Per utilitzar-la en altres dispositius que facis servir, desa-la a "<ph name="ACCOUNT_FOLDER" />" al teu compte.</translation>
 <translation id="1041263367839475438">Dispositius disponibles</translation>
 <translation id="1041607257468256895">Gestiona els permisos d'ubicació per a llocs web a Chrome</translation>
 <translation id="1042174272890264476">L'ordinador també incorpora la biblioteca RLZ de <ph name="SHORT_PRODUCT_NAME" />. La biblioteca RLZ assigna una etiqueta no única i sense identificació personal per mesurar les cerques i l'ús de <ph name="SHORT_PRODUCT_NAME" /> derivats d'una campanya promocional concreta. De vegades, aquestes etiquetes apareixen a les consultes de la Cerca de Google a <ph name="PRODUCT_NAME" />.</translation>
@@ -608,6 +609,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1418559532423038045">Suprimeix <ph name="VM_NAME" /> del teu dispositiu (<ph name="DEVICE_TYPE" />). Se suprimiran totes les aplicacions i les dades de la màquina virtual.</translation>
 <translation id="1418882096915998312">Inscripció mitjançant Enterprise en curs</translation>
 <translation id="1418954524306642206">Navega per especificar el fitxer PPD de la impressora</translation>
+<translation id="1419086691207546433">Afegeix extensions per organitzar-te, simplificar tasques i millorar la navegació</translation>
 <translation id="1421334842435688311">Informació de la ubicació per mòbil</translation>
 <translation id="1421514190500081936">Introdueix un motiu per baixar aquestes dades:</translation>
 <translation id="1422159345171879700">Carrega els scripts no segurs</translation>
@@ -1915,7 +1917,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2312219318583366810">URL de la pàgina</translation>
 <translation id="2314165183524574721">L'opció de configuració de visibilitat actual és Amagat</translation>
 <translation id="2314774579020744484">Idioma utilitzat per traduir pàgines</translation>
-<translation id="2316090909467242775">Prova aquesta contrasenya de recuperació</translation>
 <translation id="2316129865977710310">No, gràcies</translation>
 <translation id="2316433409811863464">Transmissió en línia d'aplicacions</translation>
 <translation id="2316709634732130529">Utilitza la contrasenya suggerida</translation>
@@ -3325,6 +3326,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3309330461362844500">Identificador del perfil del certificat</translation>
 <translation id="3310379801837527592">Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /> i <ph name="NUM_OTHER_MEMBERS" /> persona més</translation>
 <translation id="331080746368555063">Els llocs web privats poden incloure elements com ara la intranet de la teva empresa</translation>
+<translation id="3311007761540106761">Valor predeterminat del sistema</translation>
 <translation id="3311445899360743395">Pot ser que les dades associades a aquesta aplicació se suprimeixin del dispositiu.</translation>
 <translation id="3312470654018965389">S'està configurant el contenidor de Linux</translation>
 <translation id="3312883087018430408">Per cercar en un lloc web específic o en una part de Chrome, escriu la drecera corresponent a la barra d'adreces, seguida de la tecla de drecera que prefereixis. Per exemple, si vols cercar només a Adreces d'interès, escriu "@bookmarks" i, a continuació, prem Tab o Espai.</translation>
@@ -4038,7 +4040,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensions</translation>
 <translation id="3794792524918736965">Activa Windows Hello</translation>
 <translation id="379509625511193653">Desactivat</translation>
-<translation id="3795624560191557077">Fa poc vas canviar una contrasenya que es va fer pública a causa d'una violació de les dades. Si tens problemes per iniciar la sessió, el gestor de contrasenyes de Google et pot ajudar.</translation>
 <translation id="3796215473395753611">Alt+fletxa amunt</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, utilitza la tecla de fletxa dreta per escoltar una mostra de la veu</translation>
 <translation id="3796648294839530037">Xarxes preferides:</translation>
@@ -4909,7 +4910,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4406883609789734330">Subtítols instantanis</translation>
 <translation id="4408599188496843485">A&amp;juda</translation>
 <translation id="4409271659088619928">El teu motor de cerca és <ph name="DSE" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
-<translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />. Rebràs una notificació quan la gravació comenci.}=2{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Rebràs una notificació quan la gravació comenci.}=3{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i 1 aplicació més. Rebràs una notificació quan comenci la gravació.}other{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i # aplicacions més. Rebràs una notificació quan la gravació comenci.}}</translation>
+<translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />. Rebràs una notificació quan la gravació comenci.}=2{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Rebràs una notificació quan la gravació comenci.}=3{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i 1 aplicació més. Rebràs una notificació quan la gravació comenci.}other{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i # aplicacions més. Rebràs una notificació quan la gravació comenci.}}</translation>
 <translation id="4409697491990005945">Marges</translation>
 <translation id="4409779593816003679">Contrasenyes i &amp;emplenament automàtic</translation>
 <translation id="4410545552906060960">Per desbloquejar el dispositiu, utilitza un número (PIN) en lloc d'una contrasenya. Per definir el PIN més endavant, ves a Configuració.</translation>
@@ -5858,7 +5859,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 amb encriptació RSA</translation>
 <translation id="5090637338841444533">Sense permís per fer un seguiment de la posició de la càmera</translation>
 <translation id="5091636240353511739">Mostra el PIN</translation>
-<translation id="5093417502834168387">No pots iniciar la sessió? Prova una altra manera.</translation>
 <translation id="5093477827231450397">Llista de llocs web que has bloquejat i que no vols que suggereixin anuncis a altres llocs web</translation>
 <translation id="5093569275467863761">Submarc d'incògnit desat a la memòria cau endavant/enrere: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Amb aquesta aplicació pots obrir i editar fitxers admesos des de l'aplicació Fitxers o des d'altres aplicacions. Si vols controlar quins fitxers s'obren amb aquesta aplicació de manera predeterminada, <ph name="BEGIN_LINK" />obtén més informació sobre com pots establir aplicacions predeterminades al dispositiu<ph name="END_LINK" />.</translation>
@@ -7641,7 +7641,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6388577073199278153">No es pot accedir al compte mòbil</translation>
 <translation id="6390020764191254941">Mou la pestanya a una finestra nova</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Cap}=1{Per a <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> i 1 més}other{Per a <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> i {COUNT} més}}</translation>
-<translation id="6390533465682072118">Recuperació</translation>
 <translation id="6391131092053186625">L'IMEI del dispositiu és <ph name="IMEI_NUMBER" />. Aquest número es pot utilitzar per activar el servei.</translation>
 <translation id="6393156038355142111">Suggereix una contrasenya segura</translation>
 <translation id="6393550101331051049">Amb permís per mostrar contingut no segur</translation>
@@ -7874,6 +7873,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6560151649238390891">El suggeriment s'ha inserit</translation>
 <translation id="656065428026159829">Mostra'n més</translation>
 <translation id="6561726789132298588">retorn</translation>
+<translation id="6561877237303825108">Aquest tipus de fitxer (<ph name="TYPE" />) pot ser perillós. Desa'l només si confies en <ph name="ORIGIN" />.</translation>
 <translation id="6562117348069327379">Emmagatzema els registres del sistema al directori Baixades.</translation>
 <translation id="656293578423618167">El camí o el nom del fitxer és massa llarg. Deseu-ho amb un nom més curt o en una altra ubicació.</translation>
 <translation id="6563002009564846727">Mostra els certificats importats de Windows</translation>
@@ -9678,6 +9678,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7830833461614351956">Vols copiar <ph name="NUM_OF_FILES" /> fitxers a <ph name="CLOUD_PROVIDER" /> per obrir-los?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Les paraules personalitzades desades es mostraran aquí</translation>
+<translation id="7834832693620032149">Per compartir l'àudio, comparteix una pestanya o una finestra</translation>
 <translation id="7836577093182643605">Llista de temes que has bloquejat i que no vols que es comparteixin amb els llocs web</translation>
 <translation id="7836745198769390202">Actualment tens <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> i més. La teva organització podrà veure i gestionar aquestes dades.</translation>
 <translation id="7836850009646241041">Torna a tocar la clau de seguretat</translation>
@@ -10549,6 +10550,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8425213833346101688">Canvia</translation>
 <translation id="8425492902634685834">Fixa a la barra de tasques</translation>
 <translation id="8425768983279799676">Pots utilitzar el PIN per desbloquejar el dispositiu.</translation>
+<translation id="8426697201161711396">Inicia la sessió a Chrome per accedir a les teves contrasenyes i altres continguts des de tots els teus dispositius</translation>
 <translation id="8427213022735114808">El dictat envia la teva veu a Google per permetre l'escriptura per veu en qualsevol camp de text.</translation>
 <translation id="8427292751741042100">inserida en qualsevol amfitrió</translation>
 <translation id="8428213095426709021">Configuració</translation>
@@ -11286,6 +11288,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8940081510938872932">L'equip està fent massa coses en aquests moments. Torneu-ho a provar més tard.</translation>
 <translation id="8940888110818450052">Opcions d'inici de sessió</translation>
 <translation id="8941173171815156065">Revoca el permís <ph name="PERMISSION" /></translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> està compartint una finestra i àudio.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> està desactivada</translation>
 <translation id="894191600409472540">Crea contrasenyes segures</translation>
 <translation id="8942714513622077633">Vols cancel·lar la configuració de Microsoft 365?</translation>
@@ -11656,7 +11659,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9182556968660520230">No permetis que els llocs web reprodueixin contingut protegit</translation>
 <translation id="9183302530794969518">Documents de Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicació}other{# aplicacions}}</translation>
-<translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />. No rebràs cap notificació quan la gravació comenci.}=2{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. No rebràs cap notificació quan la gravació comenci.}=3{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i 1 aplicació més. No rebràs cap notificació quan comenci la gravació.}other{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i # aplicacions més. No rebràs cap notificació quan la gravació comenci.}}</translation>
+<translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />. No rebràs cap notificació quan la gravació comenci.}=2{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. No rebràs cap notificació quan la gravació comenci.}=3{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i 1 aplicació més. No rebràs cap notificació quan la gravació comenci.}other{L'administrador pot gravar la teva pantalla amb <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i # aplicacions més. No rebràs cap notificació quan la gravació comenci.}}</translation>
 <translation id="9186963452600581158">Inicia la sessió amb el Compte de Google d'un nen</translation>
 <translation id="9187967020623675250">Les tecles no coincideixen. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Escolta avisos de veu per poder utilitzar el dispositiu sense mirar la pantalla. Els avisos en braille estan disponibles amb un dispositiu connectat. Utilitza Ctrl+Alt+Z per activar i desactivar ChromeVox. Fes servir Cerca+fletxa esquerra o dreta per navegar. Utilitza Cerca+barra espaiadora per seleccionar (activar).</translation>

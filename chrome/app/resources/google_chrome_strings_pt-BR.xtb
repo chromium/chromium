@@ -35,6 +35,7 @@
 <translation id="141901961143729572">Envie feedback</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas.}=1{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Sua janela anônima não será aberta novamente.}one{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Sua # janela anônima não será aberta novamente.}other{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="1434626383986940139">Aplicativos Canary do Google Chrome</translation>
+<translation id="1439793550875056299">Fixar o Chrome</translation>
 <translation id="146866447420868597">Fazer login no Chrome?</translation>
 <translation id="1492280395845991349">Reinicie para concluir a atualização do Chrome</translation>
 <translation id="1497802159252041924">Erro de instalação: <ph name="INSTALL_ERROR" /></translation>
@@ -60,7 +61,7 @@
 <translation id="1786003790898721085">Verifique se sua conta está conectada ao Chrome no <ph name="TARGET_DEVICE_NAME" /> e tente fazer o envio novamente.</translation>
 <translation id="1786044937610313874">Abrir atalhos no Chrome</translation>
 <translation id="178701303897325119">Essa extensão não é mais compatível. O Chrome recomenda que você a remova.</translation>
-<translation id="1812689907177901597">Desative essa opção para acessar sites do Google, como o Gmail, sem login no Chrome</translation>
+<translation id="1812689907177901597">Desative essa opção para fazer login em sites do Google, como o Gmail, sem fazer login no Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{O Chrome recomenda pausar a guia que está deixando o navegador mais lento}one{O Chrome recomenda pausar a guia que está deixando o navegador mais lento}other{O Chrome recomenda pausar as guias que estão deixando o navegador mais lento}}</translation>
 <translation id="1832046143430087831">Deixa os sites mais rápidos com o mecanismo V8 do Chrome, mas o navegador fica um pouco menos resistente a ataques. Esta configuração está desativada.</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
@@ -353,6 +354,7 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Erro de inicialização: execute o instalador como um usuário comum, não como administrador.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
+<translation id="5600352656975192682">Fixe o Chrome na barra de tarefas para ter acesso rápido a qualquer momento</translation>
 <translation id="5602351063754773347">O Chrome recomenda a remoção dela. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões aceitas<ph name="END_LINK" />.</translation>
 <translation id="5649156266046089790">Com os perfis do Chrome, tudo fica bem separado e organizado. Crie perfis diferentes para amigos, familiares, trabalho e lazer.</translation>
 <translation id="565744775970812598">O arquivo <ph name="FILE_NAME" /> pode ser perigoso. Por isso, ele foi bloqueado pelo Chrome.</translation>

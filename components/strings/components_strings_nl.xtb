@@ -793,6 +793,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2310789833878085574">Opslaan en automatisch invullen</translation>
 <translation id="2312234273148520048">Sauzen en dressings</translation>
 <translation id="2316087952091171402">Minder dan <ph name="UPPER_ESTIMATE" />. Sommige sites laden misschien langzamer bij je volgende bezoek.</translation>
+<translation id="2316090909467242775">Probeer dit herstelwachtwoord</translation>
 <translation id="2316159751672436664">Je toegankelijkheidstools personaliseren in de Chrome OS-instellingen</translation>
 <translation id="2316887270356262533">Hiermee wordt minder dan 1 MB vrijgemaakt. Sommige sites kunnen langzamer worden geladen wanneer je ze weer bezoekt.</translation>
 <translation id="2317259163369394535">Voor <ph name="DOMAIN" /> zijn een gebruikersnaam en een wachtwoord vereist.</translation>
@@ -1668,6 +1669,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Cult- en indiefilms</translation>
 <translation id="3793574014653384240">Aantallen en oorzaken van de crashes die onlangs hebben plaatsgevonden</translation>
+<translation id="3795624560191557077">Je hebt recent een wachtwoord gewijzigd dat is gevonden bij een openbaar gegevenslek. Als je problemen ondervindt, kan Google Wachtwoordmanager je helpen inloggen.</translation>
 <translation id="3799805948399000906">Lettertype aangevraagd</translation>
 <translation id="3801297763951514916">Vaak bezocht</translation>
 <translation id="380329542618494757">Naam</translation>
@@ -2427,6 +2429,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5089810972385038852">Staat</translation>
 <translation id="5090647584136241764">Voeg tabbladen met vergelijkbare producten toe om de details die voor jou belangrijk zijn makkelijk te vergelijken</translation>
 <translation id="5093232627742069661">Zigzagvouw</translation>
+<translation id="5093417502834168387">Problemen met inloggen? Probeer het op een andere manier</translation>
 <translation id="5094747076828555589">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door Chromium. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="5097099694988056070">Apparaatstatistieken zoals CPU-/RAM-gebruik rapporteren</translation>
 <translation id="5097468150760963273">27 x 39 inch</translation>
@@ -3194,6 +3197,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6388060462449937608">Fitnessapparatuur en -toebehoren</translation>
 <translation id="6389470377220713856">Naam op pas</translation>
 <translation id="6390200185239044127">Zigzag kruisvouw</translation>
+<translation id="6390533465682072118">Herstel</translation>
 <translation id="639068771471208680">Meerdelig formulier</translation>
 <translation id="6391700400718590966">Pagina gesloten waarop staat dat er geen overeenkomende inloggegevens zijn voor beveiligde betaling</translation>
 <translation id="6392799395081100092">Papier (velijn)</translation>

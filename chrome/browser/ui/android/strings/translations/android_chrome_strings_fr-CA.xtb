@@ -152,6 +152,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1671236975893690980">Téléchargement en attente…</translation>
 <translation id="1672586136351118594">Ne plus afficher</translation>
 <translation id="1680919990519905526">Magasiner cette image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020et fermés après <ph name="MONTHS_ARCHIVED" /> mois</translation>
 <translation id="1687482373098770139">Bientôt, vous verrez du contenu relatif au site <ph name="SITE_NAME" /> dans Suivis. Les sites et recherches que vous suivez sont enregistrés dans votre compte Google. Vous pouvez gérer vos contenus suivis dans les paramètres à tout moment.</translation>
 <translation id="1689333818294560261">Pseudo</translation>
 <translation id="1696555181932908973">Vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -352,6 +353,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2593272815202181319">Espace simple</translation>
 <translation id="260403163289591229">Suivi</translation>
 <translation id="2604446170045642109">Vous pouvez désactiver le thème sombre des sites dans vos paramètres.</translation>
+<translation id="2605017215201958293">Écoutez cette page avec l'IA</translation>
 <translation id="2607441479295509868">Déconnecté. Reconnectez-vous pour utiliser les favoris, les mots de passe et plus dans votre compte.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> vous a invité à accéder à un élément partagé.</translation>
 <translation id="2625189173221582860">Mot de passe copié</translation>
@@ -876,6 +878,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="496607651705915226">Pour enregistrer et utiliser de nouveaux mots de passe dans votre compte Google, mettez à jour les services Google Play</translation>
 <translation id="4971753085054504448">Essayez de rechercher autre chose ou ouvrez l'historique complet de Chrome pour consulter plus de résultats.</translation>
 <translation id="497421865427891073">Avancer</translation>
+<translation id="497983151715419057">Consultez vos onglets et vos groupes inactifs ici</translation>
 <translation id="498624032394115435">Toute personne disposant du lien peut modifier tous les onglets.</translation>
 <translation id="4987271110129728827">Impossible de trouver cette page. Vérifiez votre orthographe ou essayez une recherche sur le Web.</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -936,7 +939,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5226378907213531272">Vous déverrouillerez votre écran chaque fois que vous utiliserez le véhicule</translation>
 <translation id="5227554086496586518">Touchez pour afficher les résultats de recherche</translation>
-<translation id="5229736206150093143">Derniers résultats</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5235196193381275927">Un problème est survenu lors de la connexion</translation>
 <translation id="5246093389635966745">Modifier le raccourci de la barre d'outils</translation>
@@ -1064,6 +1066,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5833984609253377421">Partager le lien</translation>
 <translation id="5839058148541733625">Jeu de dinosaures de Chrome</translation>
+<translation id="5842871376175639063">Les onglets et les groupes d'onglets que vous n'avez pas utilisés depuis <ph name="DAYS_INACTIVE" /> jours sont déplacés ici<ph name="AUTODELETE_SECTION" />. Vous pouvez modifier cette option en tout temps dans <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Ouvrir un fichier PDF avec <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Arrêter le partage?</translation>
 <translation id="5853623416121554550">interrompu</translation>
@@ -1382,6 +1385,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7088681679121566888">Chrome est à jour</translation>
 <translation id="7106762743910369165">Votre navigateur est géré par votre organisation</translation>
 <translation id="7111394291981742152">Chrome vous donne plus de contrôle sur les annonces que vous voyez et limite ce que les sites peuvent apprendre sur vous lorsqu'ils vous présentent des annonces personnalisées.</translation>
+<translation id="7115358764509798967">Paramètre système par défaut</translation>
 <translation id="7117485132243600300">Gérez le contenu que vous suivez ainsi que les recherches et les sujets suggérés</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorisations examinées pour 1 site}one{Autorisations examinées pour # site}other{Autorisations examinées pour # sites}}</translation>
 <translation id="7138678301420049075">Autre</translation>
@@ -1431,6 +1435,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7304873321153398381">Hors ligne. Chrome ne peut pas vérifier vos mots de passe.</translation>
 <translation id="7313188324932846546">Touchez pour configurer la synchronisation</translation>
 <translation id="7314734791127433392">Impossible de valider les mots de passe</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Onglets et groupes d'onglets non utilisés pendant 1 jour ou plus}one{Onglets et groupes d'onglets non utilisés pendant # jour ou plus}other{Onglets et groupes d'onglets non utilisés pendant # jours ou plus}}</translation>
 <translation id="7324354302972299151">Envoyer une demande « Do Not Track »</translation>
 <translation id="7333041109965360609">Désabonné des notifications</translation>
 <translation id="7336259382292148213">Les notifications semblent correctes</translation>
@@ -1642,6 +1647,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8137562778192957619">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google.</translation>
 <translation id="8152331954420209374">Accéder à Lentille</translation>
 <translation id="8163820386638255770">Pour utiliser et enregistrer des mots de passe dans votre compte Google, confirmez qu'il s'agit bien de vous</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) élément inactif}one{(#) élément inactif}other{(#) éléments inactifs}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>
 <translation id="8190358571722158785">Il reste 1 jour</translation>
 <translation id="8192765420340770300">La zone de contenu dans le bas de l'écran de connexion est ouverte à pleine hauteur</translation>

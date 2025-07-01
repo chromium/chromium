@@ -156,6 +156,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" பக்கக் குழு இனி கிடைக்காது</translation>
 <translation id="7452985128687107478">பக்கக் குழுக்கள் தானாகச் சேமிக்கப்பட்டு, உங்கள் சாதனங்கள் அனைத்திலும் சேர்க்கப்படும்</translation>
 <translation id="747459581954555080">எல்லாம் மீட்டெடு</translation>
+<translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> உள்ளது}other{<ph name="TABS_COUNT_MANY" /> உள்ளன}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> பக்கத்தை மீட்டெடுக்கும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> பக்கங்களை மீட்டெடுக்கும்}}</translation>
 <translation id="753732157349120914">தாவல் மாற்றி</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Googleளில் இருந்து <ph name="REVIEWS_COUNT_ONE" /> கருத்து}other{Googleளில் இருந்து <ph name="REVIEWS_COUNT_MANY" /> கருத்துகள்}}</translation>

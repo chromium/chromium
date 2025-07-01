@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Encerra a tarefa destacada.</translation>
 <translation id="1553461853655228091">O Chromium precisa de permissão para acessar sua câmera e criar um mapa 3D do ambiente a sua volta</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Essa extensão não é mais compatível. O Chromium recomenda a remoção dela.}one{Essa extensão não é mais compatível. O Chromium recomenda a remoção dela.}other{Essas extensões não são mais compatíveis. O Chromium recomenda a remoção dela.}}</translation>
+<translation id="1562320819937089394">Fixar o Chromium</translation>
 <translation id="1574377791422810894">Ferramentas de segurança do Chromium</translation>
 <translation id="1594928384848033697">O Chromium quer excluir seus dados do Gerenciador de senhas. Digite sua senha do Windows para conceder essa permissão.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita.}=1{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Sua janela anônima não será aberta novamente.}one{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Sua janela anônima não será aberta novamente.}other{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Suas # janelas anônimas não serão abertas novamente.}}</translation>
@@ -515,6 +516,7 @@
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8010081455002666927">Detecção automática</translation>
 <translation id="8013436988911883588">Assim que o Chromium tiver acesso, os sites poderão solicitar acesso.</translation>
+<translation id="8031714377769448844">Fixe o Chromium na barra de tarefas para ter acesso rápido a qualquer momento</translation>
 <translation id="80471789339884597">Agradecemos por fazer a instalação. É necessário reiniciar todos os navegadores antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Sempre mostrar o atalho da pesquisa por imagens</translation>
 <translation id="8077498902115777962">Desativar o Chromium em segundo plano para apps</translation>

@@ -187,6 +187,7 @@
 <translation id="1740650426894359238">切換至其他設定檔</translation>
 <translation id="1741219894094057085">智能手錶</translation>
 <translation id="1743244221910283364">捨棄變更</translation>
+<translation id="1748975028205587434">選取檔案</translation>
 <translation id="174998178145075354">{count,plural, =1{鍵盤上方顯示 {count} 個地址選項。}other{鍵盤上方顯示 {count} 個地址選項。}}</translation>
 <translation id="1750238553597293878">繼續使用 Google 帳戶中的密碼</translation>
 <translation id="17513872634828108">開啟分頁</translation>
@@ -529,6 +530,7 @@
 <translation id="3119874402040566234">系統會將你登出並刪除瀏覽資料</translation>
 <translation id="3124568093781685165">與家人共用密碼</translation>
 <translation id="3130863904455712965">記錄和其他</translation>
+<translation id="3132584647087998639">匯入你的資料</translation>
 <translation id="313283613037595347">新增無痕式分頁。</translation>
 <translation id="3136739222562075778">此資訊卡顯示所開啟分頁中的產品的減價資訊</translation>
 <translation id="3138611310073113613">要捨棄所選項目嗎？</translation>
@@ -1118,6 +1120,7 @@
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="560322036295180549">已由您的機構停用</translation>
 <translation id="5611398002774823980">儲存在帳戶中</translation>
+<translation id="561269594905823128">輕按 [選取檔案]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">按最新項目排序</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5619871095170816857">此資訊卡會顯示所有已同步裝置在過去 24 小時內最後開啟的分頁。</translation>
@@ -1238,12 +1241,14 @@
 <translation id="6074656473835429958">接收通知</translation>
 <translation id="607620096698446287">無法上載 <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">已允許存取攝錄機</translation>
+<translation id="607730456154980869">使用 Chrome 版 Gemini 更快取得答案</translation>
 <translation id="6078236141387574983">重新調整表格高度</translation>
 <translation id="6084848228346514841">選取分頁</translation>
 <translation id="6089212833343035912">Google 密碼管理工具 PIN</translation>
 <translation id="6090760257419195752">已關閉的警告</translation>
 <translation id="6096965253650248286">找到 <ph name="COUNT" /> 個</translation>
 <translation id="6100617279104942061">已使用 <ph name="USER_EMAIL" /> 的身分登入。開啟設定。</translation>
+<translation id="610083648014322104">根據當前頁面內容取得相關答案</translation>
 <translation id="6103540626693881831">裝置內置加密</translation>
 <translation id="611361228753138223">最近在此裝置上瀏覽過的網站</translation>
 <translation id="611705554202268369">長按即可新增至分頁群組</translation>
@@ -1496,6 +1501,7 @@
 <translation id="6979737339423435258">所有時間</translation>
 <translation id="6983306615164277634">你亦可按住網址列以變更位置。</translation>
 <translation id="6987201788018524855">探索你可能錯過的實用功能</translation>
+<translation id="6989636517316575338">提出有關任何頁面的問題</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">追蹤商品價格，並在任何網站降價時透過快訊通知你</translation>
 <translation id="7004032350256606903">您的機構要求您私密瀏覽內容。
@@ -1566,6 +1572,7 @@
 <translation id="7367530036083223701">在主畫面上使用「密碼管理工具」小工具安全存取密碼。</translation>
 <translation id="7369285139974632858">加入書籤</translation>
 <translation id="7380220816562673297">目前只能與家庭成員分享密碼。你可<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
+<translation id="7380698179418029202">選取 Safari 匯出的 <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> 檔</translation>
 <translation id="739101637685146669">要將邊個網址加去書籤？</translation>
 <translation id="7393747756726387725">放大</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 個網站}other{# 個網站}}</translation>
@@ -1705,6 +1712,7 @@
 <translation id="7887552845761062935">㩒兩下然後㩒住就可以打開多啲選項</translation>
 <translation id="7889910613639381518">「Google 密碼管理工具」小工具，資料存取輕鬆又安全。</translation>
 <translation id="7899199123054742721">全部標示為未讀</translation>
+<translation id="7908957400505794782">輕按 [完成]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">您的機構不允許同步處理所有資料。</translation>
 <translation id="792357691529995513">未發現任何問題</translation>
 <translation id="7925108652071887026">自動填入數據</translation>
@@ -1754,6 +1762,7 @@
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8059533439631660104">收起嗰個部分。</translation>
 <translation id="8061584726507121204">記錄</translation>
+<translation id="8069168488983557089">取得要點和分析，以助瞭解任何主題</translation>
 <translation id="8069394452933076548">針對最近未使用的分頁，選擇何時要移至閒置分頁部分。</translation>
 <translation id="8073670137947914548">下載完畢</translation>
 <translation id="8076492880354921740">分頁</translation>

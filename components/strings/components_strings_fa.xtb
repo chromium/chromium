@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">ذخیره و تکمیل خودکار</translation>
 <translation id="2312234273148520048">ادویه و سس</translation>
 <translation id="2316087952091171402">کمتر از <ph name="UPPER_ESTIMATE" />. ممکن است برخی سایت‌ها در بازدید بعدی‌تان کندتر بار شوند.</translation>
+<translation id="2316090909467242775">این گذرواژه بازیابی را امتحان کنید</translation>
 <translation id="2316159751672436664">‏شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات ChromeOS</translation>
 <translation id="2316887270356262533">کمتر از ۱ مگابایت از فضا را آزاد می‌کند. ممکن است برخی از سایت‌ها در بازدیدهای بعدی کندتر بارگیری شوند.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> به نام کاربری و گذرواژه نیاز دارد.</translation>
@@ -1673,6 +1674,7 @@
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> اینچ)</translation>
 <translation id="3792826587784915501">فیلم کالت و مستقل</translation>
 <translation id="3793574014653384240">تعداد و دلیل خرابی‌هایی که اخیراً اتفاق افتاده است</translation>
+<translation id="3795624560191557077">‏اخیراً گذرواژه‌ای را تغییر داده‌اید که در سرقت عمومی اطلاعات شبکه پیدا شده است. درصورت بروز مشکل، «مدیر گذرواژه Google» می‌تواند به شما کمک کند به سیستم وارد شوید.</translation>
 <translation id="3799805948399000906">قلم درخواست شد</translation>
 <translation id="3801297763951514916">اغلب بازدید می‌کنید</translation>
 <translation id="380329542618494757">نام</translation>
@@ -1954,6 +1956,7 @@
 <translation id="425582637250725228">تغییراتی که انجام داده‌اید ممکن است ذخیره نشده باشند.</translation>
 <translation id="4258748452823770588">امضای نادرست</translation>
 <translation id="4261046003697461417">نمی‌توان در سند محافظت‌شده حاشیه‌نویسی کرد</translation>
+<translation id="4265635050210404830">کارت‌های وفاداری شما</translation>
 <translation id="4265872034478892965">توسط سرپرست مجاز شده است</translation>
 <translation id="4269029136757623689">پنکه‌های خانگی</translation>
 <translation id="4269264543938335308">لباس شنا</translation>
@@ -2229,6 +2232,7 @@
 <translation id="4754461935447132332">برای سایت‌های ناامن مجاز نیست</translation>
 <translation id="4756388243121344051">&amp;سابقه</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">کد معتبر نیست</translation>
 <translation id="4757993714154412917">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. برای ایمن کردن حسابتان، Chromium توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="4758311279753947758">افزودن اطلاعات تماس</translation>
 <translation id="4761326898079498987">مرور جزئیات بیشتر</translation>
@@ -2294,6 +2298,7 @@
 <translation id="486459320933704969">ولی یا سرپرست باید بازدید شما از این وب‌سایت را تأیید کند</translation>
 <translation id="4864801646102013152">بهینه‌سازی خانه</translation>
 <translation id="4866506163384898554">برای نمایش مکان‌نما، |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| را فشار دهید</translation>
+<translation id="4868277513442568587">‏برای ادامه استفاده از گروه زبانه‌های هم‌رسانی‌شده‌تان، Chrome را به‌روز کنید</translation>
 <translation id="4873616204573862158">عینک</translation>
 <translation id="4873807733347502026">موشواره را قفل و از آن استفاده کند</translation>
 <translation id="4876305945144899064">بدون نام کاربری</translation>
@@ -2430,6 +2435,7 @@
 <translation id="5089810972385038852">ایالت</translation>
 <translation id="5090647584136241764">برگه‌های حاوی محصولات مشابه را اضافه کنید تا بتوانید جزئیاتی را که برایتان مهم است به‌راحتی مقایسه کنید</translation>
 <translation id="5093232627742069661">‏تاخوردگی Z شکل</translation>
+<translation id="5093417502834168387">برای وارد شدن به سیستم مشکل دارید؟ روش دیگری را امتحان کنید</translation>
 <translation id="5094747076828555589">‏این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیت آن مورداعتماد Chromium نیست. علت این موضوع می‌توان پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
 <translation id="5097099694988056070">‏آمار دستگاه مانند استفاده از CPU یا RAM</translation>
 <translation id="5097468150760963273">۳۹ × ۲۷ اینچ</translation>
@@ -3198,6 +3204,7 @@
 <translation id="6388060462449937608">تجهیزات تناسب اندام و لوازم جانبی</translation>
 <translation id="6389470377220713856">نام روی کارت</translation>
 <translation id="6390200185239044127">‏تاخوردگی Z شکل از وسط</translation>
+<translation id="6390533465682072118">بازیابی</translation>
 <translation id="639068771471208680">فرم چندتکه</translation>
 <translation id="6391700400718590966">برگ «اطلاعات کاربری مطابقت ندارد» در روند وارد کردن اطلاعات کاربری پرداخت امن بسته شد</translation>
 <translation id="6392799395081100092">کاغذ (پوست حیوانی)</translation>
@@ -3748,6 +3755,7 @@
 <translation id="7346048084945669753">وابسته است:</translation>
 <translation id="7346062987309535530">ظروف غذاخوری</translation>
 <translation id="7346081071264046066">«پاسخ مثبت با هیجان به این دعوت عروسی»</translation>
+<translation id="7347640536700429009">نام روی کارت معتبر نیست</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7353601530677266744">خط فرمان</translation>
 <translation id="7359588939039777303">آگهی‌ها مسدود شدند.</translation>

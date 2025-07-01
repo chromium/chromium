@@ -187,6 +187,7 @@
 <translation id="1740650426894359238">Tukar kepada profil lain</translation>
 <translation id="1741219894094057085">Jam Tangan Pintar</translation>
 <translation id="1743244221910283364">Buang perubahan</translation>
+<translation id="1748975028205587434">Pilih fail anda</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} pilihan alamat tersedia pada sebelah atas papan kekunci anda.}other{{count} pilihan alamat tersedia pada sebelah atas papan kekunci anda.}}</translation>
 <translation id="1750238553597293878">Kekal menggunakan kata laluan dalam Google Account anda</translation>
 <translation id="17513872634828108">Buka tab</translation>
@@ -529,6 +530,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3119874402040566234">Anda akan dilog keluar dan data semakan imbas akan dipadamkan</translation>
 <translation id="3124568093781685165">Kongsi kata laluan anda dengan keluarga anda</translation>
 <translation id="3130863904455712965">Sejarah dan pelbagai lagi</translation>
+<translation id="3132584647087998639">Import data anda</translation>
 <translation id="313283613037595347">Buat tab Inkognito baharu.</translation>
 <translation id="3136739222562075778">Kad ini menunjukkan penurunan harga pada produk dalam tab terbuka anda</translation>
 <translation id="3138611310073113613">Buang pilihan</translation>
@@ -1118,6 +1120,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5596627076506792578">Lagi pilihan</translation>
 <translation id="560322036295180549">Dimatikan oleh organisasi anda</translation>
 <translation id="5611398002774823980">Simpan dalam akaun</translation>
+<translation id="561269594905823128">Ketik <ph name="BEGIN_BOLD" />Pilih fail anda<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Isih mengikut yang terbaharu</translation>
 <translation id="5614553682702429503">Simpan kata laluan?</translation>
 <translation id="5619871095170816857">Kad ini menunjukkan tab terbuka terakhir yang anda gunakan merentas semua peranti yang disegerakkan dalam tempoh 24 jam yang lalu.</translation>
@@ -1569,6 +1572,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7367530036083223701">Akses kata laluan anda dengan selamat daripada skrin utama dengan widget Password Manager.</translation>
 <translation id="7369285139974632858">Tambahkan pada penanda halaman</translation>
 <translation id="7380220816562673297">Pada masa ini, anda hanya boleh berkongsi kata laluan dengan ahli keluarga. <ph name="BEGIN_LINK" />Buat kumpulan keluarga<ph name="END_LINK" /> dengan maksimum 6 ahli dan peroleh banyak manfaat daripada produk dan langganan anda merentas Google.</translation>
+<translation id="7380698179418029202">Pilih fail <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> eksport Safari anda</translation>
 <translation id="739101637685146669">Apakah URL yang mahu ditambahkan pada penanda halaman?</translation>
 <translation id="7393747756726387725">Zum masuk</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 laman}other{# laman}}</translation>
@@ -1708,6 +1712,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7887552845761062935">Ketik dua kali dan tahan untuk membuka lebih banyak pilihan</translation>
 <translation id="7889910613639381518">Akses mudah dan selamat dengan widget Google Password Manager.</translation>
 <translation id="7899199123054742721">Tandai semua sebagai belum dibaca</translation>
+<translation id="7908957400505794782">Ketik <ph name="BEGIN_BOLD" />Selesai<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">Organisasi anda tidak membenarkan anda menyegerakkan semua.</translation>
 <translation id="792357691529995513">Tiada isu ditemukan</translation>
 <translation id="7925108652071887026">Autolengkap data</translation>

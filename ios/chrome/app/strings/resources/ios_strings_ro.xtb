@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Contactează expeditorul pentru a solicita un link nou</translation>
 <translation id="1013952917065545813">Poți să revii aici mai târziu ca să redeschizi file pe care le-ai închis recent.</translation>
 <translation id="1016495303386450659">Element actualizat</translation>
+<translation id="1017735584092444011">Afișează modul de lectură</translation>
 <translation id="102916930470544692">Cheie de acces</translation>
 <translation id="1030376737535466765">Deschide Managerul de parole</translation>
 <translation id="1035980983510608210">Dacă închizi toate filele, se vor închide și filele fixate.</translation>
@@ -1237,12 +1238,14 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6074656473835429958">Primește notificări</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) nu s-a putut încărca</translation>
 <translation id="6077126322656614846">Se oferă acces la Camera foto</translation>
+<translation id="607730456154980869">Primește răspunsuri mai rapid cu Gemini în Chrome</translation>
 <translation id="6078236141387574983">Ajustează din nou înălțimea foii</translation>
 <translation id="6084848228346514841">Selectează file</translation>
 <translation id="6089212833343035912">PIN-ul Managerului de parole Google</translation>
 <translation id="6090760257419195752">Avertismente respinse</translation>
 <translation id="6096965253650248286">S-au găsit <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Te-ai conectat ca <ph name="USER_EMAIL" />. Deschide setările.</translation>
+<translation id="610083648014322104">Primește răspunsuri relevante în funcție de conținutul paginii pe care te afli</translation>
 <translation id="6103540626693881831">Criptare pe dispozitiv</translation>
 <translation id="611361228753138223">Site-uri pe care le-ai accesat recent pe acest dispozitiv</translation>
 <translation id="611705554202268369">Apasă lung pentru a adăuga într-un grup de file</translation>
@@ -1495,6 +1498,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6979737339423435258">Dintotdeauna</translation>
 <translation id="6983306615164277634">Poți și să ții apăsat pe bara de adrese pentru a-i schimba poziția.</translation>
 <translation id="6987201788018524855">Explorează funcțiile utile pe care nu le-ai folosit</translation>
+<translation id="6989636517316575338">Întreabă despre orice pagină</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Urmărește prețurile produselor și primește alerte când scade prețul pe orice site</translation>
 <translation id="7004032350256606903">Organizația îți solicită să navighezi în privat.
@@ -1696,6 +1700,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7863211248337747225">Descarcă aplicația</translation>
 <translation id="7865127013871431856">Opțiuni de traducere</translation>
 <translation id="7866872729285243843">Pentru a accesa lista de lecturi de pe toate dispozitivele, activează Lista de lecturi în setări.</translation>
+<translation id="787364769771947486">Ascunde Modul de lectură</translation>
 <translation id="7874107544081154809">Completează automat formularul cu <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Ai parole refolosite.</translation>
 <translation id="7887174313503389866">Fă un tur asistat al celor mai importante opțiuni de confidențialitate și de securitate. Pentru mai multe opțiuni, accesează setările individuale.</translation>
@@ -1752,6 +1757,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8058655154417507695">Anul expirării</translation>
 <translation id="8059533439631660104">Restrânge secțiunea.</translation>
 <translation id="8061584726507121204">Istoric</translation>
+<translation id="8069168488983557089">Obține concluzii și statistici cheie care te ajută să înțelegi orice subiect</translation>
 <translation id="8069394452933076548">Alege momentul în care filele care nu au folosite recent se mută în secțiunea filelor inactive.</translation>
 <translation id="8073670137947914548">Descărcarea s-a finalizat</translation>
 <translation id="8076492880354921740">File</translation>

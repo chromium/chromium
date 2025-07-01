@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">保存して自動入力</translation>
 <translation id="2312234273148520048">調味料、ドレッシング</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> 未満。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
+<translation id="2316090909467242775">この再設定パスワードをお試しください</translation>
 <translation id="2316159751672436664">ChromeOS の設定でユーザー補助ツールをカスタマイズします</translation>
 <translation id="2316887270356262533">最大で 1 MB を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> にはユーザー名とパスワードが必要です。</translation>
@@ -1673,6 +1674,7 @@
 <translation id="3792100426446126328"><ph name="NAME" />（<ph name="WIDTH" />x<ph name="HEIGHT" /> インチ）</translation>
 <translation id="3792826587784915501">カルト映画、インディーズ映画</translation>
 <translation id="3793574014653384240">最近発生した問題の件数と原因</translation>
+<translation id="3795624560191557077">一般に報告されているデータ侵害で検出されたパスワードを最近変更しました。問題が発生した場合は、Google パスワード マネージャーを使用してログインできます。</translation>
 <translation id="3799805948399000906">リクエストされたフォント</translation>
 <translation id="3801297763951514916">頻繁にアクセス</translation>
 <translation id="380329542618494757">名前</translation>
@@ -1954,6 +1956,7 @@
 <translation id="425582637250725228">行った変更が保存されない可能性があります。</translation>
 <translation id="4258748452823770588">署名が不適切です</translation>
 <translation id="4261046003697461417">保護されたドキュメントに注釈を追加することはできません</translation>
+<translation id="4265635050210404830">ポイントカード</translation>
 <translation id="4265872034478892965">管理者によって許可されています</translation>
 <translation id="4269029136757623689">家庭用扇風機</translation>
 <translation id="4269264543938335308">水着</translation>
@@ -2229,6 +2232,7 @@
 <translation id="4754461935447132332">セキュアでないサイトでは許可されていません</translation>
 <translation id="4756388243121344051">履歴(&amp;H)</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">コードが無効です</translation>
 <translation id="4757993714154412917">偽のサイトでパスワードを入力しました。アカウントを保護するため、保存したパスワードをすぐに確認することをおすすめします。</translation>
 <translation id="4758311279753947758">連絡先情報を追加</translation>
 <translation id="4761326898079498987">詳細をご確認ください</translation>
@@ -2294,6 +2298,7 @@
 <translation id="486459320933704969">保護者の方から、このウェブサイトを開いてもよいという承認をもらう必要があります</translation>
 <translation id="4864801646102013152">リフォーム</translation>
 <translation id="4866506163384898554">カーソルを表示するには |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| を押します</translation>
+<translation id="4868277513442568587">共有タブグループを引き続き使用するには、Chrome を更新してください</translation>
 <translation id="4873616204573862158">眼鏡</translation>
 <translation id="4873807733347502026">マウスのロックと使用</translation>
 <translation id="4876305945144899064">ユーザー名が指定されていません</translation>
@@ -2430,6 +2435,7 @@
 <translation id="5089810972385038852">都道府県 / 州</translation>
 <translation id="5090647584136241764">同様の商品のタブを追加して、重要な情報を簡単に比較できます</translation>
 <translation id="5093232627742069661">Z 折り</translation>
+<translation id="5093417502834168387">ログインできない場合は、別の方法を試すことができます</translation>
 <translation id="5094747076828555589">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は Chromium によって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="5097099694988056070">CPU や RAM の使用率などのデバイスの統計情報</translation>
 <translation id="5097468150760963273">27x39 インチ</translation>
@@ -3198,6 +3204,7 @@
 <translation id="6388060462449937608">フィットネス機器、付属品</translation>
 <translation id="6389470377220713856">カード名義人（半角英文字）</translation>
 <translation id="6390200185239044127">2 つ折り直角 Z 折り</translation>
+<translation id="6390533465682072118">再設定</translation>
 <translation id="639068771471208680">マルチパート フォーム</translation>
 <translation id="6391700400718590966">保護されたお支払い認証情報（認証情報の一致なし）シートは閉じています</translation>
 <translation id="6392799395081100092">紙（上質）</translation>
@@ -3748,6 +3755,7 @@
 <translation id="7346048084945669753">組織内のユーザーか:</translation>
 <translation id="7346062987309535530">食器</translation>
 <translation id="7346081071264046066">「この結婚式の招待状に、喜んで参加すると返事する」</translation>
+<translation id="7347640536700429009">カードの名義が無効です</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7353601530677266744">コマンドライン</translation>
 <translation id="7359588939039777303">広告がブロックされました。</translation>

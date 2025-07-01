@@ -793,6 +793,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2310789833878085574">Ruaj dhe plotëso automatikisht</translation>
 <translation id="2312234273148520048">Erëza dhe salca</translation>
 <translation id="2316087952091171402">Më pak se <ph name="UPPER_ESTIMATE" />. Disa sajte mund të ngarkohen më ngadalë në vizitën tënde të radhës.</translation>
+<translation id="2316090909467242775">Provo këtë fjalëkalim rikuperimi</translation>
 <translation id="2316159751672436664">Personalizo veglat e qasshmërisë te cilësimet e ChromeOS</translation>
 <translation id="2316887270356262533">Liron më pak se 1 MB. Disa sajte mund të ngarkohen më ngadalë gjatë vizitës tënde të radhës.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> kërkon një emër përdoruesi dhe një fjalëkalim.</translation>
@@ -1673,6 +1674,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> inç)</translation>
 <translation id="3792826587784915501">Filma kult dhe të pavarur</translation>
 <translation id="3793574014653384240">Shifrat dhe shkaqet e përplasjeve që kanë ndodhur së fundi</translation>
+<translation id="3795624560191557077">Së fundi ke ndryshuar një fjalëkalim të gjetur në një nxjerrje të paautorizuar të të dhënave publike. Në rast se ke probleme, "Menaxheri i fjalëkalimeve i Google" mund të të ndihmojë të identifikohesh.</translation>
 <translation id="3799805948399000906">Fonti i kërkuar</translation>
 <translation id="3801297763951514916">E viziton shpesh</translation>
 <translation id="380329542618494757">Emri</translation>
@@ -1954,6 +1956,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="425582637250725228">Ndryshimet që ke bërë mund të mos ruhen.</translation>
 <translation id="4258748452823770588">Nënshkrim i gabuar</translation>
 <translation id="4261046003697461417">Dokumentet e mbrojtura nuk mund të shënohen</translation>
+<translation id="4265635050210404830">Kartat e tua të besnikërisë</translation>
 <translation id="4265872034478892965">Lejuar nga administratori yt</translation>
 <translation id="4269029136757623689">Ventilatorë shtëpie</translation>
 <translation id="4269264543938335308">Kostume banje</translation>
@@ -2229,6 +2232,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4754461935447132332">Nuk lejohet për sajtet e pasigurta</translation>
 <translation id="4756388243121344051">&amp;Historiku</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Kodi është i pavlefshëm</translation>
 <translation id="4757993714154412917">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Për të siguruar llogaritë e tua, Chromium rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="4758311279753947758">Shto informacionet e kontaktit</translation>
 <translation id="4761326898079498987">Rishiko për detaje të mëtejshme</translation>
@@ -2294,6 +2298,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="486459320933704969">Një prind ose kujdestar duhet të pranojë që ta vizitosh këtë uebsajt</translation>
 <translation id="4864801646102013152">Përmirësimi i shtëpisë</translation>
 <translation id="4866506163384898554">Shtyp |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| për të shfaqur kursorin</translation>
+<translation id="4868277513442568587">Përditëso Chrome që të vazhdosh të përdorësh grupet e ndara të skedave</translation>
 <translation id="4873616204573862158">Syze</translation>
 <translation id="4873807733347502026">Kyç dhe përdor miun</translation>
 <translation id="4876305945144899064">Nuk ka emër përdoruesi</translation>
@@ -2430,6 +2435,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5089810972385038852">Shteti</translation>
 <translation id="5090647584136241764">Shto skeda me produkte të ngjashme për të krahasuar me lehtësi detajet që kanë rëndësi për ty</translation>
 <translation id="5093232627742069661">Palosje Z</translation>
+<translation id="5093417502834168387">Ke probleme me identifikimin? Provo një mënyrë tjetër</translation>
 <translation id="5094747076828555589">Ky server nuk mundi të dëshmonte se kjo është <ph name="DOMAIN" />; certifikata e tij e sigurisë nuk është e besueshme nga Chromium. Kjo mund të shkaktohet nga keqkonfigurimi ose një sulmues që po kap lidhjen tënde.</translation>
 <translation id="5097099694988056070">Statistikat e pajisjes si p.sh. përdorimin e njësisë CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 inç</translation>
@@ -3197,6 +3203,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6388060462449937608">Pajisje dhe aksesorë fitnesi</translation>
 <translation id="6389470377220713856">Emri në kartë</translation>
 <translation id="6390200185239044127">Palosje Z në gjysmë</translation>
+<translation id="6390533465682072118">Rikuperimi</translation>
 <translation id="639068771471208680">Formular me shumë pjesë</translation>
 <translation id="6391700400718590966">Kredenciali i pagesës së sigurt pa fletë përkatëse kredenciali është i mbyllur</translation>
 <translation id="6392799395081100092">Letër (pergamenë)</translation>
@@ -3746,6 +3753,7 @@ Detaje shtesë:
 <translation id="7346048084945669753">Është i lidhur:</translation>
 <translation id="7346062987309535530">Artikuj tavoline</translation>
 <translation id="7346081071264046066">"përgjigju me 'po' me emocion për këtë ftesë dasme"</translation>
+<translation id="7347640536700429009">Emri në kartë është i pavlefshëm</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7353601530677266744">Linja e komandave</translation>
 <translation id="7359588939039777303">Reklamat janë të bllokuara.</translation>

@@ -40,6 +40,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1547469039832541117">Nabarmendutako zeregina amaitzen du.</translation>
 <translation id="1553461853655228091">Chromium-ek kamera erabiltzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Luzapena ez da onartzen jada. Kentzea gomendatzen dizu Chromium-ek.}other{Luzapen hauek ez dira onartzen jada. Kentzea gomendatzen dizu Chromium-ek.}}</translation>
+<translation id="1562320819937089394">Ainguratu Chromium</translation>
 <translation id="1574377791422810894">Chromium-en segurtasun-tresnak</translation>
 <translation id="1594928384848033697">Chromium-ek Pasahitz-kudeatzailea zerbitzuan dauzkazun datuak ezabatu behar ditu. Horretarako baimena emateko, idatzi Windows-eko pasahitza.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Chromium berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko}=1{Chromium berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chromium berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
@@ -522,6 +523,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>
 <translation id="8010081455002666927">Hautemate automatikoa</translation>
 <translation id="8013436988911883588">Chromium-ek sarbidea duenean, webguneek sarbidea eskatuko dizute.</translation>
+<translation id="8031714377769448844">Ainguratu Chromium zereginen barran, hura bizkor atzitzeko edonoiz</translation>
 <translation id="80471789339884597">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzaile guztiak berrabiarazi behar dituzu.</translation>
 <translation id="8054112667659782652">Erakutsi beti irudi-bilaketaren lasterbidea</translation>
 <translation id="8077498902115777962">Desgaitu Chromium atzeko planoan exekutatzea aplikazioetarako</translation>

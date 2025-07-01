@@ -793,6 +793,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2310789833878085574">Gardar e autocompletar</translation>
 <translation id="2312234273148520048">Condimentos e aderezos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Algúns sitios pode que carguen máis lentamente a próxima vez que os visites.</translation>
+<translation id="2316090909467242775">Proba este contrasinal de recuperación</translation>
 <translation id="2316159751672436664">Personalizar as túas ferramentas de accesibilidade na configuración de Chrome OS</translation>
 <translation id="2316887270356262533">Libera menos de 1 MB. É posible que algúns sitios carguen de forma máis lenta a próxima vez que os visites.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> require un nome de usuario e un contrasinal.</translation>
@@ -1673,6 +1674,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Películas independentes e de culto</translation>
 <translation id="3793574014653384240">Número de fallos ocorridos recentemente e as súas causas</translation>
+<translation id="3795624560191557077">Recentemente cambiaches un contrasinal que se atopou nunha violación da seguranza dos datos pública. Se tes problemas, o xestor de contrasinais de Google pode axudarche a iniciar sesión.</translation>
 <translation id="3799805948399000906">Solicitouse a fonte</translation>
 <translation id="3801297763951514916">Acceso frecuente</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -1954,6 +1956,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="425582637250725228">É posible que non se gardasen os cambios que fixeches.</translation>
 <translation id="4258748452823770588">Sinatura incorrecta</translation>
 <translation id="4261046003697461417">Non se poden anotar os documentos protexidos</translation>
+<translation id="4265635050210404830">As túas tarxetas de fidelidade</translation>
 <translation id="4265872034478892965">Permitido polo administrador</translation>
 <translation id="4269029136757623689">Ventiladores domésticos</translation>
 <translation id="4269264543938335308">Roupa de baño</translation>
@@ -2229,6 +2232,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4754461935447132332">Non se permite para os sitios non seguros</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">O código non é válido</translation>
 <translation id="4757993714154412917">Acabas de escribir o teu contrasinal nun sitio enganoso. Para protexer as túas contas, Chromium recoméndache que comprobes os contrasinais que tes gardados.</translation>
 <translation id="4758311279753947758">Engadir información de contacto</translation>
 <translation id="4761326898079498987">Obtén máis detalles</translation>
@@ -2294,6 +2298,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="486459320933704969">Para poderes visitar este sitio web, ten que darche permiso o teu pai, nai, titor ou titora</translation>
 <translation id="4864801646102013152">Reforma de vivendas</translation>
 <translation id="4866506163384898554">Para que se mostre o cursor, preme |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
+<translation id="4868277513442568587">Actualiza Chrome para seguir usando os grupos de pestanas compartidos</translation>
 <translation id="4873616204573862158">Lentes</translation>
 <translation id="4873807733347502026">Bloquear e usar o rato</translation>
 <translation id="4876305945144899064">Sen nome de usuario</translation>
@@ -2430,6 +2435,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090647584136241764">Engade pestanas con produtos similares para comparar facilmente os detalles que máis che interesen</translation>
 <translation id="5093232627742069661">Dobrez en Z</translation>
+<translation id="5093417502834168387">Tes problemas para iniciar sesión? Proba con outro método</translation>
 <translation id="5094747076828555589">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque Chromium non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="5097099694988056070">Estatísticas do hardware, como o uso de CPU/RAM</translation>
 <translation id="5097468150760963273">27 × 39 in</translation>
@@ -3198,6 +3204,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6388060462449937608">Equipamento e accesorios para estar en forma</translation>
 <translation id="6389470377220713856">Nome na tarxeta</translation>
 <translation id="6390200185239044127">Dobrez en Z á metade</translation>
+<translation id="6390533465682072118">Recuperación</translation>
 <translation id="639068771471208680">Papel de autocopia</translation>
 <translation id="6391700400718590966">A folla da credencial de pagos seguros correspondente ás credenciais non coincidentes está pechada</translation>
 <translation id="6392799395081100092">Papel (velino)</translation>
@@ -3747,6 +3754,7 @@ Detalles adicionais:
 <translation id="7346048084945669753">É colaborador:</translation>
 <translation id="7346062987309535530">Utensilios de mesa e vaixelas</translation>
 <translation id="7346081071264046066">"responde afirmativamente e con entusiasmo a esta invitación de voda"</translation>
+<translation id="7347640536700429009">O nome que figura na tarxeta non é válido</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="7353601530677266744">Liña de comandos</translation>
 <translation id="7359588939039777303">Bloqueáronse os anuncios.</translation>

@@ -793,6 +793,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2310789833878085574">I-save at i-autofill</translation>
 <translation id="2312234273148520048">Mga Condiment at Dressing</translation>
 <translation id="2316087952091171402">Mas mababa sa <ph name="UPPER_ESTIMATE" />. Posibleng mas mabagal na mag-load ang ilang site sa iyong susunod na pagbisita.</translation>
+<translation id="2316090909467242775">Subukan ang password sa pag-recover na ito</translation>
 <translation id="2316159751672436664">I-personalize ang iyong mga tool sa accessibility sa mga setting ng ChromeOS</translation>
 <translation id="2316887270356262533">Magbabakante ng wala pang 1 MB. Maaaring mag-load nang mas mabagal ang ilang site sa iyong susunod na pagbisita.</translation>
 <translation id="2317259163369394535">Kailangan ng <ph name="DOMAIN" /> ng username at password.</translation>
@@ -1673,6 +1674,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Mga Pelikulang Cult at Indie</translation>
 <translation id="3793574014653384240">Mga bilang at sanhi ng mga pag-crash na naganap kamakailan</translation>
+<translation id="3795624560191557077">Nagpalit ka kamakailan ng password na nakita sa isang pampublikong breach sa data. Kung magkakaproblema, matutulungan ka ng Google Password Manager na mag-sign in.</translation>
 <translation id="3799805948399000906">Hiniling na font</translation>
 <translation id="3801297763951514916">Madalas mong bisitahin</translation>
 <translation id="380329542618494757">Pangalan</translation>
@@ -2433,6 +2435,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090647584136241764">Magdagdag ng mga tab na may magkakatulad na produkto para madaling paghambingin ang mga detalyeng mahalaga sa iyo</translation>
 <translation id="5093232627742069661">Z-fold</translation>
+<translation id="5093417502834168387">Nagkakaproblema sa pag-sign in? Sumubok ng ibang paraan</translation>
 <translation id="5094747076828555589">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; hindi pinagkakatiwalaan ng Chromium ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="5097099694988056070">Mga istatistika ng device gaya ng paggamit ng CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
@@ -3201,6 +3204,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6388060462449937608">Kagamitan at Mga Accessory sa Fitness</translation>
 <translation id="6389470377220713856">Pangalan sa Card</translation>
 <translation id="6390200185239044127">Z-fold half</translation>
+<translation id="6390533465682072118">Pag-recover</translation>
 <translation id="639068771471208680">Multi-Part Form</translation>
 <translation id="6391700400718590966">Nakasara ang sheet na walang tumutugmang kredensyal sa kredensyal sa secure na pagbabayad</translation>
 <translation id="6392799395081100092">Papel (Vellum)</translation>

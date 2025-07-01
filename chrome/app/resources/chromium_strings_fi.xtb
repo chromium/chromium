@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Lopettaa korostetun tehtävän.</translation>
 <translation id="1553461853655228091">Chromium tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Tätä laajennusta ei enää tueta. Chromium suosittelee sen poistamista.}other{Näitä laajennuksia ei enää tueta. Chromium suosittelee niiden poistamista.}}</translation>
+<translation id="1562320819937089394">Kiinnitä Chromium</translation>
 <translation id="1574377791422810894">Chromiumin turvallisuustyökalut</translation>
 <translation id="1594928384848033697">Chromium haluaa poistaa Salasanat-datasi. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön.}=1{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito-ikkunaasi ei avata uudelleen.}other{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
@@ -521,6 +522,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8004582292198964060">Selain</translation>
 <translation id="8010081455002666927">Automaattinen tunnistus</translation>
 <translation id="8013436988911883588">Kun Chromiumilla on käyttöoikeus, sivustot voivat pyytää sitä sinulta.</translation>
+<translation id="8031714377769448844">Kiinnitä Chromium tehtäväpalkkiin, niin voit käyttää sitä nopeasti milloin tahansa</translation>
 <translation id="80471789339884597">Kiitos asennuksesta. Kaikki selaimet pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="8054112667659782652">Näytä aina kuvahaun pikanäppäin</translation>
 <translation id="8077498902115777962">Poista käytöstä Chromiumin taustalla toimiminen sovelluksissa</translation>

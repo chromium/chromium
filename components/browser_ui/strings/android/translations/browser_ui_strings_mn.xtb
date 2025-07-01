@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="1816835383954230954">Асаалттай байхад Chrome илүү хурдан ажилладаг бөгөөд JavaScript-г ашигладаг онцлогууд зориулалтын дагуу ажиллах ёстой. Унтраалттай байхад энэ нь гүйцэтгэлийг багасгах ч V8-г халдлагад илүү тэсвэртэй болгоно.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-д AR-г ашиглахыг зөвшөөрөхийн тулд камерыг мөн <ph name="BEGIN_LINK" />Андройдын Тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
+<translation id="1881806992065048905">Шинэ таб хуудасны харагдах байдлын доод хүснэгт</translation>
 <translation id="1887786770086287077">Байршлын хандалт энэ төхөөрөмжид унтраалттай байна. Үүнийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" /> хэсэгт асаана уу.</translation>
 <translation id="1906181697255754968">Сайтууд ихэвчлэн таны ажлыг автоматаар хадгалах зэрэг онцлогуудад зориулж таны төхөөрөмж дээрх файл болон фолдерт ханддаг</translation>
 <translation id="1915307458270490472">Таслах</translation>
@@ -326,6 +327,7 @@
 <translation id="4882919381756638075">Сайтууд ихэвчлэн видео чат зэрэг харилцаа холбооны онцлогуудад зориулж таны микрофоныг ашигладаг</translation>
 <translation id="4883854917563148705">Хяналттай тохиргоог шинэчлэх боломжгүй</translation>
 <translation id="4887024562049524730">Сайтуудад таны виртуал бодит байдлын төхөөрөмж болон өгөгдлийг ашиглахыг зөвшөөрөхийн өмнө асуух (санал болгосон)</translation>
+<translation id="4934780484581617878">Цонхны менежмент</translation>
 <translation id="4936863036653376783">Та бүх төхөөрөмж дээрээ табын бүлэг хэсгээс бүлгүүдээ олно</translation>
 <translation id="4945443401464700059"><ph name="SITE" />-г таны мэдээллийг дараахад ашиглахыг блоклосон</translation>
 <translation id="4953688446973710931">Асаалттай үед сайтууд олон файлыг автоматаар татахыг хүсэх боломжтой. Унтраалттай үед сайтууд олон файлыг автоматаар татах боломжгүй.</translation>
@@ -333,6 +335,7 @@
 <translation id="4972737347717125191">Сайтууд виртуал бодит байдлын төхөөрөмжүүд болон өгөгдлийг ашиглахыг хүсэх боломжтой</translation>
 <translation id="497421865427891073">Цаашаа явах</translation>
 <translation id="4976702386844183910">Хамгийн сүүлд <ph name="DATE" />-д зочилсон</translation>
+<translation id="4978178243417029856">Discover-н хангамжийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="4994033804516042629">Харилцагч олдсонгүй</translation>
 <translation id="4996978546172906250">-аар хуваалцах</translation>
 <translation id="5001526427543320409">Гуравдагч талын күүки</translation>
@@ -457,6 +460,7 @@
 <translation id="6398765197997659313">Дэлгэц дүүрэн харах горимоос гарах</translation>
 <translation id="640163077447496506">Өнөөдөр хугацаа нь дуусна</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Загварын цуглуулга</translation>
 <translation id="6439114592976064011">Сайтуудад таны виртуал бодит байдлын төхөөрөмж болон өгөгдлийг ашиглахыг хориглох</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Таны нээлттэй таб дээрх үнэ бууралт, <ph name="OLD_PRICE" />-с <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -560,6 +564,7 @@
 <translation id="7791543448312431591">Нэмэх</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7804248752222191302">Сайт таны камерыг ашиглаж байна</translation>
+<translation id="7805832099057502789">Шинэ таб хуудасны харагдах байдлын доод хүснэгтийг бүтэн өндрөөр нээсэн</translation>
 <translation id="7807060072011926525">Google-с олгосон</translation>
 <translation id="7815680994978050279">Аюултай таталтыг блоклосон</translation>
 <translation id="7835852323729233924">Медиаг тоглуулж байна</translation>
@@ -579,9 +584,11 @@
 <translation id="802154636333426148">Татаж чадсангүй</translation>
 <translation id="8042586301629853791">Дараахаар эрэмбэлэх:</translation>
 <translation id="8051193500142930381">Камер шаардлагатай онцлогууд ажиллахгүй</translation>
+<translation id="8056330801132235235">Chrome-н өгөгдмөл</translation>
 <translation id="8067883171444229417">Видео тоглуулах</translation>
 <translation id="8068648041423924542">Сертификат сонгох боломжгүй.</translation>
 <translation id="8077120325605624147">Таны зочилсон ямар ч сайт танд ямар ч зар харуулах боломжтой</translation>
+<translation id="80798452873915119">Сайтууд таны бүх дэлгэц дээр цонх удирдахыг хүсэх боломжтой</translation>
 <translation id="8087000398470557479"><ph name="DOMAIN_NAME" />-н энэ агуулгыг Google танд хүргэж байна.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" />-н бусад сонголт</translation>
 <translation id="8112925981674547014">Аппын жагсаалтдаа таб харах</translation>

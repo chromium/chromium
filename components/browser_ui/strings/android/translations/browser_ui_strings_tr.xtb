@@ -326,6 +326,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="4882919381756638075">Görüntülü sohbet gibi iletişim özellikleri için siteler genellikle mikrofonunuzu kullanır</translation>
 <translation id="4883854917563148705">Yönetilen ayarlar sıfırlanamaz</translation>
 <translation id="4887024562049524730">Sitelerin sanal gerçeklik cihazıma veya verilerime erişmesine izin vermeden önce sor (önerilir)</translation>
+<translation id="4934780484581617878">Pencere yönetimi</translation>
 <translation id="4936863036653376783">Gruplarınızı tüm cihazlarınızda sekme grubu bölümünde bulabilirsiniz</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> sitesinin, şu sitelerdeki bilgilerinizi kullanması engellendi:</translation>
 <translation id="4953688446973710931">Bu düğme açıkken siteler birden fazla dosyayı otomatik olarak indirmek isteyebilir. Düğme kapalıyken siteler birden fazla dosyayı otomatik olarak indiremez.</translation>
@@ -333,6 +334,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="4972737347717125191">Siteler sanal gerçeklik cihazlarını ve verilerini kullanmak isteyebilir</translation>
 <translation id="497421865427891073">İlerle</translation>
 <translation id="4976702386844183910">Son ziyaret tarihi: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Keşfet feed'i hakkında daha fazla bilgi</translation>
 <translation id="4994033804516042629">Kişi bulunamadı</translation>
 <translation id="4996978546172906250">Paylaşım yöntemi:</translation>
 <translation id="5001526427543320409">Üçüncü taraf çerezleri</translation>
@@ -582,6 +584,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="8067883171444229417">Videoyu oynat</translation>
 <translation id="8068648041423924542">Sertifika seçilemiyor.</translation>
 <translation id="8077120325605624147">Ziyaret ettiğiniz herhangi bir site size reklam gösterebilir</translation>
+<translation id="80798452873915119">Siteler tüm ekranlarımda pencereleri yönetme izni isteyebilir</translation>
 <translation id="8087000398470557479">Bu içerik Google tarafından <ph name="DOMAIN_NAME" /> adresinden sağlanmaktadır.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> bölümünde daha fazla seçenek</translation>
 <translation id="8112925981674547014">Uygulama listenizdeki sekmeleri görüntüle</translation>

@@ -793,6 +793,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2310789833878085574">Uložit a automaticky vyplnit</translation>
 <translation id="2312234273148520048">Dochucovadla a dresinky</translation>
 <translation id="2316087952091171402">Méně než <ph name="UPPER_ESTIMATE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
+<translation id="2316090909467242775">Zkuste toto heslo pro obnovení</translation>
 <translation id="2316159751672436664">Přizpůsobte si v nastavení ChromeOS nástroje pro usnadnění přístupu</translation>
 <translation id="2316887270356262533">Uvolní více než 1 MB. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="2317259163369394535">Doména <ph name="DOMAIN" /> vyžaduje zadání uživatelského jména a hesla.</translation>
@@ -1669,6 +1670,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> palců)</translation>
 <translation id="3792826587784915501">Kultovní a nezávislé filmy</translation>
 <translation id="3793574014653384240">Počty a příčiny nedávných selhání</translation>
+<translation id="3795624560191557077">Nedávno jste změnili heslo, které bylo nalezeno ve zveřejněném úniku dat. V případě potíží vám s přihlášením může pomoct Správce hesel Google.</translation>
 <translation id="3799805948399000906">Požadováno písmo</translation>
 <translation id="3801297763951514916">Často navštěvujete</translation>
 <translation id="380329542618494757">Název</translation>
@@ -1950,6 +1952,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="425582637250725228">Je možné, že provedené změny nebudou uloženy.</translation>
 <translation id="4258748452823770588">Chybný podpis</translation>
 <translation id="4261046003697461417">Do chráněných dokumentů nelze přidávat značky a poznámky</translation>
+<translation id="4265635050210404830">Vaše věrnostní karty</translation>
 <translation id="4265872034478892965">Povoleno administrátorem</translation>
 <translation id="4269029136757623689">Větráky</translation>
 <translation id="4269264543938335308">Plavky a koupací oblečení</translation>
@@ -2225,6 +2228,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4754461935447132332">Není povoleno u nezabezpečených webů</translation>
 <translation id="4756388243121344051">Historie</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Kód je neplatný</translation>
 <translation id="4757993714154412917">Právě jste své heslo zadali na klamavém webu. Pokud chcete zabezpečit své účty, Chromium vám doporučuje zkontrolovat uložená hesla.</translation>
 <translation id="4758311279753947758">Přidat kontaktní údaje</translation>
 <translation id="4761326898079498987">Můžete si přečíst další podrobnosti</translation>
@@ -2290,6 +2294,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="486459320933704969">Tvůj rodič nebo zákonný zástupce musí potvrdit, že web můžeš navštívit</translation>
 <translation id="4864801646102013152">Zařizování domácnosti</translation>
 <translation id="4866506163384898554">Kurzor zobrazíte stisknutím kláves |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
+<translation id="4868277513442568587">Pokud chcete dál používat sdílené skupiny karet, aktualizujte Chrome</translation>
 <translation id="4873616204573862158">Brýle</translation>
 <translation id="4873807733347502026">Zamykat a používat myš</translation>
 <translation id="4876305945144899064">Žádné uživatelské jméno</translation>
@@ -2426,6 +2431,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5089810972385038852">Stát/kraj</translation>
 <translation id="5090647584136241764">Přidáním karet s podobnými produkty můžete snadno porovnat podrobnosti, na kterých vám záleží</translation>
 <translation id="5093232627742069661">Přeložení do Z</translation>
+<translation id="5093417502834168387">Máte s přihlášením problémy? Zkuste to jinak</translation>
 <translation id="5094747076828555589">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Chromium jeho bezpečnostnímu certifikátu nedůvěřuje. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="5097099694988056070">Statistiky zařízení, například využití CPU/RAM</translation>
 <translation id="5097468150760963273">27 × 39 palců</translation>
@@ -3193,6 +3199,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6388060462449937608">Vybavení a příslušenství pro sportovní aktivity</translation>
 <translation id="6389470377220713856">Jméno na kartě</translation>
 <translation id="6390200185239044127">Přeložení napůl do Z</translation>
+<translation id="6390533465682072118">Obnovení</translation>
 <translation id="639068771471208680">Vícedílný formulář</translation>
 <translation id="6391700400718590966">List identifikačních údajů pro zabezpečené platby o nenalezených odpovídajících identifikačních údajích je zavřený</translation>
 <translation id="6392799395081100092">Papír (velín)</translation>
@@ -3742,6 +3749,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7346048084945669753">Je přidružený:</translation>
 <translation id="7346062987309535530">Stolní nádobí</translation>
 <translation id="7346081071264046066">„napiš nadšenou kladnou odpověď na tuto svatební pozvánku“</translation>
+<translation id="7347640536700429009">Jméno na kartě je neplatné</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7353601530677266744">Příkazový řádek</translation>
 <translation id="7359588939039777303">Byly zablokovány reklamy.</translation>

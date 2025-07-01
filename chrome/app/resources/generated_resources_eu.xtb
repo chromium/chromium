@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Fitxategiak ez du balio edo hondatuta dago</translation>
 <translation id="1040761927998636252"><ph name="URL" /> webgunerako laster-marka izengabea</translation>
 <translation id="1041175011127912238">Orriak ez du erantzuten</translation>
+<translation id="1041181446722933623">"<ph name="LOCAL_BOOKMARK" />" gailu honetan soilik dago gordeta. Beste gailuetan erabiltzeko, gorde ezazu kontuko "<ph name="ACCOUNT_FOLDER" />" karpetan.</translation>
 <translation id="1041263367839475438">Gailu erabilgarriak</translation>
 <translation id="1041607257468256895">Kudeatu webguneek kokapena erabiltzeko dituzten baimenak Chrome-n</translation>
 <translation id="1042174272890264476">Ordenagailuak <ph name="SHORT_PRODUCT_NAME" /> produktuaren RLZ liburutegia ere du integratuta. RLZ liburutegiak esklusiboa ez den eta pertsonalki identifikatu ezin zaitzakeen etiketa bat esleitzen du promozio-kanpaina jakin batek sortutako bilaketak eta <ph name="SHORT_PRODUCT_NAME" /> produktuaren erabilera neurtzeko. Etiketa horiek <ph name="PRODUCT_NAME" /> produktuko Google Bilaketa kontsultetan agertzen dira batzuetan.</translation>
@@ -608,6 +609,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1418559532423038045"><ph name="VM_NAME" /> kenduko du <ph name="DEVICE_TYPE" /> gailutik. Makina birtualeko aplikazio eta datu guztiak ezabatuko dira!</translation>
 <translation id="1418882096915998312">Abian da enpresen erregistratze-prozesua</translation>
 <translation id="1418954524306642206">Arakatu eta zehaztu inprimagailuaren PPD fitxategia</translation>
+<translation id="1419086691207546433">Gehitu luzapenak dena antolatuta edukitzeko, zereginak errazteko eta hobeki arakatzeko</translation>
 <translation id="1421334842435688311">Mugikorraren kokapenari buruzko informazioa</translation>
 <translation id="1421514190500081936">Idatzi datu hauek deskargatzeko arrazoi bat:</translation>
 <translation id="1422159345171879700">Kargatu seguruak ez diren scriptak</translation>
@@ -1915,7 +1917,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2312219318583366810">Orriaren URLa</translation>
 <translation id="2314165183524574721">Oraingo ikusgaitasun-ezarpena: Ezkutatuta</translation>
 <translation id="2314774579020744484">Orrietako testua itzultzeko erabiliko den hizkuntza</translation>
-<translation id="2316090909467242775">Probatu kontua berreskuratzeko pasahitz hau</translation>
 <translation id="2316129865977710310">Ez, eskerrik asko</translation>
 <translation id="2316433409811863464">App Streaming</translation>
 <translation id="2316709634732130529">Erabili iradokitako pasahitza</translation>
@@ -3325,6 +3326,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3309330461362844500">Ziurtagiriaren profil-identifikatzailea</translation>
 <translation id="3310379801837527592">Sartu fitxa taldean <ph name="OWNER_FIRST_NAME" /> eta beste <ph name="NUM_OTHER_MEMBERS" /> erabiltzailerekin</translation>
 <translation id="331080746368555063">Webgune pribatuetan, zure enpresaren intraneta eta antzekoak sartzen dira, adibidez</translation>
+<translation id="3311007761540106761">Sistemaren balio lehenetsia</translation>
 <translation id="3311445899360743395">Aplikazio honekin erlazionatutako datu guztiak kenduko dira gailu honetatik.</translation>
 <translation id="3312470654018965389">Linux-en edukiontzia konfiguratzen</translation>
 <translation id="3312883087018430408">Bilaketak webgune zehatz batean edo Chrome-ren zati batean egiteko, idatzi atal horren lasterbidea helbide-barran eta, ondoren, sakatu erabili ohi duzun lasterbidea. Adibidez, emaitzak laster-marken atalean soilik bilatzeko, idatzi "@laster-markak", eta sakatu tabuladorea edo zuriune-barra.</translation>
@@ -4038,7 +4040,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> luzapen</translation>
 <translation id="3794792524918736965">Aktibatu Windows Hello</translation>
 <translation id="379509625511193653">Desaktibatuta</translation>
-<translation id="3795624560191557077">Datuen isilpekotasunaren urratze publiko batean aurkitu zen pasahitz bat aldatu duzu duela gutxi. Arazorik baduzu, Google-ren Pasahitz-kudeatzailea zerbitzuak saioa hasten lagun diezazuke.</translation>
 <translation id="3796215473395753611">Alt + gora egiteko gezi-tekla</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, erabili eskuinera egiteko gezi-tekla ahotsa aurreikusteko</translation>
 <translation id="3796648294839530037">Gogoko sareak:</translation>
@@ -5859,7 +5860,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5088534251099454936">PKCS #1 SHA-512 RSA enkriptatzearekin</translation>
 <translation id="5090637338841444533">Ezin dute egin kameraren posizioaren jarraipena</translation>
 <translation id="5091636240353511739">Erakutsi PINa</translation>
-<translation id="5093417502834168387">Arazoak dituzu saioa hasteko? Erabili beste modu bat</translation>
 <translation id="5093477827231450397">Blokeatu dituzun eta beste webguneei iragarkiak iradokitzea galarazi nahi diezun webguneen zerrenda</translation>
 <translation id="5093569275467863761">Aurreko orria cachean gordetzeko eginbidean gordetako ezkutuko moduko azpimarkoa: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Onartzen diren fitxategiak aplikazio honekin ireki ditzakezu Fitxategiak aplikaziotik edo beste aplikazio batzuetatik. Aplikazio hau modu lehenetsian zein fitxategik irekitzen duten kontrolatzeko, <ph name="BEGIN_LINK" />lortu gailuaren aplikazio lehenetsiak ezartzeko argibideak<ph name="END_LINK" />.</translation>
@@ -7640,7 +7640,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6388577073199278153">Ezin zara sartu mugikorreko kontuan</translation>
 <translation id="6390020764191254941">Eraman fitxa leiho berri batera</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Bat ere ez}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> eta beste domeinu baterako}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> eta beste {COUNT} domeinutarako}}</translation>
-<translation id="6390533465682072118">Berreskuratzeko</translation>
 <translation id="6391131092053186625">Gailuaren IMEIa <ph name="IMEI_NUMBER" /> da. Zerbitzua aktibatzeko erabil daiteke zenbaki hori.</translation>
 <translation id="6393156038355142111">Iradoki pasahitz konplexu bat</translation>
 <translation id="6393550101331051049">Segurua ez den edukia erakuts dezakete</translation>
@@ -7873,6 +7872,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6560151649238390891">Txertatu da iradokizuna</translation>
 <translation id="656065428026159829">Ikusi gehiago</translation>
 <translation id="6561726789132298588">sartu</translation>
+<translation id="6561877237303825108">Baliteke fitxategi mota hau (<ph name="TYPE" />) arriskutsua izatea. Gorde fitxategia <ph name="ORIGIN" /> fidagarritzat jotzen baduzu soilik.</translation>
 <translation id="6562117348069327379">Gorde sistemaren erregistroak Deskargak direktorioan.</translation>
 <translation id="656293578423618167">Fitxategi-bidea edo -izena luzeegia da. Gorde izen laburrago batekin edo beste kokapen batean.</translation>
 <translation id="6563002009564846727">Ikusi Windows-etik inportatutako ziurtagiriak</translation>
@@ -9675,6 +9675,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> fitxategi <ph name="CLOUD_PROVIDER" />-n kopiatu nahi dituzu ireki ahal izateko?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Hemen agertuko dira gordetako hitz pertsonalizatuak</translation>
+<translation id="7834832693620032149">Audioa partekatzeko, partekatu fitxa edo leiho bat</translation>
 <translation id="7836577093182643605">Blokeatu dituzun eta webguneekin partekatu nahi ez dituzun gaien zerrenda</translation>
 <translation id="7836745198769390202"><ph name="NUMBERED_ITEM_1" /> eta <ph name="NUMBERED_ITEM_2" /> dauzkazu, besteak beste. Zure erakundeak datuak ikusi eta kudeatu ahal izango ditu</translation>
 <translation id="7836850009646241041">Ukitu berriro segurtasun-giltza</translation>
@@ -10544,6 +10545,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8425213833346101688">Aldatu</translation>
 <translation id="8425492902634685834">Ainguratu zereginen barran</translation>
 <translation id="8425768983279799676">Gailua desblokeatzeko erabil dezakezu PINa.</translation>
+<translation id="8426697201161711396">Hasi saioa Chrome-n pasahitzak eta beste gauza asko eskura izateko gailu guztietan</translation>
 <translation id="8427213022735114808">Diktaketak ahotsa bidaltzen dio Google-ri, testu-eremuetan diktatu ahal izateko.</translation>
 <translation id="8427292751741042100">edozein ostalaritan kapsulatuta</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
@@ -11281,6 +11283,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8940081510938872932">Ordenagailua gauza gehiegi egiten ari da. Saiatu berriro geroago.</translation>
 <translation id="8940888110818450052">Saioa hasteko moduak</translation>
 <translation id="8941173171815156065">Baliogabetu "<ph name="PERMISSION" />" baimena</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> leiho bat eta audioa partekatzen ari da.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> desaktibatuta dago</translation>
 <translation id="894191600409472540">Sortu pasahitz konplexuak</translation>
 <translation id="8942714513622077633">Bertan behera utzi nahi duzu Microsoft 365 konfiguratzeko prozesua?</translation>

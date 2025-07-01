@@ -1930,7 +1930,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2312219318583366810">URL halaman</translation>
 <translation id="2314165183524574721">Tetapan keterlihatan semasa disembunyikan</translation>
 <translation id="2314774579020744484">Bahasa yang digunakan apabila menterjemahkan halaman</translation>
-<translation id="2316090909467242775">Cuba kata laluan pemulihan ini</translation>
 <translation id="2316129865977710310">Tidak, terima kasih</translation>
 <translation id="2316433409811863464">Penstriman Apl</translation>
 <translation id="2316709634732130529">Gunakan Kata Laluan yang Dicadangkan</translation>
@@ -4056,7 +4055,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> sambungan</translation>
 <translation id="3794792524918736965">Hidupkan Windows Hello</translation>
 <translation id="379509625511193653">Mati</translation>
-<translation id="3795624560191557077">Baru-baru ini anda telah menukar kata laluan yang ditemukan dalam pelanggaran data umum. Sekiranya terdapat masalah, Google Password Manager boleh membantu anda log masuk.</translation>
 <translation id="3796215473395753611">alt + anak panah ke atas</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, gunakan kekunci anak panah ke kanan untuk suara pratonton</translation>
 <translation id="3796648294839530037">Rangkaian Kegemaran:</translation>
@@ -5878,7 +5876,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Dengan Penyulitan RSA</translation>
 <translation id="5090637338841444533">Tidak dibenarkan untuk menjejak kedudukan kamera anda</translation>
 <translation id="5091636240353511739">Tunjukkan PIN</translation>
-<translation id="5093417502834168387">Menghadapi masalah log masuk? Cuba cara lain</translation>
 <translation id="5093477827231450397">Senarai laman yang anda sekat yang anda tidak mahu mencadangkan iklan ke laman lain</translation>
 <translation id="5093569275467863761">Subbingkai Dicache Kembali/Maju Inkognito: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Anda boleh membuka dan mengedit fail yang disokong dengan apl ini daripada apl Files atau apl lain. Untuk mengawal fail yang membuka apl ini secara lalai, <ph name="BEGIN_LINK" />ketahui cara menetapkan apl lalai pada peranti anda<ph name="END_LINK" />.</translation>
@@ -7663,7 +7660,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6388577073199278153">Tidak dapat mengakses akaun anda</translation>
 <translation id="6390020764191254941">Alihkan Tab ke Tetingkap Baharu</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Tiada}=1{Untuk <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> dan 1 lagi}other{Untuk <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> dan {COUNT} lagi}}</translation>
-<translation id="6390533465682072118">Pemulihan</translation>
 <translation id="6391131092053186625">IMEI peranti anda ialah <ph name="IMEI_NUMBER" />. Nombor ini boleh digunakan untuk mengaktifkan perkhidmatan.</translation>
 <translation id="6393156038355142111">Cadangkan kata laluan yang kukuh</translation>
 <translation id="6393550101331051049">Dibenarkan untuk memaparkan kandungan tidak selamat</translation>

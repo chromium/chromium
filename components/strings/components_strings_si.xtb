@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">සුරකින්න සහ ස්වයං පුරවන්න</translation>
 <translation id="2312234273148520048">කුළුබඩු සහ සැරහුම්</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />ට වඩා අඩු. සමහර අඩවි ඔබේ මීළඟ පිවිසීමෙහි වඩා සෙමින් පූරණය විය හැක.</translation>
+<translation id="2316090909467242775">මෙම ප්‍රතිසාධන මුරපදය උත්සාහ කරන්න</translation>
 <translation id="2316159751672436664">ChromeOS සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කරන්න</translation>
 <translation id="2316887270356262533">1 MB ට වඩා අඩුවෙන් හිස් කරයි. ඔබේ ඊළඟ පිවිසීමේදී සමහර අඩවි වඩාත් සෙමින් පූරණය විය හැකිය.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> හට පරිශීලක නාමයක් සහ මුරපදයක් අවශ්‍යයි.</translation>
@@ -1673,6 +1674,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (අඟ <ph name="WIDTH" /> x <ph name="HEIGHT" />)</translation>
 <translation id="3792826587784915501">කල්ට් සහ ඉන්ඩී චිත්‍රපට</translation>
 <translation id="3793574014653384240">මෑතදී සිදු වූ බිඳ වැටීම් සංඛ්‍යාව සහ හේතු</translation>
+<translation id="3795624560191557077">ඔබ මෑතක දී පොදු දත්ත කඩ කිරීමක දී හමු වූ මුරපදයක් වෙනස් කළා. ගැටලුවක් ඇති වුවහොත්, Google මුරපද කළමනාකරු හට ඔබට පුරනය වීමට උදවු කළ හැක.</translation>
 <translation id="3799805948399000906">අකුරු වර්ගය ඉල්ලුවා</translation>
 <translation id="3801297763951514916">ඔබ නිතර පැමිණෙයි</translation>
 <translation id="380329542618494757">නම</translation>
@@ -1954,6 +1956,7 @@
 <translation id="425582637250725228">ඔබ සිදු කළ වෙනස්කම් සුරැකීම නොවනු ඇත.</translation>
 <translation id="4258748452823770588">වැරදි අත්සනකි</translation>
 <translation id="4261046003697461417">ආරක්‍ෂිත ලේඛන අනුසටහන් කළ නොහැක</translation>
+<translation id="4265635050210404830">ඔබේ විශ්වාස කාඞ්පත්</translation>
 <translation id="4265872034478892965">ඔබේ පරිපාලක විසින් ඉඩ දෙයි</translation>
 <translation id="4269029136757623689">ගෘහ විදුලි පංකා</translation>
 <translation id="4269264543938335308">පිහිනුම් ඇඳුම්</translation>
@@ -2229,6 +2232,7 @@
 <translation id="4754461935447132332">ආරක්ෂිත-නොවන අඩවි සඳහා ඉඩ නොදේ</translation>
 <translation id="4756388243121344051">&amp;ඉතිහාසය</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">කේතය අවලංගුයි</translation>
 <translation id="4757993714154412917">ඔබ මේ දැන් වංචනික අඩවියකට ඔබගේ මුරපදය ඇතුළු කළේය. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, ඔබගේ සුරැකි මුරපද පරීක්ෂා කිරීමට Chromium නිර්දේශ කරයි.</translation>
 <translation id="4758311279753947758">සම්බන්ධතා තතු එක් කරන්න</translation>
 <translation id="4761326898079498987">වැඩිදුර විස්තර සඳහා සමාලෝචනය කරන්න</translation>
@@ -2294,6 +2298,7 @@
 <translation id="486459320933704969">ඔබ මෙම වෙබ් අඩවියට පිවිසීම සුදුසු බව දෙමාපියෙකු හෝ භාරකරුවෙකු පැවසිය යුතු වේ</translation>
 <translation id="4864801646102013152">නිවාස වැඩි දියුණු කිරීම</translation>
 <translation id="4866506163384898554">ඔබගේ කර්සරය පෙන්වීමට |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ඔබන්න</translation>
+<translation id="4868277513442568587">ඔබේ බෙදා ගත් පටිති සමූහය දිගටම භාවිත කිරීමට, Chrome යාවත්කාලීන කරන්න</translation>
 <translation id="4873616204573862158">ඇස් පැළඳුම්</translation>
 <translation id="4873807733347502026">ඔබේ මූසිකය අගුලු දමා භාවිත කරන්න</translation>
 <translation id="4876305945144899064">පරිශීලක නමක් නැත</translation>
@@ -2430,6 +2435,7 @@
 <translation id="5089810972385038852">ජනපදය</translation>
 <translation id="5090647584136241764">ඔබට වැදගත් වන විස්තර පහසුවෙන් සංසන්දනය කිරීමට සමාන නිෂ්පාදන සහිත පටිති එක් කරන්න</translation>
 <translation id="5093232627742069661">Z-නැමීම</translation>
+<translation id="5093417502834168387">පිරීමේ ගැටලුවක්ද? වෙනත් ආකාරයකින් උත්සාහ කරන්න</translation>
 <translation id="5094747076828555589">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය Chromium මගින් විශ්වාස නොකරයි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="5097099694988056070">CPU/RAM භාවිතය වැනි උපාංග සංඛ්‍යාන</translation>
 <translation id="5097468150760963273">අඟ 27 x 39</translation>
@@ -3198,6 +3204,7 @@
 <translation id="6388060462449937608">ශරීර සුවතා උපකරණ සහ ආයිත්තම්</translation>
 <translation id="6389470377220713856">කාඩ්පතෙහි ඇති නම</translation>
 <translation id="6390200185239044127">භාගයට Z-නැමීම</translation>
+<translation id="6390533465682072118">ප්‍රතිසාධනය</translation>
 <translation id="639068771471208680">බහු කොටස් ආකෘතිය</translation>
 <translation id="6391700400718590966">සුරක්ෂිත ගෙවීම් අක්තපත්‍ර ගැළපෙන අක්තපත්‍ර පත්‍රය වසා නැත</translation>
 <translation id="6392799395081100092">කඩදාසි (වැල්ලුම්)</translation>
@@ -3747,6 +3754,7 @@
 <translation id="7346048084945669753">අනුබද්ධ වී ඇත්තේ:</translation>
 <translation id="7346062987309535530">භෝජන භාණ්ඩ</translation>
 <translation id="7346081071264046066">"මෙම මංගල ආරාධනයට ප්‍රීතියෙන් ඔව් යැයි පිළිතුරු දෙන්න"</translation>
+<translation id="7347640536700429009">කාඩ්පතෙහි නම වලංගු නොවේ</translation>
 <translation id="7352651011704765696">යමක් වැරදිනි</translation>
 <translation id="7353601530677266744">විධාන පේළිය</translation>
 <translation id="7359588939039777303">වෙළඳ දැන්වීම් අවහිරයි.</translation>

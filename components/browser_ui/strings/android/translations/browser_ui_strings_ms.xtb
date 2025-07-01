@@ -69,6 +69,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="1799920918471566157">Petua Chrome</translation>
 <translation id="1816835383954230954">Apabila dihidupkan, Chrome berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti spesifikasinya. Apabila dimatikan, prestasi akan berkurang tetapi menjadikan V8 lebih tahan terhadap serangan.</translation>
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Helaian bawah penampilan halaman tab baharu</translation>
 <translation id="1887786770086287077">Akses lokasi dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Tapak biasanya mengakses fail dan folder pada peranti anda untuk ciri seperti menyimpan kerja anda secara automatik</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
@@ -326,6 +327,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="4882919381756638075">Tapak biasanya menggunakan mikrofon anda untuk ciri komunikasi seperti sembang video</translation>
 <translation id="4883854917563148705">Tetapan yang diurus tidak dapat ditetapkan semula</translation>
 <translation id="4887024562049524730">Tanya sebelum membenarkan tapak menggunakan peranti dan data realiti maya anda (disyorkan)</translation>
+<translation id="4934780484581617878">Pengurusan tetingkap</translation>
 <translation id="4936863036653376783">Anda akan menemukan kumpulan anda dalam bahagian kumpulan tab merentas semua peranti anda</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> disekat daripada menggunakan maklumat anda pada</translation>
 <translation id="4953688446973710931">Apabila dihidupkan, laman dapat meminta untuk memuat turun berbilang fail secara automatik. Apabila dimatikan, laman tidak dapat memuat turun berbilang fail secara automatik.</translation>
@@ -458,6 +460,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="6398765197997659313">Keluar daripada skrin penuh</translation>
 <translation id="640163077447496506">Tamat tempoh hari ini</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Koleksi Tema</translation>
 <translation id="6439114592976064011">Sekat tapak daripada menggunakan peranti dan data realiti maya anda</translation>
 <translation id="6447842834002726250">Kuki</translation>
 <translation id="6452138246455930388">Penurunan harga pada tab terbuka anda, daripada <ph name="OLD_PRICE" /> kepada <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -561,6 +564,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
 <translation id="7804248752222191302">Suatu tapak sedang menggunakan kamera anda</translation>
+<translation id="7805832099057502789">Helaian bawah penampilan halaman tab baharu dibuka pada ketinggian penuh</translation>
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
 <translation id="7815680994978050279">Muat turun berbahaya disekat</translation>
 <translation id="7835852323729233924">Memainkan media</translation>
@@ -580,9 +584,11 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8042586301629853791">Isih mengikut:</translation>
 <translation id="8051193500142930381">Ciri yang memerlukan kamera tidak akan berfungsi</translation>
+<translation id="8056330801132235235">Lalai Chrome</translation>
 <translation id="8067883171444229417">Mainkan video</translation>
 <translation id="8068648041423924542">Tidak dapat memilih sijil.</translation>
 <translation id="8077120325605624147">Mana-mana laman yang anda lawati boleh memaparkan sebarang iklan kepada anda</translation>
+<translation id="80798452873915119">Laman boleh meminta untuk mengurus tetingkap pada semua paparan anda</translation>
 <translation id="8087000398470557479">Kandungan ini adalah daripada <ph name="DOMAIN_NAME" />, disampaikan oleh Google.</translation>
 <translation id="8088603949666785339">Lagi pilihan dalam <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Lihat tab dalam senarai apl anda</translation>

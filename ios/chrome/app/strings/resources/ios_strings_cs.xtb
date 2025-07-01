@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Kontaktujte odesílatele a požádejte ho o nový odkaz</translation>
 <translation id="1013952917065545813">Tady můžete znovu otevřít karty, které jste nedávno zavřeli</translation>
 <translation id="1016495303386450659">Položka byla aktualizována</translation>
+<translation id="1017735584092444011">Zobrazit režim čtení</translation>
 <translation id="102916930470544692">Přístupový klíč</translation>
 <translation id="1030376737535466765">Otevřít Správce hesel</translation>
 <translation id="1035980983510608210">Zavřením všech karet zavřete i připnuté karty.</translation>
@@ -1237,12 +1238,14 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6074656473835429958">Aktivujte si oznámení</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) se nepodařilo nahrát</translation>
 <translation id="6077126322656614846">Přístup k fotoaparátu je povolen</translation>
+<translation id="607730456154980869">Získejte odpovědi rychleji s Gemini v Chromu</translation>
 <translation id="6078236141387574983">Upravit výšku panelu</translation>
 <translation id="6084848228346514841">Vybrat karty</translation>
 <translation id="6089212833343035912">PIN Správce hesel Google</translation>
 <translation id="6090760257419195752">Zavřená upozornění</translation>
 <translation id="6096965253650248286">Nalezeno: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Jste přihlášeni jako <ph name="USER_EMAIL" />. Otevře nastavení.</translation>
+<translation id="610083648014322104">Získejte relevantní odpovědi na základě obsahu stránky, kterou si právě prohlížíte</translation>
 <translation id="6103540626693881831">Šifrování v zařízení</translation>
 <translation id="611361228753138223">Weby, které jste na tomhle zařízení v poslední době navštívili</translation>
 <translation id="611705554202268369">Dlouhým stisknutím přidáte do skupiny karet</translation>
@@ -1495,6 +1498,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6979737339423435258">Od počátku věků</translation>
 <translation id="6983306615164277634">Pozici můžete změnit také podržením adresního řádku.</translation>
 <translation id="6987201788018524855">Objevte užitečné funkce, které vám chyběly</translation>
+<translation id="6989636517316575338">Zeptejte se na kteroukoli stránku</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Sledujte ceny produktů a získejte upozornění, když na kterémkoli webu klesne cena</translation>
 <translation id="7004032350256606903">Vaše organizace vyžaduje, abyste si obsah prohlíželi anonymně.
@@ -1696,6 +1700,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7863211248337747225">Stáhnout aplikaci</translation>
 <translation id="7865127013871431856">Možnosti Překladače</translation>
 <translation id="7866872729285243843">Pokud svůj seznam četby chcete mít na všech svých zařízeních, zapněte v nastavení možnost Seznam četby.</translation>
+<translation id="787364769771947486">Skrýt režim čtení</translation>
 <translation id="7874107544081154809">Automaticky formulář vyplnit pomocí <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Máte opakovaně použitá hesla.</translation>
 <translation id="7887174313503389866">Podívejte se na komentovanou prohlídku klíčových ovládacích prvků ochrany soukromí a zabezpečení. Pro další možnosti přejděte na jednotlivá nastavení.</translation>
@@ -1752,6 +1757,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8058655154417507695">Rok vypršení platnosti</translation>
 <translation id="8059533439631660104">Sbalí sekci.</translation>
 <translation id="8061584726507121204">Historie</translation>
+<translation id="8069168488983557089">Získejte klíčové poznatky a postřehy, které vám pomohou porozumět jakémukoli tématu</translation>
 <translation id="8069394452933076548">Zvolte, kdy se karty, které v poslední době nebyly použity, přesunou do sekce neaktivních karet.</translation>
 <translation id="8073670137947914548">Stahování bylo dokončeno</translation>
 <translation id="8076492880354921740">Karty</translation>

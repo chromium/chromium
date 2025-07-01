@@ -40,6 +40,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1547469039832541117">Ukončí zvýrazněnou úlohu</translation>
 <translation id="1553461853655228091">Prohlížeč Chromium potřebuje oprávnění k přístupu k fotoaparátu, aby mohl vytvořit 3D mapu vašeho okolí</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Toto rozšíření už není podporováno. Chromium vám doporučuje odstranit ho.}few{Tato rozšíření už nejsou podporována. Chromium vám doporučuje odstranit je}many{Tato rozšíření už nejsou podporována. Chromium vám doporučuje odstranit je}other{Tato rozšíření už nejsou podporována. Chromium vám doporučuje odstranit je}}</translation>
+<translation id="1562320819937089394">Připnout Chromium</translation>
 <translation id="1574377791422810894">Bezpečnostní nástroje prohlížeče Chromium</translation>
 <translation id="1594928384848033697">Chromium chce smazat vaše data Správce hesel. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali}=1{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymních oken se neotevře znovu.}}</translation>
@@ -522,6 +523,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8004582292198964060">Prohlížeč</translation>
 <translation id="8010081455002666927">Automatická detekce</translation>
 <translation id="8013436988911883588">Až bude mít Chromium přístup, budou vás weby moci požádat o přístup.</translation>
+<translation id="8031714377769448844">Připněte si Chromium na hlavní panel, abyste ho měli kdykoli rychle k dispozici</translation>
 <translation id="80471789339884597">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je třeba restartovat všechny prohlížeče.</translation>
 <translation id="8054112667659782652">Vždy zobrazovat zástupce vyhledávání obrázků</translation>
 <translation id="8077498902115777962">Zakázat Chromium na pozadí pro aplikace</translation>

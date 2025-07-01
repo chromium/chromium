@@ -793,6 +793,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2310789833878085574">Lagre og autofyll</translation>
 <translation id="2312234273148520048">Sauser og dressinger</translation>
 <translation id="2316087952091171402">Mindre enn <ph name="UPPER_ESTIMATE" />. Det kan hende at enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
+<translation id="2316090909467242775">Prøv dette gjenopprettingspassordet</translation>
 <translation id="2316159751672436664">Gi tilgjengelighetsverktøyene dine personlig preg i ChromeOS-innstillingene</translation>
 <translation id="2316887270356262533">Frigjør mindre enn 1 MB. Det kan hende enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> krever brukernavn og passord.</translation>
@@ -1673,6 +1674,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer)</translation>
 <translation id="3792826587784915501">Kult- og indiefilmer</translation>
 <translation id="3793574014653384240">Tall for og årsaker til krasjene som har forekommet nylig</translation>
+<translation id="3795624560191557077">Du har nylig endret et passord som ble funnet i et offentlig databrudd. Hvis du har problemer, kan Google Passordlagring hjelpe deg med å logge på.</translation>
 <translation id="3799805948399000906">Forespurt skrifttype</translation>
 <translation id="3801297763951514916">Du besøker nettstedet ofte</translation>
 <translation id="380329542618494757">Navn</translation>
@@ -1954,6 +1956,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="425582637250725228">Det kan hende endringene dine ikke er lagret.</translation>
 <translation id="4258748452823770588">Dårlig signatur</translation>
 <translation id="4261046003697461417">Beskyttede dokumenter kan ikke annoteres</translation>
+<translation id="4265635050210404830">Stamkundekortene dine</translation>
 <translation id="4265872034478892965">Tillatt av administratoren din</translation>
 <translation id="4269029136757623689">Vifter til hjemmet</translation>
 <translation id="4269264543938335308">Badetøy</translation>
@@ -2229,6 +2232,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4754461935447132332">Ikke tillatt for nettsteder som ikke er sikre</translation>
 <translation id="4756388243121344051">&amp;Logg</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Koden er ugyldig</translation>
 <translation id="4757993714154412917">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du sikrer kontoene dine ved å sjekke de lagrede passordene dine.</translation>
 <translation id="4758311279753947758">Legg til kontaktinformasjon</translation>
 <translation id="4761326898079498987">Gjennomgå for å få mer informasjon</translation>
@@ -2294,6 +2298,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="486459320933704969">En forelder eller foresatt må si at det er greit at du besøker dette nettstedet</translation>
 <translation id="4864801646102013152">Oppussing</translation>
 <translation id="4866506163384898554">Trykk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for å vise markøren</translation>
+<translation id="4868277513442568587">Oppdater Chrome for å fortsette å bruke de delte fanegruppene dine</translation>
 <translation id="4873616204573862158">Briller</translation>
 <translation id="4873807733347502026">låse og bruke musen din</translation>
 <translation id="4876305945144899064">Uten brukernavn</translation>
@@ -2430,6 +2435,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5089810972385038852">Fylke/delstat</translation>
 <translation id="5090647584136241764">Legg til faner med lignende produkter, slik at du enkelt kan sammenligne detaljene som er viktige for deg</translation>
 <translation id="5093232627742069661">Z-fals</translation>
+<translation id="5093417502834168387">Har du problemer med innlogging? Prøv en annen måte</translation>
 <translation id="5094747076828555589">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av Chromium. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="5097099694988056070">enhetsstatistikk, som prosessor- og minnebruk</translation>
 <translation id="5097468150760963273">27 x 39 tommer</translation>
@@ -3198,6 +3204,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6388060462449937608">Treningsutstyr og -tilbehør</translation>
 <translation id="6389470377220713856">Navn som er oppført på kortet</translation>
 <translation id="6390200185239044127">Halv Z-fals</translation>
+<translation id="6390533465682072118">Gjenoppretting</translation>
 <translation id="639068771471208680">Skjema i flere deler</translation>
 <translation id="6391700400718590966">Ark for sikker betalingslegitimasjon uten samsvarende legitimasjon er lukket</translation>
 <translation id="6392799395081100092">Papir (vellum)</translation>
@@ -3747,6 +3754,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7346048084945669753">Er tilknyttet:</translation>
 <translation id="7346062987309535530">Servise</translation>
 <translation id="7346081071264046066">«Svar ja på denne bryllupsinvitasjonen med begeistring»</translation>
+<translation id="7347640536700429009">Navnet på kortet er ugyldig</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7353601530677266744">Kommandolinje </translation>
 <translation id="7359588939039777303">Annonser er blokkert.</translation>

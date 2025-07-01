@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Mengakhiri tugas yang dipilih.</translation>
 <translation id="1553461853655228091">Chromium memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Ekstensi ini tidak lagi didukung. Chromium merekomendasikan agar Anda menghapusnya.}other{Ekstensi ini tidak lagi didukung. Chromium merekomendasikan agar Anda menghapusnya.}}</translation>
+<translation id="1562320819937089394">Sematkan Chromium</translation>
 <translation id="1574377791422810894">Alat keamanan Chromium</translation>
 <translation id="1594928384848033697">Chromium ingin menghapus data Pengelola Sandi Anda. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
@@ -521,6 +522,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8010081455002666927">Deteksi otomatis</translation>
 <translation id="8013436988911883588">Setelah Chromium memiliki akses, situs dapat meminta akses dari Anda.</translation>
+<translation id="8031714377769448844">Sematkan Chromium ke taskbar untuk mengaksesnya dengan cepat kapan saja</translation>
 <translation id="80471789339884597">Terima kasih telah menginstal. Anda harus memulai ulang semua browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Selalu tampilkan pintasan Penelusuran Gambar</translation>
 <translation id="8077498902115777962">Nonaktifkan Chromium agar tidak menjalankan aplikasi di latar belakang</translation>

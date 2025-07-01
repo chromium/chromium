@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Ffeil annilys neu lygredig</translation>
 <translation id="1040761927998636252">Nod tudalen dienw ar gyfer <ph name="URL" /></translation>
 <translation id="1041175011127912238">Nid yw'r dudalen hon yn ymateb</translation>
+<translation id="1041181446722933623">Mae "<ph name="LOCAL_BOOKMARK" />" wedi'i chadw i'r ddyfais hon yn unig. I'w ddefnyddio ar eich dyfeisiau eraill, cadwch ef yn “<ph name="ACCOUNT_FOLDER" />” yn eich cyfrif.</translation>
 <translation id="1041263367839475438">Dyfeisiau sydd ar gael</translation>
 <translation id="1041607257468256895">Rheoli caniatadau lleoliad gwefan yn Chrome</translation>
 <translation id="1042174272890264476">Mae'ch cyfrifiadur yn dod â llyfrgell RLZ <ph name="SHORT_PRODUCT_NAME" /> wedi'i integreddio. Mae RLZ yn aseinio tag nad yw'n unigryw, nad yw'n adnabyddadwy yn bersonol i fesur y chwiliadau a'r defnydd <ph name="SHORT_PRODUCT_NAME" /> sy'n cael ei yrru gan ymgyrch hyrwyddol benodol. Weithiau bydd y labeli hyn yn ymddangos mewn ymholiadau Google Search yn <ph name="PRODUCT_NAME" />.</translation>
@@ -612,6 +613,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1418559532423038045">Yn tynnu <ph name="VM_NAME" /> o'ch <ph name="DEVICE_TYPE" />. Bydd hyn yn dileu'r holl apiau a data o'r peiriant rhithiwr!</translation>
 <translation id="1418882096915998312">Wrthi'n cofrestru i Enterprise</translation>
 <translation id="1418954524306642206">Porwch i nodi PPD eich argraffydd</translation>
+<translation id="1419086691207546433">Ychwanegwch estyniadau i aros yn drefnus, symleiddio tasgau, a gwella eich pori</translation>
 <translation id="1421334842435688311">Gwybodaeth Lleoliad Cellog</translation>
 <translation id="1421514190500081936">Rhowch reswm dros lawrlwytho'r data hyn:</translation>
 <translation id="1422159345171879700">Llwytho Sgriptiau Anniogel</translation>
@@ -1931,7 +1933,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2312219318583366810">URL tudalen</translation>
 <translation id="2314165183524574721">Y gosodiad gwelededd presennol yw wedi'i guddio</translation>
 <translation id="2314774579020744484">Yr iaith a ddefnyddir wrth gyfieithu tudalennau</translation>
-<translation id="2316090909467242775">Rhowch gynnig ar y cyfrinair adfer hwn</translation>
 <translation id="2316129865977710310">Dim diolch</translation>
 <translation id="2316433409811863464">Ffrydio Ap</translation>
 <translation id="2316709634732130529">Defnyddio'r cyfrinair a awgrymir</translation>
@@ -3343,6 +3344,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3309330461362844500">Rhif Adnabod Proffil Tystysgrif</translation>
 <translation id="3310379801837527592">Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /> ac <ph name="NUM_OTHER_MEMBERS" /> arall</translation>
 <translation id="331080746368555063">Gall gwefannau preifat gynnwys pethau fel mewnrwyd eich cwmni</translation>
+<translation id="3311007761540106761">Gosodiad diofyn y system</translation>
 <translation id="3311445899360743395">Mae'n bosib y bydd data sy'n gysylltiedig â'r ap hwn yn cael eu tynnu o'r ddyfais hon.</translation>
 <translation id="3312470654018965389">Wrthi'n ffurfweddu'r cynhwysydd Linux</translation>
 <translation id="3312883087018430408">I chwilio gwefan benodol neu ran o Chrome, teipiwch ei llwybr byr yn y bar cyfeiriad, ac yna'ch llwybr byr bysellfwrdd a ffefrir. Er enghraifft, i chwilio Bookmarks yn unig, teipiwch "@bookmarks", yna pwyswch Tab neu'r Bylchwr.</translation>
@@ -4056,7 +4058,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> estyniad</translation>
 <translation id="3794792524918736965">Troi Windows Hello ymlaen</translation>
 <translation id="379509625511193653">Diffodd</translation>
-<translation id="3795624560191557077">Yn ddiweddar, fe wnaethoch chi newid cyfrinair a ganfuwyd mewn achos o dor data cyhoeddus. Mewn achos o drafferth, gall Rheolwr Cyfrinair Google eich helpu i fewngofnodi.</translation>
 <translation id="3796215473395753611">alt + saeth i fyny</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, defnyddiwch y fysell saeth dde i gael rhagolwg o'r llais</translation>
 <translation id="3796648294839530037">Hoff Rwydweithiau:</translation>
@@ -5878,7 +5879,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Gydag Amgryptio RSA</translation>
 <translation id="5090637338841444533">Ni chaniateir i olrhain safle eich camera</translation>
 <translation id="5091636240353511739">Dangos y PIN</translation>
-<translation id="5093417502834168387">Cael trafferth wrth fewngofnodi? Rhowch gynnig ar ffordd arall</translation>
 <translation id="5093477827231450397">Rhestr o wefannau y gwnaethoch eu rhwystro nad ydych am iddynt awgrymu hysbysebion i wefannau eraill</translation>
 <translation id="5093569275467863761">Is-ffrâm Anhysbys yn y Storfa Yn ôl/Ymlaen: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Gallwch agor a golygu ffeiliau a gefnogir gyda'r ap hwn o'r ap Files ac apiau eraill. I reoli pa ffeiliau sy'n agor ap hwn yn ddiofyn, <ph name="BEGIN_LINK" />dysgwch sut i osod apiau diofyn ar eich dyfais<ph name="END_LINK" />.</translation>
@@ -7663,7 +7663,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6388577073199278153">Methu â chyrchu'ch cyfrif symudol</translation>
 <translation id="6390020764191254941">Symud y Tab i Ffenestr Newydd</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Dim}=1{Ar gyfer <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ac 1 arall}two{Ar gyfer <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> a {COUNT} arall}few{Ar gyfer <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> a {COUNT} arall}many{Ar gyfer <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> a {COUNT} arall}other{Ar gyfer <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> a {COUNT} arall}}</translation>
-<translation id="6390533465682072118">Adferiad</translation>
 <translation id="6391131092053186625">IMEI eich dyfais yw <ph name="IMEI_NUMBER" />. Gellir defnyddio'r rhif hwn i helpu i weithredu gwasanaeth.</translation>
 <translation id="6393156038355142111">Awgrymu cyfrinair cryf</translation>
 <translation id="6393550101331051049">Caniateir dangos cynnwys anniogel</translation>
@@ -10579,6 +10578,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8425213833346101688">Newid</translation>
 <translation id="8425492902634685834">Pinio i'r Bar Tasgau</translation>
 <translation id="8425768983279799676">Gallwch ddefnyddio'ch PIN i ddatgloi'ch dyfais.</translation>
+<translation id="8426697201161711396">Mewngofnodwch i Chrome i gael eich cyfrineiriau a mwy ar eich holl ddyfeisiau</translation>
 <translation id="8427213022735114808">Mae Arddweud yn anfon eich llais at Google i ganiatáu teipio â llais mewn unrhyw faes testun.</translation>
 <translation id="8427292751741042100">wedi'i fewnblannu ar unrhyw westeiwr</translation>
 <translation id="8428213095426709021">Gosodiadau</translation>

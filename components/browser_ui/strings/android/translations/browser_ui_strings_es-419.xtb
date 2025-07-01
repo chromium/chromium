@@ -326,6 +326,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="4882919381756638075">Por lo general, los sitios utilizan el micrófono para habilitar funciones de comunicación, como videochat.</translation>
 <translation id="4883854917563148705">No puede restablecerse la configuración administrada</translation>
 <translation id="4887024562049524730">Preguntar antes de permitir que los sitios utilicen tus datos y dispositivos de realidad virtual (recomendado)</translation>
+<translation id="4934780484581617878">Administración de ventanas</translation>
 <translation id="4936863036653376783">Encontrarás tus grupos en la sección de grupos de pestañas de todos tus dispositivos</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> no puede utilizar tu información en</translation>
 <translation id="4953688446973710931">Cuando esta opción está activada, los sitios pueden solicitar permiso para descargar automáticamente varios archivos. Cuando está desactivada, los sitios no pueden descargar varios archivos automáticamente.</translation>
@@ -583,6 +584,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="8067883171444229417">Reproducir video</translation>
 <translation id="8068648041423924542">No es posible seleccionar un certificado</translation>
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>
+<translation id="80798452873915119">Los sitios pueden solicitar permiso para administrar las ventanas de todas tus pantallas</translation>
 <translation id="8087000398470557479">Este contenido es de <ph name="DOMAIN_NAME" />, publicado por Google.</translation>
 <translation id="8088603949666785339">Más opciones en el <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Ver pestañas en la lista de apps</translation>

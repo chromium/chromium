@@ -152,6 +152,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1671236975893690980">다운로드 대기 중...</translation>
 <translation id="1672586136351118594">다시 표시하지 않음</translation>
 <translation id="1680919990519905526">Google 렌즈로 이미지의 상품 구입 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020<ph name="MONTHS_ARCHIVED" />개월 후에 닫힙니다</translation>
 <translation id="1687482373098770139">곧 팔로우 중에서 <ph name="SITE_NAME" /> 관련 콘텐츠를 볼 수 있습니다. 팔로우하는 사이트 및 검색은 Google 계정에 저장됩니다. 언제든지 설정에서 팔로우 항목을 관리할 수 있습니다.</translation>
 <translation id="1689333818294560261">닉네임</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />에서 계속하려면 다른 방법을 시도해 보세요.</translation>
@@ -352,6 +353,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2593272815202181319">고정 너비</translation>
 <translation id="260403163289591229">팔로우 중</translation>
 <translation id="2604446170045642109">설정에서 사이트의 어두운 테마를 사용 중지할 수 있습니다.</translation>
+<translation id="2605017215201958293">AI로 이 페이지의 내용 듣기</translation>
 <translation id="2607441479295509868">로그아웃했습니다. 내 계정에서 북마크, 비밀번호 등을 사용하려면 다시 로그인하세요.</translation>
 <translation id="2620314865574742210"><ph name="NAME" />님이 공유 항목에 액세스하도록 나를 초대했습니다</translation>
 <translation id="2625189173221582860">비밀번호 복사됨</translation>
@@ -876,6 +878,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="496607651705915226">Google 계정에서 새 비밀번호를 저장하고 사용하려면 Google Play 서비스를 업데이트하세요.</translation>
 <translation id="4971753085054504448">다른 검색어로 검색하거나 전체 Chrome 방문 기록을 열어 더 많은 검색결과를 확인하세요.</translation>
 <translation id="497421865427891073">앞으로 이동</translation>
+<translation id="497983151715419057">여기에서 비활성 탭 및 그룹을 검토하세요.</translation>
 <translation id="498624032394115435">링크가 있는 사용자가 모든 탭을 수정할 수 있습니다.</translation>
 <translation id="4987271110129728827">페이지를 찾을 수 없습니다. 철자를 확인하거나 웹 검색을 이용해 보세요.</translation>
 <translation id="4988526792673242964">페이지</translation>
@@ -936,7 +939,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5226378907213531272">자동차를 사용할 때마다 화면이 잠금 해제됩니다.</translation>
 <translation id="5227554086496586518">검색결과를 보려면 탭하세요.</translation>
-<translation id="5229736206150093143">최신 검색 결과:</translation>
 <translation id="5233638681132016545">새 탭</translation>
 <translation id="5235196193381275927">로그인 중에 문제가 발생했습니다</translation>
 <translation id="5246093389635966745">툴바 바로가기 수정</translation>
@@ -1064,6 +1066,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="583281660410589416">알 수 없음</translation>
 <translation id="5833984609253377421">링크 공유</translation>
 <translation id="5839058148541733625">Chrome 공룡 게임</translation>
+<translation id="5842871376175639063"><ph name="DAYS_INACTIVE" />일 동안 사용하지 않은 탭과 탭 그룹은 여기로 이동되며 <ph name="AUTODELETE_SECTION" />. 언제든지 <ph name="SETTINGS_TITLE" />에서 변경할 수 있습니다.</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> 앱으로 PDF를 여시겠습니까?</translation>
 <translation id="5849288995120328556">공유를 중지하시겠습니까?</translation>
 <translation id="5853623416121554550">일시중지</translation>
@@ -1382,6 +1385,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7088681679121566888">Chrome이 최신 버전임</translation>
 <translation id="7106762743910369165">조직에서 관리하는 브라우저입니다.</translation>
 <translation id="7111394291981742152">Chrome을 사용하면 나에게 표시되는 광고를 보다 세부적으로 관리할 뿐만 아니라 사이트가 개인 맞춤 광고를 표시할 때 나에 관해 얻을 수 있는 정보를 제한할 수 있습니다.</translation>
+<translation id="7115358764509798967">시스템 기본값</translation>
 <translation id="7117485132243600300">추천 주제, 검색어, 팔로우하는 콘텐츠 관리</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{사이트 1개의 권한이 검토됨}other{사이트 #개의 권한이 검토됨}}</translation>
 <translation id="7138678301420049075">기타</translation>
@@ -1431,6 +1435,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7304873321153398381">오프라인 상태입니다. Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="7313188324932846546">동기화를 설정하려면 탭하세요.</translation>
 <translation id="7314734791127433392">비밀번호를 확인할 수 없음</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{1일 이상 사용하지 않은 탭 및 탭 그룹}other{#일 이상 사용하지 않은 탭 및 탭 그룹}}</translation>
 <translation id="7324354302972299151">'Do Not Track' 요청 전송</translation>
 <translation id="7333041109965360609">알림을 수신 거부했습니다</translation>
 <translation id="7336259382292148213">알림 문제 없음</translation>
@@ -1642,6 +1647,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8137562778192957619">비밀번호를 기억하지 않아도 됩니다. 비밀번호가 Google 비밀번호 관리자에 저장됩니다</translation>
 <translation id="8152331954420209374">렌즈로 이동</translation>
 <translation id="8163820386638255770">Google 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{비활성 항목 (1)개}other{비활성 항목 (#)개}}</translation>
 <translation id="8186512483418048923">파일 <ph name="FILES" />개가 남았습니다.</translation>
 <translation id="8190358571722158785">1일 남음</translation>
 <translation id="8192765420340770300">로그인 하단 시트가 전체 높이로 열렸습니다</translation>

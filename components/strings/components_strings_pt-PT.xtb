@@ -793,6 +793,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2310789833878085574">Guardar e preencher automaticamente</translation>
 <translation id="2312234273148520048">Condimentos e molhos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
+<translation id="2316090909467242775">Experimente esta palavra-passe de recuperação</translation>
 <translation id="2316159751672436664">Personalize as ferramentas de acessibilidade nas definições do ChromeOS</translation>
 <translation id="2316887270356262533">Liberta menos de 1 MB. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
 <translation id="2317259163369394535">O domínio <ph name="DOMAIN" /> requer um nome de utilizador e uma palavra-passe.</translation>
@@ -1673,6 +1674,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.)</translation>
 <translation id="3792826587784915501">Filmes de culto e indie</translation>
 <translation id="3793574014653384240">Números e causas das falhas de sistema que ocorreram recentemente.</translation>
+<translation id="3795624560191557077">Alterou recentemente uma palavra-passe encontrada numa violação de dados pública. Em caso de problemas, o Gestor de Palavras-passe da Google pode ajudar a iniciar sessão.</translation>
 <translation id="3799805948399000906">Tipo de letra solicitado</translation>
 <translation id="3801297763951514916">Visita frequentemente</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -2433,6 +2435,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090647584136241764">Adicione separadores com produtos semelhantes para comparar facilmente os detalhes mais importantes para si</translation>
 <translation id="5093232627742069661">Dobra em Z</translation>
+<translation id="5093417502834168387">Está a ter dificuldade em iniciar sessão? Experimentar outra forma</translation>
 <translation id="5094747076828555589">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o Chromium não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="5097099694988056070">Estatísticas do dispositivo, como utilização da CPU/RAM.</translation>
 <translation id="5097468150760963273">27 x 39 pol.</translation>
@@ -3201,6 +3204,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6388060462449937608">Equipamento e acessórios de fitness</translation>
 <translation id="6389470377220713856">Nome no cartão</translation>
 <translation id="6390200185239044127">Dobrar metade em Z</translation>
+<translation id="6390533465682072118">Recuperação</translation>
 <translation id="639068771471208680">Formulário multivias</translation>
 <translation id="6391700400718590966">A página de credenciais de pagamento seguro sem correspondência com as credenciais está fechada</translation>
 <translation id="6392799395081100092">Papel (velino)</translation>

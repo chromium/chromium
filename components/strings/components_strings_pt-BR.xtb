@@ -793,6 +793,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2310789833878085574">Salvar e preencher automaticamente</translation>
 <translation id="2312234273148520048">Condimentos e molhos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Alguns sites podem carregar mais lentamente no próximo acesso.</translation>
+<translation id="2316090909467242775">Tente usar esta senha de recuperação</translation>
 <translation id="2316159751672436664">Personalizar as ferramentas de acessibilidade nas configurações do ChromeOS</translation>
 <translation id="2316887270356262533">Libera menos de 1 MB. Alguns sites podem carregar mais lentamente no próximo acesso.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> exige um nome de usuário e uma senha.</translation>
@@ -1673,6 +1674,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.)</translation>
 <translation id="3792826587784915501">Filmes cult e indie</translation>
 <translation id="3793574014653384240">Números e causas das falhas que ocorreram recentemente</translation>
+<translation id="3795624560191557077">Você mudou recentemente uma senha encontrada em uma violação de dados pública. Em caso de problemas, o Gerenciador de senhas do Google pode ajudar você a fazer login.</translation>
 <translation id="3799805948399000906">Fonte solicitada</translation>
 <translation id="3801297763951514916">Você visita com frequência</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -2433,6 +2435,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090647584136241764">Adicione guias com produtos semelhantes para comparar com facilidade os detalhes que são importantes para você</translation>
 <translation id="5093232627742069661">Dobra sanfona</translation>
+<translation id="5093417502834168387">Problema para fazer login? Tente de outro jeito</translation>
 <translation id="5094747076828555589">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o Chromium. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="5097099694988056070">Estatísticas do dispositivo, como uso de CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 pol.</translation>
@@ -3201,6 +3204,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6388060462449937608">Equipamentos e acessórios para atividade física</translation>
 <translation id="6389470377220713856">Nome no cartão</translation>
 <translation id="6390200185239044127">Dobra sanfona simples</translation>
+<translation id="6390533465682072118">Recuperação</translation>
 <translation id="639068771471208680">Formulário de várias partes</translation>
 <translation id="6391700400718590966">A página de credenciais para pagamento seguro sem correspondência está fechada</translation>
 <translation id="6392799395081100092">Papel (velino)</translation>

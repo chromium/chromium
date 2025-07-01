@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">يُرجى التواصل مع المُرسِل لطلب رابط جديد</translation>
 <translation id="1013952917065545813">يمكنك الرجوع إلى هذه الصفحة لإعادة فتح علامات التبويب التي أغلقتها مؤخرًا.</translation>
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
+<translation id="1017735584092444011">عرض "وضع القراءة"</translation>
 <translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1030376737535466765">فتح "مدير كلمات المرور"</translation>
 <translation id="1035980983510608210">سيؤدي إغلاق جميع علامات التبويب إلى إغلاق علامات التبويب المثبّتة أيضًا.</translation>
@@ -1235,12 +1236,14 @@
 <translation id="6074656473835429958">فعِّل الإشعارات</translation>
 <translation id="607620096698446287">تعذر تحميل <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">الوصول إلى الكاميرا مسموح به.</translation>
+<translation id="607730456154980869">‏الحصول على إجابات أسرع باستخدام "Gemini في Chrome"</translation>
 <translation id="6078236141387574983">تغيير طول الورقة</translation>
 <translation id="6084848228346514841">اختيار علامات التبويب</translation>
 <translation id="6089212833343035912">‏رقم التعريف الشخصي لخدمة "مدير كلمات المرور في Google"</translation>
 <translation id="6090760257419195752">التحذيرات المغلقة</translation>
 <translation id="6096965253650248286">علامات التبويب المفتوحة: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">تم تسجيل الدخول بحساب "<ph name="USER_EMAIL" />". يفتح هذا الزر صفحة الإعدادات.</translation>
+<translation id="610083648014322104">يمكنك الحصول على إجابات ذات صلة استنادًا إلى محتوى الصفحة التي يتم تصفُّحها</translation>
 <translation id="6103540626693881831">التشفير على الجهاز فقط</translation>
 <translation id="611361228753138223">المواقع الإلكترونية التي زرتها مؤخرًا على هذا الجهاز</translation>
 <translation id="611705554202268369">يُرجى الضغط مع الاستمرار لإضافة علامة تبويب إلى مجموعة علامات التبويب</translation>
@@ -1493,6 +1496,7 @@
 <translation id="6979737339423435258">جميع الأوقات</translation>
 <translation id="6983306615164277634">يمكنك أيضًا النقر مع الاستمرار على شريط العناوين لتغيير مكانه.</translation>
 <translation id="6987201788018524855">إليك ما فاتك من ميزات مفيدة</translation>
+<translation id="6989636517316575338">طرح سؤال عن أي صفحة</translation>
 <translation id="6990519590575500580">‏استخدام Facetime</translation>
 <translation id="6998251471716094661">يمكنك تتبُّع أسعار المنتجات والحصول على تنبيهات عند انخفاض الأسعار على أي موقع إلكتروني</translation>
 <translation id="7004032350256606903">تفرض مؤسستك سياسة التصفُّح بخصوصية تامّة.
@@ -1694,6 +1698,7 @@
 <translation id="7863211248337747225">تنزيل التطبيق</translation>
 <translation id="7865127013871431856">خيارات الترجمة</translation>
 <translation id="7866872729285243843">يجب تفعيل ميزة "قائمة القراءة" من خلال الإعدادات لعرض هذه القائمة على جميع أجهزتك.</translation>
+<translation id="787364769771947486">إخفاء "وضع القراءة"</translation>
 <translation id="7874107544081154809">الملء التلقائي للنموذج باستخدام <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">لديك كلمات مرور مستخدَمة لحساب آخر.</translation>
 <translation id="7887174313503389866">يمكنك الاطّلاع على العناصر الرئيسية للتحكّم في الخصوصية والأمان. ولمزيد من الخيارات، انتقِل إلى الإعدادات الفردية.</translation>
@@ -1750,6 +1755,7 @@
 <translation id="8058655154417507695">سنة انتهاء الصلاحية</translation>
 <translation id="8059533439631660104">طي القسم.</translation>
 <translation id="8061584726507121204">السجلّ</translation>
+<translation id="8069168488983557089">يمكنك الحصول على النقاط الرئيسية والأفكار التي ستساعدك في فهم أي موضوع</translation>
 <translation id="8069394452933076548">يمكنك اختيار وقت نقل علامات التبويب غير المستخدَمة مؤخرًا إلى قسم علامات التبويب غير النشطة.</translation>
 <translation id="8073670137947914548">اكتمل التنزيل</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>

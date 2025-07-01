@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">저장 및 자동 완성</translation>
 <translation id="2312234273148520048">양념 및 드레싱</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> 미만입니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
+<translation id="2316090909467242775">이 복구 비밀번호를 사용해 보세요.</translation>
 <translation id="2316159751672436664">ChromeOS 설정에서 접근성 도구 맞춤설정</translation>
 <translation id="2316887270356262533">1MB 미만의 저장용량을 확보합니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" />에 사용자 이름과 비밀번호를 입력해야 합니다.</translation>
@@ -1673,6 +1674,7 @@
 <translation id="3792100426446126328"><ph name="NAME" />(<ph name="WIDTH" />x<ph name="HEIGHT" />인치)</translation>
 <translation id="3792826587784915501">컬트 및 독립 영화</translation>
 <translation id="3793574014653384240">최근 발생한 비정상 종료의 횟수 및 원인</translation>
+<translation id="3795624560191557077">최근에 공개 정보 유출로 인해 노출된 비밀번호를 변경했습니다. 문제가 발생하면 Google 비밀번호 관리자를 통해 로그인할 수 있습니다.</translation>
 <translation id="3799805948399000906">글꼴 요청됨</translation>
 <translation id="3801297763951514916">자주 방문함</translation>
 <translation id="380329542618494757">이름</translation>
@@ -1954,6 +1956,7 @@
 <translation id="425582637250725228">변경사항이 저장되지 않을 수 있습니다.</translation>
 <translation id="4258748452823770588">잘못된 서명</translation>
 <translation id="4261046003697461417">보호된 문서에는 주석을 달 수 없습니다.</translation>
+<translation id="4265635050210404830">내 포인트 카드</translation>
 <translation id="4265872034478892965">관리자가 허용함</translation>
 <translation id="4269029136757623689">가정용 선풍기</translation>
 <translation id="4269264543938335308">수영복</translation>
@@ -2229,6 +2232,7 @@
 <translation id="4754461935447132332">안전하지 않은 사이트에서 허용되지 않음</translation>
 <translation id="4756388243121344051">방문 기록(&amp;H)</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">코드가 잘못되었습니다.</translation>
 <translation id="4757993714154412917">사기성 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="4758311279753947758">연락처 정보 추가</translation>
 <translation id="4761326898079498987">추가 세부정보를 검토하세요</translation>
@@ -2294,6 +2298,7 @@
 <translation id="486459320933704969">부모님 또는 보호자가 이 웹사이트를 방문해도 괜찮다고 말해야 합니다.</translation>
 <translation id="4864801646102013152">집 리모델링</translation>
 <translation id="4866506163384898554">커서를 표시하려면 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 키를 누르세요.</translation>
+<translation id="4868277513442568587">공유 탭 그룹을 계속 사용하려면 Chrome을 업데이트하세요.</translation>
 <translation id="4873616204573862158">안경 및 선글라스</translation>
 <translation id="4873807733347502026">마우스를 잠그고 사용합니다</translation>
 <translation id="4876305945144899064">사용자 이름 없음</translation>
@@ -2430,6 +2435,7 @@
 <translation id="5089810972385038852">시/도</translation>
 <translation id="5090647584136241764">비슷한 제품이 있는 탭을 추가하여 나에게 중요한 세부정보를 손쉽게 비교하세요.</translation>
 <translation id="5093232627742069661">Z 폴드</translation>
+<translation id="5093417502834168387">로그인하는 데 문제가 있나요? 다른 방법 시도</translation>
 <translation id="5094747076828555589">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 Chromium에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="5097099694988056070">CPU/RAM 사용 등의 기기 통계</translation>
 <translation id="5097468150760963273">27x39인치</translation>
@@ -3198,6 +3204,7 @@
 <translation id="6388060462449937608">피트니스 용품 및 관련 액세서리</translation>
 <translation id="6389470377220713856">카드 소유자 이름</translation>
 <translation id="6390200185239044127">Z 폴드 하프</translation>
+<translation id="6390533465682072118">복구</translation>
 <translation id="639068771471208680">여러 부분의 양식</translation>
 <translation id="6391700400718590966">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 닫힘</translation>
 <translation id="6392799395081100092">용지(피지)</translation>
@@ -3748,6 +3755,7 @@
 <translation id="7346048084945669753">연결됨:</translation>
 <translation id="7346062987309535530">식기</translation>
 <translation id="7346081071264046066">'기쁜 마음으로 이 결혼식 초대에 '예'라고 답장'</translation>
+<translation id="7347640536700429009">카드에 기재된 이름이 잘못되었습니다.</translation>
 <translation id="7352651011704765696">문제가 발생했습니다.</translation>
 <translation id="7353601530677266744">명령줄</translation>
 <translation id="7359588939039777303">광고가 차단되었습니다.</translation>

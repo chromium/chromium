@@ -1929,7 +1929,6 @@
 <translation id="2312219318583366810">पेज URL</translation>
 <translation id="2314165183524574721">सध्याचे दृश्यमानता सेटिंग लपवलेले आहे</translation>
 <translation id="2314774579020744484">पेजचे भाषांतर करताना वापरलेली भाषा</translation>
-<translation id="2316090909467242775">हा रिकव्हरी पासवर्ड वापरून पहा</translation>
 <translation id="2316129865977710310">नाही, नको</translation>
 <translation id="2316433409811863464">ॲप स्ट्रीम करणे</translation>
 <translation id="2316709634732130529">सुचवलेला पासवर्ड वापरा</translation>
@@ -4055,7 +4054,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> एक्स्टेंशन</translation>
 <translation id="3794792524918736965">Windows Hello सुरू करा</translation>
 <translation id="379509625511193653">बंद</translation>
-<translation id="3795624560191557077">तुम्ही अलीकडेच सार्वजनिक डेटा भंगामध्ये आढळलेला पासवर्ड बदलला आहे. समस्या असल्यास, Google Password Manager हे तुम्हाला साइन इन करण्यात मदत करू शकते.</translation>
 <translation id="3796215473395753611">alt + up arrow</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, आवाजाचे पूर्वावलोकन करण्यासाठी राइट अ‍ॅरो की वापरा</translation>
 <translation id="3796648294839530037">आवडीचे नेटवर्क:</translation>
@@ -5875,7 +5873,6 @@
 <translation id="5088534251099454936">PKCS #1 RSA एंक्रिप्शनसह SHA-512</translation>
 <translation id="5090637338841444533">तुमच्या कॅमेराचे स्थान ट्रॅक करण्याची अनुमती नाही</translation>
 <translation id="5091636240353511739">पिन दाखवा</translation>
-<translation id="5093417502834168387">साइन इन करण्यात समस्या आहे का? दुसरी पद्धत वापरून पहा</translation>
 <translation id="5093477827231450397">तुम्ही ब्लॉक केलेल्या साइटची सूची, ज्यांनी इतर साइटना जाहिराती सुचवू नयेत असे तुम्हाला वाटते</translation>
 <translation id="5093569275467863761">बॅक/फॉरवर्ड कॅशे केलेली गुप्त सबफ्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">तुम्ही सपोर्ट असलेल्या फाइल या अ‍ॅपद्वारे Files अ‍ॅप किंवा इतर अ‍ॅप्समध्ये उघडू शकता आणि संपादित करू शकता. या ॲपमध्ये कोणत्या फाइल बाय डीफॉल्ट उघडल्या जाव्यात हे नियंत्रित करण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या डिव्हाइसवर डीफॉल्ट अ‍ॅप्स कशी सेट करायची ते जाणून घ्या<ph name="END_LINK" />.</translation>
@@ -7663,7 +7660,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6388577073199278153">तुमचे मोबाइल खाते ॲक्सेस करू शकत नाही</translation>
 <translation id="6390020764191254941">टॅब नवीन विंडोवर हलवा</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{None}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> आणि आणखी १ साठी}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> आणि आणखी {COUNT} साठी}}</translation>
-<translation id="6390533465682072118">रिकव्हरी</translation>
 <translation id="6391131092053186625">तुमच्या डिव्हाइसचा IMEI <ph name="IMEI_NUMBER" /> हा आहे. हा नंबर सेवा ॲक्टिव्हेट करण्यात मदत करण्यासाठी वापरला जाऊ शकतो.</translation>
 <translation id="6393156038355142111">क्लिष्ट पासवर्ड सुचवा</translation>
 <translation id="6393550101331051049">असुरक्षित आशय दाखवण्याची अनुमती आहे</translation>

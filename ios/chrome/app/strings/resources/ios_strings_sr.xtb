@@ -187,6 +187,7 @@
 <translation id="1740650426894359238">Пређите на други профил</translation>
 <translation id="1741219894094057085">Паметан сат</translation>
 <translation id="1743244221910283364">Одбаци промене</translation>
+<translation id="1748975028205587434">Изаберите фајл</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} опција за адресу је доступна изнад тастатуре.}one{{count} опција за адресу је доступна изнад тастатуре.}few{{count} опције за адресу су доступне изнад тастатуре.}other{{count} опција за адресу је доступно изнад тастатуре.}}</translation>
 <translation id="1750238553597293878">Наставите да користите лозинке на Google налогу</translation>
 <translation id="17513872634828108">Отворене картице</translation>
@@ -529,6 +530,7 @@
 <translation id="3119874402040566234">Одјавићете се и подаци прегледања ће бити избрисани</translation>
 <translation id="3124568093781685165">Делите лозинке са породицом</translation>
 <translation id="3130863904455712965">Историја и друго</translation>
+<translation id="3132584647087998639">Увезите податке</translation>
 <translation id="313283613037595347">Направи нову картицу без архивирања.</translation>
 <translation id="3136739222562075778">Ова картица приказује падове цена за производе на отвореним картицама</translation>
 <translation id="3138611310073113613">Одбаци избор</translation>
@@ -1118,6 +1120,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="560322036295180549">Искључила је организација</translation>
 <translation id="5611398002774823980">Сачувај на налогу</translation>
+<translation id="561269594905823128">Додирните <ph name="BEGIN_BOLD" />Изабери фајл<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Сортирај према најновијем</translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
 <translation id="5619871095170816857">Ова картица приказује последњу коришћену отворену картицу на свим синхронизованим уређајима у последња 24 сата.</translation>
@@ -1569,6 +1572,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7367530036083223701">Безбедно приступајте лозинкама са почетног екрана помоћу виџета Менаџер лозинки.</translation>
 <translation id="7369285139974632858">Додавање у обележиваче</translation>
 <translation id="7380220816562673297">За сада лозинке можете да делите само са члановима породице. <ph name="BEGIN_LINK" />Направите групу за породицу<ph name="END_LINK" /> са највише 6 чланова и добијте више из производа и претплата у свим Google услугама.</translation>
+<translation id="7380698179418029202">Изаберите <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> фајл за Safari извоз</translation>
 <translation id="739101637685146669">Који URL желите да обележите?</translation>
 <translation id="7393747756726387725">Увећајте</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 сајт}one{# сајт}few{# сајта}other{# сајтова}}</translation>
@@ -1708,6 +1712,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7887552845761062935">Двапут додирните и задржите да бисте отворили још опција</translation>
 <translation id="7889910613639381518">Лак и безбедан приступ помоћу виџета Google менаџер лозинки.</translation>
 <translation id="7899199123054742721">Означи све као непрочитано</translation>
+<translation id="7908957400505794782">Додирните <ph name="BEGIN_BOLD" />Готово<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">Организација не дозвољава да синхронизујете све.</translation>
 <translation id="792357691529995513">Није пронађен ниједан проблем</translation>
 <translation id="7925108652071887026">Подаци Аутоматског попуњавања</translation>

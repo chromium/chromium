@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">Yadda saxlayın və avtomatik doldurun</translation>
 <translation id="2312234273148520048">Ədviyyat və ləzzətləndiricilər</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> həcmindən az. Növbəti dəfə daxil olarkən bəzi saytlar yavaş yüklənə bilər.</translation>
+<translation id="2316090909467242775">Bu bərpa parolunu sınayın</translation>
 <translation id="2316159751672436664">ChromeOS ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
 <translation id="2316887270356262533">Maksimum 1 MB boşaldılır. Növbəti dəfə daxil olarkən bəzi saytlar daha yavaş yüklənə bilər.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> istifadəçi adı və parol tələb edir.</translation>
@@ -1669,6 +1670,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> düym)</translation>
 <translation id="3792826587784915501">Kult və Müstəqil Filmlər</translation>
 <translation id="3793574014653384240">Son vaxtlarda baş verən xətaların sayı və səbəbləri</translation>
+<translation id="3795624560191557077">Yaxın günlərdə ictimai data pozuntusunda aşkar edilmiş parolu dəyişmisiniz. Hər hansı problem yaranarsa, Google Şifrə Meneceri sizə hesabınıza daxil olmaqda kömək edə bilər.</translation>
 <translation id="3799805948399000906">Şrift üzrə sorğu göndərildi</translation>
 <translation id="3801297763951514916">Tez-tez daxil olursunuz</translation>
 <translation id="380329542618494757">Ad</translation>
@@ -1950,6 +1952,7 @@
 <translation id="425582637250725228">Etdiyiniz dəyişikliklər yadda saxlanıla bilməz.</translation>
 <translation id="4258748452823770588">Yanlış imza</translation>
 <translation id="4261046003697461417">Qorunan sənədlərdə annotasiya mümkün deyil</translation>
+<translation id="4265635050210404830">Loyallıq kartlarınız</translation>
 <translation id="4265872034478892965">Administrator tərəfindən icazə verildi</translation>
 <translation id="4269029136757623689">Məişət sərinkeşləri</translation>
 <translation id="4269264543938335308">Çimərlik geyimi</translation>
@@ -2225,6 +2228,7 @@
 <translation id="4754461935447132332">Güvənsiz saytlar üçün icazə verilmir</translation>
 <translation id="4756388243121344051">&amp;Tarixçə</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Kod etibarsızdır</translation>
 <translation id="4757993714154412917">İndicə parolunuzu aldadıcı sayt içində yazdınız. Hesablarınızı qorumaq üçün Chromium yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
 <translation id="4758311279753947758">Kontakt məlumatı əlavə edin</translation>
 <translation id="4761326898079498987">Əlavə detallar üçün nəzərdən keçirin</translation>
@@ -2290,6 +2294,7 @@
 <translation id="486459320933704969">Valideyn və ya qəyyum bu vebsaytı ziyarət etmənizə icazə verməlidir</translation>
 <translation id="4864801646102013152">Ev Təmiri</translation>
 <translation id="4866506163384898554">Kursoru göstərmək üçün |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| düyməsinə basın</translation>
+<translation id="4868277513442568587">Paylaşılan tab qruplarınızdan istifadə etməyə davam etmək üçün Chrome-u güncəlləyin</translation>
 <translation id="4873616204573862158">Eynək</translation>
 <translation id="4873807733347502026">Mausu kilidləyin və istifadə edin</translation>
 <translation id="4876305945144899064">İstifadəçi adı yoxdur</translation>
@@ -2426,6 +2431,7 @@
 <translation id="5089810972385038852">Dövlət</translation>
 <translation id="5090647584136241764">Sizin üçün vacib olan detalları asanlıqla müqayisə etmək üçün oxşar məhsullarla tablar əlavə edin</translation>
 <translation id="5093232627742069661">Z-qatlama</translation>
+<translation id="5093417502834168387">Daxil olmaqda çətinlik çəkirsiniz? Başqa yolu sınayın</translation>
 <translation id="5094747076828555589">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmədi; onun güvənlik sertifikatı Chromium tərəfindən doğrulanmayıb. Buna səbəb yanlış konfiqurasiya və ya hücumçü tərəfindən bağlantınızın ələ keçirilməsi ola bilər.</translation>
 <translation id="5097099694988056070">CPU/RAM istifadəsi kimi cihaz statistikası</translation>
 <translation id="5097468150760963273">27 x 39 düym</translation>
@@ -3194,6 +3200,7 @@
 <translation id="6388060462449937608">Fitnes avadanlıq və aksesuarları</translation>
 <translation id="6389470377220713856">Kart Adı</translation>
 <translation id="6390200185239044127">Yarımçıq Z-qatlama</translation>
+<translation id="6390533465682072118">Bərpa</translation>
 <translation id="639068771471208680">Çoxhissəli forma</translation>
 <translation id="6391700400718590966">"Təhlükəsiz ödəniş giriş məlumatları uyğun gəlmir" giriş məlumatları səhifəsi bağlanıb</translation>
 <translation id="6392799395081100092">Kağız (perqament)</translation>
@@ -3743,6 +3750,7 @@
 <translation id="7346048084945669753">Qoşulub:</translation>
 <translation id="7346062987309535530">Yemək ləvazimatları</translation>
 <translation id="7346081071264046066">"bu toy dəvətinə həyəcanla "hə" cavabı verin"</translation>
+<translation id="7347640536700429009">Kartdakı ad etibarsızdır</translation>
 <translation id="7352651011704765696">Xəta oldu</translation>
 <translation id="7353601530677266744">Əmr sahəsi</translation>
 <translation id="7359588939039777303">Reklamlar blok edildi.</translation>

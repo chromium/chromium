@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">送信者に連絡して新しいリンクをリクエストしてください</translation>
 <translation id="1013952917065545813">ここでは、最近閉じたタブをもう一度開くことができます</translation>
 <translation id="1016495303386450659">更新済みのアイテム</translation>
+<translation id="1017735584092444011">リーディング モードを表示</translation>
 <translation id="102916930470544692">パスキー</translation>
 <translation id="1030376737535466765">パスワード マネージャーを開く</translation>
 <translation id="1035980983510608210">すべてのタブを閉じると、固定されたタブも閉じます。</translation>
@@ -1237,12 +1238,14 @@
 <translation id="6074656473835429958">通知を受け取る</translation>
 <translation id="607620096698446287"><ph name="FILENAME" />（<ph name="FILESIZE" />）をアップロードできませんでした</translation>
 <translation id="6077126322656614846">カメラへのアクセスが許可されています</translation>
+<translation id="607730456154980869">Gemini in Chrome で回答をすばやく入手</translation>
 <translation id="6078236141387574983">シートの高さを再調整する</translation>
 <translation id="6084848228346514841">タブを選択</translation>
 <translation id="6089212833343035912">Google パスワード マネージャーの PIN</translation>
 <translation id="6090760257419195752">閉じた警告</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> 件見つかりました</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> としてログインしています。設定を開きます。</translation>
+<translation id="610083648014322104">閲覧しているページの内容に基づいて関連性の高い回答が得られます</translation>
 <translation id="6103540626693881831">オンデバイスの暗号化</translation>
 <translation id="611361228753138223">このデバイスで最近アクセスしたサイト</translation>
 <translation id="611705554202268369">長押ししてタブグループに追加</translation>
@@ -1495,6 +1498,7 @@
 <translation id="6979737339423435258">全期間</translation>
 <translation id="6983306615164277634">アドレスバーを長押しして位置を変更することもできます。</translation>
 <translation id="6987201788018524855">最近追加された便利な機能をご確認ください</translation>
+<translation id="6989636517316575338">ページについて質問</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">商品の価格をトラッキングし、値下げしたサイトがある場合に通知を受け取ります</translation>
 <translation id="7004032350256606903">組織がシークレット モードで閲覧するよう求めています。
@@ -1696,6 +1700,7 @@
 <translation id="7863211248337747225">アプリをダウンロード</translation>
 <translation id="7865127013871431856">翻訳オプション</translation>
 <translation id="7866872729285243843">お使いのすべてのデバイスで同じリーディング リストを使用するには、設定で [リーディング リスト] をオンにします。</translation>
+<translation id="787364769771947486">リーディング モードを非表示</translation>
 <translation id="7874107544081154809">自動入力フォーム、<ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">使い回しのパスワードがあります。</translation>
 <translation id="7887174313503389866">ガイドに沿って、プライバシーとセキュリティに関する重要な設定を確認します。その他のオプションについては、それぞれの設定で行います。</translation>
@@ -1752,6 +1757,7 @@
 <translation id="8058655154417507695">有効期限（年）</translation>
 <translation id="8059533439631660104">セクションを折りたたみます。</translation>
 <translation id="8061584726507121204">履歴</translation>
+<translation id="8069168488983557089">トピックの理解に役立つ重要なポイントや分析情報を入手できます</translation>
 <translation id="8069394452933076548">最近使用していないタブを無効なタブセクションにいつ移動するかを選択します。</translation>
 <translation id="8073670137947914548">ダウンロードが完了しました</translation>
 <translation id="8076492880354921740">タブ</translation>

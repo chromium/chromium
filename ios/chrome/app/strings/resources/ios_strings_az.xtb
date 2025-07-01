@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Yeni keçid əldə etmək üçün göndərən şəxslə əlaqə saxlayın</translation>
 <translation id="1013952917065545813">Bura qayıdaraq son zamanlarda bağladığınız tabları yenidən aça bilərsiniz</translation>
 <translation id="1016495303386450659">Element yeniləndi</translation>
+<translation id="1017735584092444011">Oxu rejimini göstərin</translation>
 <translation id="102916930470544692">Giriş açarı</translation>
 <translation id="1030376737535466765">Parol menecerini açın</translation>
 <translation id="1035980983510608210">Bütün tabları bağladıqda sancılmış tablar da bağlanacaq.</translation>
@@ -1237,12 +1238,14 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6074656473835429958">Bildiriş alın</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) yüklənmədi</translation>
 <translation id="6077126322656614846">Kameraya giriş icazəsi verilib</translation>
+<translation id="607730456154980869">Chrome-da Gemini ilə cavabları daha tez əldə edin</translation>
 <translation id="6078236141387574983">Vərəqin hündürlüyünü yenidən tənzimləyin</translation>
 <translation id="6084848228346514841">Tablar seçin</translation>
 <translation id="6089212833343035912">Google Parol Meneceri PIN-i</translation>
 <translation id="6090760257419195752">Qapadılmış xəbərdarlıqlar</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> nəticə tapıldı</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> kimi daxil olunub. Ayarları açır.</translation>
+<translation id="610083648014322104">Olduğunuz səhifənin kontentinə əsasən müvafiq cavablar alın</translation>
 <translation id="6103540626693881831">Cihazda Şifrələmə</translation>
 <translation id="611361228753138223">Bu cihazda son zamanlarda daxil olduğunuz saytlar</translation>
 <translation id="611705554202268369">Tab qrupuna əlavə etmək üçün basıb saxlayın</translation>
@@ -1495,6 +1498,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6979737339423435258">Hər zaman</translation>
 <translation id="6983306615164277634">Mövqeni dəyişmək üçün ünvan panelinə toxunub saxlaya bilərsiniz.</translation>
 <translation id="6987201788018524855">Qaçırdığınız faydalı funksiyaları araşdırın</translation>
+<translation id="6989636517316575338">İstənilən səhifə haqqında soruşun</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Məhsulların qiymətini izləyin və istənilən saytda qiymət endikdə xəbərdarlıq alın</translation>
 <translation id="7004032350256606903">Təşkilatınız məxfi şəkildə baxış keçirməyinizi tələb edir.
@@ -1696,6 +1700,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7863211248337747225">Tətbiqi əldə edin</translation>
 <translation id="7865127013871431856">Tərcümə seçimləri</translation>
 <translation id="7866872729285243843">Bütün cihazlarda oxu siyahısını əldə etmək üçün ayarlarda "Oxu Siyahısı"nı aktiv edin.</translation>
+<translation id="787364769771947486">Oxu rejimini gizlədin</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> ilə formanı avtomatik doldurun</translation>
 <translation id="7883882164760409935">Təkrar işlənən parollar var.</translation>
 <translation id="7887174313503389866">Əsas məxfilik və təhlükəsizlik nəzarətlərinə bələdçi ilə baxış keçirin. Digər seçimlər üçün fərdi ayarlara keçin.</translation>
@@ -1752,6 +1757,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8058655154417507695">Bitmə ili</translation>
 <translation id="8059533439631660104">Bölməni yığcamlaşdırır.</translation>
 <translation id="8061584726507121204">Tarixçə</translation>
+<translation id="8069168488983557089">İstənilən mövzunu başa düşməyinizə kömək edən əsas məqamları və fikirləri əldə edin</translation>
 <translation id="8069394452933076548">Son vaxtlar istifadə edilməyən tabların nə vaxt fəaliyyətsiz tab bölməsinə köçürüləcəyini seçin.</translation>
 <translation id="8073670137947914548">Endirmə tamamlandı</translation>
 <translation id="8076492880354921740">Tablar</translation>

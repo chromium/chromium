@@ -40,6 +40,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1547469039832541117">Përfundon detyrën e theksuar.</translation>
 <translation id="1553461853655228091">Chromium ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Kjo shtesë nuk mbështetet më. Chromium rekomandon që ta heqësh atë.}other{Këto shtesa nuk mbështeten më. Chromium rekomandon që t'i heqësh ato.}}</translation>
+<translation id="1562320819937089394">Gozhdo Chromium</translation>
 <translation id="1574377791422810894">Veglat e sigurisë të Chromium</translation>
 <translation id="1594928384848033697">Chromium dëshiron të fshijë të dhënat e tua të "Menaxherit të fjalëkalimeve". Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
@@ -522,6 +523,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8004582292198964060">Shfletuesi</translation>
 <translation id="8010081455002666927">Zbulo automatikisht</translation>
 <translation id="8013436988911883588">Pasi Chromium të ketë qasje, uebsajtet do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
+<translation id="8031714377769448844">Gozhdo Chromium te shiriti i veglave për të shkuar tek ai me shpejtësi në çdo kohë</translation>
 <translation id="80471789339884597">Faleminderit që e instalove. Duhet të rinisësh të gjithë shfletuesit e tu përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Shfaq gjithmonë shkurtoren e "Kërkimit nëpërmjet imazheve"</translation>
 <translation id="8077498902115777962">Çaktivizo ekzekutimin e Chromium në sfond për aplikacionet</translation>

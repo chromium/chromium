@@ -793,6 +793,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2310789833878085574">Išsaugoti ir automatiškai užpildyti</translation>
 <translation id="2312234273148520048">Prieskoniai ir padažai</translation>
 <translation id="2316087952091171402">Mažiau nei <ph name="UPPER_ESTIMATE" />. Per kitą apsilankymą kai kurios svetainės gali būti įkeltos gerokai lėčiau.</translation>
+<translation id="2316090909467242775">Išbandykite šį atkūrimo slaptažodį</translation>
 <translation id="2316159751672436664">Suasmeninkite pritaikomumo įrankius „Chrome“ OS nustatymuose</translation>
 <translation id="2316887270356262533">Atlaisvina mažiau nei 1 MB. Per kitą jūsų apsilankymą kai kurios svetainės gali būti įkeliamos lėčiau.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> būtina įvesti naudotojo vardą ir slaptažodį.</translation>
@@ -1674,6 +1675,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3792100426446126328">„<ph name="NAME" />“ (<ph name="WIDTH" /> x <ph name="HEIGHT" /> col.)</translation>
 <translation id="3792826587784915501">Kultiniai ir nepriklausomų kūrėjų filmai</translation>
 <translation id="3793574014653384240">Neseniai įvykusių strigčių skaičiai ir priežastys</translation>
+<translation id="3795624560191557077">Neseniai pakeitėte slaptažodį, kuris buvo rastas viešajame duomenų saugos pažeidime. Kilus problemų, „Google“ slaptažodžių tvarkyklė gali padėti prisijungti.</translation>
 <translation id="3799805948399000906">Užklausa dėl šrifto</translation>
 <translation id="3801297763951514916">Dažnai lankotės</translation>
 <translation id="380329542618494757">Vardas ir pavardė</translation>
@@ -2434,6 +2436,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5089810972385038852">Valstija</translation>
 <translation id="5090647584136241764">Pridėkite skirtukų su panašiais produktais, kad galėtumėte lengvai palyginti jums svarbią informaciją</translation>
 <translation id="5093232627742069661">Z formos perlenkimas</translation>
+<translation id="5093417502834168387">Nepavyksta prisijungti? Išbandykite kitą metodą</translation>
 <translation id="5094747076828555589">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas nėra patikimas „Chromium“. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="5097099694988056070">Įrenginio statistika, pvz., centrinio procesoriaus / laisvosios prieigos atminties naudojimas</translation>
 <translation id="5097468150760963273">27 x 39 col.</translation>
@@ -3202,6 +3205,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6388060462449937608">Kūno rengybos įranga ir priedai</translation>
 <translation id="6389470377220713856">Vardas kortel.</translation>
 <translation id="6390200185239044127">Z formos perlenkimas pusiau</translation>
+<translation id="6390533465682072118">Atkūrimas</translation>
 <translation id="639068771471208680">Kelių dalių forma</translation>
 <translation id="6391700400718590966">Saugaus mokėjimo prisijungimo duomenų lapas, informuojantis, kad atitinkančių prisijungimo duomenų nerasta, uždarytas</translation>
 <translation id="6392799395081100092">Popierius („Vellum“)</translation>

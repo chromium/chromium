@@ -152,6 +152,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1671236975893690980">Nevyřízené stahování…</translation>
 <translation id="1672586136351118594">Tuto zprávu již nezobrazovat</translation>
 <translation id="1680919990519905526">Koupit věc na obrázku pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
+<translation id="1683774088349393383">\u0020a po <ph name="MONTHS_ARCHIVED" /> měsících se zavřou</translation>
 <translation id="1687482373098770139">Brzy na kartě Sledováno uvidíte obsah z webu <ph name="SITE_NAME" /> nebo o něm. Weby a vyhledávání, která sledujete, se ukládají do vašeho účtu Google. Sledovaný obsah můžete kdykoli spravovat v nastavení.</translation>
 <translation id="1689333818294560261">Přezdívka</translation>
 <translation id="1696555181932908973">Můžete na <ph name="SITE_ETLD_PLUS_ONE" /> zkusit pokračovat jinými způsoby.</translation>
@@ -352,6 +353,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2593272815202181319">Neproporcionální</translation>
 <translation id="260403163289591229">Sledováno</translation>
 <translation id="2604446170045642109">Tmavý motiv můžete pro weby v nastavení vypnout.</translation>
+<translation id="2605017215201958293">Poslechněte si tuto stránku pomocí AI</translation>
 <translation id="2607441479295509868">Jste odhlášeni. Pokud chcete používat záložky, hesla a další položky ve svém účtu, znovu se přihlaste.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> vás zve k přístupu ke sdílené položce.</translation>
 <translation id="2625189173221582860">Heslo bylo zkopírováno</translation>
@@ -876,6 +878,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="496607651705915226">Pokud chcete používat hesla ze svého účtu Google a ukládat do něj nová, aktualizujte služby Google Play.</translation>
 <translation id="4971753085054504448">Zkuste vyhledat něco jiného nebo otevřete celou historii Chromu, abyste viděli více výsledků.</translation>
 <translation id="497421865427891073">Vpřed</translation>
+<translation id="497983151715419057">Tady si prohlédněte neaktivní karty a skupiny</translation>
 <translation id="498624032394115435">Kdokoli s odkazem může upravovat všechny karty.</translation>
 <translation id="4987271110129728827">Stránku nelze najít. Zkontrolujte, zda jste neudělali překlep, nebo ji zkuste vyhledat na webu.</translation>
 <translation id="4988526792673242964">Stránky</translation>
@@ -936,7 +939,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5226378907213531272">Při každém použití auta bude potřeba odemknout obrazovku</translation>
 <translation id="5227554086496586518">Klepnutím zobrazíte výsledky vyhledávání</translation>
-<translation id="5229736206150093143">Nejnovější výsledky</translation>
 <translation id="5233638681132016545">Nová karta</translation>
 <translation id="5235196193381275927">Při přihlašování se něco pokazilo</translation>
 <translation id="5246093389635966745">Upravit zkratku lišty</translation>
@@ -1064,6 +1066,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5833984609253377421">Sdílet odkaz</translation>
 <translation id="5839058148541733625">Dinosauří hra pro Chrome</translation>
+<translation id="5842871376175639063">Karty a skupiny karet, které jste <ph name="DAYS_INACTIVE" /> dní nepoužili, se přesunou sem<ph name="AUTODELETE_SECTION" />. V <ph name="SETTINGS_TITLE" /> to můžete kdykoli změnit.</translation>
 <translation id="5848257610304005265">Otevřít PDF pomocí aplikace <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Ukončit sdílení?</translation>
 <translation id="5853623416121554550">pozastaveno</translation>
@@ -1382,6 +1385,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7088681679121566888">Chrome je aktuální</translation>
 <translation id="7106762743910369165">Váš prohlížeč je spravován vaší organizací</translation>
 <translation id="7111394291981742152">Chrome vám dává větší kontrolu nad reklamami, které se vám zobrazují, a omezuje, co se o vás weby mohou dozvědět, když vám zobrazují personalizované reklamy.</translation>
+<translation id="7115358764509798967">Výchozí nastavení systému</translation>
 <translation id="7117485132243600300">Spravujte obsah, který sledujete, a navrhovaná témata a vyhledávání</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Byla zkontrolována oprávnění 1 webu}few{Byla zkontrolována oprávnění # webů}many{Byla zkontrolována oprávnění # webu}other{Byla zkontrolována oprávnění # webů}}</translation>
 <translation id="7138678301420049075">Ostatní</translation>
@@ -1431,6 +1435,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7304873321153398381">Offline. Chrome nemůže zkontrolovat vaše hesla.</translation>
 <translation id="7313188324932846546">Klepnutím nastavíte synchronizaci</translation>
 <translation id="7314734791127433392">Hesla nelze zkontrolovat</translation>
+<translation id="7322804416315419767">{INACTIVE_TIME_DAYS,plural, =1{Karty a skupiny karet, které nejméně 1 den nebyly použity}few{Karty a skupiny karet, které nejméně # dny nebyly použity}many{Karty a skupiny karet, které nejméně # dne nebyly použity}other{Karty a skupiny karet, které nejméně # dní nebyly použity}}</translation>
 <translation id="7324354302972299151">Odesílat požadavek Do Not Track</translation>
 <translation id="7333041109965360609">Odběr oznámení byl odhlášen</translation>
 <translation id="7336259382292148213">Oznámení vypadají v pořádku</translation>
@@ -1642,6 +1647,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8137562778192957619">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google.</translation>
 <translation id="8152331954420209374">Přejít do prostředí Lens</translation>
 <translation id="8163820386638255770">Pokud chcete používat a ukládat hesla ve svém účtu Google, ověřte svou totožnost</translation>
+<translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) neaktivní položka}few{(#) neaktivní položky}many{(#) neaktivní položky}other{(#) neaktivních položek}}</translation>
 <translation id="8186512483418048923">Zbývající soubory: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Zbývá: 1 d</translation>
 <translation id="8192765420340770300">Spodní panel pro přihlášení je otevřený přes celou výšku obrazovky</translation>

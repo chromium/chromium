@@ -41,6 +41,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1547469039832541117">Finaliza la tarea resaltada.</translation>
 <translation id="1553461853655228091">Para crear un mapa 3D de tu entorno, Chromium necesita permiso para acceder a tu cámara</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Esta extensión ya no se admite. Chromium te recomienda que la elimines.}other{Estas extensiones ya no se admiten. Chromium te recomienda que las elimines.}}</translation>
+<translation id="1562320819937089394">Fijar Chromium</translation>
 <translation id="1574377791422810894">Herramientas de seguridad de Chromium</translation>
 <translation id="1594928384848033697">Chromium quiere eliminar tus datos del Gestor de contraseñas. Introduce tu contraseña de Windows para permitirlo.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Tu administrador pide que reinicies Chromium para aplicar una actualización}=1{Tu administrador pide que reinicies Chromium para aplicar una actualización. La ventana de Incógnito no se volverá a abrir.}other{Tu administrador pide que reinicies Chromium para aplicar una actualización. Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
@@ -523,6 +524,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8010081455002666927">Detección automática</translation>
 <translation id="8013436988911883588">Una vez que Chromium tenga acceso, los sitios web podrán solicitarlo también.</translation>
+<translation id="8031714377769448844">Fija Chromium en la barra de tareas para acceder rápidamente a él en cualquier momento</translation>
 <translation id="80471789339884597">Gracias por realizar la instalación. Debes reiniciar todos tus navegadores para poder usar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Mostrar siempre el acceso directo a la búsqueda por imágenes</translation>
 <translation id="8077498902115777962">Inhabilitar que Chromium se ejecute en segundo plano en las aplicaciones</translation>

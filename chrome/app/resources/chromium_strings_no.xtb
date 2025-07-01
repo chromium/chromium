@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Avslutter den fremhevede oppgaven.</translation>
 <translation id="1553461853655228091">Chromium trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen støttes ikke lenger. Chromium anbefaler at du fjerner den.}other{Disse utvidelsene støttes ikke lenger. Chromium anbefaler at du fjerner dem.}}</translation>
+<translation id="1562320819937089394">Fest Chromium</translation>
 <translation id="1574377791422810894">Sikkerhetsverktøyene i Chromium</translation>
 <translation id="1594928384848033697">Chromium vil slette Passordlagring-dataene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering}=1{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
@@ -521,6 +522,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8004582292198964060">Nettleser</translation>
 <translation id="8010081455002666927">Oppdag automatisk</translation>
 <translation id="8013436988911883588">Når Chromium har fått tilgang, kan nettsteder spørre deg om tilgang.</translation>
+<translation id="8031714377769448844">Fest Chromium til oppgavelinjen for å få tilgang til den raskt når som helst</translation>
 <translation id="80471789339884597">Installasjonen er fullført. Start alle nettlesere på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Vis alltid snarveien til bildesøk</translation>
 <translation id="8077498902115777962">Deaktiver kjøring av Chromium i bakgrunnen for apper</translation>

@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">请联系发送者获取新的链接</translation>
 <translation id="1013952917065545813">您只需回到这里，便可重新打开最近关闭的标签页</translation>
 <translation id="1016495303386450659">书签已更新</translation>
+<translation id="1017735584092444011">显示阅读模式</translation>
 <translation id="102916930470544692">通行密钥</translation>
 <translation id="1030376737535466765">打开密码管理工具</translation>
 <translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
@@ -1237,12 +1238,14 @@
 <translation id="6074656473835429958">接收通知</translation>
 <translation id="607620096698446287">无法上传“<ph name="FILENAME" />”(<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">已启用摄像头使用权限</translation>
+<translation id="607730456154980869">通过 Chrome 中的 Gemini 更快地获得答案</translation>
 <translation id="6078236141387574983">重新调整动作条的高度</translation>
 <translation id="6084848228346514841">选择标签页</translation>
 <translation id="6089212833343035912">Google 密码管理工具 PIN 码</translation>
 <translation id="6090760257419195752">已忽略的警告</translation>
 <translation id="6096965253650248286">已找到 <ph name="COUNT" /> 个</translation>
 <translation id="6100617279104942061">您目前登录的账号为 <ph name="USER_EMAIL" />。打开“设置”。</translation>
+<translation id="610083648014322104">根据您当前网页的内容获取相关答案</translation>
 <translation id="6103540626693881831">设备端加密</translation>
 <translation id="611361228753138223">您最近在此设备上访问过的网站</translation>
 <translation id="611705554202268369">长按即可添加到标签页分组</translation>
@@ -1495,6 +1498,7 @@
 <translation id="6979737339423435258">时间不限</translation>
 <translation id="6983306615164277634">您也可轻触并按住地址栏来更改其位置。</translation>
 <translation id="6987201788018524855">探索您错过的实用功能</translation>
+<translation id="6989636517316575338">就任意网页提问</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">跟踪商品价格，并在有网站降价时收到提醒</translation>
 <translation id="7004032350256606903">贵单位要求您进行无痕浏览。
@@ -1696,6 +1700,7 @@
 <translation id="7863211248337747225">下载应用</translation>
 <translation id="7865127013871431856">翻译选项</translation>
 <translation id="7866872729285243843">若要将阅读清单同步到您的所有设备上，请在设置中开启“阅读清单”。</translation>
+<translation id="787364769771947486">隐藏阅读模式</translation>
 <translation id="7874107544081154809">使用<ph name="CELL_ACCESSIBILITY_LABEL" />自动填充表单</translation>
 <translation id="7883882164760409935">您有重复使用的密码。</translation>
 <translation id="7887174313503389866">观看导览，了解重要的隐私控制设置和安全控件。如需查看更多选项，请转到各项设置。</translation>
@@ -1752,6 +1757,7 @@
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8059533439631660104">合拢此部分。</translation>
 <translation id="8061584726507121204">历史记录</translation>
+<translation id="8069168488983557089">获取关键要点和数据洞见，帮助您了解任何主题</translation>
 <translation id="8069394452933076548">选择何时将最近未使用的标签页移至“闲置标签页”部分中。</translation>
 <translation id="8073670137947914548">已下载完毕</translation>
 <translation id="8076492880354921740">标签页</translation>

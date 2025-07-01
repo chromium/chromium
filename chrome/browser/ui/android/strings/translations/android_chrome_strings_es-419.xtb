@@ -383,7 +383,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2760805590727089264">MM/AA</translation>
 <translation id="2760989362628427051">Activa el tema oscuro cuando esté activado el Ahorro de batería o el tema oscuro de tu dispositivo</translation>
 <translation id="2762000892062317888">recién</translation>
-<translation id="276969039800130567">Se accedió como <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="276969039800130567">Accediste como <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundos restantes</translation>
 <translation id="2779651927720337254">error</translation>
 <translation id="2781151931089541271">1 segundo restante</translation>
@@ -939,7 +939,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5226378907213531272">Se desbloqueará la pantalla cada vez que uses el automóvil</translation>
 <translation id="5227554086496586518">Presiona para ver los resultados de la búsqueda.</translation>
-<translation id="5229736206150093143">Últimos resultados</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5235196193381275927">Se produjo un error durante el acceso</translation>
 <translation id="5246093389635966745">Editar la combinación de teclas de la barra de herramientas</translation>
@@ -1227,7 +1226,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> no se pudo descargar debido a la falta de espacio de almacenamiento.</translation>
 <translation id="6486420406192123355">Este archivo PDF proviene de un sitio que usa una conexión no segura</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Archivo descargado}other{Se completaron # descargas}}</translation>
-<translation id="6508722015517270189">Reinicia Chrome.</translation>
+<translation id="6508722015517270189">Reiniciar Chrome</translation>
 <translation id="6513924416597632811">Copiar el vínculo a la página de resultados de búsqueda para: <ph name="SEARCH_QUERY" />. Fuente: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Verificar</translation>
 <translation id="6527303717912515753">Compartir</translation>
@@ -1386,6 +1385,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7088681679121566888">Chrome está actualizado</translation>
 <translation id="7106762743910369165">Tu organización administra el navegador.</translation>
 <translation id="7111394291981742152">Chrome te otorga más control sobre los anuncios que ves y limita la información que pueden obtener los sitios sobre ti cuando te muestran anuncios personalizados.</translation>
+<translation id="7115358764509798967">Predeterminado del sistema</translation>
 <translation id="7117485132243600300">Administra el contenido que sigues y los temas y las búsquedas sugeridos</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Se revisaron los permisos de 1 sitio}other{Se revisaron los permisos de # sitios}}</translation>
 <translation id="7138678301420049075">Otros</translation>

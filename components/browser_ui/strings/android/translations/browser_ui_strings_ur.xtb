@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">‏Chrome کی تجاویز</translation>
 <translation id="1816835383954230954">‏آن ہونے پر، Chrome تیزی سے چلتا ہے اور JavaScript استعمال کرنے والی خصوصیات کو ڈیزائن کے مطابق کام کرنا چاہیے۔ آف ہونے پر، یہ کارکردگی کو کم کرتا ہے لیکن V8 کو حملوں کے خلاف زیادہ مزاحم بناتا ہے۔</translation>
 <translation id="1818308510395330587">‏<ph name="APP_NAME" /> کو AR کا استعمال کرنے دینے کے لیے، <ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں بھی کیمرا آن کریں۔</translation>
+<translation id="1881806992065048905">نئے ٹیب کے صفحہ کی ہئیت کی نیچے کی شیٹ</translation>
 <translation id="1887786770086287077">‏مقام کی رسائی اس آلہ کے لیے آف ہے۔ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" />.میں اسے آن کریں۔</translation>
 <translation id="1906181697255754968">سائٹس عام طور پر آپ کے آلہ پر موجود فائلز اور فولڈز تک آپ کا کام خودکار طور پر محفوظ کرنے جیسی خصوصیات کے لیے رسائی کرتی ہیں</translation>
 <translation id="1915307458270490472">کال منقطع کریں</translation>
@@ -326,6 +327,7 @@
 <translation id="4882919381756638075">سائٹس عام طور پر ویڈیو چیٹ جیسی کمیونیکشن کی خصوصیات کے لیے آپ کا مائيکروفون استعمال کرتی ہیں</translation>
 <translation id="4883854917563148705">نظم کردہ ترتیبات کو دوبارہ سیٹ نہیں کیا جا سکتا</translation>
 <translation id="4887024562049524730">سائٹس کو اپنا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
+<translation id="4934780484581617878">ونڈو کا نظم و نسق</translation>
 <translation id="4936863036653376783">آپ کو اپنے گروپس آپ کے تمام آلات پر ٹیب گروپ سیکشن میں ملیں گے</translation>
 <translation id="4945443401464700059">‫<ph name="SITE" /> کو آپ کی معلومات کو اس پر استعمال کرنے سے بلاک کر دیا گیا ہے</translation>
 <translation id="4953688446973710931">آن ہونے پر، سائٹس خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کیلئے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس خودکار طور پر متعدد فائلز ڈاؤن لوڈ نہیں کر سکتی ہیں۔</translation>
@@ -458,6 +460,7 @@
 <translation id="6398765197997659313">پوری سکرین سے خارج ہوں</translation>
 <translation id="640163077447496506">میعاد آج ختم ہوگی</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">تھیم کے مجموعے</translation>
 <translation id="6439114592976064011">سائٹس کو اپنا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنے سے مسدود کریں</translation>
 <translation id="6447842834002726250">کوکیز</translation>
 <translation id="6452138246455930388"><ph name="PRODUCT_NAME" />، <ph name="DOMAIN_NAME" /> پر آپ کے کھلے ٹیب پر <ph name="OLD_PRICE" /> سے <ph name="NEW_PRICE" /> تک قیمت میں کمی</translation>
@@ -561,6 +564,7 @@
 <translation id="7791543448312431591">شامل کریں</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7804248752222191302">ایک سائٹ آپ کا کیمرا استعمال کر رہی ہے</translation>
+<translation id="7805832099057502789">نئے ٹیب کے صفحہ کی ہئیت کی نیچے کی شیٹ پوری اسکرین پر کھلی ہے</translation>
 <translation id="7807060072011926525">‏Google کے ذریعے فراہم کردہ</translation>
 <translation id="7815680994978050279">خطرناک ڈاؤن لوڈ مسدود کیا گیا</translation>
 <translation id="7835852323729233924">میڈیا کو چلایا جا رہا ہے</translation>
@@ -580,9 +584,11 @@
 <translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
 <translation id="8042586301629853791">ترتیب دیں بلحاظ:</translation>
 <translation id="8051193500142930381">وہ خصوصیات کام نہیں کریں گی جن کے لیے کیمرا کی ضرورت ہوتی ہے</translation>
+<translation id="8056330801132235235">‏‫Chrome ڈیفالٹ</translation>
 <translation id="8067883171444229417">ویڈیو چلائیں</translation>
 <translation id="8068648041423924542">سرٹیفکیٹ منتخب کرنے سے قاصر ہے۔</translation>
 <translation id="8077120325605624147">آپ کی ملاحظہ کردہ کوئی بھی سائٹ آپ کو کوئی بھی اشتہار دکھا سکتی ہے</translation>
+<translation id="80798452873915119">سائٹس آپ کے سبھی ڈسپلیز پر ونڈوز کا نظم کرنے کو کہہ سکتی ہیں</translation>
 <translation id="8087000398470557479">‏یہ مواد <ph name="DOMAIN_NAME" /> کی جانب سے ہے، جسے Google نے ڈیلیور کیا ہے۔</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> میں مزید اختیارات</translation>
 <translation id="8112925981674547014">اپنی ایپس کی فہرست میں ٹیبز دیکھیں</translation>

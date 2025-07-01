@@ -1933,7 +1933,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2312219318583366810">URL strani</translation>
 <translation id="2314165183524574721">Trenutna nastavitev vidnosti je skrita</translation>
 <translation id="2314774579020744484">Jezik, ki se uporablja za prevajanje strani</translation>
-<translation id="2316090909467242775">Preizkusite to geslo za obnovitev</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
 <translation id="2316433409811863464">Pretočno izvajanje aplikacije</translation>
 <translation id="2316709634732130529">Uporabi predlagano geslo</translation>
@@ -4059,7 +4058,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3792973596468118484">Št. razširitev: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3794792524918736965">Vklopite funkcijo Windows Hello</translation>
 <translation id="379509625511193653">Izklopljeno</translation>
-<translation id="3795624560191557077">Nedavno ste spremenili geslo, najdeno v javni podatkovni kršitvi. Če imate težave, vam lahko Googlov upravitelj gesel pomaga pri prijavi.</translation>
 <translation id="3796215473395753611">alt + puščica gor</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, uporabite puščico desno za predogled glasu</translation>
 <translation id="3796648294839530037">Priljubljena omrežja:</translation>
@@ -5881,7 +5879,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5088534251099454936">PKCS #1 SHA-512 s šifriranjem RSA</translation>
 <translation id="5090637338841444533">Ni dovoljeno spremljanje položaja kamere</translation>
 <translation id="5091636240353511739">Prikaz kode PIN</translation>
-<translation id="5093417502834168387">Imate težave pri prijavi? Poskusite drugače.</translation>
 <translation id="5093477827231450397">Seznam blokiranih spletnih mest, za katera ne želite, da predlagajo oglase drugim spletnim mestom</translation>
 <translation id="5093569275467863761">Anonimni podokvir v predpomnilniku za hitro obnovitev strani: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Podprte datoteke lahko s to aplikacijo odpirate in urejate v aplikaciji Datoteke ali drugih aplikacijah. Če želite upravljati, katere datoteke to aplikacijo privzeto odprejo, <ph name="BEGIN_LINK" />preberite, kako nastavite privzete aplikacije v napravi<ph name="END_LINK" />.</translation>
@@ -7668,7 +7665,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6388577073199278153">Nimate dostopa do računa mobilne naprave</translation>
 <translation id="6390020764191254941">Premik zavihka v novo okno</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Nič}=1{Za <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> in še 1}one{Za <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> in še {COUNT}}two{Za <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> in še {COUNT}}few{Za <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> in še {COUNT}}other{Za <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> in še {COUNT}}}</translation>
-<translation id="6390533465682072118">Obnovitev</translation>
 <translation id="6391131092053186625">IMEI naprave je <ph name="IMEI_NUMBER" />. To številko je mogoče uporabiti pri aktiviranju storitve.</translation>
 <translation id="6393156038355142111">Predlagaj močno geslo</translation>
 <translation id="6393550101331051049">Dovoljeno je prikazovanje vsebine, ki ni varna</translation>
@@ -7901,6 +7897,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6560151649238390891">Predlog je vstavljen</translation>
 <translation id="656065428026159829">Prikaži več</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Ta datoteka vrste (<ph name="TYPE" />) je lahko nevarna. To datoteko shranite samo, če zaupate viru <ph name="ORIGIN" /></translation>
 <translation id="6562117348069327379">Shranjevanje sistemskih dnevnikov v mapo Prenosi.</translation>
 <translation id="656293578423618167">Pot datoteke ali ime je predolgo. Shranite s krajšim imenom ali na drugo mesto.</translation>
 <translation id="6563002009564846727">Ogled uvoženih potrdil iz sistema Windows</translation>
@@ -9711,6 +9708,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7830833461614351956">Želite kopirati datoteke (<ph name="NUM_OF_FILES" />) v storitev <ph name="CLOUD_PROVIDER" /> in jih odpreti?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Shranjene besede po meri bodo prikazane tukaj</translation>
+<translation id="7834832693620032149">Če želite deliti zvok, namesto tega delite zavihek ali okno</translation>
 <translation id="7836577093182643605">Seznam tem, ki ste jih blokirali in jih ne želite deliti s spletnimi mesti</translation>
 <translation id="7836745198769390202">Trenutno imate <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> in drugo. Vaša organizacija bo lahko videla in upravljala te podatke.</translation>
 <translation id="7836850009646241041">Poskusite se znova dotakniti varnostnega ključa</translation>
@@ -11322,6 +11320,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8940081510938872932">V računalniku se trenutno izvaja preveč procesov. Poskusite znova pozneje.</translation>
 <translation id="8940888110818450052">Možnosti prijave</translation>
 <translation id="8941173171815156065">Preklic dovoljenja »<ph name="PERMISSION" />«</translation>
+<translation id="8941209844691374403">Aplikacija <ph name="APP_NAME" /> deli okno in zvok</translation>
 <translation id="8941688920560496412">Naprava <ph name="DEVICE_NAME" /> je izklopljena</translation>
 <translation id="894191600409472540">Ustvarite zapletena gesla.</translation>
 <translation id="8942714513622077633">Želite preklicati nastavitev storitve Microsoft 365?</translation>

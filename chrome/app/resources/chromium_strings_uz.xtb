@@ -38,6 +38,7 @@
 <translation id="1547469039832541117">Belgilangan vazifani yakunlaydi.</translation>
 <translation id="1553461853655228091">Chromium atrofingiz 3D xaritasini yaratishi uchun unga kamera ruxsati zarur</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Bu kengaytma endi dastaklanmaydi. Chromium uni olib tashlashni tavsiya qiladi.}other{Bu kengaytmalar endi dastaklanmaydi. Chromium ularni olib tashlashni tavsiya qiladi.}}</translation>
+<translation id="1562320819937089394">Chromiumni mahkamlash</translation>
 <translation id="1574377791422810894">Chromium xavfsizlik vositalari</translation>
 <translation id="1594928384848033697">Chromium Parollar menejeri maʼlumotlarini oʻchirmoqchi. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
@@ -518,6 +519,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8010081455002666927">Avtomatik aniqlash</translation>
 <translation id="8013436988911883588">Chromium saytlarga ulanganda sizdan ruxsat so‘raydi.</translation>
+<translation id="8031714377769448844">Istalganda tezkor ochish uchun Chromium ilovasini vazifalar paneliga mahkamlang</translation>
 <translation id="80471789339884597">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin barcha brauzerlarni qayta ishga tushirishingiz kerak.</translation>
 <translation id="8054112667659782652">Rasm orqali qidiruv tezkor tugmasi doim chiqsin</translation>
 <translation id="8077498902115777962">Chromium ilovalarni fonda ishga tushirishini faolsizlantirish</translation>

@@ -35,6 +35,7 @@
 <translation id="141901961143729572">ご意見をお聞かせください</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。}=1{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="1434626383986940139">Chrome Canary アプリ</translation>
+<translation id="1439793550875056299">Chrome を固定</translation>
 <translation id="146866447420868597">Chrome にログインしますか？</translation>
 <translation id="1492280395845991349">Chrome の更新を完了するには再起動してください</translation>
 <translation id="1497802159252041924">インストール エラー: <ph name="INSTALL_ERROR" /></translation>
@@ -352,6 +353,7 @@
 <translation id="5566025111015594046">Google Chrome（mDNS インバウンド）</translation>
 <translation id="5579324208890605088">起動エラー: 管理者ではなく標準ユーザーとしてインストーラを実行してください。</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
+<translation id="5600352656975192682">Chrome をタスクバーに固定すると、いつでもすばやくアクセスできます</translation>
 <translation id="5602351063754773347">削除することをおすすめします。<ph name="BEGIN_LINK" />サポートされている拡張機能の詳細<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Chrome プロフィールを使うと、Chrome のあらゆる項目や設定を個別に管理できます。友達や家族のプロフィールを作成したり、仕事とプライベートでプロフィールを使い分けたりできます。</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> は危険なファイルの可能性があるため、Chrome でブロックしました。</translation>

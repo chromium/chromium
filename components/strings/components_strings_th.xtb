@@ -675,7 +675,7 @@
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">เครื่องมือค้นหาเหล่านี้แสดงแบบสุ่มลำดับ คุณเปลี่ยนค่าเริ่มต้นได้ทุกเมื่อ</translation>
 <translation id="2137891579555018930">กำลังรอการอนุญาต...</translation>
-<translation id="213826338245044447">บุ๊กมาร์กบนอุปกรณ์เคลื่อนที่</translation>
+<translation id="213826338245044447">บุ๊กมาร์กบนมือถือ</translation>
 <translation id="2141000681034340397">แก้ไขอินพุต</translation>
 <translation id="2144171668675205303">ไม่มีหัวข้อที่ใช้งานอยู่</translation>
 <translation id="2145193671493396738">ข่าวเศรษฐกิจ</translation>
@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">บันทึกและป้อนข้อมูลบัตรอัตโนมัติ</translation>
 <translation id="2312234273148520048">เครื่องปรุงรสและน้ำสลัด</translation>
 <translation id="2316087952091171402">ไม่ถึง <ph name="UPPER_ESTIMATE" /> บางเว็บไซต์อาจโหลดช้ากว่าเดิมเมื่อคุณเข้าชมครั้งถัดไป</translation>
+<translation id="2316090909467242775">ลองใช้รหัสผ่านสำหรับการกู้คืนนี้</translation>
 <translation id="2316159751672436664">ปรับเปลี่ยนเครื่องมือช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome OS</translation>
 <translation id="2316887270356262533">เพิ่มพื้นที่ว่างไม่ถึง 1 MB เว็บไซต์บางแห่งอาจโหลดช้าลงเมื่อคุณเข้าชมครั้งถัดไป</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> ต้องใช้ชื่อผู้ใช้และรหัสผ่าน</translation>
@@ -1672,6 +1673,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> นิ้ว)</translation>
 <translation id="3792826587784915501">ภาพยนตร์แนวศิลปะและอินดี้</translation>
 <translation id="3793574014653384240">จำนวนและสาเหตุของการขัดข้องที่เกิดขึ้นเมื่อเร็วๆ นี้</translation>
+<translation id="3795624560191557077">คุณเพิ่งเปลี่ยนรหัสผ่านที่พบในการละเมิดข้อมูลสาธารณะ ในกรณีที่เกิดปัญหา เครื่องมือจัดการรหัสผ่านบน Google จะช่วยให้คุณลงชื่อเข้าใช้ได้</translation>
 <translation id="3799805948399000906">ขอแบบอักษรแล้ว</translation>
 <translation id="3801297763951514916">คุณเข้าชมบ่อย</translation>
 <translation id="380329542618494757">ชื่อ</translation>
@@ -2432,6 +2434,7 @@
 <translation id="5089810972385038852">รัฐ</translation>
 <translation id="5090647584136241764">เพิ่มแท็บที่มีผลิตภัณฑ์ที่คล้ายกันเพื่อเปรียบเทียบรายละเอียดที่สำคัญสำหรับคุณได้อย่างง่ายดาย</translation>
 <translation id="5093232627742069661">พับแบบตัว Z</translation>
+<translation id="5093417502834168387">หากมีปัญหาในการลงชื่อเข้าใช้ ลองวิธีอื่น</translation>
 <translation id="5094747076828555589">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะ Chromium ไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="5097099694988056070">สถิติของอุปกรณ์ เช่น การใช้ CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 นิ้ว</translation>
@@ -2969,7 +2972,7 @@
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023810427609440412">VIN (หมายเลขประจำยานพาหนะ)</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" /> <ph name="TYPE_2" /> <ph name="TYPE_3" /> (ซิงค์แล้ว)</translation>
-<translation id="6028591542479806248">จัดการการแจ้งเตือนในอุปกรณ์เคลื่อนที่และการแจ้งเตือนทางอีเมล</translation>
+<translation id="6028591542479806248">จัดการการแจ้งเตือนบนมือถือและการแจ้งเตือนทางอีเมล</translation>
 <translation id="6028833024483927901">อาหารจากทั่วโลก</translation>
 <translation id="603068602130820122">เย็บด้วยลวดเย็บกระดาษด้านขวา 2 ครั้ง</translation>
 <translation id="6032524144326295339">กล่องจดหมาย 2</translation>
@@ -3200,6 +3203,7 @@
 <translation id="6388060462449937608">อุปกรณ์ฟิตเนสและอุปกรณ์เสริม</translation>
 <translation id="6389470377220713856">ชื่อบนบัตร</translation>
 <translation id="6390200185239044127">พับครึ่งแบบตัว Z</translation>
+<translation id="6390533465682072118">การกู้คืน</translation>
 <translation id="639068771471208680">แบบฟอร์มแบบหลายส่วน</translation>
 <translation id="6391700400718590966">ระบบได้ปิด Bottom Sheet ซึ่งแจ้งว่าไม่พบข้อมูลเข้าสู่ระบบที่ตรงกันสำหรับข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="6392799395081100092">กระดาษ (หนังลูกวัว)</translation>
@@ -4747,7 +4751,7 @@
 <translation id="9048035366624198823">การดำเนินการเหล่านี้กำหนดให้ตั้งค่านโยบาย <ph name="POLICY_NAME" /> เป็น <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" /></translation>
 <translation id="9048662076076074925">24 x 36 นิ้ว</translation>
 <translation id="9049981332609050619">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่ไม่ถูกต้อง</translation>
-<translation id="9050666287014529139">ข้อความรหัสผ่าน</translation>
+<translation id="9050666287014529139">รหัสผ่าน</translation>
 <translation id="9051072642122229460">เครื่องชงกาแฟ</translation>
 <translation id="9053840549256861041">เรากำลังเปิดตัวฟีเจอร์ใหม่ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาที่เรียกว่าการวัดผลโฆษณา Chrome จะแชร์แค่ข้อมูลจำนวนน้อยมากระหว่างเว็บไซต์ต่างๆ เช่น ข้อมูลเวลาที่แสดงโฆษณาแก่คุณ เพื่อช่วยให้เว็บไซต์วัดประสิทธิภาพโฆษณาได้</translation>
 <translation id="9053955920216300738">URL ที่คุณเข้าชม</translation>

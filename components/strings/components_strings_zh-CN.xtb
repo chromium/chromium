@@ -793,6 +793,7 @@
 <translation id="2310789833878085574">保存并自动填充</translation>
 <translation id="2312234273148520048">调味品</translation>
 <translation id="2316087952091171402">不到 <ph name="UPPER_ESTIMATE" />。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
+<translation id="2316090909467242775">请尝试使用此恢复密码</translation>
 <translation id="2316159751672436664">在 Chrome 操作系统设置中定制您的个性化无障碍工具</translation>
 <translation id="2316887270356262533">释放不到 1 MB 空间。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供用户名和密码。</translation>
@@ -1669,6 +1670,7 @@
 <translation id="3792100426446126328"><ph name="NAME" />（<ph name="WIDTH" /> x <ph name="HEIGHT" /> 英寸）</translation>
 <translation id="3792826587784915501">邪典电影与独立电影</translation>
 <translation id="3793574014653384240">近期发生崩溃的次数和原因</translation>
+<translation id="3795624560191557077">您最近更改了遭遇公开数据泄露的密码。如果您遇到问题，Google 密码管理工具可以帮助您登录。</translation>
 <translation id="3799805948399000906">请求的字体</translation>
 <translation id="3801297763951514916">您经常访问</translation>
 <translation id="380329542618494757">姓名</translation>
@@ -1950,6 +1952,7 @@
 <translation id="425582637250725228">系统可能不会保存您所做的更改。</translation>
 <translation id="4258748452823770588">签名无效</translation>
 <translation id="4261046003697461417">无法为受保护的文档添加注释</translation>
+<translation id="4265635050210404830">会员卡</translation>
 <translation id="4265872034478892965">管理员允许</translation>
 <translation id="4269029136757623689">家用电扇</translation>
 <translation id="4269264543938335308">泳装</translation>
@@ -2225,6 +2228,7 @@
 <translation id="4754461935447132332">不安全的网站不得使用</translation>
 <translation id="4756388243121344051">历史记录(&amp;H)</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">代码无效</translation>
 <translation id="4757993714154412917">您刚刚在一个诈骗网站中输入了密码。为保护您的账号安全，Chromium 建议检查您已保存的密码。</translation>
 <translation id="4758311279753947758">添加联系信息</translation>
 <translation id="4761326898079498987">查看更多详情</translation>
@@ -2290,6 +2294,7 @@
 <translation id="486459320933704969">你必须先征得家长或监护人同意，才能访问此网站</translation>
 <translation id="4864801646102013152">家居改善</translation>
 <translation id="4866506163384898554">按 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 可显示鼠标光标</translation>
+<translation id="4868277513442568587">如需继续使用共享标签页分组，请更新 Chrome</translation>
 <translation id="4873616204573862158">眼镜</translation>
 <translation id="4873807733347502026">锁定和使用鼠标</translation>
 <translation id="4876305945144899064">无用户名</translation>
@@ -2426,6 +2431,7 @@
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
 <translation id="5090647584136241764">添加包含类似商品的标签页，即可轻松比较您关心的细节部分</translation>
 <translation id="5093232627742069661">Z 型折</translation>
+<translation id="5093417502834168387">无法登录？请试试其他方式</translation>
 <translation id="5094747076828555589">此服务器无法证明它是<ph name="DOMAIN" />；Chromium不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="5097099694988056070">设备统计信息（例如 CPU/RAM 使用情况）</translation>
 <translation id="5097468150760963273">27 x 39 英寸</translation>
@@ -3193,6 +3199,7 @@
 <translation id="6388060462449937608">健身器材及配件</translation>
 <translation id="6389470377220713856">持卡人姓名</translation>
 <translation id="6390200185239044127">Z 型对折</translation>
+<translation id="6390533465682072118">恢复</translation>
 <translation id="639068771471208680">多部分表单</translation>
 <translation id="6391700400718590966">“无匹配的安全付款凭据”表单已关闭</translation>
 <translation id="6392799395081100092">纸（牛皮纸）</translation>
@@ -3743,6 +3750,7 @@
 <translation id="7346048084945669753">有无关联：</translation>
 <translation id="7346062987309535530">餐具</translation>
 <translation id="7346081071264046066">“兴奋地答应出席婚礼”</translation>
+<translation id="7347640536700429009">卡上的姓名无效</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353601530677266744">命令行</translation>
 <translation id="7359588939039777303">广告已被拦截。</translation>

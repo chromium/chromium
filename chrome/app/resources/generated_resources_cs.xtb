@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Neplatný nebo poškozený soubor</translation>
 <translation id="1040761927998636252">Záložka bez názvu pro <ph name="URL" /></translation>
 <translation id="1041175011127912238">Tato stránka nereaguje</translation>
+<translation id="1041181446722933623">Záložka <ph name="LOCAL_BOOKMARK" /> je uložená jen na tomto zařízení. Pokud ji chcete používat i na jiných zařízeních, uložte si ji do složky <ph name="ACCOUNT_FOLDER" /> ve svém účtu Google.</translation>
 <translation id="1041263367839475438">Dostupná zařízení</translation>
 <translation id="1041607257468256895">Spravovat oprávnění webů pro přístup k poloze v Chromu</translation>
 <translation id="1042174272890264476">Počítač je dodáván s integrovanou knihovnou RLZ prohlížeče <ph name="SHORT_PRODUCT_NAME" />. RLZ přiřadí značku, která slouží k vyhodnocení vyhledávání a využití prohlížečů <ph name="SHORT_PRODUCT_NAME" />, které pocházejí z konkrétní propagační kampaně. Tato značka není jedinečná a neumožňuje osobní identifikaci. Tyto značky jsou někdy v prohlížeči <ph name="PRODUCT_NAME" /> uváděny v dotazech ve Vyhledávání Google.</translation>
@@ -610,6 +611,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1418559532423038045">Odebere z vašeho zařízení <ph name="DEVICE_TYPE" /> virtuální počítač <ph name="VM_NAME" />. Tímto odstraníte všechny aplikace a data ve virtuálním počítači!</translation>
 <translation id="1418882096915998312">Probíhá registrace upgradu Enterprise</translation>
 <translation id="1418954524306642206">Procházením zadejte PPD tiskárny</translation>
+<translation id="1419086691207546433">Pomocí rozšíření si můžete uspořádat věci, zjednodušit úkoly a vylepšit procházení internetu</translation>
 <translation id="1421334842435688311">Informace o mobilním umístění</translation>
 <translation id="1421514190500081936">Zadejte důvod stažení těchto dat:</translation>
 <translation id="1422159345171879700">Načíst nezabezpečené skripty</translation>
@@ -1917,7 +1919,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2312219318583366810">Adresa URL stránky</translation>
 <translation id="2314165183524574721">Aktuální nastavení viditelnosti je Skryto.</translation>
 <translation id="2314774579020744484">Jazyky použité k překladu stránek</translation>
-<translation id="2316090909467242775">Zkuste toto heslo pro obnovení</translation>
 <translation id="2316129865977710310">Ne, děkuji</translation>
 <translation id="2316433409811863464">Streamování aplikací</translation>
 <translation id="2316709634732130529">Použít navrhované heslo</translation>
@@ -3327,6 +3328,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3309330461362844500">ID profilu certifikátu</translation>
 <translation id="3310379801837527592">Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> dalším</translation>
 <translation id="331080746368555063">Soukromé weby mohou zahrnovat věci, jako je intranet vaší společnosti</translation>
+<translation id="3311007761540106761">Výchozí nastavení systému</translation>
 <translation id="3311445899360743395">Je možné, že z tohoto zařízení budou odstraněna data přidružená k této aplikaci.</translation>
 <translation id="3312470654018965389">Probíhá konfigurace kontejneru Linuxu</translation>
 <translation id="3312883087018430408">Pokud chcete prohledat konkrétní web nebo část Chromu, zadejte do adresního řádku jejich zkratku a poté stiskněte svoji preferovanou klávesovou zkratku. Pokud například chcete vyhledávat pouze v záložkách, zadejte „@bookmarks“ a potom stiskněte tabulátor nebo mezerník.</translation>
@@ -4040,7 +4042,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> rozšíření</translation>
 <translation id="3794792524918736965">Zapněte Windows Hello</translation>
 <translation id="379509625511193653">Vypnuto</translation>
-<translation id="3795624560191557077">Nedávno jste změnili heslo, které bylo nalezeno ve zveřejněném úniku dat. V případě potíží vám s přihlášením může pomoct Správce hesel Google.</translation>
 <translation id="3796215473395753611">alt + šipka nahoru</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, stisknutím klávesy se šipkou vpravo přehrajete ukázku hlasu</translation>
 <translation id="3796648294839530037">Oblíbené sítě:</translation>
@@ -5860,7 +5861,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5088534251099454936">Šifrování PKCS #1 SHA-512 s RSA</translation>
 <translation id="5090637338841444533">Zákaz sledovat pozici kamery</translation>
 <translation id="5091636240353511739">Zobrazit PIN</translation>
-<translation id="5093417502834168387">Máte s přihlášením problémy? Zkuste to jinak</translation>
 <translation id="5093477827231450397">Seznam zablokovaných webů, které nesmí navrhovat reklamy pro jiné weby</translation>
 <translation id="5093569275467863761">Mezipaměť pro přechod zpět nebo vpřed na anonymním dílčím rámci: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Pomocí této aplikace můžete otevírat a upravovat podporované soubory z aplikace Soubory nebo z jiných aplikací. Pokud chcete určit, které soubory se ve výchozím nastavení otevírají v této aplikaci, přečtěte si, <ph name="BEGIN_LINK" />jak na zařízení nastavit výchozí aplikace<ph name="END_LINK" />.</translation>
@@ -7641,7 +7641,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6388577073199278153">K vašemu mobilnímu účtu se nelze přihlásit</translation>
 <translation id="6390020764191254941">Přesunout kartu do nového okna</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Žádné}=1{Pro <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> a 1 další web}few{Pro <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> a {COUNT} další weby}many{Pro <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> a {COUNT} dalšího webu}other{Pro <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> a {COUNT} dalších webů}}</translation>
-<translation id="6390533465682072118">Obnovení</translation>
 <translation id="6391131092053186625">IMEI vašeho zařízení je <ph name="IMEI_NUMBER" />. Toto číslo lze použít k aktivaci služby.</translation>
 <translation id="6393156038355142111">Navrhnout silné heslo</translation>
 <translation id="6393550101331051049">Povolení zobrazovat nezabezpečený obsah</translation>
@@ -7874,6 +7873,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6560151649238390891">Návrh byl vložen</translation>
 <translation id="656065428026159829">Zobrazit další</translation>
 <translation id="6561726789132298588">enter</translation>
+<translation id="6561877237303825108">Tento soubor typu (<ph name="TYPE" />) může být nebezpečný. Soubor uložte, pouze pokud webu <ph name="ORIGIN" /> důvěřujete</translation>
 <translation id="6562117348069327379">Ukládat systémové protokoly do složky Stažené soubory.</translation>
 <translation id="656293578423618167">Cesta nebo název souboru jsou příliš dlouhé. Použijte kratší název nebo vyberte jiné umístění.</translation>
 <translation id="6563002009564846727">Zobrazit importované certifikáty z Windows</translation>
@@ -9681,6 +9681,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7830833461614351956">Zkopírovat soubory (<ph name="NUM_OF_FILES" />) k otevření do úložiště <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Tady se budou zobrazovat uložená vlastní slova</translation>
+<translation id="7834832693620032149">Pokud chcete sdílet zvuk, sdílejte místo toho kartu nebo okno</translation>
 <translation id="7836577093182643605">Seznam zablokovaných témat, která nechcete sdílet s weby</translation>
 <translation id="7836745198769390202">Aktuálně máte <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> a další položky Tahle data bude moct zobrazit a spravovat vaše organizace.</translation>
 <translation id="7836850009646241041">Zkuste se znovu dotknout bezpečnostního klíče</translation>
@@ -10551,6 +10552,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8425213833346101688">Změnit</translation>
 <translation id="8425492902634685834">Připnout na hlavní panel</translation>
 <translation id="8425768983279799676">Pomocí kódu PIN můžete odemknout zařízení.</translation>
+<translation id="8426697201161711396">Pokud chcete mít své záložky, hesla a další obsah na všech zařízeních, přihlaste se do Chromu</translation>
 <translation id="8427213022735114808">Diktování odesílá váš hlas do Googlu, aby bylo možné hlasově zadávat do libovolného textového pole.</translation>
 <translation id="8427292751741042100">vloženo na libovolném webu</translation>
 <translation id="8428213095426709021">Nastavení</translation>
@@ -11289,6 +11291,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8940081510938872932">Počítač teď vykonává příliš mnoho úloh. Zkuste to znovu později.</translation>
 <translation id="8940888110818450052">Možnosti přihlášení</translation>
 <translation id="8941173171815156065">Odebrat oprávnění <ph name="PERMISSION" /></translation>
+<translation id="8941209844691374403">Aplikace <ph name="APP_NAME" /> sdílí okno a zvuk.</translation>
 <translation id="8941688920560496412">Zařízení <ph name="DEVICE_NAME" /> je vypnuté</translation>
 <translation id="894191600409472540">Vytvářejte silná hesla</translation>
 <translation id="8942714513622077633">Zrušit nastavování sady Microsoft 365?</translation>

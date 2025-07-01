@@ -39,6 +39,7 @@
 <translation id="1547469039832541117">Afslutter den fremhævede opgave.</translation>
 <translation id="1553461853655228091">Chromium skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Denne udvidelse understøttes ikke længere. Chromium anbefaler, at du fjerner den.}one{Denne udvidelse understøttes ikke længere. Chromium anbefaler, at du fjerner den.}other{Disse udvidelser understøttes ikke længere. Chromium anbefaler, at du fjerner dem.}}</translation>
+<translation id="1562320819937089394">Fastgør Chromium</translation>
 <translation id="1574377791422810894">Chromiums sikkerhedsværktøjer</translation>
 <translation id="1594928384848033697">Chromium anmoder om tilladelse til at slette dine data i Adgangskodeadministrator. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
@@ -521,6 +522,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8010081455002666927">Automatisk registrering</translation>
 <translation id="8013436988911883588">Når Chromium har adgang, kan websites bede dig om adgang.</translation>
+<translation id="8031714377769448844">Fastgør Chromium til proceslinjen, så du hurtigt kan få adgang til den</translation>
 <translation id="80471789339884597">Tak for installationen. Du skal genstarte alle dine browsere, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Vis altid genvejen til billedsøgning</translation>
 <translation id="8077498902115777962">Deaktiver, at Chromium-apps kører i baggrunden</translation>

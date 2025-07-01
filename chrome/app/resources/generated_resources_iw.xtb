@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">הקובץ לא חוקי, או שהוא פגום</translation>
 <translation id="1040761927998636252">סימנייה של <ph name="URL" /> ללא שם</translation>
 <translation id="1041175011127912238">הדף לא מגיב</translation>
+<translation id="1041181446722933623">התיקייה "<ph name="LOCAL_BOOKMARK" />" שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, עליך לשמור אותה בתיקייה "<ph name="ACCOUNT_FOLDER" />" בחשבון שלך.</translation>
 <translation id="1041263367839475438">מכשירים זמינים</translation>
 <translation id="1041607257468256895">‏ניהול הרשאות המיקום של אתרים ב-Chrome</translation>
 <translation id="1042174272890264476">‏המחשב שלך מגיע גם עם ספריית ה-RLZ המובנה של <ph name="SHORT_PRODUCT_NAME" />‏. RLZ מקצה תג שאינו ייחודי ואינו ניתן לזיהוי על מנת למדוד את החיפוש ואת השימוש ב-<ph name="SHORT_PRODUCT_NAME" /> המונעים על ידי קמפיין ספציפי לקידום מכירות. התוויות האלה מופיעות לעתים בשאילתות החיפוש של Google ב-<ph name="PRODUCT_NAME" />.</translation>
@@ -610,6 +611,7 @@
 <translation id="1418559532423038045">הסרה של <ph name="VM_NAME" /> מה-<ph name="DEVICE_TYPE" />. הפעולה הזו תמחק את כל האפליקציות והנתונים במכונה הווירטואלית.</translation>
 <translation id="1418882096915998312">‏מתבצע רישום ל-Enterprise</translation>
 <translation id="1418954524306642206">‏חיפוש במחשב לציון ה-PPD של המדפסת באופן ידני</translation>
+<translation id="1419086691207546433">אפשר להוסיף תוספים כדי לשמור על סדר וארגון, לפשט משימות ולשפר את הגלישה</translation>
 <translation id="1421334842435688311">פרטי המיקום הסלולרי</translation>
 <translation id="1421514190500081936">עליך להזין סיבה להורדת הנתונים האלה:</translation>
 <translation id="1422159345171879700">טעינת סקריפטים לא בטוחים</translation>
@@ -1927,7 +1929,6 @@
 <translation id="2312219318583366810">‏כתובת ה-URL של הדף</translation>
 <translation id="2314165183524574721">הגדרת הרשאות הגישה הנוכחית מוסתרת</translation>
 <translation id="2314774579020744484">השפה שאליה דפים יתורגמו</translation>
-<translation id="2316090909467242775">רוצה לנסות את סיסמת השחזור הזו?</translation>
 <translation id="2316129865977710310">לא, תודה</translation>
 <translation id="2316433409811863464">סטרימינג של אפליקציה</translation>
 <translation id="2316709634732130529">שימוש בסיסמה המוצעת</translation>
@@ -3339,6 +3340,7 @@
 <translation id="3309330461362844500">מזהה פרופיל האישור</translation>
 <translation id="3310379801837527592">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד משתמש אחד (<ph name="NUM_OTHER_MEMBERS" />)</translation>
 <translation id="331080746368555063">אתרים פרטיים יכולים לכלול דברים כמו האינטראנט של החברה</translation>
+<translation id="3311007761540106761">ברירת המחדל של המערכת</translation>
 <translation id="3311445899360743395">ייתכן שיוסרו מהמכשיר נתונים המשויכים לאפליקציה הזו.</translation>
 <translation id="3312470654018965389">‏המערכת מגדירה את הקונטיינר של Linux</translation>
 <translation id="3312883087018430408">‏כדי לחפש באתר ספציפי או בחלק כלשהו של Chrome, מקלידים את קיצור הדרך שלהם בסרגל הכתובות ולאחר מכן מקישים על מקש הקיצור המועדף. לדוגמה: כדי לחפש רק ב-Bookmarks, מקלידים "‎@bookmarks" ומקישים על מקש ה-Tab או על מקש הרווח.</translation>
@@ -4052,7 +4054,6 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> תוספים</translation>
 <translation id="3794792524918736965">‏הפעלת Windows Hello</translation>
 <translation id="379509625511193653">כבוי</translation>
-<translation id="3795624560191557077">‏שינית לאחרונה סיסמה שנכללה במידע שדלף בפרצה באבטחת מידע. אם נתקלת בבעיה, מנהל הסיסמאות של Google יכול לעזור לך להיכנס לחשבון.</translation>
 <translation id="3796215473395753611">‏Alt + חץ למעלה</translation>
 <translation id="3796421550129770366">‫<ph name="LANGUAGE" />, אפשר להשתמש במקש החץ ימינה כדי לשמוע קטע לדוגמה של הקול</translation>
 <translation id="3796648294839530037">רשתות מועדפות:</translation>
@@ -5875,7 +5876,6 @@
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 עם הצפנת RSA</translation>
 <translation id="5090637338841444533">לא מורשים לעקוב אחר מיקום המצלמה</translation>
 <translation id="5091636240353511739">הצגת קוד האימות</translation>
-<translation id="5093417502834168387">בעיות בכניסה? רוצה לנסות דרך אחרת?</translation>
 <translation id="5093477827231450397">רשימת האתרים החסומים שאינך רוצה שיציעו מודעות לאתרים אחרים</translation>
 <translation id="5093569275467863761">תת-המסגרת האנונימית השמורה במטמון לדף הקודם/הבא: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">יש לך אפשרות לפתוח ולערוך קבצים נתמכים באמצעות האפליקציה הזו מתוך האפליקציה 'קבצים' או באמצעות אפליקציות אחרות. כדי לקבוע אילו קבצים יפתחו את האפליקציה הזו כברירת מחדל, <ph name="BEGIN_LINK" />כאן אפשר לקרוא איך להגדיר אפליקציות כברירת מחדל במכשיר שלך<ph name="END_LINK" />.</translation>
@@ -7660,7 +7660,6 @@
 <translation id="6388577073199278153">אין גישה לחשבון הנייד שלך</translation>
 <translation id="6390020764191254941">העברת כרטיסייה לחלון חדש</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{אין}=1{ל-<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ועוד אחד}one{ל-<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ועוד {COUNT}}two{ל-<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ועוד {COUNT}}other{ל-<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ועוד {COUNT}}}</translation>
-<translation id="6390533465682072118">שחזור</translation>
 <translation id="6391131092053186625">‏ה-IMEI של המכשיר הוא <ph name="IMEI_NUMBER" />. המספר הזה יכול לשמש להפעלת השירות.</translation>
 <translation id="6393156038355142111">הצעת סיסמה חזקה</translation>
 <translation id="6393550101331051049">מורשים להציג תוכן לא מאובטח</translation>
@@ -7893,6 +7892,7 @@
 <translation id="6560151649238390891">ההצעה יושמה</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
 <translation id="6561726789132298588">Enter</translation>
+<translation id="6561877237303825108">הקובץ הזה מסוג (<ph name="TYPE" />) עלול להיות מסוכן. מומלץ לשמור את הקובץ רק אם האתר <ph name="ORIGIN" /> מהימן</translation>
 <translation id="6562117348069327379">אחסון יומני מערכת בספרייה 'הורדות'.</translation>
 <translation id="656293578423618167">הנתיב או שם הקובץ ארוך מדי. יש לשמור אותו בשם קצר יותר או במיקום אחר.</translation>
 <translation id="6563002009564846727">‏הצגת אישורים שיובאו מ-Windows</translation>
@@ -9700,6 +9700,7 @@
 <translation id="7830833461614351956">להעתיק <ph name="NUM_OF_FILES" /> קבצים אל <ph name="CLOUD_PROVIDER" /> כדי לפתוח אותם?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">כאן יופיעו המילים המותאמות ששמרת</translation>
+<translation id="7834832693620032149">כדי לשתף אודיו, צריך לשתף את הכרטיסייה או החלון במקום זאת</translation>
 <translation id="7836577093182643605">רשימת נושאים חסומים שאינך רוצה לשתף עם אתרים</translation>
 <translation id="7836745198769390202">כרגע יש לך <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> ועוד האדמין בארגון שלך יוכל לראות את הנתונים האלה ולנהל אותם</translation>
 <translation id="7836850009646241041">עליך לנסות לגעת שוב במפתח האבטחה</translation>
@@ -10572,6 +10573,7 @@
 <translation id="8425213833346101688">שינוי</translation>
 <translation id="8425492902634685834">הצמדה לשורת המשימות</translation>
 <translation id="8425768983279799676">קוד האימות מאפשר לבטל את נעילת המכשיר.</translation>
+<translation id="8426697201161711396">‏צריך להיכנס אל Chrome כדי לקבל גישה אל הסיסמאות ונתונים נוספים בכל המכשירים שלך</translation>
 <translation id="8427213022735114808">‏הכתבה שולחת הקלטה של הקול שלך אל Google כדי לאפשר הקלדה קולית בתיבת טקסט כלשהי.</translation>
 <translation id="8427292751741042100">מוטמע במארח כלשהו</translation>
 <translation id="8428213095426709021">הגדרות</translation>
@@ -11311,6 +11313,7 @@
 <translation id="8940081510938872932">המחשב מבצע יותר מדי פעולות כרגע. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="8940888110818450052">אפשרויות כניסה לחשבון</translation>
 <translation id="8941173171815156065">ביטול ההרשאה '<ph name="PERMISSION" />'</translation>
+<translation id="8941209844691374403">‫<ph name="APP_NAME" /> משתפת חלון ואודיו.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> במצב כבוי</translation>
 <translation id="894191600409472540">עליך ליצור סיסמאות חזקות</translation>
 <translation id="8942714513622077633">‏לבטל את ההגדרה של Microsoft 365?</translation>

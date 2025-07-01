@@ -1930,7 +1930,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2312219318583366810">Bladsy-URL</translation>
 <translation id="2314165183524574721">Huidige sigbaarheidinstelling word versteek</translation>
 <translation id="2314774579020744484">Taal wat gebruik word wanneer bladsye vertaal word</translation>
-<translation id="2316090909467242775">Probeer hierdie terugstelwagwoord</translation>
 <translation id="2316129865977710310">Nee, dankie</translation>
 <translation id="2316433409811863464">Appstroming</translation>
 <translation id="2316709634732130529">Gebruik voorgestelde wagwoord</translation>
@@ -4056,7 +4055,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> uitbreidings</translation>
 <translation id="3794792524918736965">Skakel Windows Hello aan</translation>
 <translation id="379509625511193653">Af</translation>
-<translation id="3795624560191557077">Jy het onlangs ’n wagwoord verander wat in ’n publieke dataskending gekry is. Google Wagwoordbestuurder kan jou help om aan te meld as jy sukkel.</translation>
 <translation id="3796215473395753611">alt + oppyl</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, gebruik regspylsleutel om stem te voorbeskou</translation>
 <translation id="3796648294839530037">Gunstelingnetwerke:</translation>
@@ -5878,7 +5876,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 met RSA-enkripsie</translation>
 <translation id="5090637338841444533">Mag nie jou kameraposisie naspoor nie</translation>
 <translation id="5091636240353511739">Wys PIN</translation>
-<translation id="5093417502834168387">Sukkel jy om aan te meld? Probeer op ’n ander manier</translation>
 <translation id="5093477827231450397">Lys werwe wat jy geblokkeer het wat jy nie wil hê advertensies aan ander werwe moet voorstel nie</translation>
 <translation id="5093569275467863761">Incognito-terug-vorentoe-kasgegeue-subraam: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Jy kan met hierdie app gesteunde lêers uit die Lêers-app of ander apps oopmaak en wysig. <ph name="BEGIN_LINK" />Vind uit hoe om verstekapps op jou toestel te stel<ph name="END_LINK" /> om te beheer watter lêers hierdie app by verstek oopmaak.</translation>
@@ -7664,7 +7661,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6388577073199278153">Het nie toegang tot jou mobiele rekening nie</translation>
 <translation id="6390020764191254941">Skuif oortjie na nuwe venster</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Geen}=1{Vir <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> en nog 1}other{Vir <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> en nog {COUNT}}}</translation>
-<translation id="6390533465682072118">Terugstelling</translation>
 <translation id="6391131092053186625">Jou toestel se IMEI is <ph name="IMEI_NUMBER" />. Hierdie nommer kan gebruik word om diens te help aktiveer.</translation>
 <translation id="6393156038355142111">Stel sterk wagwoord voor</translation>
 <translation id="6393550101331051049">Mag onveilige inhoud wys</translation>
@@ -7897,6 +7893,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6560151649238390891">Voorstel ingevoeg</translation>
 <translation id="656065428026159829">Sien meer</translation>
 <translation id="6561726789132298588">voer in</translation>
+<translation id="6561877237303825108">Hierdie lêertipe (<ph name="TYPE" />) kan gevaarlik wees. Stoor hierdie lêer net as jy <ph name="ORIGIN" /> vertrou</translation>
 <translation id="6562117348069327379">Berg stelselloglêers in die Aflaaie-gids.</translation>
 <translation id="656293578423618167">Die lêerpad of -naam is te lank. Stoor asseblief met 'n korter naam of na 'n ander ligging.</translation>
 <translation id="6563002009564846727">Bekyk ingevoerde sertifikate van Windows af</translation>
@@ -9700,6 +9697,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7830833461614351956">Kopieer <ph name="NUM_OF_FILES" /> lêers na <ph name="CLOUD_PROVIDER" /> om oop te maak?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Gestoorde gepasmaakte woorde sal hier verskyn</translation>
+<translation id="7834832693620032149">Deel eerder ’n oortjie of venster as jy oudio wil deel</translation>
 <translation id="7836577093182643605">Lys onderwerpe wat jy geblokkeer het wat jy nie met werwe gedeel wil hê nie</translation>
 <translation id="7836745198769390202">Jy het tans <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> en meer. Jou organisasie sal hierdie data kan sien en bestuur</translation>
 <translation id="7836850009646241041">Probeer weer om jou sekuriteitsleutel te raak</translation>
@@ -11307,6 +11305,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="8940081510938872932">Jou rekenaar doen tans te veel dinge. Probeer later weer.</translation>
 <translation id="8940888110818450052">Aanmeldopsies</translation>
 <translation id="8941173171815156065">Herroep die toestemming "<ph name="PERMISSION" />"</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> deel tans ’n venster en oudio.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> is af</translation>
 <translation id="894191600409472540">Skep sterk wagwoorde</translation>
 <translation id="8942714513622077633">Kanselleer Microsoft 365-opstelling?</translation>

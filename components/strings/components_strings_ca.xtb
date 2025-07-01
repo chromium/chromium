@@ -793,6 +793,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2310789833878085574">Desa i emplena automàticament</translation>
 <translation id="2312234273148520048">Condiments i salses</translation>
 <translation id="2316087952091171402">Inferior a <ph name="UPPER_ESTIMATE" />. És possible que alguns llocs web es carreguin més a poc a poc la propera vegada que els visitis.</translation>
+<translation id="2316090909467242775">Prova aquesta contrasenya de recuperació</translation>
 <translation id="2316159751672436664">Personalitza les eines d'accessibilitat a la configuració de Chrome OS</translation>
 <translation id="2316887270356262533">Allibera menys d'1 MB. És possible que alguns llocs web es carreguin més a poc a poc la propera vegada que els visitis.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requereix un nom d'usuari i una contrasenya.</translation>
@@ -1673,6 +1674,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> polzades)</translation>
 <translation id="3792826587784915501">Pel·lícules de culte i independents</translation>
 <translation id="3793574014653384240">Nombre i motius dels errors que s'han produït recentment</translation>
+<translation id="3795624560191557077">Fa poc vas canviar una contrasenya que es va fer pública a causa d'una violació de les dades. Si tens problemes per iniciar la sessió, el gestor de contrasenyes de Google et pot ajudar.</translation>
 <translation id="3799805948399000906">Tipus de lletra sol·licitat</translation>
 <translation id="3801297763951514916">Hi accedeixes sovint</translation>
 <translation id="380329542618494757">Nom</translation>
@@ -1954,6 +1956,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="425582637250725228">És possible que els canvis que heu fet no es desin.</translation>
 <translation id="4258748452823770588">Signatura errònia</translation>
 <translation id="4261046003697461417">No es poden fer anotacions en documents protegits</translation>
+<translation id="4265635050210404830">Les teves targetes de fidelització</translation>
 <translation id="4265872034478892965">Permès per l'administrador</translation>
 <translation id="4269029136757623689">Ventiladors domèstics</translation>
 <translation id="4269264543938335308">Roba de bany</translation>
@@ -2229,6 +2232,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4754461935447132332">No s'admet en llocs web no segurs</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">El codi no és vàlid</translation>
 <translation id="4757993714154412917">Acabes d'introduir la contrasenya en un lloc web enganyós. Per protegir els teus comptes, Chromium et recomana que comprovis les contrasenyes desades.</translation>
 <translation id="4758311279753947758">Afegiu informació de contacte</translation>
 <translation id="4761326898079498987">Revisa per obtenir més informació</translation>
@@ -2294,6 +2298,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="486459320933704969">El teu pare, mare o tutor ha de dir si pots visitar aquest lloc web</translation>
 <translation id="4864801646102013152">Millores de la llar</translation>
 <translation id="4866506163384898554">Prem |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| perquè es mostri el cursor</translation>
+<translation id="4868277513442568587">Per continuar utilitzant els grups de pestanyes compartits, actualitza Chrome</translation>
 <translation id="4873616204573862158">Ulleres</translation>
 <translation id="4873807733347502026">Bloquejar i utilitzar el ratolí</translation>
 <translation id="4876305945144899064">Sense nom d'usuari</translation>
@@ -2430,6 +2435,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5089810972385038852">Estat</translation>
 <translation id="5090647584136241764">Afegeix pestanyes amb productes similars per comparar fàcilment els detalls que t'interessen</translation>
 <translation id="5093232627742069661">Plegat en Z</translation>
+<translation id="5093417502834168387">No pots iniciar la sessió? Prova una altra manera.</translation>
 <translation id="5094747076828555589">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè Chromium considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="5097099694988056070">Estadístiques del dispositiu, com ara l'ús de CPU o RAM</translation>
 <translation id="5097468150760963273">27 x 39 polzades</translation>
@@ -3198,6 +3204,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6388060462449937608">Accessoris i equipament de fitnes</translation>
 <translation id="6389470377220713856">Titular de la targeta</translation>
 <translation id="6390200185239044127">Plegat en Z fins a la meitat</translation>
+<translation id="6390533465682072118">Recuperació</translation>
 <translation id="639068771471208680">Formulari de diverses parts</translation>
 <translation id="6391700400718590966">S'ha tancat el full de credencials no coincidents de credencials de pagament segur</translation>
 <translation id="6392799395081100092">Paper (vitel·la)</translation>
@@ -3748,6 +3755,7 @@ Detalls addicionals:
 <translation id="7346048084945669753">Està afiliat:</translation>
 <translation id="7346062987309535530">Estris per menjar</translation>
 <translation id="7346081071264046066">"Respon afirmativament a aquesta invitació de casament amb entusiasme"</translation>
+<translation id="7347640536700429009">El nom del titular de la targeta no és vàlid</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7353601530677266744">Línia d'ordres</translation>
 <translation id="7359588939039777303">S'han bloquejat els anuncis.</translation>

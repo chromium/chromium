@@ -37,6 +37,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="141901961143729572">Ndaj mendimet e tua</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri.}=1{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="1434626383986940139">Aplikacionet e Chrome Canary</translation>
+<translation id="1439793550875056299">Gozhdo Chrome</translation>
 <translation id="146866447420868597">Do të identifikohesh në Chrome?</translation>
 <translation id="1492280395845991349">Rinise për të përfunduar përditësimin e Chrome</translation>
 <translation id="1497802159252041924">Gabim gjatë instalimit: <ph name="INSTALL_ERROR" /></translation>
@@ -360,6 +361,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Gabim në nisje: ekzekuto instaluesin si përdorues i rregullt, jo si administrator.</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
+<translation id="5600352656975192682">Gozhdo Chrome te shiriti i veglave për të shkuar tek ai me shpejtësi në çdo kohë</translation>
 <translation id="5602351063754773347">Chrome rekomandon që ta heqësh atë. <ph name="BEGIN_LINK" />Mëso më shumë rreth shtesave të mbështetura<ph name="END_LINK" /></translation>
 <translation id="5649156266046089790">Me profilet e Chrome, mund t'i ndash të gjitha gjërat e tua të Chrome. Krijo profile për miqtë dhe familjen ose ndaje punën nga argëtimi.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm, prandaj Chrome e ka bllokuar.</translation>

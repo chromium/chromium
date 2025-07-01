@@ -65,6 +65,7 @@
 <translation id="1039337018183941703">Недапушчальны або пашкоджаны файл</translation>
 <translation id="1040761927998636252">Закладка без назвы для старонкі <ph name="URL" /></translation>
 <translation id="1041175011127912238">Гэтая старонка не адказвае</translation>
+<translation id="1041181446722933623">Закладка "<ph name="LOCAL_BOOKMARK" />" захавана толькі на гэтай прыладзе. Каб выкарыстоўваць яе на іншых прыладах, захавайце яе ў сваім уліковым запісе ў папцы "<ph name="ACCOUNT_FOLDER" />".</translation>
 <translation id="1041263367839475438">Даступныя прылады</translation>
 <translation id="1041607257468256895">Кіраваць дазволамі вэб-сайтаў на доступ да геаданых у Chrome</translation>
 <translation id="1042174272890264476">Ваш камп’ютар пастаўляецца з убудаванай бібліятэкай RLZ для <ph name="SHORT_PRODUCT_NAME" />. RLZ прызначае неўнікальны цэтлік, які не дазваляе ідэнтыфікаваць асобу, для ацэнкі пошукавых запытаў і статыстыкі выкарыстання <ph name="SHORT_PRODUCT_NAME" />, якія з’яўляюцца вынікам пэўных рэкламных кампаній. Гэтыя меткі часам з’яўляюцца ў пошукавых запытах у Google у прадукце <ph name="PRODUCT_NAME" />.</translation>
@@ -611,6 +612,7 @@
 <translation id="1418559532423038045">Выдаляе віртуальную машыну "<ph name="VM_NAME" />" з прылады "<ph name="DEVICE_TYPE" />". Будуць выдалены ўсе праграмы і даныя на віртуальнай машыне.</translation>
 <translation id="1418882096915998312">Ідзе рэгістрацыя з выкарыстаннем ліцэнзіі Enterprise</translation>
 <translation id="1418954524306642206">Знайсці і ўказаць файл PPD прынтара</translation>
+<translation id="1419086691207546433">Дадавайце пашырэнні, якія дапамогуць упарадкаваць матэрыял, выканаць задачы, а таксама зробяць прагляд сайтаў больш зручным</translation>
 <translation id="1421334842435688311">Інфармацыя пра месцазнаходжанне (сотавыя сеткі)</translation>
 <translation id="1421514190500081936">Укажыце прычыну спампоўвання гэтых даных:</translation>
 <translation id="1422159345171879700">Загрузіць небяспечныя сцэнарыі</translation>
@@ -1916,7 +1918,6 @@
 <translation id="2312219318583366810">URL-адрас старонкі</translation>
 <translation id="2314165183524574721">Бягучая налада бачнасці: схавана</translation>
 <translation id="2314774579020744484">Мова, якая выкарыстоўваецца для перакладу</translation>
-<translation id="2316090909467242775">Паспрабуйце гэты пароль для аднаўлення</translation>
 <translation id="2316129865977710310">Не, дзякуй</translation>
 <translation id="2316433409811863464">Трансляцыя праграм</translation>
 <translation id="2316709634732130529">Выкарыстаць прапанаваны пароль</translation>
@@ -3328,6 +3329,7 @@
 <translation id="3309330461362844500">Ідэнтыфікатар профілю сертыфіката</translation>
 <translation id="3310379801837527592">Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUM_OTHER_MEMBERS" /> карыстальнік</translation>
 <translation id="331080746368555063">Да прыватных сайтаў можа адносіцца, напрыклад, інтранэт кампаніі</translation>
+<translation id="3311007761540106761">Стандартная сістэмная налада</translation>
 <translation id="3311445899360743395">Даныя, звязаныя з гэтай праграмай, могуць быць выдалены з гэтай прылады.</translation>
 <translation id="3312470654018965389">Ідзе наладжванне кантэйнера Linux</translation>
 <translation id="3312883087018430408">Каб выканаць пошук на канкрэтным сайце або ў канкрэтным раздзеле Chrome, увядзіце ў адрасным радку адпаведную каманду і націсніце выбранае спалучэнне клавіш. Напрыклад, каб шукаць толькі ў закладках, увядзіце "@bookmarks" і націсніце клавішу Tab або прабел.</translation>
@@ -4039,7 +4041,6 @@
 <translation id="3792973596468118484">Пашырэнняў: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3794792524918736965">Уключыце Windows Hello</translation>
 <translation id="379509625511193653">Выключана</translation>
-<translation id="3795624560191557077">Вы нядаўна змянілі пароль, які аказаўся сярод агульнадаступных даных у выніку ўцечкі. Калі ўзнікне праблема, вы зможаце выканаць уваход з дапамогай Менеджара пароляў Google.</translation>
 <translation id="3796215473395753611">Alt + стрэлка ўверх</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, скарыстайце клавішу са стрэлкай управа, каб праслухаць голас</translation>
 <translation id="3796648294839530037">Абраныя сеткі:</translation>
@@ -5861,7 +5862,6 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 з шыфраваннем RSA</translation>
 <translation id="5090637338841444533">Не дазволена адсочваць становішча камеры</translation>
 <translation id="5091636240353511739">Паказваць PIN-код</translation>
-<translation id="5093417502834168387">Праблемы з уваходам? Паспрабуйце іншы спосаб</translation>
 <translation id="5093477827231450397">Спіс заблакіраваных вамі сайтаў, якім забаронена прапаноўваць рэкламу іншым сайтам</translation>
 <translation id="5093569275467863761">Субфрэйм у рэжыме інкогніта, захаваны ў кэшы пераходу назад і наперад: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">З дапамогай гэтай праграмы можна адкрываць і змяняць сумяшчальныя файлы ў іншых праграмах (у прыватнасці, у "Файлах"). Каб указаць, якія файлы павінны адкрывацца ў гэтай праграме стандартна, <ph name="BEGIN_LINK" />паглядзіце, як задаць стандартныя праграмы для прылады<ph name="END_LINK" />.</translation>
@@ -7645,7 +7645,6 @@
 <translation id="6388577073199278153">Не ўдалося атрымаць доступ да ўліковага запісу на мабільнай прыладзе</translation>
 <translation id="6390020764191254941">Перамясціць укладку ў новае акно</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Няма}=1{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> і яшчэ 1 дамена}one{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> і яшчэ {COUNT} дамена}few{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> і яшчэ {COUNT} даменаў}many{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> і яшчэ {COUNT} даменаў}other{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> і яшчэ {COUNT} дамена}}</translation>
-<translation id="6390533465682072118">Аднаўленне</translation>
 <translation id="6391131092053186625">IMEI прылады: <ph name="IMEI_NUMBER" />. Гэты нумар можна выкарыстаць для актывацыі сэрвісу.</translation>
 <translation id="6393156038355142111">Прапанаваць надзейны пароль</translation>
 <translation id="6393550101331051049">Дазволена паказваць небяспечнае змесціва</translation>
@@ -7878,6 +7877,7 @@
 <translation id="6560151649238390891">Прапанаваны варыянт устаўлены</translation>
 <translation id="656065428026159829">Яшчэ</translation>
 <translation id="6561726789132298588">Enter</translation>
+<translation id="6561877237303825108">Файл тыпу (<ph name="TYPE" />) можа быць небяспечным. Захоўвайце яго, толькі калі давяраеце крыніцы (<ph name="ORIGIN" />).</translation>
 <translation id="6562117348069327379">Захоўванне сістэмных журналаў у каталозе "Спампоўкі".</translation>
 <translation id="656293578423618167">Шлях да файла або яго назва занадта доўгія.  Зрабіце назву карацейшай або ўкажыце іншае месцазнаходжанне.</translation>
 <translation id="6563002009564846727">Праглядзець сертыфікаты, імпартаваныя з Windows</translation>
@@ -9687,6 +9687,7 @@
 <translation id="7830833461614351956">Скапіраваць файлы (<ph name="NUM_OF_FILES" />) у сэрвіс "<ph name="CLOUD_PROVIDER" />" перад адкрыццём?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Дададзеныя карыстальнікам словы, якія былі захаваны, з’явяцца тут</translation>
+<translation id="7834832693620032149">Каб абагуліць аўдыя, абагульце ўкладку ці акно</translation>
 <translation id="7836577093182643605">Спіс заблакіраваных вамі тэм, якія вы не хочаце абагульваць з сайтамі</translation>
 <translation id="7836745198769390202">У вас ёсць <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> і іншыя даныя. Ваша арганізацыя зможа праглядаць гэтыя даныя і кіраваць імі.</translation>
 <translation id="7836850009646241041">Паспрабуйце дакрануцца да ключа бяспекі яшчэ раз</translation>
@@ -10556,6 +10557,7 @@
 <translation id="8425213833346101688">Змяніць</translation>
 <translation id="8425492902634685834">Замацаваць на панэлі заданняў</translation>
 <translation id="8425768983279799676">Вы можаце выкарыстоўваць свой PIN-код для разблакіроўкі прылады.</translation>
+<translation id="8426697201161711396">Каб паролі і іншыя налады былі даступнымі на ўсіх вашых прыладах, увайдзіце ў Chrome</translation>
 <translation id="8427213022735114808">Функцыя галасавога ўводу адпраўляе запісы вашага голасу сэрвісам Google, што дазваляе вам уводзіць тэкст голасам у тэкставых палях.</translation>
 <translation id="8427292751741042100">убудаваны на любым хосце</translation>
 <translation id="8428213095426709021">Налады</translation>
@@ -11296,6 +11298,7 @@
 <translation id="8940081510938872932">На вашым камп’ютары выконваецца занадта шмат працэсаў.  Паўтарыце спробу пазней.</translation>
 <translation id="8940888110818450052">Спосабы ўваходу</translation>
 <translation id="8941173171815156065">Адклікаць дазвол "<ph name="PERMISSION" />"</translation>
+<translation id="8941209844691374403">Праграма "<ph name="APP_NAME" />" абагульвае акно і аўдыя.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />: выключана</translation>
 <translation id="894191600409472540">Стварыце надзейныя паролі</translation>
 <translation id="8942714513622077633">Скасаваць наладжванне Microsoft 365?</translation>

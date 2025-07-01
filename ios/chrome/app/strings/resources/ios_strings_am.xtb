@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">አዲስ አገናኝ ለመጠየቅ ላኪውን ያነጋግሩ</translation>
 <translation id="1013952917065545813">በቅርብ ጊዜ የዘጓቸውን ትሮች መልሰው ለመክፈት ወደዚህ ተመልሰው መምጣት ይችላሉ</translation>
 <translation id="1016495303386450659">ንጥል ተዘምኗል</translation>
+<translation id="1017735584092444011">የንባብ ሁነታ አሳይ</translation>
 <translation id="102916930470544692">የይለፍ ቁልፍ</translation>
 <translation id="1030376737535466765">የሚስጥር ቁልፍ አስተዳዳሪ ክፈት</translation>
 <translation id="1035980983510608210">ሁሉንም ትሮች መዝጋት እንዲሁም የተሰኩ ትሮችን ይዘጋል።</translation>
@@ -1237,12 +1238,14 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6074656473835429958">ማሳወቂያዎችን ያግኙ</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) መስቀል አልተቻለም</translation>
 <translation id="6077126322656614846">የካሜራ መዳረሻ ተፈቅዷል</translation>
+<translation id="607730456154980869">Gemini በChrome ውስጥ በሚለው መልሶችን ይበልጥ በፍጥነት ያግኙ</translation>
 <translation id="6078236141387574983">የሉሁን ቁመት እንደገና ያስተካክሉ</translation>
 <translation id="6084848228346514841">ትሮችን ይምረጡ</translation>
 <translation id="6089212833343035912">Google የይለፍ ቃል አስተዳዳሪ ፒን</translation>
 <translation id="6090760257419195752">የተሰናበቱ ማስጠንቀቂያዎች</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> ተገኝቷል</translation>
 <translation id="6100617279104942061">እንደ <ph name="USER_EMAIL" /> ሆነው ገብተዋል። ቅንብሮችን ይከፍታል።</translation>
+<translation id="610083648014322104">እርስዎ ባሉበት የገፅ ይዘት ላይ በመመስረት አግባብነት ያላቸው መልሶችን ያግኙ</translation>
 <translation id="6103540626693881831">በመሳሪያ ላይ ምስጠራ</translation>
 <translation id="611361228753138223">በዚህ መሣሪያ ላይ በቅርብ ጊዜ የጎበኟቸው ጣቢያዎች</translation>
 <translation id="611705554202268369">ወደ የትር ቡድን ለማከል ረዥም ይጫኑ</translation>
@@ -1495,6 +1498,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6979737339423435258">የምንጊዜም</translation>
 <translation id="6983306615164277634">እንዲሁም ቦታውን ለመቀየር የአድራሻ አሞሌውን መንካት እና መያዝ ይችላሉ።</translation>
 <translation id="6987201788018524855">ያመለጡዎትን አጋዥ ባህሪያት ያስሱ</translation>
+<translation id="6989636517316575338">ስለማንኛውም ገፅ ይጠይቁ</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">የምርቶችን ዋጋዎች ይከታተሉ እና በማንኛውም ጣቢያ ላይ ዋጋ ሲቀንስ ማንቂያዎች ያግኙ</translation>
 <translation id="7004032350256606903">ድርጅትዎ በግል እንዲያሰሱ ይፈልግብዎታል።
@@ -1696,6 +1700,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7863211248337747225">መተግበሪያውን አግኝ</translation>
 <translation id="7865127013871431856">የትርጉም አማራጮች</translation>
 <translation id="7866872729285243843">የንባብ ዝርዝርዎን በሁሉም መሳሪያዎችዎ ላይ ለማግኘት፣ በቅንብሮች ውስጥ «የንባብ ዝርዝር»ን ያብሩ።</translation>
+<translation id="787364769771947486">የንባብ ሁነታን ደብቅ</translation>
 <translation id="7874107544081154809">የራስ-ሙላ ቅፅ ከ<ph name="CELL_ACCESSIBILITY_LABEL" /> ጋር</translation>
 <translation id="7883882164760409935">ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላት አሉዎት።</translation>
 <translation id="7887174313503389866">የቁልፍ ግላዊነት እና ደህንነት ቁጥጥሮች በአስጎብኚ የሚወሰድ ጉብኝት ያድርጉ። ለተጨማሪ አማራጮች ወደ ግለሰብ ቅንብሮች ይሂዱ።</translation>
@@ -1752,6 +1757,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8058655154417507695">ጊዜው የሚያበቃበት ዓመት</translation>
 <translation id="8059533439631660104">ክፍሉን ይሰበስባል።</translation>
 <translation id="8061584726507121204">ታሪክ</translation>
+<translation id="8069168488983557089">ማንኛውንም ርዕስ ለመረዳት የሚያግዙዎትን ቁልፍ የሚወሰዱ ነገሮች እና ግንዛቤዎች ያግኙ</translation>
 <translation id="8069394452933076548">በቅርብ ጥቅም ላይ ያልዋሉ ትሮች ወደ ገቢር ያልሆነ ትር ክፍል መቼ እንደሚንቀሳቀሱ ይምረጡ።</translation>
 <translation id="8073670137947914548">ማውረድ ተጠናቅቋል</translation>
 <translation id="8076492880354921740">ትሮች</translation>

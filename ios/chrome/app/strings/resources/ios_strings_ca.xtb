@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">Contacta amb el remitent per demanar-li un enllaç nou</translation>
 <translation id="1013952917065545813">Pots tornar aquí per obrir de nou les pestanyes que has tancat fa poc</translation>
 <translation id="1016495303386450659">S'ha actualitzat l'element.</translation>
+<translation id="1017735584092444011">Mostra el mode de lectura</translation>
 <translation id="102916930470544692">Clau d'accés</translation>
 <translation id="1030376737535466765">Obre el gestor de contrasenyes</translation>
 <translation id="1035980983510608210">Si tanques totes les pestanyes, també es tancaran les pestanyes fixades.</translation>
@@ -1237,12 +1238,14 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6074656473835429958">Rep notificacions</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) no s'ha pogut penjar</translation>
 <translation id="6077126322656614846">S'ha permès l'accés a la càmera</translation>
+<translation id="607730456154980869">Obtén respostes més ràpidament amb Gemini a Chrome</translation>
 <translation id="6078236141387574983">Reajusta l'alçada del full</translation>
 <translation id="6084848228346514841">Selecciona pestanyes</translation>
 <translation id="6089212833343035912">PIN del gestor de contrasenyes de Google</translation>
 <translation id="6090760257419195752">Advertiments ignorats</translation>
 <translation id="6096965253650248286">S'han trobat <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Has iniciat la sessió com a <ph name="USER_EMAIL" />. Obre la configuració.</translation>
+<translation id="610083648014322104">Obtén respostes rellevants basades en el contingut de la pàgina en què et trobes</translation>
 <translation id="6103540626693881831">Encriptació al dispositiu</translation>
 <translation id="611361228753138223">Llocs web que has visitat darrerament en aquest dispositiu</translation>
 <translation id="611705554202268369">Mantén-la premuda per afegir-la a un grup de pestanyes</translation>
@@ -1495,6 +1498,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6979737339423435258">Sempre</translation>
 <translation id="6983306615164277634">També pots mantenir premuda la barra d'adreces per canviar la posició.</translation>
 <translation id="6987201788018524855">Explora funcions útils que t'has perdut</translation>
+<translation id="6989636517316575338">Pregunta sobre qualsevol pàgina</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Fes un seguiment dels preus dels productes i rep alertes quan el preu baixi en qualsevol lloc web</translation>
 <translation id="7004032350256606903">La teva organització requereix que naveguis de manera privada.
@@ -1696,6 +1700,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7863211248337747225">Baixa l'aplicació</translation>
 <translation id="7865127013871431856">Opcions del Traductor</translation>
 <translation id="7866872729285243843">Per accedir a la llista de lectura des de tots els dispositius, activa l'opció Llista de lectura a la configuració.</translation>
+<translation id="787364769771947486">Amaga el mode de lectura</translation>
 <translation id="7874107544081154809">Emplena automàticament el formulari amb <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Tens contrasenyes reutilitzades.</translation>
 <translation id="7887174313503389866">Fes una visita guiada pels controls principals de privadesa i seguretat. Per veure més possibilitats, ves a cada opció de configuració.</translation>
@@ -1752,6 +1757,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8058655154417507695">Any de caducitat</translation>
 <translation id="8059533439631660104">Replega la secció.</translation>
 <translation id="8061584726507121204">Historial</translation>
+<translation id="8069168488983557089">Obtén conclusions i informació clau que t'ajudin a entendre qualsevol tema</translation>
 <translation id="8069394452933076548">Tria quan es mouran les pestanyes que no s'han utilitzat recentment a la secció de pestanyes inactives.</translation>
 <translation id="8073670137947914548">La baixada ha finalitzat</translation>
 <translation id="8076492880354921740">Pestanyes</translation>

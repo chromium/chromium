@@ -793,6 +793,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2310789833878085574">Save and autofill</translation>
 <translation id="2312234273148520048">Condiments and Dressings</translation>
 <translation id="2316087952091171402">Less than <ph name="UPPER_ESTIMATE" />. Some sites may load more slowly on your next visit.</translation>
+<translation id="2316090909467242775">Try this recovery password</translation>
 <translation id="2316159751672436664">Personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="2316887270356262533">Frees up less than 1 MB. Some sites may load more slowly on your next visit.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requires a username and password.</translation>
@@ -1673,6 +1674,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Cult and indie films</translation>
 <translation id="3793574014653384240">Numbers and causes of the crashes that occurred recently</translation>
+<translation id="3795624560191557077">You recently changed a password found in a public data breach. In case of trouble, Google Password Manager can help you sign in.</translation>
 <translation id="3799805948399000906">Font requested</translation>
 <translation id="3801297763951514916">You visit often</translation>
 <translation id="380329542618494757">Name</translation>
@@ -1954,6 +1956,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="425582637250725228">Changes that you made may not be saved.</translation>
 <translation id="4258748452823770588">Bad signature</translation>
 <translation id="4261046003697461417">Protected documents cannot be annotated</translation>
+<translation id="4265635050210404830">Your loyalty cards</translation>
 <translation id="4265872034478892965">Allowed by your administrator</translation>
 <translation id="4269029136757623689">Household Fans</translation>
 <translation id="4269264543938335308">Swimwear</translation>
@@ -2229,6 +2232,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4754461935447132332">Not allowed for non-secure sites</translation>
 <translation id="4756388243121344051">&amp;History</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757740693289347881">Code is invalid</translation>
 <translation id="4757993714154412917">You just entered your password on a deceptive site. To secure your accounts, Chromium recommends checking your saved passwords.</translation>
 <translation id="4758311279753947758">Add contact info</translation>
 <translation id="4761326898079498987">Review for further details</translation>
@@ -2294,6 +2298,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="486459320933704969">A parent or guardian has to say that it's OK for you to visit this website</translation>
 <translation id="4864801646102013152">Home improvement</translation>
 <translation id="4866506163384898554">Press |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| to show your cursor</translation>
+<translation id="4868277513442568587">To continue using your shared tab groups, update Chrome</translation>
 <translation id="4873616204573862158">Eyewear</translation>
 <translation id="4873807733347502026">Lock and use your mouse</translation>
 <translation id="4876305945144899064">No username</translation>
@@ -2430,6 +2435,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5089810972385038852">State</translation>
 <translation id="5090647584136241764">Add tabs with similar products to easily compare the details that matter to you</translation>
 <translation id="5093232627742069661">Z-fold</translation>
+<translation id="5093417502834168387">Trouble signing in? Try another way</translation>
 <translation id="5094747076828555589">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by Chromium. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="5097099694988056070">Device statistics such as CPU/RAM usage</translation>
 <translation id="5097468150760963273">27 in x 39 in</translation>
@@ -3198,6 +3204,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6388060462449937608">Fitness Equipment and Accessories</translation>
 <translation id="6389470377220713856">Name on card</translation>
 <translation id="6390200185239044127">Z-fold half</translation>
+<translation id="6390533465682072118">Recovery</translation>
 <translation id="639068771471208680">Multi-part form</translation>
 <translation id="6391700400718590966">Secure payment credential no matching credential sheet is closed</translation>
 <translation id="6392799395081100092">Paper (vellum)</translation>
@@ -3748,6 +3755,7 @@ Additional details:
 <translation id="7346048084945669753">Is affiliated:</translation>
 <translation id="7346062987309535530">Tableware</translation>
 <translation id="7346081071264046066">'reply yes to this wedding invite with excitement'</translation>
+<translation id="7347640536700429009">Name on card is invalid</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7353601530677266744">Command Line</translation>
 <translation id="7359588939039777303">Ads blocked.</translation>
