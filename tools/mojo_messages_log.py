@@ -8,27 +8,42 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-DESCRIPTION = '''
-Extract Mojo message information from a Chromium trace file.
+DESCRIPTION = \
+'''This script takes in a Chromium trace file and extracts info about Mojo
+messages that were sent/received.
 
-Trace files can be created using chrome://tracing or by passing
-'--enable-tracing' to Chrome or browser test executables.
-Make sure 'mojom' and 'toplevel' categories are enabled in the trace.
+Trace files can be created using chrome://tracing or from passing
+'--enable-tracing' to a Chrome or browser test executable. In the
+chrome://tracing UI, ensure that the 'mojom' and 'toplevel' categories are
+selected when setting up a new trace. Also, the trace events available will
+have much more information (including message contents and return values) if
+the executable generating the trace file is built with the
+`extended_tracing_enabled = true` gn arg.
 '''
 
-PERFETTO_NOT_FOUND_HELP_TEXT = '''
-Error: perfetto module not found.
+PERFETTO_NOT_FOUND_HELP_TEXT = \
+'''Error: perfetto module not found.
 
-This script requires the perfetto Python module.
-Install it with: pip install perfetto
-
-Googlers using gLinux:
-    sudo apt-get install python3-venv
-    python3 -m venv venv
-    ./venv/bin/python3 -mpip install perfetto
-    ./venv/bin/python3 tools/mojo_messages_log.py <args>
+This script requires the perfetto Python module. To install it, use something
+like `pip install perfetto`, or for Googlers on gLinux use the following (in a
+Chromium checkout):
+```
+sudo apt-get install python3-venv
+python3 -m venv venv
+./venv/bin/python3 -mpip install perfetto
+./venv/bin/python3 tools/mojo_messages_log.py <script args>
+```
 '''
 
+# Note: Ignore 'mojo::Message::Message' (from the disabled by default 'mojom'
+# category) because there is usually higher-level information that's more
+# helpful, even in release builds.
+
+# TODO(awillia): The 'Send mojo message' and 'Receive mojo sync reply' trace
+# events (both from the toplevel.flow category) should have a message ID
+# associated with them but I'm not sure how to access it. With the former we
+# could figure out the sender of a message, but without the message ID the
+# events aren't very helpful.
 MOJO_EVENTS_QUERY = '''
 INCLUDE PERFETTO MODULE slices.with_context;
 SELECT
