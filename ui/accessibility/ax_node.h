@@ -80,8 +80,10 @@ class AX_EXPORT AXNode final {
     ChildIteratorBase(const NodeType* parent, NodeType* child);
     ChildIteratorBase(const ChildIteratorBase& it);
     ~ChildIteratorBase() = default;
-    friend bool operator==(const ChildIteratorBase&,
-                           const ChildIteratorBase&) = default;
+    friend bool operator==(const ChildIteratorBase& lhs,
+                           const ChildIteratorBase& rhs) {
+      return lhs.parent_ == rhs.parent_ && lhs.child_ == rhs.child_;
+    }
     ChildIteratorBase& operator++();
     ChildIteratorBase& operator--();
     NodeType* get() const;
@@ -91,6 +93,8 @@ class AX_EXPORT AXNode final {
    protected:
     raw_ptr<const NodeType> parent_;
     raw_ptr<NodeType, DanglingUntriaged> child_;
+    raw_ptr<NodeType, DanglingUntriaged> first_child_{nullptr};
+    raw_ptr<NodeType, DanglingUntriaged> last_child_{nullptr};
   };
 
   // The constructor requires a parent, id, and index in parent, but
@@ -863,10 +867,10 @@ AXNode::ChildIteratorBase<NodeType,
   // increment the iterator past the end, we remain at the past-the-end iterator
   // condition.
   if (child_ && parent_) {
-    if (child_ == (parent_->*LastChild)())
-      child_ = nullptr;
-    else
-      child_ = (child_->*NextSibling)();
+    if (!last_child_) {
+      last_child_ = (parent_->*LastChild)();
+    }
+    child_ = child_ == last_child_ ? nullptr : (child_->*NextSibling)();
   }
 
   return *this;
@@ -890,13 +894,22 @@ AXNode::ChildIteratorBase<NodeType,
   if (parent_) {
     // If the iterator is past the end, |child_=nullptr|, decrement the iterator
     // gives us the last iterator element.
-    if (!child_)
-      child_ = (parent_->*LastChild)();
-    // Decrement the iterator gives us the previous element, except when the
-    // iterator is at the beginning; in which case, decrementing the iterator
-    // remains at the beginning.
-    else if (child_ != (parent_->*FirstChild)())
-      child_ = (child_->*PreviousSibling)();
+    if (!child_) {
+      if (!last_child_) {
+        last_child_ = (parent_->*LastChild)();
+      }
+      child_ = last_child_;
+    } else {
+      if (!first_child_) {
+        first_child_ = (parent_->*FirstChild)();
+      }
+      // Decrement the iterator gives us the previous element, except when the
+      // iterator is at the beginning; in which case, decrementing the iterator
+      // remains at the beginning.
+      if (child_ != first_child_) {
+        child_ = (child_->*PreviousSibling)();
+      }
+    }
   }
 
   return *this;
