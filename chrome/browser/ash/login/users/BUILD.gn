@@ -89,6 +89,8 @@ static_library("test_support") {
   sources = [
     "fake_chrome_user_manager.cc",
     "fake_chrome_user_manager.h",
+    "scoped_account_id_annotator.cc",
+    "scoped_account_id_annotator.h",
   ]
 
   public_deps = [
@@ -101,10 +103,12 @@ static_library("test_support") {
   deps = [
     ":users",
     "//ash/constants",
+    "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/users/default_user_image",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ui",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/settings",
     "//components/user_manager:common",

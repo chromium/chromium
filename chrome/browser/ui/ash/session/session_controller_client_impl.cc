@@ -452,13 +452,14 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
   }
 
   UserManager* const user_manager = UserManager::Get();
-  if (user_manager->GetUsersAllowedForMultiUserSignIn().empty()) {
-    return ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS;
-  }
 
   if (user_manager::GetMultiUserSignInPolicy(user_manager->GetPrimaryUser()) ==
       user_manager::MultiUserSignInPolicy::kNotAllowed) {
     return ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER;
+  }
+
+  if (user_manager->GetUsersAllowedForMultiUserSignIn().empty()) {
+    return ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS;
   }
 
   if (user_manager->GetLoggedInUsers().size() >=

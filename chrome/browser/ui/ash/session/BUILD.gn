@@ -93,6 +93,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/login/session",
     "//components/account_id",
+    "//components/account_id:test_support",
     "//components/prefs",
     "//components/session_manager/core",
     "//components/user_manager",
