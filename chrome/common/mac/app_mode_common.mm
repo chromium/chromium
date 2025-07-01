@@ -16,22 +16,6 @@
 
 namespace app_mode {
 
-const char kAppShimBootstrapNameFragment[] = "apps";
-
-const char kRunningChromeVersionSymlinkName[] = "RunningChromeVersion";
-const char kFeatureStateFileName[] = "ChromeFeatureState";
-
-const char kLaunchedByChromeProcessId[] = "launched-by-chrome-process-id";
-const char kLaunchedByChromeBundlePath[] = "launched-by-chrome-bundle-path";
-const char kLaunchedByChromeFrameworkBundlePath[] =
-    "launched-by-chrome-framework-bundle-path";
-const char kLaunchedByChromeFrameworkDylibPath[] =
-    "launched-by-chrome-framework-dylib-path";
-const char kLaunchedForTest[] = "launched-for-test";
-const char kLaunchedAfterRebuild[] = "launched-after-rebuild";
-const char kIsNormalLaunch[] = "is-normal-launch";
-const char kLaunchChromeForTest[] = "launch-chrome-for-test";
-
 NSString* const kCFBundleDocumentTypesKey = @"CFBundleDocumentTypes";
 NSString* const kCFBundleTypeExtensionsKey = @"CFBundleTypeExtensions";
 NSString* const kCFBundleTypeIconFileKey = @"CFBundleTypeIconFile";

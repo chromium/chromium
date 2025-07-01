@@ -40,52 +40,57 @@ inline constexpr mach_msg_id_t kBootstrapMsgId = 'apps';
 // namespace. The full name is "<bundle-id>.apps.<profile_path_hash>".
 // <bundle-id> is the BaseBundleID() and <profile_path_hash> is an MD5 hash
 // of the full profile directory path.
-extern const char kAppShimBootstrapNameFragment[];
+inline constexpr char kAppShimBootstrapNameFragment[] = "apps";
 
 // A symlink used to store the version string of the currently running Chrome,
 // along with any other necessary configuration. The shim will read this to
 // determine which version of the framework to load.
-extern const char kRunningChromeVersionSymlinkName[];
+inline constexpr char kRunningChromeVersionSymlinkName[] =
+    "RunningChromeVersion";
 
 // A file used to store feature and field trial state of the currently or most
 // recently running Chrome. The shim will read this to determine what features
 // to enable if it wasn't launched by Chrome, until it can get the current state
 // from Chrome.
-extern const char kFeatureStateFileName[];
+inline constexpr char kFeatureStateFileName[] = "ChromeFeatureState";
 
 // The process ID of the Chrome process that launched the app shim.
 // The presence of this switch instructs the app shim to send LaunchApp with
 // launch_now = false. This associates the shim without launching the app.
-extern const char kLaunchedByChromeProcessId[];
+inline constexpr char kLaunchedByChromeProcessId[] =
+    "launched-by-chrome-process-id";
 
 // The main bundle path of the Chrome process that launched the app shim.
-extern const char kLaunchedByChromeBundlePath[];
+inline constexpr char kLaunchedByChromeBundlePath[] =
+    "launched-by-chrome-bundle-path";
 
 // The framework bundle path of the Chrome process that launched the app shim.
-extern const char kLaunchedByChromeFrameworkBundlePath[];
+inline constexpr char kLaunchedByChromeFrameworkBundlePath[] =
+    "launched-by-chrome-framework-bundle-path";
 
 // The framework dylib path of the Chrome process that launched the app shim.
-extern const char kLaunchedByChromeFrameworkDylibPath[];
+inline constexpr char kLaunchedByChromeFrameworkDylibPath[] =
+    "launched-by-chrome-framework-dylib-path";
 
 // Indicates to the shim that it was launched for a test, so don't attempt to
 // launch Chrome.
-extern const char kLaunchedForTest[];
+inline constexpr char kLaunchedForTest[] = "launched-for-test";
 
 // Indicates to the shim that this Chrome has rebuilt it once already, i.e. if
 // it fails to launch again, don't trigger another rebuild.
-extern const char kLaunchedAfterRebuild[];
+inline constexpr char kLaunchedAfterRebuild[] = "launched-after-rebuild";
 
 // Indicates to the shim that even if `kLaunchedByChromeProcessId` was also
 // specified, this should still be considered a "normal" launch as opposed to a
 // "register only" launch. This is used by tests to launch a shim as if the user
 // launched it, while still making sure it connects to the correct chrome
 // process.
-extern const char kIsNormalLaunch[];
+inline constexpr char kIsNormalLaunch[] = "is-normal-launch";
 
 // Normally when running tests app shims are not supposed to try to launch
 // Chrome. Pass this flag to specify the executable to launch when the app shim
 // would normally launch Chrome.
-extern const char kLaunchChromeForTest[];
+inline constexpr char kLaunchChromeForTest[] = "launch-chrome-for-test";
 
 #ifdef __OBJC__
 
