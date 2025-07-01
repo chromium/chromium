@@ -43,7 +43,7 @@ ImageBitmapRenderingContextBase::getHTMLOrOffscreenCanvas() const {
 void ImageBitmapRenderingContextBase::Reset() {
   CHECK(Host());
   CHECK(Host()->IsOffscreenCanvas());
-  resource_provider_.reset();
+  resource_provider_for_offscreen_canvas_.reset();
   Host()->DiscardResources();
 }
 
@@ -60,7 +60,7 @@ ImageBitmapRenderingContextBase::PaintRenderingResultsToSnapshot(
 
 void ImageBitmapRenderingContextBase::Dispose() {
   Stop();
-  resource_provider_.reset();
+  resource_provider_for_offscreen_canvas_.reset();
   CanvasRenderingContext::Dispose();
 }
 
@@ -137,7 +137,8 @@ CanvasResourceProvider* ImageBitmapRenderingContextBase::
     return nullptr;
   }
 
-  if (CanvasResourceProvider* provider = resource_provider_.get()) {
+  if (CanvasResourceProvider* provider =
+          resource_provider_for_offscreen_canvas_.get()) {
     if (!provider->IsValid()) {
       // The canvas context is not lost but the provider is invalid. This
       // happens if the GPU process dies in the middle of a render task. The
@@ -192,24 +193,27 @@ CanvasResourceProvider* ImageBitmapRenderingContextBase::
         CanvasResourceProvider::ShouldInitialize::kCallClear, Host());
   }
 
-  resource_provider_ = std::move(provider);
+  resource_provider_for_offscreen_canvas_ = std::move(provider);
   Host()->UpdateMemoryUsage();
 
-  if (resource_provider_.get() && resource_provider_.get()->IsValid()) {
+  if (resource_provider_for_offscreen_canvas_.get() &&
+      resource_provider_for_offscreen_canvas_.get()->IsValid()) {
     // todo(crbug.com/1064363)  Add a separate UMA for Offscreen Canvas usage
     // and understand if the if (ResourceProvider() &&
     // ResourceProvider()->IsValid()) is really needed.
-    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                              resource_provider_.get()->IsAccelerated());
-    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                  resource_provider_.get()->GetType());
+    base::UmaHistogramBoolean(
+        "Blink.Canvas.ResourceProviderIsAccelerated",
+        resource_provider_for_offscreen_canvas_.get()->IsAccelerated());
+    base::UmaHistogramEnumeration(
+        "Blink.Canvas.ResourceProviderType",
+        resource_provider_for_offscreen_canvas_.get()->GetType());
     Host()->DidDraw();
   }
-  return resource_provider_.get();
+  return resource_provider_for_offscreen_canvas_.get();
 }
 
 bool ImageBitmapRenderingContextBase::IsAccelerated() const {
-  auto* resource_provider = resource_provider_.get();
+  auto* resource_provider = resource_provider_for_offscreen_canvas_.get();
   return resource_provider ? resource_provider->IsAccelerated()
                            : Host()->ShouldTryToUseGpuRaster();
 }
@@ -227,10 +231,12 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
   }
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
-  resource_provider_->Canvas().drawImage(image->PaintImageForCurrentFrame(), 0,
-                                         0, SkSamplingOptions(), &paint_flags);
+  resource_provider_for_offscreen_canvas_->Canvas().drawImage(
+      image->PaintImageForCurrentFrame(), 0, 0, SkSamplingOptions(),
+      &paint_flags);
   scoped_refptr<CanvasResource> resource =
-      resource_provider_->ProduceCanvasResource(FlushReason::kNon2DCanvas);
+      resource_provider_for_offscreen_canvas_->ProduceCanvasResource(
+          FlushReason::kNon2DCanvas);
   Host()->PushFrame(
       std::move(resource),
       SkIRect::MakeWH(image_layer_bridge_->GetImage()->Size().width(),
