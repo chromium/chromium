@@ -63,7 +63,6 @@ namespace {{namespace}} {
   (property.is_border_radius and 'kBorderRadius' or ''),
   (property.is_highlight_colors and 'kHighlightColors' or ''),
   (property.is_visited_highlight_colors and 'kVisitedHighlightColors' or ''),
-  (property.valid_for_highlight_legacy and 'kValidForHighlightLegacy' or ''),
   (property.valid_for_highlight and 'kValidForHighlight' or ''),
   (property.logical_property_group and 'kInLogicalPropertyGroup' or ''),
 ] | reject('==', '') | join(' | ') %}

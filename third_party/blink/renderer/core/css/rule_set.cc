@@ -93,12 +93,8 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
       case CSSSelector::kPseudoGrammarError:
       case CSSSelector::kPseudoSpellingError:
       case CSSSelector::kPseudoHighlight:
-        if (UsesHighlightPseudoInheritance(
-                component->GetPseudoId(component->GetPseudoType()))) {
-          return ValidPropertyFilter::kHighlight;
-        } else {
-          return ValidPropertyFilter::kHighlightLegacy;
-        }
+      case CSSSelector::kPseudoSearchText:
+        return ValidPropertyFilter::kHighlight;
       default:
         break;
     }

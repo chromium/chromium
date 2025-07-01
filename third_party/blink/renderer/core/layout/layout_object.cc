@@ -2825,8 +2825,7 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
     // We don't do anything regarding ::selection, as ::selection
     // uses its own mechanism for this (see
     // LayoutObject::InvalidateSelectionOnStyleChange()).
-    if (RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled() &&
-        UsesHighlightPseudoInheritance(kPseudoIdSearchText)) {
+    if (RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
       HighlightPseudoUpdateDiff(kPseudoIdSearchText,
                                 style_->HighlightData().SearchTextCurrent(),
                                 style->HighlightData().SearchTextCurrent());
@@ -2834,21 +2833,15 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
                                 style_->HighlightData().SearchTextNotCurrent(),
                                 style->HighlightData().SearchTextNotCurrent());
     }
-    if (UsesHighlightPseudoInheritance(kPseudoIdTargetText)) {
-      HighlightPseudoUpdateDiff(kPseudoIdTargetText,
-                                style_->HighlightData().TargetText(),
-                                style->HighlightData().TargetText());
-    }
-    if (UsesHighlightPseudoInheritance(kPseudoIdSpellingError)) {
-      HighlightPseudoUpdateDiff(kPseudoIdSpellingError,
-                                style_->HighlightData().SpellingError(),
-                                style->HighlightData().SpellingError());
-    }
-    if (UsesHighlightPseudoInheritance(kPseudoIdGrammarError)) {
-      HighlightPseudoUpdateDiff(kPseudoIdGrammarError,
-                                style_->HighlightData().GrammarError(),
-                                style->HighlightData().GrammarError());
-    }
+    HighlightPseudoUpdateDiff(kPseudoIdTargetText,
+                              style_->HighlightData().TargetText(),
+                              style->HighlightData().TargetText());
+    HighlightPseudoUpdateDiff(kPseudoIdSpellingError,
+                              style_->HighlightData().SpellingError(),
+                              style->HighlightData().SpellingError());
+    HighlightPseudoUpdateDiff(kPseudoIdGrammarError,
+                              style_->HighlightData().GrammarError(),
+                              style->HighlightData().GrammarError());
   }
 
   diff = AdjustStyleDifference(diff);
@@ -4389,14 +4382,6 @@ const ComputedStyle* LayoutObject::GetUncachedPseudoElementStyle(
   return element->UncachedStyleForPseudoElement(request);
 }
 
-const ComputedStyle* LayoutObject::GetSelectionStyle() const {
-  NOT_DESTROYED();
-  if (UsesHighlightPseudoInheritance(kPseudoIdSelection)) {
-    return StyleRef().HighlightData().Selection();
-  }
-  return GetCachedPseudoElementStyle(kPseudoIdSelection);
-}
-
 void LayoutObject::AddDraggableRegions(Vector<DraggableRegionValue>& regions) {
   NOT_DESTROYED();
   // Convert the style regions to absolute coordinates.
@@ -4753,7 +4738,7 @@ void LayoutObject::SetShouldInvalidateSelection() {
   // Invalidate overflow for ::selection styles that contain overflowing
   // effects.
   if (IsText()) {
-    if (auto* computed_style = GetSelectionStyle()) {
+    if (auto* computed_style = StyleRef().HighlightData().Selection()) {
       if (computed_style->HasAppliedTextDecorations() ||
           computed_style->HasVisualOverflowingEffect()) {
         InvalidateVisualOverflow();

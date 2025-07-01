@@ -74,12 +74,10 @@ StyleResolverState::StyleResolverState(
       pseudo_id_(style_request.pseudo_id),
       originating_element_style_(style_request.originating_element_style),
       is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
-      uses_highlight_pseudo_inheritance_(
-          ::blink::UsesHighlightPseudoInheritance(style_request.pseudo_id)),
       can_trigger_animations_(style_request.can_trigger_animations) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
-  if (UsesHighlightPseudoInheritance()) {
+  if (is_for_highlight_) {
     DCHECK(originating_element_style_);
   } else {
     if (!parent_style_) {
@@ -105,7 +103,7 @@ StyleResolverState::~StyleResolverState() {
 
 bool StyleResolverState::IsInheritedForUnset(
     const CSSProperty& property) const {
-  return property.IsInherited() || UsesHighlightPseudoInheritance();
+  return property.IsInherited() || IsForHighlight();
 }
 
 EInsideLink StyleResolverState::InsideLink() const {
@@ -119,7 +117,7 @@ EInsideLink StyleResolverState::InsideLink() const {
   }
   if (!IsForPseudoElement() && GetElement().IsLink()) {
     inside_link_ = ElementLinkState();
-  } else if (uses_highlight_pseudo_inheritance_) {
+  } else if (IsForHighlight()) {
     // Highlight pseudo-elements acquire the link status of the originating
     // element. Note that highlight pseudo-elements do not *inherit* from
     // the originating element [1], and therefore ParentStyle()->InsideLink()

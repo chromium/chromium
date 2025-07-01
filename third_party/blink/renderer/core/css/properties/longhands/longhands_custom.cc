@@ -2296,8 +2296,7 @@ void Color::ApplyValue(StyleResolverState& state,
       // As per the spec, 'color: currentColor' is treated as 'color: inherit'
       ApplyInherit(state);
       builder.SetColorIsCurrentColor(true);
-      if (state.UsesHighlightPseudoInheritance() &&
-          state.OriginatingElementStyle()) {
+      if (state.IsForHighlight() && state.OriginatingElementStyle()) {
         builder.SetColor(state.OriginatingElementStyle()->Color());
       }
       return;
@@ -4882,8 +4881,7 @@ void InternalVisitedColor::ApplyValue(StyleResolverState& state,
       identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
     ApplyInherit(state);
     builder.SetInternalVisitedColorIsCurrentColor(true);
-    if (state.UsesHighlightPseudoInheritance() &&
-        state.OriginatingElementStyle()) {
+    if (state.IsForHighlight() && state.OriginatingElementStyle()) {
       builder.SetInternalVisitedColor(
           state.OriginatingElementStyle()->InternalVisitedColor());
     }

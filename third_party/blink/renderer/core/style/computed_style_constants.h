@@ -136,18 +136,6 @@ inline bool IsHighlightPseudoElement(PseudoId pseudo_id) {
   }
 }
 
-inline bool UsesHighlightPseudoInheritance(PseudoId pseudo_id) {
-  // ::highlight() pseudos, ::spelling-error, and ::grammar-error use highlight
-  // inheritance rather than originating inheritance, regardless of whether the
-  // highlight inheritance feature is enabled.
-  return ((IsHighlightPseudoElement(pseudo_id) &&
-           RuntimeEnabledFeatures::HighlightInheritanceEnabled()) ||
-          pseudo_id == PseudoId::kPseudoIdSearchText ||
-          pseudo_id == PseudoId::kPseudoIdHighlight ||
-          pseudo_id == PseudoId::kPseudoIdSpellingError ||
-          pseudo_id == PseudoId::kPseudoIdGrammarError);
-}
-
 inline bool IsTransitionPseudoElement(PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdViewTransition:

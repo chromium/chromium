@@ -1690,11 +1690,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   const ComputedStyle* GetCachedPseudoElementStyle(PseudoId) const;
   const ComputedStyle* GetUncachedPseudoElementStyle(const StyleRequest&) const;
 
-  // Returns the ::selection style, which may be stored in StyleCachedData (old
-  // impl) or StyleHighlightData (new impl).
-  // TODO(crbug.com/1024156): inline and remove on shipping HighlightInheritance
-  const ComputedStyle* GetSelectionStyle() const;
-
   LayoutView* View() const {
     NOT_DESTROYED();
     return GetDocument().GetLayoutView();

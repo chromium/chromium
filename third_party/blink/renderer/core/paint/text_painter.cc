@@ -259,7 +259,7 @@ void PrepareSvgPaints(const TextPainter::SvgTextPaintState& state,
                                 &state]() -> const ComputedStyle& {
     if (state.IsPaintingSelection()) {
       if (const ComputedStyle* pseudo_selection_style =
-              layout_parent.GetSelectionStyle()) {
+              layout_parent.StyleRef().HighlightData().Selection()) {
         return *pseudo_selection_style;
       }
     }

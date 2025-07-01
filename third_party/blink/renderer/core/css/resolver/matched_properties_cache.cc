@@ -339,7 +339,7 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   }
 
   // See StyleResolver::ApplyMatchedCache() for comments.
-  if (state.UsesHighlightPseudoInheritance()) {
+  if (state.IsForHighlight()) {
     return false;
   }
   if (!state.GetElement().GetCascadeFilter().IsEmpty()) {

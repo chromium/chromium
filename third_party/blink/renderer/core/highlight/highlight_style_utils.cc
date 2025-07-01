@@ -213,67 +213,11 @@ std::optional<Color> DefaultHighlightColor(
                                 search_text_is_active_match);
 }
 
-// Returns highlight styles for the given node, inheriting from the originating
-// element only, like most impls did before highlights were added to css-pseudo.
-const ComputedStyle* HighlightPseudoStyleWithOriginatingInheritance(
-    Node* node,
-    PseudoId pseudo,
-    const AtomicString& pseudo_argument = g_null_atom) {
-  if (!node) {
-    return nullptr;
-  }
-
-  Element* element = nullptr;
-
-  // In Blink, highlight pseudo style only applies to direct children of the
-  // element on which the highlight pseudo is matched. In order to be able to
-  // style highlight inside elements implemented with a UA shadow tree, like
-  // input::selection, we calculate highlight style on the shadow host for
-  // elements inside the UA shadow.
-  ShadowRoot* root = node->ContainingShadowRoot();
-  if (root && root->IsUserAgent()) {
-    element = node->OwnerShadowHost();
-  }
-
-  // If we request highlight style for LayoutText, query highlight style on the
-  // parent element instead, as that is the node for which the highlight pseudo
-  // matches. This should most likely have used FlatTreeTraversal, but since we
-  // don't implement inheritance of highlight styles, it would probably break
-  // cases where you style a shadow host with a highlight pseudo and expect
-  // light tree text children to be affected by that style.
-  if (!element) {
-    element = Traversal<Element>::FirstAncestorOrSelf(*node);
-  }
-
-  if (!element || element->IsPseudoElement()) {
-    return nullptr;
-  }
-
-  if (pseudo == kPseudoIdSelection &&
-      element->GetDocument().GetStyleEngine().UsesWindowInactiveSelector() &&
-      !element->GetDocument().GetPage()->GetFocusController().IsActive()) {
-    // ::selection and ::selection:window-inactive styles may be different. Only
-    // cache the styles for ::selection if there are no :window-inactive
-    // selector, or if the page is active.
-    // With Originating Inheritance the originating element is also the parent
-    // element.
-    return element->UncachedStyleForPseudoElement(
-        StyleRequest(pseudo, element->GetComputedStyle(),
-                     element->GetComputedStyle(), pseudo_argument));
-  }
-
-  return element->CachedStyleForPseudoElement(pseudo, pseudo_argument);
-}
-
 bool UseForcedColors(const Document& document,
                      const ComputedStyle& originating_style,
                      const ComputedStyle* pseudo_style) {
   if (!document.InForcedColorsMode()) {
     return false;
-  }
-  // TODO(crbug.com/1309835) simplify when valid_for_highlight_legacy is removed
-  if (pseudo_style) {
-    return pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kAuto;
   }
   return originating_style.ForcedColorAdjust() == EForcedColorAdjust::kAuto;
 }
@@ -287,8 +231,7 @@ bool UseDefaultHighlightColors(const ComputedStyle* pseudo_style,
   switch (property.PropertyID()) {
     case CSSPropertyID::kColor:
     case CSSPropertyID::kBackgroundColor:
-      return !pseudo_style || (UsesHighlightPseudoInheritance(pseudo) &&
-                               !pseudo_style->HasAuthorHighlightColors());
+      return !(pseudo_style && pseudo_style->HasAuthorHighlightColors());
     default:
       return false;
   }
@@ -354,18 +297,12 @@ std::optional<Color> HighlightStyleUtils::MaybeResolveColor(
 }
 
 // Returns highlight styles for the given node, inheriting through the “tree” of
-// highlight pseudo styles mirroring the originating element tree. None of the
-// returned styles are influenced by originating elements or pseudo-elements.
+// highlight pseudo styles mirroring the originating element tree.
 const ComputedStyle* HighlightStyleUtils::HighlightPseudoStyle(
     Node* node,
     const ComputedStyle& style,
     PseudoId pseudo,
     const AtomicString& pseudo_argument) {
-  if (!UsesHighlightPseudoInheritance(pseudo)) {
-    return HighlightPseudoStyleWithOriginatingInheritance(node, pseudo,
-                                                          pseudo_argument);
-  }
-
   switch (pseudo) {
     case kPseudoIdSelection:
       return style.HighlightData().Selection();

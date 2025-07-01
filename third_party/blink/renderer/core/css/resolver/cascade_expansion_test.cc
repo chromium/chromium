@@ -427,25 +427,6 @@ TEST_F(CascadeExpansionTest, FilterMarker) {
   EXPECT_EQ(CSSPropertyID::kFontSize, e[0].name.Id());
 }
 
-TEST_F(CascadeExpansionTest, FilterHighlightLegacy) {
-  MatchResult result;
-  result.BeginAddingAuthorRulesForTreeScope(GetDocument());
-  result.AddMatchedProperties(
-      ParseDeclarationBlock(
-          "display:block;background-color:lime;forced-color-adjust:none"),
-      {
-          .valid_property_filter =
-              static_cast<uint8_t>(ValidPropertyFilter::kHighlightLegacy),
-          .origin = CascadeOrigin::kAuthor,
-      });
-
-  auto e = ExpansionAt(result, 0);
-  ASSERT_EQ(3u, e.size());
-  EXPECT_EQ(CSSPropertyID::kBackgroundColor, e[0].name.Id());
-  EXPECT_EQ(CSSPropertyID::kInternalVisitedBackgroundColor, e[1].name.Id());
-  EXPECT_EQ(CSSPropertyID::kForcedColorAdjust, e[2].name.Id());
-}
-
 TEST_F(CascadeExpansionTest, FilterHighlight) {
   MatchResult result;
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());

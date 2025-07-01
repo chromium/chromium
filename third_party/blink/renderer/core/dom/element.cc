@@ -6139,8 +6139,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
   const StyleHighlightData* parent_highlights =
       parent_style ? &parent_style->HighlightData() : nullptr;
 
-  if (UsesHighlightPseudoInheritance(kPseudoIdSelection) &&
-      new_style.HasPseudoElementStyle(kPseudoIdSelection)) {
+  if (new_style.HasPseudoElementStyle(kPseudoIdSelection)) {
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->Selection() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
@@ -6153,7 +6152,6 @@ const ComputedStyle* Element::RecalcHighlightStyles(
   }
 
   if (RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled() &&
-      UsesHighlightPseudoInheritance(kPseudoIdSearchText) &&
       new_style.HasPseudoElementStyle(kPseudoIdSearchText)) {
     const ComputedStyle* highlight_parent_current =
         parent_highlights ? parent_highlights->SearchTextCurrent() : nullptr;
@@ -6177,8 +6175,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
     }
   }
 
-  if (UsesHighlightPseudoInheritance(kPseudoIdTargetText) &&
-      new_style.HasPseudoElementStyle(kPseudoIdTargetText)) {
+  if (new_style.HasPseudoElementStyle(kPseudoIdTargetText)) {
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->TargetText() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
@@ -6190,8 +6187,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
     }
   }
 
-  if (UsesHighlightPseudoInheritance(kPseudoIdSpellingError) &&
-      new_style.HasPseudoElementStyle(kPseudoIdSpellingError)) {
+  if (new_style.HasPseudoElementStyle(kPseudoIdSpellingError)) {
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->SpellingError() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
@@ -6203,8 +6199,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
     }
   }
 
-  if (UsesHighlightPseudoInheritance(kPseudoIdGrammarError) &&
-      new_style.HasPseudoElementStyle(kPseudoIdGrammarError)) {
+  if (new_style.HasPseudoElementStyle(kPseudoIdGrammarError)) {
     const ComputedStyle* highlight_parent =
         parent_highlights ? parent_highlights->GrammarError() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc, highlight_parent,
@@ -6216,8 +6211,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
     }
   }
 
-  if (UsesHighlightPseudoInheritance(kPseudoIdHighlight) &&
-      new_style.HasPseudoElementStyle(kPseudoIdHighlight)) {
+  if (new_style.HasPseudoElementStyle(kPseudoIdHighlight)) {
     RecalcCustomHighlightPseudoStyle(style_recalc_context, highlight_recalc,
                                      builder, parent_highlights, new_style);
   }
@@ -8854,7 +8848,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
     DCHECK_EQ(style_request.type, StyleRequest::kForComputedStyle);
     style_request.search_text_request = StyleRequest::kNotCurrent;
   }
-  if (UsesHighlightPseudoInheritance(pseudo_element_specifier)) {
+  if (IsHighlightPseudoElement(pseudo_element_specifier)) {
     const ComputedStyle* highlight_element_style = nullptr;
     if (Element* parent = LayoutTreeBuilderTraversal::ParentElement(*this)) {
       highlight_element_style =
@@ -9524,7 +9518,7 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
     const AtomicString& pseudo_argument) {
   // Highlight pseudos are resolved into StyleHighlightData during originating
   // style recalc, and should never be stored in StyleCachedData.
-  DCHECK(!UsesHighlightPseudoInheritance(pseudo_id));
+  DCHECK(!IsHighlightPseudoElement(pseudo_id));
 
   const ComputedStyle* style = GetComputedStyle();
 
@@ -9556,7 +9550,7 @@ const ComputedStyle* Element::UncachedStyleForPseudoElement(
     const StyleRequest& request) {
   // Highlight pseudos are resolved into StyleHighlightData during originating
   // style recalc, where we have the actual StyleRecalcContext.
-  DCHECK(!UsesHighlightPseudoInheritance(request.pseudo_id));
+  DCHECK(!IsHighlightPseudoElement(request.pseudo_id));
 
   return StyleForPseudoElement(
       StyleRecalcContext::FromInclusiveAncestors(*this), request);
