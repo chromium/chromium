@@ -1807,7 +1807,8 @@ TEST_P(PNGTests, cicp) {
   ASSERT_TRUE(transform);  // Guaranteed by `HasEmbeddedColorProfile`.
   const skcms_ICCProfile* png_profile = transform->SrcProfile();
   ASSERT_TRUE(png_profile);
-  EXPECT_TRUE(skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
+  EXPECT_TRUE(skcms_TransferFunction_isPQ(&png_profile->trc[0].parametric) ||
+              skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
 }
 
 TEST_P(PNGTests, IgnoringColorProfile) {
