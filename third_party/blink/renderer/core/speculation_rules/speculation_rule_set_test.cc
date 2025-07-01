@@ -846,7 +846,7 @@ TEST_F(SpeculationRuleSetTest, PropagatesToDocument) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, AtomicString("SpEcUlAtIoNrUlEs"));
-  script->setText(
+  script->setTextWithoutTrustedTypes(
       R"({"prefetch": [
            {"source": "list", "urls": ["https://example.com/foo"]}
          ],
@@ -871,7 +871,7 @@ HTMLScriptElement* InsertSpeculationRules(Document& document,
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, AtomicString("SpEcUlAtIoNrUlEs"));
-  script->setText(speculation_script);
+  script->setTextWithoutTrustedTypes(speculation_script);
   document.head()->appendChild(script);
   return script;
 }
@@ -1260,7 +1260,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarning) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
-  script->setText("[invalid]");
+  script->setTextWithoutTrustedTypes("[invalid]");
   document.head()->appendChild(script);
 
   EXPECT_TRUE(std::ranges::any_of(
@@ -1279,7 +1279,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForInvalidRule) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
-  script->setText(
+  script->setTextWithoutTrustedTypes(
       R"({
         "prefetch": [{
           "source": "list",
@@ -1322,10 +1322,10 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForChildModification) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
-  script->setText("{}");
+  script->setTextWithoutTrustedTypes("{}");
   document.head()->appendChild(script);
 
-  script->setText(R"({"prefetch": [{"urls": "/2"}]})");
+  script->setTextWithoutTrustedTypes(R"({"prefetch": [{"urls": "/2"}]})");
 
   EXPECT_TRUE(std::ranges::any_of(
       chrome_client->ConsoleMessages(), [](const String& message) {
@@ -1344,7 +1344,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForDuplicateKey) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
-  script->setText(
+  script->setTextWithoutTrustedTypes(
       R"({
         "prefetch": [{"urls": ["a.html"]}],
         "prefetch": [{"urls": ["b.html"]}]
@@ -1904,7 +1904,7 @@ TEST_F(DocumentRulesTest, ConsoleWarningForInvalidRule) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
-  script->setText(
+  script->setTextWithoutTrustedTypes(
       R"({
         "prefetch": [{
           "source": "document",
@@ -4191,7 +4191,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForNoVarySearchHintNotAString) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
-  script->setText(
+  script->setTextWithoutTrustedTypes(
       R"({
     "prefetch": [{
         "source": "list",
@@ -4361,7 +4361,7 @@ TEST_F(SpeculationRuleSetTest, DocumentReportsSuccessMetric) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
-  script->setText("{}");
+  script->setTextWithoutTrustedTypes("{}");
   document.head()->appendChild(script);
   histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
                                       SpeculationRulesLoadOutcome::kSuccess, 1);
@@ -4375,7 +4375,7 @@ TEST_F(SpeculationRuleSetTest, DocumentReportsParseErrorFromScript) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
-  script->setText("{---}");
+  script->setTextWithoutTrustedTypes("{---}");
   document.head()->appendChild(script);
   histogram_tester.ExpectUniqueSample(
       "Blink.SpeculationRules.LoadOutcome",

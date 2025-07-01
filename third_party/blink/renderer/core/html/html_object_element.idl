@@ -27,7 +27,7 @@
     ActiveScriptWrappable,
     HTMLConstructor
 ] interface HTMLObjectElement : HTMLElement {
-    [CEReactions, Reflect, URL] attribute ScriptURLString data;
+    [CEReactions, RaisesException=Setter, URL] attribute (TrustedScriptURL or USVString) data;
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect] attribute DOMString useMap;
@@ -57,7 +57,7 @@
     [CEReactions, Reflect] attribute unsigned long hspace;
     [CEReactions, Reflect] attribute DOMString standby;
     [CEReactions, Reflect] attribute unsigned long vspace;
-    [CEReactions, Reflect, URL] attribute ScriptURLString codeBase;
+    [CEReactions, RaisesException=Setter, URL] attribute (TrustedScriptURL or USVString) codeBase;
     [CEReactions, Reflect] attribute DOMString codeType;
 
     [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString border;

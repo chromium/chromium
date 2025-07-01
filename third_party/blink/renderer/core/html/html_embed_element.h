@@ -43,6 +43,9 @@ class CORE_EXPORT HTMLEmbedElement final : public HTMLPlugInElement {
     return FrameOwnerElementType::kEmbed;
   }
 
+  const V8UnionTrustedScriptURLOrUSVString* src();
+  void setSrc(const V8UnionTrustedScriptURLOrUSVString*, ExceptionState&);
+
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;

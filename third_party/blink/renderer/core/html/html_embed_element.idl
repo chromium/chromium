@@ -27,7 +27,7 @@
     ActiveScriptWrappable,
     HTMLConstructor
 ] interface HTMLEmbedElement : HTMLElement {
-    [CEReactions, Reflect, URL] attribute ScriptURLString src;
+    [CEReactions, RaisesException=Setter, URL] attribute (TrustedScriptURL or USVString) src;
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute DOMString width;
     [CEReactions, Reflect] attribute DOMString height;

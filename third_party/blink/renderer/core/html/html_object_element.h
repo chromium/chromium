@@ -95,6 +95,11 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   };
   void RenderFallbackContent(ErrorEventPolicy should_dispatch_error_event);
 
+  V8UnionTrustedScriptURLOrUSVString* data();
+  void setData(const V8UnionTrustedScriptURLOrUSVString*, ExceptionState&);
+  V8UnionTrustedScriptURLOrUSVString* codeBase();
+  void setCodeBase(const V8UnionTrustedScriptURLOrUSVString*, ExceptionState&);
+
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;

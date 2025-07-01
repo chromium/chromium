@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -229,6 +230,22 @@ bool HTMLEmbedElement::IsExposed() const {
       return false;
   }
   return true;
+}
+
+const V8UnionTrustedScriptURLOrUSVString* HTMLEmbedElement::src() {
+  return MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(
+      GetURLAttribute(html_names::kSrcAttr));
+}
+
+void HTMLEmbedElement::setSrc(const V8UnionTrustedScriptURLOrUSVString* value,
+                              ExceptionState& exception_state) {
+  String compliantValue = TrustedTypesCheckForScriptURL(
+      value, GetExecutionContext(), "HTMLEmbedElement", "src", exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  SetAttributeWithoutValidation(html_names::kSrcAttr,
+                                AtomicString(compliantValue));
 }
 
 }  // namespace blink

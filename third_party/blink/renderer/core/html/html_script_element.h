@@ -51,8 +51,6 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   // Returns attributes that should be checked against Trusted Types
   const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
-  String text() { return TextFromChildren(); }
-  void setText(const String&);
   void setInnerTextForBinding(
       const V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
           string_or_trusted_script,
@@ -60,6 +58,14 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   void setTextContentForBinding(const V8UnionStringOrTrustedScript* value,
                                 ExceptionState& exception_state) override;
   void setTextContent(const String&) override;
+  void setSrc(
+      const V8UnionTrustedScriptURLOrUSVString* string_or_trusted_script_url,
+      ExceptionState& exception_state);
+  V8UnionTrustedScriptURLOrUSVString* src();
+
+  void setText(V8UnionStringOrTrustedScript*, ExceptionState&);
+  V8UnionStringOrTrustedScript* text();
+  void setTextWithoutTrustedTypes(const String&);
 
   void setAsync(bool);
   bool async() const;
