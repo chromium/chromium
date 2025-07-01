@@ -23,11 +23,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/encoding_tables.h"
 
 #include <unicode/ucnv.h>
@@ -36,11 +31,14 @@
 #include <memory>
 #include <mutex>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/types/to_address.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
@@ -161,17 +159,21 @@ const Jis0208EncodeIndex& EnsureJis0208EncodeIndexForDecode() {
     DCHECK(U_SUCCESS(error));
 
     constexpr size_t kRange = 94;
-    uint8_t icu_input[2];
+    std::array<uint8_t, 2> icu_input;
     UChar icu_output;
     for (size_t i = 0; i < kRange; ++i) {
       for (size_t j = 0; j < kRange; ++j) {
         icu_input[0] = 0xA1 + i;
         icu_input[1] = 0xA1 + j;
 
-        UChar* output = &icu_output;
-        const char* input = reinterpret_cast<const char*>(icu_input);
-        ucnv_toUnicode(icu_converter.converter, &output, output + 1, &input,
-                       input + sizeof(icu_input), nullptr, true, &error);
+        base::span<UChar, 1> output_span = base::span_from_ref(icu_output);
+        UChar* output = output_span.data();
+        UChar* output_end = base::to_address(output_span.end());
+        const char* input = reinterpret_cast<const char*>(icu_input.data());
+        const char* input_end =
+            reinterpret_cast<const char*>(base::to_address(icu_input.end()));
+        ucnv_toUnicode(icu_converter.converter, &output, output_end, &input,
+                       input_end, nullptr, true, &error);
         DCHECK(U_SUCCESS(error));
         if (icu_output != uchar::kReplacementCharacter) {
           uint16_t pointer = i * kRange + j;
@@ -219,7 +221,7 @@ const Jis0212EncodeIndex& EnsureJis0212EncodeIndexForDecode() {
     DCHECK(U_SUCCESS(error));
 
     constexpr size_t kRange = 94;
-    uint8_t icu_input[3];
+    std::array<uint8_t, 3> icu_input;
     UChar icu_output;
     for (size_t i = 0; i < kRange; ++i) {
       for (size_t j = 0; j < kRange; ++j) {
@@ -227,10 +229,14 @@ const Jis0212EncodeIndex& EnsureJis0212EncodeIndexForDecode() {
         icu_input[1] = 0xA1 + i;
         icu_input[2] = 0xA1 + j;
 
-        UChar* output = &icu_output;
-        const char* input = reinterpret_cast<const char*>(icu_input);
-        ucnv_toUnicode(icu_converter.converter, &output, output + 1, &input,
-                       input + sizeof(icu_input), nullptr, true, &error);
+        base::span<UChar, 1> output_span = base::span_from_ref(icu_output);
+        UChar* output = output_span.data();
+        UChar* output_end = base::to_address(output_span.end());
+        const char* input = reinterpret_cast<const char*>(icu_input.data());
+        const char* input_end =
+            reinterpret_cast<const char*>(base::to_address(icu_input.end()));
+        ucnv_toUnicode(icu_converter.converter, &output, output_end, &input,
+                       input_end, nullptr, true, &error);
         DCHECK(U_SUCCESS(error));
         if (icu_output != uchar::kReplacementCharacter) {
           uint16_t pointer = i * kRange + j;
@@ -266,11 +272,14 @@ const EucKrEncodeIndex& EnsureEucKrEncodeIndexForDecode() {
           static_cast<uint8_t>(pointer / 190u + 0x81),
           static_cast<uint8_t>(pointer % 190u + 0x41)};
       const char* input = reinterpret_cast<const char*>(icu_input.data());
-      UChar icu_output[2];
-      UChar* output = icu_output;
+      const char* input_end =
+          reinterpret_cast<const char*>(base::to_address(icu_input.end()));
+      std::array<UChar, 2> icu_output;
+      UChar* output = icu_output.data();
+      UChar* output_end = base::to_address(icu_output.end());
       UErrorCode error = U_ZERO_ERROR;
-      ucnv_toUnicode(icu_converter.converter, &output, output + 2, &input,
-                     input + sizeof(icu_input), nullptr, true, &error);
+      ucnv_toUnicode(icu_converter.converter, &output, output_end, &input,
+                     input_end, nullptr, true, &error);
       DCHECK(U_SUCCESS(error));
       if (icu_output[0] == uchar::kReplacementCharacter) {
         return std::nullopt;
@@ -320,16 +329,21 @@ const Gb18030EncodeTable& EnsureGb18030EncodeTable() {
     blink::IcuConverterWrapper icu_converter;
     icu_converter.converter = ucnv_open("gb18030", &error);
     DCHECK(U_SUCCESS(error));
+    std::array<uint8_t, 2> icu_input;
+    UChar icu_output{0};
+
     for (size_t pointer = 0; pointer < 23940; pointer++) {
-      uint8_t icu_input[2];
       icu_input[0] = pointer / 190 + 0x81;
       icu_input[1] = pointer % 190;
       icu_input[1] += (icu_input[1] < 0x3F) ? 0x40 : 0x41;
-      UChar icu_output{0};
-      UChar* output = &icu_output;
-      const char* input = reinterpret_cast<const char*>(icu_input);
-      ucnv_toUnicode(icu_converter.converter, &output, output + 1, &input,
-                     input + sizeof(icu_input), nullptr, true, &error);
+      base::span<UChar, 1> output_span = base::span_from_ref(icu_output);
+      UChar* output = output_span.data();
+      UChar* output_end = base::to_address(output_span.end());
+      const char* input = reinterpret_cast<const char*>(icu_input.data());
+      const char* input_end =
+          reinterpret_cast<const char*>(base::to_address(icu_input.end()));
+      ucnv_toUnicode(icu_converter.converter, &output, output_end, &input,
+                     input_end, nullptr, true, &error);
       DCHECK(U_SUCCESS(error));
       DCHECK_NE(icu_output, uchar::kReplacementCharacter);
       (*array)[pointer] = icu_output;
