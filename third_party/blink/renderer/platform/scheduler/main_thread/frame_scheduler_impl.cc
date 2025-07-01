@@ -550,8 +550,6 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kInternalIntersectionObserver:
     case TaskType::kInternalAutofill:
       return PausableTaskQueueTraits();
-    case TaskType::kBackForwardCachePostedMessage:
-      return PausableTaskQueueTraits().SetCanRunInBFCache(true);
     case TaskType::kInternalFindInPage:
       return FindInPageTaskQueueTraits();
     case TaskType::kInternalHighPriorityLocalFrame:
@@ -955,13 +953,6 @@ void FrameSchedulerImpl::UpdateQueuePolicy(
   // will be resumed when the page is visible.
   bool queue_frozen =
       parent_page_scheduler_->IsFrozen() && queue->CanBeFrozen();
-  // Override the frozen state for queues that should run while in BFCache. This
-  // allows tasks like eviction-triggering messages to be processed, while still
-  // freezing the queue for other reasons (e.g., to save resources).
-  if (queue_frozen && queue->CanRunInBFCache() &&
-      parent_page_scheduler_->IsInBackForwardCache()) {
-    queue_frozen = false;
-  }
   queue_disabled |= queue_frozen;
   // Per-frame freezable queues of tasks which are specified as getting frozen
   // immediately when their frame becomes invisible get frozen. They will be

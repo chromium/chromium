@@ -66,9 +66,6 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
       return RendererMainThreadTaskExecution::TASK_TYPE_WEB_SOCKET;
     case TaskType::kPostedMessage:
       return RendererMainThreadTaskExecution::TASK_TYPE_POSTED_MESSAGE;
-    case TaskType::kBackForwardCachePostedMessage:
-      return RendererMainThreadTaskExecution::
-          TASK_TYPE_BACK_FORWARD_CACHE_POSTED_MESSAGE;
     case TaskType::kUnshippedPortMessage:
       return RendererMainThreadTaskExecution::TASK_TYPE_UNSHIPPED_PORT_MESSAGE;
     case TaskType::kFileReading:

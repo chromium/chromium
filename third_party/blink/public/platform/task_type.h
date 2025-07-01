@@ -291,10 +291,6 @@ enum class TaskType : unsigned char {
   // submission. Remove this if the autofill tasks become synchronous.
   kInternalAutofill = 88,
 
-  // Like kPostedMessage, but for tasks that must run on a page in the
-  // Back-Forward Cache.
-  kBackForwardCachePostedMessage = 89,
-
   ///////////////////////////////////////
   // The following task types are only for thread-local queues.
   ///////////////////////////////////////
@@ -324,7 +320,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kBackForwardCachePostedMessage,
+  kMaxValue = kInternalAutofill,
 };
 
 }  // namespace blink

@@ -226,11 +226,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return *this;
     }
 
-    QueueTraits SetCanRunInBFCache(bool value) {
-      can_run_in_bfcache = value;
-      return *this;
-    }
-
     QueueTraits SetPrioritisationType(PrioritisationType type) {
       prioritisation_type = type;
       return *this;
@@ -257,7 +252,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       key |= can_be_frozen << (offset++);
       key |= can_run_in_background << (offset++);
       key |= can_run_when_virtual_time_paused << (offset++);
-      key |= can_run_in_bfcache << (offset++);
       key |= can_be_paused_for_android_webview << (offset++);
       key |= static_cast<int>(prioritisation_type) << offset;
       offset += kPrioritisationTypeWidthBits;
@@ -274,13 +268,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     bool can_be_frozen : 1 = false;
     bool can_run_in_background : 1 = true;
     bool can_run_when_virtual_time_paused : 1 = true;
-    // Normally, a freezable task queue is paused when its page is frozen. A
-    // page can be frozen when it enters the Back-Forward Cache, or when the
-    // browser freezes pages to save resources. This flag marks tasks that
-    // should run only when the page is frozen for BFCache. This is useful for
-    // tasks that need to evict the page from BFCache, e.g., a message from a
-    // SharedWorker.
-    bool can_run_in_bfcache : 1 = false;
     bool can_be_paused_for_android_webview : 1 = false;
     PrioritisationType prioritisation_type = PrioritisationType::kRegular;
   };
@@ -352,12 +339,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     QueueCreationParams SetCanRunWhenVirtualTimePaused(bool value) {
       queue_traits = queue_traits.SetCanRunWhenVirtualTimePaused(value);
-      ApplyQueueTraitsToSpec();
-      return *this;
-    }
-
-    QueueCreationParams SetCanRunInBFCache(bool value) {
-      queue_traits = queue_traits.SetCanRunInBFCache(value);
       ApplyQueueTraitsToSpec();
       return *this;
     }
@@ -446,8 +427,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   bool CanRunWhenVirtualTimePaused() const {
     return queue_traits_.can_run_when_virtual_time_paused;
   }
-
-  bool CanRunInBFCache() const { return queue_traits_.can_run_in_bfcache; }
 
   QueueTraits GetQueueTraits() const { return queue_traits_; }
 

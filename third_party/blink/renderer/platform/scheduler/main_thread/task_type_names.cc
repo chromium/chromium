@@ -51,8 +51,6 @@ perfetto::StaticString TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "WebSocket";
     case TaskType::kPostedMessage:
       return "PostedMessage";
-    case TaskType::kBackForwardCachePostedMessage:
-      return "BackForwardCachePostedMessage";
     case TaskType::kUnshippedPortMessage:
       return "UnshippedPortMessage";
     case TaskType::kFileReading:

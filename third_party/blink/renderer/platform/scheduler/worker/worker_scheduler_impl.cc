@@ -156,7 +156,6 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kJavascriptTimerDelayedLowNesting:
     case TaskType::kJavascriptTimerDelayedHighNesting:
     case TaskType::kPostedMessage:
-    case TaskType::kBackForwardCachePostedMessage:
     case TaskType::kWorkerAnimation:
       return throttleable_task_queue_->CreateTaskRunner(type);
     case TaskType::kNetworking:
