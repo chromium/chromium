@@ -570,6 +570,10 @@ config("compiler") {
         cflags += [ "-fno-sized-deallocation" ]
       }
     }
+
+    if (diagnostics_print_source_range_info && !is_win) {
+      cflags += [ "-fdiagnostics-print-source-range-info" ]
+    }
   }
 
   if (use_lld) {
