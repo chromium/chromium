@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -21,6 +22,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace feature_first_run {
 
@@ -77,10 +80,12 @@ std::unique_ptr<views::View> CreateDialogContentView(
 void ShowAutofillAiFirstRunDialog(content::WebContents* web_contents) {
   autofill::LogOptInFunnelEvent(
       autofill::AutofillAiOptInFunnelEvents::kFFRDialogShown);
+
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   ShowFeatureFirstRunDialog(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE),
-      ui::ImageModel::FromResourceId(IDR_AUTOFILL_AI_FFR_BANNER),
-      ui::ImageModel::FromResourceId(IDR_AUTOFILL_AI_FFR_BANNER_DARK),
+      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_AI_FFR_BANNER_LOTTIE),
+      /*dark_mode_banner=*/ui::ImageModel(),
       CreateDialogContentView(web_contents),
       base::BindOnce(&OnDialogAccepted, web_contents),
       base::BindOnce(&OnDialogCancelled), web_contents);

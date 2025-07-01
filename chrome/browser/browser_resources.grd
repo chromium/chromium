@@ -34,6 +34,7 @@
         <structure type="lottie" name="IDR_SAVE_PASSWORD_LOTTIE" file="resources/autofill/autofill_save_password.json" compress="brotli"/>
         <structure type="lottie" name="IDR_SAVE_ADDRESS_LOTTIE" file="resources/autofill/autofill_save_address.json" compress="brotli"/>
         <structure type="lottie" name="IDR_VIRTUAL_CARD_ENROLL_DIALOG_LOTTIE" file="resources/autofill/autofill_virtual_card_enroll_dialog.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_AUTOFILL_AI_FFR_BANNER_LOTTIE" file="resources/autofill/autofill_ai_ffr_banner.json" compress="brotli"/>
 
       </if>
     </structures>
