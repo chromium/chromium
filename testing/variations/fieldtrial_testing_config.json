@@ -25525,6 +25525,22 @@
             ]
         }
     ],
+    "UserLevelMemoryPressureSignal": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "UserLevelMemoryPressureSignalOn4GbDevices",
+                        "UserLevelMemoryPressureSignalOn6GbDevices"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8CodeFlushing": [
         {
             "platforms": [
