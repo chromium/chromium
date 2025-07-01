@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 // View controller for the reader mode options.
-@interface ReaderModeOptionsViewController : UIViewController
+@interface ReaderModeOptionsViewController : UINavigationController
 
 @end
 

@@ -13,6 +13,7 @@ source_set("coordinator") {
     ":options",
     "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reader_mode/ui",
+    "//ios/chrome/browser/reader_mode/ui:constants",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

@@ -5025,6 +5025,48 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_QR_SCANNER_VIEWPORT_CAPTION" desc="Message displayed below the QR scanner viewport instructing the user to position the scanned QR or bar code inside the viewport. [Length: unlimited] [iOS only]">
         Position QR code or barcode in this frame
       </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_DARK" desc="Label of a Reading mode options button which changes the Reading mode dark color scheme.">
+        Dark
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_LIGHT" desc="Label of a Reading mode options button which changes the Reading mode light color scheme.">
+        Light
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_SEPIA" desc="Label of a Reading mode options button which changes the Reading mode sepia color scheme.">
+        Sepia
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_LABEL" desc="Label of a Reading mode options button which changes the Reading mode color scheme." meaning="Label of a Reading mode options button which changes the Reading mode color scheme. This should be one, at most two characters to preview the color scheme e.g. Aa in English.">
+        Aa
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MENU_TITLE" desc="Title of the Reading mode font family drop-down menu which contains font families to choose from.">
+        Font
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MONOSPACE_LABEL" desc="Title of the Monospace option in the Reading mode font family drop-down menu.">
+        Monospace
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SANS_SERIF_LABEL" desc="Title of the Sans-Serif option in the Reading mode font family drop-down menu.">
+        Sans-Serif
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SERIF_LABEL" desc="Title of the Serif option in the Reading mode font family drop-down menu.">
+        Serif
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_SIZE_DECREASE_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibillity label of the Reading mode options button which decreases the font size in Reading mode.">
+        Decrease text size
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_SIZE_DECREASE_BUTTON_LABEL" desc="Label of the Reading mode options button which decreases the font size in Reading mode." meaning="Label of the Reading mode options button which decreases the font size in Reading mode. This should be one, at most two preview characters e.g. A in English, あ in Japanese, 小 in Chinese (to indicate smaller text). This button's text is smaller than average to indicate than tapping the button will decrease the font size in Reading mode.">
+        A
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_SIZE_INCREASE_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibillity label of the Reading mode options button which increases the font size in Reading mode.">
+        Increase text size
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_SIZE_INCREASE_BUTTON_LABEL" desc="Label of the Reading mode options button which increases the font size in Reading mode." meaning="Label of the Reading mode options button which increases the font size in Reading mode. This should be one, at most two preview characters e.g. A in English, あ in Japanese, 大 in Chinese (to indicate larger text). This button's text is larger than average to indicate than tapping the button will increase the font size in Reading mode.">
+        A
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_HIDE_BUTTON_LABEL" desc="Label of a Reading mode options button which closes Reading mode.">
+        Turn Off
+      </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_TITLE" desc="Title of the Reading mode options UI which gives user control over the Reading mode font family, font size, color scheme.">
+        Reading Mode
+      </message>
       <message name="IDS_IOS_READING_LIST_ACCESSIBILITY_STATE_DOWNLOADED" desc="Accessibility label for the offline status of the reading list entry. Read by Text To Speech.">
         Available offline
       </message>
