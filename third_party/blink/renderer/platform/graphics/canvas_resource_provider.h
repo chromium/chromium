@@ -105,15 +105,14 @@ class PLATFORM_EXPORT CanvasResourceProvider
     kBitmapGpuMemoryBuffer [[deprecated]] = 4,
     kSharedImage = 5,
     kDirectGpuMemoryBuffer [[deprecated]] = 6,
-    kPassThrough = 7,
+    kPassThrough [[deprecated]] = 7,
     kSwapChain = 8,
     kSkiaDawnSharedImage [[deprecated]] = 9,
     kMaxValue = kSkiaDawnSharedImage,
   };
 #pragma GCC diagnostic pop
 
-  // Used to determine if the provider is going to be initialized or not,
-  // ignored by PassThrough
+  // Used to determine if the provider is going to be initialized or not.
   enum class ShouldInitialize { kNo, kCallClear };
 
   static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
