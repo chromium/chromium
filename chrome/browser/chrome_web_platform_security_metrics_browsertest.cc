@@ -26,7 +26,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "pdf/buildflags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -205,11 +205,9 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
 class PrivateNetworkAccessWebSocketMetricBrowserTest
     : public ChromeWebPlatformSecurityMetricsBrowserTest {
  public:
-  PrivateNetworkAccessWebSocketMetricBrowserTest()
-      : ws_server_(net::SpawnedTestServer::TYPE_WS,
-                   net::GetWebSocketTestDataDirectory()) {}
+  PrivateNetworkAccessWebSocketMetricBrowserTest() = default;
 
-  net::SpawnedTestServer& ws_server() { return ws_server_; }
+  net::EmbeddedTestServer& ws_server() { return ws_server_; }
 
   std::string WaitAndGetTitle() {
     return base::UTF16ToUTF8(watcher_->WaitAndGetTitle());
@@ -217,6 +215,9 @@ class PrivateNetworkAccessWebSocketMetricBrowserTest
 
  private:
   void SetUpOnMainThread() override {
+    net::test_server::InstallDefaultWebSocketHandlers(&ws_server_);
+    ASSERT_TRUE(ws_server_.Start());
+
     ChromeWebPlatformSecurityMetricsBrowserTest::SetUpOnMainThread();
 
     watcher_ = std::make_unique<content::TitleWatcher>(
@@ -226,7 +227,7 @@ class PrivateNetworkAccessWebSocketMetricBrowserTest
 
   void TearDownOnMainThread() override { watcher_.reset(); }
 
-  net::SpawnedTestServer ws_server_;
+  net::EmbeddedTestServer ws_server_{net::EmbeddedTestServer::Type::TYPE_HTTP};
   std::unique_ptr<content::TitleWatcher> watcher_;
 };
 
@@ -421,16 +422,14 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     PrivateNetworkAccessWebSocketMetricBrowserTest,
     MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocal) {
-  // Launch a WebSocket server.
-  ASSERT_TRUE(ws_server().Start());
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), http_server().GetURL(
-                     "a.com",
-                     "/private_network_access/"
-                     "websocket-treat-as-public-address.html"
-                     "?url=" +
-                         ws_server().GetURL("echo-with-no-extension").spec())));
+      browser(),
+      http_server().GetURL(
+          "a.com",
+          "/private_network_access/"
+          "websocket-treat-as-public-address.html"
+          "?url=" +
+              ws_server().GetURL("/echo-with-no-extension").spec())));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
   CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 1);
@@ -448,16 +447,14 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebSocketMetricBrowserTest,
                        MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal) {
-  // Launch a WebSocket server.
-  ASSERT_TRUE(ws_server().Start());
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), http_server().GetURL(
-                     "a.com",
-                     "/private_network_access/"
-                     "websocket.html"
-                     "?url=" +
-                         ws_server().GetURL("echo-with-no-extension").spec())));
+      browser(),
+      http_server().GetURL(
+          "a.com",
+          "/private_network_access/"
+          "websocket.html"
+          "?url=" +
+              ws_server().GetURL("/echo-with-no-extension").spec())));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
   CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 0);
