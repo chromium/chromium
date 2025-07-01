@@ -290,10 +290,9 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector<AXNode::AllChildIterator> siblings;
-    for (auto iter = root_node->AllChildrenBegin();
-         iter != root_node->AllChildrenEnd(); ++iter) {
-      siblings.push_back(iter);
+    std::vector<AXNode*> siblings;
+    for (AXNode* child : root_node->GetAllChildren()) {
+      siblings.push_back(child);
     }
     EXPECT_THAT(siblings, ElementsAre(HasAXNodeID(paragraph_0),
                                       HasAXNodeID(paragraph_1_ignored),

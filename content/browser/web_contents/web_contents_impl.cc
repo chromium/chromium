@@ -9442,9 +9442,8 @@ void WebContentsImpl::RecursivelyConstructAXTree(
     std::vector<ui::AXNodeData>& nodes) {
   nodes.push_back(node->data());
 
-  for (auto iter = node->AllChildrenBegin(); iter != node->AllChildrenEnd();
-       ++iter) {
-    RecursivelyConstructAXTree(&(*iter), nodes);
+  for (ui::AXNode* child : node->GetAllChildren()) {
+    RecursivelyConstructAXTree(child, nodes);
   }
 }
 

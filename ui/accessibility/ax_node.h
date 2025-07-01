@@ -188,13 +188,8 @@ class AX_EXPORT AXNode final {
   // Iterators for walking the tree in depth-first pre-order.
   //
 
-  using AllChildIterator = ChildIteratorBase<AXNode,
-                                             &AXNode::GetNextSibling,
-                                             &AXNode::GetPreviousSibling,
-                                             &AXNode::GetFirstChild,
-                                             &AXNode::GetLastChild>;
-  AllChildIterator AllChildrenBegin() const;
-  AllChildIterator AllChildrenEnd() const;
+  // Use a range-based for loop on GetAllChildren() to iterate over all of a
+  // node's direct children.
 
   using AllChildCrossingTreeBoundaryIterator =
       ChildIteratorBase<AXNode,

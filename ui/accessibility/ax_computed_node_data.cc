@@ -255,12 +255,11 @@ void AXComputedNodeData::ComputeUnignoredValues(
     unignored_parent_id_for_child = owner_->id();
   int unignored_child_count = 0;
   std::vector<AXNodeID> unignored_child_ids;
-  for (auto iter = owner_->AllChildrenBegin(), end = owner_->AllChildrenEnd();
-       iter != end; ++iter) {
-    const AXComputedNodeData& computed_data = iter->GetComputedNodeData();
+  for (AXNode* child : owner_->GetAllChildren()) {
+    const AXComputedNodeData& computed_data = child->GetComputedNodeData();
     int new_index_in_parent = starting_index_in_parent + unignored_child_count;
 
-    if (iter->IsIgnored()) {
+    if (child->IsIgnored()) {
       // Skip the ignored node and recursively look at its children.
       computed_data.ComputeUnignoredValues(unignored_parent_id_for_child,
                                            new_index_in_parent);
@@ -281,7 +280,7 @@ void AXComputedNodeData::ComputeUnignoredValues(
         computed_data.unignored_parent_id_ = unignored_parent_id_for_child;
 
       ++unignored_child_count;
-      unignored_child_ids.push_back(iter->id());
+      unignored_child_ids.push_back(child->id());
     }
   }
 
