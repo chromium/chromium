@@ -9,7 +9,6 @@
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -219,6 +218,40 @@ void WaitForTitle(content::WebContents* web_contents,
       content::TitleWatcher(web_contents, expected_title).WaitAndGetTitle());
 }
 
+class OverlayControlsBecomingVisibleObserver : public views::ViewObserver {
+ public:
+  OverlayControlsBecomingVisibleObserver(views::View* controls_container,
+                                         base::OnceClosure cb)
+      : visibility_changed_callback_(std::move(cb)) {
+    if (controls_container->GetVisible()) {
+      std::move(visibility_changed_callback_).Run();
+    } else {
+      observation_.Observe(controls_container);
+    }
+  }
+  OverlayControlsBecomingVisibleObserver(
+      const OverlayControlsBecomingVisibleObserver&) = delete;
+  OverlayControlsBecomingVisibleObserver& operator=(
+      const OverlayControlsBecomingVisibleObserver&) = delete;
+
+  ~OverlayControlsBecomingVisibleObserver() override = default;
+
+  void OnViewVisibilityChanged(views::View*,
+                               views::View* controls_container,
+                               bool visible) override {
+    if (controls_container->GetVisible()) {
+      std::move(visibility_changed_callback_).Run();
+    } else {
+      LOG(WARNING) << "Expected to receive callback after container is "
+                      "visible, but did not";
+    }
+  }
+
+ private:
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+  base::OnceClosure visibility_changed_callback_;
+};
+
 }  // namespace
 
 class VideoPictureInPictureWindowControllerBrowserTest
@@ -373,8 +406,10 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 
   // Wait for controls to become visible. This might not be immediate, if the
   // window has been moved.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return GetOverlayWindow()->AreControlsVisible(); }));
+  base::RunLoop run_loop;
+  OverlayControlsBecomingVisibleObserver observer(
+      GetOverlayWindow()->GetControlsContainerView(), run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_TRUE(GetOverlayWindow()->AreControlsVisible());
 }
