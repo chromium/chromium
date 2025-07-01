@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -328,6 +329,7 @@ FileSystemBackend* FileSystemContext::GetFileSystemBackend(
   if (found != backend_map_.end()) {
     return found->second;
   }
+  SCOPED_CRASH_KEY_NUMBER("398002857", "file_system_type", type);
   NOTREACHED() << "Unknown filesystem type: " << type;
 }
 
