@@ -79,7 +79,7 @@ struct HashTraits<String> : SimpleClassHashTraits<String> {
   static unsigned GetHash(const UChar* key) {
     return ComputeHashForWideString(
         // SAFETY: Safe when input is null-terminated string.
-        key, UNSAFE_BUFFERS(LengthOfNullTerminatedString(key)));
+        UNSAFE_BUFFERS({key, LengthOfNullTerminatedString(key)}));
   }
 
   static bool Equal(const String& a, const char* b) { return a == b; }

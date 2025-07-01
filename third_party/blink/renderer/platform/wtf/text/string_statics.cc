@@ -23,11 +23,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
 
 #include <algorithm>
@@ -39,6 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/convert_to_8bit_hash_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -69,20 +65,20 @@ alignas(String) char g_canonical_whitespace_table_storage[sizeof(
     NewlineThenWhitespaceStringsTable::TableType)];
 }
 
-WTF_EXPORT unsigned ComputeHashForWideString(const UChar* str,
-                                             unsigned length) {
+WTF_EXPORT unsigned ComputeHashForWideString(base::span<const UChar> str) {
   bool is_all_latin1 = true;
-  for (unsigned i = 0; i < length; ++i) {
-    if (str[i] & 0xff00) {
+  for (UChar ch : str) {
+    if (ch & 0xff00) {
       is_all_latin1 = false;
       break;
     }
   }
   if (is_all_latin1) {
     return StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
-        (char*)str, length);
+        reinterpret_cast<const char*>(str.data()), str.size());
   } else {
-    return StringHasher::ComputeHashAndMaskTop8Bits((char*)str, length * 2);
+    return StringHasher::ComputeHashAndMaskTop8Bits(
+        reinterpret_cast<const char*>(str.data()), str.size() * 2);
   }
 }
 
@@ -95,10 +91,9 @@ NOINLINE unsigned StringImpl::HashSlowCase() const {
   if (Is8Bit()) {
     // This is the common case, so we take the size penalty
     // of the inlining here.
-    SetHash(StringHasher::ComputeHashAndMaskTop8BitsInline((char*)Characters8(),
-                                                           length_));
+    SetHash(StringHasher::ComputeHashAndMaskTop8BitsInline(Span8()));
   } else {
-    SetHash(ComputeHashForWideString(Characters16(), length_));
+    SetHash(ComputeHashForWideString(Span16()));
   }
   return ExistingHash();
 }

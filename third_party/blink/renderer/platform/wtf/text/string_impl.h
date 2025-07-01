@@ -79,7 +79,7 @@ enum TextCaseSensitivity {
 // LChar to begin with. This ensures that the same code points
 // are hashed to the same value, even if someone called e.g.
 // Ensure16Bit() on the string at some point.
-WTF_EXPORT unsigned ComputeHashForWideString(const UChar* str, unsigned length);
+WTF_EXPORT unsigned ComputeHashForWideString(base::span<const UChar> str);
 
 enum StripBehavior { kStripExtraWhiteSpace, kDoNotStripWhiteSpace };
 
@@ -260,7 +260,7 @@ class WTF_EXPORT StringImpl {
         hash,
         (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(
                         reinterpret_cast<const char*>(Span8().data()), length_)
-                  : ComputeHashForWideString(Span16().data(), length_)));
+                  : ComputeHashForWideString(Span16())));
     DCHECK(hash);  // Verify that 0 is a valid sentinel hash value.
     SetHashRaw(hash);
   }

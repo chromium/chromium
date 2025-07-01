@@ -9,6 +9,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 
+#include <cstdint>
+
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
@@ -38,10 +40,11 @@ class UCharBuffer {
       // This is a very common case from HTML parsing, so we take
       // the size penalty from inlining.
       return StringHasher::ComputeHashAndMaskTop8BitsInline<
-          WTF::ConvertTo8BitHashReader>((const char*)chars, len);
+          WTF::ConvertTo8BitHashReader>(
+          {reinterpret_cast<const uint8_t*>(chars), len});
     } else {
-      return StringHasher::ComputeHashAndMaskTop8Bits((const char*)chars,
-                                                      len * 2);
+      return StringHasher::ComputeHashAndMaskTop8Bits(
+          reinterpret_cast<const char*>(chars), len * 2);
     }
   }
 
@@ -347,9 +350,7 @@ class LCharBuffer {
       : characters_(chars.data()),
         length_(chars.size()),
         // This is a common path from V8 strings, so inlining is worth it.
-        hash_(StringHasher::ComputeHashAndMaskTop8BitsInline(
-            base::as_chars(chars).data(),
-            chars.size())) {}
+        hash_(StringHasher::ComputeHashAndMaskTop8BitsInline(chars)) {}
 
   base::span<const LChar> characters() const { return {characters_, length_}; }
   unsigned hash() const { return hash_; }

@@ -80,10 +80,8 @@ class StringHasher {
   // HashReader.
   template <class Reader = PlainHashReader>
   ALWAYS_INLINE static unsigned ComputeHashAndMaskTop8BitsInline(
-      const char* data,
-      unsigned length) {
-    return MaskTop8Bits(
-        rapidhash<Reader>(reinterpret_cast<const uint8_t*>(data), length));
+      base::span<const uint8_t> data) {
+    return MaskTop8Bits(rapidhash<Reader>(data.data(), data.size()));
   }
 
   static uint64_t HashMemory(base::span<const uint8_t> data) {
