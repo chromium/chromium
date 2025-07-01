@@ -86,12 +86,12 @@ found in the LICENSE file.
 
     <declare-styleable name="ChipView">
         <attr name="allowMultipleLines" format="boolean"/>
-        <attr name="extendLateralPadding" format="boolean"/>
         <attr name="reduceEndPadding" format="boolean"/>
         <attr name="solidColorChip" format="boolean"/>
         <attr name="textAlignStart" format="boolean"/>
         <attr name="reduceTextStartPadding" format="boolean"/>
         <attr name="chipColor" format="color"/>
+        <attr name="chipStartPadding" format="reference|dimension"/>
         <attr name="chipStateLayerColor" format="color"/>
         <attr name="chipStrokeColor" format="color"/>
         <attr name="chipStyle" format="reference"/>
@@ -102,6 +102,8 @@ found in the LICENSE file.
         <attr name="primaryTextAppearance" format="reference"/>
         <attr name="endIconWidth" format="reference|dimension"/>
         <attr name="endIconHeight" format="reference|dimension"/>
+        <attr name="endIconMarginStart" format="reference|dimension"/>
+        <attr name="endIconMarginEnd" format="reference|dimension"/>
         <attr name="multiLineVerticalPadding" format="reference|dimension"/>
         <attr name="secondaryTextAppearance" format="reference"/>
         <attr name="rippleColor"/>

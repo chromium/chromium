@@ -181,14 +181,14 @@ found in the LICENSE file.
     <dimen name="chip_default_height">32dp</dimen>
     <dimen name="chip_end_padding">16dp</dimen>
     <dimen name="chip_reduced_end_padding">12dp</dimen>
-    <dimen name="chip_element_leading_padding">8dp</dimen>
-    <dimen name="chip_element_extended_leading_padding">16dp</dimen>
+    <dimen name="chip_view_start_padding">8dp</dimen>
+    <dimen name="chip_view_extended_start_padding">16dp</dimen>
     <dimen name="chip_bg_vertical_inset">8dp</dimen>
     <dimen name="chip_loading_view_size">12dp</dimen>
     <dimen name="chip_end_icon_margin_start">8dp</dimen>
     <dimen name="chip_end_icon_extended_margin_start">16dp</dimen>
-    <dimen name="chip_end_padding_with_end_icon">6dp</dimen>
-    <dimen name="chip_extended_end_padding_with_end_icon">16dp</dimen>
+    <dimen name="chip_end_icon_margin_end">6dp</dimen>
+    <dimen name="chip_end_icon_extended_margin_end">16dp</dimen>
     <dimen name="chip_text_multiline_vertical_padding">12dp</dimen>
     <dimen name="chip_text_reduced_leading_padding">4dp</dimen>
     <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(8dp) ) / 2 -->

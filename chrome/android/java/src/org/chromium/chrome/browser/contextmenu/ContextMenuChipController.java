@@ -61,11 +61,10 @@ class ContextMenuChipController implements View.OnClickListener {
                 mContext.getResources().getDimensionPixelSize(R.dimen.context_menu_chip_max_width)
                         // Padding before primary icon
                         - mContext.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.chip_element_extended_leading_padding)
+                                .getDimensionPixelSize(R.dimen.chip_view_extended_start_padding)
                         // Padding after primary icon
                         - mContext.getResources()
-                                .getDimensionPixelSize(R.dimen.chip_element_leading_padding)
+                                .getDimensionPixelSize(R.dimen.chip_view_start_padding)
                         // Primary icon width.
                         - mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.context_menu_chip_icon_size);
@@ -82,7 +81,7 @@ class ContextMenuChipController implements View.OnClickListener {
                             // Padding after close icon.
                             - mContext.getResources()
                                     .getDimensionPixelSize(
-                                            R.dimen.chip_extended_end_padding_with_end_icon);
+                                            R.dimen.chip_end_icon_extended_margin_end);
         }
 
         return maxWidthPx;
