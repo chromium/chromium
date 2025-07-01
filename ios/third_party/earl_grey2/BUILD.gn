@@ -181,6 +181,7 @@ source_set("ui_lib_shared_headers") {
   testonly = true
 
   sources = [
+    "src/AppFramework/Additions/CAAnimation+GREYApp.h",
     "src/UILib/GREYElementHierarchy.h",
     "src/UILib/GREYScreenshotter.h",
     "src/UILib/Provider/GREYUIWindowProvider.h",
@@ -314,7 +315,6 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Action/GREYTapper.m",
     "src/AppFramework/Action/GREYTwistAction.h",
     "src/AppFramework/Action/GREYTwistAction.m",
-    "src/AppFramework/Additions/CAAnimation+GREYApp.h",
     "src/AppFramework/Additions/CAAnimation+GREYApp.m",
     "src/AppFramework/Additions/CALayer+GREYApp.h",
     "src/AppFramework/Additions/CALayer+GREYApp.m",
