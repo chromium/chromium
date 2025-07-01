@@ -16,7 +16,6 @@ enum CacheType {
                               // cases where auto-eviction is not desired:
                               // e.g. cache_storage, service worker script cache
   SHADER_CACHE,               // Backing store for the GL shader cache.
-  PNACL_CACHE,                // Backing store the PNaCl translation cache
   GENERATED_BYTE_CODE_CACHE,  // Backing store for renderer generated data like
                               // bytecode for JavaScript.
   GENERATED_NATIVE_CODE_CACHE,      // Backing store for renderer generated data

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/disk_cache/disk_cache.h"
+
 #include <cinttypes>
 #include <cstdlib>
 #include <iostream>
@@ -20,6 +22,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -32,7 +35,6 @@
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
-#include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_fuzzer.pb.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/disk_cache/memory/mem_backend_impl.h"
@@ -279,14 +281,6 @@ net::CacheType GetCacheTypeAndPrint(
     case disk_cache_fuzzer::FuzzCommands::SHADER_CACHE:
       MAYBE_PRINT << "Cache type = SHADER_CACHE." << std::endl;
       return net::CacheType::SHADER_CACHE;
-    case disk_cache_fuzzer::FuzzCommands::PNACL_CACHE:
-      // Simple cache won't handle PNACL_CACHE.
-      if (backend == disk_cache_fuzzer::FuzzCommands::SIMPLE) {
-        MAYBE_PRINT << "Cache type = DISK_CACHE." << std::endl;
-        return net::CacheType::DISK_CACHE;
-      }
-      MAYBE_PRINT << "Cache type = PNACL_CACHE." << std::endl;
-      return net::CacheType::PNACL_CACHE;
     case disk_cache_fuzzer::FuzzCommands::GENERATED_BYTE_CODE_CACHE:
       MAYBE_PRINT << "Cache type = GENERATED_BYTE_CODE_CACHE." << std::endl;
       return net::CacheType::GENERATED_BYTE_CODE_CACHE;
@@ -297,6 +291,7 @@ net::CacheType GetCacheTypeAndPrint(
       MAYBE_PRINT << "Cache type = DISK_CACHE." << std::endl;
       return net::CacheType::DISK_CACHE;
   }
+  NOTREACHED();
 }
 
 void IOCallback(std::string io_type, int rv) {
