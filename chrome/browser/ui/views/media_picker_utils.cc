@@ -41,7 +41,15 @@ views::Widget* CreateMediaPickerDialogWidget(Browser* browser,
     // Top-level windows should usually be draggable.
     if (!parent) {
       delegate->set_draggable(true);
+#if BUILDFLAG(IS_CHROMEOS)
+      // kSystem is available only on CrOS and should be used here because the
+      // dimmer window is shown in front of the media picker dialog when the
+      // dialog is requested by an Android app. kSystem brings the dialog in
+      // front of the dimmer.
+      delegate->SetModalType(ui::mojom::ModalType::kSystem);
+#else
       delegate->SetModalType(ui::mojom::ModalType::kNone);
+#endif
     }
     widget =
         views::DialogDelegate::CreateDialogWidget(delegate, context, parent);
