@@ -131,9 +131,8 @@ void DidFindRegistrationForDispatchPeriodicSyncEvent(
 
 }  // namespace
 
-ServiceWorkerHandler::ServiceWorkerHandler(bool allow_inspect_worker)
+ServiceWorkerHandler::ServiceWorkerHandler()
     : DevToolsDomainHandler(ServiceWorker::Metainfo::domainName),
-      allow_inspect_worker_(allow_inspect_worker),
       enabled_(false),
       browser_context_(nullptr),
       storage_partition_(nullptr) {}
@@ -269,26 +268,6 @@ Response ServiceWorkerHandler::UpdateRegistration(
   context_->UpdateRegistration(GURL(scope_url),
                                blink::StorageKey::CreateFirstParty(
                                    url::Origin::Create(GURL(scope_url))));
-  return Response::Success();
-}
-
-Response ServiceWorkerHandler::InspectWorker(const std::string& version_id) {
-  if (!enabled_)
-    return CreateDomainNotEnabledErrorResponse();
-  if (!context_)
-    return CreateContextErrorResponse();
-  if (!allow_inspect_worker_)
-    return Response::ServerError("Permission denied");
-  int64_t id = blink::mojom::kInvalidServiceWorkerVersionId;
-  if (!base::StringToInt64(version_id, &id))
-    return CreateInvalidVersionIdErrorResponse();
-
-  if (content::ServiceWorkerVersion* version = context_->GetLiveVersion(id)) {
-    OpenNewDevToolsWindow(
-        version->embedded_worker()->process_id(),
-        version->embedded_worker()->worker_devtools_agent_route_id());
-  }
-
   return Response::Success();
 }
 

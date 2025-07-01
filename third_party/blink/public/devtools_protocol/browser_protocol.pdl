@@ -10638,10 +10638,6 @@ experimental domain ServiceWorker
 
   command enable
 
-  command inspectWorker
-    parameters
-      string versionId
-
   command setForceUpdateOnPageLoad
     parameters
       boolean forceUpdateOnPageLoad
