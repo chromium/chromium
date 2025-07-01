@@ -761,7 +761,8 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorWithRefreshTokens) {
       kAccountId,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(token_service()->RefreshTokenHasError(kAccountId));
+  EXPECT_NE(token_service()->GetAuthError(kAccountId),
+            GoogleServiceAuthError::AuthErrorNone());
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(SetAccountsInCookieResult::kPersistentError, result_);
 }
@@ -993,7 +994,8 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
       kAccountId,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
-  EXPECT_TRUE(token_service()->RefreshTokenHasError(kAccountId));
+  EXPECT_NE(token_service()->GetAuthError(kAccountId),
+            GoogleServiceAuthError::AuthErrorNone());
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(SetAccountsInCookieResult::kPersistentError, result_);
 }

@@ -281,10 +281,6 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   bool RefreshTokenIsAvailableOnDevice(const CoreAccountId& account_id) const;
 #endif  // BUILDFLAG(IS_IOS)
 
-  // Returns true if a refresh token exists for |account_id| and it is in a
-  // persistent error state.
-  bool RefreshTokenHasError(const CoreAccountId& account_id) const;
-
   // Returns the auth error associated with |account_id|. Only persistent errors
   // will be returned.
   GoogleServiceAuthError GetAuthError(const CoreAccountId& account_id) const;

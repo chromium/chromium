@@ -337,11 +337,6 @@ bool ProfileOAuth2TokenService::RefreshTokenIsAvailableOnDevice(
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-bool ProfileOAuth2TokenService::RefreshTokenHasError(
-    const CoreAccountId& account_id) const {
-  return GetAuthError(account_id) != GoogleServiceAuthError::AuthErrorNone();
-}
-
 GoogleServiceAuthError ProfileOAuth2TokenService::GetAuthError(
     const CoreAccountId& account_id) const {
   GoogleServiceAuthError error = delegate_->GetAuthError(account_id);
