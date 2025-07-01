@@ -427,6 +427,58 @@ public class ModalDialogViewRenderTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_Checkbox_Unchecked() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                "This dialog has a checkbox below.")
+                        .with(
+                                ModalDialogProperties.CHECKBOX_TEXT,
+                                mResources.getString(R.string.dont_ask_again))
+                        .with(ModalDialogProperties.CHECKBOX_CHECKED, false)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "checkbox_unchecked");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_Checkbox_Checked() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                "This dialog has a checkbox below that is checked by default.")
+                        .with(
+                                ModalDialogProperties.CHECKBOX_TEXT,
+                                mResources.getString(R.string.dont_ask_again))
+                        .with(ModalDialogProperties.CHECKBOX_CHECKED, true)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "checkbox_checked");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
     public void testRender_ButtonGroup() throws IOException {
         setUpViews(
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,

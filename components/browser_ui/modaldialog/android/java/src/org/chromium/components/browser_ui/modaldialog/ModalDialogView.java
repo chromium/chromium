@@ -18,6 +18,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -67,6 +69,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private LinearLayout mButtonGroup;
     private Button mPositiveButton;
     private Button mNegativeButton;
+    private CheckBox mCheckboxView;
     private @Nullable Callback<Integer> mOnButtonClickedCallback;
     private @Nullable Runnable mOnEscapeCallback;
     private boolean mTitleScrollable;
@@ -139,6 +142,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mMessageParagraphsContainer = findViewById(R.id.message_paragraphs_container);
         mCustomViewContainer = findViewById(R.id.custom_view_not_in_scrollable);
         mCustomButtonBarViewContainer = findViewById(R.id.custom_button_bar);
+        mCheckboxView = findViewById(R.id.modal_dialog_checkbox);
         mButtonBar = findViewById(R.id.button_bar);
         mPositiveButton = findViewById(R.id.positive_button);
         mNegativeButton = findViewById(R.id.negative_button);
@@ -151,6 +155,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mFooterContainer.setBackgroundColor(
                 SemanticColorUtils.getColorSurfaceContainerLow(getContext()));
         updateContentVisibility();
+        updateCheckboxVisibility();
         updateButtonVisibility();
 
         // If the scroll view can not be scrolled, make the scroll view not focusable so that the
@@ -491,6 +496,36 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         return (TextView) mMessageParagraphsContainer.getChildAt(index);
     }
 
+    /** Sets the listener for the checkbox. */
+    void setOnCheckboxCheckedChangeListener(
+            CompoundButton.@Nullable OnCheckedChangeListener listener) {
+        mCheckboxView.setOnCheckedChangeListener(listener);
+    }
+
+    /**
+     * @param text The text of the checkbox.
+     */
+    void setCheckboxText(CharSequence text) {
+        mCheckboxView.setText(text);
+        updateCheckboxVisibility();
+    }
+
+    /**
+     * @param checked The checked state of the checkbox.
+     */
+    void setCheckboxChecked(boolean checked) {
+        if (mCheckboxView.isChecked() != checked) {
+            mCheckboxView.setChecked(checked);
+        }
+    }
+
+    /**
+     * @return Whether the checkbox is checked.
+     */
+    public boolean isCheckboxChecked() {
+        return mCheckboxView.isChecked();
+    }
+
     /**
      * @param view The customized view in the dialog content.
      */
@@ -656,6 +691,12 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mModalDialogScrollView.setVisibility(
                 modalDialogScrollViewVisible ? View.VISIBLE : View.GONE);
         mFooterContainer.setVisibility(footerMessageVisible ? View.VISIBLE : View.GONE);
+    }
+
+    private void updateCheckboxVisibility() {
+        if (mCheckboxView == null) return;
+        boolean checkboxVisible = !TextUtils.isEmpty(mCheckboxView.getText());
+        mCheckboxView.setVisibility(checkboxVisible ? View.VISIBLE : View.GONE);
     }
 
     private void updateButtonVisibility() {

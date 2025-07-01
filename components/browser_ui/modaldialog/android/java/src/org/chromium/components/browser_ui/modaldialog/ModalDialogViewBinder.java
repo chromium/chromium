@@ -46,6 +46,20 @@ public class ModalDialogViewBinder
             view.setCustomView(model.get(ModalDialogProperties.CUSTOM_VIEW));
         } else if (ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW == propertyKey) {
             view.setCustomButtonBar(model.get(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW));
+        } else if (ModalDialogProperties.CHECKBOX_TEXT == propertyKey) {
+            String text = model.get(ModalDialogProperties.CHECKBOX_TEXT);
+            view.setCheckboxText(text);
+
+            if (!TextUtils.isEmpty(text)) {
+                view.setOnCheckboxCheckedChangeListener(
+                        (buttonView, isChecked) -> {
+                            model.set(ModalDialogProperties.CHECKBOX_CHECKED, isChecked);
+                        });
+            } else {
+                view.setOnCheckboxCheckedChangeListener(null);
+            }
+        } else if (ModalDialogProperties.CHECKBOX_CHECKED == propertyKey) {
+            view.setCheckboxChecked(model.get(ModalDialogProperties.CHECKBOX_CHECKED));
         } else if (ModalDialogProperties.POSITIVE_BUTTON_TEXT == propertyKey) {
             assert checkFilterTouchConsistency(model);
             assert checkDefaultButtonsNotCombinedWithButtonGroup(model);
