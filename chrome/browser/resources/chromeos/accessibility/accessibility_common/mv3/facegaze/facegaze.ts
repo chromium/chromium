@@ -94,7 +94,7 @@ export class FaceGaze {
 
   private maybeShowConfirmationDialog_(): void {
     chrome.settingsPrivate.getPref(
-        PrefNames.ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, pref => {
+        PrefNames.ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, async pref => {
           if (pref.value === undefined || pref.value === null) {
             return;
           }
@@ -112,10 +112,10 @@ export class FaceGaze {
               chrome.i18n.getMessage('facegaze_confirmation_dialog_title');
           const description =
               chrome.i18n.getMessage('facegaze_confirmation_dialog_desc');
-          chrome.accessibilityPrivate.showConfirmationDialog(
-              title, description, /*cancelName=*/ undefined, (accepted) => {
-                this.onConfirmationDialog_(accepted);
-              });
+          const accepted =
+              await chrome.accessibilityPrivate.showConfirmationDialog(
+                  title, description, /*cancelName=*/ undefined);
+          this.onConfirmationDialog_(accepted);
         });
   }
 

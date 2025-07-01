@@ -401,10 +401,15 @@ class MockAccessibilityPrivate {
    * Whether a feature is enabled. This doesn't look at command line flags; set
    * enabled state with MockAccessibilityPrivate::enableFeatureForTest.
    * @param {AccessibilityFeature} feature
-   * @param {function(boolean): void} callback
+   * @param {function(boolean): void} [callback]
    */
   isFeatureEnabled(feature, callback) {
-    callback(this.enabledFeatures_.has(feature));
+    if (callback) {
+      callback(this.enabledFeatures_.has(feature));
+      return;
+    }
+
+    return Promise.resolve(this.enabledFeatures_.has(feature));
   }
 
   /**
@@ -420,12 +425,22 @@ class MockAccessibilityPrivate {
 
   /** @return {?PumpkinData} */
   installPumpkinForDictation(callback) {
-    callback(MockAccessibilityPrivate.pumpkinData_);
+    if (callback) {
+      callback(MockAccessibilityPrivate.pumpkinData_);
+      return;
+    }
+
+    return Promise.resolve(MockAccessibilityPrivate.pumpkinData_);
   }
 
   /** @return {?FaceGazeAssets} */
   installFaceGazeAssets(callback) {
-    callback(this.faceGazeAssets_);
+    if (callback) {
+      callback(this.faceGazeAssets_);
+      return;
+    }
+
+    return Promise.resolve(this.faceGazeAssets_);
   }
 
   /** Called in order to toggle FaceGaze gesture info for settings. */
@@ -658,7 +673,12 @@ class MockAccessibilityPrivate {
 
   /** @return {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
   getDisplayBounds(callback) {
-    callback(this.displayBounds_);
+    if (callback) {
+      callback(this.displayBounds_);
+      return;
+    }
+
+    return Promise.resolve(his.displayBounds_);
   }
 
   /**

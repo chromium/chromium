@@ -63,7 +63,7 @@ export class AccessibilityCommon {
   /**
    * Initializes the AccessibilityCommon extension.
    */
-  private init_(): void {
+  private async init_(): Promise<void> {
     chrome.accessibilityFeatures.autoclick.get(
         {}, details => this.onAutoclickUpdated_(details));
     chrome.accessibilityFeatures.autoclick.onChange.addListener(
@@ -90,10 +90,9 @@ export class AccessibilityCommon {
 
     const faceGazeFeature =
         chrome.accessibilityPrivate.AccessibilityFeature.FACE_GAZE;
-    chrome.accessibilityPrivate.isFeatureEnabled(faceGazeFeature, enabled => {
-      if (!enabled) {
-        return;
-      }
+    const faceGazeEnabled =
+        await chrome.accessibilityPrivate.isFeatureEnabled(faceGazeFeature);
+    if (faceGazeEnabled) {
       // TODO(b/309121742): Add FaceGaze pref to the accessibilityFeatures
       // extension API.
       chrome.settingsPrivate.getPref(
@@ -107,7 +106,7 @@ export class AccessibilityCommon {
           }
         }
       });
-    });
+    }
 
     // AccessibilityCommon is an IME so it shows in the input methods list
     // when it starts up. Remove from this list, Dictation will add it back

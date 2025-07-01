@@ -45,18 +45,17 @@ export class PumpkinParseStrategy extends ParseStrategy {
   private onPumpkinTaggerReadyChangedForTesting_: VoidFunction|null = null;
   private offscreenMessageListenerRegistered_ = false;
 
-  private init_(): void {
+  private async init_(): Promise<void> {
     this.refreshLocale_();
     if (!this.locale_) {
       return;
     }
 
     this.requestedPumpkinInstall_ = true;
-    chrome.accessibilityPrivate.installPumpkinForDictation(data => {
-      // TODO(crbug.com/259352407): Consider retrying installation at a later
-      // time if it failed.
-      this.onPumpkinInstalled_(data);
-    });
+    const data = await chrome.accessibilityPrivate.installPumpkinForDictation();
+    // TODO(crbug.com/259352407): Consider retrying installation at a later
+    // time if it failed.
+    this.onPumpkinInstalled_(data);
   }
 
   private onPumpkinInstalled_(data: PumpkinConstants.PumpkinData): void {

@@ -123,28 +123,25 @@ export class WebCamFaceLandmarker {
   }
 
   private async installAssets_(): Promise<any> {
-    return new Promise(resolve => {
-      chrome.accessibilityPrivate.installFaceGazeAssets(assets => {
-        if (!assets) {
-          // FaceGaze will not work unless the FaceGaze assets are successfully
-          // installed. When the assets fail to install, AccessibilityManager
-          // shows a notification to the user informing them of the failure and
-          // to try installing again later. As a result, we should turn FaceGaze
-          // off here and allow them to toggle the feature back on to retry the
-          // download.
-          console.error(
-              `Couldn't create FaceLandmarker because FaceGaze assets couldn't
-                 be installed.`);
+    const assets = await chrome.accessibilityPrivate.installFaceGazeAssets();
+    if (!assets) {
+      // FaceGaze will not work unless the FaceGaze assets are successfully
+      // installed. When the assets fail to install, AccessibilityManager
+      // shows a notification to the user informing them of the failure and
+      // to try installing again later. As a result, we should turn FaceGaze
+      // off here and allow them to toggle the feature back on to retry the
+      // download.
+      console.error(
+          `Couldn't create FaceLandmarker because FaceGaze assets couldn't
+             be installed.`);
 
-          chrome.settingsPrivate.setPref(PrefNames.FACE_GAZE_ENABLED, false);
-          return;
-        }
-        resolve({
-          wasm: Messenger.arrayBufferToBase64(assets.wasm),
-          model: Messenger.arrayBufferToBase64(assets.model)
-        });
-      });
-    });
+      chrome.settingsPrivate.setPref(PrefNames.FACE_GAZE_ENABLED, false);
+      return;
+    }
+    return {
+      wasm: Messenger.arrayBufferToBase64(assets.wasm),
+      model: Messenger.arrayBufferToBase64(assets.model)
+    };
   }
 
   stop(): void {

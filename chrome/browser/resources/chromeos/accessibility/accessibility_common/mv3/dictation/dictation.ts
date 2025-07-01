@@ -59,7 +59,7 @@ export class Dictation {
   }
 
   /** Sets up Dictation's speech recognizer and various listeners. */
-  private initialize_(): void {
+  private async initialize_(): Promise<void> {
     this.focusHandler_ = new FocusHandler();
     this.inputController_ = new InputControllerImpl(
         () => this.stopDictation_(/*notify=*/ true), this.focusHandler_);
@@ -103,10 +103,9 @@ export class Dictation {
     const contextCheckingFeature =
         chrome.accessibilityPrivate.AccessibilityFeature
             .DICTATION_CONTEXT_CHECKING;
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        contextCheckingFeature, enabled => {
-          this.isContextCheckingFeatureEnabled_ = enabled;
-        });
+    this.isContextCheckingFeatureEnabled_ =
+        await chrome.accessibilityPrivate.isFeatureEnabled(
+            contextCheckingFeature);
   }
 
   /** Performs any destruction before dictation object is destroyed. */

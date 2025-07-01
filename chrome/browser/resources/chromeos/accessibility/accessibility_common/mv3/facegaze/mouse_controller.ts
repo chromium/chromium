@@ -183,11 +183,7 @@ export class MouseController {
     this.paused_ = false;
 
     // TODO(b/309121742): Handle display bounds changed.
-    const screens = await new Promise<ScreenRect[]>((resolve) => {
-      chrome.accessibilityPrivate.getDisplayBounds((screens: ScreenRect[]) => {
-        resolve(screens);
-      });
-    });
+    const screens = await chrome.accessibilityPrivate.getDisplayBounds();
     if (!screens.length) {
       // TODO(b/309121742): Error handling for no detected screens.
       return;
