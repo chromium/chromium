@@ -11,6 +11,8 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_result.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -77,23 +79,23 @@ class NotificationPermissionsReviewService : public SafetyHubService,
   // SafetyHubService implementation
 
   // Initializes the latest result to the notifications that should be reviewed.
-  std::unique_ptr<SafetyHubService::Result> InitializeLatestResultImpl()
-      override;
+  std::unique_ptr<SafetyHubResult> InitializeLatestResultImpl() override;
 
   // Returns the interval at which the repeated updates will be run.
   base::TimeDelta GetRepeatedUpdateInterval() override;
 
   // For the notification permission review service, there is not background
   // task. Instead, all operations happen on the UI thread.
-  base::OnceCallback<std::unique_ptr<Result>()> GetBackgroundTask() override;
+  base::OnceCallback<std::unique_ptr<SafetyHubResult>()> GetBackgroundTask()
+      override;
 
   // A boilerplate function that returns an empty result.
-  static std::unique_ptr<SafetyHubService::Result> UpdateOnBackgroundThread();
+  static std::unique_ptr<SafetyHubResult> UpdateOnBackgroundThread();
 
   // Gathers all the sites that sent a lot of notifications, and that the user
   // should review.
-  std::unique_ptr<Result> UpdateOnUIThread(
-      std::unique_ptr<Result> result) override;
+  std::unique_ptr<SafetyHubResult> UpdateOnUIThread(
+      std::unique_ptr<SafetyHubResult> result) override;
 
   // Returns |true| when the URL and notification count combination meets the
   // criteria for adding the origin to the review list.

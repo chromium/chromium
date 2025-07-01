@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_result.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -112,7 +113,7 @@ class RevokedPermissionsService final : public SafetyHubService,
   // it determines whether it should be considered as recently unused (i.e. one
   // week). This list will be further filtered in the UI task to determine which
   // permissions should be revoked.
-  static std::unique_ptr<Result> UpdateOnBackgroundThread(
+  static std::unique_ptr<SafetyHubResult> UpdateOnBackgroundThread(
       base::Clock* clock,
       const scoped_refptr<HostContentSettingsMap> hcsm);
 
@@ -187,22 +188,22 @@ class RevokedPermissionsService final : public SafetyHubService,
 
   // SafetyHubService implementation
 
-  std::unique_ptr<SafetyHubService::Result> InitializeLatestResultImpl()
-      override;
+  std::unique_ptr<SafetyHubResult> InitializeLatestResultImpl() override;
 
   // Returns the interval at which the repeated updates will be run.
   base::TimeDelta GetRepeatedUpdateInterval() override;
 
   // Returns a reference to the static |UpdateOnBackgroundThread| function,
-  // bound with a |Result| containing a reference to the clock and
+  // bound with a |SafetyHubResult| containing a reference to the clock and
   // host content settings map.
-  base::OnceCallback<std::unique_ptr<Result>()> GetBackgroundTask() override;
+  base::OnceCallback<std::unique_ptr<SafetyHubResult>()> GetBackgroundTask()
+      override;
 
   // Uses the |UnusedPermissionMap| from the background task to determine which
   // permissions should be revoked, revokes them and returns the list of revoked
   // permissions.
-  std::unique_ptr<Result> UpdateOnUIThread(
-      std::unique_ptr<Result> result) override;
+  std::unique_ptr<SafetyHubResult> UpdateOnUIThread(
+      std::unique_ptr<SafetyHubResult> result) override;
 
   // Returns if the permissions auto-revocation is enabled for unused sites.
   bool IsUnusedSiteAutoRevocationEnabled();

@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
@@ -725,7 +726,7 @@ void SafetyHubHandler::SendNotificationPermissionReviewList() {
 }
 
 void SafetyHubHandler::InitSafetyHubExtensionResults() {
-  std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> sh_result =
       SafetyHubExtensionsResult::GetResult(profile_, false);
   if (sh_result.has_value()) {
     extension_sh_result_ = std::make_unique<SafetyHubExtensionsResult>(

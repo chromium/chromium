@@ -31,6 +31,8 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -108,7 +110,7 @@ class TestObserver : public SafetyHubService::Observer {
     callback_ = callback;
   }
 
-  void OnResultAvailable(const SafetyHubService::Result* result) override {
+  void OnResultAvailable(const SafetyHubResult* result) override {
     callback_.Run();
   }
 

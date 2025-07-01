@@ -9,7 +9,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -68,8 +68,8 @@ class PasswordStatusCheckService
   base::Value::Dict GetPasswordCardData(bool signed_in);
 
   // Returns the latest PasswordStatusCheckResult that is available in memory.
-  // TODO(crbug.com/40267370): This will be a SafetyHubService implementation.
-  std::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
+  // TODO(crbug.com/40267370): This will be a SafetyHubResult implementation.
+  std::optional<std::unique_ptr<SafetyHubResult>> GetCachedResult();
 
   // Returns if there is any ongoing password check or insecure credential
   // check. Returns true if is_update_credential_count_pending() or

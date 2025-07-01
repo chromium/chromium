@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -132,7 +132,7 @@ SafetyHubCardState GetOverallState(Profile* profile) {
   // "warning".
   RevokedPermissionsService* rp_service =
       RevokedPermissionsServiceFactory::GetForProfile(profile);
-  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_usp_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> opt_usp_result =
       rp_service->GetCachedResult();
   if (opt_usp_result.has_value()) {
     auto* result =
@@ -144,7 +144,7 @@ SafetyHubCardState GetOverallState(Profile* profile) {
 
   NotificationPermissionsReviewService* npr_service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
-  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_npr_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> opt_npr_result =
       npr_service->GetCachedResult();
   if (opt_npr_result.has_value()) {
     auto* result = static_cast<NotificationPermissionsReviewResult*>(
@@ -154,7 +154,7 @@ SafetyHubCardState GetOverallState(Profile* profile) {
     }
   }
 
-  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_ext_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> opt_ext_result =
       SafetyHubExtensionsResult::GetResult(profile, true);
   if (opt_ext_result.has_value()) {
     auto* result =

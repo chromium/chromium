@@ -9,7 +9,7 @@
 #include <map>
 #include <set>
 
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -47,7 +47,7 @@ struct PermissionsData {
   PermissionsRevocationType revocation_type;
 };
 
-class RevokedPermissionsResult : public SafetyHubService::Result {
+class RevokedPermissionsResult : public SafetyHubResult {
  public:
   RevokedPermissionsResult();
 
@@ -77,14 +77,14 @@ class RevokedPermissionsResult : public SafetyHubService::Result {
 
   std::set<ContentSettingsPattern> GetRevokedOrigins() const;
 
-  // SafetyHubService::Result implementation
+  // SafetyHubResult implementation
   base::Value::Dict ToDictValue() const override;
   bool IsTriggerForMenuNotification() const override;
   bool WarrantsNewMenuNotification(
       const base::Value::Dict& previous_result_dict) const override;
   std::u16string GetNotificationString() const override;
   int GetNotificationCommandId() const override;
-  std::unique_ptr<SafetyHubService::Result> Clone() const override;
+  std::unique_ptr<SafetyHubResult> Clone() const override;
 
  private:
   std::list<PermissionsData> revoked_permissions_;

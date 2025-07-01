@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -134,9 +135,9 @@ void NotificationPermissionsReviewService::
       ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, {});
 }
 
-std::unique_ptr<SafetyHubService::Result>
+std::unique_ptr<SafetyHubResult>
 NotificationPermissionsReviewService::UpdateOnUIThread(
-    std::unique_ptr<SafetyHubService::Result> interim_result) {
+    std::unique_ptr<SafetyHubResult> interim_result) {
   // Get blocklisted pattern pairs that should not be shown in the review list.
   std::set<std::pair<ContentSettingsPattern, ContentSettingsPattern>>
       ignored_patterns_set = GetIgnoredPatternPairs(hcsm_);
@@ -226,19 +227,19 @@ NotificationPermissionsReviewService::GetRepeatedUpdateInterval() {
   return base::Days(1);
 }
 
-base::OnceCallback<std::unique_ptr<SafetyHubService::Result>()>
+base::OnceCallback<std::unique_ptr<SafetyHubResult>()>
 NotificationPermissionsReviewService::GetBackgroundTask() {
   return base::BindOnce(&UpdateOnBackgroundThread);
 }
 
 // static
-std::unique_ptr<SafetyHubService::Result>
+std::unique_ptr<SafetyHubResult>
 NotificationPermissionsReviewService::UpdateOnBackgroundThread() {
   // Return an empty result.
   return std::make_unique<NotificationPermissionsReviewResult>();
 }
 
-std::unique_ptr<SafetyHubService::Result>
+std::unique_ptr<SafetyHubResult>
 NotificationPermissionsReviewService::InitializeLatestResultImpl() {
   return UpdateOnUIThread(
       std::make_unique<NotificationPermissionsReviewResult>());

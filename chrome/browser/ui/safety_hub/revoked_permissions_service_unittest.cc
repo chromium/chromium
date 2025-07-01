@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
@@ -1423,7 +1423,7 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
   // of revoked permissions) should be immediately available.
   auto new_service = std::make_unique<RevokedPermissionsService>(
       profile(), profile()->GetPrefs());
-  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> opt_result =
       new_service->GetCachedResult();
   EXPECT_TRUE(opt_result.has_value());
   auto* result =
@@ -1532,7 +1532,7 @@ TEST_P(RevokedPermissionsServiceTest, PermissionsRevocationType) {
 
   auto new_service = std::make_unique<RevokedPermissionsService>(
       profile(), profile()->GetPrefs());
-  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> opt_result =
       new_service->GetCachedResult();
   EXPECT_TRUE(opt_result.has_value());
   auto* result =

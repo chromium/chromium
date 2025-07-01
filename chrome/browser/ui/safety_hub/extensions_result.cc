@@ -15,7 +15,7 @@
 #include "chrome/browser/extensions/extension_safety_check_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,7 +42,7 @@ SafetyHubExtensionsResult& SafetyHubExtensionsResult::operator=(
 SafetyHubExtensionsResult::~SafetyHubExtensionsResult() = default;
 
 // static
-std::optional<std::unique_ptr<SafetyHubService::Result>>
+std::optional<std::unique_ptr<SafetyHubResult>>
 SafetyHubExtensionsResult::GetResult(Profile* profile,
                                      bool only_unpublished_extensions = false) {
   extensions::ExtensionRegistry* extension_registry =
@@ -65,8 +65,7 @@ SafetyHubExtensionsResult::GetResult(Profile* profile,
       triggering_extensions, only_unpublished_extensions);
 }
 
-std::unique_ptr<SafetyHubService::Result> SafetyHubExtensionsResult::Clone()
-    const {
+std::unique_ptr<SafetyHubResult> SafetyHubExtensionsResult::Clone() const {
   return std::make_unique<SafetyHubExtensionsResult>(*this);
 }
 

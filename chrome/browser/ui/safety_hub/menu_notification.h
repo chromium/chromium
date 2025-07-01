@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 
 inline constexpr base::TimeDelta
@@ -57,7 +58,7 @@ class SafetyHubMenuNotification {
   // Called whenever a new result for this class of menu notification is
   // available. If the updated result is similar to the current one, no changes
   // are made. Otherwise, the menu notification will be considered as a new one.
-  void UpdateResult(std::unique_ptr<SafetyHubService::Result> result);
+  void UpdateResult(std::unique_ptr<SafetyHubResult> result);
 
   // Sets the time at which a notification can start to be shown.
   void SetOnlyShowAfter(base::Time time);
@@ -76,7 +77,7 @@ class SafetyHubMenuNotification {
   // Returns the module type this menu notification is for.
   safety_hub::SafetyHubModuleType GetModuleType() const;
 
-  SafetyHubService::Result* GetResultForTesting() const;
+  SafetyHubResult* GetResultForTesting() const;
 
   // Returns whether any notification for the same type of result has been
   // shown.
@@ -108,7 +109,7 @@ class SafetyHubMenuNotification {
   std::optional<base::Time> last_impression_time_;
   // The result for which the notification may be shown. Initially, this is a
   // nullptr but its value is updated before any notification will be shown.
-  std::unique_ptr<SafetyHubService::Result> current_result_ = nullptr;
+  std::unique_ptr<SafetyHubResult> current_result_ = nullptr;
   // The previous result that was persisted on disk. This will only be set when
   // the menu notification is created from a Dict value (originating from
   // prefs).

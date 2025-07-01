@@ -7,24 +7,9 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/json/values_util.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "content/public/browser/browser_thread.h"
-
-SafetyHubService::Result::Result(base::Time timestamp)
-    : timestamp_(timestamp) {}
-
-base::Value::Dict SafetyHubService::Result::BaseToDictValue() const {
-  base::Value::Dict result;
-  result.Set(kSafetyHubTimestampResultKey, base::TimeToValue(timestamp_));
-  return result;
-}
-
-base::Time SafetyHubService::Result::timestamp() const {
-  return timestamp_;
-}
 
 SafetyHubService::SafetyHubService() = default;
 SafetyHubService::~SafetyHubService() = default;
@@ -60,7 +45,7 @@ void SafetyHubService::UpdateAsyncInternal() {
 }
 
 void SafetyHubService::OnUpdateFinished(
-    std::unique_ptr<SafetyHubService::Result> result) {
+    std::unique_ptr<SafetyHubResult> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   latest_result_ = UpdateOnUIThread(std::move(result));
   NotifyObservers(latest_result_.get());
@@ -77,7 +62,7 @@ void SafetyHubService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SafetyHubService::NotifyObservers(Result* result) {
+void SafetyHubService::NotifyObservers(SafetyHubResult* result) {
   for (auto& observer : observers_) {
     observer.OnResultAvailable(result);
   }
@@ -87,7 +72,7 @@ bool SafetyHubService::IsUpdateRunning() {
   return pending_updates_ > 0;
 }
 
-std::optional<std::unique_ptr<SafetyHubService::Result>>
+std::optional<std::unique_ptr<SafetyHubResult>>
 SafetyHubService::GetCachedResult() {
   if (latest_result_) {
     // Using the `Clone()` function here instead of the copy constructor as the
@@ -106,6 +91,6 @@ bool SafetyHubService::IsTimerRunningForTesting() {
 }
 
 void SafetyHubService::SetLatestResult(
-    std::unique_ptr<SafetyHubService::Result> result) {
+    std::unique_ptr<SafetyHubResult> result) {
   latest_result_ = std::move(result);
 }

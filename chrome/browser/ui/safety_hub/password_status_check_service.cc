@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -786,7 +787,7 @@ bool PasswordStatusCheckService::IsUpdateRunning() const {
 
 // TODO(crbug.com/40267370): Consider pass by value for GetCachedResult
 // functions.
-std::optional<std::unique_ptr<SafetyHubService::Result>>
+std::optional<std::unique_ptr<SafetyHubResult>>
 PasswordStatusCheckService::GetCachedResult() {
   if (latest_result_) {
     return std::make_unique<PasswordStatusCheckResult>(*latest_result_);

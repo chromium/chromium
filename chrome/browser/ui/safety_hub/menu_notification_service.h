@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -46,21 +46,19 @@ struct SafetyHubModuleInfoElement {
   SafetyHubModuleInfoElement(
       MenuNotificationPriority priority,
       base::TimeDelta interval,
-      base::RepeatingCallback<
-          std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+      base::RepeatingCallback<std::optional<std::unique_ptr<SafetyHubResult>>()>
           result_getter,
       std::unique_ptr<SafetyHubMenuNotification> notification);
 
   MenuNotificationPriority priority;
   base::TimeDelta interval;
-  base::RepeatingCallback<
-      std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+  base::RepeatingCallback<std::optional<std::unique_ptr<SafetyHubResult>>()>
       result_getter;
   std::unique_ptr<SafetyHubMenuNotification> notification;
 };
 
-using ResultMap = std::map<safety_hub::SafetyHubModuleType,
-                           std::unique_ptr<SafetyHubService::Result>>;
+using ResultMap =
+    std::map<safety_hub::SafetyHubModuleType, std::unique_ptr<SafetyHubResult>>;
 
 }  // namespace
 
@@ -101,8 +99,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
 
   void UpdateResultGetterForTesting(
       safety_hub::SafetyHubModuleType type,
-      base::RepeatingCallback<
-          std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+      base::RepeatingCallback<std::optional<std::unique_ptr<SafetyHubResult>>()>
           result_getter);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -132,8 +129,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
       safety_hub::SafetyHubModuleType type,
       MenuNotificationPriority priority,
       base::TimeDelta interval,
-      base::RepeatingCallback<
-          std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+      base::RepeatingCallback<std::optional<std::unique_ptr<SafetyHubResult>>()>
           result_getter,
       const base::Value::Dict& stored_notifications);
 

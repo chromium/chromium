@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
@@ -343,7 +344,7 @@ void RevokedPermissionsService::MaybeStartRepeatedUpdates() {
   }
 }
 
-std::unique_ptr<SafetyHubService::Result>
+std::unique_ptr<SafetyHubResult>
 RevokedPermissionsService::InitializeLatestResultImpl() {
   return GetRevokedPermissions();
 }
@@ -611,13 +612,13 @@ void RevokedPermissionsService::DeletePatternFromRevokedPermissionList(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
 }
 
-base::OnceCallback<std::unique_ptr<SafetyHubService::Result>()>
+base::OnceCallback<std::unique_ptr<SafetyHubResult>()>
 RevokedPermissionsService::GetBackgroundTask() {
   return base::BindOnce(&RevokedPermissionsService::UpdateOnBackgroundThread,
                         clock_, base::WrapRefCounted(hcsm()));
 }
 
-std::unique_ptr<SafetyHubService::Result>
+std::unique_ptr<SafetyHubResult>
 RevokedPermissionsService::UpdateOnBackgroundThread(
     base::Clock* clock,
     const scoped_refptr<HostContentSettingsMap> hcsm) {
@@ -662,9 +663,8 @@ RevokedPermissionsService::UpdateOnBackgroundThread(
   return std::move(result);
 }
 
-std::unique_ptr<SafetyHubService::Result>
-RevokedPermissionsService::UpdateOnUIThread(
-    std::unique_ptr<SafetyHubService::Result> result) {
+std::unique_ptr<SafetyHubResult> RevokedPermissionsService::UpdateOnUIThread(
+    std::unique_ptr<SafetyHubResult> result) {
   auto* interim_result = static_cast<RevokedPermissionsResult*>(result.get());
   recently_unused_permissions_ = interim_result->GetRecentlyUnusedPermissions();
   if (IsUnusedSiteAutoRevocationEnabled()) {

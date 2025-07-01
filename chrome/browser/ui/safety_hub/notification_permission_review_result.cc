@@ -7,6 +7,7 @@
 #include <set>
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -80,8 +81,8 @@ NotificationPermissionsReviewResult::GetOrigins() const {
   return origins;
 }
 
-std::unique_ptr<SafetyHubService::Result>
-NotificationPermissionsReviewResult::Clone() const {
+std::unique_ptr<SafetyHubResult> NotificationPermissionsReviewResult::Clone()
+    const {
   return std::make_unique<NotificationPermissionsReviewResult>(*this);
 }
 

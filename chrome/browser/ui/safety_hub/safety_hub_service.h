@@ -7,78 +7,25 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/time/clock.h"
-#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "components/keyed_service/core/keyed_service.h"
-
-inline constexpr char kSafetyHubTimestampResultKey[] = "timestamp";
-inline constexpr char kSafetyHubOriginKey[] = "origin";
 
 // Base class for Safety Hub services. The background and UI tasks of the
 // derived classes will be executed periodically, according to the time delta
 // interval returned by GetRepeatedUpdateInterval().
 class SafetyHubService : public KeyedService {
  public:
-  // Base class for results returned after the periodic execution of the Safety
-  // Hub service. Each service should implement a derived class that captures
-  // the specific information that is retrieved. Any intermediate data that is
-  // required for the background task, or that needs to passed through to the UI
-  // thread task should be included as well.
-  // TODO(crbug.com/40267370): Move result class to outside of SafetyHubService.
-  class Result {
-   public:
-    virtual ~Result() = default;
-
-    virtual base::Value::Dict ToDictValue() const = 0;
-
-    // Determines whether the current result meets the bar for showing a
-    // notification to the user in the Chrome menu.
-    virtual bool IsTriggerForMenuNotification() const = 0;
-
-    // Determines whether the previous result is sufficiently different that for
-    // the current result a new notification should be shown. This indication is
-    // just based on the comparison of the two results, and thus irrelevant to
-    // how frequently a menu notification has already been shown.
-    virtual bool WarrantsNewMenuNotification(
-        const base::Value::Dict& previous_result_dict) const = 0;
-
-    // Returns the string for the notification that will be shown in the
-    // three-dot menu.
-    virtual std::u16string GetNotificationString() const = 0;
-
-    // Returns the command ID that should be run when the user clicks the
-    // notification in the three-dot menu.
-    virtual int GetNotificationCommandId() const = 0;
-
-    // Returns a copy of the current Safety Hub object. This is intended to be
-    // used when the caller is unaware of the specific derived class.
-    virtual std::unique_ptr<Result> Clone() const = 0;
-
-    base::Time timestamp() const;
-
-   protected:
-    explicit Result(base::Time timestamp = base::Time::Now());
-    Result(const Result&) = default;
-    Result& operator=(const Result&) = default;
-
-    base::Value::Dict BaseToDictValue() const;
-
-   private:
-    base::Time timestamp_;
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     // Called when the result from the update of the service is available.
-    virtual void OnResultAvailable(const Result* result) = 0;
+    virtual void OnResultAvailable(const SafetyHubResult* result) = 0;
   };
 
   SafetyHubService();
@@ -102,7 +49,7 @@ class SafetyHubService : public KeyedService {
   bool IsUpdateRunning();
 
   // Returns the latest result that is available in memory.
-  std::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
+  std::optional<std::unique_ptr<SafetyHubResult>> GetCachedResult();
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -136,37 +83,38 @@ class SafetyHubService : public KeyedService {
   // computation-heavy part of the update process. This task should be static
   // and not be bound to the service, as it will be executed on a separate
   // background thread. As such, only thread-safe parameters should be bound.
-  // The returned Result will be passed along to the UpdateOnUIThread function.
-  virtual base::OnceCallback<std::unique_ptr<Result>()> GetBackgroundTask() = 0;
+  // The returned SafetyHubResult will be passed along to the UpdateOnUIThread
+  // function.
+  virtual base::OnceCallback<std::unique_ptr<SafetyHubResult>()>
+  GetBackgroundTask() = 0;
 
   // This function contains the part of the update task that will be executed
   // synchronously on the UI thread. Hence, it should not be computation-heavy
   // to avoid freezing the browser. It will be passed the intermediate result
   // that was produced by the background task. The result returned by this UI
   // task will be the final result that will be sent to the observers.
-  virtual std::unique_ptr<Result> UpdateOnUIThread(
-      std::unique_ptr<Result> result) = 0;
+  virtual std::unique_ptr<SafetyHubResult> UpdateOnUIThread(
+      std::unique_ptr<SafetyHubResult> result) = 0;
 
   virtual base::WeakPtr<SafetyHubService> GetAsWeakRef() = 0;
 
   // Returns the result that should be initialized upon starting the service.
   // Typically, this will be the outcome of running the lightweight step of the
   // update process (i.e. `UpdateOnUIThread()`).
-  virtual std::unique_ptr<SafetyHubService::Result>
-  InitializeLatestResultImpl() = 0;
+  virtual std::unique_ptr<SafetyHubResult> InitializeLatestResultImpl() = 0;
 
   // Updates the latest result to the provided value.
-  void SetLatestResult(std::unique_ptr<SafetyHubService::Result> result);
+  void SetLatestResult(std::unique_ptr<SafetyHubResult> result);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SafetyHubServiceTest, ManageObservers);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubServiceTest, UpdateOnBackgroundThread);
 
   // Called as soon as the update has been finished.
-  void OnUpdateFinished(std::unique_ptr<Result> result);
+  void OnUpdateFinished(std::unique_ptr<SafetyHubResult> result);
 
   // Notifies each of the added observers that a new result is available.
-  void NotifyObservers(Result* result);
+  void NotifyObservers(SafetyHubResult* result);
 
   // Posts the background task on a background thread.
   void UpdateAsyncInternal();
@@ -183,7 +131,7 @@ class SafetyHubService : public KeyedService {
   // The latest available result, which is initialized when the service is
   // started. The value is set by `InitializeLatestResult()`, which is called
   // in the constructor of each service.
-  std::unique_ptr<Result> latest_result_ = nullptr;
+  std::unique_ptr<SafetyHubResult> latest_result_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_SERVICE_H_

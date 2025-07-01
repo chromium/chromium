@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -908,7 +909,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCardCheckTime) {
 
 TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
        ResultWhenChangingLeakedPassword) {
-  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_old_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> opt_old_result =
       service()->GetCachedResult();
   EXPECT_TRUE(opt_old_result.has_value());
   PasswordStatusCheckResult* old_result =
@@ -919,7 +920,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
   password_store().AddLogin(MakeForm(kUsername2, kPassword, kOrigin1, true));
   RunUntilIdle();
 
-  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_new_result =
+  std::optional<std::unique_ptr<SafetyHubResult>> opt_new_result =
       service()->GetCachedResult();
   EXPECT_TRUE(opt_new_result.has_value());
   PasswordStatusCheckResult* new_result =

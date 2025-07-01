@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_result.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 
 SafetyHubMenuNotification::SafetyHubMenuNotification(
     safety_hub::SafetyHubModuleType type)
@@ -176,7 +176,7 @@ bool SafetyHubMenuNotification::HasAnyNotificationBeenShown() const {
 }
 
 void SafetyHubMenuNotification::UpdateResult(
-    std::unique_ptr<SafetyHubService::Result> new_result) {
+    std::unique_ptr<SafetyHubResult> new_result) {
   // Use the latest available result. This is either the current result when a
   // new result was received, or, if it is unavailble, the result that was
   // stored on the disk.
@@ -204,8 +204,7 @@ int SafetyHubMenuNotification::GetNotificationCommandId() const {
   return current_result_->GetNotificationCommandId();
 }
 
-SafetyHubService::Result* SafetyHubMenuNotification::GetResultForTesting()
-    const {
+SafetyHubResult* SafetyHubMenuNotification::GetResultForTesting() const {
   return current_result_.get();
 }
 

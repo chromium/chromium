@@ -13,6 +13,7 @@
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/common/chrome_features.h"
@@ -76,7 +77,7 @@ class NotificationPermissionReviewServiceTest : public testing::Test {
   std::vector<NotificationPermissions> GetUpdatedReviewList(
       NotificationPermissionsReviewService* service) {
     safety_hub_test_util::UpdateSafetyHubServiceAsync(service);
-    std::optional<std::unique_ptr<SafetyHubService::Result>> result_opt =
+    std::optional<std::unique_ptr<SafetyHubResult>> result_opt =
         service->GetCachedResult();
     EXPECT_TRUE(result_opt.has_value());
     auto* result = static_cast<NotificationPermissionsReviewResult*>(
@@ -100,7 +101,7 @@ class NotificationPermissionReviewServiceTest : public testing::Test {
   GetNotificationPermissionsFromService() {
     auto* service =
         NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
-    std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+    std::optional<std::unique_ptr<SafetyHubResult>> sh_result =
         service->GetCachedResult();
     EXPECT_TRUE(sh_result.has_value());
     return (static_cast<NotificationPermissionsReviewResult*>(

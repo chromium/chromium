@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 
-class SafetyHubSafeBrowsingResult : public SafetyHubService::Result {
+class SafetyHubSafeBrowsingResult : public SafetyHubResult {
  public:
   SafetyHubSafeBrowsingResult() = delete;
 
@@ -21,14 +21,14 @@ class SafetyHubSafeBrowsingResult : public SafetyHubService::Result {
 
   ~SafetyHubSafeBrowsingResult() override;
 
-  static std::optional<std::unique_ptr<SafetyHubService::Result>> GetResult(
+  static std::optional<std::unique_ptr<SafetyHubResult>> GetResult(
       const PrefService* pref_service);
 
   static SafeBrowsingState GetState(const PrefService* pref_service);
 
-  // SafetyHubService::Result implementation
+  // SafetyHubResult implementation
 
-  std::unique_ptr<SafetyHubService::Result> Clone() const override;
+  std::unique_ptr<SafetyHubResult> Clone() const override;
 
   base::Value::Dict ToDictValue() const override;
 

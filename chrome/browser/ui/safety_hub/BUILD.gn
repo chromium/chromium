@@ -22,6 +22,7 @@ source_set("safety_hub") {
     "safe_browsing_result.h",
     "safety_hub_constants.h",
     "safety_hub_prefs.h",
+    "safety_hub_result.h",
     "safety_hub_service.h",
     "safety_hub_util.h",
   ]
@@ -85,6 +86,7 @@ source_set("impl") {
     "safe_browsing_result.cc",
     "safety_hub_constants.cc",
     "safety_hub_prefs.cc",
+    "safety_hub_result.cc",
     "safety_hub_service.cc",
     "safety_hub_util.cc",
   ]
@@ -268,6 +270,7 @@ source_set("unit_tests") {
       "revoked_permissions_result_unittest.cc",
       "revoked_permissions_service_unittest.cc",
       "safety_hub_hats_service_unittest.cc",
+      "safety_hub_result_unittest.cc",
       "safety_hub_service_unittest.cc",
     ]
 

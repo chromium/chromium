@@ -8,7 +8,7 @@
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -26,7 +26,7 @@ SafetyHubSafeBrowsingResult& SafetyHubSafeBrowsingResult::operator=(
 SafetyHubSafeBrowsingResult::~SafetyHubSafeBrowsingResult() = default;
 
 // static
-std::optional<std::unique_ptr<SafetyHubService::Result>>
+std::optional<std::unique_ptr<SafetyHubResult>>
 SafetyHubSafeBrowsingResult::GetResult(const PrefService* pref_service) {
   SafeBrowsingState state = SafetyHubSafeBrowsingResult::GetState(pref_service);
   return std::make_unique<SafetyHubSafeBrowsingResult>(state);
@@ -50,8 +50,7 @@ SafeBrowsingState SafetyHubSafeBrowsingResult::GetState(
   return SafeBrowsingState::kDisabledByUser;
 }
 
-std::unique_ptr<SafetyHubService::Result> SafetyHubSafeBrowsingResult::Clone()
-    const {
+std::unique_ptr<SafetyHubResult> SafetyHubSafeBrowsingResult::Clone() const {
   return std::make_unique<SafetyHubSafeBrowsingResult>(*this);
 }
 
