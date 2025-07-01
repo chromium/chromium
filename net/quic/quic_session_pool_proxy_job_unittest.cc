@@ -246,7 +246,9 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
   // The browser ACKs the OK response packet.
   socket_data.AddWrite(
       "proxy1 ack ok",
-      ConstructAckPacket(to_proxy1, to_proxy1_packet_num++, 1, 2, 1));
+      ConstructAckPacket(to_proxy1, to_proxy1_packet_num++,
+                         /*packet_num_received=*/1, /*largest_received=*/2,
+                         /*smallest_received=*/1));
 
   // The browser sends initial settings and a CONNECT-UDP request to proxy2 via
   // proxy1.

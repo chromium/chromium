@@ -482,10 +482,10 @@ QuicSessionPoolTestBase::ConstructAckPacket(
     test::QuicTestPacketMaker& packet_maker,
     uint64_t packet_number,
     uint64_t packet_num_received,
-    uint64_t smallest_received,
-    uint64_t largest_received) {
+    uint64_t largest_received,
+    uint64_t smallest_received) {
   return packet_maker.Packet(packet_number)
-      .AddAckFrame(packet_num_received, smallest_received, largest_received)
+      .AddAckFrame(packet_num_received, largest_received, smallest_received)
       .Build();
 }
 
