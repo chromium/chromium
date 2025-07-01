@@ -326,6 +326,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/global_error",
       "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/media_router",
+      "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:login",

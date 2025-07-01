@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("performance_controls") {
+    sources = [
+      "battery_saver_bubble_delegate.h",
+      "battery_saver_bubble_observer.h",
+      "battery_saver_button_controller.h",
+      "battery_saver_button_controller_delegate.h",
+      "memory_saver_bubble_controller.h",
+      "memory_saver_bubble_delegate.h",
+      "memory_saver_bubble_observer.h",
+      "memory_saver_chip_controller.h",
+      "memory_saver_chip_tab_helper.h",
+      "memory_saver_opt_in_iph_controller.h",
+      "memory_saver_utils.h",
+      "performance_controls_hats_service.h",
+      "performance_controls_hats_service_factory.h",
+      "performance_controls_metrics.h",
+      "performance_intervention_bubble_delegate.h",
+      "performance_intervention_bubble_observer.h",
+      "performance_intervention_button_controller.h",
+      "performance_intervention_button_controller_delegate.h",
+      "tab_list_model.h",
+      "tab_resource_usage_collector.h",
+      "tab_resource_usage_tab_helper.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resource_coordinator",
+      "//chrome/browser/resource_coordinator:mojo_bindings_shared",
+      "//chrome/browser/resource_coordinator:mojo_bindings_shared_cpp_sources",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//components/keyed_service/core",
+      "//components/metrics",
+      "//components/performance_manager",
+      "//components/prefs",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//ui/base",
+      "//url",
+    ]
+  }
+}

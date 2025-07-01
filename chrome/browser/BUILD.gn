@@ -4423,6 +4423,7 @@ static_library("browser") {
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/search",
 

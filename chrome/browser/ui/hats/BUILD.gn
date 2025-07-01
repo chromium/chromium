@@ -44,6 +44,7 @@ source_set("impl") {
     "hats_service_factory.cc",
     "survey_config.cc",
   ]
+  deps = []
 
   if (!is_android) {
     sources += [
@@ -52,8 +53,10 @@ source_set("impl") {
       "trust_safety_sentiment_service.cc",
       "trust_safety_sentiment_service_factory.cc",
     ]
+
+    deps += [ "//chrome/browser/ui/performance_controls" ]
   }
-  deps = [
+  deps += [
     ":hats",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",

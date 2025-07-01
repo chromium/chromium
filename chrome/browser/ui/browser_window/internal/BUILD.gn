@@ -29,6 +29,7 @@ source_set("internal") {
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/find_bar:find_bar",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/tabs/tab_strip_api",
