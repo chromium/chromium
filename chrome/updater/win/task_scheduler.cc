@@ -455,11 +455,19 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    hr = is_system ? principal->put_RunLevel(TASK_RUNLEVEL_HIGHEST)
-                   : principal->put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
+    hr = principal->put_RunLevel(is_system ? TASK_RUNLEVEL_HIGHEST
+                                           : TASK_RUNLEVEL_LUA);
     if (FAILED(hr)) {
-      PLOG(ERROR) << "Can't put run level or logon type. " << std::hex << hr;
+      PLOG(ERROR) << "Can't put run level. " << std::hex << hr;
       return false;
+    }
+
+    if (!is_system) {
+      hr = principal->put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
+      if (FAILED(hr)) {
+        PLOG(ERROR) << "Can't put logon type. " << std::hex << hr;
+        return false;
+      }
     }
 
     Microsoft::WRL::ComPtr<IRegistrationInfo> registration_info;
