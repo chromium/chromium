@@ -2011,6 +2011,13 @@ public class RootUiCoordinator
     }
 
     /**
+     * @return The {@link TopControlsStacker} that handles all layers for this instance.
+     */
+    public TopControlsStacker getTopControlsStacker() {
+        return mTopControlsStacker;
+    }
+
+    /**
      * Initializes a glue logic that suppresses Contextual Search and hides the Page Zoom slider
      * while a Bottom Sheet feature is in action.
      */

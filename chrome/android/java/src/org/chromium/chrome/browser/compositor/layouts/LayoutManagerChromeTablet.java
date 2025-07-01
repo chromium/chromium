@@ -15,6 +15,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
@@ -81,6 +82,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
+     * @param topControlsStacker The {@link TopControlsStacker} for the owner of this instance.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -104,7 +106,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             DataSharingTabManager dataSharingTabManager,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            TopControlsStacker topControlsStacker) {
         super(
                 host,
                 contentContainer,
@@ -135,7 +138,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         dataSharingTabManager,
                         bottomSheetController,
                         shareDelegateSupplier,
-                        xrSpaceModeObservableSupplier);
+                        xrSpaceModeObservableSupplier,
+                        topControlsStacker);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;
