@@ -1580,8 +1580,7 @@ protocol::Response InspectorOverlayAgent::setInspectMode(
   if (mode != protocol::Overlay::InspectModeEnum::None &&
       mode != protocol::Overlay::InspectModeEnum::SearchForNode &&
       mode != protocol::Overlay::InspectModeEnum::SearchForUAShadowDOM &&
-      mode != protocol::Overlay::InspectModeEnum::CaptureAreaScreenshot &&
-      mode != protocol::Overlay::InspectModeEnum::ShowDistances) {
+      mode != protocol::Overlay::InspectModeEnum::CaptureAreaScreenshot) {
     return protocol::Response::ServerError(
         StrCat({"Unknown mode \"", mode, "\" was provided."}).Utf8());
   }
@@ -1621,10 +1620,6 @@ void InspectorOverlayAgent::PickTheRightTool() {
   } else if (inspect_mode ==
              protocol::Overlay::InspectModeEnum::CaptureAreaScreenshot) {
     inspect_tool = MakeGarbageCollected<ScreenshotTool>(this, GetFrontend());
-  } else if (inspect_mode ==
-             protocol::Overlay::InspectModeEnum::ShowDistances) {
-    inspect_tool =
-        MakeGarbageCollected<NearbyDistanceTool>(this, GetFrontend());
   } else if (!paused_in_debugger_message_.Get().IsNull()) {
     inspect_tool = MakeGarbageCollected<PausedInDebuggerTool>(
         this, GetFrontend(), v8_session_, paused_in_debugger_message_.Get());

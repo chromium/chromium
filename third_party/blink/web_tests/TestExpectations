@@ -7458,7 +7458,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.sharedworker.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded/fast/idle-callback/idle_periods.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/console/console-eval-scoped.js [ Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/elements/distance/node-distances.js [ Skip Timeout ]
 [ Debug Mac13 ] animations/events/animation-iteration-event.html [ Skip Timeout ]
 [ Debug Mac13 ] animations/composition/y-composition.html [ Skip Timeout ]
 [ Debug Mac13 ] animations/interpolation/svg-cy-interpolation.html [ Skip Timeout ]

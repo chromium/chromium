@@ -197,27 +197,6 @@ class PersistentTool : public InspectTool {
 
 // -----------------------------------------------------------------------------
 
-class NearbyDistanceTool : public InspectTool {
- public:
-  NearbyDistanceTool(const NearbyDistanceTool&) = delete;
-  NearbyDistanceTool& operator=(const NearbyDistanceTool&) = delete;
-  void Trace(Visitor* visitor) const override;
-
- private:
-  using InspectTool::InspectTool;
-
-  bool HandleMouseDown(const WebMouseEvent& event,
-                       bool* swallow_next_mouse_up) override;
-  bool HandleMouseMove(const WebMouseEvent& event) override;
-  bool HandleMouseUp(const WebMouseEvent& event) override;
-  void Draw(float scale) override;
-  String GetOverlayName() override;
-
-  Member<Node> hovered_node_;
-};
-
-// -----------------------------------------------------------------------------
-
 class ShowViewSizeTool : public InspectTool {
   using InspectTool::InspectTool;
 
