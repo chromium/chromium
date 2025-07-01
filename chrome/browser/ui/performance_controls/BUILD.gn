@@ -47,4 +47,58 @@ if (!is_android) {
       "//url",
     ]
   }
+
+  source_set("impl") {
+    sources = [
+      "battery_saver_bubble_delegate.cc",
+      "battery_saver_button_controller.cc",
+      "memory_saver_bubble_controller.cc",
+      "memory_saver_bubble_delegate.cc",
+      "memory_saver_chip_controller.cc",
+      "memory_saver_chip_tab_helper.cc",
+      "memory_saver_opt_in_iph_controller.cc",
+      "memory_saver_utils.cc",
+      "performance_controls_hats_service.cc",
+      "performance_controls_hats_service_factory.cc",
+      "performance_controls_metrics.cc",
+      "performance_intervention_bubble_delegate.cc",
+      "performance_intervention_button_controller.cc",
+      "tab_list_model.cc",
+      "tab_resource_usage_collector.cc",
+      "tab_resource_usage_tab_helper.cc",
+    ]
+    deps = [
+      ":performance_controls",
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser:primitives",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/page_action",
+      "//chrome/common",
+      "//chrome/common:channel_info",
+      "//chrome/common:constants",
+      "//components/feature_engagement/public",
+      "//components/feature_engagement/public:feature_constants",
+      "//components/metrics",
+      "//components/performance_manager",
+      "//components/prefs",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//content/public/common",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
 }

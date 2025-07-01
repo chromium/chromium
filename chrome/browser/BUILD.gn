@@ -4575,6 +4575,10 @@ static_library("browser") {
       "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
     ]
 
+    # TODO(crbug.com/428666921): Remove this dependency when c/b/feature_engagement/tracker_factory.h
+    # gets componentized.
+    deps += [ "//chrome/browser/ui/performance_controls:impl" ]
+
     #!is_android
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
@@ -4641,6 +4645,10 @@ static_library("browser") {
       # - identity_manager_factory.h
       # ... get componentized.
       "//chrome/browser/ui/search:impl",
+
+      # TODO(crbug.com/428666921): Remove this circular dependency when
+      # c/b/feature_engagement/tracker_factory.h gets componentized.
+      "//chrome/browser/ui/performance_controls:impl",
 
       "//chrome/browser/ui/browser_window/internal",
       "//chrome/browser/ui/exclusive_access",
