@@ -7,13 +7,16 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/browser_user_data.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
-class Browser;
+class BrowserWindowInterface;
+class GURL;
+class Profile;
 class HistoryClustersSidePanelUI;
 class SidePanelEntryScope;
 class SidePanelRegistry;
+class SidePanelCoordinator;
 
 namespace views {
 class View;
@@ -21,11 +24,10 @@ class View;
 
 // HistoryClustersSidePanelCoordinator handles the creation and registration of
 // the history clusters SidePanelEntry.
-class HistoryClustersSidePanelCoordinator
-    : public BrowserUserData<HistoryClustersSidePanelCoordinator> {
+class HistoryClustersSidePanelCoordinator {
  public:
-  explicit HistoryClustersSidePanelCoordinator(Browser* browser);
-  ~HistoryClustersSidePanelCoordinator() override;
+  explicit HistoryClustersSidePanelCoordinator(BrowserWindowInterface* browser);
+  ~HistoryClustersSidePanelCoordinator();
 
   // Returns whether HistoryClustersSidePanelCoordinator is supported for
   // `profile`. If this returns false, it should not be registered with the side
@@ -47,10 +49,12 @@ class HistoryClustersSidePanelCoordinator
   void OnHistoryClustersPreferenceChanged();
 
  private:
-  friend class BrowserUserData<HistoryClustersSidePanelCoordinator>;
-
   std::unique_ptr<views::View> CreateHistoryClustersWebView(
       SidePanelEntryScope& scope);
+
+  const raw_ptr<BrowserWindowInterface> browser_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<SidePanelCoordinator> side_panel_coordinator_;
 
   // A weak reference to the last-created UI object for this browser.
   base::WeakPtr<HistoryClustersSidePanelUI> history_clusters_ui_;
@@ -59,8 +63,6 @@ class HistoryClustersSidePanelCoordinator
   std::string initial_query_;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  BROWSER_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_SIDE_PANEL_COORDINATOR_H_

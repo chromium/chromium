@@ -658,8 +658,7 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
   }
 
   if (auto* history_clusters_side_panel_coordinator =
-          HistoryClustersSidePanelCoordinator::BrowserUserData::FromBrowser(
-              browser)) {
+          browser->GetFeatures().history_clusters_side_panel_coordinator()) {
     history_clusters_side_panel_coordinator->Show(query);
     return true;
   }

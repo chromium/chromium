@@ -32,6 +32,7 @@ class DesktopBrowserWindowCapabilities;
 class DownloadToolbarUIController;
 class ExclusiveAccessManager;
 class FindBarController;
+class HistoryClustersSidePanelCoordinator;
 class HistorySidePanelCoordinator;
 class IncognitoClearBrowsingDataDialogCoordinator;
 class LocationBarModel;
@@ -329,6 +330,11 @@ class BrowserWindowFeatures {
     return exclusive_access_manager_.get();
   }
 
+  HistoryClustersSidePanelCoordinator*
+  history_clusters_side_panel_coordinator() {
+    return history_clusters_side_panel_coordinator_.get();
+  }
+
   static UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -461,6 +467,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<FindBarController> find_bar_controller_;
 
   std::unique_ptr<TabListBridge> tab_list_bridge_;
+
+  std::unique_ptr<HistoryClustersSidePanelCoordinator>
+      history_clusters_side_panel_coordinator_;
 
   // TODO(crbug.com/423956131): Remove this.
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;

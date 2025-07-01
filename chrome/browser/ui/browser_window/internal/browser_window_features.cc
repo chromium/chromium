@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
@@ -360,6 +361,9 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         std::make_unique<HistorySidePanelCoordinator>(browser_view->browser());
   }
 
+  history_clusters_side_panel_coordinator_ =
+      std::make_unique<HistoryClustersSidePanelCoordinator>(browser_);
+
   bookmarks_side_panel_coordinator_ =
       std::make_unique<BookmarksSidePanelCoordinator>();
 
@@ -437,6 +441,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   if (download_toolbar_ui_controller_) {
     download_toolbar_ui_controller_->TearDownPreBrowserWindowDestruction();
   }
+
+  history_clusters_side_panel_coordinator_.reset();
 
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.
