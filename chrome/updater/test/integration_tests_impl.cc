@@ -1797,31 +1797,6 @@ void InstallEnterpriseCompanionApp() {
                                              &exit_code));
 }
 
-void InstallBrokenEnterpriseCompanionApp() {
-  std::optional<base::FilePath> exe_path =
-      enterprise_companion::GetInstallDirectory();
-  ASSERT_TRUE(exe_path);
-  exe_path = exe_path->Append(GetEnterpriseCompanionAppExeRelativePath());
-
-  ASSERT_TRUE(base::CreateDirectory(exe_path->DirName()));
-  ASSERT_TRUE(base::WriteFile(*exe_path, "broken enterprise companion app"));
-  VLOG(1) << "Broken enterprise companion app installed.";
-}
-
-void UninstallBrokenEnterpriseCompanionApp() {
-  std::optional<base::FilePath> install_dir =
-      enterprise_companion::GetInstallDirectory();
-  ASSERT_TRUE(install_dir);
-  for (const base::FilePath::StringType& process_name :
-       GetCompanionAppProcessNames()) {
-    KillProcesses(process_name, -1);
-    WaitForProcessesToExit(process_name, TestTimeouts::action_timeout());
-    EXPECT_FALSE(IsProcessRunning(process_name)) << process_name;
-  }
-  ASSERT_TRUE(base::DeletePathRecursively(*install_dir));
-  VLOG(1) << "Enterprise companion app manually uninstalled.";
-}
-
 void InstallEnterpriseCompanionAppOverrides(
     const base::Value::Dict& external_overrides) {
   std::optional<base::FilePath> json_path =
@@ -1858,9 +1833,6 @@ void UninstallEnterpriseCompanionApp() {
     VLOG(1) << "Enterprise companion app is removed.";
     return;
   }
-
-  // Forcefully remove the installation in case a broken one exists.
-  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
 }
 
 void ExpectDeviceManagementRequest(ScopedServer* test_server,

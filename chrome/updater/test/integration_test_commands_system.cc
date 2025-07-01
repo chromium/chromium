@@ -663,12 +663,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void InstallEnterpriseCompanionApp() override {
     RunCommand("install_enterprise_companion_app");
   }
-  void InstallBrokenEnterpriseCompanionApp() override {
-    RunCommand("install_broken_enterprise_companion_app");
-  }
-  void UninstallBrokenEnterpriseCompanionApp() override {
-    RunCommand("uninstall_broken_enterprise_companion_app");
-  }
   void InstallEnterpriseCompanionAppOverrides(
       const base::Value::Dict& external_overrides) override {
     RunCommand(

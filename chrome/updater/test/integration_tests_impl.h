@@ -550,16 +550,6 @@ void DMCleanup(UpdaterScope scope);
 // the system scope.
 void InstallEnterpriseCompanionApp();
 
-// Manually uninstalls the enterprise companion app installed via
-// `InstallBrokenEnterpriseCompanionApp`. This should be done before the updater
-// uninstalls, as the broken companion app is unable to uninstall itself which
-// will cause the updater's uninstaller to return an error.
-void UninstallBrokenEnterpriseCompanionApp();
-
-// Installs a stub enterprise companion app which will fail to launch, always at
-// the system scope.
-void InstallBrokenEnterpriseCompanionApp();
-
 // Installs the constants overrides for the enterprise companion app, always at
 // the system scope.
 void InstallEnterpriseCompanionAppOverrides(

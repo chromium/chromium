@@ -538,14 +538,6 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::InstallEnterpriseCompanionApp();
   }
 
-  void InstallBrokenEnterpriseCompanionApp() override {
-    updater::test::InstallBrokenEnterpriseCompanionApp();
-  }
-
-  void UninstallBrokenEnterpriseCompanionApp() override {
-    updater::test::UninstallBrokenEnterpriseCompanionApp();
-  }
-
   void InstallEnterpriseCompanionAppOverrides(
       const base::Value::Dict& external_overrides) override {
     updater::test::InstallEnterpriseCompanionAppOverrides(external_overrides);
