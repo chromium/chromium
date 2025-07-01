@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.73"
 name = "cxxbridge-macro"
-version = "1.0.158"
+version = "1.0.160"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = [
@@ -66,6 +66,9 @@ optional = true
 [dependencies.flate2]
 version = "1.0.26"
 optional = true
+
+[dependencies.indexmap]
+version = "2.9.0"
 
 [dependencies.memmap]
 version = "0.7"

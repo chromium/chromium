@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.73"
 name = "cxxbridge-cmd"
-version = "1.0.158"
+version = "1.0.160"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = ["build.rs"]
@@ -56,6 +56,9 @@ default-features = false
 
 [dependencies.codespan-reporting]
 version = "0.12"
+
+[dependencies.indexmap]
+version = "2.9.0"
 
 [dependencies.proc-macro2]
 version = "1.0.74"

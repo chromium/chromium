@@ -383,7 +383,7 @@ fn check_api_type(cx: &mut Check, ety: &ExternType) {
         }
         let lang = match ety.lang {
             Lang::Rust => "Rust",
-            Lang::Cxx => "C++",
+            Lang::Cxx | Lang::CxxUnwind => "C++",
         };
         let msg = format!(
             "derive({}) on opaque {} type is not supported yet",
@@ -409,7 +409,7 @@ fn check_api_type(cx: &mut Check, ety: &ExternType) {
 
 fn check_api_fn(cx: &mut Check, efn: &ExternFn) {
     match efn.lang {
-        Lang::Cxx => {
+        Lang::Cxx | Lang::CxxUnwind => {
             if !efn.generics.params.is_empty() && !efn.trusted {
                 let ref span = span_for_generics_error(efn);
                 cx.error(span, "extern C++ function with lifetimes must be declared in `unsafe extern \"C++\"` block");

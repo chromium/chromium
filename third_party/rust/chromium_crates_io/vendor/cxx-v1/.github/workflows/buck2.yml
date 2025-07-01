@@ -19,7 +19,9 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@1.87.0
+        # FIXME: use @stable after prelude supports `--test-runtool`
+        # https://github.com/rust-lang/rust/pull/137096
         with:
           components: rust-src
       - uses: dtolnay/install-buck2@latest

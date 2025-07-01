@@ -174,7 +174,7 @@ impl<'a> Types<'a> {
             let Some(impl_key) = ty.impl_key() else {
                 continue;
             };
-            let implicit_impl = match impl_key {
+            let implicit_impl = match &impl_key {
                 ImplKey::RustBox(ident)
                 | ImplKey::RustVec(ident)
                 | ImplKey::UniquePtr(ident)

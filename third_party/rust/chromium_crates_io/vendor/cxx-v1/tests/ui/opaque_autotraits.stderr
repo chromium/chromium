@@ -57,7 +57,7 @@ error[E0277]: `PhantomPinned` cannot be unpinned
 note: required because it appears within the type `PhantomData<PhantomPinned>`
   --> $RUST/core/src/marker.rs
    |
-   | pub struct PhantomData<T: ?Sized>;
+   | pub struct PhantomData<T: PointeeSized>;
    |            ^^^^^^^^^^^
 note: required because it appears within the type `cxx::private::Opaque`
   --> src/opaque.rs

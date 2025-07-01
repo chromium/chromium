@@ -364,7 +364,7 @@
 //! </table>
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.158")]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.160")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(
     improper_ctypes,
@@ -395,6 +395,7 @@
     clippy::ref_as_ptr,
     clippy::uninlined_format_args
 )]
+#![allow(unknown_lints, mismatched_lifetime_syntaxes)]
 
 #[cfg(built_with_cargo)]
 extern crate link_cplusplus;

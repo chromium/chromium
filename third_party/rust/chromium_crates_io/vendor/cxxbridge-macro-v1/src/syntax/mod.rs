@@ -323,6 +323,7 @@ pub(crate) struct Array {
 #[derive(Copy, Clone, PartialEq)]
 pub(crate) enum Lang {
     Cxx,
+    CxxUnwind,
     Rust,
 }
 

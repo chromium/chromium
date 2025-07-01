@@ -20,7 +20,7 @@ note: required because it appears within the type `NotThreadSafe`
 note: required because it appears within the type `PhantomData<[NotThreadSafe]>`
   --> $RUST/core/src/marker.rs
    |
-   | pub struct PhantomData<T: ?Sized>;
+   | pub struct PhantomData<T: PointeeSized>;
    |            ^^^^^^^^^^^
 note: required because it appears within the type `CxxVector<NotThreadSafe>`
   --> src/cxx_vector.rs

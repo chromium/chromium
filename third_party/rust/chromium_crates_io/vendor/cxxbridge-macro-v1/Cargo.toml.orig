@@ -1,6 +1,6 @@
 [package]
 name = "cxxbridge-macro"
-version = "1.0.158"
+version = "1.0.160"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::ffi"]
 description = "Implementation detail of the `cxx` crate."
@@ -21,6 +21,7 @@ experimental-async-fn = []
 experimental-enum-variants-from-header = ["clang-ast", "flate2", "memmap", "serde", "serde_derive", "serde_json"]
 
 [dependencies]
+indexmap = "2.9.0"
 proc-macro2 = "1.0.74"
 quote = "1.0.35"
 rustversion = "1"

@@ -23,6 +23,7 @@
     clippy::toplevel_ref_arg,
     clippy::uninlined_format_args
 )]
+#![allow(unknown_lints, mismatched_lifetime_syntaxes)]
 
 mod app;
 mod cfg;

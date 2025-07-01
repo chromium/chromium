@@ -7,9 +7,27 @@ error: hidden lifetime parameters in types are deprecated
 note: the lint level is defined here
   --> tests/ui/deny_elided_lifetimes.rs:1:9
    |
-1  | #![deny(elided_lifetimes_in_paths)]
+1  | #![deny(elided_lifetimes_in_paths, mismatched_lifetime_syntaxes)]
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^
 help: indicate the anonymous lifetime
+   |
+21 |         fn lifetime_elided(s: &i32) -> UniquePtr<Cpp<'_>>;
+   |                                                     ++++
+
+error: lifetime flowing from input to output with different syntax can be confusing
+  --> tests/ui/deny_elided_lifetimes.rs:21:31
+   |
+21 |         fn lifetime_elided(s: &i32) -> UniquePtr<Cpp>;
+   |                               ^^^^               --- the lifetime gets resolved as `'_`
+   |                               |
+   |                               this lifetime flows to the output
+   |
+note: the lint level is defined here
+  --> tests/ui/deny_elided_lifetimes.rs:1:36
+   |
+1  | #![deny(elided_lifetimes_in_paths, mismatched_lifetime_syntaxes)]
+   |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: one option is to remove the lifetime for references and use the anonymous lifetime for paths
    |
 21 |         fn lifetime_elided(s: &i32) -> UniquePtr<Cpp<'_>>;
    |                                                     ++++

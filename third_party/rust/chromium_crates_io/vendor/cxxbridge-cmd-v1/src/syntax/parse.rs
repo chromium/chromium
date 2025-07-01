@@ -353,7 +353,7 @@ fn parse_foreign_mod(
                 cx.error(span, "extern \"Rust\" block does not need to be unsafe");
             }
         }
-        Lang::Cxx => {}
+        Lang::Cxx | Lang::CxxUnwind => {}
     }
 
     let trusted = trusted || foreign_mod.unsafety.is_some();
@@ -445,6 +445,7 @@ fn parse_lang(abi: &Abi) -> Result<Lang> {
 
     match name.value().as_str() {
         "C++" => Ok(Lang::Cxx),
+        "C++-unwind" => Ok(Lang::CxxUnwind),
         "Rust" => Ok(Lang::Rust),
         _ => Err(Error::new_spanned(
             abi,
@@ -492,7 +493,7 @@ fn parse_extern_type(
     let semi_token = foreign_type.semi_token;
 
     (match lang {
-        Lang::Cxx => Api::CxxType,
+        Lang::Cxx | Lang::CxxUnwind => Api::CxxType,
         Lang::Rust => Api::RustType,
     })(ExternType {
         cfg,
@@ -671,7 +672,7 @@ fn parse_extern_fn(
     let semi_token = foreign_fn.semi_token;
 
     Ok(match lang {
-        Lang::Cxx => Api::CxxFunction,
+        Lang::Cxx | Lang::CxxUnwind => Api::CxxFunction,
         Lang::Rust => Api::RustFunction,
     }(ExternFn {
         cfg,
@@ -964,7 +965,7 @@ fn parse_extern_type_bounded(
     let name = pair(namespace, &ident, cxx_name, rust_name);
 
     Ok(match lang {
-        Lang::Cxx => Api::CxxType,
+        Lang::Cxx | Lang::CxxUnwind => Api::CxxType,
         Lang::Rust => Api::RustType,
     }(ExternType {
         cfg,

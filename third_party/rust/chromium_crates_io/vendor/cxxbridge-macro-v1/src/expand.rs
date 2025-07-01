@@ -7,8 +7,8 @@ use crate::syntax::qualified::QualifiedName;
 use crate::syntax::report::Errors;
 use crate::syntax::symbol::Symbol;
 use crate::syntax::{
-    self, check, mangle, Api, Doc, Enum, ExternFn, ExternType, Impl, Lifetimes, Pair, Signature,
-    Struct, Trait, Type, TypeAlias, Types,
+    self, check, mangle, Api, Doc, Enum, ExternFn, ExternType, Impl, Lang, Lifetimes, Pair,
+    Signature, Struct, Trait, Type, TypeAlias, Types,
 };
 use crate::type_id::Crate;
 use crate::{derive, generics};
@@ -92,7 +92,7 @@ fn expand(ffi: Module, doc: Doc, attrs: OtherAttrs, apis: &[Api], types: &Types)
     }
 
     for (impl_key, &explicit_impl) in &types.impls {
-        match *impl_key {
+        match impl_key {
             ImplKey::RustBox(ident) => {
                 hidden.extend(expand_rust_box(ident, types, explicit_impl));
             }
@@ -733,8 +733,13 @@ fn expand_cxx_function_shim(efn: &ExternFn, types: &Types) -> TokenStream {
     let ident = &efn.name.rust;
     let generics = &efn.generics;
     let arg_list = quote_spanned!(efn.paren_token.span=> (#(#all_args,)*));
+    let calling_conv = match efn.lang {
+        Lang::Cxx => quote_spanned!(span=> "C"),
+        Lang::CxxUnwind => quote_spanned!(span=> "C-unwind"),
+        Lang::Rust => unreachable!(),
+    };
     let fn_body = quote_spanned!(span=> {
-        #UnsafeExtern extern "C" {
+        #UnsafeExtern extern #calling_conv {
             #decl
         }
         #trampolines
@@ -805,12 +810,17 @@ fn expand_function_pointer_trampoline(
         &efn.attrs,
         body_span,
     );
+    let calling_conv = match efn.lang {
+        Lang::Cxx => "C",
+        Lang::CxxUnwind => "C-unwind",
+        Lang::Rust => unreachable!(),
+    };
     let var = &var.rust;
 
     quote! {
         let #var = ::cxx::private::FatFunction {
             trampoline: {
-                #UnsafeExtern extern "C" {
+                #UnsafeExtern extern #calling_conv {
                     #[link_name = #c_trampoline]
                     fn trampoline();
                 }
@@ -1296,7 +1306,7 @@ fn type_id(name: &Pair) -> TokenStream {
     crate::type_id::expand(Crate::Cxx, qualified)
 }
 
-fn expand_rust_box(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl>) -> TokenStream {
+fn expand_rust_box(key: &NamedImplKey, types: &Types, explicit_impl: Option<&Impl>) -> TokenStream {
     let ident = key.rust;
     let resolve = types.resolve(ident);
     let link_prefix = format!("cxxbridge1$box${}$", resolve.name.to_symbol());
@@ -1345,7 +1355,7 @@ fn expand_rust_box(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
     }
 }
 
-fn expand_rust_vec(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl>) -> TokenStream {
+fn expand_rust_vec(key: &NamedImplKey, types: &Types, explicit_impl: Option<&Impl>) -> TokenStream {
     let elem = key.rust;
     let resolve = types.resolve(elem);
     let link_prefix = format!("cxxbridge1$rust_vec${}$", resolve.name.to_symbol());
@@ -1443,7 +1453,7 @@ fn expand_rust_vec(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
 }
 
 fn expand_unique_ptr(
-    key: NamedImplKey,
+    key: &NamedImplKey,
     types: &Types,
     explicit_impl: Option<&Impl>,
 ) -> TokenStream {
@@ -1555,7 +1565,7 @@ fn expand_unique_ptr(
 }
 
 fn expand_shared_ptr(
-    key: NamedImplKey,
+    key: &NamedImplKey,
     types: &Types,
     explicit_impl: Option<&Impl>,
 ) -> TokenStream {
@@ -1637,7 +1647,7 @@ fn expand_shared_ptr(
     }
 }
 
-fn expand_weak_ptr(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl>) -> TokenStream {
+fn expand_weak_ptr(key: &NamedImplKey, types: &Types, explicit_impl: Option<&Impl>) -> TokenStream {
     let ident = key.rust;
     let name = ident.to_string();
     let resolve = types.resolve(ident);
@@ -1710,7 +1720,7 @@ fn expand_weak_ptr(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
 }
 
 fn expand_cxx_vector(
-    key: NamedImplKey,
+    key: &NamedImplKey,
     explicit_impl: Option<&Impl>,
     types: &Types,
 ) -> TokenStream {
