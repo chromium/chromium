@@ -486,10 +486,11 @@ void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   CHECK(data_type_limits.conv2d_input.Supports(
       GetOperand(conv2d.filter_operand_id).descriptor));
   std::vector<const char*> inputs = {input.c_str(), filter.c_str()};
+  std::string bias;
   if (conv2d.bias_operand_id.has_value()) {
     CHECK(data_type_limits.conv2d_bias.Supports(
         GetOperand(conv2d.bias_operand_id.value()).descriptor));
-    const std::string bias = GetOperandNameById(conv2d.bias_operand_id.value());
+    bias = GetOperandNameById(conv2d.bias_operand_id.value());
     inputs.push_back(bias.c_str());
   }
   std::array<const char*, 1> outputs = {output.c_str()};
