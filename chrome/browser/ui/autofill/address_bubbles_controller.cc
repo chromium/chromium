@@ -54,8 +54,8 @@ AutofillBubbleBase* ShowSaveBubble(
     base::WeakPtr<AddressBubbleControllerDelegate> delegate) {
   auto controller = std::make_unique<SaveAddressBubbleController>(
       delegate, web_contents, profile, is_migration_to_account);
-  return chrome::FindBrowserWithTab(web_contents)
-      ->window()
+
+  return BrowserWindow::FindBrowserWindowWithWebContents(web_contents)
       ->GetAutofillBubbleHandler()
       ->ShowSaveAddressProfileBubble(web_contents, std::move(controller),
                                      shown_by_user_gesture);
@@ -69,8 +69,7 @@ AutofillBubbleBase* ShowUpdateBubble(
     base::WeakPtr<AddressBubbleControllerDelegate> delegate) {
   auto update_controller = std::make_unique<UpdateAddressBubbleController>(
       delegate, web_contents, profile, original_profile);
-  return chrome::FindBrowserWithTab(web_contents)
-      ->window()
+  return BrowserWindow::FindBrowserWindowWithWebContents(web_contents)
       ->GetAutofillBubbleHandler()
       ->ShowUpdateAddressProfileBubble(
           web_contents, std::move(update_controller), shown_by_user_gesture);
@@ -81,8 +80,7 @@ AutofillBubbleBase* ShowSignInPromo(content::WebContents* web_contents,
                                     const AutofillProfile& autofill_profile) {
   // TODO(crbug.com/381390420): Expose the `AutofillBubbleHandler` in
   // `BrowserWindowInterface` and use that instead.
-  return chrome::FindBrowserWithTab(web_contents)
-      ->window()
+  return BrowserWindow::FindBrowserWindowWithWebContents(web_contents)
       ->GetAutofillBubbleHandler()
       ->ShowAddressSignInPromo(web_contents, autofill_profile);
 }
@@ -261,7 +259,7 @@ void AddressBubblesController::SetUpAndShowBubble(
 }
 
 void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  Browser* browser = BrowserWindow::FindBrowserWindowWithWebContents(web_contents())->AsBrowserView()->browser();
 
   // Verify if user is eligible for iOS promo, and attempt showing if they are.
   ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kAddress, browser);

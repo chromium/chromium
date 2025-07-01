@@ -6,6 +6,8 @@
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -25,13 +27,24 @@ class AddressBubblesControllerBrowserTest : public InProcessBrowserTest {
       const AddressBubblesControllerBrowserTest&) = delete;
   ~AddressBubblesControllerBrowserTest() override = default;
 
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    side_panel_coordinator()->SetNoDelaysForTesting(true);
+    side_panel_coordinator()->DisableAnimationsForTesting();
+  }
+
  protected:
-  raw_ptr<content::WebContents> web_contents() const {
+  raw_ptr<content::WebContents> tab_web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  AddressBubblesController* controller() {
-    return AddressBubblesController::FromWebContents(web_contents());
+  AddressBubblesController* tab_controller() {
+    return AddressBubblesController::FromWebContents(tab_web_contents());
+  }
+
+  SidePanelCoordinator* side_panel_coordinator() {
+    return browser()->GetFeatures().side_panel_coordinator();
   }
 };
 
@@ -41,14 +54,37 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, /*original_profile=*/nullptr,
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
       /*is_migration_to_account=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kAccepted,
                   Property(&profile_ref::has_value, false)));
-  controller()->OnUserDecision(
+  tab_controller()->OnUserDecision(
       AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt);
+}
+
+// This is testing that the callback is invoked when the dialog is triggered in
+// the side panel. It covers the regression found in crbug.com/401068467.
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
+                       DialogAcceptedInvokesCallbackForSidePanel) {
+  content::WebContents* side_panel_web_contents =
+      side_panel_coordinator()->GetWebContentsForTest(
+          SidePanelEntry::Id::kReadingList);
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kReadingList);
+  AutofillProfile profile = test::GetFullProfile();
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      side_panel_web_contents, profile, /*original_profile=*/nullptr,
+      /*is_migration_to_account=*/{}, callback.Get());
+
+  EXPECT_CALL(callback,
+              Run(AutofillClient::AddressPromptUserDecision::kAccepted,
+                  Property(&profile_ref::has_value, false)));
+  AddressBubblesController::FromWebContents(side_panel_web_contents)
+      ->OnUserDecision(AutofillClient::AddressPromptUserDecision::kAccepted,
+                       std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
@@ -56,13 +92,13 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, /*original_profile=*/nullptr,
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
       /*is_migration_to_account=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kDeclined,
                   Property(&profile_ref::has_value, false)));
-  controller()->OnUserDecision(
+  tab_controller()->OnUserDecision(
       AutofillClient::AddressPromptUserDecision::kDeclined, std::nullopt);
 }
 
@@ -74,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, /*original_profile=*/nullptr,
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
       /*is_migration_to_account=*/{}, callback.Get());
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
@@ -105,13 +141,13 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
                        BubbleShouldBeVisibleByDefault) {
   AutofillProfile profile = test::GetFullProfile();
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, /*original_profile=*/nullptr,
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
       /*is_migration_to_account=*/{},
       /*callback=*/base::DoNothing());
 
   // Bubble is visible and active
-  EXPECT_TRUE(controller()->GetBubbleView());
-  EXPECT_TRUE(controller()->IsBubbleActive());
+  EXPECT_TRUE(tab_controller()->GetBubbleView());
+  EXPECT_TRUE(tab_controller()->IsBubbleActive());
 }
 
 // This is testing that when a second prompt comes while another prompt is
@@ -122,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
   AutofillProfile profile = test::GetFullProfile();
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, /*original_profile=*/nullptr,
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
       /*is_migration_to_account=*/{},
       /*callback=*/base::DoNothing());
 
@@ -132,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
               Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
                   Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, /*original_profile=*/nullptr,
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
       /*is_migration_to_account=*/{}, callback.Get());
 }
 
@@ -145,15 +181,15 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
 
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, /*original_profile=*/nullptr,
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
       /*is_migration_to_account=*/{}, callback.Get());
-  controller()->OnBubbleClosed();
+  tab_controller()->OnBubbleClosed();
 
   // When second prompt comes, the first one will be ignored.
   EXPECT_CALL(callback, Run(AutofillClient::AddressPromptUserDecision::kIgnored,
                             Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, /*original_profile=*/nullptr,
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
       /*is_migration_to_account=*/{},
       /*callback=*/base::DoNothing());
 }
