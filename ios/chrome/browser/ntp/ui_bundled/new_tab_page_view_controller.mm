@@ -269,6 +269,8 @@ CGFloat SpaceBetweenModules() {
     };
     [self registerForTraitChanges:traits withHandler:handler];
   }
+
+  [self.mutator checkNewBadgeEligibility];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

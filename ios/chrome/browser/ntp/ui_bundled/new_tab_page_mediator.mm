@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher.h"
@@ -50,6 +51,7 @@
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -72,6 +74,10 @@ namespace {
 
 // The point size of the entry point's symbol.
 const CGFloat kIconPointSize = 18.0;
+
+// The holdback period to wait after FRE completion before showing new badges
+// on the homepage.
+constexpr base::TimeDelta kFREBadgeHoldbackPeriod = base::Hours(1);
 
 }  // namespace
 
@@ -205,6 +211,15 @@ const CGFloat kIconPointSize = 18.0;
 }
 
 #pragma mark - NewTabPageMutator
+
+- (void)checkNewBadgeEligibility {
+  // Notify the badge holdback period has been satisfied if this is not the
+  // First Run, or the First Run happened longer than the holdback period.
+  if (!IsFirstRun() || !IsFirstRunRecent(kFREBadgeHoldbackPeriod)) {
+    _tracker->NotifyEvent(
+        feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed);
+  }
+}
 
 - (void)notifyLensBadgeDisplayed {
   _tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);

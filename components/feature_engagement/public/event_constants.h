@@ -338,6 +338,9 @@ extern const char kIOSSafariImportRemindMeLater[];
 // Event fired when the First Run Experience (FRE) is completed on iOS.
 extern const char kIOSFirstRunComplete[];
 
+// Event fired after the quiet period following FRE completion has elapsed.
+extern const char kIOSFREBadgeHoldbackPeriodElapsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

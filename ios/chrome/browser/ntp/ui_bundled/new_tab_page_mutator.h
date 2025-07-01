@@ -17,6 +17,9 @@
 // Notifies that the Customization "new" badge has been displayed.
 - (void)notifyCustomizationBadgeDisplayed;
 
+// Notifies the caller to check if any new badge is eligible to be shown.
+- (void)checkNewBadgeEligibility;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_MUTATOR_H_

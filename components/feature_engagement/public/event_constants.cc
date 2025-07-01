@@ -174,6 +174,8 @@ const char kIOSSafariImportRemindMeLater[] =
 const char kIOSPageActionMenuIPHTrigger[] = "page_action_menu_iph_trigger";
 const char kIOSPageActionMenuIPHUsed[] = "page_action_menu_iph_used";
 const char kIOSFirstRunComplete[] = "ios_first_run_complete";
+const char kIOSFREBadgeHoldbackPeriodElapsed[] =
+    "ios_fre_badge_holdback_period_elapsed";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
