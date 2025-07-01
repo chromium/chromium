@@ -38,10 +38,6 @@ using net::test_server::ControllableHttpResponse;
 class NavPrefetchBrowserTest : public ContentBrowserTest,
                                public BackForwardCacheMetricsTestMatcher {
  public:
-  NavPrefetchBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({features::kPrefetchReusable}, {});
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -361,8 +357,8 @@ IN_PROC_BROWSER_TEST_F(
     ExpectRestored(FROM_HERE);
   }
 
-  // Activate a prefetch again. Prefetch is served if `kPrefetchReusable` is
-  // enabled.
+  // Activate a prefetch again. Prefetch is served since it can be used multiple
+  // times.
   {
     TestNavigationObserver nav_observer(shell()->web_contents());
     nav_observer.set_wait_event(

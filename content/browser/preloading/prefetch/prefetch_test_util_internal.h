@@ -34,11 +34,6 @@ class RunLoop;
 
 namespace content {
 
-enum class PrefetchReusableForTests { kDisabled, kEnabled };
-std::ostream& operator<<(std::ostream& ostream, PrefetchReusableForTests);
-
-std::vector<PrefetchReusableForTests> PrefetchReusableValuesForTests();
-
 void MakeServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container,
     network::mojom::URLResponseHeadPtr head,

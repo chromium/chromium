@@ -196,9 +196,8 @@ class PrerendererImplBrowserTestNoPrefetchAhead
  public:
   PrerendererImplBrowserTestNoPrefetchAhead() {
     feature_list_.InitWithFeatures(
-        {features::kPrefetchReusable},
-        {features::kPrerender2FallbackPrefetchSpecRules,
-         blink::features::kLCPTimingPredictorPrerender2});
+        {}, {features::kPrerender2FallbackPrefetchSpecRules,
+             blink::features::kLCPTimingPredictorPrerender2});
   }
 };
 
@@ -219,21 +218,24 @@ class PrerendererImplBrowserTestPrefetchAhead
       }
     }();
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrefetchReusable, {}},
-         {features::kPrerender2FallbackPrefetchSpecRules,
-          {
-              {"kPrerender2FallbackPrefetchSchedulerPolicy",
-               prefetch_scheduler_policy},
-          }},
-         {features::kPrefetchUseContentRefactor,
-          {
-              {"prefetch_timeout_ms", "1500"},
-              {"block_until_head_timeout_moderate_prefetch", "500"},
-          }}},
-        {blink::features::kLCPTimingPredictorPrerender2,
-         // `kPrefetchServiceWorker` is disabled to make the prefetch fail due
-         // to ServiceWorker-related ineligibility.
-         features::kPrefetchServiceWorker});
+        {
+            {features::kPrerender2FallbackPrefetchSpecRules,
+             {
+                 {"kPrerender2FallbackPrefetchSchedulerPolicy",
+                  prefetch_scheduler_policy},
+             }},
+            {features::kPrefetchUseContentRefactor,
+             {
+                 {"prefetch_timeout_ms", "1500"},
+                 {"block_until_head_timeout_moderate_prefetch", "500"},
+             }},
+        },
+        {
+            blink::features::kLCPTimingPredictorPrerender2,
+            // `kPrefetchServiceWorker` is disabled to make the prefetch fail
+            // due to ServiceWorker-related ineligibility.
+            features::kPrefetchServiceWorker,
+        });
   }
 };
 

@@ -7214,9 +7214,6 @@ TEST_P(
 TEST_P(
     PrefetchServiceTest,
     DISABLED_CHROMEOS(MultipleConcurrentNavigationSuccessBeforeNavigations)) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kPrefetchReusable}, {});
-
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -7277,9 +7274,6 @@ TEST_P(
 TEST_P(
     PrefetchServiceTest,
     DISABLED_CHROMEOS(MultipleConcurrentNavigationBlockUntilHeadThenSuccess)) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kPrefetchReusable}, {});
-
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -7350,9 +7344,6 @@ TEST_P(
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(
            MultipleConcurrentNavigationBlockUntilHeadThenSuccessFail)) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kPrefetchReusable}, {});
-
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -7429,9 +7420,6 @@ TEST_P(PrefetchServiceTest,
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(
            MultipleConcurrentNavigationBlockUntilHeadThenCookiesChanged)) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kPrefetchReusable}, {});
-
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(

@@ -166,22 +166,12 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
 class PrefetchStreamingURLLoaderTest
     : public ::testing::Test,
-      public ::testing::WithParamInterface<
-          std::tuple<bool, PrefetchReusableForTests>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     task_environment_ = std::make_unique<base::test::TaskEnvironment>(
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     test_url_loader_factory_ = std::make_unique<TestURLLoaderFactory>();
-
-    switch (std::get<1>(GetParam())) {
-      case PrefetchReusableForTests::kDisabled:
-        scoped_feature_list_.InitAndDisableFeature(features::kPrefetchReusable);
-        break;
-      case PrefetchReusableForTests::kEnabled:
-        scoped_feature_list_.InitAndEnableFeature(features::kPrefetchReusable);
-        break;
-    }
   }
 
   void TearDown() override { scoped_feature_list_.Reset(); }
@@ -206,13 +196,9 @@ class PrefetchStreamingURLLoaderTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// The first parameter should determine if the test should call
+// The parameter should determine if the test should call
 // SetOnReceivedHeadCallback and check that callback is later called.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PrefetchStreamingURLLoaderTest,
-    testing::Combine(testing::Bool(),
-                     testing::ValuesIn(PrefetchReusableValuesForTests())));
+INSTANTIATE_TEST_SUITE_P(All, PrefetchStreamingURLLoaderTest, testing::Bool());
 
 TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   base::HistogramTester histogram_tester;
@@ -250,15 +236,14 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
       }),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulates receiving the head and body for the prefetch.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
 
@@ -360,8 +345,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
       }),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulates receiving the head for the prefetch, receiving part of the body
@@ -371,7 +355,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   test_url_loader_factory()->SimulateReceiveHead(
       net::HTTP_OK, kBodyContent1.size() + kBodyContent2.size());
   on_response_received_loop.Run();
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
 
@@ -483,15 +467,14 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
       }),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulates a successful prefetch that is not used.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
 
@@ -547,15 +530,14 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
       }),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulates a prefetch with a non-2XX response. This should be marked as not
   // servable.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_NOT_FOUND, 0);
   on_response_received_loop.Run();
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
 
@@ -611,15 +593,14 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
       }),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulates a prefetch with a non-OK net error.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
 
@@ -675,8 +656,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
       }),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulate getting a non-OK net error.
@@ -688,7 +668,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(streaming_loader);
 
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
 
@@ -737,8 +717,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
       }),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulates receiving the head for the prefetch, receiving part of the body
@@ -747,7 +726,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
 
@@ -859,8 +838,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
           &on_response_complete_loop),
       CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
                                             &redirect_info, &redirect_head),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       redirect_response_reader->GetWeakPtr());
 
   ASSERT_TRUE(test_url_loader_factory()->test_url_loader());
@@ -886,7 +864,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
 
@@ -1015,8 +993,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
           }),
       CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
                                             &redirect_info, &redirect_head),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulate a redirect that should not be followed by the URL loader.
@@ -1033,7 +1010,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(streaming_loader);
 
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
 
@@ -1080,8 +1057,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
       // on_receive_head_callback_ is not called, and is passed to the
       // follow up PrefetchStreamingURLLoader that will follow the redirect
       // in the other network context.
-      std::get<0>(GetParam()) ? base::BindOnce([]() { NOTREACHED(); })
-                              : base::OnceClosure(),
+      GetParam() ? base::BindOnce([]() { NOTREACHED(); }) : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulate a redirect that should not be followed by the URL loader.
@@ -1181,8 +1157,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
           }),
       CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
                                             &redirect_info, &redirect_head),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
   streaming_loader->SetOnDeletionScheduledForTests(
       on_deletion_scheduled_loop.QuitClosure());
@@ -1200,7 +1175,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   ASSERT_TRUE(streaming_loader);
   streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
                                    redirect_info, std::move(redirect_head));
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
   task_environment()->RunUntilIdle();
@@ -1257,8 +1232,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
       }),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   // Simulates a successful prefetch that is not used. However, since the
@@ -1320,13 +1294,12 @@ TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
       }),
-      std::get<0>(GetParam()) ? on_head_received_loop.QuitClosure()
-                              : base::OnceClosure(),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
       response_reader->GetWeakPtr());
 
   task_environment()->FastForwardBy(base::Seconds(1));
   on_response_complete_loop.Run();
-  if (std::get<0>(GetParam())) {
+  if (GetParam()) {
     on_head_received_loop.Run();
   }
 
