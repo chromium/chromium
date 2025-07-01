@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/search_engines/template_url_service.h"
@@ -115,6 +116,8 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
   static std::string search_site() { return "/title1.html"; }
 
   content::test::PrerenderTestHelper prerender_helper_;
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   std::unique_ptr<content::test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;
 
@@ -323,15 +326,12 @@ TEST_F(PrerenderManagerTest, DisallowSearchUrlNewTabPage) {
 
 class PrerenderManagerPrewarmTest : public PrerenderManagerTest {
  public:
-  PrerenderManagerPrewarmTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrewarm,
-        {{"url", "https://search.example.com/prewarm.html"}});
-  }
+  PrerenderManagerPrewarmTest() = default;
   ~PrerenderManagerPrewarmTest() override = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kEnabledWithNoTrigger};
 };
 
 TEST_F(PrerenderManagerPrewarmTest, StartPrewarmSearchResult) {

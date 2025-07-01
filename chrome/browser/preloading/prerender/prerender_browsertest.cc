@@ -15,6 +15,7 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -111,6 +112,8 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
 
  private:
   content::test::PrerenderTestHelper prerender_helper_;
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 };
@@ -943,12 +946,6 @@ class PrerenderPrewarmDefaultSearchEngineTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<content::PreloadingPredictor> {
  public:
-  PrerenderPrewarmDefaultSearchEngineTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrewarm, {{"url", "https://search.example.com/prewarm.html"},
-                             {"zero_suggest_trigger", "false"}});
-  }
-
   void SetUpOnMainThread() override {
     PrerenderBrowserTest::SetUpOnMainThread();
     PrerenderManager::CreateForWebContents(GetActiveWebContents());
@@ -967,7 +964,8 @@ class PrerenderPrewarmDefaultSearchEngineTest
 
  protected:
   GURL prewarm_url_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kEnabledWithNoTrigger};
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,

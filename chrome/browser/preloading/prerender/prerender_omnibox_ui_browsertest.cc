@@ -26,6 +26,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -252,6 +253,8 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
 
   base::ScopedMockElapsedTimersForTest scoped_test_timer_;
   content::test::PrerenderTestHelper prerender_helper_;
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::test::ScopedFeatureList scoped_feature_list_;
   ui::PageTransition last_finished_page_transition_type_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
@@ -1012,13 +1015,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxReferrerChainUIBrowserTest,
 
 class PrewarmOmniboxUIBrowserTest : public PrerenderOmniboxUIBrowserTest {
  public:
-  PrewarmOmniboxUIBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrewarm, {{"url", "https://search.example.com/prewarm.html"},
-                             {"zero_suggest_trigger", "true"}});
-  }
-  ~PrewarmOmniboxUIBrowserTest() override = default;
-
   void StopPrewarm() {
     auto* manager = PrerenderManager::FromWebContents(GetActiveWebContents());
     if (manager) {
@@ -1033,7 +1029,9 @@ class PrewarmOmniboxUIBrowserTest : public PrerenderOmniboxUIBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::
+          kEnabledWithDefaultTrigger};
 };
 
 // Basic scenario for the interactive_ui_tests to trigger the prewarm feature

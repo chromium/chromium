@@ -9121,6 +9121,8 @@ static_library("test_support") {
     "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_test_util.h",
     "predictors/loading_test_util.cc",
     "predictors/loading_test_util.h",
+    "preloading/scoped_prewarm_feature_list.cc",
+    "preloading/scoped_prewarm_feature_list.h",
     "resource_coordinator/tab_load_tracker_test_support.cc",
     "resource_coordinator/tab_load_tracker_test_support.h",
     "safe_browsing/notification_content_detection/mock_notification_content_detection_service.cc",
