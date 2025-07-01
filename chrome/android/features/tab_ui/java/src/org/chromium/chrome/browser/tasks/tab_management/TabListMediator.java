@@ -637,7 +637,8 @@ class TabListMediator implements TabListNotificationHandler {
     private final TabGroupModelFilterObserver mTabGroupObserver =
             new TabGroupModelFilterObserver() {
                 @Override
-                public void didChangeTabGroupTitle(int rootId, String newTitle) {
+                public void didChangeTabGroupTitle(
+                        int rootId, @Nullable Token tabGroupId, @Nullable String newTitle) {
                     assert mShowingTabs;
 
                     if (!mActionsOnAllRelatedTabs) return;
@@ -656,7 +657,8 @@ class TabListMediator implements TabListNotificationHandler {
                 }
 
                 @Override
-                public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
+                public void didChangeTabGroupColor(
+                        int rootId, @Nullable Token tabGroupId, @TabGroupColorId int newColor) {
                     assert mShowingTabs;
 
                     if (!mActionsOnAllRelatedTabs) return;

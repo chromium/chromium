@@ -597,13 +597,17 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testDidChangeTitle() {
         // Valid title.
         when(mTabGroupModelFilter.getTabGroupTitle(ROOT_ID_1)).thenReturn(TITLE_1);
-        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(ROOT_ID_1, TITLE_1);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(ROOT_ID_1, TOKEN_1, TITLE_1);
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(TITLE_1), anyInt());
 
         // Null title.
         when(mTabGroupModelFilter.getTabGroupTitle(ROOT_ID_1)).thenReturn(null);
-        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(ROOT_ID_1, null);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(ROOT_ID_1, TOKEN_1, null);
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(new String()), anyInt());
     }
@@ -615,7 +619,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupColor(ROOT_ID_1, TabGroupColorId.RED);
+                .didChangeTabGroupColor(ROOT_ID_1, TOKEN_1, TabGroupColorId.RED);
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TabGroupColorId.RED));
     }
@@ -624,7 +628,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testDidChangeTitleAndColorForNonExistingGroup() {
         // Handle updates for non-existing groups.
         when(mTabGroupModelFilter.getTabGroupTitle(12)).thenReturn(null);
-        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(12, TITLE_1);
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(12, TOKEN_1, TITLE_1);
         verify(mTabGroupSyncService, never()).updateVisualData(any(), any(), anyInt());
 
         // Handle updates for non-existing groups.
@@ -632,7 +636,7 @@ public class TabGroupSyncLocalObserverUnitTest {
                 .thenReturn(TabGroupColorId.BLUE);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupColor(12, TabGroupColorId.BLUE);
+                .didChangeTabGroupColor(12, new Token(437289L, 783492L), TabGroupColorId.BLUE);
         verify(mTabGroupSyncService, never()).updateVisualData(any(), any(), anyInt());
     }
 

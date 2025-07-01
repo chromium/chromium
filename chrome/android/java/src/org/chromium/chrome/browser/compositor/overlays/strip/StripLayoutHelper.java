@@ -290,7 +290,8 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void didChangeTabGroupTitle(int rootId, @Nullable String newTitle) {
+                public void didChangeTabGroupTitle(
+                        int rootId, @Nullable Token tabGroupId, @Nullable String newTitle) {
                     final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
                     if (groupTitle == null) return;
 
@@ -299,13 +300,17 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
+                public void didChangeTabGroupColor(
+                        int rootId, @Nullable Token tabGroupId, @TabGroupColorId int newColor) {
                     updateGroupTitleTint(findGroupTitle(rootId), newColor);
                 }
 
                 @Override
                 public void didChangeTabGroupCollapsed(
-                        int rootId, boolean isCollapsed, boolean animate) {
+                        int rootId,
+                        @Nullable Token tabGroupId,
+                        boolean isCollapsed,
+                        boolean animate) {
                     final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
                     if (groupTitle == null) return;
 

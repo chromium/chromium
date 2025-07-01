@@ -522,7 +522,8 @@ public class TabGridDialogMediator
         mTabGroupModelFilterObserver =
                 new TabGroupModelFilterObserver() {
                     @Override
-                    public void didChangeTabGroupTitle(int rootId, @Nullable String newTitle) {
+                    public void didChangeTabGroupTitle(
+                            int rootId, @Nullable Token tabGroupId, @Nullable String newTitle) {
                         if (currentTabRootIdMatchesRootId(rootId)
                                 && !Objects.equals(
                                         mModel.get(TabGridDialogProperties.HEADER_TITLE),
@@ -533,7 +534,8 @@ public class TabGridDialogMediator
                     }
 
                     @Override
-                    public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
+                    public void didChangeTabGroupColor(
+                            int rootId, @Nullable Token tabGroupId, @TabGroupColorId int newColor) {
                         if (currentTabRootIdMatchesRootId(rootId)) {
                             mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, newColor);
                         }

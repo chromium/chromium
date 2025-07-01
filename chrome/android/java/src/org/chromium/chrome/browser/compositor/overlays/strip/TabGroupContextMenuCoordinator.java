@@ -98,14 +98,16 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
             new TabGroupModelFilterObserver() {
                 @Override
-                public void didChangeTabGroupTitle(int rootId, @Nullable String newTitle) {
+                public void didChangeTabGroupTitle(
+                        int rootId, @Nullable Token tabGroupId, @Nullable String newTitle) {
                     if (isMenuShowing() && rootId == mGroupRootId) {
                         setExistingOrDefaultTitle(newTitle);
                     }
                 }
 
                 @Override
-                public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
+                public void didChangeTabGroupColor(
+                        int rootId, @Nullable Token tabGroupId, @TabGroupColorId int newColor) {
                     if (isMenuShowing() && rootId == mGroupRootId) {
                         setSelectedColorItem(newColor);
                     }

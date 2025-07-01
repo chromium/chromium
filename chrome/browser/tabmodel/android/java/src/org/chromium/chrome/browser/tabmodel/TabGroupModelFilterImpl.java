@@ -1407,16 +1407,18 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     @Override
     public void setTabGroupTitle(int rootId, @Nullable String title) {
         TabGroupTitleUtils.storeTabGroupTitle(rootId, title);
+        Token tabGroupId = getTabGroupIdFromRootId(rootId);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupTitle(rootId, title);
+            observer.didChangeTabGroupTitle(rootId, tabGroupId, title);
         }
     }
 
     @Override
     public void deleteTabGroupTitle(int rootId) {
         TabGroupTitleUtils.deleteTabGroupTitle(rootId);
+        Token tabGroupId = getTabGroupIdFromRootId(rootId);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupTitle(rootId, null);
+            observer.didChangeTabGroupTitle(rootId, tabGroupId, null);
         }
     }
 
@@ -1435,33 +1437,37 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     @Override
     public void setTabGroupColor(int rootId, @TabGroupColorId int color) {
         TabGroupColorUtils.storeTabGroupColor(rootId, color);
+        Token tabGroupId = getTabGroupIdFromRootId(rootId);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupColor(rootId, color);
+            observer.didChangeTabGroupColor(rootId, tabGroupId, color);
         }
     }
 
     @Override
     public void deleteTabGroupColor(int rootId) {
         TabGroupColorUtils.deleteTabGroupColor(rootId);
+        Token tabGroupId = getTabGroupIdFromRootId(rootId);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupColor(rootId, TabGroupColorId.GREY);
+            observer.didChangeTabGroupColor(rootId, tabGroupId, TabGroupColorId.GREY);
         }
     }
 
     @Override
     public void setTabGroupCollapsed(int rootId, boolean isCollapsed, boolean animate) {
         TabGroupCollapsedUtils.storeTabGroupCollapsed(rootId, isCollapsed);
+        Token tabGroupId = getTabGroupIdFromRootId(rootId);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupCollapsed(rootId, isCollapsed, animate);
+            observer.didChangeTabGroupCollapsed(rootId, tabGroupId, isCollapsed, animate);
         }
     }
 
     @Override
     public void deleteTabGroupCollapsed(int rootId) {
         TabGroupCollapsedUtils.deleteTabGroupCollapsed(rootId);
+        Token tabGroupId = getTabGroupIdFromRootId(rootId);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.didChangeTabGroupCollapsed(
-                    rootId, /* isCollapsed= */ false, /* animate= */ false);
+                    rootId, tabGroupId, /* isCollapsed= */ false, /* animate= */ false);
         }
     }
 

@@ -22,6 +22,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -198,7 +199,8 @@ public final class TabGroupSyncLocalObserver {
     private TabGroupModelFilterObserver createTabGroupModelFilterObserver() {
         return new TabGroupModelFilterObserver() {
             @Override
-            public void didChangeTabGroupColor(int rootId, int newColor) {
+            public void didChangeTabGroupColor(
+                    int rootId, @Nullable Token tabGroupId, @TabGroupColorId int newColor) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didChangeTabGroupColor, rootId = " + rootId);
                 updateVisualData(
@@ -206,7 +208,8 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didChangeTabGroupTitle(int rootId, @Nullable String newTitle) {
+            public void didChangeTabGroupTitle(
+                    int rootId, @Nullable Token tabGroupId, @Nullable String newTitle) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didChangeTabGroupTitle, rootId = " + rootId);
                 updateVisualData(
