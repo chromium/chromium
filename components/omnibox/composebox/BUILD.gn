@@ -51,6 +51,7 @@ source_set("test_support") {
     "//components/endpoint_fetcher:test_support",
     "//components/lens",
     "//google_apis/common",
+    "//services/network/public/cpp:cpp",
     "//third_party/lens_server_proto:lens_overlay_proto",
   ]
 }

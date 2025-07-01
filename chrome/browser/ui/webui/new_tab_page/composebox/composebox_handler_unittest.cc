@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,6 +39,11 @@ class MockQueryController : public ComposeboxQueryController {
 
   MOCK_METHOD(void, NotifySessionStarted, ());
   MOCK_METHOD(void, NotifySessionAbandoned, ());
+  MOCK_METHOD(
+      void,
+      StartFileUploadFlow,
+      (std::unique_ptr<ComposeboxQueryController::FileInfo> file_info_mojom,
+       scoped_refptr<base::RefCountedBytes> file_data));
 };
 
 class TestWebContentsDelegate : public content::WebContentsDelegate {
@@ -141,4 +147,34 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery) {
   // Ensure navigation occurred.
   EXPECT_EQ(expected_url,
             web_contents()->GetController().GetLastCommittedEntry()->GetURL());
+}
+
+TEST_F(ComposeboxHandlerTest, AddFile_Pdf) {
+  composebox::mojom::SelectedFileInfoPtr file_info =
+      composebox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "test.pdf";
+  file_info->selection_time = base::Time::Now();
+  file_info->mime_type = "application/pdf";
+
+  std::vector<uint8_t> test_data = {1, 2, 3, 4};
+  auto test_data_span = base::span<const uint8_t>(test_data);
+  mojo_base::BigBuffer file_data(test_data_span);
+
+  EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(1);
+  handler().AddFile(std::move(file_info), std::move(file_data));
+}
+
+TEST_F(ComposeboxHandlerTest, AddFile_Image) {
+  composebox::mojom::SelectedFileInfoPtr file_info =
+      composebox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "test.png";
+  file_info->selection_time = base::Time::Now();
+  file_info->mime_type = "application/image";
+
+  std::vector<uint8_t> test_data = {1, 2, 3, 4};
+  auto test_data_span = base::span<const uint8_t>(test_data);
+  mojo_base::BigBuffer file_data(test_data_span);
+
+  EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(1);
+  handler().AddFile(std::move(file_info), std::move(file_data));
 }

@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import type {ComposeboxPageHandlerRemote} from '../composebox.mojom-webui.js';
@@ -102,7 +103,7 @@ export class ComposeboxElement extends CrLitElement {
     this.files_ = this.files_.filter((file) => file.uuid !== e.detail.uuid);
   }
 
-  protected onFileChange_(e: Event) {
+  protected async onFileChange_(e: Event) {
     const input = e.target as HTMLInputElement;
     const files = input.files;
     if (!files || files.length === 0) {
@@ -114,6 +115,21 @@ export class ComposeboxElement extends CrLitElement {
       if (file.size === 0 || file.size > this.maxFileSize_) {
         // TODO(crbug.com/422559050): Show error state.
       } else {
+        const fileBuffer = await file.arrayBuffer();
+        if (!file.type.includes('pdf') && !file.type.includes('image')) {
+          return;
+        }
+
+        const bigBuffer:
+            BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
+
+        this.pageHandler_.addFile(
+            {
+              fileName: file.name,
+              mimeType: file.type,
+              selectionTime: new Date(),
+            },
+            bigBuffer);
         newFiles.push({
           uuid: this.createUuid(),
           name: file.name,
@@ -121,7 +137,6 @@ export class ComposeboxElement extends CrLitElement {
               e.target === this.$.imageInput ? URL.createObjectURL(file) : null,
           type: file.type,
         });
-        // TODO(crbug.com/422559977): Upload the file.
       }
     }
     this.files_ = this.files_.concat(newFiles);

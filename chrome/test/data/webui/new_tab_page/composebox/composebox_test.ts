@@ -5,12 +5,11 @@
 import {ComposeboxPageHandlerRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
 import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../test_support.js';
-
 
 suite('NewTabPageComposeboxTest', () => {
   let composeboxElement: ComposeboxElement;
@@ -25,6 +24,27 @@ suite('NewTabPageComposeboxTest', () => {
   function createComposeboxElement() {
     composeboxElement = new ComposeboxElement();
     document.body.appendChild(composeboxElement);
+  }
+
+  async function waitForAddFileCallCount(expectedCount: number): Promise<void> {
+    const startTime = Date.now();
+    return new Promise((resolve, reject) => {
+      const checkCount = () => {
+        const currentCount = handler.getCallCount('addFile');
+        if (currentCount === expectedCount) {
+          resolve();
+          return;
+        }
+
+        if (Date.now() - startTime >= 5000) {
+          reject(new Error(`Could not add file ${expectedCount} times.`));
+          return;
+        }
+
+        setTimeout(checkCount, 50);
+      };
+      checkCount();
+    });
   }
 
   test('clear functionality', async () => {
@@ -46,6 +66,8 @@ suite('NewTabPageComposeboxTest', () => {
         new File(['foo1'], 'foo1.pdf', {type: 'application/pdf'}));
     composeboxElement.$.fileInput.files = dataTransfer.files;
     composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
+
+    await handler.whenCalled('addFile');
     await microtasksFinished();
 
     // Check submit button enabled and file uploaded.
@@ -85,9 +107,21 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Act.
     const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+
+    const file = new File(['foo'], 'foo.jpg', {type: 'image/jpeg'});
+    dataTransfer.items.add(file);
+
+    // Since the `onFileChange_` method checks the event target when creating
+    // the `objectUrl`, we have to mock it here.
+    const mockFileChange = new Event('change', {bubbles: true});
+    Object.defineProperty(mockFileChange, 'target', {
+      writable: false,
+      value: composeboxElement.$.imageInput,
+    });
     composeboxElement.$.imageInput.files = dataTransfer.files;
-    composeboxElement.$.imageInput.dispatchEvent(new Event('change'));
+    composeboxElement.$.imageInput.dispatchEvent(mockFileChange);
+
+    await handler.whenCalled('addFile');
     await microtasksFinished();
 
     // Assert one image file.
@@ -96,6 +130,18 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(files[0]!.type, 'image/jpeg');
     assertEquals(files[0]!.name, 'foo.jpg');
     assertTrue(!!files[0]!.objectUrl);
+
+    assertEquals(handler.getCallCount('notifySessionStarted'), 1);
+
+    // Assert file is uploaded.
+    assertEquals(handler.getCallCount('addFile'), 1);
+
+    const fileBuffer = await file.arrayBuffer();
+    const fileArray = Array.from(new Uint8Array(fileBuffer));
+
+    const [[fileInfo, fileData]] = handler.getArgs('addFile');
+    assertEquals(fileInfo.fileName, 'foo.jpg');
+    assertDeepEquals(fileData.bytes, fileArray);
   });
 
   test('upload pdf', async () => {
@@ -106,10 +152,12 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Arrange.
     const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(
-        new File(['foo'], 'foo.pdf', {type: 'application/pdf'}));
+    const file = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
+    dataTransfer.items.add(file);
     composeboxElement.$.fileInput.files = dataTransfer.files;
     composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
+
+    await handler.whenCalled('addFile');
     await microtasksFinished();
 
     // Assert one pdf file.
@@ -118,6 +166,17 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(files[0]!.type, 'application/pdf');
     assertEquals(files[0]!.name, 'foo.pdf');
     assertFalse(!!files[0]!.objectUrl);
+
+    assertEquals(handler.getCallCount('notifySessionStarted'), 1);
+
+    const fileBuffer = await file.arrayBuffer();
+    const fileArray = Array.from(new Uint8Array(fileBuffer));
+
+    // Assert file is uploaded.
+    assertEquals(handler.getCallCount('addFile'), 1);
+    const [[fileInfo, fileData]] = handler.getArgs('addFile');
+    assertEquals(fileInfo.fileName, 'foo.pdf');
+    assertDeepEquals(fileData.bytes, fileArray);
   });
 
   test('delete file', async () => {
@@ -126,14 +185,26 @@ suite('NewTabPageComposeboxTest', () => {
     // Arrange.
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(
-        new File(['foo1'], 'foo1.pdf', {type: 'application/pdf'}));
+        new File(['foo'], 'foo.pdf', {type: 'application/pdf'}));
     dataTransfer.items.add(
         new File(['foo2'], 'foo2.pdf', {type: 'application/pdf'}));
+
+    // Since the `onFileChange_` method checks the event target when creating
+    // the `objectUrl`, we have to mock it here.
+    const mockFileChange = new Event('change', {bubbles: true});
+    Object.defineProperty(mockFileChange, 'target', {
+      writable: false,
+      value: composeboxElement.$.fileInput,
+    });
+
     composeboxElement.$.fileInput.files = dataTransfer.files;
-    composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
+    composeboxElement.$.fileInput.dispatchEvent(mockFileChange);
+
+    await waitForAddFileCallCount(2);
+    await composeboxElement.updateComplete;
     await microtasksFinished();
 
-    // Assert two files.
+    // Assert two files are present initially.
     assertEquals(composeboxElement.$.carousel.files.length, 2);
 
     // Act.
@@ -144,6 +215,7 @@ suite('NewTabPageComposeboxTest', () => {
       bubbles: true,
       composed: true,
     }));
+
     await microtasksFinished();
 
     // Assert.

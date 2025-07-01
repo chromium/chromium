@@ -42,3 +42,28 @@ void ComposeboxHandler::OpenUrl(GURL url,
                                 ui::PAGE_TRANSITION_LINK, false);
   web_contents_->OpenURL(params, base::DoNothing());
 }
+
+void ComposeboxHandler::AddFile(
+    composebox::mojom::SelectedFileInfoPtr file_info_mojom,
+    mojo_base::BigBuffer file_bytes) {
+  scoped_refptr<base::RefCountedBytes> file_data =
+      base::MakeRefCounted<base::RefCountedBytes>(file_bytes);
+
+  auto file_info_metadata =
+      std::make_unique<ComposeboxQueryController::FileInfo>();
+  file_info_metadata->file_name = file_info_mojom->file_name;
+  file_info_metadata->file_size_bytes = file_bytes.size();
+  file_info_metadata->webui_selection_time = file_info_mojom->selection_time;
+  file_info_metadata->file_token_ = base::UnguessableToken::Create();
+
+  if ((file_info_mojom->mime_type).find("pdf") != std::string::npos) {
+    file_info_metadata->mime_type_ = lens::MimeType::kPdf;
+  } else if ((file_info_mojom->mime_type).find("image") != std::string::npos) {
+    file_info_metadata->mime_type_ = lens::MimeType::kImage;
+  } else {
+    NOTREACHED();
+  }
+
+  query_controller_->StartFileUploadFlow(std::move(file_info_metadata),
+                                         std::move(file_data));
+}

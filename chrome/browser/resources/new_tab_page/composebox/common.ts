@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 export interface ComposeboxFile {
+  // TODO(crbug.com/427994425): Keep uuid until we get base::Unguessable token
+  //   through a callback.
   uuid: string;
   name: string;
   objectUrl: string|null;
