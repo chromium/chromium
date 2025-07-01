@@ -51,7 +51,6 @@ ScopedJavaLocalRef<jobject> EventForwarder::GetJavaObject() {
 }
 
 jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj,
                                       const JavaParamRef<jobject>& motion_event,
                                       jlong oldest_event_time_ns,
                                       jlong latest_event_time_ns,
@@ -163,7 +162,6 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
 }
 
 void EventForwarder::OnMouseEvent(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj,
                                   jlong time_ns,
                                   jint android_action,
                                   jfloat x,
@@ -199,7 +197,6 @@ void EventForwarder::OnMouseEvent(JNIEnv* env,
 }
 
 void EventForwarder::OnDragEvent(JNIEnv* env,
-                                 const JavaParamRef<jobject>& jobj,
                                  jint action,
                                  jfloat x,
                                  jfloat y,
@@ -224,7 +221,6 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
 }
 
 jboolean EventForwarder::OnGestureEvent(JNIEnv* env,
-                                        const JavaParamRef<jobject>& jobj,
                                         jint type,
                                         jlong time_ms,
                                         jfloat scale) {
@@ -242,7 +238,6 @@ jboolean EventForwarder::OnGestureEvent(JNIEnv* env,
 
 jboolean EventForwarder::OnGenericMotionEvent(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& motion_event,
     jlong event_time_ns,
     jlong down_time_ms) {
@@ -280,21 +275,18 @@ jboolean EventForwarder::DispatchKeyEvent(
 }
 
 void EventForwarder::ScrollBy(JNIEnv* env,
-                              const JavaParamRef<jobject>& jobj,
                               jfloat delta_x,
                               jfloat delta_y) {
   view_->ScrollBy(delta_x, delta_y);
 }
 
 void EventForwarder::ScrollTo(JNIEnv* env,
-                              const JavaParamRef<jobject>& jobj,
                               jfloat x,
                               jfloat y) {
   view_->ScrollTo(x, y);
 }
 
 void EventForwarder::DoubleTap(JNIEnv* env,
-                               const JavaParamRef<jobject>& jobj,
                                jlong time_ms,
                                jint x,
                                jint y) {
@@ -306,13 +298,12 @@ void EventForwarder::DoubleTap(JNIEnv* env,
 }
 
 void EventForwarder::StartFling(JNIEnv* env,
-                                const JavaParamRef<jobject>& jobj,
                                 jlong time_ms,
                                 jfloat velocity_x,
                                 jfloat velocity_y,
                                 jboolean synthetic_scroll,
                                 jboolean prevent_boosting) {
-  CancelFling(env, jobj, time_ms, prevent_boosting);
+  CancelFling(env, time_ms, prevent_boosting);
 
   if (velocity_x == 0 && velocity_y == 0)
     return;
@@ -331,7 +322,6 @@ void EventForwarder::StartFling(JNIEnv* env,
 }
 
 void EventForwarder::CancelFling(JNIEnv* env,
-                                 const JavaParamRef<jobject>& jobj,
                                  jlong time_ms,
                                  jboolean prevent_boosting) {
   view_->OnGestureEvent(GestureEventAndroid(

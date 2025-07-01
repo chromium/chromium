@@ -140,7 +140,6 @@ public class EventForwarderTest {
         verify(mNativeMock, times(1))
                 .onTouchEvent(
                         EventForwarderTest.NATIVE_EVENT_FORWARDER_ID,
-                        eventForwarder,
                         dragEvent,
                         eventTime * 1000_000,
                         latestEventTime * 1000_000,
@@ -205,7 +204,6 @@ public class EventForwarderTest {
         verify(mNativeMock, times(1))
                 .onTouchEvent(
                         EventForwarderTest.NATIVE_EVENT_FORWARDER_ID,
-                        eventForwarder,
                         dragEvent,
                         latestEventTime * 1000_000,
                         latestEventTime * 1000_000,
@@ -251,7 +249,6 @@ public class EventForwarderTest {
         verify(mNativeMock, times(1))
                 .onTouchEvent(
                         anyLong(),
-                        any(EventForwarder.class),
                         any(MotionEvent.class),
                         anyLong(),
                         anyLong(),
@@ -288,7 +285,6 @@ public class EventForwarderTest {
         verify(mNativeMock, never())
                 .onMouseEvent(
                         anyLong(),
-                        any(EventForwarder.class),
                         anyLong(),
                         anyInt(),
                         anyFloat(),
@@ -312,7 +308,6 @@ public class EventForwarderTest {
         verify(mNativeMock, never())
                 .onMouseEvent(
                         anyLong(),
-                        any(EventForwarder.class),
                         anyLong(),
                         anyInt(),
                         anyFloat(),
@@ -380,7 +375,6 @@ public class EventForwarderTest {
         verify(mNativeMock, never())
                 .onMouseEvent(
                         anyLong(),
-                        any(EventForwarder.class),
                         anyLong(),
                         anyInt(),
                         anyFloat(),
@@ -418,7 +412,6 @@ public class EventForwarderTest {
         verify(mNativeMock, times(1))
                 .onMouseEvent(
                         NATIVE_EVENT_FORWARDER_ID,
-                        eventForwarder,
                         MotionEventUtils.getEventTimeNanos(moveEvent),
                         moveEvent.getActionMasked(),
                         moveEvent.getX() - downEvent.getX(),
@@ -468,7 +461,6 @@ public class EventForwarderTest {
         verify(mNativeMock, times(1))
                 .onMouseEvent(
                         NATIVE_EVENT_FORWARDER_ID,
-                        eventForwarder,
                         MotionEventUtils.getEventTimeNanos(moveEvent),
                         moveEvent.getActionMasked(),
                         0,
@@ -504,7 +496,6 @@ public class EventForwarderTest {
         verify(mNativeMock, times(1))
                 .onMouseEvent(
                         NATIVE_EVENT_FORWARDER_ID,
-                        eventForwarder,
                         MotionEventUtils.getEventTimeNanos(moveEvent),
                         moveEvent.getActionMasked(),
                         moveEvent.getX(),
@@ -522,7 +513,6 @@ public class EventForwarderTest {
         verify(mNativeMock, times(1))
                 .onMouseEvent(
                         NATIVE_EVENT_FORWARDER_ID,
-                        eventForwarder,
                         MotionEventUtils.getEventTimeNanos(moveEvent),
                         moveEvent.getActionMasked(),
                         moveEvent.getX() * 2,
@@ -556,12 +546,7 @@ public class EventForwarderTest {
 
         eventForwarder.onCapturedPointerEvent(scrollEvent, Surface.ROTATION_0);
         verify(mNativeMock, times(1))
-                .onGenericMotionEvent(
-                        anyLong(),
-                        any(EventForwarder.class),
-                        any(MotionEvent.class),
-                        anyLong(),
-                        anyLong());
+                .onGenericMotionEvent(anyLong(), any(MotionEvent.class), anyLong(), anyLong());
     }
 
     private void verifyNativeMouseEventSent(
@@ -572,7 +557,6 @@ public class EventForwarderTest {
         verify(mNativeMock, times(times))
                 .onMouseEvent(
                         nativeEventForwarder,
-                        eventForwarder,
                         MotionEventUtils.getEventTimeNanos(event),
                         event.getActionMasked(),
                         event.getX(),
@@ -615,7 +599,6 @@ public class EventForwarderTest {
         verify(mNativeMock, times(1))
                 .onDragEvent(
                         eq(EventForwarderTest.NATIVE_EVENT_FORWARDER_ID),
-                        eq(eventForwarder),
                         eq(DragEvent.ACTION_DROP),
                         eq(14.0f), // x
                         eq(21.0f), // y
