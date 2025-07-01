@@ -254,7 +254,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* emptySubheadingStringResId= */ Resources.ID_NULL,
                             /* onTabGroupCreation= */ null,
                             /* allowDragAndDrop= */ true,
-                            /* tabSwitcherDragHandler= */ null);
+                            /* tabSwitcherDragHandler= */ null,
+                            /* undoBarExplicitTrigger= */ null);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
                     UiType.MESSAGE,
@@ -364,7 +365,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             // Parent container handles desktop window state.
                             /* desktopWindowStateManager= */ null,
                             /* edgeToEdgeSupplier= */ null,
-                            CreationMode.DIALOG);
+                            CreationMode.DIALOG,
+                            /* undoBarExplicitTrigger= */ null);
         }
 
         return mTabListEditorCoordinator.getController();

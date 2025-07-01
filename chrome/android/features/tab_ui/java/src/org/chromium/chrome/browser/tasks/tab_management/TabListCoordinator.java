@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCa
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -185,6 +186,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      * @param onTabGroupCreation Runnable invoked on tab group creation
      * @param allowDragAndDrop Whether to allow drag and drop for this tab list coordinator.
      * @param tabSwitcherDragHandler An instance of the {@link TabSwitcherDragHandler}.
+     * @param undoBarExplicitTrigger An interface to explicitly trigger the undo closure snackbar.
      */
     TabListCoordinator(
             @TabListMode int mode,
@@ -211,7 +213,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             @StringRes int emptySubheadingStringResId,
             @Nullable Runnable onTabGroupCreation,
             boolean allowDragAndDrop,
-            @Nullable TabSwitcherDragHandler tabSwitcherDragHandler) {
+            @Nullable TabSwitcherDragHandler tabSwitcherDragHandler,
+            @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger) {
         mMode = mode;
         mTabActionState = initialTabActionState;
         mActivity = activity;
@@ -370,7 +373,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         componentName,
                         initialTabActionState,
                         dataSharingTabManager,
-                        onTabGroupCreation);
+                        onTabGroupCreation,
+                        undoBarExplicitTrigger);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             // Ignore attachToParent initially. In some activitys multiple TabListCoordinators are

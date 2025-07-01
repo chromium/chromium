@@ -153,6 +153,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.Shopping
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
@@ -355,6 +356,7 @@ public class TabListMediatorUnitTest {
     @Mock DataSharingService mDataSharingService;
     @Mock CollaborationService mCollaborationService;
     @Mock ServiceStatus mServiceStatus;
+    @Mock UndoBarExplicitTrigger mUndoBarExplicitTrigger;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -1694,7 +1696,8 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabActionState.CLOSABLE,
                         mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        /* undoBarExplicitTrigger= */ null);
         mMediator.initWithNative(mProfile);
 
         initAndAssertAllProperties();
@@ -3473,7 +3476,8 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        /* undoBarExplicitTrigger= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3506,7 +3510,8 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        /* undoBarExplicitTrigger= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initWithThreeTabs();
@@ -3981,7 +3986,8 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.SELECTABLE,
                         mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        /* undoBarExplicitTrigger= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4027,7 +4033,8 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.SELECTABLE,
                         mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        /* undoBarExplicitTrigger= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4073,7 +4080,8 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.SELECTABLE,
                         mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        /* undoBarExplicitTrigger= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4600,7 +4608,8 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        /* undoBarExplicitTrigger= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4930,6 +4939,7 @@ public class TabListMediatorUnitTest {
         // Assert that the tab group has been removed from the model list and archive status reset.
         assertEquals(TAB, mModelList.get(0).model.get(CARD_TYPE));
         verify(mTabGroupSyncService).updateArchivalStatus(eq(SYNC_GROUP_ID1), eq(false));
+        verify(mUndoBarExplicitTrigger).triggerSnackbarForSavedTabGroup(eq(SYNC_GROUP_ID1));
     }
 
     @Test
@@ -4972,7 +4982,8 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        /* undoBarExplicitTrigger= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -5221,7 +5232,8 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         tabActionState,
                         mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        mUndoBarExplicitTrigger);
         TrackerFactory.setTrackerForTests(mTracker);
         mMediator.registerOrientationListener(mGridLayoutManager);
 

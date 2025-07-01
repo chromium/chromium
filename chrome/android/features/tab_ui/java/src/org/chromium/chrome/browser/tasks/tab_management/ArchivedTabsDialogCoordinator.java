@@ -793,6 +793,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     @EnsuresNonNull("mTabListEditorCoordinator")
     private void createTabListEditorCoordinator() {
+        // TODO(crbug.com/417467809): Plumb the actual UndoBar trigger interface when available.
         mTabListEditorCoordinator =
                 new TabListEditorCoordinator(
                         mActivity,
@@ -815,7 +816,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         mModalDialogManager,
                         mDesktopWindowStateManager,
                         /* edgeToEdgeSupplier= */ null,
-                        CreationMode.FULL_SCREEN);
+                        CreationMode.FULL_SCREEN,
+                        /* undoBarExplicitTrigger= */ null);
     }
 
     @VisibleForTesting

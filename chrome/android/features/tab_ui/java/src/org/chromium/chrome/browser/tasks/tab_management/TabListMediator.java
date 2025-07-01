@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardPropert
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
@@ -385,6 +386,7 @@ class TabListMediator implements TabListNotificationHandler {
     private final TabModelObserver mTabModelObserver;
     private final TabActionListener mTabClosedListener;
     private final TabGridItemTouchHelperCallback mTabGridItemTouchHelperCallback;
+    private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
 
     private int mNextTabId = Tab.INVALID_TAB_ID;
     private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
@@ -957,6 +959,7 @@ class TabListMediator implements TabListNotificationHandler {
      *     Must always be CLOSABLE for TabListMode.STRIP.
      * @param dataSharingTabManager The service used to initiate data sharing.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
+     * @param undoBarExplicitTrigger Interface to explicitly trigger the undo closure snackbar.
      */
     public TabListMediator(
             Activity activity,
@@ -974,7 +977,8 @@ class TabListMediator implements TabListNotificationHandler {
             String componentName,
             @TabActionState int initialTabActionState,
             @Nullable DataSharingTabManager dataSharingTabManager,
-            @Nullable Runnable onTabGroupCreation) {
+            @Nullable Runnable onTabGroupCreation,
+            @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger) {
         mActivity = activity;
         mModelList = modelList;
         mMode = mode;
@@ -991,6 +995,7 @@ class TabListMediator implements TabListNotificationHandler {
         mTabActionState = initialTabActionState;
         mDataSharingTabManager = dataSharingTabManager;
         mOnTabGroupCreation = onTabGroupCreation;
+        mUndoBarExplicitTrigger = undoBarExplicitTrigger;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -1241,6 +1246,11 @@ class TabListMediator implements TabListNotificationHandler {
                                 model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
                                 mModelList.removeAt(index);
                                 mTabGroupSyncService.updateArchivalStatus(syncId, false);
+
+                                if (mUndoBarExplicitTrigger != null) {
+                                    mUndoBarExplicitTrigger.triggerSnackbarForSavedTabGroup(syncId);
+                                }
+
                                 RecordUserAction.record(
                                         "TabGroups.ArchivedTabGroupManualCloseOnInactiveSurface");
                                 RecordHistogram.recordCount1000Histogram(

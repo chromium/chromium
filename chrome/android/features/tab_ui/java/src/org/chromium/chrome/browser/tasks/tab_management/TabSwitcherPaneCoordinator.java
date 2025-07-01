@@ -375,7 +375,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                     : Resources.ID_NULL,
                             onTabGroupCreation,
                             /* allowDragAndDrop= */ true,
-                            tabSwitcherDragHandler);
+                            tabSwitcherDragHandler,
+                            /* undoBarExplicitTrigger= */ null);
             mTabListCoordinator = tabListCoordinator;
             tabListCoordinator.setOnLongPressTabItemEventListener(mLongPressItemEventListener);
 
