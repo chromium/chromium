@@ -55,7 +55,7 @@
                   action:actionBlock
                    style:style
                preferred:NO
-                 enabled:YES];
+                 enabled:enabled];
 }
 
 - (void)addItemWithTitle:(NSString*)title
