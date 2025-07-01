@@ -388,6 +388,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/popup_menu/ui_bundled",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/prerender/model:test_support",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/save_to_photos/ui_bundled",
     "//ios/chrome/browser/search_engines/model",
