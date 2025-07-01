@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/omnibox/coordinator/zero_suggest_prefetch_helper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
@@ -94,7 +94,6 @@
   // OmniboxCoordinator temporarely owns these class until they are removed
   // after the refactoring crbug.com/390409559.
   std::unique_ptr<OmniboxControllerIOS> _omniboxController;
-  std::unique_ptr<OmniboxEditModelIOS> _omniboxEditModel;
   std::unique_ptr<OmniboxTextModel> _omniboxTextModel;
 
   /// Controller for the omnibox autocomplete.
@@ -191,10 +190,6 @@
   [_omniboxMetricsRecorder
       setAutocompleteController:_omniboxController->autocomplete_controller()];
 
-  _omniboxEditModel = std::make_unique<OmniboxEditModelIOS>(
-      _omniboxController.get(), _client.get(), _omniboxTextModel.get(),
-      _omniboxMetricsRecorder);
-
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [textField setPasteDelegate:self.pasteDelegate];
 
@@ -217,13 +212,11 @@
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
       initWithOmniboxController:_omniboxController.get()
                   omniboxClient:_client.get()
-               omniboxEditModel:_omniboxEditModel.get()
                omniboxTextModel:_omniboxTextModel.get()];
 
   _omniboxTextController = [[OmniboxTextController alloc]
       initWithOmniboxController:_omniboxController.get()
                   omniboxClient:_client.get()
-               omniboxEditModel:_omniboxEditModel.get()
                omniboxTextModel:_omniboxTextModel.get()
                   inLensOverlay:_isLensOverlay];
   _omniboxTextController.delegate = mediator;
@@ -235,9 +228,6 @@
   _omniboxAutocompleteController.omniboxMetricsRecorder =
       _omniboxMetricsRecorder;
 
-  _omniboxEditModel->set_text_controller(_omniboxTextController);
-  _omniboxEditModel->set_omnibox_autocomplete_controller(
-      _omniboxAutocompleteController);
   _omniboxMetricsRecorder.omniboxAutocompleteController =
       _omniboxAutocompleteController;
 
@@ -283,7 +273,6 @@
   [self.popupCoordinator stop];
   self.popupCoordinator = nil;
 
-  _omniboxEditModel.reset();
   _omniboxController.reset();
   _omniboxTextModel.reset();
   _client.reset();

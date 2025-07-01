@@ -11,7 +11,6 @@
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/search_engines/template_url_starter_pack_data.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 
 class OmniboxClient;
 

@@ -15,7 +15,6 @@
 @class OmniboxAutocompleteController;
 class OmniboxClient;
 class OmniboxControllerIOS;
-class OmniboxEditModelIOS;
 @protocol OmniboxFocusDelegate;
 @protocol OmniboxTextControllerDelegate;
 @class OmniboxTextFieldIOS;
@@ -43,7 +42,6 @@ class OmniboxEditModelIOS;
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
                             omniboxClient:(OmniboxClient*)omniboxClient
-                         omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
                             inLensOverlay:(BOOL)inLensOverlay
     NS_DESIGNATED_INITIALIZER;

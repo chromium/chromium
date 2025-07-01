@@ -22,7 +22,6 @@ class AutocompleteResult;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
 class OmniboxClient;
 class OmniboxControllerIOS;
-class OmniboxEditModelIOS;
 @class OmniboxMetricsRecorder;
 @class OmniboxTextController;
 struct OmniboxTextModel;
@@ -56,7 +55,6 @@ struct OmniboxTextModel;
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
                             omniboxClient:(OmniboxClient*)omniboxClient
-                         omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -72,7 +70,7 @@ struct OmniboxTextModel;
 - (void)stopAutocompleteWithClearSuggestions:(BOOL)clearSuggestions;
 
 /// Opens given selection. Most kinds of selection invoke an action or
-/// otherwise call `OpenMatch`, but some may `acceptInputWithDisposition` which
+/// otherwise call `openMatch`, but some may `acceptInputWithDisposition` which
 /// is not guaranteed to open a match or commit the omnibox.
 - (void)openSelection:(OmniboxPopupSelection)selection
             timestamp:(base::TimeTicks)timestamp

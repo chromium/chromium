@@ -21,7 +21,6 @@
 #import "components/omnibox/browser/page_classification_functions.h"
 #import "components/omnibox/common/omnibox_feature_configs.h"
 #import "components/search_engines/template_url_starter_pack_data.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 #import "ui/gfx/geometry/rect.h"
 
 OmniboxControllerIOS::OmniboxControllerIOS(

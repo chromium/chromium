@@ -16,6 +16,15 @@ class AutocompleteController;
 - (void)setAutocompleteController:
     (std::unique_ptr<AutocompleteController>)autocompleteController;
 
+#pragma mark - Exposed methods for testing
+
+- (void)openMatch:(AutocompleteMatch)match
+             popupSelection:(OmniboxPopupSelection)selection
+      windowOpenDisposition:(WindowOpenDisposition)disposition
+            alternateNavURL:(const GURL&)alternateNavURL
+                 pastedText:(const std::u16string&)pastedText
+    matchSelectionTimestamp:(base::TimeTicks)matchSelectionTimestamp;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_AUTOCOMPLETE_CONTROLLER_TESTING_H_

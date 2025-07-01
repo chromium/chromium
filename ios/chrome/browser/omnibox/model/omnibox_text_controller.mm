@@ -17,7 +17,6 @@
 #import "components/omnibox/browser/omnibox_text_util.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion.h"
@@ -40,8 +39,6 @@ const char kOmniboxFocusResultedInNavigation[] =
   raw_ptr<OmniboxControllerIOS> _omniboxController;
   /// Client of the omnibox.
   raw_ptr<OmniboxClient> _omniboxClient;
-  /// Omnibox edit model. Should only be used for text interactions.
-  raw_ptr<OmniboxEditModelIOS> _omniboxEditModel;
   /// Whether the popup was scrolled during this omnibox interaction.
   BOOL _suggestionsListScrolled;
   /// The omnbibox text model, holding the text state.
@@ -61,14 +58,12 @@ const char kOmniboxFocusResultedInNavigation[] =
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
                             omniboxClient:(OmniboxClient*)omniboxClient
-                         omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
                             inLensOverlay:(BOOL)inLensOverlay {
   self = [super init];
   if (self) {
     _omniboxController = omniboxController;
     _omniboxClient = omniboxClient;
-    _omniboxEditModel = omniboxEditModel;
     _omniboxTextModel = omniboxTextModel;
     _inLensOverlay = inLensOverlay;
     _currentSelection = NSMakeRange(0, 0);
@@ -80,7 +75,6 @@ const char kOmniboxFocusResultedInNavigation[] =
 - (void)disconnect {
   _omniboxController = nullptr;
   _omniboxClient = nullptr;
-  _omniboxEditModel = nullptr;
   _omniboxTextModel = nullptr;
 }
 
@@ -390,9 +384,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (void)onUserRemoveAdditionalText {
   [self setAdditionalText:u""];
-  if (_omniboxEditModel) {
-    [self updateInput];
-  }
+  [self updateInput];
 }
 
 - (void)onThumbnailSet:(BOOL)hasThumbnail {
@@ -410,9 +402,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   if (self.textField.userText.length) {
     // If the omnibox is not empty, start autocomplete.
-    if (_omniboxEditModel) {
       [self updateInput];
-    }
   } else {
     [self.omniboxAutocompleteController closeOmniboxPopup];
   }
@@ -443,7 +433,6 @@ const char kOmniboxFocusResultedInNavigation[] =
   RecordAction(base::UserMetricsAction("MobileOmniboxUse"));
   RecordAction(base::UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
 
-  if (_omniboxEditModel) {
     // The omnibox edit model doesn't support accepting input with no text.
     // Delegate the call to the client instead.
     if (_omniboxClient && !self.textField.text.length) {
@@ -453,7 +442,6 @@ const char kOmniboxFocusResultedInNavigation[] =
           openCurrentSelectionWithDisposition:WindowOpenDisposition::CURRENT_TAB
                                     timestamp:base::TimeTicks()];
     }
-  }
 
   [self revertAll];
 }
@@ -492,7 +480,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   [self onBeforePossibleChange];
 
-  if (_omniboxEditModel && _omniboxTextModel) {
+  if (_omniboxTextModel) {
     _omniboxTextModel->OnSetFocus();
 
     if (_inLensOverlay) {

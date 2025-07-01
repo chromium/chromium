@@ -6,6 +6,7 @@
 
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
@@ -16,12 +17,14 @@
 #import "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
+#import "components/omnibox/browser/search_provider.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller+Testing.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -37,7 +40,9 @@
 #import "ui/gfx/image/image_skia.h"
 #import "ui/gfx/image/image_unittest_util.h"
 
+using testing::_;
 using testing::AtMost;
+using testing::SaveArg;
 
 namespace {
 
@@ -117,34 +122,36 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
 
-    omnibox_edit_model_ = std::make_unique<OmniboxEditModelIOS>(
-        omnibox_controller_.get(), omnibox_client_.get(),
-        omnibox_text_model_.get(), nil);
-
     controller_delegate_ =
         OCMProtocolMock(@protocol(OmniboxAutocompleteControllerDelegate));
 
     controller_ = [[TestOmniboxAutocompleteController alloc]
         initWithOmniboxController:omnibox_controller_.get()
                     omniboxClient:omnibox_client_.get()
-                 omniboxEditModel:omnibox_edit_model_.get()
                  omniboxTextModel:omnibox_text_model_.get()];
     controller_.delegate = controller_delegate_;
 
-    omnibox_edit_model_->set_omnibox_autocomplete_controller(controller_);
+    omnibox_metrics_recorder_ = [[OmniboxMetricsRecorder alloc]
+        initWithClient:omnibox_client_.get()
+             textModel:omnibox_text_model_.get()];
+    [omnibox_metrics_recorder_
+        setAutocompleteController:omnibox_controller_
+                                      ->autocomplete_controller()];
+    controller_.omniboxMetricsRecorder = omnibox_metrics_recorder_;
   }
 
   ~OmniboxAutocompleteControllerTest() override {
     [controller_ disconnect];
     clipboard_ = nullptr;
     autocomplete_controller_ = nullptr;
-    omnibox_edit_model_ = nullptr;
     omnibox_controller_ = nullptr;
     omnibox_client_ = nullptr;
     omnibox_text_model_ = nullptr;
     controller_delegate_ = nil;
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
+    [omnibox_metrics_recorder_ disconnect];
+    omnibox_metrics_recorder_ = nil;
   }
 
   ACMatches SampleMatches() const {
@@ -160,6 +167,28 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
         controller_.lastOpenedSelectionLineIndex);
   }
 
+  /// Simulates opening `url_text` from the text controller.
+  void OpenUrlFromEditBox(const std::u16string url_text,
+                          bool is_autocompleted) {
+    AutocompleteMatch match(autocomplete_controller_->search_provider(), 0,
+                            false, AutocompleteMatchType::OPEN_TAB);
+    match.destination_url = GURL(url_text);
+    match.allowed_to_be_default_match = true;
+    if (is_autocompleted) {
+      match.inline_autocompletion = url_text;
+    } else {
+      omnibox_text_model_->SetInputInProgressNoNotify(YES);
+      omnibox_text_model_->UpdateUserText(url_text);
+    }
+    omnibox_text_model_->OnSetFocus();
+    [controller_ openMatch:match
+                 popupSelection:OmniboxPopupSelection(0)
+          windowOpenDisposition:WindowOpenDisposition::CURRENT_TAB
+                alternateNavURL:GURL()
+                     pastedText:u""
+        matchSelectionTimestamp:base::TimeTicks()];
+  }
+
  protected:
   // Message loop for the main test thread.
   base::test::TaskEnvironment environment_;
@@ -171,7 +200,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   raw_ptr<FakeClipboardRecentContent> clipboard_;
   std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
-  std::unique_ptr<OmniboxEditModelIOS> omnibox_edit_model_;
+  OmniboxMetricsRecorder* omnibox_metrics_recorder_;
   id controller_delegate_;
 };
 
@@ -381,4 +410,93 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardImageMatch) {
   EXPECT_EQ(LastOpenedMatch().type, AutocompleteMatchType::CLIPBOARD_IMAGE);
   EXPECT_FALSE(LastOpenedMatch().post_content->first.empty());
   EXPECT_FALSE(LastOpenedMatch().post_content->second.empty());
+}
+
+// This verifies the fix for a bug where calling openMatch with a valid
+// alternate nav URL would fail a DCHECK if the input began with "http://".
+// The failure was due to erroneously trying to strip the scheme from the
+// resulting fill_into_edit.  Alternate nav matches are never shown, so there's
+// no need to ever try and strip this scheme.
+TEST_F(OmniboxAutocompleteControllerTest, AlternateNavHasHTTP) {
+  AutocompleteMatch match(autocomplete_controller_->search_provider(), 0, false,
+                          AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  // `match.destination_url` has to be set to ensure that OnAutocompleteAccept
+  // is called and `alternate_nav_match` is populated.
+  match.destination_url = GURL("https://foo/");
+  const GURL alternate_nav_url("http://abcd/");
+
+  AutocompleteMatch alternate_nav_match;
+  EXPECT_CALL(*omnibox_client_,
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
+      .WillOnce(SaveArg<10>(&alternate_nav_match));
+
+  omnibox_text_model_->OnSetFocus();  // Avoids DCHECK in OpenMatch().
+  omnibox_text_model_->SetInputInProgressNoNotify(YES);
+  omnibox_text_model_->UpdateUserText(u"http://abcd");
+  [controller_ openMatch:match
+               popupSelection:OmniboxPopupSelection(0)
+        windowOpenDisposition:WindowOpenDisposition::CURRENT_TAB
+              alternateNavURL:alternate_nav_url
+                   pastedText:u""
+      matchSelectionTimestamp:base::TimeTicks()];
+  EXPECT_TRUE(
+      AutocompleteInput::HasHTTPScheme(alternate_nav_match.fill_into_edit));
+
+  EXPECT_CALL(*omnibox_client_,
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
+      .WillOnce(SaveArg<10>(&alternate_nav_match));
+
+  omnibox_text_model_->SetInputInProgressNoNotify(YES);
+  omnibox_text_model_->UpdateUserText(u"abcd");
+  [controller_ openMatch:match
+               popupSelection:OmniboxPopupSelection(0)
+        windowOpenDisposition:WindowOpenDisposition::CURRENT_TAB
+              alternateNavURL:alternate_nav_url
+                   pastedText:u""
+      matchSelectionTimestamp:base::TimeTicks()];
+
+  EXPECT_TRUE(
+      AutocompleteInput::HasHTTPScheme(alternate_nav_match.fill_into_edit));
+}
+
+#pragma mark - Histogram tests
+
+// Tests IPv4AddressPartsCount logging.
+TEST_F(OmniboxAutocompleteControllerTest, IPv4AddressPartsCount) {
+  base::HistogramTester histogram_tester;
+  constexpr char kIPv4AddressPartsCountHistogramName[] =
+      "Omnibox.IPv4AddressPartsCount";
+  // Hostnames shall not be recorded.
+  OpenUrlFromEditBox(u"http://example.com", false);
+  histogram_tester.ExpectTotalCount(kIPv4AddressPartsCountHistogramName, 0);
+
+  // Autocompleted navigations shall not be recorded.
+  OpenUrlFromEditBox(u"http://127.0.0.1", true);
+  histogram_tester.ExpectTotalCount(kIPv4AddressPartsCountHistogramName, 0);
+
+  // Test IPv4 parts are correctly counted.
+  OpenUrlFromEditBox(u"http://127.0.0.1", false);
+  OpenUrlFromEditBox(u"http://127.1/test.html", false);
+  OpenUrlFromEditBox(u"http://127.0.1", false);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kIPv4AddressPartsCountHistogramName),
+      testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1),
+                           base::Bucket(4, 1)));
+}
+
+// Tests AnswerInSuggest logging.
+TEST_F(OmniboxAutocompleteControllerTest, LogAnswerUsed) {
+  base::HistogramTester histogram_tester;
+  AutocompleteMatch match(autocomplete_controller_->search_provider(), 0, false,
+                          AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  match.answer_type = omnibox::ANSWER_TYPE_WEATHER;
+  match.destination_url = GURL("https://foo");
+  [controller_ openMatch:match
+               popupSelection:OmniboxPopupSelection(0)
+        windowOpenDisposition:WindowOpenDisposition::CURRENT_TAB
+              alternateNavURL:GURL()
+                   pastedText:u""
+      matchSelectionTimestamp:base::TimeTicks()];
+  histogram_tester.ExpectUniqueSample("Omnibox.SuggestionUsed.AnswerInSuggest",
+                                      8, 1);
 }

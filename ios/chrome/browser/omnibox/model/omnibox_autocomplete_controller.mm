@@ -16,15 +16,16 @@
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/clipboard_provider.h"
+#import "components/omnibox/browser/history_url_provider.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/omnibox/browser/page_classification_functions.h"
+#import "components/omnibox/browser/verbatim_match.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_debugger_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
@@ -56,8 +57,6 @@ using base::UserMetricsAction;
   raw_ptr<OmniboxClient> _omniboxClient;
   /// Controller of the omnibox.
   raw_ptr<OmniboxControllerIOS> _omniboxController;
-  /// Omnibox edit model. Should only be used for autocomplete interactions.
-  raw_ptr<OmniboxEditModelIOS> _omniboxEditModel;
   /// Omnibox text model.
   raw_ptr<OmniboxTextModel> _omniboxTextModel;
 
@@ -73,13 +72,11 @@ using base::UserMetricsAction;
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
                             omniboxClient:(OmniboxClient*)omniboxClient
-                         omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel {
   self = [super init];
   if (self) {
     _omniboxClient = omniboxClient;
     _omniboxController = omniboxController;
-    _omniboxEditModel = omniboxEditModel;
     _omniboxTextModel = omniboxTextModel;
 
     _autocompleteControllerObserverBridge =
@@ -111,7 +108,6 @@ using base::UserMetricsAction;
   [_bottomOmniboxEnabled setObserver:nil];
   _bottomOmniboxEnabled = nil;
   _autocompleteResultWrapper = nil;
-  _omniboxEditModel = nullptr;
   _omniboxController = nullptr;
   _omniboxTextModel = nullptr;
   _omniboxClient = nullptr;
@@ -152,7 +148,7 @@ using base::UserMetricsAction;
             timestamp:(base::TimeTicks)timestamp
           disposition:(WindowOpenDisposition)disposition {
   // Intentionally accept input when selection has no line.
-  // This will usually reach `OpenMatch` indirectly.
+  // This will usually reach `openMatch` indirectly.
   if (selection.line >= self.autocompleteController->result().size()) {
     [self acceptInputWithDisposition:disposition timestamp:timestamp];
     return;
@@ -165,8 +161,12 @@ using base::UserMetricsAction;
   GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
       _omniboxTextModel->input, match,
       self.autocompleteController->autocomplete_provider_client());
-  _omniboxEditModel->OpenMatch(selection, match, disposition, alternate_nav_url,
-                               std::u16string(), timestamp);
+  [self openMatch:match
+               popupSelection:selection
+        windowOpenDisposition:disposition
+              alternateNavURL:alternate_nav_url
+                   pastedText:u""
+      matchSelectionTimestamp:timestamp];
 }
 
 - (void)openCurrentSelectionWithDisposition:(WindowOpenDisposition)disposition
@@ -189,7 +189,7 @@ using base::UserMetricsAction;
 
   [self updatePopupSuggestions];
   if (defaultMatchChanged) {
-    // The default match has changed, we need to let the OmniboxEditModelIOS
+    // The default match has changed, we need to let the text controller
     // know about new inline autocomplete text (blue highlight).
     if (const AutocompleteMatch* match =
             autocompleteController->result().default_match()) {
@@ -304,7 +304,7 @@ using base::UserMetricsAction;
   }
 
   AutocompleteController* autocompleteController = self.autocompleteController;
-  if (!autocompleteController || !_omniboxEditModel) {
+  if (!autocompleteController) {
     return;
   }
 
@@ -329,11 +329,9 @@ using base::UserMetricsAction;
     return;
   }
 
-  if (_omniboxEditModel) {
     [self openSelection:OmniboxPopupSelection(row)
               timestamp:matchSelectionTimestamp
             disposition:disposition];
-  }
 }
 
 - (void)selectMatchForAppending:(const AutocompleteMatch&)match {
@@ -505,19 +503,6 @@ using base::UserMetricsAction;
 
 #pragma mark - Private
 
-/// Opens a match created outside of autocomplete controller.
-- (void)openCustomMatch:(std::optional<AutocompleteMatch>)match
-            disposition:(WindowOpenDisposition)disposition
-     selectionTimestamp:(base::TimeTicks)timestamp {
-  AutocompleteController* autocompleteController = self.autocompleteController;
-  if (!autocompleteController || !_omniboxEditModel || !match) {
-    return;
-  }
-  OmniboxPopupSelection selection(
-      autocompleteController->InjectAdHocMatch(match.value()));
-  [self openSelection:selection timestamp:timestamp disposition:disposition];
-}
-
 /// Wraps the suggestions and send them to the delegate.
 - (void)updateWithSortedResults:(const AutocompleteResult&)results {
   NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups =
@@ -536,8 +521,23 @@ using base::UserMetricsAction;
   }
 }
 
-// Asks the browser to load the popup's currently selected item, using the
-// supplied disposition.  This may close the popup.
+#pragma mark Open match
+
+/// Opens a match created outside of autocomplete controller.
+- (void)openCustomMatch:(std::optional<AutocompleteMatch>)match
+            disposition:(WindowOpenDisposition)disposition
+     selectionTimestamp:(base::TimeTicks)timestamp {
+  AutocompleteController* autocompleteController = self.autocompleteController;
+  if (!autocompleteController || !match) {
+    return;
+  }
+  OmniboxPopupSelection selection(
+      autocompleteController->InjectAdHocMatch(match.value()));
+  [self openSelection:selection timestamp:timestamp disposition:disposition];
+}
+
+/// Asks the browser to load the popup's currently selected item, using the
+/// supplied disposition.  This may close the popup.
 - (void)acceptInputWithDisposition:(WindowOpenDisposition)disposition
                          timestamp:(base::TimeTicks)timestamp {
   // Get the URL and transition type for the selected entry.
@@ -557,9 +557,144 @@ using base::UserMetricsAction;
     match.transition = ui::PAGE_TRANSITION_LINK;
   }
 
-  _omniboxEditModel->OpenMatch(
-      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
-      disposition, alternate_nav_url, std::u16string(), timestamp);
+  [self openMatch:match
+               popupSelection:OmniboxPopupSelection(
+                                  OmniboxPopupSelection::kNoMatch)
+        windowOpenDisposition:disposition
+              alternateNavURL:alternate_nav_url
+                   pastedText:u""
+      matchSelectionTimestamp:timestamp];
+}
+
+/// Asks the browser to load `match` or execute one of its actions
+/// according to `selection`.
+///
+/// openMatch: needs to know the original text that drove this action.  If
+/// `pastedText` is non-empty, this is a Paste-And-Go/Search action, and
+/// that's the relevant input text.  Otherwise, the relevant input text is
+/// either the user text or the display URL, depending on if user input is
+/// in progress.
+///
+/// `match` is passed by value for two reasons:
+/// (1) This function needs to modify `match`, so a const ref isn't
+///     appropriate.  Callers don't actually care about the modifications, so a
+///     pointer isn't required.
+/// (2) The passed-in match is, on the caller side, typically coming from data
+///     associated with the popup.  Since this call can close the popup, that
+///     could clear that data, leaving us with a pointer-to-garbage.  So at
+///     some point someone needs to make a copy of the match anyway, to
+///     preserve it past the popup closure.
+- (void)openMatch:(AutocompleteMatch)match
+             popupSelection:(OmniboxPopupSelection)selection
+      windowOpenDisposition:(WindowOpenDisposition)disposition
+            alternateNavURL:(const GURL&)alternateNavURL
+                 pastedText:(const std::u16string&)pastedText
+    matchSelectionTimestamp:(base::TimeTicks)matchSelectionTimestamp {
+  // If the user is executing an action, this will be non-null and some match
+  // opening and metrics behavior will be adjusted accordingly.
+  OmniboxAction* action = nullptr;
+  if (selection.state == OmniboxPopupSelection::NORMAL &&
+      match.takeover_action) {
+    DCHECK(matchSelectionTimestamp != base::TimeTicks());
+    action = match.takeover_action.get();
+  } else if (selection.IsAction()) {
+    DCHECK_LT(selection.action_index, match.actions.size());
+    action = match.actions[selection.action_index].get();
+  }
+
+  // Invalid URLs such as chrome://history can end up here, but that's okay
+  // if the user is executing an action instead of navigating to the URL.
+  if (!match.destination_url.is_valid() && !action) {
+    return;
+  }
+
+  // NULL_RESULT_MESSAGE matches are informational only and cannot be acted
+  // upon. Immediately return when attempting to open one.
+  if (match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
+    return;
+  }
+
+  // Also switch the window disposition for tab switch actions. The action
+  // itself will already open with SWITCH_TO_TAB disposition, but the change
+  // is needed earlier for metrics.
+  bool isTabSwitchAction =
+      action && action->ActionId() == OmniboxActionId::TAB_SWITCH;
+  if (isTabSwitchAction) {
+    disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+  }
+
+  TRACE_EVENT("omnibox", "OmniboxAutocompleteController::OpenMatch", "match",
+              match, "disposition", disposition, "altenate_nav_url",
+              alternateNavURL, "pasted_text", pastedText);
+
+  GURL destinationURL = action ? action->getUrl() : match.destination_url;
+
+  std::u16string inputText(pastedText);
+  if (inputText.empty()) {
+    inputText = _omniboxTextModel->user_input_in_progress
+                    ? _omniboxTextModel->user_text
+                    : _omniboxTextModel->url_for_editing;
+  }
+
+  // Save the result of the interaction, but do not record the histogram yet.
+  _omniboxTextModel->focus_resulted_in_navigation = true;
+
+  // Create a dummy AutocompleteInput for use in calling VerbatimMatchForInput()
+  // to create an alternate navigational match.
+  AutocompleteInput alternateInput(
+      inputText, _omniboxClient->GetPageClassification(/*is_prefetch=*/false),
+      _omniboxClient->GetSchemeClassifier(),
+      _omniboxClient->ShouldDefaultTypedNavigationsToHttps(), 0, false);
+  // Somehow we can occasionally get here with no active tab.  It's not
+  // clear why this happens.
+  alternateInput.set_current_url(_omniboxClient->GetURL());
+  alternateInput.set_current_title(_omniboxClient->GetTitle());
+
+  [self.omniboxMetricsRecorder recordOpenMatch:match
+                                destinationURL:destinationURL
+                                     inputText:inputText
+                                popupSelection:selection
+                         windowOpenDisposition:disposition
+                                      isAction:action
+                                  isPastedText:!pastedText.empty()];
+
+  if (action) {
+    OmniboxAction::ExecutionContext context(
+        *(self.autocompleteController->autocomplete_provider_client()),
+        base::BindOnce(&OmniboxClient::OnAutocompleteAccept,
+                       _omniboxClient->AsWeakPtr()),
+        matchSelectionTimestamp, disposition);
+    action->Execute(context);
+  }
+
+  if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+    base::AutoReset<bool> tmp(&_omniboxTextModel->in_revert, true);
+    [self.omniboxTextController
+            revertAll];  // Revert the box to its unedited state.
+  }
+
+  if (!action) {
+    // This block should be the last call in openMatch, because controller_ is
+    // not guaranteed to exist after client()->OnAutocompleteAccept is called.
+    if (destinationURL.is_valid()) {
+      // This calls RevertAll again.
+      base::AutoReset<bool> tmp(&_omniboxTextModel->in_revert, true);
+
+      _omniboxClient->OnAutocompleteAccept(
+          destinationURL, match.post_content.get(), disposition,
+          ui::PageTransitionFromInt(match.transition |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          match.type, matchSelectionTimestamp,
+          _omniboxTextModel->input.added_default_scheme_to_typed_url(),
+          _omniboxTextModel->input.typed_url_had_http_scheme() &&
+              match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+          inputText, match,
+          VerbatimMatchForInput(
+              self.autocompleteController->history_url_provider(),
+              self.autocompleteController->autocomplete_provider_client(),
+              alternateInput, alternateNavURL, false));
+    }
+  }
 }
 
 #pragma mark Clipboard match handling
