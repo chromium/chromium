@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrInputElement, SettingsSearchEngineEditDialogElement, SettingsSearchEnginesListElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
-import type {SearchEnginesInfo} from 'chrome://settings/settings.js';
+import type {SearchEngine, SearchEnginesInfo} from 'chrome://settings/settings.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -133,9 +133,9 @@ suite('SearchEnginePageTests', function() {
         id: 1,
         name: 'search_engine_default_B',
         displayName: 'B displayName',
-        isManaged: true,
         keyword: 'default B',
         url: 'https://www.default_b.com/search?q=%s',
+        urlLocked: true,
       }),
       createSampleSearchEngine({
         id: 2,
@@ -143,28 +143,40 @@ suite('SearchEnginePageTests', function() {
         displayName: 'C displayName',
         keyword: 'default C',
         url: 'https://www.default_c.com/search?q=%s',
-        urlLocked: true,
+        default: true,
+        canBeEdited: true,
+        isManaged: true,
       }),
       createSampleSearchEngine({
         id: 3,
         name: 'search_engine_default_D',
         displayName: 'D displayName',
         keyword: 'default D',
-      }),
-      createSampleSearchEngine({
-        id: 4,
-        name: 'search_engine_default_E',
-        displayName: 'E displayName',
-        keyword: 'default E',
-      }),
-      createSampleSearchEngine({
-        id: 5,
-        name: 'search_engine_default_F',
-        displayName: 'F displayName',
-        keyword: 'default F',
+        url: 'https://www.default_d.com/search?q=%s',
+        default: true,
+        isManaged: true,
       }),
     ],
-    actives: [createSampleSearchEngine({id: 6})],
+    actives: [
+      createSampleSearchEngine({id: 4}),
+      createSampleSearchEngine({
+        id: 5,
+        name: 'search_engine_active_E',
+        displayName: 'E displayName',
+        keyword: 'active E',
+        url: 'https://www.active_E.com/search?q=%s',
+        canBeEdited: true,
+        isManaged: true,
+      }),
+      createSampleSearchEngine({
+        id: 6,
+        name: 'search_engine_active_F',
+        displayName: 'F displayName',
+        keyword: 'active F',
+        url: 'https://www.active_F.com/search?q=%s',
+        isManaged: true,
+      }),
+    ],
     others: [
       createSampleSearchEngine({
         id: 7,
@@ -420,8 +432,16 @@ suite('SearchEnginePageTests', function() {
         loadTimeData.getString('save'));
   });
 
-  test('EditSearchEngineDialog_IsManaged', async function() {
-    const engine = searchEnginesInfo.defaults[1]!;
+  /**
+   * A helper function to test the "edit search engine" dialog. It triggers
+   * the dialog for a given search engine and verifies its initial state,
+   * including the title, pre-populated input fields, and the state of the
+   * action buttons. It also checks whether the fields are correctly marked
+   * as read-only and that validation is skipped for read-only engines.
+   */
+  async function testEditSearchEngineDialog(
+      engine: SearchEngine, expectedDialogTitle: string,
+      expectedReadonly: boolean) {
     page.dispatchEvent(new CustomEvent('view-or-edit-search-engine', {
       bubbles: true,
       composed: true,
@@ -433,41 +453,72 @@ suite('SearchEnginePageTests', function() {
     const modelIndex = await browserProxy.whenCalled('searchEngineEditStarted');
     assertEquals(engine.modelIndex, modelIndex);
     const dialog =
-        page.shadowRoot!.querySelector('settings-search-engine-edit-dialog')!;
+        page.shadowRoot!.querySelector('settings-search-engine-edit-dialog');
     assertTrue(!!dialog);
     const policySubtitleContainer =
         dialog.shadowRoot!.querySelector('#policySubtitleContainer');
     assertTrue(!!policySubtitleContainer);
+    assertEquals(
+        expectedDialogTitle,
+        dialog.shadowRoot!.querySelector(
+                              'div[slot="title"]')!.textContent!.trim());
 
     // Check that the cr-input fields are pre-populated.
     assertEquals(engine.name, dialog.$.searchEngine.value);
-    assertTrue(dialog.$.searchEngine.readonly);
+    assertEquals(expectedReadonly, dialog.$.searchEngine.readonly);
     assertEquals(engine.keyword, dialog.$.keyword.value);
-    assertTrue(dialog.$.keyword.readonly);
+    assertEquals(expectedReadonly, dialog.$.keyword.readonly);
     assertEquals(engine.url, dialog.$.queryUrl.value);
-    assertTrue(dialog.$.queryUrl.readonly);
+    assertEquals(expectedReadonly, dialog.$.queryUrl.readonly);
 
-    assertTrue(dialog.$.cancel.hidden);
+    assertEquals(expectedReadonly, dialog.$.cancel.hidden);
+    assertFalse(dialog.$.cancel.disabled);
     assertFalse(dialog.$.actionButton.hidden);
     assertFalse(dialog.$.actionButton.disabled);
     assertEquals(
-        dialog.$.actionButton.textContent!.trim(),
-        loadTimeData.getString('done'));
+        loadTimeData.getString(expectedReadonly ? 'done' : 'save'),
+        dialog.$.actionButton.textContent!.trim());
 
-    // Ensures that field validation is not run for search engines created by
-    // policy (b/348165485).
-    browserProxy.resetResolver('validateSearchEngineInput');
-    dialog.$.keyword.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
-    assertEquals(0, browserProxy.getCallCount('validateSearchEngineInput'));
+    // Ensures that field validation is not run for readonly search engines
+    // created by policy (crbug.com/348165485).
+    if (expectedReadonly) {
+      browserProxy.resetResolver('validateSearchEngineInput');
+      dialog.$.keyword.dispatchEvent(
+          new CustomEvent('input', {bubbles: true, composed: true}));
+      assertEquals(0, browserProxy.getCallCount('validateSearchEngineInput'));
+    }
+  }
 
-    assertTrue(dialog.$.cancel.hidden);
-    assertFalse(dialog.$.actionButton.hidden);
-    assertFalse(dialog.$.actionButton.disabled);
+  test('EditSearchEngineDialog_IsManaged', function() {
+    return testEditSearchEngineDialog(
+        searchEnginesInfo.actives[1]!,
+        loadTimeData.getString('searchEnginesEditSiteSearch'),
+        /*expectedReadonly=*/ false);
+  });
+
+  test('EditSearchEngineDialog_IsManaged_Readonly', function() {
+    return testEditSearchEngineDialog(
+        searchEnginesInfo.actives[2]!,
+        loadTimeData.getString('searchEnginesViewSiteSearch'),
+        /*expectedReadonly=*/ true);
+  });
+
+  test('EditSearchEngineDialog_Default_IsManaged', function() {
+    return testEditSearchEngineDialog(
+        searchEnginesInfo.defaults[2]!,
+        loadTimeData.getString('searchEnginesEditSearchEngine'),
+        /*expectedReadonly=*/ false);
+  });
+
+  test('EditSearchEngineDialog_Default_IsManaged_Readonly', function() {
+    return testEditSearchEngineDialog(
+        searchEnginesInfo.defaults[3]!,
+        loadTimeData.getString('searchEnginesViewSearchEngine'),
+        /*expectedReadonly=*/ true);
   });
 
   test('EditSearchEngineDialog_UrlLocked', async function() {
-    const engine = searchEnginesInfo.defaults[2]!;
+    const engine = searchEnginesInfo.defaults[1]!;
     page.dispatchEvent(new CustomEvent('view-or-edit-search-engine', {
       bubbles: true,
       composed: true,
@@ -517,8 +568,10 @@ suite('SearchEnginePageTests', function() {
     }
 
     function assertSearchResults(
-        defaultsCount: number, othersCount: number, extensionsCount: number) {
+        defaultsCount: number, activesCount: number, othersCount: number,
+        extensionsCount: number) {
       assertEquals(defaultsCount, getListItems(0)!.length);
+      assertEquals(activesCount, getListItems(1)!.length);
       assertEquals(othersCount, getListItems(2)!.length);
       assertEquals(extensionsCount, getListItems(3)!.length);
 
@@ -529,37 +582,37 @@ suite('SearchEnginePageTests', function() {
       assertEquals(extensionsCount > 0, noResultsElements[3]!.hidden);
     }
 
-    assertSearchResults(6, 7, 1);
+    assertSearchResults(4, 3, 7, 1);
 
     // Search by name
     page.filter = searchEnginesInfo.defaults[0]!.name;
     flush();
-    assertSearchResults(1, 0, 0);
+    assertSearchResults(1, 0, 0, 0);
 
     // Search by displayName
     page.filter = searchEnginesInfo.others[0]!.displayName;
     flush();
-    assertSearchResults(0, 1, 0);
+    assertSearchResults(0, 0, 1, 0);
 
     // Search by keyword
     page.filter = searchEnginesInfo.others[1]!.keyword;
     flush();
-    assertSearchResults(0, 1, 0);
+    assertSearchResults(0, 0, 1, 0);
 
     // Search by URL
     page.filter = 'search?';
     flush();
-    assertSearchResults(6, 7, 0);
+    assertSearchResults(4, 3, 7, 0);
 
     // Test case where none of the sublists have results.
     page.filter = 'does not exist';
     flush();
-    assertSearchResults(0, 0, 0);
+    assertSearchResults(0, 0, 0, 0);
 
     // Test case where an 'extension' search engine matches.
     page.filter = 'extension';
     flush();
-    assertSearchResults(0, 0, 1);
+    assertSearchResults(0, 0, 0, 1);
   });
 
   // Test that the "no other search engines" message is shown/hidden as

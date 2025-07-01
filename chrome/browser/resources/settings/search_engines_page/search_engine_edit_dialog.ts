@@ -94,8 +94,9 @@ export class SettingsSearchEngineEditDialogElement extends
     if (this.model) {
       this.readonly_ = this.model.isManaged && !this.model.canBeEdited;
       if (this.model.isPrepopulated || this.model.default) {
-        this.dialogTitle_ =
-            loadTimeData.getString('searchEnginesEditSearchEngine');
+        this.dialogTitle_ = loadTimeData.getString(
+            this.readonly_ ? 'searchEnginesViewSearchEngine' :
+                             'searchEnginesEditSearchEngine');
       } else {
         this.dialogTitle_ = loadTimeData.getString(
             this.readonly_ ? 'searchEnginesViewSiteSearch' :

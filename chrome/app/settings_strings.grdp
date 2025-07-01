@@ -2117,6 +2117,9 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_EDIT_SEARCH_ENGINE" desc="Title for a dialog that allows editing an existing search engine.">
     Edit search engine
   </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_VIEW_SEARCH_ENGINE" desc="Title for a dialog that allows viewing details of an existing search engine.">
+    Search engine
+  </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_EDIT_SITE_SEARCH" desc="Title for a dialog that allows editing an existing site search engine.">
     Edit site search
   </message>
