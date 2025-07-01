@@ -2657,28 +2657,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MonthlyHostCount" units="hosts"
-    expires_after="2025-07-27">
+    expires_after="2026-01-27">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
   <summary>
     Unique hostnames in History database urls table with last-visit times in the
-    last 30 days. Metrics are logged on initialization of the History DB on 0.3%
-    of starts. See also ExploreSites.MonthlyHostCount metric which is similar
-    but is reported on an elapsed time basis to help avoid bias toward more
-    active users.
+    last 30 days. Metrics are logged on initialization of the History DB on
+    one-third of starts.
   </summary>
 </histogram>
 
 <histogram name="History.MonthlyURLCount" units="urls"
-    expires_after="2025-07-27">
+    expires_after="2026-01-27">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
   <summary>
     Unique URLs in History database urls table with last-visit times in the last
-    30 days. Metrics are logged on initialization of the History DB on 0.3% of
-    starts.
+    30 days. Metrics are logged on initialization of the History DB on one-third
+    of starts.
   </summary>
 </histogram>
 
@@ -2934,8 +2932,8 @@ chromium-metrics-reviews@google.com.
   <component>1456716</component>
   <summary>
     Unique hostnames in History database urls table with last-visit times in the
-    last 7 days. Metrics are logged on initialization of the History DB on 0.3%
-    of starts.
+    last 7 days. Metrics are logged on initialization of the History DB on
+    one-third of starts.
   </summary>
 </histogram>
 
@@ -2946,8 +2944,8 @@ chromium-metrics-reviews@google.com.
   <component>1456716</component>
   <summary>
     Unique URLs in History database urls table with last-visit times in the last
-    7 days. Metrics are logged on initialization of the History DB on 0.3% of
-    starts.
+    7 days. Metrics are logged on initialization of the History DB on one-third
+    of starts.
   </summary>
 </histogram>
 
