@@ -189,6 +189,9 @@ message IntelligentScanInfo {
     // The on device model could not create an output. This can only be matched
     // if the previous three are not the case.
     ON_DEVICE_MODEL_OUTPUT_MISSING = 4;
+    // The length of texts on the page is too short and will likely cause
+    // hallucination.
+    TEXT_TOO_SHORT = 5;
   }
   optional NoInfoReason no_info_reason = 3;
 }

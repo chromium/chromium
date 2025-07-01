@@ -256,6 +256,8 @@ class MockClientSideDetectionHostDelegate
 
   void ForceEmptyInnerText() { inner_text_ = ""; }
 
+  void SetInnerText(std::string inner_text) { inner_text_ = inner_text; }
+
  private:
   std::string inner_text_ = "inner text";
 };
@@ -2828,6 +2830,41 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/IntelligentScanInfo::EMPTY_TEXT,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       ShortInnerTextDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  // The current inner text is too short. Threshold is set at
+  // ClientSideDetectionHost::kInnerTextMinThresholdBytes.
+  raw_delegate_->SetInnerText("text");
+  // Because the inner text is too short, we will NOT inquire the on-device
+  // model.
+  EXPECT_CALL(*intelligent_scan_delegate_, InquireOnDeviceModel(_, _)).Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/IntelligentScanInfo::TEXT_TOO_SHORT,
       /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/

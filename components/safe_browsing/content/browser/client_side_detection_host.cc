@@ -80,6 +80,8 @@ const float kProbabilityForSendingSampleRequest = 0.000001;
 // trigger and force request types. More information on why this value was
 // chosen can be found at go/crca-cspp-expand-allowlist.
 const float kProbabilityForAcceptingHCAllowlistTrigger = 0.95;
+// Threshold value used to skip the on-device model inquiry.
+const int kInnerTextMinThresholdBytes = 5;
 
 void WriteFeaturesToDisk(const ClientPhishingRequest& features,
                          const base::FilePath& base_path) {
@@ -1341,9 +1343,15 @@ void ClientSideDetectionHost::OnInnerTextComplete(
       "SBClientPhishing.OnDeviceModelInnerTextSize." +
           GetRequestTypeName(verdict->client_side_detection_type()),
       inner_text.size());
-  if (inner_text.empty()) {
+  if (inner_text.size() <= kInnerTextMinThresholdBytes) {
     IntelligentScanInfo intelligent_scan_info;
-    intelligent_scan_info.set_no_info_reason(IntelligentScanInfo::EMPTY_TEXT);
+    if (inner_text.empty()) {
+      intelligent_scan_info.set_no_info_reason(IntelligentScanInfo::EMPTY_TEXT);
+
+    } else {
+      intelligent_scan_info.set_no_info_reason(
+          IntelligentScanInfo::TEXT_TOO_SHORT);
+    }
     *verdict->mutable_intelligent_scan_info() =
         std::move(intelligent_scan_info);
     MaybeGetAccessToken(std::move(verdict),
