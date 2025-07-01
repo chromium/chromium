@@ -273,7 +273,7 @@ ntp-lens-upload-dialog {
 }
 
 #composeboxScrim {
-  background: var(--color-new-tab-page-background);
+  background: var(--color-new-tab-page-composebox-scrim-background);
   inset: 0;
   position: fixed;
   z-index: 1;

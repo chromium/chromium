@@ -310,10 +310,10 @@
 
 @keyframes color-pulse-on-expand {
     40% {
-        background: var(--color-new-tab-page-background);
+        background: var(--color-new-tab-page-composebox-scrim-background);
     }
     58% {
-        background: var(--color-new-tab-page-background);
+        background: var(--color-new-tab-page-composebox-scrim-background);
     }
 }
 
