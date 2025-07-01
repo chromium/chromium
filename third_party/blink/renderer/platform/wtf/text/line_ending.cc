@@ -29,29 +29,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 namespace {
 
 template <typename CharType>
-wtf_size_t RequiredSizeForCRLF(const CharType* data, wtf_size_t length) {
+wtf_size_t RequiredSizeForCRLF(base::span<const CharType> data) {
   wtf_size_t new_len = 0;
-  const CharType* p = data;
-  while (p < data + length) {
-    CharType c = *p++;
+  wtf_size_t index = 0;
+  while (index < data.size()) {
+    CharType c = data[index++];
     if (c == '\r') {
-      if (p >= data + length || *p != '\n') {
+      if (index >= data.size() || data[index] != '\n') {
         // Turn CR into CRLF.
         new_len += 2;
       } else {
@@ -70,23 +68,25 @@ wtf_size_t RequiredSizeForCRLF(const CharType* data, wtf_size_t length) {
 }
 
 template <typename CharType>
-void NormalizeToCRLF(const CharType* src, wtf_size_t src_length, CharType* q) {
-  const CharType* p = src;
-  while (p < src + src_length) {
-    CharType c = *p++;
+void NormalizeToCRLF(base::span<const CharType> src, base::span<CharType> dst) {
+  wtf_size_t src_length = src.size();
+  wtf_size_t index = 0, index_out = 0;
+
+  while (index < src_length) {
+    CharType c = src[index++];
     if (c == '\r') {
-      if (p >= src + src_length || *p != '\n') {
+      if (index >= src_length || src[index] != '\n') {
         // Turn CR into CRLF.
-        *q++ = '\r';
-        *q++ = '\n';
+        dst[index_out++] = '\r';
+        dst[index_out++] = '\n';
       }
     } else if (c == '\n') {
       // Turn LF into CRLF.
-      *q++ = '\r';
-      *q++ = '\n';
+      dst[index_out++] = '\r';
+      dst[index_out++] = '\n';
     } else {
       // Leave other characters alone.
-      *q++ = c;
+      dst[index_out++] = c;
     }
   }
 }
@@ -94,7 +94,7 @@ void NormalizeToCRLF(const CharType* src, wtf_size_t src_length, CharType* q) {
 #if BUILDFLAG(IS_WIN)
 void InternalNormalizeLineEndingsToCRLF(const std::string& from,
                                         Vector<char>& buffer) {
-  size_t new_len = RequiredSizeForCRLF(from.c_str(), from.length());
+  size_t new_len = RequiredSizeForCRLF(base::span(from));
   if (new_len < from.length())
     return;
 
@@ -105,8 +105,8 @@ void InternalNormalizeLineEndingsToCRLF(const std::string& from,
 
   wtf_size_t old_buffer_size = buffer.size();
   buffer.Grow(old_buffer_size + new_len);
-  char* write_position = buffer.data() + old_buffer_size;
-  NormalizeToCRLF(from.c_str(), from.length(), write_position);
+  NormalizeToCRLF(base::span(from),
+                  base::span(buffer).subspan(old_buffer_size));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -114,16 +114,15 @@ void InternalNormalizeLineEndingsToCRLF(const std::string& from,
 
 void NormalizeLineEndingsToLF(const std::string& from, Vector<char>& result) {
   // Compute the new length.
-  wtf_size_t new_len = 0;
+  wtf_size_t new_len = 0, index = 0;
   bool need_fix = false;
-  const char* p = from.c_str();
   char from_ending_char = '\r';
   char to_ending_char = '\n';
-  while (p < from.c_str() + from.length()) {
-    char c = *p++;
-    if (c == '\r' && *p == '\n') {
+  while (index < from.length()) {
+    char c = from[index++];
+    if (c == '\r' && from[index] == '\n') {
       // Turn CRLF into CR or LF.
-      p++;
+      index++;
       need_fix = true;
     } else if (c == from_ending_char) {
       // Turn CR/LF into LF/CR.
@@ -132,32 +131,29 @@ void NormalizeLineEndingsToLF(const std::string& from, Vector<char>& result) {
     new_len += 1;
   }
 
-  // Grow the result buffer.
-  p = from.c_str();
-  wtf_size_t old_result_size = result.size();
-  result.Grow(old_result_size + new_len);
-  char* q = result.data() + old_result_size;
-
   // If no need to fix the string, just copy the string over.
   if (!need_fix) {
-    memcpy(q, p, from.length());
+    result.AppendSpan(base::span(from));
     return;
   }
 
+  index = 0;
+  wtf_size_t old_result_size = result.size();
+  wtf_size_t index_out = old_result_size;
+  result.Grow(old_result_size + new_len);
+
   // Make a copy of the string.
-  while (p < from.c_str() + from.length()) {
-    char c = *p++;
-    if (c == '\r' && *p == '\n') {
+  while (index < from.length()) {
+    char c = from[index++];
+    if (c == '\r' && from[index] == '\n') {
       // Turn CRLF or CR into CR or LF.
-      p++;
-      *q++ = to_ending_char;
+      index++;
+      c = to_ending_char;
     } else if (c == from_ending_char) {
       // Turn CR/LF into LF/CR.
-      *q++ = to_ending_char;
-    } else {
-      // Leave other characters alone.
-      *q++ = c;
+      c = to_ending_char;
     }
+    result[index_out++] = c;
   }
 }
 
@@ -166,18 +162,18 @@ String NormalizeLineEndingsToCRLF(const String& src) {
   if (length == 0)
     return src;
   if (src.Is8Bit()) {
-    wtf_size_t new_length = RequiredSizeForCRLF(src.Characters8(), length);
+    wtf_size_t new_length = RequiredSizeForCRLF(src.Span8());
     if (new_length == length)
       return src;
     StringBuffer<LChar> buffer(new_length);
-    NormalizeToCRLF(src.Characters8(), length, buffer.Characters());
+    NormalizeToCRLF(src.Span8(), buffer.Span());
     return String::Adopt(buffer);
   }
-  wtf_size_t new_length = RequiredSizeForCRLF(src.Characters16(), length);
+  wtf_size_t new_length = RequiredSizeForCRLF(src.Span16());
   if (new_length == length)
     return src;
   StringBuffer<UChar> buffer(new_length);
-  NormalizeToCRLF(src.Characters16(), length, buffer.Characters());
+  NormalizeToCRLF(src.Span16(), buffer.Span());
   return String::Adopt(buffer);
 }
 
