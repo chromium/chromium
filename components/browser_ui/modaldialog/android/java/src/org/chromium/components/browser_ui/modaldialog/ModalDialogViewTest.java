@@ -24,6 +24,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.times;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
@@ -56,6 +57,10 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
@@ -85,6 +90,7 @@ public class ModalDialogViewTest {
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
     private static Activity sActivity;
@@ -96,6 +102,8 @@ public class ModalDialogViewTest {
     private PropertyModel.Builder mModelBuilder;
     private RelativeLayout mCustomButtonBar1;
     private RelativeLayout mCustomButtonBar2;
+
+    @Mock private ModalDialogProperties.Controller mMockController;
 
     @BeforeClass
     public static void setupSuite() {
@@ -536,10 +544,10 @@ public class ModalDialogViewTest {
     public void testCheckbox_InteractionUpdatesModel() {
         final String checkboxText = "Opt-in for awesome features";
 
-        // Create a model with the checkbox visible and unchecked.
         PropertyModel model =
                 createModel(
                         mModelBuilder
+                                .with(ModalDialogProperties.CONTROLLER, mMockController)
                                 .with(ModalDialogProperties.CHECKBOX_TEXT, checkboxText)
                                 .with(ModalDialogProperties.CHECKBOX_CHECKED, false));
 
@@ -558,6 +566,7 @@ public class ModalDialogViewTest {
         Assert.assertTrue(
                 "Model property CHECKBOX_CHECKED should be true after click.",
                 model.get(ModalDialogProperties.CHECKBOX_CHECKED));
+        Mockito.verify(mMockController, times(1)).onCheckboxChecked(true);
 
         // Perform another click to uncheck the box.
         onView(withId(R.id.modal_dialog_checkbox)).perform(click());
@@ -567,6 +576,7 @@ public class ModalDialogViewTest {
         Assert.assertFalse(
                 "Model property CHECKBOX_CHECKED should be false after second click.",
                 model.get(ModalDialogProperties.CHECKBOX_CHECKED));
+        Mockito.verify(mMockController, times(1)).onCheckboxChecked(false);
     }
 
     @Test

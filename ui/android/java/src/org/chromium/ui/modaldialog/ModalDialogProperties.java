@@ -33,10 +33,18 @@ public class ModalDialogProperties {
     public interface Controller {
         /**
          * Handle click event of the buttons on the dialog.
+         *
          * @param model The dialog model that is associated with this click event.
          * @param buttonType The type of the button.
          */
         void onClick(PropertyModel model, @ButtonType int buttonType);
+
+        /**
+         * Handle check event of the checkbox on the dialog.
+         *
+         * @param isChecked Whether the checkbox is checked.
+         */
+        default void onCheckboxChecked(boolean isChecked) {}
 
         /**
          * Handle dismiss event when the dialog is dismissed by actions on the dialog. Note that it
@@ -45,6 +53,7 @@ public class ModalDialogProperties {
          * clicked), because the dismissal cause can be different values depending on modal dialog
          * type and mode of presentation (e.g. it could be unknown on VR but a specific value on
          * non-VR).
+         *
          * @param model The dialog model that is associated with this dismiss event.
          * @param dismissalCause The reason of the dialog being dismissed.
          * @see DialogDismissalCause

@@ -83,6 +83,23 @@ public class FakeModalDialogManager extends ModalDialogManager {
     }
 
     @CalledByNativeForTesting
+    public void toggleCheckbox() {
+        boolean isCurrentlyChecked = mShownDialogModel.get(ModalDialogProperties.CHECKBOX_CHECKED);
+
+        mShownDialogModel.set(ModalDialogProperties.CHECKBOX_CHECKED, !isCurrentlyChecked);
+        ModalDialogProperties.Controller controller =
+                mShownDialogModel.get(ModalDialogProperties.CONTROLLER);
+        if (controller != null) {
+            controller.onCheckboxChecked(!isCurrentlyChecked);
+        }
+    }
+
+    @CalledByNativeForTesting
+    public boolean isCheckboxChecked() {
+        return mShownDialogModel.get(ModalDialogProperties.CHECKBOX_CHECKED);
+    }
+
+    @CalledByNativeForTesting
     public int getButtonStyles() {
         return mShownDialogModel.get(ModalDialogProperties.BUTTON_STYLES);
     }

@@ -54,6 +54,12 @@ public class ModalDialogViewBinder
                 view.setOnCheckboxCheckedChangeListener(
                         (buttonView, isChecked) -> {
                             model.set(ModalDialogProperties.CHECKBOX_CHECKED, isChecked);
+
+                            ModalDialogProperties.Controller controller =
+                                    model.get(ModalDialogProperties.CONTROLLER);
+                            if (controller != null) {
+                                controller.onCheckboxChecked(isChecked);
+                            }
                         });
             } else {
                 view.setOnCheckboxCheckedChangeListener(null);

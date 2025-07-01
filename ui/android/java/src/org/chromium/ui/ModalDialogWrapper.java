@@ -65,6 +65,17 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
                 new ArrayList<>(Arrays.asList(paragraphs)));
     }
 
+    @CalledByNative
+    private void withCheckbox(String text, boolean isChecked) {
+        mPropertyModelBuilder.with(ModalDialogProperties.CHECKBOX_TEXT, text);
+        mPropertyModelBuilder.with(ModalDialogProperties.CHECKBOX_CHECKED, isChecked);
+    }
+
+    @Override
+    public void onCheckboxChecked(boolean isChecked) {
+        ModalDialogWrapperJni.get().checkboxToggled(mNativeDelegatePtr, isChecked);
+    }
+
     @Override
     public void onClick(PropertyModel model, int buttonType) {
         ModalDialogManager modalDialogManager = assumeNonNull(mModalDialogManager);
@@ -96,6 +107,8 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
         void positiveButtonClicked(long nativeModalDialogWrapper);
 
         void negativeButtonClicked(long nativeModalDialogWrapper);
+
+        void checkboxToggled(long nativeModalDialogWrapper, boolean isChecked);
 
         void dismissed(long nativeModalDialogWrapper);
 

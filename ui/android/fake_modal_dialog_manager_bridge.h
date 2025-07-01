@@ -32,6 +32,9 @@ class UI_ANDROID_EXPORT FakeModalDialogManagerBridge {
   void ClickPositiveButton();
   void ClickNegativeButton();
 
+  void ToggleCheckbox();
+  bool IsCheckboxChecked();
+
   int GetButtonStyles();
   std::vector<std::u16string> GetMessageParagraphs();
 
