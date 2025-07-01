@@ -11,6 +11,12 @@
 // The current scroll position to save in the NTP state.
 @property(nonatomic, assign) CGFloat scrollPositionToSave;
 
+// Notifies that the Lens "new" badge has been displayed.
+- (void)notifyLensBadgeDisplayed;
+
+// Notifies that the Customization "new" badge has been displayed.
+- (void)notifyCustomizationBadgeDisplayed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_MUTATOR_H_

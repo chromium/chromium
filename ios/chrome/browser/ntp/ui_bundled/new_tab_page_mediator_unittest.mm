@@ -11,6 +11,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/test/test_sync_service.h"
@@ -137,7 +138,8 @@ class NewTabPageMediatorTest : public PlatformTest {
                        imageFetcherService:image_fetcher_service
              browserViewVisibilityNotifier:browser_view_visibility_notifier_
         discoverFeedVisibilityBrowserAgent:
-            discover_feed_visibility_browser_agent];
+            discover_feed_visibility_browser_agent
+                  featureEngagementTracker:&mock_tracker_];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
     visibility_observer_ =
@@ -183,6 +185,7 @@ class NewTabPageMediatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<web::WebState> initial_web_state_;
+  feature_engagement::test::MockTracker mock_tracker_;
   raw_ptr<PrefService> prefs_;
   id header_consumer_;
   id visibility_observer_;
@@ -270,4 +273,20 @@ TEST_F(NewTabPageMediatorTest, TestUpdateVisibilityStateOfFeed) {
                                             fromState:kCoveredByOmniboxPopup];
   EXPECT_EQ(test_discover_feed_service_->visibility_state(),
             kCoveredByOmniboxPopup);
+}
+
+// Tests that -notifyLensBadgeDisplayed correctly notifies the tracker.
+TEST_F(NewTabPageMediatorTest, TestNotifyLensBadgeDisplayed) {
+  EXPECT_CALL(
+      mock_tracker_,
+      Dismissed(testing::Ref(feature_engagement::kIPHiOSHomepageLensNewBadge)));
+  [mediator_ notifyLensBadgeDisplayed];
+}
+
+// Tests that -notifyCustomizationBadgeDisplayed correctly notifies the tracker.
+TEST_F(NewTabPageMediatorTest, TestNotifyCustomizationBadgeDisplayed) {
+  EXPECT_CALL(mock_tracker_,
+              Dismissed(testing::Ref(
+                  feature_engagement::kIPHiOSHomepageCustomizationNewBadge)));
+  [mediator_ notifyCustomizationBadgeDisplayed];
 }

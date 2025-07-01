@@ -656,7 +656,8 @@
       self.componentFactory;
   self.logoVendor = ios::provider::CreateLogoVendor(browser, self.webState);
   self.NTPViewController = [componentFactory NTPViewController];
-  self.headerViewController = [componentFactory headerViewController];
+  self.headerViewController =
+      [componentFactory headerViewControllerForProfile:self.profile];
   self.NTPMediator =
       [componentFactory NTPMediatorForBrowser:browser
                      identityDiscImageUpdater:self.headerViewController];
@@ -737,6 +738,7 @@
   headerViewController.toolbarDelegate = self.toolbarDelegate;
   headerViewController.baseViewController = self.baseViewController;
   headerViewController.NTPMetricsRecorder = self.NTPMetricsRecorder;
+  headerViewController.mutator = self.NTPMediator;
   [headerViewController setLogoVendor:self.logoVendor];
 }
 

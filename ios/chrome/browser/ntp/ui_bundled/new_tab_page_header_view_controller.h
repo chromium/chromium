@@ -18,6 +18,7 @@
 @protocol NewTabPageHeaderCommands;
 @protocol NewTabPageShortcutsHandler;
 @class NewTabPageMetricsRecorder;
+@protocol NewTabPageMutator;
 @class LayoutGuideCenter;
 @class PrimaryToolbarViewController;
 @class TabGroupIndicatorView;
@@ -79,6 +80,9 @@
 
 // Handles the actions for the NTP shortcuts, like Lens or voice search.
 @property(nonatomic, weak) id<NewTabPageShortcutsHandler> NTPShortcutsHandler;
+
+// The mutator for the NTP.
+@property(nonatomic, weak) id<NewTabPageMutator> mutator;
 
 // Animation to expand this header in response to focusing the omnibox to match
 // the fake omnibox with the omnibox's.

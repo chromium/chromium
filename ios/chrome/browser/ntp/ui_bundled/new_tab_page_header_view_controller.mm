@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -117,6 +118,12 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 @implementation NewTabPageHeaderViewController {
   BOOL _useNewBadgeForLensButton;
   BOOL _useNewBadgeForCustomizationMenu;
+  // Tracks if the mutator has already been notified of the Lens entrypoint
+  // "new" badge display.
+  BOOL _didNotifyLensBadgeDisplay;
+  // Tracks if the mutator has already been notified of the Homepage
+  // Customization "new" badge display.
+  BOOL _didNotifyCustomizationBadgeDisplay;
   BOOL _hasAccountError;
   // Constraint for the identity disc button width.
   NSLayoutConstraint* _identityDiscWidthConstraint;
@@ -363,6 +370,18 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+
+  if (_useNewBadgeForLensButton && !_didNotifyLensBadgeDisplay) {
+    [self.mutator notifyLensBadgeDisplayed];
+    _didNotifyLensBadgeDisplay = YES;
+  }
+
+  if (_useNewBadgeForCustomizationMenu &&
+      !_didNotifyCustomizationBadgeDisplay) {
+    [self.mutator notifyCustomizationBadgeDisplayed];
+    _didNotifyCustomizationBadgeDisplay = YES;
+  }
+
   // Check if the identity disc button was properly set before the view appears.
   DCHECK(self.identityDiscButton);
   DCHECK(self.identityDiscImage);

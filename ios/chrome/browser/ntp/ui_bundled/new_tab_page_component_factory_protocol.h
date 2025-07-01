@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COMPONENT_FACTORY_PROTOCOL_H_
 
 class Browser;
+class ProfileIOS;
 @class ContentSuggestionsCoordinator;
 @class DiscoverFeedViewControllerConfiguration;
 @class FeedHeaderViewController;
@@ -28,8 +29,10 @@ typedef NS_ENUM(NSInteger, FollowingFeedSortType);
 // Metrics recorder for actions relating to the feed.
 - (FeedMetricsRecorder*)feedMetricsRecorderForBrowser:(Browser*)browser;
 
-// The header view controller containing the fake omnibox and logo.
-- (NewTabPageHeaderViewController*)headerViewController;
+// The header view controller containing the fake omnibox and logo for
+// `profile`.
+- (NewTabPageHeaderViewController*)headerViewControllerForProfile:
+    (ProfileIOS*)profile;
 
 // Mediator owned by the NewTabPageCoordinator
 - (NewTabPageMediator*)NTPMediatorForBrowser:(Browser*)browser

@@ -10,6 +10,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -133,6 +135,8 @@ const CGFloat kIconPointSize = 18.0;
   raw_ptr<signin::IdentityManager> _identityManager;
   id<SystemIdentity> _signedInIdentity;
   std::unique_ptr<PlaceholderServiceObserverBridge> _placeholderServiceObserver;
+  // Feature engagement tracker for handling "new" badge IPH.
+  raw_ptr<feature_engagement::Tracker> _tracker;
 }
 
 // Synthesized from NewTabPageMutator.
@@ -160,12 +164,14 @@ const CGFloat kIconPointSize = 18.0;
          browserViewVisibilityNotifier:
              (BrowserViewVisibilityNotifierBrowserAgent*)
                  browserViewVisibilityNotifierBrowserAgent
-    discoverFeedVisibilityBrowserAgent:(DiscoverFeedVisibilityBrowserAgent*)
-                                           discoverFeedVisibilityBrowserAgent {
+    discoverFeedVisibilityBrowserAgent:
+        (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
+              featureEngagementTracker:(feature_engagement::Tracker*)tracker {
   self = [super init];
   if (self) {
     CHECK(identityManager);
     CHECK(accountManagerService);
+    CHECK(tracker);
     _templateURLService = templateURLService;
     _defaultSearchEngine = templateURLService->GetDefaultSearchProvider();
     _URLLoader = URLLoader;
@@ -193,8 +199,19 @@ const CGFloat kIconPointSize = 18.0;
     _imageFetcherService = imageFetcherService;
     _signedInIdentity =
         _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    _tracker = tracker;
   }
   return self;
+}
+
+#pragma mark - NewTabPageMutator
+
+- (void)notifyLensBadgeDisplayed {
+  _tracker->Dismissed(feature_engagement::kIPHiOSHomepageLensNewBadge);
+}
+
+- (void)notifyCustomizationBadgeDisplayed {
+  _tracker->Dismissed(feature_engagement::kIPHiOSHomepageCustomizationNewBadge);
 }
 
 - (BOOL)isFeedHeaderVisible {
