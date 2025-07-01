@@ -782,12 +782,22 @@ interface FrameHost {
   // either ignored, or serviced correctly in the security context of the
   // document they originated from (based on which BrowserInterfaceBroker
   // connection the GetInterface messages arrive on).
+  //
+  // NOTE: PageState in DidCommitProvisionalLoadParams can be quite large when
+  // serialized, and its message structure must remain stable; hence
+  // [UnlimitedSize] for this message.
+  [UnlimitedSize]
   DidCommitProvisionalLoad(
       DidCommitProvisionalLoadParams params,
       DidCommitProvisionalLoadInterfaceParams? interface_params);
 
   // Sent by the renderer to indicate that a same document navigation
   // committed in the renderer process.
+  //
+  // NOTE: PageState in DidCommitProvisionalLoadParams can be quite large when
+  // serialized, and its message structure must remain stable; hence
+  // [UnlimitedSize] for this message.
+  [UnlimitedSize]
   DidCommitSameDocumentNavigation(
       DidCommitProvisionalLoadParams params,
       DidCommitSameDocumentNavigationParams same_document_params);

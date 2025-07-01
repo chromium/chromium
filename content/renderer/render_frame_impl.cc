@@ -301,6 +301,12 @@ namespace content {
 
 namespace {
 
+// Feature to combine the UpdateState IPC that's sent during commit time with
+// the DidCommit* IPCs. See: http://crbug.com/424829233
+BASE_FEATURE(kReducePageStateIpcs,
+             "ReducePageStateIpcs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const int kExtraCharsBeforeAndAfterSelection = 100;
 const size_t kMaxURLLogChars = 1024;
 const char kCommitRenderFrame[] = "Navigation.CommitRenderFrame";
@@ -4901,7 +4907,8 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     ui::PageTransition transition,
     const network::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
-    const std::optional<base::UnguessableToken>& embedding_token) {
+    const std::optional<base::UnguessableToken>& embedding_token,
+    std::optional<blink::PageState> previous_page_state) {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
   const WebURLResponse& response = document_loader->GetWebResponse();
 
@@ -4983,6 +4990,10 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // should_update_history.
   params->should_update_history =
       !document_loader->HasUnreachableURL() && response.HttpStatusCode() != 404;
+
+  if (previous_page_state.has_value()) {
+    params->previous_page_state = previous_page_state;
+  }
 
   // Make navigation state a part of the DidCommitProvisionalLoad message so
   // that committed entry has it at all times.  Send a single HistoryItem for
@@ -5149,9 +5160,11 @@ void RenderFrameImpl::UpdateStateForCommit(
       DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
   NavigationState* navigation_state = document_state->navigation_state();
 
-  // We need to update the last committed session history entry with state for
-  // the previous page. Do this before updating the current history item.
-  SendUpdateState();
+  if (!base::FeatureList::IsEnabled(kReducePageStateIpcs)) {
+    // We need to update the last committed session history entry with state for
+    // the previous page. Do this before updating the current history item.
+    SendUpdateState();
+  }
 
   UpdateNavigationHistory(commit_type);
 
@@ -5193,6 +5206,15 @@ void RenderFrameImpl::DidCommitNavigationInternal(
     mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
     const std::optional<base::UnguessableToken>& embedding_token) {
   DCHECK(!(same_document_params && interface_params));
+
+  // The pre-navigation page state needs to be saved before
+  // UpdateStateForCommit() since that call will update the current history
+  // item.
+  std::optional<blink::PageState> previous_page_state = std::nullopt;
+  if (base::FeatureList::IsEnabled(kReducePageStateIpcs) &&
+      !GetWebFrame()->GetCurrentHistoryItem().IsNull()) {
+    previous_page_state = GetWebFrame()->CurrentHistoryItemToPageState();
+  }
   UpdateStateForCommit(commit_type, transition);
 
   if (GetBlinkPreferences().renderer_wide_named_frame_lookup)
@@ -5200,7 +5222,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
 
   auto params = MakeDidCommitProvisionalLoadParams(
       commit_type, transition, permissions_policy_header,
-      document_policy_header, embedding_token);
+      document_policy_header, embedding_token, previous_page_state);
   NavigationState* navigation_state =
       DocumentState::FromDocumentLoader(frame_->GetDocumentLoader())
           ->navigation_state();

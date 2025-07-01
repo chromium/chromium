@@ -1070,7 +1070,8 @@ class CONTENT_EXPORT RenderFrameImpl
       ui::PageTransition transition,
       const network::ParsedPermissionsPolicy& permissions_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header,
-      const std::optional<base::UnguessableToken>& embedding_token);
+      const std::optional<base::UnguessableToken>& embedding_token,
+      std::optional<blink::PageState> previous_page_state);
 
   // Updates the navigation history depending on the passed parameters.
   // This could result either in the creation of a new entry or a modification

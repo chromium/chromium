@@ -15523,6 +15523,12 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         same_document_params->navigation_entry_screenshot_destination);
   }
 
+  // The navigation entry ID isn't updated until the call to DidNavigate(), so
+  // this call to UpdateState() will target the previous navigation entry.
+  if (params->previous_page_state.has_value()) {
+    UpdateState(params->previous_page_state.value());
+  }
+
   // Grab the navigation's timestamps and ukm builder for recording metrics at
   // the end of this function, since the NavigationRequest will be destroyed in
   // the DidNavigate call below.

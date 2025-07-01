@@ -99,7 +99,13 @@ struct DidCommitProvisionalLoadParams {
   // so that we can set the appropriate page type.
   bool url_is_unreachable;
 
-  // Serialized history item state to store in the navigation entry.
+  // The serialized history item state of the document that is being replaced by
+  // this navigation (if the page is in the same renderer process as the new
+  // page). Stored in the navigation entry.
+  PageState? previous_page_state;
+
+  // The initial serialized history item state of the document that is being
+  // committed from this navigation. Stored in the navigation entry.
   PageState page_state;
 
   // User agent override used to navigate.
