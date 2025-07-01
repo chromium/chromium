@@ -51,12 +51,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @NullMarked
 public class AccountManagerFacadeImpl implements AccountManagerFacade {
     /**
-     * An account feature (corresponding to a Gaia service flag) that specifies whether the account
-     * is a USM account.
-     */
-    @VisibleForTesting public static final String FEATURE_IS_USM_ACCOUNT_KEY = "service_usm";
-
-    /**
      * The maximum amount of acceptable retries (for a total of MAXIMUM_RETRIES+1 attempts). *
      *
      * <p>WARNING: This is tied to the number of buckets of a UMA histogram and should therefore not
@@ -238,25 +232,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         }
         // The callback will be invoked when the all pending token requests are finished.
         mTokenRequestsCompletedCallback = requestsCompletedCallback;
-    }
-
-    @Override
-    public void checkChildAccountStatus(
-            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener) {
-        ThreadUtils.assertOnUiThread();
-        new AsyncTask<Boolean>() {
-            @Override
-            public Boolean doInBackground() {
-                Account account = CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
-                return mDelegate.hasFeature(account, FEATURE_IS_USM_ACCOUNT_KEY);
-            }
-
-            @Override
-            protected void onPostExecute(Boolean isChild) {
-                // TODO(crbug.com/40201126): rework this interface to avoid passing a null account.
-                listener.onStatusReady(isChild, isChild ? coreAccountInfo : null);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override

@@ -116,19 +116,6 @@ public interface AccountManagerFacade {
     void waitForPendingTokenRequestsToComplete(Runnable requestsCompletedCallback);
 
     /**
-     * Checks the child account status of the given account.
-     *
-     * @param coreAccountInfo The CoreAccountInfo to check the child account status.
-     * @param listener The listener is called when the status of the account (whether it is a child
-     *     one) is ready.
-     */
-    @MainThread
-    // TODO(crbug.com/355388109): Remove this method following the migration to
-    // `checkIsSubjectToParentalControls`.
-    void checkChildAccountStatus(
-            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener);
-
-    /**
      * Check whether the account is subject to parental controls.
      *
      * @param coreAccountInfo The CoreAccountInfo to check is subject to parental controls.

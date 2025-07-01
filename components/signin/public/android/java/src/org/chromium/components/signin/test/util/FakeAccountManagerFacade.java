@@ -58,12 +58,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     private static final String TAG = "FakeAccountManager";
 
-    /**
-     * All the account names starting with this prefix will be considered as a child account in
-     * {@link FakeAccountManagerFacade}.
-     */
-    private static final String CHILD_ACCOUNT_NAME_PREFIX = "child.";
-
     /** An {@link Activity} stub to test add account flow. */
     public static final class AddAccountActivityStub extends Activity {
         public static final @IdRes int OK_BUTTON_ID = R.id.ok_button;
@@ -186,16 +180,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public void waitForPendingTokenRequestsToComplete(Runnable requestsCompletedCallback) {
         throw new UnsupportedOperationException("Not implemented");
-    }
-
-    @Override
-    public void checkChildAccountStatus(
-            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener) {
-        if (coreAccountInfo.getEmail().startsWith(CHILD_ACCOUNT_NAME_PREFIX)) {
-            listener.onStatusReady(true, coreAccountInfo);
-        } else {
-            listener.onStatusReady(false, /* childAccount= */ null);
-        }
     }
 
     @Override
@@ -349,15 +333,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     /** Converts an email to a fake gaia Id. */
     public static GaiaId toGaiaId(String email) {
         return new GaiaId("gaia-id-" + email.replace("@", "_at_"));
-    }
-
-    /**
-     * Creates an email used to identify child accounts in tests. A child-specific prefix will be
-     * appended to the base name so that the created account will be considered a child account in
-     * {@link FakeAccountManagerFacade}.
-     */
-    public static String generateChildEmail(String baseEmail) {
-        return CHILD_ACCOUNT_NAME_PREFIX + baseEmail;
     }
 
     /**
