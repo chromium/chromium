@@ -106,6 +106,10 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #endif
 
+#if defined(USE_AURA)
+#include "chrome/browser/ui/overscroll_pref_manager.h"
+#endif  // defined(USE_AURA)
+
 BrowserWindowFeatures::BrowserWindowFeatures() = default;
 BrowserWindowFeatures::~BrowserWindowFeatures() = default;
 
@@ -224,6 +228,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   tab_list_bridge_ = std::make_unique<TabListBridge>(
       *tab_strip_model_, browser->GetUnownedUserDataHost());
+
+#if defined(USE_AURA)
+  overscroll_pref_manager_ = std::make_unique<OverscrollPrefManager>(
+      tab_strip_model_,
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS);
+#endif  // defined(USE_AURA)
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {

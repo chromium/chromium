@@ -3792,7 +3792,10 @@ if (!is_android) {
     ]
 
     if (use_aura) {
-      sources += [ "../browser/extensions/extension_install_prompt_show_params_browsertest.cc" ]
+      sources += [
+        "../browser/extensions/extension_install_prompt_show_params_browsertest.cc",
+        "../browser/ui/overscroll_pref_manager_browsertest.cc",
+      ]
     }
 
     if (enable_glic) {
@@ -9586,16 +9589,6 @@ test("unit_tests") {
     ]
   }
 
-  if (use_aura) {
-    sources += [ "../browser/ui/overscroll_pref_manager_unittest.cc" ]
-
-    deps += [
-      "//ui/aura:test_support",
-      "//ui/views:test_support",
-      "//ui/wm",
-    ]
-  }
-
   if (is_linux) {
     sources += [
       "../browser/shell_integration_linux_unittest.cc",
@@ -10450,6 +10443,12 @@ test("unit_tests") {
         "../browser/ui/views/bubble/webui_bubble_event_handler_aura_unittest.cc",
 
         # Get this compiling on Mac - see http://crbug.com/657883.
+      ]
+
+      deps += [
+        "//ui/aura:test_support",
+        "//ui/views:test_support",
+        "//ui/wm",
       ]
       if (use_nss_certs) {
         sources += [

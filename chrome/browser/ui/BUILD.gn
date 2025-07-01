@@ -1798,6 +1798,9 @@ static_library("ui") {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/on_device_internals",
     ]
+    if (use_aura) {
+      public_deps += [ "//chrome/browser/ui:overscroll_pref_manager" ]
+    }
 
     if (is_chromeos) {
       deps += [ "//chrome/browser/apps/app_service" ]
@@ -5157,8 +5160,6 @@ static_library("ui") {
 
   if (use_aura) {
     sources += [
-      "overscroll_pref_manager.cc",
-      "overscroll_pref_manager.h",
       "views/accelerator_utils_aura.cc",
       "views/apps/app_window_easy_resize_window_targeter.cc",
       "views/apps/app_window_easy_resize_window_targeter.h",
@@ -5867,5 +5868,23 @@ static_library("browser_element_identifiers") {
 if (is_android) {
   java_cpp_enum("adaptive_toolbar_enums_java") {
     sources = [ "android/toolbar/adaptive_toolbar_enums.h" ]
+  }
+}
+
+if (use_aura) {
+  source_set("overscroll_pref_manager") {
+    sources = [
+      "overscroll_pref_manager.cc",
+      "overscroll_pref_manager.h",
+    ]
+    deps = [ "//base" ]
+    public_deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common",
+      "//components/prefs",
+      "//content/public/browser",
+    ]
   }
 }

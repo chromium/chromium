@@ -57,5 +57,9 @@ source_set("internal") {
     if (enable_glic) {
       deps += [ "//chrome/browser/glic" ]
     }
+
+    if (use_aura) {
+      deps += [ "//chrome/browser/ui:overscroll_pref_manager" ]
+    }
   }
 }

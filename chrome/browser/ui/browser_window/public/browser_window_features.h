@@ -60,6 +60,10 @@ class PdfInfoBarController;
 }  // namespace pdf::infobar
 #endif
 
+#if defined(USE_AURA)
+class OverscrollPrefManager;
+#endif  // defined(USE_AURA)
+
 namespace extensions {
 class BrowserExtensionWindowController;
 class ExtensionSidePanelManager;
@@ -308,6 +312,12 @@ class BrowserWindowFeatures {
     return incognito_clear_browsing_data_dialog_coordinator_.get();
   }
 
+#if defined(USE_AURA)
+  OverscrollPrefManager* overscroll_pref_manager() {
+    return overscroll_pref_manager_.get();
+  }
+#endif  // defined(USE_AURA)
+
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();
@@ -436,6 +446,10 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<IncognitoClearBrowsingDataDialogCoordinator>
       incognito_clear_browsing_data_dialog_coordinator_;
+
+#if defined(USE_AURA)
+  std::unique_ptr<OverscrollPrefManager> overscroll_pref_manager_;
+#endif  // defined(USE_AURA)
 
   std::unique_ptr<ColorProviderBrowserHelper> color_provider_browser_helper_;
 

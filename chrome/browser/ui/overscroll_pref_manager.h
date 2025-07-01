@@ -6,24 +6,29 @@
 #define CHROME_BROWSER_UI_OVERSCROLL_PREF_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/prefs/pref_change_registrar.h"
+
+class TabStripModel;
 
 class OverscrollPrefManager {
  public:
-  explicit OverscrollPrefManager(Browser* browser);
+  OverscrollPrefManager(TabStripModel* tab_strip_model, bool is_type_devtools);
   ~OverscrollPrefManager();
 
-  bool IsOverscrollHistoryNavigationEnabled() const;
+  // Called to determine if the active tab of the hosting Browser can be
+  // overscrolled with touch/wheel gestures.
+  bool CanOverscrollContent() const;
 
  private:
   // Handle changes to kOverscrollHistoryNavigationEnabled preference.
   void OnOverscrollHistoryNavigationEnabledChanged();
 
-  // Browser that owns this object.
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
 
   PrefChangeRegistrar local_state_pref_registrar_;
+
+  // Whether this is for devtools type.
+  const bool is_type_devtools_;
 
   // Whether the browser can overscroll content for history navigation.
   // Reflects the value of the kOverscrollHistoryNavigationEnabled pref.

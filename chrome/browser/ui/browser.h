@@ -72,7 +72,6 @@ class BrowserView;
 class BrowserWindow;
 class BrowserWindowFeatures;
 class FindBarController;
-class OverscrollPrefManager;
 class Profile;
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
@@ -1476,10 +1475,6 @@ class Browser : public TabStripModelObserver,
   // If true, the browser window was created as a tab modal pop-up. This is
   // determined by the NavigateParams::is_tab_modal_popup_deprecated.
   bool is_tab_modal_popup_deprecated_ = false;
-
-#if defined(USE_AURA)
-  std::unique_ptr<OverscrollPrefManager> overscroll_pref_manager_;
-#endif
 
   int force_show_bookmark_bar_flags_ = ForceShowBookmarkBarFlag::kNone;
 
