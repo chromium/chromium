@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssueCreated" enum="DevToolsIssueCreated"
-    expires_after="2025-09-14">
+    expires_after="M150">
   <owner>yangguo@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <component>1519296</component>
@@ -241,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelIssueExpanded"
-    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2025-08-10">
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="M150">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <component>1519296</component>
@@ -251,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelOpenedFrom"
-    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2025-08-10">
+    enum="DevToolsIssuesPanelOpenedFrom" expires_after="M150">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <component>1519296</component>
@@ -261,7 +261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelResourceOpened"
-    enum="DevToolsIssuesPanelResourceOpened" expires_after="2025-08-10">
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="M150">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <component>1519296</component>
