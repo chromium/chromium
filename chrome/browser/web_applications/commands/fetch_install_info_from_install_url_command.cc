@@ -171,11 +171,10 @@ void FetchInstallInfoFromInstallUrlCommand::
             webapps::WebappInstallSource::SUB_APP,
             lock_->shared_web_contents().GetWeakPtr(), [](IconUrlSizeSet&) {},
             GetMutableDebugValue(),
-            base::BindOnce(&FetchInstallInfoFromInstallUrlCommand::
-                               OnInstallInfoFetchedFromManifestApplyMerge,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(web_app_info)),
-            construct_options);
+            base::BindOnce(
+                &FetchInstallInfoFromInstallUrlCommand::OnInstallInfoFetched,
+                weak_ptr_factory_.GetWeakPtr()),
+            construct_options, web_app_info->Clone());
 
     return;
   }
@@ -204,32 +203,9 @@ void FetchInstallInfoFromInstallUrlCommand::OnIconsRetrievedForNoManifest(
                                  std::move(web_app_info));
 }
 
-void FetchInstallInfoFromInstallUrlCommand::
-    OnInstallInfoFetchedFromManifestApplyMerge(
-        std::unique_ptr<WebAppInstallInfo> info_from_page,
-        std::unique_ptr<WebAppInstallInfo> info_from_manifest) {
-  CHECK(info_from_page);
+void FetchInstallInfoFromInstallUrlCommand::OnInstallInfoFetched(
+    std::unique_ptr<WebAppInstallInfo> info_from_manifest) {
   CHECK(info_from_manifest);
-  // Merge fields from `info_from_page` onto `info_from_manifest` if required.
-  // `info_from_page` is generated from the `WebAppDataRetriever` and populates
-  // the following fields:
-  // - title
-  // - description
-  // - start_url
-  // - manifest_id
-  // - manifest_icons
-  // - mobile_capable
-  // Out of these, only `title`, `description` and `mobile_capable` needs to be
-  // moved over to `info_from_manifest`. `start_url` and `manifest_id` has to be
-  // valid for the job to run. `manifest_icons` are always overwritten with the
-  // manifest information while running the job.
-  if (info_from_manifest->title.empty()) {
-    info_from_manifest->title = info_from_page->title;
-  }
-  if (info_from_manifest->description.empty()) {
-    info_from_manifest->description = info_from_page->description;
-  }
-  info_from_manifest->mobile_capable = info_from_page->mobile_capable;
   info_from_manifest->install_url = install_url_;
   info_from_manifest->parent_app_manifest_id = parent_manifest_id_;
 

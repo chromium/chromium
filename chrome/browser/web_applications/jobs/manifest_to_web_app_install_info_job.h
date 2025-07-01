@@ -46,7 +46,9 @@ struct WebAppInstallInfoConstructOptions {
 };
 
 // The role of this job is to take a `blink::mojom::Manifest`, parse it,
-// populate a `WebAppInstallInfo` and return it.
+// populate a `WebAppInstallInfo` and return it. If a `fallback_info` exists,
+// it is used to populate `title`, `description`, and `icons` if those aren't
+// supplied by the manifest, as well as `mobile_capable`.
 class ManifestToWebAppInstallInfoJob {
  public:
   virtual ~ManifestToWebAppInstallInfoJob();
@@ -65,7 +67,10 @@ class ManifestToWebAppInstallInfoJob {
       base::Value::Dict& debug_data,
       WebAppInstallInfoCreationCallback creation_callback,
       WebAppInstallInfoConstructOptions options =
-          WebAppInstallInfoConstructOptions{});
+          WebAppInstallInfoConstructOptions{},
+      std::optional<WebAppInstallInfo> fallback_info = std::nullopt);
+
+  base::Value::Dict GetManifestToWebAppInfoGenerationErrors();
 
  private:
   ManifestToWebAppInstallInfoJob(
@@ -75,7 +80,8 @@ class ManifestToWebAppInstallInfoJob {
       webapps::WebappInstallSource install_source,
       base::Value::Dict& debug_data,
       WebAppInstallInfoCreationCallback creation_callback,
-      WebAppInstallInfoConstructOptions options);
+      WebAppInstallInfoConstructOptions options,
+      std::optional<WebAppInstallInfo> fallback_info);
 
   void Start(base::WeakPtr<content::WebContents> web_contents,
              base::FunctionRef<void(IconUrlSizeSet&)> icon_url_modifications);
@@ -93,6 +99,7 @@ class ManifestToWebAppInstallInfoJob {
   base::raw_ref<base::Value::Dict> debug_data_;
   WebAppInstallInfoCreationCallback creation_callback_;
   WebAppInstallInfoConstructOptions options_;
+  std::optional<WebAppInstallInfo> fallback_info_;
 
   base::WeakPtrFactory<ManifestToWebAppInstallInfoJob> weak_ptr_factory_{this};
 };

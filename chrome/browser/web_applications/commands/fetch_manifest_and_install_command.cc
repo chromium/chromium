@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
@@ -118,8 +119,8 @@ std::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-void LogInstallInfo(base::Value::Dict& dict,
-                    const WebAppInstallInfo& install_info) {
+void LogInstallInfoForFallbackData(base::Value::Dict& dict,
+                                   const WebAppInstallInfo& install_info) {
   dict.Set("manifest_id", install_info.manifest_id().spec());
   dict.Set("start_url", install_info.start_url().spec());
   dict.Set("name", install_info.title);
@@ -364,8 +365,9 @@ void FetchManifestAndInstallCommand::OnGetWebAppInstallInfo(
     return;
   }
   web_app_info_ = std::move(fallback_web_app_info);
-  LogInstallInfo(*GetMutableDebugValue().EnsureDict("fallback_web_app_info"),
-                 *web_app_info_);
+  LogInstallInfoForFallbackData(
+      *GetMutableDebugValue().EnsureDict("fallback_web_app_info"),
+      *web_app_info_);
 
   FetchManifest();
 }
@@ -418,6 +420,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
     return;
   }
 
+  // Set the behavior for the command based on the `fallback_behavior_`.
   switch (fallback_behavior_) {
     case FallbackBehavior::kCraftedManifestOnly:
       if (!valid_manifest_for_web_app) {
@@ -429,71 +432,31 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
         Abort(webapps::InstallResultCode::kNotValidManifestForWebApp);
         return;
       }
-      web_app_info_ = std::make_unique<WebAppInstallInfo>(
-          opt_manifest->id, opt_manifest->start_url);
+      CHECK(!opt_manifest->icons.empty())
+          << "kValidManifestIgnoreDisplay guarantees a manifest icon.";
+      skip_page_favicons_on_initial_download_ = true;
       break;
     case FallbackBehavior::kUseFallbackInfoWhenNotInstallable: {
-      webapps::InstallableStatusCode display_installable =
-          webapps::InstallableEvaluator::GetDisplayError(
-              *opt_manifest,
-              webapps::InstallableCriteria::kValidManifestWithIcons);
-      GetMutableDebugValue().Set("display_installable_code",
-                                 base::ToString(display_installable));
-      // Since the valid_manifest_for_web_app used the
-      // `kValidManifestIgnoreDisplay` criteria, add the display check to see if
-      // this app was fully promotable/crafted.
-      bool promotable = valid_manifest_for_web_app &&
-                        display_installable ==
-                            webapps::InstallableStatusCode::NO_ERROR_DETECTED;
-      // If the manifest is crafted, override the fallback install info.
-      if (promotable) {
-        web_app_info_ = std::make_unique<WebAppInstallInfo>(
-            opt_manifest->id, opt_manifest->start_url);
-      } else {
-        web_app_info_->is_diy_app = true;
-      }
+      skip_page_favicons_on_initial_download_ = valid_manifest_for_web_app;
       break;
     }
     case FallbackBehavior::kAllowFallbackDataAlways:
       CHECK(web_app_info_);
-      break;
-  }
-  GetMutableDebugValue().Set("is_diy_app", web_app_info_->is_diy_app);
-  CHECK(opt_manifest->start_url.is_valid());
-  CHECK(opt_manifest->id.is_valid());
-  UpdateWebAppInfoFromManifest(*opt_manifest, web_app_info_.get());
-  LogInstallInfo(GetMutableDebugValue(), *web_app_info_);
-
-  icons_from_manifest_ = GetValidIconUrlsToDownload(*web_app_info_);
-  for (const IconUrlWithSize& icon_with_size : icons_from_manifest_) {
-    GetMutableDebugValue()
-        .EnsureList("icon_urls_from_manifest")
-        ->Append(icon_with_size.ToString());
-  }
-
-  opt_manifest_ = std::move(opt_manifest);
-  StartPreloadingScreenshots();
-
-  switch (fallback_behavior_) {
-    case FallbackBehavior::kCraftedManifestOnly:
-      CHECK(!opt_manifest_->icons.empty())
-          << "kValidManifestIgnoreDisplay guarantees a manifest icon.";
-      skip_page_favicons_on_initial_download_ = true;
-      break;
-    case FallbackBehavior::kUseFallbackInfoWhenNotInstallable:
-      skip_page_favicons_on_initial_download_ = valid_manifest_for_web_app;
-      break;
-    case FallbackBehavior::kAllowFallbackDataAlways:
       skip_page_favicons_on_initial_download_ = false;
       break;
   }
+
   GetMutableDebugValue().Set("skip_page_favicons_on_initial_download",
                              skip_page_favicons_on_initial_download_);
+  CHECK(opt_manifest->start_url.is_valid());
+  CHECK(opt_manifest->id.is_valid());
+  opt_manifest_ = std::move(opt_manifest);
+  StartPreloadingScreenshots();
 
   app_lock_ = std::make_unique<AppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
       std::move(noop_lock_), *app_lock_,
-      {GenerateAppIdFromManifestId(web_app_info_->manifest_id())},
+      {GenerateAppIdFromManifestId(opt_manifest_->id)},
       base::BindOnce(
           &FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons,
           weak_ptr_factory_.GetWeakPtr()));
@@ -557,16 +520,88 @@ void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  data_retriever_->GetIcons(
-      web_contents_.get(), icons_from_manifest_,
-      skip_page_favicons_on_initial_download_,
-      /*fail_all_if_any_fail=*/false,
-      base::BindOnce(
-          &FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog,
-          weak_ptr_factory_.GetWeakPtr()));
+  // Populate a `WebAppInstallInfo` instance assuming that there is a valid
+  // `opt_manifest_`.
+  CHECK(opt_manifest_);
+  WebAppInstallInfoConstructOptions construct_options;
+  construct_options.skip_page_favicons =
+      skip_page_favicons_on_initial_download_;
+  construct_options.fail_all_if_any_fail = false;
+
+  // Only use the fallback information if the installation is for a path that
+  // doesn't enforce a crafted manifest.
+  std::optional<WebAppInstallInfo> fallback_info = std::nullopt;
+  if (web_app_info_ &&
+      fallback_behavior_ != FallbackBehavior::kCraftedManifestOnly) {
+    fallback_info = web_app_info_->Clone();
+  }
+
+  manifest_to_install_info_job_ =
+      ManifestToWebAppInstallInfoJob::CreateAndStart(
+          *opt_manifest_, *data_retriever_.get(),
+          /*background_installation=*/false, install_surface_, web_contents_,
+          [](IconUrlSizeSet&) {}, GetMutableDebugValue(),
+          base::BindOnce(&FetchManifestAndInstallCommand::
+                             OnInstallInfoObtainedMergeAndShowDialog,
+                         weak_ptr_factory_.GetWeakPtr()),
+          construct_options, std::move(fallback_info));
 }
 
-void FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog(
+void FetchManifestAndInstallCommand::OnInstallInfoObtainedMergeAndShowDialog(
+    std::unique_ptr<WebAppInstallInfo> install_info) {
+  if (IsWebContentsDestroyed()) {
+    Abort(webapps::InstallResultCode::kWebContentsDestroyed);
+    return;
+  }
+
+  CHECK(install_info);
+  bool is_promotable_install = true;
+
+  // Apply fallback behavior specific changes if needed.
+  if (fallback_behavior_ ==
+      FallbackBehavior::kUseFallbackInfoWhenNotInstallable) {
+    webapps::InstallableStatusCode display_installable =
+        webapps::InstallableEvaluator::GetDisplayError(
+            *opt_manifest_,
+            webapps::InstallableCriteria::kValidManifestWithIcons);
+    GetMutableDebugValue().Set("display_installable_code",
+                               base::ToString(display_installable));
+    // Since `valid_manifest_for_crafted_web_app_` used the
+    // `kValidManifestIgnoreDisplay` criteria, add the display check to see if
+    // this app was fully promotable/crafted.
+    is_promotable_install = valid_manifest_for_crafted_web_app_ &&
+                            (display_installable ==
+                             webapps::InstallableStatusCode::NO_ERROR_DETECTED);
+
+    // In `kUseFallbackInfoWhenNotInstallable` mode, we skip favicons if the
+    // manifest looks valid. However, if the icon download fails, we are no
+    // longer installable & thus fall back to favicons.
+    // This needs to be fixed.
+    if (skip_page_favicons_on_initial_download_ &&
+        valid_manifest_for_crafted_web_app_ &&
+        install_info->is_generated_icon) {
+      GetMutableDebugValue().Set("used_fallback_after_icon_download_failed",
+                                 true);
+      valid_manifest_for_crafted_web_app_ = false;
+      web_app_info_->is_diy_app = true;
+      data_retriever_->GetIcons(
+          web_contents_.get(), {},
+          /*skip_page_favicons=*/false,
+          /*fail_all_if_any_fail=*/false,
+          base::BindOnce(&FetchManifestAndInstallCommand::
+                             OnIconsDownloadedForFallbackInfoShowDialog,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+  }
+
+  web_app_info_ = std::move(install_info);
+  web_app_info_->is_diy_app = !is_promotable_install;
+  GetMutableDebugValue().Set("is_diy_app", web_app_info_->is_diy_app);
+  ShowInstallDialog();
+}
+
+void FetchManifestAndInstallCommand::OnIconsDownloadedForFallbackInfoShowDialog(
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
@@ -583,37 +618,15 @@ void FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog(
     }
   }
 
-  CHECK(web_app_info_);
-
-  // In kUseFallbackInfoWhenNotInstallable mode, we skip favicons if the
-  // manifest looks valid. However, if the icon download fails, we are no longer
-  // installable & thus fall back to favicons.
-  if (skip_page_favicons_on_initial_download_ &&
-      valid_manifest_for_crafted_web_app_ && icons_map.empty() &&
-      fallback_behavior_ ==
-          FallbackBehavior::kUseFallbackInfoWhenNotInstallable) {
-    GetMutableDebugValue().Set("used_fallback_after_icon_download_failed",
-                               true);
-    valid_manifest_for_crafted_web_app_ = false;
-    web_app_info_->is_diy_app = true;
-    GetMutableDebugValue().Set("is_diy_app", true);
-    data_retriever_->GetIcons(
-        web_contents_.get(), {},
-        /*skip_page_favicons=*/false,
-        /*fail_all_if_any_fail=*/false,
-        base::BindOnce(
-            &FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog,
-            weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
   PopulateProductIcons(web_app_info_.get(), &icons_map);
   PopulateOtherIcons(web_app_info_.get(), icons_map);
-
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);
   install_error_log_entry_.LogDownloadedIconsErrors(
       *web_app_info_, result, icons_map, icons_http_results);
+  ShowInstallDialog();
+}
 
+void FetchManifestAndInstallCommand::ShowInstallDialog() {
   if (!dialog_callback_) {
     OnDialogCompleted(/*user_accepted=*/true, std::move(web_app_info_));
   } else {
@@ -716,6 +729,12 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
     if (install_error_log_entry_.HasErrorDict()) {
       command_manager()->LogToInstallManager(
           install_error_log_entry_.TakeErrorDict());
+    }
+    base::Value::Dict install_info_dict =
+        manifest_to_install_info_job_
+            ->GetManifestToWebAppInfoGenerationErrors();
+    if (!install_info_dict.empty()) {
+      command_manager()->LogToInstallManager(std::move(install_info_dict));
     }
   }
   GetMutableDebugValue().Set("result_code", base::ToString(code));

@@ -74,8 +74,7 @@ class FetchInstallInfoFromInstallUrlCommand
       IconsDownloadedResult result,
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
-  void OnInstallInfoFetchedFromManifestApplyMerge(
-      std::unique_ptr<WebAppInstallInfo> info_from_page,
+  void OnInstallInfoFetched(
       std::unique_ptr<WebAppInstallInfo> info_from_manifest);
   void CompleteCommandAndSelfDestruct(
       FetchInstallInfoResult result,

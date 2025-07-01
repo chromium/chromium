@@ -366,6 +366,36 @@ void PopulateHomeTabIconsFromHomeTabManifestParams(
   web_app_info->tab_strip->home_tab = home_tab;
 }
 
+// Merges a `WebAppInstallInfo` instance obtained from parsing the web page
+// metadata into one that's obtained from the manifest.
+// It is the duty of the callsites to perform the necessary checks to ensure
+// that `from_info` and `to_info` is valid.
+void MergeFallbackInstallInfoIntoNewInfo(const WebAppInstallInfo& from_info,
+                                         WebAppInstallInfo* to_info) {
+  // Merge fields from `from_info` onto `to_info` if required.
+  // `from` is generated from the `WebAppDataRetriever` and populates
+  // the following fields:
+  // - title
+  // - description
+  // - start_url
+  // - manifest_id
+  // - manifest_icons
+  // - mobile_capable
+  // Out of these, only `title`, `description`, `manifest_icons` and
+  // `mobile_capable` needs to be moved over to `to_info`. `start_url` and
+  // `manifest_id` has to be valid for the job to run.
+  if (to_info->title.empty()) {
+    to_info->title = from_info.title;
+  }
+  if (to_info->description.empty()) {
+    to_info->description = from_info.description;
+  }
+  to_info->mobile_capable = from_info.mobile_capable;
+  if (to_info->manifest_icons.empty() && !from_info.manifest_icons.empty()) {
+    to_info->manifest_icons = from_info.manifest_icons;
+  }
+}
+
 }  // namespace
 
 ManifestToWebAppInstallInfoJob::~ManifestToWebAppInstallInfoJob() = default;
@@ -381,12 +411,22 @@ ManifestToWebAppInstallInfoJob::CreateAndStart(
     base::FunctionRef<void(IconUrlSizeSet&)> icon_url_modifications,
     base::Value::Dict& debug_data,
     WebAppInstallInfoCreationCallback creation_callback,
-    WebAppInstallInfoConstructOptions options) {
+    WebAppInstallInfoConstructOptions options,
+    std::optional<WebAppInstallInfo> fallback_info) {
   auto job = base::WrapUnique(new ManifestToWebAppInstallInfoJob(
       manifest, data_retriever, background_installation, install_source,
-      debug_data, std::move(creation_callback), options));
+      debug_data, std::move(creation_callback), options,
+      std::move(fallback_info)));
   job->Start(web_contents, icon_url_modifications);
   return job;
+}
+
+base::Value::Dict
+ManifestToWebAppInstallInfoJob::GetManifestToWebAppInfoGenerationErrors() {
+  if (!install_error_log_entry_.HasErrorDict()) {
+    return base::Value::Dict();
+  }
+  return install_error_log_entry_.TakeErrorDict();
 }
 
 ManifestToWebAppInstallInfoJob::ManifestToWebAppInstallInfoJob(
@@ -396,13 +436,15 @@ ManifestToWebAppInstallInfoJob::ManifestToWebAppInstallInfoJob(
     webapps::WebappInstallSource install_source,
     base::Value::Dict& debug_data,
     WebAppInstallInfoCreationCallback creation_callback,
-    WebAppInstallInfoConstructOptions options)
+    WebAppInstallInfoConstructOptions options,
+    std::optional<WebAppInstallInfo> fallback_info)
     : manifest_(manifest.Clone()),
       data_retriever_(data_retriever),
       install_error_log_entry_(background_installation, install_source),
       debug_data_(debug_data),
       creation_callback_(std::move(creation_callback)),
-      options_(options) {
+      options_(options),
+      fallback_info_(std::move(fallback_info)) {
   // These are the pre-requisites for constructing a WebAppInstallInfo from a
   // valid manifest id and start url.
   CHECK(manifest_->id.is_valid());
@@ -438,6 +480,11 @@ void ManifestToWebAppInstallInfoJob::Start(
   // First, populate the `install_info_` by parsing the fields provided in the
   // manifest.
   ParseManifestAndPopulateInfo();
+  if (fallback_info_) {
+    CHECK(install_info_);
+    MergeFallbackInstallInfoIntoNewInfo(fallback_info_.value(),
+                                        install_info_.get());
+  }
 
   // Second, fetch icons, and populate them inside the `install_info_`. Exit
   // early if icon generation needs to be bypassed.
@@ -584,7 +631,7 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
   base::Value::Dict* icons_downloaded =
-      debug_data_->EnsureDict("icons_created");
+      debug_data_->EnsureDict("icons_retrieved");
   for (const auto& [url, bitmap_vector] : icons_map) {
     base::Value::List* sizes = icons_downloaded->EnsureList(url.spec());
     for (const SkBitmap& bitmap : bitmap_vector) {

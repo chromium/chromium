@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -109,14 +110,25 @@ class FetchManifestAndInstallCommand
   void CheckForPlayStoreIntentOrGetIcons();
 
   // Called when the asynchronous check for whether an intent to the Play Store
-  // should be made returns.
+  // should be made returns, and a `WebAppInstallInfo` instance creation job is
+  // started from the manifest.
   void OnDidCheckForIntentToPlayStore(const std::string& intent,
                                       bool should_intent_to_store);
 
-  void OnIconsRetrievedShowDialog(
+  // A populated `WebAppInstallInfo` instance is obtained from the
+  // `opt_manifest_`, and is merged with the `web_app_info_` if needed.
+  void OnInstallInfoObtainedMergeAndShowDialog(
+      std::unique_ptr<WebAppInstallInfo> install_info);
+
+  // Called when icons are downloaded for the
+  // `kUseFallbackInfoWhenNotInstallable` mode.
+  void OnIconsDownloadedForFallbackInfoShowDialog(
       IconsDownloadedResult result,
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
+
+  void ShowInstallDialog();
+
   void OnDialogCompleted(bool user_accepted,
                          std::unique_ptr<WebAppInstallInfo> web_app_info);
   void OnInstallFinalizedMaybeReparentTab(const webapps::AppId& app_id,
@@ -149,6 +161,7 @@ class FetchManifestAndInstallCommand
   std::unique_ptr<AppLock> app_lock_;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
+  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
   bool did_navigation_occur_before_start_ = false;
 

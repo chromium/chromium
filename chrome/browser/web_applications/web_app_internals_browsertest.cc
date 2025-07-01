@@ -166,6 +166,9 @@ class WebAppInternalsBrowserTest : public WebAppBrowserTestBase {
       features::kRecordWebAppDebugInfo};
 };
 
+// There are 2 error logs being persisted here, one generated from the commands
+// and one generated while parsing the manifest into a `WebAppInstallInfo`,
+// which logs the invalid icon errors.
 IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
                        PRE_InstallManagerErrorsPersist) {
   OverrideHttpRequest(embedded_test_server()->GetURL("/banners/bad_icon.png"),
@@ -183,10 +186,10 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
       nullptr);
 
   ASSERT_TRUE(GetProvider().install_manager().error_log());
-  ASSERT_EQ(1u, GetProvider().install_manager().error_log()->size());
+  ASSERT_EQ(2u, GetProvider().install_manager().error_log()->size());
 
   const base::Value& error_log =
-      (*GetProvider().install_manager().error_log())[0];
+      (*GetProvider().install_manager().error_log())[1];
   EXPECT_TRUE(error_log.is_dict());
   EXPECT_EQ(4u, error_log.GetDict().size());
 
@@ -199,10 +202,10 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
   test::WaitUntilReady(WebAppProvider::GetForTest(browser()->profile()));
 
   ASSERT_TRUE(GetProvider().install_manager().error_log());
-  ASSERT_EQ(1u, GetProvider().install_manager().error_log()->size());
+  ASSERT_EQ(2u, GetProvider().install_manager().error_log()->size());
 
   const base::Value& error_log =
-      (*GetProvider().install_manager().error_log())[0];
+      (*GetProvider().install_manager().error_log())[1];
   EXPECT_TRUE(error_log.is_dict());
   EXPECT_EQ(4u, error_log.GetDict().size());
 
