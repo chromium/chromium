@@ -599,11 +599,12 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testAllocInstanceId_ignoreWrongPassedInstanceID() {
+    public void testAllocInstanceId_allowPassedInstanceIdValueGreaterThanMaxLimitValue() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
 
-        // Go through the ordinary allocation logic if the passed ID is out of range.
-        assertEquals(1, allocInstanceIndex(10, mActivityTask59));
+        // Honor a passed ID with value greater than the max instance limit value. This is possible
+        // after an instance limit downgrade.
+        assertEquals(10, allocInstanceIndex(10, mActivityTask59));
     }
 
     @Test
