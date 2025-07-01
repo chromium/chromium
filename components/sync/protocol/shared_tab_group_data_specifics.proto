@@ -23,6 +23,9 @@ package sync_pb;
 import "components/sync/protocol/unique_position.proto";
 
 // LINT.IfChange(SharedTabGroupDataSpecifics)
+// IMPORTANT: please update
+// shared_tab_group_data_specifics_full_proto_unittest.cc if you change any
+// sync_collaboration_attribution FieldOptions.
 message SharedTabGroupDataSpecifics {
   // Unique identifier for this entity.
   optional string guid = 1;
@@ -112,7 +115,4 @@ message SharedTab {
   reserved 3;
   reserved "favicon_url";
 }
-// LINT.ThenChange(
-//  //components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics,
-//  //components/sync/protocol/shared_tab_group_data_specifics_full_proto_unittest.cc.cc:ShouldReflectAndReadCustomAnnotations
-// )
+// LINT.ThenChange(//components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)

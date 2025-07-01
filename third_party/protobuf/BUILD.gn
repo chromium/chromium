@@ -148,7 +148,7 @@ static_library("protobuf_full") {
       "//components/proto_extras:protobuf_full_support",
 
       # Sync requires descriptors for testing.
-      "//components/sync:full_proto_unittests",
+      "//components/sync:sync_full_proto_unittests",
       "//components/sync/protocol:full_proto",
     ]
   }

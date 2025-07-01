@@ -335,7 +335,7 @@ group("gn_all") {
 
     if (!is_android && !is_ios && !is_fuchsia) {
       deps += [
-        "//components/sync:full_proto_unittests",
+        "//components/sync:sync_full_proto_unittests",
         "//ui/webui/examples:webui_examples",
       ]
     }

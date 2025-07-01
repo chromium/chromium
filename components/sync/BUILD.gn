@@ -315,7 +315,7 @@ source_set("unit_tests") {
 }
 
 if (!is_android && !is_ios && !is_fuchsia) {
-  test("full_proto_unittests") {
+  test("sync_full_proto_unittests") {
     sources =
         [ "protocol/shared_tab_group_data_specifics_full_proto_unittest.cc" ]
 
