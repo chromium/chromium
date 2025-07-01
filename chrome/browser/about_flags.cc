@@ -1542,11 +1542,39 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-const FeatureEntry::FeatureParam kOmniboxToolbeltZeroAndTypedInputse[] = {
+const FeatureEntry::FeatureParam kOmniboxToolbeltVariant1[] = {
+    {"KeepToolbeltAfterInput", "false"},
+    {"AlwaysIncludeLensAction", "false"},
+    {"ShowLensActionOnNonNtp", "true"},
+    {"ShowLensActionOnNtp", "false"},
+    {"ShowAiModeActionOnNonNtp", "true"},
+    {"ShowAiModeActionOnNtp", "true"},
+    {"ShowHistoryActionOnNonNtp", "true"},
+    {"ShowHistoryActionOnNtp", "true"},
+    {"ShowBookmarksActionOnNonNtp", "true"},
+    {"ShowBookmarksActionOnNtp", "true"},
+    {"ShowTabsActionOnNonNtp", "false"},
+    {"ShowTabsActionOnNtp", "false"},
+};
+const FeatureEntry::FeatureParam kOmniboxToolbeltVariant2[] = {
     {"KeepToolbeltAfterInput", "true"},
     {"AlwaysIncludeLensAction", "false"},
     {"ShowLensActionOnNonNtp", "true"},
-    {"ShowLensActionOnNtp", "true"},
+    {"ShowLensActionOnNtp", "false"},
+    {"ShowAiModeActionOnNonNtp", "true"},
+    {"ShowAiModeActionOnNtp", "true"},
+    {"ShowHistoryActionOnNonNtp", "true"},
+    {"ShowHistoryActionOnNtp", "true"},
+    {"ShowBookmarksActionOnNonNtp", "true"},
+    {"ShowBookmarksActionOnNtp", "true"},
+    {"ShowTabsActionOnNonNtp", "false"},
+    {"ShowTabsActionOnNtp", "false"},
+};
+const FeatureEntry::FeatureParam kOmniboxToolbeltVariant3[] = {
+    {"KeepToolbeltAfterInput", "false"},
+    {"AlwaysIncludeLensAction", "false"},
+    {"ShowLensActionOnNonNtp", "false"},
+    {"ShowLensActionOnNtp", "false"},
     {"ShowAiModeActionOnNonNtp", "true"},
     {"ShowAiModeActionOnNtp", "true"},
     {"ShowHistoryActionOnNonNtp", "true"},
@@ -1556,7 +1584,21 @@ const FeatureEntry::FeatureParam kOmniboxToolbeltZeroAndTypedInputse[] = {
     {"ShowTabsActionOnNonNtp", "true"},
     {"ShowTabsActionOnNtp", "true"},
 };
-const FeatureEntry::FeatureParam kOmniboxToolbeltZeroInputs[] = {
+const FeatureEntry::FeatureParam kOmniboxToolbeltVariant4[] = {
+    {"KeepToolbeltAfterInput", "true"},
+    {"AlwaysIncludeLensAction", "false"},
+    {"ShowLensActionOnNonNtp", "false"},
+    {"ShowLensActionOnNtp", "false"},
+    {"ShowAiModeActionOnNonNtp", "true"},
+    {"ShowAiModeActionOnNtp", "true"},
+    {"ShowHistoryActionOnNonNtp", "true"},
+    {"ShowHistoryActionOnNtp", "true"},
+    {"ShowBookmarksActionOnNonNtp", "true"},
+    {"ShowBookmarksActionOnNtp", "true"},
+    {"ShowTabsActionOnNonNtp", "true"},
+    {"ShowTabsActionOnNtp", "true"},
+};
+const FeatureEntry::FeatureParam kOmniboxToolbeltAllActionsZeroInputs[] = {
     {"KeepToolbeltAfterInput", "false"},
     {"AlwaysIncludeLensAction", "false"},
     {"ShowLensActionOnNonNtp", "true"},
@@ -1570,12 +1612,36 @@ const FeatureEntry::FeatureParam kOmniboxToolbeltZeroInputs[] = {
     {"ShowTabsActionOnNonNtp", "true"},
     {"ShowTabsActionOnNtp", "true"},
 };
+const FeatureEntry::FeatureParam
+    kOmniboxToolbeltAllActionsZeroAndTypedInputs[] = {
+        {"KeepToolbeltAfterInput", "true"},
+        {"AlwaysIncludeLensAction", "false"},
+        {"ShowLensActionOnNonNtp", "true"},
+        {"ShowLensActionOnNtp", "true"},
+        {"ShowAiModeActionOnNonNtp", "true"},
+        {"ShowAiModeActionOnNtp", "true"},
+        {"ShowHistoryActionOnNonNtp", "true"},
+        {"ShowHistoryActionOnNtp", "true"},
+        {"ShowBookmarksActionOnNonNtp", "true"},
+        {"ShowBookmarksActionOnNtp", "true"},
+        {"ShowTabsActionOnNonNtp", "true"},
+        {"ShowTabsActionOnNtp", "true"},
+};
 const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
-    {"Zero & typed inputs; all actions.", kOmniboxToolbeltZeroAndTypedInputse,
-     std::size(kOmniboxToolbeltZeroAndTypedInputse), nullptr},
-    {"Zero inputs; all actions.", kOmniboxToolbeltZeroInputs,
-     std::size(kOmniboxToolbeltZeroInputs), nullptr}};
-
+    {"Variant 1: ContextualAndAIMode - ZeroPrefixStateOnly",
+     kOmniboxToolbeltVariant1, std::size(kOmniboxToolbeltVariant1), nullptr},
+    {"Variant 2: ContextualAndAIMode - ZeroPrefixAndTypedState",
+     kOmniboxToolbeltVariant2, std::size(kOmniboxToolbeltVariant2), nullptr},
+    {"Variant 3: AIModeOnly - ZeroPrefixStateOnly", kOmniboxToolbeltVariant3,
+     std::size(kOmniboxToolbeltVariant3), nullptr},
+    {"Variant 4: AIModeOnly - ZeroPrefixAndTypedState",
+     kOmniboxToolbeltVariant4, std::size(kOmniboxToolbeltVariant4), nullptr},
+    {"All actions - ZeroPrefixStateOnly", kOmniboxToolbeltAllActionsZeroInputs,
+     std::size(kOmniboxToolbeltAllActionsZeroInputs), nullptr},
+    {"All actions - ZeroPrefixAndTypedState",
+     kOmniboxToolbeltAllActionsZeroAndTypedInputs,
+     std::size(kOmniboxToolbeltAllActionsZeroAndTypedInputs), nullptr},
+};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
