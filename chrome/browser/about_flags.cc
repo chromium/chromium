@@ -12078,6 +12078,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          credential_management::features::
              kCredentialManagementThirdPartyWebApiRequestForwarding)},
+
+    {"third-party-disable-chrome-autofill-settings-screen",
+     flag_descriptions::kThirdPartyDisableChromeAutofillSettingsScreenName,
+     flag_descriptions::
+         kThirdPartyDisableChromeAutofillSettingsScreenDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(credential_management::features::
+                            kThirdPartyDisableChromeAutofillSettingsScreen)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -5031,6 +5031,11 @@ extern const char kComposeUpfrontInputModesName[];
 extern const char kComposeUpfrontInputModesDescription[];
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kThirdPartyDisableChromeAutofillSettingsScreenName[];
+extern const char kThirdPartyDisableChromeAutofillSettingsScreenDescription[];
+#endif  // IS_ANDROID
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kThirdPartyProfileManagementName[];
 extern const char kThirdPartyProfileManagementDescription[];

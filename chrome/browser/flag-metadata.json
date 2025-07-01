@@ -9472,6 +9472,13 @@
     "expiry_milestone": 150
   },
   {
+    "name": "third-party-disable-chrome-autofill-settings-screen",
+    "owners": [
+      "izuzic@google.com",
+      "anki-team@google.com" ],
+    "expiry_milestone": 141
+  },
+  {
     "name": "third-party-profile-management",
     "owners": [ "igorruvinov@chromium.org", "ydago@chromium.org", "zmin@chromium.org" ],
     "expiry_milestone": 135

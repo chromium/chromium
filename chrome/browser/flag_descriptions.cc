@@ -8572,6 +8572,13 @@ const char kComposeUpfrontInputModesDescription[] =
     "Enables upfront input modes in the Compose dialog";
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
+#if BUILDFLAG(IS_ANDROID)
+const char kThirdPartyDisableChromeAutofillSettingsScreenName[] =
+    "Chrome Autofill Settings Screen in 3P Mode";
+const char kThirdPartyDisableChromeAutofillSettingsScreenDescription[] =
+    "Chrome's Address and Payments Autofill are disabled in third party mode.";
+#endif  // IS_ANDROID
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kThirdPartyProfileManagementName[] =
     "Third party profile management";

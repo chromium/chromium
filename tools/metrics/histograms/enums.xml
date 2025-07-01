@@ -10482,6 +10482,8 @@ from previous Chrome versions.
   <int value="-1315812099"
       label="ReadAnythingReadAloudAutomaticWordHighlighting:disabled"/>
   <int value="-1315631616" label="CustomizeChromeWallpaperSearch:disabled"/>
+  <int value="-1315551310"
+      label="ThirdPartyDisableChromeAutofillSettingsScreen:enabled"/>
   <int value="-1315360754" label="WindowLayoutMenu:disabled"/>
   <int value="-1315176318" label="FilesTrashAutoCleanup:disabled"/>
   <int value="-1314823250"
@@ -10766,6 +10768,8 @@ from previous Chrome versions.
   <int value="-1215163628"
       label="AccessibilityUnserializeOptimizations:disabled"/>
   <int value="-1214870820" label="EnableNewStyleLauncher:enabled"/>
+  <int value="-1213030642"
+      label="ThirdPartyDisableChromeAutofillSettingsScreen:disabled"/>
   <int value="-1212959146" label="HideTabletToolbarDownloadButton:enabled"/>
   <int value="-1212855900" label="enable-all-bookmarks-view"/>
   <int value="-1212273428" label="enable-experimental-app-list"/>
