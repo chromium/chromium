@@ -501,6 +501,9 @@ extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 extern const char kAutofillEnableLoyaltyCardsFillingName[];
 extern const char kAutofillEnableLoyaltyCardsFillingDescription[];
 
+extern const char kAutofillEnableLoyaltyCardSyncName[];
+extern const char kAutofillEnableLoyaltyCardSyncDescription[];
+
 extern const char
     kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName[];
 extern const char

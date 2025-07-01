@@ -807,6 +807,10 @@ const char kAutofillEnableLoyaltyCardsFillingDescription[] =
     "When enabled, Autofill will offer support for filling the user's loyalty "
     "cards stored in Google Wallet.";
 
+const char kAutofillEnableLoyaltyCardSyncName[] = "Sync Autofill Loyalty Cards";
+const char kAutofillEnableLoyaltyCardSyncDescription[] =
+    "When enabled, allows syncing of Google Wallet loyalty cards.";
+
 const char
     kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName[] =
         "Enable multiple server request support for virtual card downstream "

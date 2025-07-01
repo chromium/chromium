@@ -848,6 +848,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "autofill-enable-syncing-of-loyalty-cards",
+    "owners": [ "piotrwrotniak@google.com",  "vizcay@google.com", "autofill-squad-muc@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-enable-syncing-of-pix-bank-accounts",
     "owners": ["siashah@chromium.org", "chrome-payments-team@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 140

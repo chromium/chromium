@@ -10619,6 +10619,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableLoyaltyCardsFilling)},
 
+    {"autofill-enable-syncing-of-loyalty-cards",
+     flag_descriptions::kAutofillEnableLoyaltyCardSyncName,
+     flag_descriptions::kAutofillEnableLoyaltyCardSyncDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncAutofillLoyaltyCard)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"background-not-perceptible-binding",
      flag_descriptions::kBackgroundNotPerceptibleBindingName,
@@ -12746,7 +12751,7 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          autofill::features::
-             kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarna)},
+             kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarna)}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
