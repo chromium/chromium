@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_view.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
@@ -145,11 +146,20 @@ UIFont* GetNavigationBarTitleFont() {
       UIContentSizeCategoryExtraExtraLarge;
   // Create the skip button.
   CHECK(self.skipButtonText);
-  UIBarButtonItem* rightItem =
-      [[UIBarButtonItem alloc] initWithTitle:self.skipButtonText
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(skipButtonAction:)];
+  UIBarButtonItem* rightItem;
+  if (@available(iOS 26, *)) {
+    rightItem =
+        [[UIBarButtonItem alloc] initWithImage:DefaultCloseButtonForToolbar()
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(skipButtonAction:)];
+  } else {
+    rightItem =
+        [[UIBarButtonItem alloc] initWithTitle:self.skipButtonText
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(skipButtonAction:)];
+  }
   rightItem.accessibilityIdentifier =
       kWebSigninSkipButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = rightItem;
