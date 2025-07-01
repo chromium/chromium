@@ -658,6 +658,12 @@ export declare interface GlicBrowserHostMetrics {
 
   /** Called when the user rates a response. */
   onResponseRated?(positive: boolean): void;
+
+  /**
+   * Called when the first caption is shown for the current request or response.
+   * This can get fired multiple times in a single session.
+   */
+  onClosedCaptionsShown?(): void;
 }
 
 /** Web client's operation modes */

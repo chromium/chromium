@@ -830,6 +830,17 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->metrics()->OnResponseRated(positive);
   }
 
+  void OnClosedCaptionsShown() override {
+    if (!base::FeatureList::IsEnabled(features::kGlicClosedCaptioning)) {
+      receiver_.ReportBadMessage(
+          "Client should not be able to call OnClosedCaptionsShown "
+          "without the GlicClosedCaptioning feature enabled.");
+      return;
+    }
+
+    glic_service_->metrics()->LogClosedCaptionsShown();
+  }
+
   void ScrollTo(mojom::ScrollToParamsPtr params,
                 ScrollToCallback callback) override {
     if (!base::FeatureList::IsEnabled(features::kGlicScrollTo)) {

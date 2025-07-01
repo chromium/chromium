@@ -228,6 +228,9 @@ class GlicMetrics {
   // triggered.
   void OnGlicScrollComplete(bool success);
 
+  // Called when a response is received with closed captions showing.
+  void LogClosedCaptionsShown();
+
   // Must be called immediately after constructor before any calls from
   // glic.mojom.
   void SetControllers(GlicWindowController* window_controller,

@@ -277,6 +277,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableClosedCaptioningFeature) {
       this.getClosedCaptioningSetting = undefined;
       this.setClosedCaptioningSetting = undefined;
+      this.metrics.onClosedCaptionsShown = undefined;
     }
 
     if (!state.enableMaybeRefreshUserStatus) {
@@ -627,6 +628,11 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
 
   onResponseRated(positive: boolean): void {
     this.sender.requestNoResponse('glicBrowserOnResponseRated', {positive});
+  }
+
+  onClosedCaptionsShown?(): void {
+    this.sender.requestNoResponse(
+        'glicBrowserOnClosedCaptionsShown', undefined);
   }
 }
 

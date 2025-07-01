@@ -336,6 +336,11 @@ class GlicApiTest : public NonInteractiveGlicTest {
 
 class GlicApiTestWithOneTab : public GlicApiTest {
  public:
+  GlicApiTestWithOneTab() {
+    scoped_feature_list_.InitWithFeatures({features::kGlicClosedCaptioning},
+                                          /*disabled_features=*/{});
+  }
+
   void SetUpOnMainThread() override {
     GlicApiTest::SetUpOnMainThread();
 
@@ -353,6 +358,9 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   }
 
   std::unique_ptr<base::HistogramTester> histogram_tester;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
@@ -1105,6 +1113,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetDisplayMedia) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testMetrics) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kGlicClosedCaptioningEnabled, true);
+
   ExecuteJsTest();
   // Sleeping here is needed so that the calls made from the web client are
   // handled by the browser before the check below.
@@ -1112,6 +1123,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testMetrics) {
   histogram_tester->ExpectUniqueSample(
       "Glic.Sharing.ActiveTabSharingState.OnUserInputSubmitted",
       ActiveTabSharingState::kTabContextPermissionNotGranted, 1);
+
+  histogram_tester->ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
+                                       true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToFindsText) {

@@ -529,6 +529,13 @@ void GlicMetrics::OnGlicScrollComplete(bool success) {
   scroll_input_mode_ = mojom::WebClientMode::kUnknown;
 }
 
+void GlicMetrics::LogClosedCaptionsShown() {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicClosedCaptioning));
+  bool pref_enabled =
+      profile_->GetPrefs()->GetBoolean(prefs::kGlicClosedCaptioningEnabled);
+  base::UmaHistogramBoolean("Glic.Response.ClosedCaptionsShown", pref_enabled);
+}
+
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,
                                  GlicSharingManager* sharing_manager) {
   delegate_ = std::make_unique<DelegateImpl>(window_controller, sharing_manager,

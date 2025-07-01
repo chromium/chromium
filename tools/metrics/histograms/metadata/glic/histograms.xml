@@ -79,6 +79,7 @@ chromium-metrics-reviews@google.com.
     <variant name="GetUserProfileInfo"/>
     <variant name="GetZeroStateSuggestionsForFocusedTab"/>
     <variant name="MaybeRefreshUserStatus"/>
+    <variant name="OnClosedCaptionsShown"/>
     <variant name="OnRequestStarted"/>
     <variant name="OnResponseRated"/>
     <variant name="OnResponseStarted"/>
@@ -508,6 +509,17 @@ chromium-metrics-reviews@google.com.
     When glic returns a response to user input, whether glic was attached or
     detached at the time the response started. Only emitted if glic was visible
     when the response started.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.ClosedCaptionsShown" enum="Boolean"
+    expires_after="2026-01-15">
+  <owner>sanaakbani@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records if closed captions were being shown at the moment when glic returns
+    a response to the user. Records true if the closed captions pref was enabled
+    by the user; records false otherwise (an error condition).
   </summary>
 </histogram>
 

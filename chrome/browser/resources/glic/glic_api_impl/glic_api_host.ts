@@ -554,6 +554,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.onResponseRated(request.positive);
   }
 
+  glicBrowserOnClosedCaptionsShown(): void {
+    this.handler.onClosedCaptionsShown();
+  }
+
   async glicBrowserScrollTo(request: {params: ScrollToParams}) {
     const {params} = request;
 

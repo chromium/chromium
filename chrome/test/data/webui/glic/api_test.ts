@@ -766,11 +766,13 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!!metrics.onResponseStarted);
     assertTrue(!!metrics.onResponseStopped);
     assertTrue(!!metrics.onSessionTerminated);
+    assertTrue(!!metrics.onClosedCaptionsShown);
     metrics.onResponseRated(true);
     metrics.onUserInputSubmitted(WebClientMode.AUDIO);
     metrics.onResponseStarted();
     metrics.onResponseStopped();
     metrics.onSessionTerminated();
+    metrics.onClosedCaptionsShown();
   }
 
   async testScrollToFindsText() {
