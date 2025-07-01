@@ -17,7 +17,6 @@
 namespace {
 
 constexpr int kSettingsButtonIndex = 0;
-constexpr int kCloseWindowsButtonIndex = 1;
 
 void NavigateToAppSettings(Profile* profile, const webapps::AppId& app_id) {
   const web_app::WebApp* web_app =
@@ -33,46 +32,14 @@ void NavigateToAppSettings(Profile* profile, const webapps::AppId& app_id) {
 }  // namespace
 
 MultipleWebContentsOpenedNotificationDelegate::
-    MultipleWebContentsOpenedNotificationDelegate(
-        Profile* profile,
-        const webapps::AppId& app_id,
-        MultipleWebContentsOpenedService::CloseWebContentsCallback
-            close_web_contents_callback,
-        MultipleWebContentsOpenedService::NotificationAcknowledgedCallback
-            notification_acknowledged_callback,
-        MultipleWebContentsOpenedService::CloseNotificationCallback
-            close_notification_callback)
-    : profile_(*profile),
-      app_id_(app_id),
-      close_web_contents_callback_(std::move(close_web_contents_callback)),
-      notification_acknowledged_callback_(
-          std::move(notification_acknowledged_callback)),
-      close_notification_callback_(std::move(close_notification_callback)) {}
-
-MultipleWebContentsOpenedNotificationDelegate::
-    ~MultipleWebContentsOpenedNotificationDelegate() = default;
+    MultipleWebContentsOpenedNotificationDelegate(Profile* profile,
+                                                  const webapps::AppId& app_id)
+    : profile_(*profile), app_id_(app_id) {}
 
 void MultipleWebContentsOpenedNotificationDelegate::Click(
     const std::optional<int>& button_index,
     const std::optional<std::u16string>& reply) {
-  if (!button_index) {
-    return;
-  }
-
-  switch (button_index.value()) {
-    case kSettingsButtonIndex:
-      NavigateToAppSettings(&profile_.get(), app_id_);
-      break;
-    case kCloseWindowsButtonIndex:
-      close_web_contents_callback_.Run(app_id_);
-      break;
-    default:
-      break;
-  }
-}
-
-void MultipleWebContentsOpenedNotificationDelegate::Close(bool by_user) {
-  if (by_user) {
-    notification_acknowledged_callback_.Run(app_id_);
+  if (button_index == kSettingsButtonIndex) {
+    NavigateToAppSettings(&profile_.get(), app_id_);
   }
 }

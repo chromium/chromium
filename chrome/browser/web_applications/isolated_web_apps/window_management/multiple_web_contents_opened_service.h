@@ -46,30 +46,13 @@ class MultipleWebContentsOpenedService : public KeyedService,
                                          public BrowserListObserver,
                                          public TabStripModelObserver {
  public:
-  using CloseWebContentsCallback =
-      base::RepeatingCallback<void(const webapps::AppId&)>;
-  using NotificationAcknowledgedCallback =
-      base::RepeatingCallback<void(const webapps::AppId&)>;
-  using CloseNotificationCallback = base::RepeatingClosure;
-
   explicit MultipleWebContentsOpenedService(Profile* profile);
   ~MultipleWebContentsOpenedService() override;
 
   // KeyedService:
   void Shutdown() override;
 
-  int GetWindowCountForAppForTesting(const webapps::AppId& app_id) const;
-  bool IsWebContentsTrackedForTesting(content::WebContents* contents) const;
-
-  void OnNotificationAcknowledged(const webapps::AppId& app_id);
-  void CloseNotification(const webapps::AppId& app_id);
-
  private:
-  struct NotificationState {
-    int times_shown = 0;
-    bool acknowledged = false;
-    bool is_active = false;
-  };
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
@@ -91,17 +74,12 @@ class MultipleWebContentsOpenedService : public KeyedService,
   void CreateAndDisplayNotification(const webapps::AppId& app_id,
                                     int current_window_count);
 
-  void CloseAllWebContentsOpenedByApp(const webapps::AppId& app_id);
-
   const raw_ptr<Profile> profile_;
   base::flat_map<webapps::AppId, int> app_window_counts_;
   base::flat_map<content::WebContents*, webapps::AppId> opened_by_app_map_;
-  std::map<webapps::AppId, NotificationState> app_notification_states_;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
-  base::WeakPtrFactory<MultipleWebContentsOpenedService> weak_ptr_factory_{
-      this};
 };
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_MULTIPLE_WEB_CONTENTS_OPENED_SERVICE_H_
