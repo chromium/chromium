@@ -1,4 +1,6 @@
 include_rules = [
-  "-content/public/android/java",
+  "+components/dom_distiller",
   "+content/public/android/java/src/org/chromium/content_public",
+
+  "-content/public/android/java",
 ]

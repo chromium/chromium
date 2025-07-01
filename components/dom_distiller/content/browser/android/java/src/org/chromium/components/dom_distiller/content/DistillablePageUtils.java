@@ -4,6 +4,8 @@
 
 package org.chromium.components.dom_distiller.content;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -50,7 +52,8 @@ public final class DistillablePageUtils {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         void setDelegate(WebContents webContents, PageDistillableDelegate delegate);
     }
 }

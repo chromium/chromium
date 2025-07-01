@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
@@ -18,6 +19,7 @@ import org.chromium.components.dom_distiller.content.DistillablePageUtils.PageDi
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -72,20 +74,26 @@ public class TabDistillabilityProvider extends EmptyTabObserver
     /** Cached results from the last result from native. */
     private boolean mIsDistillable;
 
+    /** Track the last result URL. Used to avoid resetting distillability data on the same page. */
+    private @Nullable GURL mDistillationResultUrl;
+
     private boolean mIsLast;
     private boolean mIsLongArticle;
     private boolean mIsMobileOptimized;
 
+    /** Creates a TabDistillabilityProvider for the given tab. */
     public static void createForTab(Tab tab) {
         assert get(tab) == null;
         tab.getUserDataHost().setUserData(USER_DATA_KEY, new TabDistillabilityProvider(tab));
     }
 
+    /** Returns the TabDistillabilityProvider for the given tab if it exists. */
     public static @Nullable TabDistillabilityProvider get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
-    private TabDistillabilityProvider(Tab tab) {
+    @VisibleForTesting
+    TabDistillabilityProvider(Tab tab) {
         mTab = tab;
         mObserverList = new ObserverList<>();
         resetState();
@@ -136,6 +144,7 @@ public class TabDistillabilityProvider extends EmptyTabObserver
      */
     private void resetState() {
         mDistillabilityDetermined = false;
+        mDistillationResultUrl = null;
         mIsDistillable = false;
         mIsLast = false;
         mIsLongArticle = false;
@@ -169,6 +178,8 @@ public class TabDistillabilityProvider extends EmptyTabObserver
             boolean isLast,
             boolean isLongArticle,
             boolean isMobileOptimized) {
+        // TODO(crbug.com/428168653): Plumb the url through this callback.
+        mDistillationResultUrl = mTab.getUrl();
         mIsDistillable = isDistillable;
         mIsLast = isLast;
         mIsLongArticle = isLongArticle;
@@ -179,11 +190,11 @@ public class TabDistillabilityProvider extends EmptyTabObserver
         for (DistillabilityObserver o : mObserverList) {
             o.onIsPageDistillableResult(mTab, mIsDistillable, mIsLast, mIsMobileOptimized);
         }
+        recordContentClassificationMetric();
     }
 
     @Override
     public void onContentChanged(Tab tab) {
-        recordContentClassificationMetric();
         resetState();
     }
 
@@ -194,9 +205,13 @@ public class TabDistillabilityProvider extends EmptyTabObserver
     }
 
     @Override
+    public void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
+        resetStateIfUrlHasChanged(tab);
+    }
+
+    @Override
     public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
-        recordContentClassificationMetric();
-        resetState();
+        resetStateIfUrlHasChanged(tab);
     }
 
     @Override
@@ -206,6 +221,13 @@ public class TabDistillabilityProvider extends EmptyTabObserver
         mTab.removeObserver(this);
         mTab = null;
         mWebContents = null;
+        resetState();
+    }
+
+    private void resetStateIfUrlHasChanged(Tab tab) {
+        // If the current URL matches the distillation result URL, then the result is still fresh.
+        // TODO(crbug.com/428169696): Use more relaxed matching to avoid #fragments resetting this.
+        if (tab.getUrl().equals(mDistillationResultUrl)) return;
         resetState();
     }
 }
