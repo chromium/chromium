@@ -37,6 +37,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
   // Generates a valid name that can be passed to `sql::database`'s constructor.
   base::FilePath GetDbVirtualFilePath() const;
 
+  bool read_only() const { return read_only_; }
+
  private:
   base::FilePath GetJournalVirtualFilePath() const;
 
@@ -48,6 +50,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
   // differentiate them. This is guaranteed to be unique because it is based on
   // a monotonically increasing integer.
   std::string virtual_fs_path_;
+
+  bool read_only_;
 };
 
 }  // namespace persistent_cache

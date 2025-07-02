@@ -15,4 +15,8 @@ BackendType MockBackendImpl::GetType() const {
   return BackendType::kMock;
 }
 
+bool MockBackendImpl::IsReadOnly() const {
+  return false;
+}
+
 }  // namespace persistent_cache

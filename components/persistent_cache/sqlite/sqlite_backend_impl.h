@@ -39,6 +39,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
               base::span<const uint8_t> content,
               EntryMetadata metadata) override;
   BackendType GetType() const override;
+  bool IsReadOnly() const override;
 
  private:
   static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);

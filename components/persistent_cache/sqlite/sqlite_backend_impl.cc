@@ -150,4 +150,8 @@ BackendType SqliteBackendImpl::GetType() const {
   return BackendType::kSqlite;
 }
 
+bool SqliteBackendImpl::IsReadOnly() const {
+  return vfs_file_set_.read_only();
+}
+
 }  // namespace persistent_cache

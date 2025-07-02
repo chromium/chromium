@@ -49,6 +49,32 @@ chromium-metrics-reviews@google.com.
   <token key="Mode" variants="Mode"/>
 </histogram>
 
+<histogram name="PersistentCache.Find.{BackendType}.{Mode}"
+    units="microseconds" expires_after="2026-07-02">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Time it took to attempt to find an entry in a {BackendType} backend in
+    {Mode} mode. Recorded for one out of every 100 operations.
+
+    Note: This metric is dropped for clients without high-precision clocks.
+  </summary>
+  <token key="Mode" variants="Mode"/>
+</histogram>
+
+<histogram name="PersistentCache.Insert.{BackendType}.{Mode}"
+    units="microseconds" expires_after="2026-07-02">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Time it took to attempt to insert an entry into a {BackendType} backend in
+    {Mode} mode. Recorded for one out of every 100 operations.
+
+    Note: This metric is dropped for clients without high-precision clocks.
+  </summary>
+  <token key="Mode" variants="Mode"/>
+</histogram>
+
 <histogram name="PersistentCache.ParamsManager.{FileType}.DeleteSuccess"
     enum="Boolean" expires_after="2026-06-09">
   <owner>olivierli@chromium.org</owner>

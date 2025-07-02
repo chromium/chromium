@@ -6,12 +6,15 @@
 #define COMPONENTS_PERSISTENT_CACHE_PERSISTENT_CACHE_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/rand_util.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/entry_metadata.h"
 
@@ -87,7 +90,13 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   Backend* GetBackendForTesting();
 
  private:
+  std::optional<base::ElapsedTimer> MaybeGetTimerForHistogram();
+  std::string GetFullHistogramName(std::string_view name) const;
+
   std::unique_ptr<Backend> backend_;
+
+  static constexpr double kTimingLoggingProbability = 0.01;
+  base::MetricsSubSampler metrics_subsampler_;
 };
 
 }  // namespace persistent_cache

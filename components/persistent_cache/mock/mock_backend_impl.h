@@ -20,6 +20,7 @@ class MockBackendImpl : public Backend {
   explicit MockBackendImpl(const BackendParams& backend_params);
   ~MockBackendImpl() override;
   BackendType GetType() const override;
+  bool IsReadOnly() const override;
 
   MockBackendImpl(const MockBackendImpl&) = delete;
   MockBackendImpl(MockBackendImpl&&) = delete;

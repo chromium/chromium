@@ -26,7 +26,12 @@ SqliteVfsFileSet::SqliteVfsFileSet(std::unique_ptr<SandboxedFile> db_file,
     : db_file_(std::move(db_file)),
       journal_file_(std::move(journal_file)),
       virtual_fs_path_(base::NumberToString(
-          g_file_set_id_generator.fetch_add(1, std::memory_order_relaxed))) {}
+          g_file_set_id_generator.fetch_add(1, std::memory_order_relaxed))),
+      read_only_(db_file_->access_rights() ==
+                 SandboxedFile::AccessRights::kReadOnly) {
+  // It makes no sense to have a file writeable and not the other.
+  CHECK_EQ(db_file_->access_rights(), journal_file_->access_rights());
+}
 
 SqliteVfsFileSet::SqliteVfsFileSet(SqliteVfsFileSet&& other) = default;
 SqliteVfsFileSet& SqliteVfsFileSet::operator=(SqliteVfsFileSet&& other) =
