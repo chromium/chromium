@@ -147,7 +147,7 @@ bool SortPRFValuesByCredentialId(const PRFValuesPtr& a, const PRFValuesPtr& b) {
   }
 }
 
-Vector<uint8_t> Base64UnpaddedURLDecodeOrCheck(const String& encoded) {
+Vector<uint8_t> Base64UnpaddedURLDecodeOrCheck(const blink::String& encoded) {
   Vector<uint8_t> decoded;
   CHECK(blink::Base64UnpaddedURLDecode(encoded, decoded));
   return decoded;
@@ -173,7 +173,7 @@ CredentialInfoPtr TypeConverter<CredentialInfoPtr, blink::Credential*>::Convert(
     ::blink::FederatedCredential* federated_credential =
         static_cast<::blink::FederatedCredential*>(credential);
     info->type = CredentialType::FEDERATED;
-    info->password = g_empty_string;
+    info->password = blink::g_empty_string;
     scoped_refptr<const blink::SecurityOrigin> origin =
         federated_credential->GetProviderAsOrigin();
     info->federation = url::SchemeHostPort(
@@ -193,8 +193,8 @@ TypeConverter<blink::Credential*, CredentialInfoPtr>::Convert(
       return blink::FederatedCredential::Create(
           info->id,
           blink::SecurityOrigin::CreateFromValidTuple(
-              String::FromUTF8(info->federation.scheme()),
-              String::FromUTF8(info->federation.host()),
+              blink::String::FromUTF8(info->federation.scheme()),
+              blink::String::FromUTF8(info->federation.host()),
               info->federation.port()),
           info->name, info->icon);
     case CredentialType::PASSWORD:
@@ -340,8 +340,8 @@ TypeConverter<Vector<uint8_t>, blink::V8UnionArrayBufferOrArrayBufferView*>::
 
 // static
 std::optional<PublicKeyCredentialType>
-TypeConverter<std::optional<PublicKeyCredentialType>, String>::Convert(
-    const String& type) {
+TypeConverter<std::optional<PublicKeyCredentialType>, blink::String>::Convert(
+    const blink::String& type) {
   if (type == "public-key") {
     return PublicKeyCredentialType::PUBLIC_KEY;
   }
@@ -350,8 +350,8 @@ TypeConverter<std::optional<PublicKeyCredentialType>, String>::Convert(
 
 // static
 std::optional<AuthenticatorTransport>
-TypeConverter<std::optional<AuthenticatorTransport>, String>::Convert(
-    const String& transport) {
+TypeConverter<std::optional<AuthenticatorTransport>, blink::String>::Convert(
+    const blink::String& transport) {
   if (transport == "usb") {
     return AuthenticatorTransport::USB;
   }
@@ -372,7 +372,7 @@ TypeConverter<std::optional<AuthenticatorTransport>, String>::Convert(
 }
 
 // static
-String TypeConverter<String, AuthenticatorTransport>::Convert(
+blink::String TypeConverter<blink::String, AuthenticatorTransport>::Convert(
     const AuthenticatorTransport& transport) {
   if (transport == AuthenticatorTransport::USB) {
     return "usb";
@@ -395,7 +395,7 @@ String TypeConverter<String, AuthenticatorTransport>::Convert(
 // static
 std::optional<blink::mojom::blink::ResidentKeyRequirement>
 TypeConverter<std::optional<blink::mojom::blink::ResidentKeyRequirement>,
-              String>::Convert(const String& requirement) {
+              blink::String>::Convert(const blink::String& requirement) {
   if (requirement == "discouraged") {
     return ResidentKeyRequirement::DISCOURAGED;
   }
@@ -414,8 +414,8 @@ TypeConverter<std::optional<blink::mojom::blink::ResidentKeyRequirement>,
 
 // static
 std::optional<UserVerificationRequirement>
-TypeConverter<std::optional<UserVerificationRequirement>, String>::Convert(
-    const String& requirement) {
+TypeConverter<std::optional<UserVerificationRequirement>,
+              blink::String>::Convert(const blink::String& requirement) {
   if (requirement == "required") {
     return UserVerificationRequirement::REQUIRED;
   }
@@ -430,8 +430,8 @@ TypeConverter<std::optional<UserVerificationRequirement>, String>::Convert(
 
 // static
 std::optional<AttestationConveyancePreference>
-TypeConverter<std::optional<AttestationConveyancePreference>, String>::Convert(
-    const String& preference) {
+TypeConverter<std::optional<AttestationConveyancePreference>,
+              blink::String>::Convert(const blink::String& preference) {
   if (preference == "none") {
     return AttestationConveyancePreference::NONE;
   }
@@ -450,7 +450,8 @@ TypeConverter<std::optional<AttestationConveyancePreference>, String>::Convert(
 // static
 std::optional<AuthenticatorAttachment> TypeConverter<
     std::optional<AuthenticatorAttachment>,
-    std::optional<String>>::Convert(const std::optional<String>& attachment) {
+    std::optional<blink::String>>::Convert(const std::optional<blink::String>&
+                                               attachment) {
   if (!attachment.has_value()) {
     return AuthenticatorAttachment::NO_PREFERENCE;
   }
@@ -465,8 +466,8 @@ std::optional<AuthenticatorAttachment> TypeConverter<
 
 // static
 LargeBlobSupport
-TypeConverter<LargeBlobSupport, std::optional<String>>::Convert(
-    const std::optional<String>& large_blob_support) {
+TypeConverter<LargeBlobSupport, std::optional<blink::String>>::Convert(
+    const std::optional<blink::String>& large_blob_support) {
   if (large_blob_support) {
     if (*large_blob_support == "required") {
       return LargeBlobSupport::REQUIRED;
@@ -491,7 +492,8 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
   mojo_criteria->authenticator_attachment =
       AuthenticatorAttachment::NO_PREFERENCE;
   if (criteria.hasAuthenticatorAttachment()) {
-    std::optional<String> attachment = criteria.authenticatorAttachment();
+    std::optional<blink::String> attachment =
+        criteria.authenticatorAttachment();
     auto maybe_attachment =
         ConvertTo<std::optional<AuthenticatorAttachment>>(attachment);
     if (maybe_attachment) {
@@ -991,7 +993,7 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
   // We do not need to check whether authz is enabled because the bindings
   // code will check that for us due to the RuntimeEnabled= flag in the IDL.
   if (options.hasFields()) {
-    Vector<String> fields;
+    Vector<blink::String> fields;
     for (const auto& field : options.fields()) {
       if (field->IsIdentityProviderField()) {
         fields.push_back(field->GetAsIdentityProviderField()->name());
@@ -1135,11 +1137,11 @@ TypeConverter<IdentityCredentialDisconnectOptionsPtr,
   return mojo_disconnect_options;
 }
 
-Vector<Hint> TypeConverter<Vector<Hint>, Vector<String>>::Convert(
-    const Vector<String>& hints) {
+Vector<Hint> TypeConverter<Vector<Hint>, Vector<blink::String>>::Convert(
+    const Vector<blink::String>& hints) {
   Vector<Hint> ret;
 
-  for (const String& hint : hints) {
+  for (const blink::String& hint : hints) {
     if (hint == "security-key") {
       ret.push_back(Hint::SECURITY_KEY);
     } else if (hint == "client-device") {

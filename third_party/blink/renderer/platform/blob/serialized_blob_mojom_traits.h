@@ -31,7 +31,7 @@ struct PLATFORM_EXPORT StructTraits<blink::mojom::SerializedBlobDataView,
 
   static WTF::String content_type(
       const scoped_refptr<blink::BlobDataHandle>& input) {
-    return input->GetType().IsNull() ? g_empty_string : input->GetType();
+    return input->GetType().IsNull() ? blink::g_empty_string : input->GetType();
   }
 
   static uint64_t size(const scoped_refptr<blink::BlobDataHandle>& input) {

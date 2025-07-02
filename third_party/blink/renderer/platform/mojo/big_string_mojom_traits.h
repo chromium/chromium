@@ -31,7 +31,7 @@ struct PLATFORM_EXPORT
     }
     // An empty |mojo_base::BigBuffer| may have a null |data()| if empty.
     if (!buffer.size()) {
-      *out = g_empty_string;
+      *out = blink::g_empty_string;
     } else {
       *out = WTF::String::FromUTF8(base::span(buffer));
     }

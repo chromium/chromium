@@ -25,7 +25,7 @@ struct MODULES_EXPORT StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
                                    blink::IDBDatabaseMetadata> {
   static WTF::String name(const blink::IDBDatabaseMetadata& metadata) {
     if (metadata.name.IsNull())
-      return g_empty_string;
+      return blink::g_empty_string;
     return metadata.name;
   }
   static int64_t version(const blink::IDBDatabaseMetadata& metadata) {
@@ -69,7 +69,7 @@ struct MODULES_EXPORT StructTraits<blink::mojom::IDBIndexMetadataDataView,
   static WTF::String name(
       const scoped_refptr<blink::IDBIndexMetadata>& metadata) {
     if (metadata->name.IsNull())
-      return g_empty_string;
+      return blink::g_empty_string;
     return metadata->name;
   }
   static const blink::IDBKeyPath& key_path(
@@ -99,9 +99,9 @@ struct MODULES_EXPORT
   static base::span<const uint8_t> binary(
       const std::unique_ptr<blink::IDBKey>& key);
   static const WTF::String string(const std::unique_ptr<blink::IDBKey>& key) {
-    String key_string = key->GetString();
+    blink::String key_string = key->GetString();
     if (key_string.IsNull())
-      key_string = g_empty_string;
+      key_string = blink::g_empty_string;
     return key_string;
   }
   static double date(const std::unique_ptr<blink::IDBKey>& key) {
@@ -149,7 +149,7 @@ struct MODULES_EXPORT
   static WTF::String name(
       const scoped_refptr<blink::IDBObjectStoreMetadata>& metadata) {
     if (metadata->name.IsNull())
-      return g_empty_string;
+      return blink::g_empty_string;
     return metadata->name;
   }
   static const blink::IDBKeyPath& key_path(

@@ -172,7 +172,7 @@ bool StructTraits<blink::mojom::DragItemBinaryDataView,
   mojo_base::BigBufferView file_contents;
   blink::KURL source_url;
   base::FilePath filename_extension;
-  String content_disposition;
+  blink::String content_disposition;
   if (!data.ReadData(&file_contents) || !data.ReadSourceUrl(&source_url) ||
       !data.ReadFilenameExtension(&filename_extension) ||
       !data.ReadContentDisposition(&content_disposition)) {

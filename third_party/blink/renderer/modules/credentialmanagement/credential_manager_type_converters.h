@@ -106,9 +106,9 @@ struct TypeConverter<Vector<uint8_t>,
 template <>
 struct TypeConverter<
     std::optional<blink::mojom::blink::PublicKeyCredentialType>,
-    String> {
+    blink::String> {
   static std::optional<blink::mojom::blink::PublicKeyCredentialType> Convert(
-      const String&);
+      const blink::String&);
 };
 
 template <>
@@ -123,52 +123,54 @@ struct TypeConverter<
 
 template <>
 struct TypeConverter<std::optional<blink::mojom::blink::AuthenticatorTransport>,
-                     String> {
+                     blink::String> {
   static std::optional<blink::mojom::blink::AuthenticatorTransport> Convert(
-      const String&);
+      const blink::String&);
 };
 
 template <>
-struct TypeConverter<String, blink::mojom::blink::AuthenticatorTransport> {
-  static String Convert(const blink::mojom::blink::AuthenticatorTransport&);
+struct TypeConverter<blink::String,
+                     blink::mojom::blink::AuthenticatorTransport> {
+  static blink::String Convert(
+      const blink::mojom::blink::AuthenticatorTransport&);
 };
 
 template <>
 struct TypeConverter<std::optional<blink::mojom::blink::ResidentKeyRequirement>,
-                     String> {
+                     blink::String> {
   static std::optional<blink::mojom::blink::ResidentKeyRequirement> Convert(
-      const String&);
+      const blink::String&);
 };
 
 template <>
 struct TypeConverter<
     std::optional<blink::mojom::blink::UserVerificationRequirement>,
-    String> {
+    blink::String> {
   static std::optional<blink::mojom::blink::UserVerificationRequirement>
-  Convert(const String&);
+  Convert(const blink::String&);
 };
 
 template <>
 struct TypeConverter<
     std::optional<blink::mojom::blink::AttestationConveyancePreference>,
-    String> {
+    blink::String> {
   static std::optional<blink::mojom::blink::AttestationConveyancePreference>
-  Convert(const String&);
+  Convert(const blink::String&);
 };
 
 template <>
 struct TypeConverter<
     std::optional<blink::mojom::blink::AuthenticatorAttachment>,
-    std::optional<String>> {
+    std::optional<blink::String>> {
   static std::optional<blink::mojom::blink::AuthenticatorAttachment> Convert(
-      const std::optional<String>&);
+      const std::optional<blink::String>&);
 };
 
 template <>
 struct TypeConverter<blink::mojom::blink::LargeBlobSupport,
-                     std::optional<String>> {
+                     std::optional<blink::String>> {
   static blink::mojom::blink::LargeBlobSupport Convert(
-      const std::optional<String>&);
+      const std::optional<blink::String>&);
 };
 
 template <>
@@ -313,8 +315,9 @@ struct TypeConverter<
 };
 
 template <>
-struct TypeConverter<Vector<blink::mojom::blink::Hint>, Vector<String>> {
-  static Vector<blink::mojom::blink::Hint> Convert(const Vector<String>&);
+struct TypeConverter<Vector<blink::mojom::blink::Hint>, Vector<blink::String>> {
+  static Vector<blink::mojom::blink::Hint> Convert(
+      const Vector<blink::String>&);
 };
 
 template <>

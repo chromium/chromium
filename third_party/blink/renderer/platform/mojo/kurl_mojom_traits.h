@@ -15,16 +15,16 @@ namespace mojo {
 
 template <>
 struct StructTraits<url::mojom::UrlDataView, ::blink::KURL> {
-  static const WTF::String& url(const ::blink::KURL& blinkUrl) {
+  static const blink::String& url(const ::blink::KURL& blinkUrl) {
     if (!blinkUrl.IsValid() ||
         blinkUrl.GetString().length() > url::kMaxURLChars) {
-      return g_empty_string;
+      return blink::g_empty_string;
     }
 
     return blinkUrl.GetString();
   }
   static bool Read(url::mojom::UrlDataView data, ::blink::KURL* out) {
-    WTF::String urlString;
+    blink::String urlString;
     if (!data.ReadUrl(&urlString))
       return false;
 

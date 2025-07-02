@@ -29,8 +29,8 @@ struct UrlOriginAdapter {
     scoped_refptr<blink::SecurityOrigin> tuple_origin;
     if (tuple.IsValid()) {
       tuple_origin = blink::SecurityOrigin::CreateFromValidTuple(
-          String::FromUTF8(tuple.scheme()), String::FromUTF8(tuple.host()),
-          tuple.port());
+          blink::String::FromUTF8(tuple.scheme()),
+          blink::String::FromUTF8(tuple.host()), tuple.port());
     }
 
     if (nonce_if_opaque) {

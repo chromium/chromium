@@ -39,7 +39,7 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
       input->instrument()->iconMustBeShown(),
       // WTF::String()'s empty constructor constructs a 'null' string.
       input->instrument()->hasDetails() ? input->instrument()->details()
-                                        : String());
+                                        : blink::String());
 
   if (input->hasPayeeOrigin()) {
     output->payee_origin =
