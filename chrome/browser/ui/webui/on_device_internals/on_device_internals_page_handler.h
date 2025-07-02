@@ -33,15 +33,14 @@ class PageHandler : public mojom::PageHandler,
   PageHandler& operator=(const PageHandler&) = delete;
 
  private:
-#if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
-  using Service = on_device_model::mojom::OnDeviceModelPlatformService;
-#else
   using Service = on_device_model::mojom::OnDeviceModelService;
-#endif
-
   Service& GetService();
 
-#if !BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
+#if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
+  using PlatformService = on_device_model::mojom::OnDeviceModelPlatformService;
+  PlatformService& GetPlatformService();
+#endif
+
   void OnModelAssetsLoaded(
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadModelCallback callback,
@@ -50,7 +49,6 @@ class PageHandler : public mojom::PageHandler,
   void OnModelLoaded(LoadModelCallback callback,
                      on_device_model::ModelFile weights,
                      on_device_model::mojom::LoadModelResult result);
-#endif
 
   // mojom::PageHandler:
   void LoadModel(
@@ -58,6 +56,10 @@ class PageHandler : public mojom::PageHandler,
       ml::ModelPerformanceHint performance_hint,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadModelCallback callback) override;
+  void LoadPlatformModel(
+      const base::FilePath& model_path,
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+      LoadPlatformModelCallback callback) override;
   void GetDevicePerformanceInfo(
       GetDevicePerformanceInfoCallback callback) override;
   void GetDefaultModelPath(GetDefaultModelPathCallback callback) override;
@@ -87,6 +89,9 @@ class PageHandler : public mojom::PageHandler,
   mojo::Remote<Service> service_;
   on_device_model::mojom::DevicePerformanceInfoPtr performance_info_;
 
+#if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
+  mojo::Remote<PlatformService> platform_service_;
+#endif
   // Logger to receive the debug logs from the optimization guide service. Not
   // owned. Guaranteed to outlive |this|, since the logger is owned by the
   // optimization guide keyed service, while |this| is part of

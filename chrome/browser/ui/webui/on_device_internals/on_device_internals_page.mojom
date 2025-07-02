@@ -92,6 +92,12 @@ interface PageHandler {
       (on_device_model.mojom.LoadModelResult result,
        on_device_model.mojom.Capabilities capabilities);
 
+  // Binds a new OnDeviceModel interface via the ChromeOS platform service
+  // using model assets loaded from within `model_path`.
+  LoadPlatformModel(mojo_base.mojom.FilePath model_path,
+                    pending_receiver<on_device_model.mojom.OnDeviceModel> model) =>
+      (on_device_model.mojom.LoadModelResult result);
+
   // Returns the performance class based on benchmarks run on the device.
   GetDevicePerformanceInfo() =>
       (on_device_model.mojom.DevicePerformanceInfo performance_info);

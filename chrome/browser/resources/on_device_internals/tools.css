@@ -133,10 +133,11 @@ cr-expand-button:hover {
 
 .model-options {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
 cr-checkbox {
-  margin-left: 20px;
+  margin-top: 5px;
+  margin-bottom: 20px;
   --cr-checkbox-label-padding-start: 10px;
 }

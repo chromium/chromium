@@ -8,12 +8,14 @@ import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
+import '/strings.m.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FilePath} from '//resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import type {AudioData, Capabilities, InputPiece, ResponseChunk, ResponseSummary} from './on_device_model.mojom-webui.js';
@@ -118,6 +120,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
       responses_: {type: Array},
       model_: {type: Object},
       performanceClassText_: {type: String},
+      usePlatformModel_: {type: Boolean},
       contextExpanded_: {type: Boolean},
       contextLength_: {type: Number},
       contextText_: {type: String},
@@ -143,6 +146,9 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
   private accessor modelPath_: string = '';
   protected accessor model_: OnDeviceModelRemote|null = null;
   protected accessor performanceClassText_: string = 'Loading...';
+  protected showPlatformModelCheckbox_: boolean =
+      loadTimeData.getBoolean('useChromeOSModelService');
+  protected accessor usePlatformModel_: boolean = false;
   protected accessor responses_: Response[] = [];
   protected accessor temperature_: number = 0;
   protected accessor text_: string = '';
@@ -267,7 +273,6 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     }
   }
 
-
   private async onModelSelected_(modelPath: FilePath) {
     this.error_ = '';
     if (this.model_) {
@@ -284,8 +289,22 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     const performanceHint = ModelPerformanceHint[(
         this.performanceHint_ as keyof typeof ModelPerformanceHint)];
     const newModel = new OnDeviceModelRemote();
-    const {result, capabilities} = await this.proxy_.handler.loadModel(
-        modelPath, performanceHint, newModel.$.bindNewPipeAndPassReceiver());
+
+    let result: LoadModelResult;
+    let capabilities: Capabilities;
+    if (this.usePlatformModel_) {
+      const loadedData = await this.proxy_.handler.loadPlatformModel(
+          modelPath, newModel.$.bindNewPipeAndPassReceiver());
+      result = loadedData.result;
+      capabilities = {imageInput: false, audioInput: false};
+    } else {
+      const loadedData = await this.proxy_.handler.loadModel(
+          modelPath, performanceHint,
+          newModel.$.bindNewPipeAndPassReceiver());
+      result = loadedData.result;
+      capabilities = loadedData.capabilities;
+    }
+
     if (result !== LoadModelResult.kSuccess) {
       this.error_ =
           'Unable to load model. Specify a correct and absolute path.';
@@ -518,6 +537,10 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
 
   protected onTemperatureChanged_(e: CustomEvent<{value: number}>) {
     this.temperature_ = e.detail.value;
+  }
+
+  protected onUsePlatformModelChanged_(e: CustomEvent<{value: boolean}>) {
+    this.usePlatformModel_ = e.detail.value;
   }
 }
 

@@ -27,6 +27,11 @@ export function getHtml(this: ToolsElement) {
 </cr-input>
 
 <div class="model-options">
+  <cr-checkbox ?hidden="${!this.showPlatformModelCheckbox_}"
+      ?checked="${this.usePlatformModel_}"
+      @checked-changed="${this.onUsePlatformModelChanged_}">
+    Use ChromeOS Platform Model
+  </cr-checkbox>
   <select id="performanceHintSelect" class="md-select"
       value="${this.performanceHint_}" @change="${this.onPerformanceHintChange_}">
     <option value="kHighestQuality">Highest Quality</option>

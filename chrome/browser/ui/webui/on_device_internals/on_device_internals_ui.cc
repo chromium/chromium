@@ -31,6 +31,9 @@ OnDeviceInternalsUI::OnDeviceInternalsUI(content::WebUI* web_ui)
       chrome::kChromeUIOnDeviceInternalsHost);
   webui::SetupWebUIDataSource(source, kOnDeviceInternalsResources,
                               IDR_ON_DEVICE_INTERNALS_ON_DEVICE_INTERNALS_HTML);
+
+  source->AddBoolean("useChromeOSModelService",
+                     BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE));
 }
 
 OnDeviceInternalsUI::~OnDeviceInternalsUI() = default;
