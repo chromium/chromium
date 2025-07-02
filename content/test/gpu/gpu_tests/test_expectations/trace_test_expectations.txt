@@ -233,16 +233,9 @@ crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineCr
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
-# Win10/Intel failures
-crbug.com/398218431 [ win11 intel-0x9bc5 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
 
 # DirectionComposition seems to flakily fail
 crbug.com/403536258 [ win angle-d3d11 intel-0x4680 graphite-enabled passthrough ] VideoPathTraceTest_DirectComposition_Video_MP4_NV12 [ RetryOnFailure ]
-crbug.com/419617732 [ win angle-d3d11 nvidia-0x2184 graphite-enabled passthrough ] VideoPathTraceTest_DirectComposition_Video_MP4_NV12 [ RetryOnFailure ]
-crbug.com/419617732 [ win angle-d3d11 nvidia-0x2184 graphite-enabled passthrough ] VideoPathTraceTest_DirectComposition_Underlay_Fullsize [ RetryOnFailure ]
-crbug.com/419617732 [ win angle-d3d11 nvidia-0x2184 graphite-enabled passthrough ] VideoPathTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
-crbug.com/419617732 [ win angle-d3d11 nvidia-0x2184 graphite-enabled passthrough ] VideoPathTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
-crbug.com/419617732 [ win angle-d3d11 nvidia-0x2184 graphite-enabled passthrough ] VideoPathTraceTest_DirectComposition_Video_MP4 [ RetryOnFailure ]
 
 # Windows Intel Driver crash
 crbug.com/403336123 [ win intel-0x9bc5 ] TraceTest_PerspectiveTest [ Failure ]
