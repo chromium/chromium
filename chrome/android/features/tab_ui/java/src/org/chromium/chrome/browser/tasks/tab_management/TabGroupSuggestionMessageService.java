@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -86,23 +87,23 @@ public class TabGroupSuggestionMessageService extends MessageService
     private final ObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
 
-    private final Runnable mOnAddMessageListener;
+    private final Callback<@TabId Integer> mAddOnMessageAfterTabCallback;
     private boolean mMessageCurrentlyShown;
 
     /**
      * @param context The context for this service.
      * @param currentTabGroupModelFilterSupplier The supplier for the current {@link
      *     TabGroupModelFilter}.
-     * @param onAddMessageListener A listener to be called when a group suggestion message is added.
+     * @param onMessageAfterTabCallback A callback to be called to add a message after a tab.
      */
     public TabGroupSuggestionMessageService(
             Context context,
             ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
-            Runnable onAddMessageListener) {
+            Callback<@TabId Integer> onMessageAfterTabCallback) {
         super(MessageType.TAB_GROUP_SUGGESTION_MESSAGE);
         mContext = context;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
-        mOnAddMessageListener = onAddMessageListener;
+        mAddOnMessageAfterTabCallback = onMessageAfterTabCallback;
     }
 
     /**
@@ -120,23 +121,30 @@ public class TabGroupSuggestionMessageService extends MessageService
     /**
      * Attempts to show a group suggestion message for a given list of tabs.
      *
-     * @param tabIds The list of tab IDs to be considered for the group suggestion.
+     * @param tabIdsSortedByIndex The list of tab IDs to be considered for the group suggestion.
+     *     These must be sorted by the associated tab's tab model index.
      * @param responseListener The listener watching user responses to messages.
      */
     public void addGroupMessageForTabs(
-            List<@TabId Integer> tabIds, SuggestionLifecycleObserver responseListener) {
-        if (tabIds.isEmpty()) return;
+            List<@TabId Integer> tabIdsSortedByIndex,
+            SuggestionLifecycleObserver responseListener) {
+        if (tabIdsSortedByIndex.isEmpty()) return;
         if (mMessageCurrentlyShown) return;
 
         TabGroupSuggestionMessageData data =
                 new TabGroupSuggestionMessageData(
-                        tabIds.size(),
+                        tabIdsSortedByIndex.size(),
                         mContext,
-                        () -> groupTabs(tabIds, responseListener::onSuggestionAccepted),
+                        () ->
+                                groupTabs(
+                                        tabIdsSortedByIndex,
+                                        responseListener::onSuggestionAccepted),
                         ignored -> dismissMessage(responseListener::onSuggestionDismissed));
         sendAvailabilityNotification(data);
         mMessageCurrentlyShown = true;
-        mOnAddMessageListener.run();
+
+        @TabId int lastTabId = tabIdsSortedByIndex.get(tabIdsSortedByIndex.size() - 1);
+        mAddOnMessageAfterTabCallback.onResult(lastTabId);
     }
 
     private void groupTabs(List<@TabId Integer> tabIds, Runnable onAcceptMessageListener) {

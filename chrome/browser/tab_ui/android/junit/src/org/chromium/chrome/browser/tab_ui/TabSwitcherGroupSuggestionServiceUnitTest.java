@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab_ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -138,6 +137,14 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     public void testMaybeShowSuggestions_showsFirstAndDiscardsOthers() {
         List<Integer> shownTabIdsList = List.of(1, 2);
         int[] shownTabIdsArray = {1, 2};
+
+        // Mock a full tab model state to prevent NPEs.
+        mockTab(1, 0, true); // One tab must be active
+        mockTab(2, 1, false);
+        mockTab(3, 2, false);
+        mockTab(4, 3, false);
+        when(mTabModel.getCount()).thenReturn(4);
+
         GroupSuggestion suggestion1 = new GroupSuggestion(shownTabIdsArray, 10, 0, "", "", "");
         GroupSuggestion suggestion2 = new GroupSuggestion(new int[] {3, 4}, 11, 0, "", "", "");
 
@@ -160,10 +167,45 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     }
 
     @Test
-    public void testMaybeShowSuggestions_incognito() {
-        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+    public void testMaybeShowSuggestions_tabsContiguous() {
+        int[] tabIds = {2, 1};
+        GroupSuggestion suggestion = new GroupSuggestion(tabIds, 10, 0, "", "", "");
+        setupCachedSuggestion(suggestion);
+        mockTab(1, 0, true);
+        mockTab(2, 1, false);
+        when(mTabModel.getCount()).thenReturn(2);
+
         mService.maybeShowSuggestions();
-        verify(mGroupSuggestionsService, never()).getCachedSuggestions(anyInt());
+        verify(mSuggestionLifecycleObserverHandler).onShowSuggestion(List.of(1, 2));
+    }
+
+    @Test
+    public void testMaybeShowSuggestions_tabsNotContiguous_smallGap() {
+        int[] tabIds = {1, 3}; // Gap between tab 1 and 3.
+        GroupSuggestion suggestion = new GroupSuggestion(tabIds, 10, 0, "", "", "");
+        setupCachedSuggestion(suggestion);
+        mockTab(1, 0, true);
+        mockTab(2, 1, false);
+        mockTab(3, 2, false);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        mService.maybeShowSuggestions();
+        verify(mSuggestionLifecycleObserverHandler).onShowSuggestion(List.of(1, 3));
+    }
+
+    @Test
+    public void testMaybeShowSuggestions_tabsNotContiguous_bigGap() {
+        int[] tabIds = {1, 4}; // Gap between tab 1 and 4.
+        GroupSuggestion suggestion = new GroupSuggestion(tabIds, 10, 0, "", "", "");
+        setupCachedSuggestion(suggestion);
+        mockTab(1, 0, true);
+        mockTab(2, 1, false);
+        mockTab(3, 2, false);
+        mockTab(4, 3, false);
+        when(mTabModel.getCount()).thenReturn(4);
+
+        mService.maybeShowSuggestions();
+        verify(mSuggestionLifecycleObserverHandler, never()).onShowSuggestion(any());
     }
 
     @Test
@@ -234,5 +276,27 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         reset(mSuggestionLifecycleObserverHandler);
         observer.willCloseTabGroup(null, false);
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
+    }
+
+    private void mockTab(int tabId, int index, boolean isActive) {
+        Tab tab = mock();
+
+        when(tab.getId()).thenReturn(tabId);
+        when(tab.isFrozen()).thenReturn(false);
+        when(tab.isClosing()).thenReturn(false);
+        when(tab.isActivated()).thenReturn(isActive);
+
+        when(mTabModel.getTabById(tabId)).thenReturn(tab);
+        when(mTabModel.indexOf(tab)).thenReturn(index);
+        when(mTabModel.getTabAt(index)).thenReturn(tab);
+    }
+
+    private void setupCachedSuggestion(GroupSuggestion suggestion) {
+        GroupSuggestions groupSuggestions =
+                new GroupSuggestions(Collections.singletonList(suggestion));
+        CachedSuggestions cachedSuggestions =
+                new CachedSuggestions(groupSuggestions, mUserResponseCallback);
+        when(mGroupSuggestionsService.getCachedSuggestions(WINDOW_ID))
+                .thenReturn(cachedSuggestions);
     }
 }

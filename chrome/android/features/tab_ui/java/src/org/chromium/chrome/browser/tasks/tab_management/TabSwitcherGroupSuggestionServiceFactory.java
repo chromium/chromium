@@ -70,9 +70,9 @@ public class TabSwitcherGroupSuggestionServiceFactory {
                     }
 
                     @Override
-                    public void onShowSuggestion(List<@TabId Integer> tabIds) {
-                        tabListHighlighter.highlightTabs(new HashSet<>(tabIds));
-                        messageService.addGroupMessageForTabs(tabIds, handler);
+                    public void onShowSuggestion(List<@TabId Integer> tabIdsSortedByIndex) {
+                        tabListHighlighter.highlightTabs(new HashSet<>(tabIdsSortedByIndex));
+                        messageService.addGroupMessageForTabs(tabIdsSortedByIndex, handler);
                     }
                 };
         handler.initialize(observer);
