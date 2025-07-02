@@ -61,7 +61,7 @@ int GetMessageText(const FileRequestData& file_request_data) {
   NOTREACHED();
 }
 
-int GetButtonLabel(const FileRequestData& file_request_data) {
+int GetOkButtonLabel(const FileRequestData& file_request_data) {
   switch (file_request_data.access) {
     case AccessType::kRead:
       return file_request_data.handle_type == HandleType::kDirectory
@@ -73,6 +73,22 @@ int GetButtonLabel(const FileRequestData& file_request_data) {
       return file_request_data.handle_type == HandleType::kDirectory
                  ? IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_ALLOW_TEXT
                  : IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_ALLOW_TEXT;
+  }
+  NOTREACHED();
+}
+
+int GetCancelButtonLabel(const FileRequestData& file_request_data) {
+  switch (file_request_data.access) {
+    case AccessType::kRead:
+      return file_request_data.handle_type == HandleType::kDirectory
+                 ? IDS_FILE_SYSTEM_ACCESS_VIEW_DIRECTORY_PERMISSION_CANCEL_TEXT
+                 : IDS_FILE_SYSTEM_ACCESS_VIEW_FILE_PERMISSION_CANCEL_TEXT;
+    case AccessType::kWrite:
+      return IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_CANCEL_TEXT;
+    case AccessType::kReadWrite:
+      return file_request_data.handle_type == HandleType::kDirectory
+                 ? IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_CANCEL_TEXT
+                 : IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_CANCEL_TEXT;
   }
   NOTREACHED();
 }
@@ -143,9 +159,12 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessPermissionDialog(
       .AddOkButton(
           std::move(accept_callback),
           ui::DialogModel::Button::Params().SetLabel(
-              l10n_util::GetStringUTF16(GetButtonLabel(file_request_data))))
+              l10n_util::GetStringUTF16(GetOkButtonLabel(file_request_data))))
       .AddCancelButton(std::move(cancel_callbacks.first),
-                       ui::DialogModel::Button::Params().SetId(kCancelButtonId))
+                       ui::DialogModel::Button::Params()
+                           .SetId(kCancelButtonId)
+                           .SetLabel(l10n_util::GetStringUTF16(
+                               GetCancelButtonLabel(file_request_data))))
       .SetCloseActionCallback(std::move(cancel_callbacks.second))
       .SetInitiallyFocusedField(kCancelButtonId);
   return dialog_builder.Build();

@@ -16924,10 +16924,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to edit files in <ph name="FOLDERNAME">$2<ex>My Project</ex></ph> until you close all tabs for this site
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_FILE_TEXT" desc="Text of dialog for confirming read access to files using the File System Access API">
-      <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to view <ph name="FILENAME">$2<ex>README.md</ex></ph> until you close all tabs for this site
+      <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to view and make its own copies of <ph name="FILENAME">$2<ex>README.md</ex></ph> until you close all tabs for this site
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_DIRECTORY_TEXT" desc="Text of dialog asking user if they intended to share a particular directory">
-      <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to view files in <ph name="FOLDERNAME">$2<ex>My Project</ex></ph> until you close all tabs for this site
+      <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to view and make its own copies of files in <ph name="FOLDERNAME">$2<ex>My Project</ex></ph> until you close all tabs for this site
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_FILE_TEXT" desc="Text of the dialog for confirming origin scoped write access to files using the File System Access API">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to edit <ph name="FILENAME">$2<ex>README.md</ex></ph>
@@ -16936,34 +16936,49 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to edit files in <ph name="FOLDERNAME">$2<ex>My Project</ex></ph>
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_READ_PERMISSION_FILE_TEXT" desc="Text of dialog for confirming read access to files using the File System Access API">
-      <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to view <ph name="FILENAME">$2<ex>README.md</ex></ph>
+      <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to view and make its own copies of <ph name="FILENAME">$2<ex>README.md</ex></ph>
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_READ_PERMISSION_DIRECTORY_TEXT" desc="Text of dialog asking user if they intended to share a particular directory">
-      <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to view files in <ph name="FOLDERNAME">$2<ex>My Project</ex></ph>
+      <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to view and make its own copies of files in <ph name="FOLDERNAME">$2<ex>My Project</ex></ph>
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read and write access to a file using the File System Access API">
-      Let site edit <ph name="FILE_NAME">$1<ex>README.md</ex></ph>?
+      Allow this site to edit <ph name="FILE_NAME">$1<ex>README.md</ex></ph>?
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read and write access to (files in) a directory using the File System Access API">
-      Let site edit files?
+      Allow this site to edit files?
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_READ_FILE_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read access to a file using the File System Access API">
-      Let site view <ph name="FILE_NAME">$1<ex>README.md</ex></ph>?
+      Allow this site to view and copy <ph name="FILE_NAME">$1<ex>README.md</ex></ph>?
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_READ_DIRECTORY_PERMISSION_TITLE" desc="Title of dialog asking user if they intended to share a particular directory">
-      Let site view files?
+      Allow this site to view and copy files?
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming write access to a file using the File System Access API">
-      Edit file
+      Allow
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming write access to a directory (and the files in it) using the File System Access API">
-      Edit files
+      Allow
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_VIEW_FILE_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming read access to a file using the File System Access API">
-      View file
+      Allow
     </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_VIEW_DIRECTORY_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming read access to a directory (and the files in it) using the File System Access API">
-      View files
+      Allow
+    </message>
+    <message name="IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_CANCEL_TEXT" desc="Text of the 'cancel' button in the dialog for confirming write access to files or directories using the File System Access API">
+      Cancel
+    </message>
+    <message name="IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_CANCEL_TEXT" desc="Text of the 'cancel' button in the dialog for confirming write access to a file using the File System Access API">
+      Don't Allow
+    </message>
+    <message name="IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_CANCEL_TEXT" desc="Text of the 'cancel' button in the dialog for confirming write access to a directory (and the files in it) using the File System Access API">
+      Don't Allow
+    </message>
+    <message name="IDS_FILE_SYSTEM_ACCESS_VIEW_FILE_PERMISSION_CANCEL_TEXT" desc="Text of the 'cancel' button in the dialog for confirming read access to a file using the File System Access API">
+      Don't Allow
+    </message>
+    <message name="IDS_FILE_SYSTEM_ACCESS_VIEW_DIRECTORY_PERMISSION_CANCEL_TEXT" desc="Text of the 'cancel' button in the dialog for confirming read access to a directory (and the files in it) using the File System Access API">
+      Don't Allow
     </message>
 
     <!-- File System Access restore permission prompt -->
