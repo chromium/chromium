@@ -89,7 +89,7 @@ class SqlPersistentStoreTest : public testing::Test {
   }
 
   // Helper function to create, initialize, and then close a store.
-  void InitializeTestStore() {
+  void CreateAndCloseInitializedStore() {
     CreateStore();
     ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
     store_.reset();
@@ -124,8 +124,32 @@ class SqlPersistentStoreTest : public testing::Test {
     run_loop.Run();
   }
 
-  // Manually opens the SQLite database for direct inspection.
-  std::unique_ptr<sql::Database> ManuallyOpenDatabase() {
+  // Custom deleter for the unique_ptr returned by ManuallyOpenDatabase.
+  // It ensures that the store is re-initialized after manual DB access if it
+  // was open before.
+  struct DatabaseReopener {
+    void operator()(sql::Database* db) const {
+      delete db;
+      if (test_fixture_to_reinit) {
+        test_fixture_to_reinit->CreateAndInitStore();
+      }
+    }
+    // Use raw_ptr to avoid ownership cycles and for safety.
+    // This is null if the store doesn't need to be re-initialized.
+    raw_ptr<SqlPersistentStoreTest> test_fixture_to_reinit = nullptr;
+  };
+
+  using DatabaseHandle = std::unique_ptr<sql::Database, DatabaseReopener>;
+
+  // This will close the current store connection and automatically reopen it
+  // when the returned handle goes out of scope.
+  DatabaseHandle ManuallyOpenDatabase() {
+    bool should_reopen = false;
+    if (store_) {
+      ClearStore();
+      should_reopen = true;
+    }
+
     auto db = std::make_unique<sql::Database>(
         sql::DatabaseOptions()
             .set_exclusive_locking(true)
@@ -136,13 +160,14 @@ class SqlPersistentStoreTest : public testing::Test {
             .set_wal_mode(true),
         sql::Database::Tag("HttpCacheDiskCache"));
     CHECK(db->Open(GetDatabaseFilePath()));
-    return db;
+    return DatabaseHandle(db.release(), {should_reopen ? this : nullptr});
   }
 
   // Manually opens the meta table within the database.
-  std::unique_ptr<sql::MetaTable> ManuallyOpenMetaTable(sql::Database* db) {
+  std::unique_ptr<sql::MetaTable> ManuallyOpenMetaTable(
+      sql::Database* db_handle) {
     auto mata_table = std::make_unique<sql::MetaTable>();
-    CHECK(mata_table->Init(db, kSqlBackendCurrentDatabaseVersion,
+    CHECK(mata_table->Init(db_handle, kSqlBackendCurrentDatabaseVersion,
                            kSqlBackendCurrentDatabaseVersion));
     return mata_table;
   }
@@ -245,16 +270,17 @@ class SqlPersistentStoreTest : public testing::Test {
 
   // Helper to count rows in the resource table.
   int64_t CountResourcesTable() {
-    auto db = ManuallyOpenDatabase();
-    sql::Statement s(db->GetUniqueStatement("SELECT COUNT(*) FROM resources"));
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement s(
+        db_handle->GetUniqueStatement("SELECT COUNT(*) FROM resources"));
     CHECK(s.Step());
     return s.ColumnInt(0);
   }
 
   // Helper to count doomed rows in the resource table.
   int64_t CountDoomedResourcesTable(const CacheEntryKey& key) {
-    auto db = ManuallyOpenDatabase();
-    sql::Statement s(db->GetUniqueStatement(
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement s(db_handle->GetUniqueStatement(
         "SELECT COUNT(*) FROM resources WHERE cache_key=? AND doomed=?"));
     s.BindString(0, key.string());
     s.BindBool(1, true);  // doomed = true
@@ -272,10 +298,10 @@ class SqlPersistentStoreTest : public testing::Test {
   // Helper to read entry details from the resources table.
   std::optional<ResourceEntryDetails> GetResourceEntryDetails(
       const CacheEntryKey& key) {
-    auto db = ManuallyOpenDatabase();
-    sql::Statement s(
-        db->GetUniqueStatement("SELECT last_used, bytes_usage, head, doomed "
-                               "FROM resources WHERE cache_key=?"));
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement s(db_handle->GetUniqueStatement(
+        "SELECT last_used, bytes_usage, head, doomed "
+        "FROM resources WHERE cache_key=?"));
     s.BindString(0, key.string());
     if (s.Step()) {
       ResourceEntryDetails details;
@@ -320,7 +346,7 @@ TEST_F(SqlPersistentStoreTest, InitWithZeroMaxBytes) {
 
 // Tests that an existing, valid database can be opened and initialized.
 TEST_F(SqlPersistentStoreTest, InitExisting) {
-  InitializeTestStore();
+  CreateAndCloseInitializedStore();
 
   // Create a new store with the same path, which should open the existing DB.
   CreateStore();
@@ -330,12 +356,12 @@ TEST_F(SqlPersistentStoreTest, InitExisting) {
 // Tests that a database with a future (incompatible) version is razed
 // (deleted and recreated).
 TEST_F(SqlPersistentStoreTest, InitRazedTooNew) {
-  InitializeTestStore();
+  CreateAndCloseInitializedStore();
 
   {
     // Manually open the database and set a future version number.
-    auto db = ManuallyOpenDatabase();
-    auto meta_table = ManuallyOpenMetaTable(db.get());
+    auto db_handle = ManuallyOpenDatabase();
+    auto meta_table = ManuallyOpenMetaTable(db_handle.get());
     ASSERT_TRUE(
         meta_table->SetVersionNumber(kSqlBackendCurrentDatabaseVersion + 1));
     ASSERT_TRUE(meta_table->SetCompatibleVersionNumber(
@@ -348,11 +374,11 @@ TEST_F(SqlPersistentStoreTest, InitRazedTooNew) {
   }
 
   // Re-initializing the store should detect the future version and raze the DB.
-  InitializeTestStore();
+  CreateAndCloseInitializedStore();
 
   // Verify that the old data is gone.
-  auto db = ManuallyOpenDatabase();
-  auto meta_table = ManuallyOpenMetaTable(db.get());
+  auto db_handle = ManuallyOpenDatabase();
+  auto meta_table = ManuallyOpenMetaTable(db_handle.get());
   int64_t value = 0;
   EXPECT_FALSE(meta_table->GetValue("SomeNewData", &value));
 }
@@ -372,7 +398,7 @@ TEST_F(SqlPersistentStoreTest, InitFailsWithCreationDirectoryFailure) {
 
 // Tests that initialization fails if the database file is not writable.
 TEST_F(SqlPersistentStoreTest, InitFailsWithUnwritableFile) {
-  InitializeTestStore();
+  CreateAndCloseInitializedStore();
 
   // Make the database file read-only.
   MakeFileUnwritable();
@@ -383,7 +409,7 @@ TEST_F(SqlPersistentStoreTest, InitFailsWithUnwritableFile) {
 
 // Tests the recovery mechanism when the database file is corrupted.
 TEST_F(SqlPersistentStoreTest, InitWithCorruptDatabase) {
-  InitializeTestStore();
+  CreateAndCloseInitializedStore();
 
   // Corrupt the database file by overwriting its header.
   CHECK(sql::test::CorruptSizeInHeader(GetDatabaseFilePath()));
@@ -430,25 +456,18 @@ TEST_F(SqlPersistentStoreTest, GetEntryAndSize) {
   // A new store should have zero entries and zero total size.
   EXPECT_EQ(GetEntryCount(), 0);
   EXPECT_EQ(GetSizeOfAllEntries(), 0);
-  store_.reset();
-  FlushPendingTask();
 
   // Manually set metadata.
   const int64_t kTestEntryCount = 123;
   const int64_t kTestTotalSize = 456789;
   {
-    auto db = ManuallyOpenDatabase();
-    auto meta_table = ManuallyOpenMetaTable(db.get());
+    auto db_handle = ManuallyOpenDatabase();
+    auto meta_table = ManuallyOpenMetaTable(db_handle.get());
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyEntryCount,
                                      kTestEntryCount));
     ASSERT_TRUE(
         meta_table->SetValue(kSqlBackendMetaTableKeyTotalSize, kTestTotalSize));
   }
-
-  // Re-initializing the store should load the new metadata values.
-  InitializeTestStore();
-  CreateStore();
-  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
 
   EXPECT_EQ(GetEntryCount(), kTestEntryCount);
   EXPECT_EQ(GetSizeOfAllEntries(),
@@ -458,12 +477,12 @@ TEST_F(SqlPersistentStoreTest, GetEntryAndSize) {
 // Tests that GetEntryCount() and GetSizeOfAllEntries() handle invalid
 // (e.g., negative) metadata by treating it as zero.
 TEST_F(SqlPersistentStoreTest, GetEntryAndSizeWithInvalidMetadata) {
-  InitializeTestStore();
+  CreateAndCloseInitializedStore();
 
   // Test with a negative entry count. The total size should still be valid.
   {
-    auto db = ManuallyOpenDatabase();
-    auto meta_table = ManuallyOpenMetaTable(db.get());
+    auto db_handle = ManuallyOpenDatabase();
+    auto meta_table = ManuallyOpenMetaTable(db_handle.get());
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyEntryCount, -1));
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyTotalSize, 12345));
   }
@@ -471,78 +490,60 @@ TEST_F(SqlPersistentStoreTest, GetEntryAndSizeWithInvalidMetadata) {
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
   EXPECT_EQ(GetEntryCount(), 0);
   EXPECT_EQ(GetSizeOfAllEntries(), 12345);
-  store_.reset();
-  FlushPendingTask();
 
   // Test with an entry count that exceeds the int32_t limit.
   {
-    auto db = ManuallyOpenDatabase();
-    auto meta_table = ManuallyOpenMetaTable(db.get());
+    auto db_handle = ManuallyOpenDatabase();
+    auto meta_table = ManuallyOpenMetaTable(db_handle.get());
     ASSERT_TRUE(meta_table->SetValue(
         kSqlBackendMetaTableKeyEntryCount,
         static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1));
   }
-  CreateStore();
-  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
   EXPECT_EQ(GetEntryCount(), 0);
   EXPECT_EQ(GetSizeOfAllEntries(), 12345);
-  store_.reset();
-  FlushPendingTask();
 
   // Test with an entry count with the int32_t limit.
   {
-    auto db = ManuallyOpenDatabase();
-    auto meta_table = ManuallyOpenMetaTable(db.get());
+    auto db_handle = ManuallyOpenDatabase();
+    auto meta_table = ManuallyOpenMetaTable(db_handle.get());
     ASSERT_TRUE(meta_table->SetValue(
         kSqlBackendMetaTableKeyEntryCount,
         static_cast<int64_t>(std::numeric_limits<int32_t>::max())));
   }
-  CreateStore();
-  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
   EXPECT_EQ(GetEntryCount(), std::numeric_limits<int32_t>::max());
   EXPECT_EQ(GetSizeOfAllEntries(),
             12345 + static_cast<int64_t>(std::numeric_limits<int32_t>::max()) *
                         kSqlBackendStaticResourceSize);
-  store_.reset();
-  FlushPendingTask();
 
   // Test with a negative total size. The entry count should still be valid.
   {
-    auto db = ManuallyOpenDatabase();
-    auto meta_table = ManuallyOpenMetaTable(db.get());
+    auto db_handle = ManuallyOpenDatabase();
+    auto meta_table = ManuallyOpenMetaTable(db_handle.get());
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyEntryCount, 10));
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyTotalSize, -1));
   }
-  CreateStore();
-  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
   EXPECT_EQ(GetSizeOfAllEntries(), 10 * kSqlBackendStaticResourceSize);
-  store_.reset();
-  FlushPendingTask();
 
   // Test with a total size at the int64_t limit with no entries.
   {
-    auto db = ManuallyOpenDatabase();
-    auto meta_table = ManuallyOpenMetaTable(db.get());
+    auto db_handle = ManuallyOpenDatabase();
+    auto meta_table = ManuallyOpenMetaTable(db_handle.get());
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyEntryCount, 0));
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyTotalSize,
                                      std::numeric_limits<int64_t>::max()));
   }
-  CreateStore();
-  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
   EXPECT_EQ(GetSizeOfAllEntries(), std::numeric_limits<int64_t>::max());
-  store_.reset();
-  FlushPendingTask();
 
   // Test with a total size at the int64_t limit with one entry.
   {
-    auto db = ManuallyOpenDatabase();
-    auto meta_table = ManuallyOpenMetaTable(db.get());
+    auto db_handle = ManuallyOpenDatabase();
+    auto meta_table = ManuallyOpenMetaTable(db_handle.get());
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyEntryCount, 1));
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyTotalSize,
                                      std::numeric_limits<int64_t>::max()));
   }
-  CreateStore();
-  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
   // Adding the static size for the one entry would overflow. The implementation
   // should clamp the result at the maximum value.
   EXPECT_EQ(GetSizeOfAllEntries(), std::numeric_limits<int64_t>::max());
@@ -565,8 +566,6 @@ TEST_F(SqlPersistentStoreTest, CreateEntry) {
   EXPECT_EQ(GetEntryCount(), 1);
   EXPECT_EQ(GetSizeOfAllEntries(),
             kSqlBackendStaticResourceSize + kKey.string().size());
-
-  ClearStore();
 
   EXPECT_EQ(CountResourcesTable(), 1);
 }
@@ -591,8 +590,6 @@ TEST_F(SqlPersistentStoreTest, CreateEntryAlreadyExists) {
   EXPECT_EQ(GetEntryCount(), 1);
   EXPECT_EQ(GetSizeOfAllEntries(),
             kSqlBackendStaticResourceSize + kKey.string().size());
-
-  ClearStore();
 
   EXPECT_EQ(CountResourcesTable(), 1);
 }
@@ -678,23 +675,17 @@ TEST_F(SqlPersistentStoreTest, OpenEntryInvalidToken) {
   ASSERT_TRUE(create_result.has_value());
   EXPECT_FALSE(create_result->token.is_empty());
 
-  // Close the store's connection to modify the database directly.
-  ClearStore();
-
   // Manually open the database and corrupt the `token_high` and `token_low` for
   // the entry.
   {
-    auto db = ManuallyOpenDatabase();
+    auto db_handle = ManuallyOpenDatabase();
     static constexpr char kSqlUpdateTokenLow[] =
         "UPDATE resources SET token_high=0, token_low=0 WHERE cache_key=?";
     sql::Statement statement(
-        db->GetCachedStatement(SQL_FROM_HERE, kSqlUpdateTokenLow));
+        db_handle->GetCachedStatement(SQL_FROM_HERE, kSqlUpdateTokenLow));
     statement.BindString(0, kKey.string());
     ASSERT_TRUE(statement.Run());
   }
-
-  // Re-initialize the store, which will now try to read the corrupted data.
-  CreateAndInitStore();
 
   // Attempt to open the entry. It should now fail with kInvalidData.
   auto open_result = OpenEntry(kKey);
@@ -750,7 +741,6 @@ TEST_F(SqlPersistentStoreTest, DoomEntrySuccess) {
 
   // Verify the doomed entry still exists in the table but is marked as doomed,
   // and the other entry is unaffected.
-  ClearStore();
   EXPECT_EQ(CountResourcesTable(), 2);
   EXPECT_EQ(CountDoomedResourcesTable(kKeyToDoom), 1);
   EXPECT_EQ(CountDoomedResourcesTable(kKeyToKeep), 0);
@@ -818,21 +808,17 @@ TEST_F(SqlPersistentStoreTest, DoomEntryWithCorruptSizeRecovers) {
   ASSERT_TRUE(CreateEntry(kKeyToKeep).has_value());
   ASSERT_EQ(GetEntryCount(), 2);
   const auto token_to_doom = create_corrupt_result->token;
-  ClearStore();
 
   // Manually open the database and corrupt the `bytes_usage` for one entry
   // to an extreme value that will cause an overflow during calculation.
   {
-    auto db = ManuallyOpenDatabase();
-    sql::Statement statement(db->GetUniqueStatement(
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
         "UPDATE resources SET bytes_usage = ? WHERE cache_key = ?"));
     statement.BindInt64(0, std::numeric_limits<int64_t>::min());
     statement.BindString(1, kKeyToCorrupt.string());
     ASSERT_TRUE(statement.Run());
   }
-
-  // Re-initialize the store with the corrupted database.
-  CreateAndInitStore();
 
   // Doom the entry with the corrupted size. This will trigger an overflow in
   // `total_size_delta`, causing `!total_size_delta.IsValid()` to be true.
@@ -866,15 +852,12 @@ TEST_F(SqlPersistentStoreTest, DeleteDoomedEntrySuccess) {
   const auto token = create_result->token;
   ASSERT_EQ(DoomEntry(kKey, token), SqlPersistentStore::Error::kOk);
   ASSERT_EQ(GetEntryCount(), 0);
-  ClearStore();
   ASSERT_EQ(CountResourcesTable(), 1);
-  CreateAndInitStore();
 
   // Delete the doomed entry.
   ASSERT_EQ(DeleteDoomedEntry(kKey, token), SqlPersistentStore::Error::kOk);
 
   // Verify the entry is now physically gone from the database.
-  ClearStore();
   EXPECT_EQ(CountResourcesTable(), 0);
 }
 
@@ -895,7 +878,6 @@ TEST_F(SqlPersistentStoreTest, DeleteDoomedEntryFailsOnLiveEntry) {
 
   // Verify the entry still exists.
   EXPECT_EQ(GetEntryCount(), 1);
-  ClearStore();
   EXPECT_EQ(CountResourcesTable(), 1);
 }
 
@@ -934,7 +916,6 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntrySuccess) {
   EXPECT_EQ((*open_kept_result)->token, create_result_to_keep->token);
 
   // Verify the entry is physically gone from the database.
-  ClearStore();
   EXPECT_EQ(CountResourcesTable(), 1);
 }
 
@@ -980,7 +961,6 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntryFailsOnDoomedEntry) {
 
   // Verify the doomed entry still exists in the table (as doomed), and the
   // live entry is also present.
-  ClearStore();
   EXPECT_EQ(CountResourcesTable(), 2);
   EXPECT_EQ(CountDoomedResourcesTable(kDoomedKey), 1);
   EXPECT_EQ(CountDoomedResourcesTable(kLiveKey), 0);
@@ -998,21 +978,17 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntryWithCorruptTokenRecovers) {
   ASSERT_TRUE(CreateEntry(kKeyToCorrupt).has_value());
   ASSERT_TRUE(CreateEntry(kKeyToKeep).has_value());
   ASSERT_EQ(GetEntryCount(), 2);
-  ClearStore();
 
   // Manually open the database and corrupt the token for one entry so that
   // it becomes invalid.
   {
-    auto db = ManuallyOpenDatabase();
-    sql::Statement statement(db->GetUniqueStatement(
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
         "UPDATE resources SET token_high = 0, token_low = 0 WHERE cache_key = "
         "?"));
     statement.BindString(0, kKeyToCorrupt.string());
     ASSERT_TRUE(statement.Run());
   }
-
-  // Re-initialize the store with the corrupted database.
-  CreateAndInitStore();
 
   // Delete the entry with the corrupted token. This will trigger the
   // `corruption_detected` path, forcing a full recalculation.
@@ -1024,7 +1000,6 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntryWithCorruptTokenRecovers) {
   EXPECT_EQ(GetSizeOfAllEntries(), expected_size_after_recovery);
 
   // Verify the state on disk. Only the un-corrupted entry should remain.
-  ClearStore();
   EXPECT_EQ(CountResourcesTable(), 1);
 }
 
@@ -1040,21 +1015,17 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntryWithCorruptSizeRecovers) {
   ASSERT_TRUE(CreateEntry(kKeyToCorrupt).has_value());
   ASSERT_TRUE(CreateEntry(kKeyToKeep).has_value());
   ASSERT_EQ(GetEntryCount(), 2);
-  ClearStore();
 
   // Manually open the database and corrupt the `bytes_usage` for one entry
   // to an extreme value that will cause an underflow during calculation.
   {
-    auto db = ManuallyOpenDatabase();
-    sql::Statement statement(db->GetUniqueStatement(
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
         "UPDATE resources SET bytes_usage = ? WHERE cache_key = ?"));
     statement.BindInt64(0, std::numeric_limits<int64_t>::max());
     statement.BindString(1, kKeyToCorrupt.string());
     ASSERT_TRUE(statement.Run());
   }
-
-  // Re-initialize the store with the corrupted database.
-  CreateAndInitStore();
 
   // Delete the entry with the corrupted size. This will trigger an underflow
   // in `total_size_delta`, causing `!total_size_delta.IsValid()` to be true.
@@ -1067,7 +1038,6 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntryWithCorruptSizeRecovers) {
   EXPECT_EQ(GetSizeOfAllEntries(), expected_size_after_recovery);
 
   // Verify the state on disk. Only the un-corrupted entry should remain.
-  ClearStore();
   EXPECT_EQ(CountResourcesTable(), 1);
 }
 
@@ -1085,9 +1055,7 @@ TEST_F(SqlPersistentStoreTest, DeleteAllEntriesNonEmpty) {
   ASSERT_EQ(GetEntryCount(), 2);
   ASSERT_EQ(GetSizeOfAllEntries(), expected_size);
 
-  ClearStore();
   ASSERT_EQ(CountResourcesTable(), 2);
-  CreateAndInitStore();
 
   // Delete all entries.
   ASSERT_EQ(DeleteAllEntries(), SqlPersistentStore::Error::kOk);
@@ -1095,10 +1063,7 @@ TEST_F(SqlPersistentStoreTest, DeleteAllEntriesNonEmpty) {
   // Verify the cache is empty.
   EXPECT_EQ(GetEntryCount(), 0);
   EXPECT_EQ(GetSizeOfAllEntries(), 0);
-
-  ClearStore();
   EXPECT_EQ(CountResourcesTable(), 0);
-  CreateAndInitStore();
 
   // Verify the old entries cannot be opened.
   auto open_result = OpenEntry(kKey1);
@@ -1122,18 +1087,16 @@ TEST_F(SqlPersistentStoreTest, DeleteAllEntriesEmpty) {
 TEST_F(SqlPersistentStoreTest, ChangeEntryCountOverflowRecovers) {
   // Create and initialize a store to have a valid DB file.
   CreateAndInitStore();
-  ClearStore();
 
   // Manually set the entry count to INT32_MAX.
   {
-    auto db = ManuallyOpenDatabase();
-    auto meta_table = ManuallyOpenMetaTable(db.get());
+    auto db_handle = ManuallyOpenDatabase();
+    auto meta_table = ManuallyOpenMetaTable(db_handle.get());
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyEntryCount,
                                      std::numeric_limits<int32_t>::max()));
   }
 
-  // Re-open the store. It should load the manipulated count.
-  CreateAndInitStore();
+  // After re-openning the store. The manipulated count should be loaded.
   ASSERT_EQ(GetEntryCount(), std::numeric_limits<int32_t>::max());
 
   // Create a new entry. This will attempt to increment the counter, causing
@@ -1150,7 +1113,6 @@ TEST_F(SqlPersistentStoreTest, ChangeEntryCountOverflowRecovers) {
             kSqlBackendStaticResourceSize + kKey.string().size());
 
   // Verify by closing and re-opening that the correct value was persisted.
-  ClearStore();
   CreateAndInitStore();
   EXPECT_EQ(GetEntryCount(), 1);
   EXPECT_EQ(GetSizeOfAllEntries(),
@@ -1160,18 +1122,16 @@ TEST_F(SqlPersistentStoreTest, ChangeEntryCountOverflowRecovers) {
 TEST_F(SqlPersistentStoreTest, ChangeTotalSizeOverflowRecovers) {
   // Create and initialize a store.
   CreateAndInitStore();
-  ClearStore();
 
   // Manually set the total size to INT64_MAX.
   {
-    auto db = ManuallyOpenDatabase();
-    auto meta_table = ManuallyOpenMetaTable(db.get());
+    auto db_handle = ManuallyOpenDatabase();
+    auto meta_table = ManuallyOpenMetaTable(db_handle.get());
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyTotalSize,
                                      std::numeric_limits<int64_t>::max()));
   }
 
   // Re-open the store and confirm it loaded the manipulated size.
-  CreateAndInitStore();
   ASSERT_EQ(GetSizeOfAllEntries(), std::numeric_limits<int64_t>::max());
   ASSERT_EQ(GetEntryCount(), 0);
 
@@ -1188,7 +1148,6 @@ TEST_F(SqlPersistentStoreTest, ChangeTotalSizeOverflowRecovers) {
             kSqlBackendStaticResourceSize + kKey.string().size());
 
   // Verify that the correct values were persisted to the database.
-  ClearStore();
   CreateAndInitStore();
   EXPECT_EQ(GetEntryCount(), 1);
   EXPECT_EQ(GetSizeOfAllEntries(),
@@ -1286,16 +1245,14 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   // Create kKey4 and then manually set its last_used time to kBaseTime,
   // which is before kTime1.
   ASSERT_TRUE(CreateEntry(kKey4).has_value());
-  ClearStore();
   {
-    auto db = ManuallyOpenDatabase();
-    sql::Statement statement(db->GetUniqueStatement(
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
         "UPDATE resources SET last_used = ? WHERE cache_key = ?"));
     statement.BindTime(0, kBaseTime);
     statement.BindString(1, kKey4.string());
     ASSERT_TRUE(statement.Run());
   }
-  CreateAndInitStore();
   // kKey4's last_used time in DB is now kBaseTime. kBaseTime < kTime1 is true.
 
   // Create kKey5, ensuring its time is after kTime3.
@@ -1333,7 +1290,6 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   EXPECT_TRUE(OpenEntry(kKey4).value().has_value());
   EXPECT_TRUE(OpenEntry(kKey5).value().has_value());
 
-  ClearStore();
   EXPECT_EQ(CountResourcesTable(), 4);
 }
 
@@ -1387,18 +1343,16 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenWithCorruptSize) {
 
   ASSERT_EQ(GetEntryCount(), 2);
 
-  ClearStore();
   {
-    auto db = ManuallyOpenDatabase();
+    auto db_handle = ManuallyOpenDatabase();
     // Set bytes_usage for kKeyToCorrupt to cause overflow when subtracted
     // during deletion.
-    sql::Statement update_corrupt_stmt(db->GetUniqueStatement(
+    sql::Statement update_corrupt_stmt(db_handle->GetUniqueStatement(
         "UPDATE resources SET bytes_usage=? WHERE cache_key=?"));
     update_corrupt_stmt.BindInt64(0, std::numeric_limits<int64_t>::min());
     update_corrupt_stmt.BindString(1, kKeyToCorrupt.string());
     ASSERT_TRUE(update_corrupt_stmt.Run());
   }
-  CreateAndInitStore();  // Re-initialize with modified DB
 
   base::HistogramTester histogram_tester;
 
@@ -1440,18 +1394,16 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenWithCorruptToken) {
 
   ASSERT_EQ(GetEntryCount(), 2);
 
-  ClearStore();
   {
     // Manually corrupt the token of kKeyToCorrupt in the database.
     // This simulates a scenario where the token data is invalid.
-    auto db = ManuallyOpenDatabase();
+    auto db_handle = ManuallyOpenDatabase();
     sql::Statement statement(
-        db->GetUniqueStatement("UPDATE resources SET token_high=0, "
-                               "token_low=0 WHERE cache_key=?"));
+        db_handle->GetUniqueStatement("UPDATE resources SET token_high=0, "
+                                      "token_low=0 WHERE cache_key=?"));
     statement.BindString(0, kKeyToCorrupt.string());
     ASSERT_TRUE(statement.Run());
   }
-  CreateAndInitStore();
 
   base::HistogramTester histogram_tester;
   ASSERT_EQ(DeleteLiveEntriesBetween(kTimeCorrupt, kTimeKeep),
@@ -1552,8 +1504,6 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessInitial) {
   EXPECT_EQ(GetSizeOfAllEntries(),
             kSqlBackendStaticResourceSize + expected_bytes_usage);
 
-  ClearStore();
-
   // Verify database content.
   auto details = GetResourceEntryDetails(kKey);
   ASSERT_TRUE(details.has_value());
@@ -1600,8 +1550,6 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessReplace) {
   // Verify in-memory stats (should be unchanged as size is same).
   EXPECT_EQ(GetSizeOfAllEntries(),
             kSqlBackendStaticResourceSize + initial_bytes_usage);
-
-  ClearStore();
 
   // Verify database content.
   auto details = GetResourceEntryDetails(kKey);
@@ -1650,8 +1598,6 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessGrow) {
   EXPECT_EQ(GetSizeOfAllEntries(),
             kSqlBackendStaticResourceSize + expected_bytes_usage);
 
-  ClearStore();
-
   // Verify database content.
   auto details = GetResourceEntryDetails(kKey);
   ASSERT_TRUE(details.has_value());
@@ -1697,8 +1643,6 @@ TEST_F(SqlPersistentStoreTest, UpdateEntryHeaderAndLastUsedSuccessShrink) {
       kKey.string().size() + kNewHeadData.size();
   EXPECT_EQ(GetSizeOfAllEntries(),
             kSqlBackendStaticResourceSize + expected_bytes_usage);
-
-  ClearStore();
 
   // Verify database content.
   auto details = GetResourceEntryDetails(kKey);
@@ -1755,23 +1699,17 @@ TEST_F(SqlPersistentStoreTest,
   const int64_t initial_size_of_all_entries = GetSizeOfAllEntries();
   const int32_t initial_entry_count = GetEntryCount();
 
-  // Close the store to modify DB directly.
-  ClearStore();
-
   // Manually corrupt the bytes_usage to a very small value.
   const int64_t corrupted_bytes_usage = 1;
   {
-    auto db = ManuallyOpenDatabase();
-    sql::Statement statement(db->GetUniqueStatement(
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
         "UPDATE resources SET bytes_usage = ? WHERE cache_key = ?"));
     statement.BindInt64(0, corrupted_bytes_usage);
     statement.BindString(1, kKey.string());
     ASSERT_TRUE(statement.Run());
   }
 
-  // Re-open the store. The in-memory stats are read from the meta table, which
-  // we haven't changed.
-  CreateAndInitStore();
   ASSERT_EQ(GetSizeOfAllEntries(), initial_size_of_all_entries);
   ASSERT_EQ(GetEntryCount(), initial_entry_count);
 
@@ -1796,8 +1734,6 @@ TEST_F(SqlPersistentStoreTest,
   // Verify that the store status was NOT changed due to rollback.
   EXPECT_EQ(GetEntryCount(), initial_entry_count);
   EXPECT_EQ(GetSizeOfAllEntries(), initial_size_of_all_entries);
-
-  ClearStore();
 
   // Verify database content was rolled back to its state before the UPDATE
   // call.
@@ -1920,18 +1856,14 @@ TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSkipsInvalidToken) {
   auto create_valid_after_result = CreateEntry(kKeyValidAfter);
   ASSERT_TRUE(create_valid_after_result.has_value());
 
-  ClearStore();  // Close the store to modify DB directly.
-
   // Manually corrupt the token for kKeyInvalid.
   {
-    auto db = ManuallyOpenDatabase();
-    sql::Statement statement(db->GetUniqueStatement(
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
         "UPDATE resources SET token_high=0, token_low=0 WHERE cache_key=?"));
     statement.BindString(0, kKeyInvalid.string());
     ASSERT_TRUE(statement.Run());
   }
-
-  CreateAndInitStore();  // Re-open the store.
 
   // kKeyValidAfter should be returned first.
   auto next_result =
