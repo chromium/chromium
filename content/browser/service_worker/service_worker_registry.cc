@@ -412,7 +412,9 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
       int64_t registration_id = it->second;
       std::optional<scoped_refptr<ServiceWorkerRegistration>> registration =
           FindFromLiveRegistrationsForId(registration_id);
-      if (registration) {
+      // Since FindFromLiveRegistrationsForId() can return std::nullopt or
+      // nullptr, both cases must be checked.
+      if (registration.has_value() && registration.value()) {
         FindRegistrationForClientUrlTraceEventBegin(trace_event_id, client_url);
         FindRegistrationForClientUrlTraceEventEnd(
             trace_event_id, blink::ServiceWorkerStatusCode::kOk, std::nullopt);
