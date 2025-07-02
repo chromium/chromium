@@ -20,6 +20,8 @@ per-file skia_*=michaelludwig@google.com
 # frame sinks / surfaces
 kylechar@chromium.org
 jonross@chromium.org
+amanvr@google.com
+kartarsingh@google.com
 
 # gpu
 kylechar@chromium.org
