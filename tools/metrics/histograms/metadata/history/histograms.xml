@@ -2743,6 +2743,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.RemoveVisitsFromWebHistory.EntryCount" units="entries"
+    expires_after="2026-06-20">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the number of history entries that the user deleted via the history
+    UI, when the deletions are sent to WebHistoryService (i.e. only for users
+    who have history sync enabled). One history entry corresponds to one row (or
+    checkbox) in the history UI, and represents all visits to a single URL on a
+    given day. E.g. visiting a URL N times on the same day will have 1 row in
+    the UI; and deleting that row will record 1 to this metric.
+  </summary>
+</histogram>
+
 <histogram name="History.SearchResultClicked.Index{HistoryResultType}"
     units="index" expires_after="2025-12-28">
   <owner>orinj@chromium.org</owner>

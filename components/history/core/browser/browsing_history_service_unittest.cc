@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
@@ -221,6 +222,16 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
 
   void AddHistory(const std::vector<TestResult>& data) {
     AddHistory(data, web_history());
+  }
+
+  HistoryEntry CreateEntry(const std::string& url,
+                           const std::vector<int>& hour_offsets) {
+    HistoryEntry entry;
+    entry.url = GURL(url);
+    for (int hour_offset : hour_offsets) {
+      entry.all_timestamps.insert(OffsetToTime(hour_offset));
+    }
+    return entry;
   }
 
   void VerifyEntry(const TestResult& expected, const HistoryEntry& actual) {
@@ -732,6 +743,39 @@ TEST_F(BrowsingHistoryServiceTest, IncorrectlyOrderedRemoteResults) {
   // BrowsingHistoryService before `reversed` goes out of scope.
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), nullptr, nullptr);
+}
+
+TEST_F(BrowsingHistoryServiceTest, RemoveVisitsMetric) {
+  // `kUrl1` was visited 3 times on day 1, and 4 times on day 2. `kUrl2` was
+  // visited once on day 1. In total, there are 3 `HistoryEntry` instances
+  // (since every "entry" groups all visits to a URL for a single day).
+  // Note that for this test it doesn't matter that no such history entries were
+  // actually added to the service first.
+  const std::vector<HistoryEntry> entries{CreateEntry(kUrl1, {1, 2, 3}),
+                                          CreateEntry(kUrl2, {4}),
+                                          CreateEntry(kUrl1, {25, 26, 27, 28})};
+
+  {
+    base::HistogramTester histograms;
+
+    service()->RemoveVisits(entries);
+
+    histograms.ExpectUniqueSample(
+        "History.RemoveVisitsFromWebHistory.EntryCount", 3, 1);
+  }
+
+  {
+    // Simulate that history sync is disabled, so `WebHistoryService` is null.
+    driver()->SetWebHistory(nullptr);
+
+    base::HistogramTester histograms;
+
+    service()->RemoveVisits(entries);
+
+    // Without WebHistoryService, nothing should be recorded.
+    histograms.ExpectTotalCount("History.RemoveVisitsFromWebHistory.EntryCount",
+                                0);
+  }
 }
 
 }  // namespace
