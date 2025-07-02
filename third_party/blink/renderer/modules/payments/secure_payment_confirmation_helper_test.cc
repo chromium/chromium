@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_network_or_issuer_information.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_entity_logo.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -119,18 +118,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_OptionalFields) {
   request->setPayeeOrigin("https://merchant.example");
   request->setTimeout(5 * 60 * 1000);  // 5 minutes
 
-  NetworkOrIssuerInformation* networkInfo =
-      NetworkOrIssuerInformation::Create(scope.GetIsolate());
-  networkInfo->setName("Network Name");
-  networkInfo->setIcon("https://network.example/icon.png");
-  request->setNetworkInfo(networkInfo);
-
-  NetworkOrIssuerInformation* issuerInfo =
-      NetworkOrIssuerInformation::Create(scope.GetIsolate());
-  issuerInfo->setName("Issuer Name");
-  issuerInfo->setIcon("https://bank.example/icon.png");
-  request->setIssuerInfo(issuerInfo);
-
   PaymentEntityLogo* logo1 = PaymentEntityLogo::Create(scope.GetIsolate());
   logo1->setUrl("https://entity1.example/icon.png");
   logo1->setLabel("Label 1");
@@ -153,16 +140,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_OptionalFields) {
   EXPECT_EQ(parsed_request->payee_origin->ToString(),
             "https://merchant.example");
   EXPECT_EQ(parsed_request->timeout, base::Minutes(5));
-
-  // These fields are behind a default-disabled flag, however when set directly
-  // into the request as above they will still be present and we can test that
-  // the mojo parsing works correctly.
-  EXPECT_EQ(parsed_request->network_info->name, "Network Name");
-  EXPECT_EQ(parsed_request->network_info->icon.GetString(),
-            "https://network.example/icon.png");
-  EXPECT_EQ(parsed_request->issuer_info->name, "Issuer Name");
-  EXPECT_EQ(parsed_request->issuer_info->icon.GetString(),
-            "https://bank.example/icon.png");
 
   // This field is behind a default-disabled flag, however when set directly
   // into the request as above it will still be present and we can test that the
@@ -509,150 +486,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_Extensions) {
   ASSERT_FALSE(parsed_request->extensions.is_null());
   WTF::Vector<uint8_t> prf_expected = CreateVector(kPrfInputData);
   ASSERT_EQ(parsed_request->extensions->prf_inputs[0]->first, prf_expected);
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an empty
-// networkName throws.
-TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyNetworkName) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  SecurePaymentConfirmationRequest* request =
-      CreateSecurePaymentConfirmationRequest(scope);
-
-  NetworkOrIssuerInformation* networkInfo =
-      NetworkOrIssuerInformation::Create(scope.GetIsolate());
-  networkInfo->setName("");
-  networkInfo->setIcon("https://network.example/icon.png");
-  request->setNetworkInfo(networkInfo);
-
-  ScriptValue script_value(scope.GetIsolate(),
-                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
-                               scope.GetScriptState(), request));
-  SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
-      script_value, *scope.GetExecutionContext(), scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(ESErrorType::kTypeError,
-            scope.GetExceptionState().CodeAs<ESErrorType>());
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an empty
-// network icon throws.
-TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyNetworkIcon) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  SecurePaymentConfirmationRequest* request =
-      CreateSecurePaymentConfirmationRequest(scope);
-
-  NetworkOrIssuerInformation* networkInfo =
-      NetworkOrIssuerInformation::Create(scope.GetIsolate());
-  networkInfo->setName("Network Name");
-  networkInfo->setIcon("");
-  request->setNetworkInfo(networkInfo);
-
-  ScriptValue script_value(scope.GetIsolate(),
-                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
-                               scope.GetScriptState(), request));
-  SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
-      script_value, *scope.GetExecutionContext(), scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(ESErrorType::kTypeError,
-            scope.GetExceptionState().CodeAs<ESErrorType>());
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an invalid
-// network icon URL throws.
-TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidNetworkIcon) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  SecurePaymentConfirmationRequest* request =
-      CreateSecurePaymentConfirmationRequest(scope);
-
-  NetworkOrIssuerInformation* networkInfo =
-      NetworkOrIssuerInformation::Create(scope.GetIsolate());
-  networkInfo->setName("Network Name");
-  networkInfo->setIcon("thisisnotaurl");
-  request->setNetworkInfo(networkInfo);
-
-  ScriptValue script_value(scope.GetIsolate(),
-                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
-                               scope.GetScriptState(), request));
-  SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
-      script_value, *scope.GetExecutionContext(), scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(ESErrorType::kTypeError,
-            scope.GetExceptionState().CodeAs<ESErrorType>());
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an empty
-// issuerName throws.
-TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyIssuerName) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  SecurePaymentConfirmationRequest* request =
-      CreateSecurePaymentConfirmationRequest(scope);
-
-  NetworkOrIssuerInformation* issuerInfo =
-      NetworkOrIssuerInformation::Create(scope.GetIsolate());
-  issuerInfo->setName("");
-  issuerInfo->setIcon("https://bank.example/icon.png");
-  request->setIssuerInfo(issuerInfo);
-
-  ScriptValue script_value(scope.GetIsolate(),
-                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
-                               scope.GetScriptState(), request));
-  SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
-      script_value, *scope.GetExecutionContext(), scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(ESErrorType::kTypeError,
-            scope.GetExceptionState().CodeAs<ESErrorType>());
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an empty
-// issuer icon throws.
-TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyIssuerIcon) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  SecurePaymentConfirmationRequest* request =
-      CreateSecurePaymentConfirmationRequest(scope);
-
-  NetworkOrIssuerInformation* issuerInfo =
-      NetworkOrIssuerInformation::Create(scope.GetIsolate());
-  issuerInfo->setName("Issuer Name");
-  issuerInfo->setIcon("");
-  request->setIssuerInfo(issuerInfo);
-
-  ScriptValue script_value(scope.GetIsolate(),
-                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
-                               scope.GetScriptState(), request));
-  SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
-      script_value, *scope.GetExecutionContext(), scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(ESErrorType::kTypeError,
-            scope.GetExceptionState().CodeAs<ESErrorType>());
-}
-
-// Test that parsing a SecurePaymentConfirmationRequest with an invalid
-// issuer icon URL throws.
-TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidIssuerIcon) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  SecurePaymentConfirmationRequest* request =
-      CreateSecurePaymentConfirmationRequest(scope);
-
-  NetworkOrIssuerInformation* issuerInfo =
-      NetworkOrIssuerInformation::Create(scope.GetIsolate());
-  issuerInfo->setName("Issuer Name");
-  issuerInfo->setIcon("thisisnotaurl");
-  request->setIssuerInfo(issuerInfo);
-
-  ScriptValue script_value(scope.GetIsolate(),
-                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
-                               scope.GetScriptState(), request));
-  SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
-      script_value, *scope.GetExecutionContext(), scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(ESErrorType::kTypeError,
-            scope.GetExceptionState().CodeAs<ESErrorType>());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with a PaymentEntityLogo
