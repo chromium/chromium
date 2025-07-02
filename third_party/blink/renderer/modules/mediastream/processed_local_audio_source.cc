@@ -44,9 +44,6 @@ using base::StringPrintf;
 
 namespace blink {
 
-using EchoCancellationType =
-    blink::AudioProcessingProperties::EchoCancellationType;
-
 namespace {
 
 void SendLogMessage(const std::string& message) {
