@@ -29,7 +29,7 @@ enum class RequestType;
 // implement. A class of this type is registered with the permission request
 // manager to receive updates about the result of the permissions request
 // from the bubble or infobar. It should live until it is unregistered or until
-// RequestFinished is called.
+// its destructor is called.
 // Note that no particular guarantees are made about what exact UI surface
 // is presented to the user. The delegate may be coalesced with other bubble
 // requests, or depending on the situation, not shown at all.
