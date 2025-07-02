@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/audio_debug_file_writer.h"
 
 #include <stdint.h>
@@ -186,7 +191,7 @@ void AudioDebugFileWriter::WriteHeader() {
     return;
   WavHeaderBuffer buf;
   WriteWavHeader(&buf, params_.channels(), params_.sample_rate(), samples_);
-  file_.Write(0, base::as_byte_span(buf));
+  file_.Write(0, &buf[0], kWavHeaderSize);
 
   // Write() does not move the cursor if file is not in APPEND mode; Seek() so
   // that the header is not overwritten by the following writes.

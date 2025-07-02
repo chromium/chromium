@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/flac_audio_handler.h"
 
 #include <algorithm>
@@ -10,8 +15,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "base/logging.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_fifo.h"
@@ -127,30 +130,17 @@ FLAC__StreamDecoderReadStatus FlacAudioHandler::ReadCallback(
     FLAC__byte buffer[],
     size_t* bytes,
     void* client_data) {
-  // SAFETY:
-  // https://xiph.org/flac/api/group__flac__stream__decoder.html#ga25d4321dc2f122d35ddc9061f44beae7
-  // says `buffer` is the address of the buffer to be decoded and `bytes` points
-  // to the number of bytes the buffer can hold.
-  UNSAFE_BUFFERS(
-      base::span<uint8_t> output(static_cast<uint8_t*>(buffer), *bytes));
   return reinterpret_cast<FlacAudioHandler*>(client_data)
-      ->ReadCallbackInternal(output, bytes);
+      ->ReadCallbackInternal(buffer, bytes);
 }
 
 FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallback(
     const FLAC__StreamDecoder* decoder,
     const FLAC__Frame* frame,
-    FLAC_Channels buffer[],
+    const FLAC__int32* const buffer[],
     void* client_data) {
-  const size_t num_channels = frame->header.channels;
-  // SAFETY:
-  // https://xiph.org/flac/api/group__flac__stream__decoder.html#ga61e48dc2c0d2f6c5519290ff046874a4
-  // says `buffer` is an array of pointers to the decoded audio (one for each
-  // channel).
-  UNSAFE_BUFFERS(
-      base::span output(static_cast<FLAC_Channels*>(buffer), num_channels));
   return reinterpret_cast<FlacAudioHandler*>(client_data)
-      ->WriteCallbackInternal(frame, output);
+      ->WriteCallbackInternal(frame, buffer);
 }
 
 void FlacAudioHandler::MetaCallback(const FLAC__StreamDecoder* decoder,
@@ -163,37 +153,29 @@ void FlacAudioHandler::MetaCallback(const FLAC__StreamDecoder* decoder,
 void FlacAudioHandler::ErrorCallback(const FLAC__StreamDecoder* decoder,
                                      FLAC__StreamDecoderErrorStatus status,
                                      void* client_data) {
-  // `FLAC__STREAM_DECODER_ERROR_STATUS_BAD_METADATA` is the last enumeration
-  // value of `FLAC__StreamDecoderErrorStatus`. The legal status value should be
-  // less than or equal to it.
-  CHECK_LE(status, FLAC__STREAM_DECODER_ERROR_STATUS_BAD_METADATA);
   LOG(ERROR) << "Got an error callback: "
-             // SAFETY: The above CHECK ensures that `status` does not exceed
-             // the length of `FLAC__StreamDecoderErrorStatusString`
-             << UNSAFE_BUFFERS(FLAC__StreamDecoderErrorStatusString[status]);
+             << FLAC__StreamDecoderErrorStatusString[status];
   reinterpret_cast<FlacAudioHandler*>(client_data)->ErrorCallbackInternal();
 }
 
 FLAC__StreamDecoderReadStatus FlacAudioHandler::ReadCallbackInternal(
-    base::span<uint8_t> buffer,
+    FLAC__byte buffer[],
     size_t* bytes) {
   // Abort to avoid a deadlock.
-  if (buffer.empty()) {
+  if (*bytes < 0) {
     return FLAC__STREAM_DECODER_READ_STATUS_ABORT;
   }
 
   DCHECK_LE(cursor_, flac_data_.size());
   // Check if there is enough data to read.
-  if (flac_data_.size() - cursor_ < buffer.size()) {
-    buffer = buffer.first(flac_data_.size() - cursor_);
-    *bytes = buffer.size();
+  if (flac_data_.size() - cursor_ < *bytes) {
+    *bytes = flac_data_.size() - cursor_;
   }
 
-  buffer.copy_from_nonoverlapping(
-      base::as_byte_span(flac_data_).first(buffer.size()));
+  memcpy(buffer, flac_data_.data() + cursor_, *bytes);
 
   // Update `cursor_`.
-  cursor_ += buffer.size();
+  cursor_ += *bytes;
 
   // Check for end of input.
   return cursor_ >= flac_data_.size()
@@ -203,7 +185,7 @@ FLAC__StreamDecoderReadStatus FlacAudioHandler::ReadCallbackInternal(
 
 FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
     const FLAC__Frame* frame,
-    const base::span<FLAC_Channels> buffer) {
+    const FLAC__int32* const buffer[]) {
   // For some fuzzer cases (b/41495570), a single call of
   // `FLAC__stream_decoder_process_single` will trigger the write callback for
   // multiple times to add silence frames. We don't support the abnormal padding
@@ -213,10 +195,11 @@ FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
   }
 
   // Get the number of channels and the number of samples per channel.
+  const size_t num_channels = frame->header.channels;
   const size_t num_samples = frame->header.blocksize;
 
   // Avoid the crash happened in `fifo_`.
-  if (buffer.size() != static_cast<size_t>(num_channels_)) {
+  if (num_channels != static_cast<size_t>(num_channels_)) {
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
 
@@ -226,15 +209,12 @@ FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
 
-  for (size_t ch = 0; ch < buffer.size(); ++ch) {
+  for (size_t ch = 0; ch < num_channels; ++ch) {
     auto channel_data = bus_->channel_span(ch);
-    // SAFETY:
-    // https://xiph.org/flac/api/group__flac__stream__decoder.html#ga61e48dc2c0d2f6c5519290ff046874a4
-    // says that each buffer pointer will point to a signed array of samples of
-    // length `num_samples`.
-    UNSAFE_BUFFERS(base::span source(buffer[ch], num_samples));
-    std::ranges::transform(source, channel_data.begin(),
-                           SignedInt16SampleTypeTraits::ToFloat);
+    const FLAC__int32* source_data = buffer[ch];
+    for (size_t s = 0; s < num_samples; ++s, ++source_data) {
+      channel_data[s] = SignedInt16SampleTypeTraits::ToFloat(*source_data);
+    }
   }
 
   fifo_->Push(bus_.get(), num_samples);

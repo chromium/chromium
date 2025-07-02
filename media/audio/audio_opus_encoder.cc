@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/audio_opus_encoder.h"
 
-#include <array>
 #include <utility>
 
 #include "base/containers/heap_array.h"
-#include "base/containers/span.h"
-#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -142,44 +144,44 @@ AudioOpusEncoder::CodecDescription AudioOpusEncoder::PrepareExtraData() {
   CodecDescription extra_data;
   // RFC #7845  Ogg Encapsulation for the Opus Audio Codec
   // https://tools.ietf.org/html/rfc7845
-  static constexpr auto kExtraDataTemplate = std::to_array<const uint8_t>(
-      {'O', 'p', 'u', 's', 'H', 'e', 'a', 'd',
-       1,           // offset 8, version, always 1
-       0,           // offset 9, channel count
-       0, 0,        // offset 10, pre-skip
-       0, 0, 0, 0,  // offset 12, original input sample rate in Hz
-       0, 0, 0});
+  static const uint8_t kExtraDataTemplate[19] = {
+      'O', 'p', 'u', 's', 'H', 'e', 'a', 'd',
+      1,                 // offset 8, version, always 1
+      0,                 // offset 9, channel count
+      0,   0,            // offset 10, pre-skip
+      0,   0,   0,   0,  // offset 12, original input sample rate in Hz
+      0,   0,   0};
 
-  extra_data.assign(kExtraDataTemplate.begin(), kExtraDataTemplate.end());
+  extra_data.assign(kExtraDataTemplate,
+                    kExtraDataTemplate + sizeof(kExtraDataTemplate));
 
   // Save number of channels
   base::CheckedNumeric<uint8_t> channels(converted_params_.channels());
-  base::SpanWriter extra_data_writer(base::as_writable_byte_span(extra_data));
-  extra_data_writer.Skip<9u>();
-  extra_data_writer.WriteU8NativeEndian(channels.ValueOrDefault(0));
+  if (channels.IsValid())
+    extra_data.data()[9] = channels.ValueOrDie();
+
   // Number of samples to skip from the start of the decoder's output.
   // Real data begins this many samples late. These samples need to be skipped
   // only at the very beginning of the audio stream, NOT at beginning of each
   // decoded output.
-  base::CheckedNumeric<uint16_t> samples_to_skip_safe = 0;
   if (opus_encoder_) {
     int32_t samples_to_skip = 0;
 
-    static_assert(sizeof(int32_t) == sizeof(opus_int32));
-    opus_encoder_ctl(opus_encoder_.get(),
-                     // SAFETY: In `OPUS_GET_LOOKAHEAD`, we check the pointer
-                     // type. We require a pointer of type `opus_int32`. Our
-                     // static assertion ensures that it is safe.
-                     UNSAFE_BUFFERS(OPUS_GET_LOOKAHEAD(&samples_to_skip)));
-    samples_to_skip_safe = samples_to_skip;
+    opus_encoder_ctl(opus_encoder_.get(), OPUS_GET_LOOKAHEAD(&samples_to_skip));
+    base::CheckedNumeric<uint16_t> samples_to_skip_safe = samples_to_skip;
+    if (samples_to_skip_safe.IsValid())
+      *reinterpret_cast<uint16_t*>(extra_data.data() + 10) =
+          samples_to_skip_safe.ValueOrDie();
   }
-  extra_data_writer.WriteU16NativeEndian(
-      samples_to_skip_safe.ValueOrDefault(0));
 
   // Save original sample rate
   base::CheckedNumeric<uint16_t> sample_rate = input_params_.sample_rate();
-  extra_data_writer.WriteU16NativeEndian(
-      sample_rate.ValueOrDefault(uint16_t{kOpusPreferredSamplingRate}));
+  uint16_t* sample_rate_ptr =
+      reinterpret_cast<uint16_t*>(extra_data.data() + 12);
+  if (sample_rate.IsValid())
+    *sample_rate_ptr = sample_rate.ValueOrDie();
+  else
+    *sample_rate_ptr = uint16_t{kOpusPreferredSamplingRate};
   return extra_data;
 }
 
@@ -227,12 +229,7 @@ void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
 
   if (fifo_has_data_) {
     int32_t encoder_delay = 0;
-    static_assert(sizeof(int32_t) == sizeof(opus_int32));
-    opus_encoder_ctl(opus_encoder_.get(),
-                     // SAFETY: In `OPUS_GET_LOOKAHEAD`, we check the pointer
-                     // type. We require a pointer of type `opus_int32`. Our
-                     // static assertion ensures that it is safe.
-                     UNSAFE_BUFFERS(OPUS_GET_LOOKAHEAD(&encoder_delay)));
+    opus_encoder_ctl(opus_encoder_.get(), OPUS_GET_LOOKAHEAD(&encoder_delay));
 
     // Add enough silence to the queue to guarantee that all audible frames will
     // be output from the encoder.

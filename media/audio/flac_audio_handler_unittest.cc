@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/audio/flac_audio_handler.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
-#include <algorithm>
+#include "media/audio/flac_audio_handler.h"
 #include <cstddef>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/types/zip.h"
 #include "media/audio/test_data.h"
 #include "media/base/audio_bus.h"
 #include "media/base/test_data_util.h"
@@ -45,10 +47,11 @@ TEST(FlacAudioHandlerTest, SampleDataTest) {
   ASSERT_EQ(frames_written1, frames_written2);
 
   // Compare the content in two buses.
-  for (auto [channel_1, channel_2] :
-       base::zip(bus1->AllChannels(), bus2->AllChannels())) {
-    for (int s = 0; s < bus1->frames(); ++s) {
-      ASSERT_FLOAT_EQ(channel_1[s], channel_2[s]);
+  for (int ch = 0; ch < bus1->channels(); ++ch) {
+    float* channel_data1 = bus1->channel(ch);
+    float* channel_data2 = bus2->channel(ch);
+    for (int s = 0; s < bus1->frames(); ++s, ++channel_data1, ++channel_data2) {
+      ASSERT_FLOAT_EQ(*channel_data1, *channel_data2);
     }
   }
 }

@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/audio/audio_output_device.h"
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -199,7 +203,7 @@ void AudioOutputDeviceTest::CallOnStreamCreated() {
   ASSERT_TRUE(shared_memory_region_.IsValid());
   shared_memory_mapping_ = shared_memory_region_.Map();
   ASSERT_TRUE(shared_memory_mapping_.IsValid());
-  std::ranges::fill(shared_memory_mapping_.GetMemoryAsSpan<uint8_t>(), 0xff);
+  memset(shared_memory_mapping_.memory(), 0xff, kMemorySize);
 
   ASSERT_TRUE(CancelableSyncSocket::CreatePair(&browser_socket_,
                                                &renderer_socket_));

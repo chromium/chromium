@@ -9,7 +9,6 @@
 #include <memory>
 #include <string_view>
 
-#include "base/containers/span.h"
 #include "media/audio/audio_handler.h"
 #include "media/base/media_export.h"
 #include "third_party/flac/include/FLAC/stream_decoder.h"
@@ -46,8 +45,6 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
   int total_frames_for_testing() const { return total_frames_; }
 
  private:
-  using FLAC_Channels = const FLAC__int32* const;
-
   // Callbacks for the `decoder_`.
   static FLAC__StreamDecoderReadStatus ReadCallback(
       const FLAC__StreamDecoder* decoder,
@@ -57,7 +54,7 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
   static FLAC__StreamDecoderWriteStatus WriteCallback(
       const FLAC__StreamDecoder* decoder,
       const FLAC__Frame* frame,
-      FLAC_Channels buffer[],
+      const FLAC__int32* const buffer[],
       void* client_data);
   static void MetaCallback(const FLAC__StreamDecoder* decoder,
                            const FLAC__StreamMetadata* metadata,
@@ -69,11 +66,11 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
   bool is_initialized() const { return !!fifo_; }
 
   // Internal callbacks.
-  FLAC__StreamDecoderReadStatus ReadCallbackInternal(base::span<uint8_t> buffer,
+  FLAC__StreamDecoderReadStatus ReadCallbackInternal(FLAC__byte buffer[],
                                                      size_t* bytes);
   FLAC__StreamDecoderWriteStatus WriteCallbackInternal(
       const FLAC__Frame* frame,
-      const base::span<FLAC_Channels> buffer);
+      const FLAC__int32* const buffer[]);
   void MetaCallbackInternal(const FLAC__StreamMetadata* metadata);
   void ErrorCallbackInternal();
 
