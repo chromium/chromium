@@ -123,8 +123,6 @@ crbug.com/1368785 [ android-pixel-6 arm renderer-skia-vulkan target-cpu-64 ] Web
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
 
-# Platform API doesn't report correct 8k 30 framerate for vp09 coded on ChromeOS intel devices.
-crbug.com/373648897 [ chromeos intel angle-vulkan graphite-disabled ] WebCodecs_EncodingFramerateResolutions_7680x3840_30_vp09.00.62.08_prefer-hardware_quality [ Failure ]
 
 # MediaFoundation report `max_macroblocks_per_second=194400`, but only supports 1920x1080
 # up to 238fps instead of 240fps.
@@ -139,17 +137,7 @@ crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hv
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
 
 # Graphite failures
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_EncodeDecode_capture_vp8_prefer-hardware [ Failure ]
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_avc1.42001E_prefer-software [ Failure ]
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_EncodeDecode_capture_vp09.00.10.08_prefer-hardware [ Failure ]
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_Encode_capture_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_vp8_prefer-hardware [ Failure ]
 crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_Encode_capture_vp8_prefer-hardware [ Failure ]
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_EncodeDecode_capture_vp8_prefer-software [ Failure ]
-crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_vp8_prefer-software [ Failure ]
 
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
@@ -172,15 +160,6 @@ crbug.com/416483573 [ android android-brya ] WebCodecs_EncodingRateControl_avc1.
 crbug.com/416483573 [ android android-brya ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
 crbug.com/416483573 [ android android-brya ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
-# Android Desktop/Corsola Failures
-crbug.com/416483573 [ android android-corsola ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ Failure ]
-crbug.com/416483573 [ android android-corsola ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_1500000 [ Failure ]
-crbug.com/419321448 [ android android-corsola ] WebCodecs_FrameSizeChange_avc1.42001E_arraybuffer [ Failure ]
-crbug.com/419321448 [ android android-corsola ] WebCodecs_FrameSizeChange_avc1.42001E_camera [ Failure ]
-crbug.com/419321448 [ android android-corsola ] WebCodecs_FrameSizeChange_avc1.42001E_capture [ Failure ]
-# crbug.com/419321448 [ android android-corsola ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]  # Commented out to avoid conflict with equivalent in "Common Android Desktop Failures".
-crbug.com/419321448 [ android android-corsola ] WebCodecs_FrameSizeChange_avc1.42001E_offscreen [ Failure ]
-crbug.com/419321448 [ android android-corsola ] WebCodecs_FrameSizeChange_avc1.42001E_sw_decoder [ Failure ]
 
 # Common Android Desktop Failures
 crbug.com/428749339 [ android desktop graphite-disabled ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
@@ -241,16 +220,15 @@ crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_sw_decoder [ Failure ]
 
 # Mac Intel SharedImage Synchronization Flakes
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_DrawImage_camera [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodeDecode_arraybuffer_hvc1.1.6.L123.00_prefer-software [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-* [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-software [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_DrawImage_camera [ Failure ]
+crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_arraybuffer_hvc1.1.6.L123.00_prefer-software [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-* [ Failure ]
+crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-software [ Failure ]
+crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-software [ Failure ]
 crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodingRateControl_vp8_prefer-software_constant_2000000 [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_* [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_SVC_avc1.42001E_prefer-* [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_* [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_* [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_avc1.42001E_prefer-* [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_* [ Failure ]
 
 
 #######################################################################
