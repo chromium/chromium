@@ -4054,7 +4054,7 @@
         },
         "swarming": {
           "dimensions": {
-            "os": "Windows-10",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
