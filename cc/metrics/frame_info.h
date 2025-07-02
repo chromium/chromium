@@ -38,8 +38,10 @@ struct CC_EXPORT FrameInfo {
     //     new update from the main-thread.
     kPresentedPartialOldMain,
     kPresentedPartialNewMain,
+    kPresentedPartialWithoutWaiting,
   };
   FrameFinalState final_state = FrameFinalState::kNoUpdateDesired;
+  FrameFinalState final_state_v4 = FrameFinalState::kNoUpdateDesired;
   FrameFinalState final_state_raster_property =
       FrameFinalState::kNoUpdateDesired;
   FrameFinalState final_state_raster_scroll = FrameFinalState::kNoUpdateDesired;
@@ -94,6 +96,7 @@ struct CC_EXPORT FrameInfo {
   bool WasSmoothRasterPropertyUpdateDropped() const;
   bool WasSmoothRasterScrollUpdateDropped() const;
   bool WasSmoothMainUpdateDropped() const;
+  bool WasSmoothMainUpdateDroppedV4() const;
   bool WasSmoothMainUpdateExpected() const;
 
   bool IsScrollPrioritizeFrameDropped() const;
@@ -111,6 +114,7 @@ struct CC_EXPORT FrameInfo {
   bool raster_property_was_dropped = false;
   bool raster_scroll_was_dropped = false;
   bool main_update_was_dropped = false;
+  bool main_update_was_dropped_v4 = false;
 
   // A frame that `was_merged` could have differing final states, and differing
   // termination times. We track both so that each thread's jank can be

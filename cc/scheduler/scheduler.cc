@@ -603,8 +603,13 @@ void Scheduler::BeginImplFrameSynchronous(const viz::BeginFrameArgs& args) {
   BeginImplFrame(adjusted_args, Now());
   compositor_timing_history_->WillFinishImplFrame(
       state_machine_.needs_redraw());
+  bool waiting_for_main =
+      !(deadline_mode_ ==
+            SchedulerStateMachine::BeginImplFrameDeadlineMode::IMMEDIATE ||
+        deadline_mode_ ==
+            SchedulerStateMachine::BeginImplFrameDeadlineMode::WAIT_FOR_SCROLL);
   compositor_frame_reporting_controller_->OnFinishImplFrame(
-      adjusted_args.frame_id);
+      adjusted_args.frame_id, waiting_for_main);
   // Delay the call to |FinishFrame()| if a draw is anticipated, so that it is
   // called after the draw happens (in |OnDrawForLayerTreeFrameSink()|).
   needs_finish_frame_for_synchronous_compositor_ = true;
@@ -692,7 +697,8 @@ void Scheduler::BeginImplFrame(const viz::BeginFrameArgs& args,
 
     begin_impl_frame_tracker_.Start(args);
     state_machine_.OnBeginImplFrame(args);
-    compositor_frame_reporting_controller_->WillBeginImplFrame(args);
+    compositor_frame_reporting_controller_->WillBeginImplFrame(
+        args, state_machine_.ShouldThrottleSendBeginMainFrame());
     bool has_damage =
         client_->WillBeginImplFrame(begin_impl_frame_tracker_.Current());
 
@@ -805,8 +811,13 @@ void Scheduler::OnBeginImplFrameDeadline() {
     if (!settings_.using_synchronous_renderer_compositor) {
       compositor_timing_history_->WillFinishImplFrame(
           state_machine_.needs_redraw());
+      bool waiting_for_main =
+          !(deadline_mode_ ==
+                SchedulerStateMachine::BeginImplFrameDeadlineMode::IMMEDIATE ||
+            deadline_mode_ == SchedulerStateMachine::
+                                  BeginImplFrameDeadlineMode::WAIT_FOR_SCROLL);
       compositor_frame_reporting_controller_->OnFinishImplFrame(
-          begin_main_frame_args_.frame_id);
+          begin_main_frame_args_.frame_id, waiting_for_main);
     }
 
     state_machine_.OnBeginImplFrameDeadline();

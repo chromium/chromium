@@ -355,6 +355,8 @@ class CC_EXPORT SchedulerStateMachine {
 
   void SetVideoNeedsBeginFrames(bool video_needs_begin_frames);
 
+  bool ShouldThrottleSendBeginMainFrame() const;
+
   bool did_submit_in_last_frame() const { return did_submit_in_last_frame_; }
   bool draw_succeeded_in_last_frame() const {
     return draw_succeeded_in_last_frame_;
@@ -420,7 +422,6 @@ class CC_EXPORT SchedulerStateMachine {
   bool ShouldDraw() const;
   bool ShouldActivateSyncTree() const;
   bool ShouldSendBeginMainFrame() const;
-  bool ShouldThrottleSendBeginMainFrame() const;
   bool ShouldCommit() const;
   bool ShouldRunPostCommit() const;
   bool ShouldPrepareTiles() const;

@@ -12,6 +12,7 @@
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
+#include "cc/scheduler/scheduler_state_machine.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -127,7 +128,8 @@ void CompositorFrameReportingController::ProcessSkippedFramesIfNecessary(
 }
 
 void CompositorFrameReportingController::WillBeginImplFrame(
-    const viz::BeginFrameArgs& args) {
+    const viz::BeginFrameArgs& args,
+    bool will_throttle_main) {
   ProcessSkippedFramesIfNecessary(args);
 
   base::TimeTicks begin_time = Now();
@@ -165,6 +167,7 @@ void CompositorFrameReportingController::WillBeginImplFrame(
   reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                        begin_time);
   reporter->set_want_new_tree(needs_raster_properties_animated_);
+  reporter->set_will_throttle_main(will_throttle_main);
   reporters_[PipelineStage::kBeginImplFrame] = std::move(reporter);
 }
 
@@ -269,6 +272,8 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     const viz::BeginFrameId& last_activated_frame_id) {
   bool is_activated_frame_new =
       (last_activated_frame_id != last_submitted_frame_id_);
+  uint64_t active_tree_staleness = current_frame_id.sequence_number -
+                                   last_activated_frame_id.sequence_number;
 
   // It is possible to submit a CompositorFrame containing outputs from two
   // different begin-frames: an begin-main-frame that was blocked on the
@@ -404,6 +409,7 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
         submit_info.checkerboarded_needs_record);
     impl_reporter->set_is_accompanied_by_main_thread_update(
         is_activated_frame_new);
+    impl_reporter->set_active_tree_staleness(active_tree_staleness);
     impl_reporter->set_reporter_type_to_impl();
     impl_reporter->set_top_controls_moved(submit_info.top_controls_moved);
     impl_reporter->set_created_new_tree(submit_info.drawn_with_new_layer_tree);
@@ -468,10 +474,11 @@ void CompositorFrameReportingController::
 }
 
 void CompositorFrameReportingController::OnFinishImplFrame(
-    const viz::BeginFrameId& id) {
+    const viz::BeginFrameId& id,
+    bool waiting_for_main) {
   for (auto& reporter : reporters_) {
     if (reporter && reporter->frame_id() == id) {
-      reporter->OnFinishImplFrame(Now());
+      reporter->OnFinishImplFrame(Now(), waiting_for_main);
       return;
     }
   }
@@ -797,7 +804,7 @@ CompositorFrameReportingController::GetOutstandingUpdatesFromMain(
 
 void CompositorFrameReportingController::CreateReportersForDroppedFrames(
     const viz::BeginFrameArgs& old_args,
-    const viz::BeginFrameArgs& new_args) const {
+    const viz::BeginFrameArgs& new_args) {
   DCHECK_EQ(new_args.frame_id.source_id, old_args.frame_id.source_id);
   DCHECK_GE(
       new_args.frame_id.sequence_number - new_args.frames_throttled_since_last,
@@ -810,8 +817,34 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
   const uint32_t kMaxFrameCount = 100;
 
   // If there are more than 100 frames skipped, ignore them
-  if (interval > kMaxFrameCount)
+  if (interval > kMaxFrameCount) {
     return;
+  }
+
+  // Due to scheduling we can be told `DidNotProduceFrame` for Main-threaded
+  // effects, without having a need for `WillBeginImplFrame`. We want to reflect
+  // the `FrameSkippedReason` in the backfill reporters. As they may actually
+  // have been `NoUpdateDesired` and not `Dropped`.
+  std::optional<FrameSkippedReason> skipped_reason;
+  for (auto& stage_reporter : reporters_) {
+    if (stage_reporter && stage_reporter->frame_id() == old_args.frame_id) {
+      bool main_not_expected = !stage_reporter->will_throttle_main() &&
+                               !stage_reporter->waiting_for_main();
+      bool waiting_on_main = stage_reporter->has_frame_skip_reason() &&
+                             stage_reporter->frame_skip_reason() ==
+                                 FrameSkippedReason::kWaitingOnMain;
+      // WaitingOnMain can be inaccurate. It can be due to scheduling, or we
+      // could have not actually waited for main, but had no Compositor thread
+      // damage. If we were not waiting, treat this as NoDamage for the V4
+      // metric.
+      if (main_not_expected && waiting_on_main) {
+        skipped_reason = FrameSkippedReason::kNoDamage;
+      } else if (stage_reporter->has_frame_skip_reason()) {
+        skipped_reason = stage_reporter->frame_skip_reason();
+      }
+      break;
+    }
+  }
 
   auto timestamp = old_args.frame_time + old_args.interval;
   FrameSequenceTrackerCollection* trackers =
@@ -846,6 +879,7 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
     reporter->TerminateFrame(FrameTerminationStatus::kDidNotPresentFrame,
                              args.deadline);
     reporter->set_is_backfill(true);
+    reporter->set_frame_skipped_reason_v4(skipped_reason);
   }
 }
 

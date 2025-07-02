@@ -65,7 +65,8 @@ class CC_EXPORT CompositorFrameReportingController {
       const CompositorFrameReportingController&) = delete;
 
   // Events to signal Beginning/Ending of phases.
-  virtual void WillBeginImplFrame(const viz::BeginFrameArgs& args);
+  virtual void WillBeginImplFrame(const viz::BeginFrameArgs& args,
+                                  bool will_throttle_main);
   virtual void WillBeginMainFrame(const viz::BeginFrameArgs& args);
   virtual void BeginMainFrameAborted(const viz::BeginFrameId& id,
                                      CommitEarlyOutReason reason);
@@ -80,7 +81,8 @@ class CC_EXPORT CompositorFrameReportingController {
       const viz::BeginFrameId& last_activated_frame_id);
   virtual void DidNotProduceFrame(const viz::BeginFrameId& id,
                                   FrameSkippedReason skip_reason);
-  virtual void OnFinishImplFrame(const viz::BeginFrameId& id);
+  virtual void OnFinishImplFrame(const viz::BeginFrameId& id,
+                                 bool waiting_for_main);
   virtual void DidPresentCompositorFrame(
       uint32_t frame_token,
       const viz::FrameTimingDetails& details);
@@ -184,9 +186,8 @@ class CC_EXPORT CompositorFrameReportingController {
       bool next_reporter_from_same_frame);
   void StoreEventMetricsFromDroppedFrames(CompositorFrameReporter& reporter,
                                           uint32_t frame_token);
-  void CreateReportersForDroppedFrames(
-      const viz::BeginFrameArgs& old_args,
-      const viz::BeginFrameArgs& new_args) const;
+  void CreateReportersForDroppedFrames(const viz::BeginFrameArgs& old_args,
+                                       const viz::BeginFrameArgs& new_args);
 
   // The arg is a reference to the unique_ptr, because depending on the state
   // that reporter is in, its ownership might be pass or not.

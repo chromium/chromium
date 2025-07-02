@@ -131,7 +131,8 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   void SimulateBeginImplFrame() {
     IncrementCurrentId();
     begin_impl_time_ = AdvanceNowByMs(10);
-    reporting_controller_.WillBeginImplFrame(args_);
+    reporting_controller_.WillBeginImplFrame(args_,
+                                             /*will_throttle_main=*/false);
   }
 
   void SimulateBeginMainFrame() {
@@ -368,24 +369,29 @@ TEST_F(CompositorFrameReportingControllerTest, ActiveReporterCounts) {
   viz::BeginFrameArgs args_3 = SimulateBeginFrameArgs(current_id_3);
 
   // BF
-  reporting_controller_.WillBeginImplFrame(args_1);
+  reporting_controller_.WillBeginImplFrame(args_1,
+                                           /*will_throttle_main=*/false);
   EXPECT_EQ(1, reporting_controller_.ActiveReporters());
-  reporting_controller_.OnFinishImplFrame(args_1.frame_id);
+  reporting_controller_.OnFinishImplFrame(args_1.frame_id,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.DidNotProduceFrame(args_1.frame_id,
                                            FrameSkippedReason::kNoDamage);
 
   // BF -> BF
   // Should replace previous reporter.
-  reporting_controller_.WillBeginImplFrame(args_2);
+  reporting_controller_.WillBeginImplFrame(args_2,
+                                           /*will_throttle_main=*/false);
   EXPECT_EQ(1, reporting_controller_.ActiveReporters());
-  reporting_controller_.OnFinishImplFrame(args_2.frame_id);
+  reporting_controller_.OnFinishImplFrame(args_2.frame_id,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.DidNotProduceFrame(args_2.frame_id,
                                            FrameSkippedReason::kNoDamage);
 
   // BF -> BMF -> BF
   // Should add new reporter.
   reporting_controller_.WillBeginMainFrame(args_2);
-  reporting_controller_.WillBeginImplFrame(args_3);
+  reporting_controller_.WillBeginImplFrame(args_3,
+                                           /*will_throttle_main=*/false);
   EXPECT_EQ(2, reporting_controller_.ActiveReporters());
 
   // BF -> BMF -> BF -> Commit
@@ -437,7 +443,8 @@ TEST_F(CompositorFrameReportingControllerTest, ActiveReporterCounts) {
   SimulateBeginImplFrame();
   EXPECT_EQ(4, reporting_controller_.ActiveReporters());
 
-  reporting_controller_.OnFinishImplFrame(args_.frame_id);
+  reporting_controller_.OnFinishImplFrame(args_.frame_id,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.DidNotProduceFrame(args_.frame_id,
                                            FrameSkippedReason::kNoDamage);
 
@@ -510,23 +517,28 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameCausedNoDamage) {
   viz::BeginFrameId current_id_3(1, 3);
   viz::BeginFrameArgs args_3 = SimulateBeginFrameArgs(current_id_3);
 
-  reporting_controller_.WillBeginImplFrame(args_1);
+  reporting_controller_.WillBeginImplFrame(args_1,
+                                           /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args_1);
   reporting_controller_.BeginMainFrameAborted(
       current_id_1, CommitEarlyOutReason::kFinishedNoUpdates);
-  reporting_controller_.OnFinishImplFrame(current_id_1);
+  reporting_controller_.OnFinishImplFrame(current_id_1,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.DidNotProduceFrame(current_id_1,
                                            FrameSkippedReason::kNoDamage);
 
-  reporting_controller_.WillBeginImplFrame(args_2);
+  reporting_controller_.WillBeginImplFrame(args_2,
+                                           /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args_2);
-  reporting_controller_.OnFinishImplFrame(current_id_2);
+  reporting_controller_.OnFinishImplFrame(current_id_2,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.BeginMainFrameAborted(
       current_id_2, CommitEarlyOutReason::kFinishedNoUpdates);
   reporting_controller_.DidNotProduceFrame(current_id_2,
                                            FrameSkippedReason::kNoDamage);
 
-  reporting_controller_.WillBeginImplFrame(args_3);
+  reporting_controller_.WillBeginImplFrame(args_3,
+                                           /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args_3);
 
   histogram_tester.ExpectTotalCount(
@@ -544,14 +556,18 @@ TEST_F(CompositorFrameReportingControllerTest, DidNotProduceFrame) {
   viz::BeginFrameId current_id_2(1, 2);
   viz::BeginFrameArgs args_2 = SimulateBeginFrameArgs(current_id_2);
 
-  reporting_controller_.WillBeginImplFrame(args_1);
+  reporting_controller_.WillBeginImplFrame(args_1,
+                                           /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args_1);
-  reporting_controller_.OnFinishImplFrame(current_id_1);
+  reporting_controller_.OnFinishImplFrame(current_id_1,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.DidNotProduceFrame(current_id_1,
                                            FrameSkippedReason::kNoDamage);
 
-  reporting_controller_.WillBeginImplFrame(args_2);
-  reporting_controller_.OnFinishImplFrame(current_id_2);
+  reporting_controller_.WillBeginImplFrame(args_2,
+                                           /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_2,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
@@ -585,11 +601,12 @@ TEST_F(CompositorFrameReportingControllerTest, DidNotProduceFrame) {
 TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted) {
   base::HistogramTester histogram_tester;
 
-  reporting_controller_.WillBeginImplFrame(args_);
+  reporting_controller_.WillBeginImplFrame(args_, /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args_);
   reporting_controller_.BeginMainFrameAborted(
       current_id_, CommitEarlyOutReason::kFinishedNoUpdates);
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info = {1u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_,
                                                  last_activated_id_);
@@ -621,17 +638,21 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted2) {
   viz::BeginFrameId current_id_3(1, 3);
   viz::BeginFrameArgs args_3 = SimulateBeginFrameArgs(current_id_3);
 
-  reporting_controller_.WillBeginImplFrame(args_1);
-  reporting_controller_.OnFinishImplFrame(current_id_1);
+  reporting_controller_.WillBeginImplFrame(args_1,
+                                           /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_1,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.WillBeginMainFrame(args_1);
   reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
-  reporting_controller_.WillBeginImplFrame(args_2);
+  reporting_controller_.WillBeginImplFrame(args_2,
+                                           /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args_2);
-  reporting_controller_.OnFinishImplFrame(current_id_2);
+  reporting_controller_.OnFinishImplFrame(current_id_2,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.BeginMainFrameAborted(
       current_id_2, CommitEarlyOutReason::kFinishedNoUpdates);
   SubmitInfo submit_info = {1u, AdvanceNowByMs(10)};
@@ -673,8 +694,10 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted2) {
   histogram_tester.ExpectTotalCount(
       "CompositorLatency2.SubmitCompositorFrameToPresentationCompositorFrame",
       2);
-  reporting_controller_.WillBeginImplFrame(args_3);
-  reporting_controller_.OnFinishImplFrame(current_id_3);
+  reporting_controller_.WillBeginImplFrame(args_3,
+                                           /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_3,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info3 = {3u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info3, current_id_3,
                                                  current_id_1);
@@ -708,8 +731,10 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
   viz::BeginFrameArgs args_3 = SimulateBeginFrameArgs(current_id_3);
 
   viz::FrameTimingDetails details = {};
-  reporting_controller_.WillBeginImplFrame(args_1);
-  reporting_controller_.OnFinishImplFrame(current_id_1);
+  reporting_controller_.WillBeginImplFrame(args_1,
+                                           /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_1,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.WillBeginMainFrame(args_1);
   reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
@@ -737,9 +762,11 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
 
   // Second frame will not have the main frame update ready and will only submit
   // the Impl update
-  reporting_controller_.WillBeginImplFrame(args_2);
+  reporting_controller_.WillBeginImplFrame(args_2,
+                                           /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args_2);
-  reporting_controller_.OnFinishImplFrame(current_id_2);
+  reporting_controller_.OnFinishImplFrame(current_id_2,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info2 = {2u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info2, current_id_2,
                                                  current_id_1);
@@ -761,8 +788,10 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
       "CompositorLatency2.SubmitCompositorFrameToPresentationCompositorFrame",
       1);
 
-  reporting_controller_.WillBeginImplFrame(args_3);
-  reporting_controller_.OnFinishImplFrame(current_id_3);
+  reporting_controller_.WillBeginImplFrame(args_3,
+                                           /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_3,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
@@ -799,8 +828,10 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
   viz::BeginFrameArgs args_2 = SimulateBeginFrameArgs(current_id_2);
 
   viz::FrameTimingDetails details = {};
-  reporting_controller_.WillBeginImplFrame(args_1);
-  reporting_controller_.OnFinishImplFrame(current_id_1);
+  reporting_controller_.WillBeginImplFrame(args_1,
+                                           /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_1,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.WillBeginMainFrame(args_1);
   reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
@@ -827,12 +858,14 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
       1);
 
   // The reporting for the second frame is delayed until activation happens.
-  reporting_controller_.WillBeginImplFrame(args_2);
+  reporting_controller_.WillBeginImplFrame(args_2,
+                                           /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args_2);
   reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
-  reporting_controller_.OnFinishImplFrame(current_id_2);
+  reporting_controller_.OnFinishImplFrame(current_id_2,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info2 = {2u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info2, current_id_2,
                                                  current_id_1);
@@ -859,8 +892,10 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
   // a new frame is submitted.
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
-  reporting_controller_.WillBeginImplFrame(args_3);
-  reporting_controller_.OnFinishImplFrame(current_id_3);
+  reporting_controller_.WillBeginImplFrame(args_3,
+                                           /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_3,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info3 = {3u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info3, current_id_3,
                                                  current_id_2);
@@ -927,8 +962,9 @@ TEST_F(CompositorFrameReportingControllerTest, BlinkBreakdown) {
 TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame1) {
   base::HistogramTester histogram_tester;
 
-  reporting_controller_.WillBeginImplFrame(args_);
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.WillBeginImplFrame(args_, /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.WillBeginMainFrame(args_);
   reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
@@ -952,8 +988,9 @@ TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame1) {
 TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame2) {
   base::HistogramTester histogram_tester;
 
-  reporting_controller_.WillBeginImplFrame(args_);
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.WillBeginImplFrame(args_, /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.WillBeginMainFrame(args_);
   reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
@@ -979,8 +1016,9 @@ TEST_F(CompositorFrameReportingControllerTest, LongCompositorAnimation) {
 
   SimulatePresentCompositorFrame();
 
-  reporting_controller_.WillBeginImplFrame(args_);
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.WillBeginImplFrame(args_, /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info = {1u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_,
                                                  last_activated_id_);
@@ -988,15 +1026,17 @@ TEST_F(CompositorFrameReportingControllerTest, LongCompositorAnimation) {
   reporting_controller_.DidPresentCompositorFrame(*current_token_, details);
 
   IncrementCurrentId();
-  reporting_controller_.WillBeginImplFrame(args_);
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.WillBeginImplFrame(args_, /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.DidNotProduceFrame(args_.frame_id,
                                            FrameSkippedReason::kDrawThrottled);
 
   IncrementCurrentId();
   // Flushing the last no damage frame.
-  reporting_controller_.WillBeginImplFrame(args_);
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.WillBeginImplFrame(args_, /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   EXPECT_EQ(3u, frame_sorter_.total_frames());
   EXPECT_EQ(1u, frame_sorter_.total_dropped());
@@ -1214,7 +1254,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   // Simulate a frame getting stuck in the main thread.
   SimulateBeginImplFrame();
   SimulateBeginMainFrame();
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Submit a partial update with our events from the compositor thread.
   EventMetrics::List metrics_list;
@@ -1235,7 +1276,8 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // Submit the final update.
   SimulateBeginImplFrame();
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SimulateSubmitCompositorFrame({});
 
   // Present the final update.
@@ -1418,7 +1460,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   // (R1C for the submitted frame with updates from compositor-thread, and R1M
   // for the pending main-thread frame).
   SimulateBeginMainFrame();
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info = {1u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_, {});
   viz::FrameTimingDetails details = {};
@@ -1438,7 +1481,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   // before the main-thread responds. This also again creates two reporters: R2C
   // and R2M.
   SimulateBeginMainFrame();
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info_main = {1u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info_main, current_id_,
                                                  previous_id);
@@ -1465,13 +1509,15 @@ TEST_F(CompositorFrameReportingControllerTest,
        DependentDroppedFrameTerminatesReporterImmediately) {
   // Start a frame with main-thread update and let it get stuck in main-thread.
   SimulateBeginMainFrame();
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Start another frame that has impl-thread update and submit and present it
   // successfully. The reporter for this frame should become dependent of the
   // main reporter and adopted by it.
   SimulateBeginImplFrame();
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info = {1u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_, {});
 
@@ -1494,7 +1540,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   // the main reporter, but should terminated immediately upon presentation
   // failure, hence not adopted by the main reporter.
   SimulateBeginImplFrame();
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info2 = {2u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info2, current_id_, {});
 
@@ -1596,20 +1643,26 @@ TEST_F(CompositorFrameReportingControllerTest,
   viz::BeginFrameId current_id_4(1, 4);
   viz::BeginFrameArgs args_4 = SimulateBeginFrameArgs(current_id_4);
 
-  reporting_controller_.WillBeginImplFrame(args_1);
+  reporting_controller_.WillBeginImplFrame(args_1,
+                                           /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args_1);
-  reporting_controller_.OnFinishImplFrame(current_id_1);
+  reporting_controller_.OnFinishImplFrame(current_id_1,
+                                          /*waiting_for_main=*/true);
   EXPECT_EQ(0u, frame_sorter_.total_dropped());
   reporting_controller_.DidNotProduceFrame(args_1.frame_id,
                                            FrameSkippedReason::kWaitingOnMain);
 
-  reporting_controller_.WillBeginImplFrame(args_2);
-  reporting_controller_.OnFinishImplFrame(args_2.frame_id);
+  reporting_controller_.WillBeginImplFrame(args_2,
+                                           /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(args_2.frame_id,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.DidNotProduceFrame(args_2.frame_id,
                                            FrameSkippedReason::kWaitingOnMain);
 
-  reporting_controller_.WillBeginImplFrame(args_3);
-  reporting_controller_.OnFinishImplFrame(args_3.frame_id);
+  reporting_controller_.WillBeginImplFrame(args_3,
+                                           /*will_throttle_main=*/false);
+  reporting_controller_.OnFinishImplFrame(args_3.frame_id,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.DidNotProduceFrame(args_3.frame_id,
                                            FrameSkippedReason::kWaitingOnMain);
 
@@ -1628,7 +1681,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   // New reporters replace older reporters
-  reporting_controller_.WillBeginImplFrame(args_4);
+  reporting_controller_.WillBeginImplFrame(args_4,
+                                           /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args_4);
 
   EXPECT_EQ(4u, frame_sorter_.total_frames());
@@ -1723,7 +1777,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   for (int i = 0; i < 5; ++i) {
     SimulateBeginImplFrame();
     SimulateBeginMainFrame();
-    reporting_controller_.OnFinishImplFrame(current_id_);
+    reporting_controller_.OnFinishImplFrame(current_id_,
+                                            /*waiting_for_main=*/true);
     reporting_controller_.BeginMainFrameAborted(
         current_id_, CommitEarlyOutReason::kFinishedNoUpdates);
   }
@@ -1733,7 +1788,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   for (int i = 0; i < 5; ++i) {
     SimulateBeginImplFrame();
     SimulateBeginMainFrame();
-    reporting_controller_.OnFinishImplFrame(current_id_);
+    reporting_controller_.OnFinishImplFrame(current_id_,
+                                            /*waiting_for_main=*/true);
     reporting_controller_.BeginMainFrameAborted(
         current_id_, CommitEarlyOutReason::kAbortedDeferredCommit);
     SimulateSubmitCompositorFrame({});
@@ -1784,7 +1840,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   frame_sorter_.OnFirstContentfulPaintReceived();
 
   SimulateBeginMainFrame();
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SubmitInfo submit_info = {1u, AdvanceNowByMs(10)};
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_, {});
   viz::FrameTimingDetails details = {};
@@ -1798,7 +1855,8 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   SimulateBeginMainFrame();
   DCHECK_NE(previous_id, current_id_);
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Starts a new frame and submit it prior to its commit, but the older frame
   // has new updates which would be activated and submitted now.
@@ -1829,7 +1887,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(0u, frame_sorter_.total_frames());
 
   // Terminate the frame without submitting a frame.
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   reporting_controller_.DidNotProduceFrame(current_id_,
                                            FrameSkippedReason::kWaitingOnMain);
   EXPECT_EQ(0u, frame_sorter_.total_frames());
@@ -1844,7 +1903,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(2, reporting_controller_.ActiveReporters());
   EXPECT_EQ(0u, frame_sorter_.total_frames());
 
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SimulatePresentCompositorFrame();
   EXPECT_EQ(3u, frame_sorter_.total_frames());
 }
@@ -1856,11 +1916,11 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameBeforeCommit) {
   viz::BeginFrameArgs args4 = SimulateBeginFrameArgs({1, 4});
 
   // Frame 1
-  reporting_controller_.WillBeginImplFrame(args1);
+  reporting_controller_.WillBeginImplFrame(args1, /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args1);
   reporting_controller_.NotifyReadyToCommit(nullptr);
   // Frame 1 is ready to commit, so we can pipeline frame 2.
-  reporting_controller_.WillBeginImplFrame(args2);
+  reporting_controller_.WillBeginImplFrame(args2, /*will_throttle_main=*/false);
   reporting_controller_.WillBeginMainFrame(args2);
   EXPECT_EQ(2, reporting_controller_.ActiveReporters());
   EXPECT_TRUE(reporting_controller_.HasReporterAt(
@@ -1873,7 +1933,7 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameBeforeCommit) {
   reporting_controller_.DidCommit();
   // Frame 2 ready to commit
   reporting_controller_.NotifyReadyToCommit(nullptr);
-  reporting_controller_.WillBeginImplFrame(args3);
+  reporting_controller_.WillBeginImplFrame(args3, /*will_throttle_main=*/false);
   EXPECT_EQ(3, reporting_controller_.ActiveReporters());
   // Pipeline frame 3
   reporting_controller_.WillBeginMainFrame(args3);
@@ -1893,7 +1953,7 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameBeforeCommit) {
   reporting_controller_.DidCommit();
   // Frame 3 ready to commit
   reporting_controller_.NotifyReadyToCommit(nullptr);
-  reporting_controller_.WillBeginImplFrame(args4);
+  reporting_controller_.WillBeginImplFrame(args4, /*will_throttle_main=*/false);
   EXPECT_EQ(4, reporting_controller_.ActiveReporters());
   // Pipeline frame 4
   reporting_controller_.WillBeginMainFrame(args4);
@@ -1950,7 +2010,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   SimulateBeginImplFrame();  // BF1
   viz::BeginFrameId bf1_id = current_id_;
   SimulateBeginMainFrame();  // BMF1
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Submit a partial update with update from R1impl.
   EventMetrics::List metrics_list_1;
@@ -1969,7 +2030,8 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   SimulateBeginImplFrame();  // BF2
   viz::BeginFrameId bf2_id = current_id_;
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SimulateCommit(nullptr);   // CMF1
   SimulateBeginMainFrame();  // BMF2
 
@@ -1989,7 +2051,8 @@ TEST_F(CompositorFrameReportingControllerTest,
       bf2_id, CommitEarlyOutReason::kFinishedNoUpdates);  // AbMF2
 
   SimulateBeginImplFrame();  // BF3
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   // Begin main frame 3, this replaces the R2main in controller and terminates
   // the reporter. So R2impl won't get adopted by R2main.
   SimulateBeginMainFrame();  // BMF3
@@ -2063,7 +2126,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   SimulateBeginImplFrame();  // BF1
   viz::BeginFrameId bf1_id = current_id_;
   SimulateBeginMainFrame();  // BMF1
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Submit a partial update including only main update from R1impl.
   EventMetrics::List metrics_list_1;
@@ -2081,7 +2145,8 @@ TEST_F(CompositorFrameReportingControllerTest,
                                                   details_1);  // PF1
 
   SimulateBeginImplFrame();  // BF2
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Submit a partial update including only main update from R2impl.
   EventMetrics::List metrics_list_2;
@@ -2104,7 +2169,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   SimulateActivate();  // AMF1
 
   SimulateBeginImplFrame();  // BF3
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Submit the frame containing updates from R1main and R3impl.
   ++current_token_;
@@ -2164,7 +2230,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   SimulateBeginImplFrame();  // BF1
   viz::BeginFrameId bf1_id = current_id_;
   SimulateBeginMainFrame();  // BMF1
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Submit a partial update including only main update from R1impl.
   EventMetrics::List metrics_list_1;
@@ -2183,7 +2250,8 @@ TEST_F(CompositorFrameReportingControllerTest,
                                                   details_1);  // PF1(dropped)
 
   SimulateBeginImplFrame();  // BF2
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SimulateCommit(nullptr);
   SimulateActivate();  // AMF1
 
@@ -2258,7 +2326,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   SimulateBeginImplFrame();  // BF1
   viz::BeginFrameId bf1_id = current_id_;
   SimulateBeginMainFrame();  // BMF1
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Submit a partial update containing R1impl.
   EventMetrics::List metrics_list_1;
@@ -2281,7 +2350,8 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   SimulateBeginImplFrame();  // BF2
   viz::BeginFrameId bf2_id = current_id_;
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   SimulateBeginMainFrame();  // BMF2
 
   // Submit frame containing update from R1main and R2impl.
@@ -2301,7 +2371,8 @@ TEST_F(CompositorFrameReportingControllerTest,
                                                   details_2);  // PF(2+1)
 
   SimulateBeginImplFrame();  // BF3
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Submit partial update containing R3impl.
   EventMetrics::List metrics_list_3;
@@ -2322,7 +2393,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   SimulateActivate();  // AMF2
 
   SimulateBeginImplFrame();  // BF4
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
 
   // Submit frame containing update from R2main and R4impl.
   ++current_token_;
@@ -2430,7 +2502,8 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
   args_.interval = vsync_interval;
 
   SimulateBeginImplFrame();  // BF1
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   EventMetrics::List metrics_list_1;
   metrics_list_1.push_back(std::move(metrics_1));
   SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1), {}});
@@ -2442,7 +2515,8 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
                                                   details_1);  // PF1
 
   SimulateBeginImplFrame();  // BF2
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   EventMetrics::List metrics_list_2;
   metrics_list_2.push_back(std::move(metrics_2));
   SimulateSubmitCompositorFrame({{}, std::move(metrics_list_2), {}});
@@ -2454,7 +2528,8 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
                                                   details_2);  // PF2
 
   SimulateBeginImplFrame();  // BF3
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   EventMetrics::List metrics_list_3;
   metrics_list_3.push_back(std::move(metrics_3));
   SimulateSubmitCompositorFrame({{}, std::move(metrics_list_3), {}});
@@ -2466,7 +2541,8 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
                                                   details_3);  // PF3
 
   SimulateBeginImplFrame();  // BF4
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   EventMetrics::List metrics_list_4;
   metrics_list_4.push_back(std::move(non_scroll_event));
   SimulateSubmitCompositorFrame({{}, std::move(metrics_list_4), {}});
@@ -2544,7 +2620,8 @@ TEST_F(CompositorFrameReportingControllerTest, JankyThrottledScrolledFrameArg) {
   args_.interval = vsync_interval;
 
   SimulateBeginImplFrame();  // BF1
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   EventMetrics::List metrics_list_1;
   metrics_list_1.push_back(std::move(metrics_1));
   SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1), {}});
@@ -2556,13 +2633,15 @@ TEST_F(CompositorFrameReportingControllerTest, JankyThrottledScrolledFrameArg) {
                                                   details_1);  // PF1
 
   SimulateBeginImplFrame();  // BF2
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   AdvanceNowByMs(10);
   reporting_controller_.DidNotProduceFrame(current_id_,
                                            FrameSkippedReason::kDrawThrottled);
 
   SimulateBeginImplFrame();  // BF3
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   EventMetrics::List metrics_list_3;
   metrics_list_3.push_back(std::move(metrics_2));
   metrics_list_3.push_back(std::move(metrics_3));
@@ -2621,7 +2700,8 @@ TEST_F(CompositorFrameReportingControllerTest, VsyncIntervalArg) {
   // First BeginFrame with a 32ms interval.
   args_.interval = base::Milliseconds(32);
   SimulateBeginImplFrame();  // BF1
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   EventMetrics::List metrics_list_1;
   metrics_list_1.push_back(std::move(metrics_1));
   SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1), {}});
@@ -2632,7 +2712,8 @@ TEST_F(CompositorFrameReportingControllerTest, VsyncIntervalArg) {
   // Second BeginFrame with an 8ms interval.
   args_.interval = base::Milliseconds(8);
   SimulateBeginImplFrame();  // BF2
-  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.OnFinishImplFrame(current_id_,
+                                          /*waiting_for_main=*/true);
   EventMetrics::List metrics_list_2;
   metrics_list_2.push_back(std::move(metrics_2));
   SimulateSubmitCompositorFrame({{}, std::move(metrics_list_2), {}});

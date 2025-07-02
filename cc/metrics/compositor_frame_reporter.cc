@@ -683,6 +683,8 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
   new_reporter->current_stage_.start_time = stage_history_.front().start_time;
   new_reporter->set_tick_clock(tick_clock_);
   new_reporter->set_is_forked(true);
+  new_reporter->set_will_throttle_main(will_throttle_main_);
+  new_reporter->waiting_for_main(waiting_for_main_);
 
   // Set up the new reporter so that it depends on |this| for partial update
   // information.
@@ -738,11 +740,13 @@ void CompositorFrameReporter::TerminateFrame(
   EndCurrentStage(frame_termination_time_);
 }
 
-void CompositorFrameReporter::OnFinishImplFrame(base::TimeTicks timestamp) {
+void CompositorFrameReporter::OnFinishImplFrame(base::TimeTicks timestamp,
+                                                bool waiting_for_main) {
   DCHECK(!did_finish_impl_frame_);
 
   did_finish_impl_frame_ = true;
   impl_frame_finish_time_ = timestamp;
+  waiting_for_main_ = waiting_for_main;
 }
 
 void CompositorFrameReporter::OnAbortBeginMainFrame(base::TimeTicks timestamp) {
@@ -854,6 +858,7 @@ void CompositorFrameReporter::TerminateReporter() {
     case FrameFinalState::kPresentedAll:
     case FrameFinalState::kPresentedPartialNewMain:
     case FrameFinalState::kPresentedPartialOldMain:
+    case FrameFinalState::kPresentedPartialWithoutWaiting:
       EnableReportType(FrameReportType::kNonDroppedFrame);
       if (ComputeSafeDeadlineForFrame(args_) < frame_termination_time_)
         EnableReportType(FrameReportType::kMissedDeadlineFrame);
@@ -1274,6 +1279,7 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
             break;
           case FrameInfo::FrameFinalState::kPresentedPartialNewMain:
           case FrameInfo::FrameFinalState::kPresentedPartialOldMain:
+          case FrameInfo::FrameFinalState::kPresentedPartialWithoutWaiting:
             state = ChromeFrameReporter2::STATE_PRESENTED_PARTIAL;
             break;
           case FrameInfo::FrameFinalState::kNoUpdateDesired:
@@ -1634,6 +1640,7 @@ base::WeakPtr<CompositorFrameReporter> CompositorFrameReporter::GetWeakPtr() {
 
 FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   FrameFinalState final_state = FrameFinalState::kNoUpdateDesired;
+  std::optional<FrameFinalState> final_state_v4;
   FrameFinalState final_state_raster_property =
       FrameFinalState::kNoUpdateDesired;
   FrameFinalState final_state_raster_scroll = FrameFinalState::kNoUpdateDesired;
@@ -1646,6 +1653,17 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
         final_state = is_accompanied_by_main_thread_update_
                           ? FrameFinalState::kPresentedPartialNewMain
                           : FrameFinalState::kPresentedPartialOldMain;
+        // When the Main thread effect is not throttle, and we are not scheduled
+        // to wait for it, then we do not expect its update to accompany the
+        // Compositor thread effect. When throttling the Active Tree will become
+        // stale compared to the Compositor thread effect. We allow one frame of
+        // staleness. Larger periods than that denote that the Main thread is
+        // failing to produce new content. So we allow those to be marked as
+        // dropped.
+        if (!will_throttle_main_ && !waiting_for_main_ &&
+            active_tree_staleness_ <= 1) {
+          final_state_v4 = FrameFinalState::kPresentedPartialWithoutWaiting;
+        }
       } else {
         final_state = FrameFinalState::kPresentedAll;
       }
@@ -1729,12 +1747,24 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
       break;
   }
 
+  // It is possible that we may have been informed of `kDidNotPresentFrame` or
+  // `kDidNotProduceFrame` depending on scheduling choices made during this
+  // frame. For both cases WaitingOnMain is not accurate when we may be
+  // throttling the Main thread. In such cases updated logic in
+  // CompositorFrameReportingController will denote if we actually had no damage
+  // expected.
+  if (frame_skipped_reason_v4_.has_value() &&
+      frame_skipped_reason_v4_.value() == FrameSkippedReason::kNoDamage) {
+    final_state_v4 = FrameFinalState::kNoUpdateDesired;
+  }
+
   FrameInfo info;
 
   // We separate final state and smooth thread fields while both V3 and V4
   // metrics are being reported. V3 and V3 metrics make different assumptions
   // about dropped frames, resulting in different final FrameInfo states.
   info.final_state = final_state;
+  info.final_state_v4 = final_state_v4.value_or(final_state);
   info.final_state_raster_property = final_state_raster_property;
   info.final_state_raster_scroll = final_state_raster_scroll;
   info.smooth_thread = smooth_thread;
@@ -1751,6 +1781,14 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
     // means this frame contains the response ('no damage') from the
     // main-thread.
     info.main_thread_response = FrameInfo::MainThreadResponse::kIncluded;
+    // Main threaded work can often cause no damage. Such as when rAF is running
+    // but changing content outside the viewport. Or being used by a site for
+    // time based delayed work, and never actually drawing. Do not treat these
+    // as drops. Since they do not prevent the Compositor thread from
+    // submitting, and there is nothing visual for user to miss.
+    if (info.smooth_thread == SmoothThread::kSmoothMain) {
+      info.final_state_v4 = FrameFinalState::kNoUpdateDesired;
+    }
   } else if (partial_update_dependents_.size() > 0) {
     // Only a frame containing a response from the main-thread can have
     // dependent reporters.

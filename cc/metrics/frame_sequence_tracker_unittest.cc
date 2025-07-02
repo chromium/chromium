@@ -920,15 +920,17 @@ TEST_F(FrameSequenceTrackerTest,
   compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
       &collection_);
   auto frame0_args = CreateBeginFrameArgs(source, ++sequence);
-  compositor_frame_reporting_controller_->WillBeginImplFrame(frame0_args);
+  compositor_frame_reporting_controller_->WillBeginImplFrame(
+      frame0_args, /*will_throttle_main=*/false);
   compositor_frame_reporting_controller_->OnFinishImplFrame(
-      frame0_args.frame_id);
+      frame0_args.frame_id, /*not_waiting_for_main=*/false);
 
   // Starting frame 5 will trigger the callback expectation.
   auto frame5_args =
       CreateBeginFrameArgs(source, sequence + kNumFramesSkipped,
                            base::TimeTicks::Now() /*+ base::Seconds(5)*/);
-  compositor_frame_reporting_controller_->WillBeginImplFrame(frame5_args);
+  compositor_frame_reporting_controller_->WillBeginImplFrame(
+      frame5_args, /*will_throttle_main=*/false);
   // Clear the expectation before simulating finishing the frame.
   testing::Mock::VerifyAndClearExpectations(&sorter_);
   compositor_frame_reporting_controller_->WillBeginMainFrame(frame5_args);
@@ -941,7 +943,7 @@ TEST_F(FrameSequenceTrackerTest,
   compositor_frame_reporting_controller_->DidSubmitCompositorFrame(
       submit_info, frame5_args.frame_id, frame5_args.frame_id);
   compositor_frame_reporting_controller_->OnFinishImplFrame(
-      frame5_args.frame_id);
+      frame5_args.frame_id, /*not_waiting_for_main=*/false);
   viz::FrameTimingDetails ftd;
   compositor_frame_reporting_controller_->DidPresentCompositorFrame(
       submit_info.frame_token, ftd);

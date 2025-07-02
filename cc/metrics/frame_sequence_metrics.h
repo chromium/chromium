@@ -193,7 +193,8 @@ class CC_EXPORT FrameSequenceMetrics {
     void Advance(base::TimeTicks start_timestamp,
                  base::TimeTicks new_timestamp,
                  uint32_t expected,
-                 uint32_t dropped,
+                 uint32_t dropped_v3,
+                 uint32_t dropped_v4,
                  uint64_t sequence_number,
                  const char* histogram_name);
     void Terminate(const V3& v3,

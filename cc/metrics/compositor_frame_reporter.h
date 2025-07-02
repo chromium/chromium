@@ -331,7 +331,7 @@ class CC_EXPORT CompositorFrameReporter {
     return stage_history_.size();
   }
 
-  void OnFinishImplFrame(base::TimeTicks timestamp);
+  void OnFinishImplFrame(base::TimeTicks timestamp, bool waiting_for_main);
   void OnAbortBeginMainFrame(base::TimeTicks timestamp);
   void OnDidNotProduceFrame(FrameSkippedReason skip_reason);
   void EnableCompositorOnlyReporting();
@@ -354,6 +354,7 @@ class CC_EXPORT CompositorFrameReporter {
     return *main_frame_abort_time_;
   }
 
+  bool has_frame_skip_reason() const { return frame_skip_reason_.has_value(); }
   FrameSkippedReason frame_skip_reason() const { return *frame_skip_reason_; }
 
   void set_tick_clock(const base::TickClock* tick_clock) {
@@ -429,6 +430,21 @@ class CC_EXPORT CompositorFrameReporter {
   // Erase and return only the EventMetrics objects which depend on main thread
   // updates (see comments on EventMetrics::requires_main_thread_update_).
   EventMetrics::List TakeMainBlockedEventsMetrics();
+
+  bool will_throttle_main() const { return will_throttle_main_; }
+  void set_will_throttle_main(bool will_throttle_main) {
+    will_throttle_main_ = will_throttle_main;
+  }
+  bool waiting_for_main() const { return waiting_for_main_; }
+  void waiting_for_main(bool waiting_for_main) {
+    waiting_for_main_ = waiting_for_main;
+  }
+  void set_active_tree_staleness(bool active_tree_staleness) {
+    active_tree_staleness_ = active_tree_staleness;
+  }
+  void set_frame_skipped_reason_v4(std::optional<FrameSkippedReason> reason) {
+    frame_skipped_reason_v4_ = reason;
+  }
 
  protected:
   void set_has_partial_update(bool has_partial_update) {
@@ -581,6 +597,23 @@ class CC_EXPORT CompositorFrameReporter {
   bool created_new_tree_ = false;
 
   bool invalidate_raster_scroll_ = false;
+
+  // Main thread can be throttled separately from Compositor thread work. We
+  // can also be scheduled to not wait for the Main thread at all. We denote
+  // these as partial updates where we do not give Main a chance to respond.
+  // These frames should not be considered dropped.
+  bool will_throttle_main_ = false;
+  bool waiting_for_main_ = true;
+  // The difference of `viz::BeginFrameId.sequence_number` of the current frame
+  // and the current `active_tree`. Denotes how stale updates from the
+  // Main-thread are.
+  uint64_t active_tree_staleness_ = 0;
+  // Similar to above, we may skip the entire production of a Compositor thread
+  // if there is no damage. We need to account for Main thread itself
+  // producing no damage. Such as when a rAF is completely offscreen. We track
+  // this separately from `frame_skipped_reason_` so as to not shift the V3
+  // metrics
+  std::optional<FrameSkippedReason> frame_skipped_reason_v4_;
 
   const GlobalMetricsTrackers global_trackers_;
 

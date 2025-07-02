@@ -17,6 +17,8 @@
 #include "base/time/time.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/frame_sorter.h"
+#include "cc/scheduler/scheduler.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,9 +27,24 @@
 namespace cc {
 namespace {
 
+using ::testing::_;
 using ::testing::Each;
 using ::testing::IsEmpty;
 using ::testing::NotNull;
+using ::testing::SaveArg;
+
+class MockFrameSorter : public FrameSorter {
+ public:
+  MockFrameSorter() = default;
+  ~MockFrameSorter() override = default;
+
+  MOCK_METHOD(void, AddFrameInfoToBuffer, (const FrameInfo&), (override));
+  MOCK_METHOD(void, AddNewFrame, (const viz::BeginFrameArgs&), (override));
+  MOCK_METHOD(void,
+              AddFrameResult,
+              (const viz::BeginFrameArgs&, const FrameInfo&),
+              (override));
+};
 
 class CompositorFrameReporterTest : public testing::Test {
  public:
@@ -206,6 +223,23 @@ class CompositorFrameReporterTest : public testing::Test {
         /*should_report_metrics=*/true,
         CompositorFrameReporter::SmoothThread::kSmoothBoth,
         FrameInfo::SmoothEffectDrivingThread::kUnknown,
+        /*layer_tree_host_id=*/1, trackers);
+    reporter->set_tick_clock(&test_tick_clock_);
+    return reporter;
+  }
+
+  std::unique_ptr<CompositorFrameReporter> CreateReporterWithMockSorter(
+      MockFrameSorter* mock_sorter_ptr,
+      const viz::BeginFrameArgs& args,
+      FrameInfo::SmoothThread smooth_thread =
+          FrameInfo::SmoothThread::kSmoothNone,
+      FrameInfo::SmoothEffectDrivingThread scrolling_thread =
+          FrameInfo::SmoothEffectDrivingThread::kUnknown) {
+    GlobalMetricsTrackers trackers{nullptr, nullptr, nullptr,        nullptr,
+                                   nullptr, nullptr, mock_sorter_ptr};
+    auto reporter = std::make_unique<CompositorFrameReporter>(
+        ActiveTrackers(), args,
+        /*should_report_metrics=*/true, smooth_thread, scrolling_thread,
         /*layer_tree_host_id=*/1, trackers);
     reporter->set_tick_clock(&test_tick_clock_);
     return reporter;
@@ -803,6 +837,259 @@ TEST_F(CompositorFrameReporterTest, PartialUpdateDependentQueues) {
   DCHECK_EQ(
       kMaxOwnedPartialUpdateDependents,
       pipeline_reporter_->owned_partial_update_dependents_size_for_testing());
+}
+
+TEST_F(CompositorFrameReporterTest, GenerateFrameInfo_PresentedAll) {
+  MockFrameSorter mock_sorter;
+  viz::BeginFrameArgs args = viz::BeginFrameArgs();
+  args.frame_id = viz::BeginFrameId(1, 1);
+  auto reporter = CreateReporterWithMockSorter(&mock_sorter, args);
+
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+  auto begin_main_frame_start_time = AdvanceNowByUs(10);
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit,
+      begin_main_frame_start_time);
+
+  std::unique_ptr<BeginMainFrameMetrics> blink_breakdown =
+      BuildBlinkBreakdown();
+  reporter->SetBlinkBreakdown(std::move(blink_breakdown),
+                              begin_main_frame_start_time);
+
+  reporter->StartStage(CompositorFrameReporter::StageType::kCommit,
+                       AdvanceNowByUs(10));
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kEndCommitToActivation,
+      AdvanceNowByUs(10));
+  reporter->StartStage(CompositorFrameReporter::StageType::kActivation,
+                       AdvanceNowByUs(10));
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
+      AdvanceNowByUs(10));
+  reporter->StartStage(CompositorFrameReporter::StageType::
+                           kSubmitCompositorFrameToPresentationCompositorFrame,
+                       AdvanceNowByUs(10));
+
+  FrameInfo captured_info;
+  EXPECT_CALL(mock_sorter, AddFrameInfoToBuffer(_))
+      .WillOnce(SaveArg<0>(&captured_info));
+  EXPECT_CALL(mock_sorter, AddFrameResult(_, _)).Times(testing::AnyNumber());
+
+  reporter->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame,
+      AdvanceNowByUs(10));
+  reporter.reset();
+
+  EXPECT_EQ(captured_info.final_state,
+            FrameInfo::FrameFinalState::kPresentedAll);
+  EXPECT_EQ(captured_info.final_state_v4,
+            FrameInfo::FrameFinalState::kPresentedAll);
+  EXPECT_EQ(captured_info.main_thread_response,
+            FrameInfo::MainThreadResponse::kIncluded);
+}
+
+TEST_F(CompositorFrameReporterTest, GenerateFrameInfo_PresentedPartialNewMain) {
+  MockFrameSorter mock_sorter;
+  viz::BeginFrameArgs args = viz::BeginFrameArgs();
+  args.frame_id = viz::BeginFrameId(1, 1);
+  auto reporter = CreateReporterWithMockSorter(&mock_sorter, args);
+  reporter->set_is_accompanied_by_main_thread_update(true);
+  // Simulate partial update by having a decider (even if it's itself for
+  // simplicity here) This sets has_partial_update_ to true.
+  reporter->SetPartialUpdateDecider(reporter.get());
+
+  FrameInfo captured_info;
+  EXPECT_CALL(mock_sorter, AddFrameInfoToBuffer(_))
+      .WillOnce(SaveArg<0>(&captured_info));
+  EXPECT_CALL(mock_sorter, AddFrameResult(_, _)).Times(testing::AnyNumber());
+
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+  auto begin_main_frame_start_time = AdvanceNowByUs(10);
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit,
+      begin_main_frame_start_time);
+
+  std::unique_ptr<BeginMainFrameMetrics> blink_breakdown =
+      BuildBlinkBreakdown();
+  reporter->SetBlinkBreakdown(std::move(blink_breakdown),
+                              begin_main_frame_start_time);
+  reporter->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame,
+      AdvanceNowByUs(10));
+  reporter.reset();
+
+  EXPECT_EQ(captured_info.final_state,
+            FrameInfo::FrameFinalState::kPresentedPartialNewMain);
+  EXPECT_EQ(captured_info.final_state_v4,
+            FrameInfo::FrameFinalState::kPresentedPartialNewMain);
+}
+
+TEST_F(CompositorFrameReporterTest, GenerateFrameInfo_Dropped) {
+  MockFrameSorter mock_sorter;
+  viz::BeginFrameArgs args = viz::BeginFrameArgs();
+  args.frame_id = viz::BeginFrameId(1, 1);
+  auto reporter = CreateReporterWithMockSorter(&mock_sorter, args);
+
+  FrameInfo captured_info;
+  EXPECT_CALL(mock_sorter, AddFrameInfoToBuffer(_))
+      .WillOnce(SaveArg<0>(&captured_info));
+  EXPECT_CALL(mock_sorter, AddFrameResult(_, _)).Times(testing::AnyNumber());
+
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+  reporter->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kDidNotPresentFrame,
+      AdvanceNowByUs(10));
+  reporter.reset();
+
+  EXPECT_EQ(captured_info.final_state, FrameInfo::FrameFinalState::kDropped);
+  EXPECT_EQ(captured_info.final_state_v4, FrameInfo::FrameFinalState::kDropped);
+}
+
+TEST_F(CompositorFrameReporterTest, GenerateFrameInfo_DidNotProduce_NoDamage) {
+  MockFrameSorter mock_sorter;
+  viz::BeginFrameArgs args = viz::BeginFrameArgs();
+  args.frame_id = viz::BeginFrameId(1, 1);
+  auto reporter = CreateReporterWithMockSorter(&mock_sorter, args);
+
+  reporter->OnDidNotProduceFrame(FrameSkippedReason::kNoDamage);
+
+  FrameInfo captured_info;
+  EXPECT_CALL(mock_sorter, AddFrameInfoToBuffer(_))
+      .WillOnce(SaveArg<0>(&captured_info));
+  EXPECT_CALL(mock_sorter, AddFrameResult(_, _)).Times(testing::AnyNumber());
+
+  reporter->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kDidNotProduceFrame,
+      AdvanceNowByUs(10));
+  reporter.reset();
+
+  EXPECT_EQ(captured_info.final_state,
+            FrameInfo::FrameFinalState::kNoUpdateDesired);
+  // V4 also considers this no update desired if main thread response is
+  // included.
+  EXPECT_EQ(captured_info.final_state_v4,
+            FrameInfo::FrameFinalState::kNoUpdateDesired);
+  EXPECT_EQ(captured_info.main_thread_response,
+            FrameInfo::MainThreadResponse::kIncluded);
+}
+
+TEST_F(CompositorFrameReporterTest,
+       GenerateFrameInfo_DidNotProduce_WaitingOnMain) {
+  MockFrameSorter mock_sorter;
+  viz::BeginFrameArgs args = viz::BeginFrameArgs();
+  args.frame_id = viz::BeginFrameId(1, 1);
+  auto reporter = CreateReporterWithMockSorter(
+      &mock_sorter, args, FrameInfo::SmoothThread::kSmoothCompositor);
+
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+  auto begin_main_frame_start_time = AdvanceNowByUs(10);
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit,
+      begin_main_frame_start_time);
+
+  std::unique_ptr<BeginMainFrameMetrics> blink_breakdown =
+      BuildBlinkBreakdown();
+  reporter->SetBlinkBreakdown(std::move(blink_breakdown),
+                              begin_main_frame_start_time);
+  reporter->OnDidNotProduceFrame(FrameSkippedReason::kWaitingOnMain);
+
+  FrameInfo captured_info;
+  EXPECT_CALL(mock_sorter, AddFrameInfoToBuffer(_))
+      .WillOnce(SaveArg<0>(&captured_info));
+  EXPECT_CALL(mock_sorter, AddFrameResult(_, _)).Times(testing::AnyNumber());
+
+  reporter->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kDidNotProduceFrame,
+      AdvanceNowByUs(10));
+  reporter.reset();
+
+  // Since we never `SetPartialUpdateDecider` this is simulating the Compositor
+  // thread having no pending work. Which makes these `kNoUpdateDesired`.
+  EXPECT_EQ(captured_info.final_state,
+            FrameInfo::FrameFinalState::kNoUpdateDesired);
+  EXPECT_EQ(captured_info.final_state_v4,
+            FrameInfo::FrameFinalState::kNoUpdateDesired);
+  EXPECT_EQ(captured_info.smooth_thread,
+            FrameInfo::SmoothThread::kSmoothNone);  // Adjusted
+  EXPECT_EQ(captured_info.main_thread_response,
+            FrameInfo::MainThreadResponse::kMissing);
+}
+
+TEST_F(CompositorFrameReporterTest,
+       GenerateFrameInfo_PresentedPartialWithoutWaiting) {
+  MockFrameSorter mock_sorter;
+  viz::BeginFrameArgs args = viz::BeginFrameArgs();
+  args.frame_id = viz::BeginFrameId(1, 1);
+  auto reporter = CreateReporterWithMockSorter(&mock_sorter, args);
+  reporter->SetPartialUpdateDecider(pipeline_reporter_.get());
+  reporter->set_will_throttle_main(false);
+
+  FrameInfo captured_info;
+  EXPECT_CALL(mock_sorter, AddFrameInfoToBuffer(_))
+      .WillOnce(SaveArg<0>(&captured_info));
+  EXPECT_CALL(mock_sorter, AddFrameResult(_, _)).Times(testing::AnyNumber());
+
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+  reporter->OnFinishImplFrame(Now(), /*waiting_for_main=*/false);
+  reporter->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame,
+      AdvanceNowByUs(10));
+  reporter.reset();
+
+  // Advance the Main thread reporter.
+  auto begin_main_frame_start_time = AdvanceNowByUs(10);
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit,
+      begin_main_frame_start_time);
+  std::unique_ptr<BeginMainFrameMetrics> blink_breakdown =
+      BuildBlinkBreakdown();
+  pipeline_reporter_->SetBlinkBreakdown(std::move(blink_breakdown),
+                                        begin_main_frame_start_time);
+  pipeline_reporter_->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame,
+      AdvanceNowByUs(10));
+  pipeline_reporter_.reset();
+
+  EXPECT_EQ(captured_info.final_state,
+            FrameInfo::FrameFinalState::kPresentedPartialOldMain);
+  EXPECT_EQ(captured_info.final_state_v4,
+            FrameInfo::FrameFinalState::kPresentedPartialWithoutWaiting);
+}
+
+TEST_F(CompositorFrameReporterTest,
+       GenerateFrameInfo_MainThreadNoUpdate_CompositorDropped) {
+  MockFrameSorter mock_sorter;
+  viz::BeginFrameArgs args = viz::BeginFrameArgs();
+  args.frame_id = viz::BeginFrameId(1, 1);
+  auto reporter = CreateReporterWithMockSorter(&mock_sorter, args);
+
+  FrameInfo captured_info;
+  EXPECT_CALL(mock_sorter, AddFrameInfoToBuffer(_))
+      .WillOnce(SaveArg<0>(&captured_info));
+  EXPECT_CALL(mock_sorter, AddFrameResult(_, _)).Times(testing::AnyNumber());
+
+  reporter->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+  reporter->set_frame_skipped_reason_v4(FrameSkippedReason::kNoDamage);
+  reporter->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kDidNotPresentFrame,
+      AdvanceNowByUs(10));
+  reporter.reset();
+
+  EXPECT_EQ(captured_info.final_state, FrameInfo::FrameFinalState::kDropped);
+  EXPECT_EQ(captured_info.final_state_v4,
+            FrameInfo::FrameFinalState::kNoUpdateDesired);
 }
 
 }  // namespace

@@ -320,11 +320,7 @@ int FrameSequenceMetrics::ReportMetrics() {
 
     const int percent_missing_content = get_percent(v3_.frames_missing_content);
     const int percent_dropped = get_percent(v3_.frames_dropped);
-    const int percent_dropped_v4 =
-        ((type() == FrameSequenceTrackerType::kCompositorRasterAnimation) ||
-         thread_type == SmoothEffectDrivingThread::kRaster)
-            ? get_percent(v4_.frames_dropped)
-            : percent_dropped;
+    const int percent_dropped_v4 = get_percent(v4_.frames_dropped);
     const int percent_jank = get_percent(v3_.jank_count);
 
     // v4.
@@ -490,7 +486,8 @@ void FrameSequenceMetrics::TraceData::Terminate(
   auto dict = std::make_unique<base::trace_event::TracedValue>();
   dict->BeginDictionary("data");
   dict->SetInteger("expected", v3.frames_expected);
-  dict->SetInteger("dropped", v3.frames_dropped);
+  dict->SetInteger("dropped_v3", v3.frames_dropped);
+  dict->SetInteger("dropped_v4", v4.frames_dropped);
   dict->SetInteger("missing_content", v3.frames_missing_content);
   // v4.
   dict->SetInteger("checkerboarded", v4.frames_checkerboarded);
@@ -532,7 +529,8 @@ void FrameSequenceMetrics::TraceData::Terminate(
 void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
                                               base::TimeTicks new_timestamp,
                                               uint32_t expected,
-                                              uint32_t dropped,
+                                              uint32_t dropped_v3,
+                                              uint32_t dropped_v4,
                                               uint64_t sequence_number,
                                               const char* histogram_name) {
   if (!enabled)
@@ -558,7 +556,8 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
   dict->SetInteger("sequence_number", sequence_number);
   dict->SetInteger("last_sequence", last_presented_sequence_number);
   dict->SetInteger("expected", expected);
-  dict->SetInteger("dropped", dropped);
+  dict->SetInteger("dropped_v3", dropped_v3);
+  dict->SetInteger("dropped_v4", dropped_v4);
   dict->EndDictionary();
 
   // Use different names, because otherwise the trace-viewer shows the slices in
@@ -599,6 +598,8 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
       if (frame_info.WasSmoothMainUpdateExpected()) {
         if (frame_info.WasSmoothMainUpdateDropped()) {
           ++v3_.frames_dropped;
+        }
+        if (frame_info.WasSmoothMainUpdateDroppedV4()) {
           ++v4_.frames_dropped;
         }
         ++v3_.frames_expected;
@@ -644,6 +645,7 @@ void FrameSequenceMetrics::CalculateJankV3(
     case FrameInfo::FrameFinalState::kPresentedAll:
     case FrameInfo::FrameFinalState::kPresentedPartialOldMain:
     case FrameInfo::FrameFinalState::kPresentedPartialNewMain:
+    case FrameInfo::FrameFinalState::kPresentedPartialWithoutWaiting:
       // The first frame of a sequence will have no previous timestamp. We don't
       // calculate it for jank. However we start the tracing from when the
       // sequence was started.
@@ -664,7 +666,7 @@ void FrameSequenceMetrics::CalculateJankV3(
           termination_time > last_presented_termination_time) {
         trace_data_.Advance(last_presented_termination_time, termination_time,
                             v3_.frames_expected, v3_.frames_dropped,
-                            frame_info.sequence_number,
+                            v4_.frames_dropped, frame_info.sequence_number,
                             "FrameSequenceTrackerV3");
       }
 

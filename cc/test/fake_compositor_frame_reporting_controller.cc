@@ -19,8 +19,11 @@ FakeCompositorFrameReportingController::FakeCompositorFrameReportingController()
 
 void FakeCompositorFrameReportingController::WillBeginMainFrame(
     const viz::BeginFrameArgs& args) {
-  if (!HasReporterAt(PipelineStage::kBeginImplFrame))
-    CompositorFrameReportingController::WillBeginImplFrame(args);
+  if (!HasReporterAt(PipelineStage::kBeginImplFrame)) {
+    CompositorFrameReportingController::WillBeginImplFrame(
+        args,
+        /*will_throttle_main=*/false);
+  }
   CompositorFrameReportingController::WillBeginMainFrame(args);
 }
 
