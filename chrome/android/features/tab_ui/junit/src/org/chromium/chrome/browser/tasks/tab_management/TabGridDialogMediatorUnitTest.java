@@ -466,7 +466,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // mTabGroupModelFilter#setTabGroupTitle() should not react to text change when there is no
         // focus.
-        verify(mTabGroupModelFilter, never()).setTabGroupTitle(anyInt(), anyString());
+        verify(mTabGroupModelFilter, never()).setTabGroupTitle(any(), anyString());
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
         assertThat(mMediator.getCurrentGroupModifiedTitleForTesting(), equalTo(null));
     }
@@ -543,7 +543,8 @@ public class TabGridDialogMediatorUnitTest {
 
         keyboardVisibilityListener.keyboardVisibilityChanged(false);
 
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB1_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabGroupModelFilter)
+                .setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
                 mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
@@ -571,7 +572,8 @@ public class TabGridDialogMediatorUnitTest {
 
         keyboardVisibilityListener.keyboardVisibilityChanged(false);
 
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB1_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabGroupModelFilter)
+                .setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
                 mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
@@ -594,7 +596,7 @@ public class TabGridDialogMediatorUnitTest {
 
         keyboardVisibilityListener.keyboardVisibilityChanged(false);
 
-        verify(mTabGroupModelFilter, never()).setTabGroupTitle(anyInt(), anyString());
+        verify(mTabGroupModelFilter, never()).setTabGroupTitle(any(), anyString());
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
     }
 
@@ -727,11 +729,8 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.setCurrentTabIdForTesting(TAB3_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB1_ID);
+        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB_GROUP_ID);
 
-        assertThat(
-                mTabGroupModelFilter.getTabGroupTitle(mTab1.getRootId()),
-                equalTo(CUSTOMIZED_DIALOG_TITLE));
         mTabModelObserverCaptor.getValue().willCloseTab(newTab, true);
 
         // Dialog title should still be the stored title.
@@ -756,7 +755,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.setCurrentTabIdForTesting(TAB3_ID);
 
         // Mock that we have a stored title stored with reference to root ID of newTab.
-        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB3_ID);
+        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB_GROUP_ID);
 
         mTabModelObserverCaptor.getValue().willCloseTab(newTab, true);
 
@@ -780,7 +779,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.setCurrentTabIdForTesting(TAB2_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB1_ID);
+        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB_GROUP_ID);
 
         mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
 
@@ -811,7 +810,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB1_ID);
+        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB_GROUP_ID);
 
         // Mock that tab1 and tab2 are in the same group, and we are undoing tab2.
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
@@ -1064,7 +1063,8 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.hideDialog(false);
 
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB1_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabGroupModelFilter)
+                .setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
                 mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
@@ -1092,7 +1092,8 @@ public class TabGridDialogMediatorUnitTest {
         mModel.get(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER).onClick(null);
 
         // Verify that the modified title is committed to the TabGroupModelFilter.
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB1_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabGroupModelFilter)
+                .setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
                 mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
@@ -1119,9 +1120,9 @@ public class TabGridDialogMediatorUnitTest {
 
         // When updated title is a empty string, delete stored title and restore default title in
         // PropertyModel.
-        verify(mTabGroupModelFilter).deleteTabGroupTitle(eq(TAB1_ID));
+        verify(mTabGroupModelFilter).deleteTabGroupTitle(eq(TAB_GROUP_ID));
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB1_ID), eq(null));
+        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB_GROUP_ID), eq(null));
     }
 
     @Test
@@ -1135,7 +1136,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.hideDialog(false);
 
         // When title is not updated, don't store title when hide dialog.
-        verify(mTabGroupModelFilter, never()).setTabGroupTitle(anyInt(), anyString());
+        verify(mTabGroupModelFilter, never()).setTabGroupTitle(any(), anyString());
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
     }
 
@@ -1160,7 +1161,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.hideDialog(false);
 
         // Skip storing dialog title when the last tab is closing.
-        verify(mTabGroupModelFilter, never()).setTabGroupTitle(anyInt(), anyString());
+        verify(mTabGroupModelFilter, never()).setTabGroupTitle(any(), anyString());
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
     }
 
@@ -1185,7 +1186,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.hideDialog(false);
 
         // Skip storing dialog title when this group becomes a single tab.
-        verify(mTabGroupModelFilter, never()).setTabGroupTitle(anyInt(), anyString());
+        verify(mTabGroupModelFilter, never()).setTabGroupTitle(any(), anyString());
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
     }
 
@@ -1239,7 +1240,6 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         // Mock that we have a stored color stored with reference to root ID of tab1.
-        // when(mTabGroupModelFilter.getTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_2);
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, COLOR_2);
 
         assertTrue(mMediator.onReset(tabGroup));
@@ -1247,7 +1247,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Assert that the color has changed both in the property model and the model filter.
         assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_3));
-        verify(mTabGroupModelFilter).setTabGroupColor(mTab1.getRootId(), COLOR_3);
+        verify(mTabGroupModelFilter).setTabGroupColor(TAB_GROUP_ID, COLOR_3);
     }
 
     @Test
@@ -1262,8 +1262,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        when(mTabGroupModelFilter.getTabGroupColorWithFallback(mTab1.getRootId()))
-                .thenReturn(COLOR_2);
+        when(mTabGroupModelFilter.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
         assertTrue(mMediator.onReset(tabGroup));
 
         // Assert that a color and the incognito status were set.
@@ -1296,7 +1295,7 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB1_ID);
+        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB_GROUP_ID);
 
         assertTrue(mMediator.onReset(tabGroup));
 
@@ -1329,8 +1328,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        when(mTabGroupModelFilter.getTabGroupColorWithFallback(mTab1.getRootId()))
-                .thenReturn(COLOR_2);
+        when(mTabGroupModelFilter.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
         assertTrue(mMediator.onReset(tabGroup));
 
         // Assert that a color and the incognito status were set.
@@ -1367,7 +1365,7 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB1_ID);
+        doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB_GROUP_ID);
 
         assertTrue(mMediator.onReset(tabGroup));
 
@@ -1612,7 +1610,7 @@ public class TabGridDialogMediatorUnitTest {
     public void testDialogToolbarMenu_DeleteSharedGroup() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
 
-        when(mTabGroupModelFilter.getTabGroupTitle(anyInt())).thenReturn(GROUP_TITLE);
+        when(mTabGroupModelFilter.getTabGroupTitle(any())).thenReturn(GROUP_TITLE);
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL1, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
@@ -1631,7 +1629,7 @@ public class TabGridDialogMediatorUnitTest {
     public void testDialogToolbarMenu_LeaveSharedGroup() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1, GROUP_MEMBER2);
 
-        when(mTabGroupModelFilter.getTabGroupTitle(anyInt())).thenReturn(GROUP_TITLE);
+        when(mTabGroupModelFilter.getTabGroupTitle(any())).thenReturn(GROUP_TITLE);
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL2, GAIA_ID2);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
@@ -1766,13 +1764,14 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, rootId, TAB_GROUP_ID);
 
-        when(mTabGroupModelFilter.getTabGroupTitle(rootId)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID))
+                .thenReturn(CUSTOMIZED_DIALOG_TITLE);
         assertTrue(mMediator.onReset(tabGroup));
 
         assertEquals(CUSTOMIZED_DIALOG_TITLE, mModel.get(TabGridDialogProperties.HEADER_TITLE));
 
         String newTitle = "BAR";
-        when(mTabGroupModelFilter.getTabGroupTitle(rootId)).thenReturn(newTitle);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(newTitle);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
                 .didChangeTabGroupTitle(rootId, TAB_GROUP_ID, newTitle);

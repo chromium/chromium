@@ -23,6 +23,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -214,7 +215,11 @@ public class StripDragShadowView extends FrameLayout {
                         .getTabGroupModelFilter(isIncognito);
 
         // Background color
-        @TabGroupColorId int colorId = modelFilter.getTabGroupColorWithFallback(tab.getRootId());
+        @TabGroupColorId int colorId = TabGroupColorId.GREY;
+        Token tabGroupId = tab.getTabGroupId();
+        if (tabGroupId != null) {
+            colorId = modelFilter.getTabGroupColorWithFallback(tabGroupId);
+        }
         @ColorInt
         int groupColor =
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(

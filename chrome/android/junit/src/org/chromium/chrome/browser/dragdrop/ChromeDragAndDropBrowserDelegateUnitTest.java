@@ -364,7 +364,6 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     private TabGroupMetadata buildTabGroupMetadata() {
         Token tabGroupId = new Token(2L, 2L);
         String tabGroupTitle = "Regrouped tabs";
-        int rootId = 1;
         ArrayList<Entry<Integer, String>> tabIdsToUrls =
                 new ArrayList<>(
                         List.of(
@@ -373,8 +372,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                                 Map.entry(3, "https://www.facebook.com/")));
 
         return new TabGroupMetadata(
-                rootId,
-                /* selectedTabId= */ rootId,
+                /* selectedTabId= */ 1,
                 /* sourceWindowId= */ TabWindowManager.INVALID_WINDOW_ID,
                 tabGroupId,
                 tabIdsToUrls,

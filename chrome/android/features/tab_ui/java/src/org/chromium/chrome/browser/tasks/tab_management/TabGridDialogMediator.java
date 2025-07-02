@@ -395,7 +395,7 @@ public class TabGridDialogMediator
                         // Ignore updates to tabs in other tab groups.
                         boolean closingTabIsCurrentTab = tab.getId() == mCurrentTabId;
                         if (!closingTabIsCurrentTab
-                                && !currentTabRootIdMatchesRootId(tab.getRootId())) {
+                                && !currentTabGroupIdMatches(tab.getTabGroupId())) {
                             return;
                         }
 
@@ -524,7 +524,7 @@ public class TabGridDialogMediator
                     @Override
                     public void didChangeTabGroupTitle(
                             int rootId, @Nullable Token tabGroupId, @Nullable String newTitle) {
-                        if (currentTabRootIdMatchesRootId(rootId)
+                        if (currentTabGroupIdMatches(tabGroupId)
                                 && !Objects.equals(
                                         mModel.get(TabGridDialogProperties.HEADER_TITLE),
                                         newTitle)) {
@@ -536,7 +536,7 @@ public class TabGridDialogMediator
                     @Override
                     public void didChangeTabGroupColor(
                             int rootId, @Nullable Token tabGroupId, @TabGroupColorId int newColor) {
-                        if (currentTabRootIdMatchesRootId(rootId)) {
+                        if (currentTabGroupIdMatches(tabGroupId)) {
                             mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, newColor);
                         }
                     }
@@ -780,12 +780,11 @@ public class TabGridDialogMediator
     void setSelectedTabGroupColor(int selectedColor) {
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, selectedColor);
 
-        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        assumeNonNull(filter);
-        Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
-
-        if (currentTab != null) {
-            filter.setTabGroupColor(currentTab.getRootId(), selectedColor);
+        Token tabGroupId = getCurrentTabGroupId();
+        if (tabGroupId != null) {
+            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+            assumeNonNull(filter);
+            filter.setTabGroupColor(tabGroupId, selectedColor);
         }
     }
 
@@ -825,10 +824,11 @@ public class TabGridDialogMediator
 
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         assumeNonNull(filter);
-        Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
-        assumeNonNull(currentTab);
-        final @TabGroupColorId int color =
-                filter.getTabGroupColorWithFallback(currentTab.getRootId());
+        Token tabGroupId = getCurrentTabGroupId();
+        @TabGroupColorId int color = TabGroupColorId.GREY;
+        if (tabGroupId != null) {
+            color = filter.getTabGroupColorWithFallback(tabGroupId);
+        }
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
         updateTitle(tabCount);
     }
@@ -838,10 +838,9 @@ public class TabGridDialogMediator
 
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         assumeNonNull(filter);
-        Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
-        assumeNonNull(currentTab);
-        String storedTitle = filter.getTabGroupTitle(currentTab.getRootId());
-        if (storedTitle != null && filter.isTabInTabGroup(currentTab)) {
+        Token tabGroupId = getCurrentTabGroupId();
+        String storedTitle = tabGroupId != null ? filter.getTabGroupTitle(tabGroupId) : null;
+        if (storedTitle != null) {
             mModel.set(
                     TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                     res.getQuantityString(
@@ -1246,26 +1245,21 @@ public class TabGridDialogMediator
     }
 
     private void saveCurrentGroupModifiedTitle() {
+        Token tabGroupId = getCurrentTabGroupId();
+        // When current group no longer exists, skip saving the title.
+        if (tabGroupId == null) return;
+
+        if (mCurrentGroupModifiedTitle == null) return;
+
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         assumeNonNull(filter);
-        Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
-        // When current group no longer exists, skip saving the title.
-        if (currentTab == null || !filter.isTabInTabGroup(currentTab)) {
-            return;
-        }
-
-        if (mCurrentGroupModifiedTitle == null) {
-            return;
-        }
-
         int tabsCount = getRelatedTabs(mCurrentTabId).size();
-        int rootId = currentTab.getRootId();
         if (mCurrentGroupModifiedTitle.length() == 0
                 || TabGroupTitleUtils.isDefaultTitle(
                         mActivity, mCurrentGroupModifiedTitle, tabsCount)) {
             // When dialog title is empty or was unchanged, delete previously stored title and
             // restore default title.
-            filter.deleteTabGroupTitle(rootId);
+            filter.deleteTabGroupTitle(tabGroupId);
 
             String originalTitle = TabGroupTitleUtils.getDefaultTitle(mActivity, tabsCount);
             mModel.set(
@@ -1279,22 +1273,21 @@ public class TabGridDialogMediator
             mModel.set(TabGridDialogProperties.HEADER_TITLE, originalTitle);
             // Setting the tab group title to null ensures the default title isn't saved, but
             // observers downstream will update to the correct default title.
-            filter.setTabGroupTitle(rootId, null);
+            filter.setTabGroupTitle(tabGroupId, null);
             mCurrentGroupModifiedTitle = null;
             RecordUserAction.record("TabGridDialog.ResetTabGroupName");
             return;
         }
-        filter.setTabGroupTitle(rootId, mCurrentGroupModifiedTitle);
-        int relatedTabsCount = getRelatedTabs(mCurrentTabId).size();
+        filter.setTabGroupTitle(tabGroupId, mCurrentGroupModifiedTitle);
         mModel.set(
                 TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                 mActivity
                         .getResources()
                         .getQuantityString(
                                 R.plurals.accessibility_dialog_back_button_with_group_name,
-                                relatedTabsCount,
+                                tabsCount,
                                 mCurrentGroupModifiedTitle,
-                                relatedTabsCount));
+                                tabsCount));
         mModel.set(TabGridDialogProperties.HEADER_TITLE, mCurrentGroupModifiedTitle);
         RecordUserAction.record("TabGridDialog.TabGroupNamedInDialog");
         mCurrentGroupModifiedTitle = null;
@@ -1396,12 +1389,9 @@ public class TabGridDialogMediator
         }
     }
 
-    private boolean currentTabRootIdMatchesRootId(int rootId) {
-        Tab tab =
-                assumeNonNull(mCurrentTabGroupModelFilterSupplier.get())
-                        .getTabModel()
-                        .getTabById(mCurrentTabId);
-        return tab != null && tab.getRootId() == rootId;
+    private boolean currentTabGroupIdMatches(@Nullable Token otherTabGroupId) {
+        Token tabGroupId = getCurrentTabGroupId();
+        return tabGroupId != null && tabGroupId.equals(otherTabGroupId);
     }
 
     /**

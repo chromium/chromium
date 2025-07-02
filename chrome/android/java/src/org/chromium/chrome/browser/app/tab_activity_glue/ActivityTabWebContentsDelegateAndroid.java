@@ -275,7 +275,6 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 tabGroupModelFilter.mergeListOfTabsToGroup(
                         Arrays.asList(newTab), sourceTab, /* notify= */ false);
                 if (mChromeActivityNativeDelegate != null) {
-                    assert newTab.getRootId() == sourceTab.getRootId();
                     assert Objects.equals(newTab.getTabGroupId(), sourceTab.getTabGroupId());
                     assert tabGroupModelFilter
                             .getTabsInGroup(newTab.getTabGroupId())

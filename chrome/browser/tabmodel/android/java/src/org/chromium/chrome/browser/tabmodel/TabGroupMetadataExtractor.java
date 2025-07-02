@@ -23,9 +23,10 @@ import java.util.Map;
 @NullMarked
 public class TabGroupMetadataExtractor {
     /**
-     * Extracts the metadata of a given tab group, including tab IDs, URLs, group ID, root ID,
-     * color, title, collapsed state and shared state.
+     * Extracts the metadata of a given tab group, including tab IDs, URLs, group ID, color, title,
+     * collapsed state and shared state.
      *
+     * @param tabGroupModelFilter The tab group model filter to fetch group-level properties.
      * @param groupedTabs The list of tabs that form the group.
      * @param sourceWindowIndex The index of the window that holds the tab group.
      * @param selectedTabId The selected tab ID of the group.
@@ -34,6 +35,7 @@ public class TabGroupMetadataExtractor {
      *     null} if the provided tab group list is empty.
      */
     public static @Nullable TabGroupMetadata extractTabGroupMetadata(
+            TabGroupModelFilter tabGroupModelFilter,
             List<Tab> groupedTabs,
             int sourceWindowIndex,
             int selectedTabId,
@@ -60,23 +62,21 @@ public class TabGroupMetadataExtractor {
         }
         if (!selectedTabIsInGroup) selectedTabId = groupedTabs.get(0).getId();
 
-        // 2. Get the first tab as a representative to retrieve the tab group ID and root ID.
+        // 2. Get the first tab as a representative to retrieve the tab group ID.
         Tab firstTab = groupedTabs.get(0);
         @Nullable Token tabGroupId = firstTab.getTabGroupId();
         if (tabGroupId == null) return null;
-        int rootId = firstTab.getRootId();
 
-        // 3. Fetch group-level properties using the root ID.
-        int tabGroupColor = TabGroupColorUtils.getTabGroupColor(rootId);
-        @Nullable String tabGroupTitle = TabGroupTitleUtils.getTabGroupTitle(rootId);
-        boolean tabGroupCollapsed = TabGroupCollapsedUtils.getTabGroupCollapsed(rootId);
+        // 3. Fetch group-level properties using the tab group ID.
+        int tabGroupColor = tabGroupModelFilter.getTabGroupColor(tabGroupId);
+        @Nullable String tabGroupTitle = tabGroupModelFilter.getTabGroupTitle(tabGroupId);
+        boolean tabGroupCollapsed = tabGroupModelFilter.getTabGroupCollapsed(tabGroupId);
 
         // If the tab group is collapsed, do not select any tab within the group.
         if (tabGroupCollapsed) selectedTabId = Tab.INVALID_TAB_ID;
 
         // 4. Create and populate TabGroupMetadata with data gathered above.
         return new TabGroupMetadata(
-                rootId,
                 selectedTabId,
                 sourceWindowIndex,
                 tabGroupId,

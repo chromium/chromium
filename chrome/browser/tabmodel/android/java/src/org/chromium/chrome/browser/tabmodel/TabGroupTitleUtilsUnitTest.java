@@ -42,7 +42,6 @@ public class TabGroupTitleUtilsUnitTest {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
     private static final int TAB_ID = 456;
-    private static final int ROOT_ID = 12;
     private static final Token TAB_GROUP_ID = new Token(34789L, 3784L);
     private static final String TAB_TITLE = "Tab";
 
@@ -133,8 +132,7 @@ public class TabGroupTitleUtilsUnitTest {
     @Test
     public void testGetDisplayableTitle_Explicit() {
         String title = "t1";
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(ROOT_ID);
-        when(mTabGroupModelFilter.getTabGroupTitle(ROOT_ID)).thenReturn(title);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(title);
         assertEquals(
                 title,
                 TabGroupTitleUtils.getDisplayableTitle(
@@ -144,8 +142,7 @@ public class TabGroupTitleUtilsUnitTest {
     @Test
     public void testGetDisplayableTitle_Fallback() {
         int tabCount = 4567;
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(ROOT_ID);
-        when(mTabGroupModelFilter.getTabGroupTitle(ROOT_ID)).thenReturn("");
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
         when(mTabGroupModelFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(tabCount);
         String title =
                 TabGroupTitleUtils.getDisplayableTitle(

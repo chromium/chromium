@@ -396,6 +396,11 @@ public class DragAndDropLauncherActivityTest {
 
                     TabGroupMetadata tabGroupMetadata =
                             TabGroupMetadataExtractor.extractTabGroupMetadata(
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelSelector()
+                                            .getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(false),
                                     draggedTabGroup,
                                     sourceWindowId,
                                     draggedTabGroup.get(0).getId(),

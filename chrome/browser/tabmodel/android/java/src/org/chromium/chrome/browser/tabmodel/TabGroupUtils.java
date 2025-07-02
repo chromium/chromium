@@ -109,15 +109,16 @@ public class TabGroupUtils {
 
         // 2. Create the local tab group in the current TabGroupModelFilter.
         tabGroupModelFilter.createTabGroupForTabGroupSync(tabs, tabGroupId);
-        int newRootId = tabs.get(0).getRootId();
+        tabGroupId = tabs.get(0).getTabGroupId();
+        assumeNonNull(tabGroupId);
 
         // 3. Apply the tab group attributes (color, collapsed state, and title) using the new
         // rootId.
-        tabGroupModelFilter.setTabGroupColor(newRootId, tabGroupColor);
-        tabGroupModelFilter.setTabGroupTitle(newRootId, tabGroupTitle);
+        tabGroupModelFilter.setTabGroupColor(tabGroupId, tabGroupColor);
+        tabGroupModelFilter.setTabGroupTitle(tabGroupId, tabGroupTitle);
         if (shouldApplyCollapse) {
             tabGroupModelFilter.setTabGroupCollapsed(
-                    newRootId, tabGroupCollapsed, /* animate= */ false);
+                    tabGroupId, tabGroupCollapsed, /* animate= */ false);
         }
     }
 

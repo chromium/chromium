@@ -231,6 +231,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 TabModel tabModel = tabModelSupplier.get();
                 @Nullable TabGroupMetadata tabGroupMetadata =
                         TabGroupMetadataExtractor.extractTabGroupMetadata(
+                                tabGroupModelFilter,
                                 tabGroupModelFilter.getTabsInGroup(tabGroupId),
                                 TabWindowManagerSingleton.getInstance().getIdForWindow(activity),
                                 assumeNonNull(tabModel.getTabAt(tabModel.index())).getId(),

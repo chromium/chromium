@@ -58,9 +58,8 @@ public class TabGroupTitleUtils {
      */
     public static String getDisplayableTitle(
             Context context, TabGroupModelFilter tabGroupModelFilter, @Nullable Token tabGroupId) {
-        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
         @Nullable String explicitTitle =
-                rootId == Tab.INVALID_TAB_ID ? null : tabGroupModelFilter.getTabGroupTitle(rootId);
+                tabGroupId == null ? null : tabGroupModelFilter.getTabGroupTitle(tabGroupId);
         if (TextUtils.isEmpty(explicitTitle)) {
             int tabCount = tabGroupModelFilter.getTabCountForGroup(tabGroupId);
             return getDefaultTitle(context, tabCount);

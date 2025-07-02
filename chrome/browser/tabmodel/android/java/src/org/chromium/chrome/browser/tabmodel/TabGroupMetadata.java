@@ -23,7 +23,6 @@ import java.util.Objects;
  */
 @NullMarked
 public class TabGroupMetadata {
-    private static final String KEY_ROOT_ID = "rootId";
     private static final String KEY_SELECTED_TAB_ID = "selectedTabId";
     private static final String KEY_SOURCE_WINDOW_ID = "sourceWindowId";
     private static final String KEY_TAB_GROUP_ID = "tabGroupId";
@@ -35,7 +34,6 @@ public class TabGroupMetadata {
     private static final String KEY_IS_INCOGNITO = "isIncognito";
     private static final String KEY_MHTML_TAB_TITLE = "mhtmlTabTitle";
 
-    public final int rootId;
     public final int selectedTabId;
     public final int sourceWindowId;
     public final Token tabGroupId;
@@ -58,7 +56,6 @@ public class TabGroupMetadata {
     /**
      * Constructs a {@link TabGroupMetadata} object that stores metadata about a tab group.
      *
-     * @param rootId The root ID of the group.
      * @param selectedTabId The selected tab ID of the group.
      * @param sourceWindowId The ID of the window that holds the tab group before re-parenting.
      * @param tabGroupId The stable ID for the tab group.
@@ -71,7 +68,6 @@ public class TabGroupMetadata {
      * @param isIncognito Whether the tab group is in incognito mode.
      */
     public TabGroupMetadata(
-            int rootId,
             int selectedTabId,
             int sourceWindowId,
             Token tabGroupId,
@@ -82,7 +78,6 @@ public class TabGroupMetadata {
             boolean tabGroupCollapsed,
             boolean isGroupShared,
             boolean isIncognito) {
-        this.rootId = rootId;
         this.selectedTabId = selectedTabId;
         this.sourceWindowId = sourceWindowId;
         this.tabGroupId = tabGroupId;
@@ -102,7 +97,6 @@ public class TabGroupMetadata {
      */
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
-        bundle.putInt(KEY_ROOT_ID, rootId);
         bundle.putInt(KEY_SELECTED_TAB_ID, selectedTabId);
         bundle.putInt(KEY_SOURCE_WINDOW_ID, sourceWindowId);
         bundle.putBundle(KEY_TAB_GROUP_ID, tabGroupId.toBundle());
@@ -131,7 +125,6 @@ public class TabGroupMetadata {
         if (tabGroupIdFromBundle == null
                 || tabIdsToUrls == null
                 || tabIdsToUrls.isEmpty()
-                || !bundle.containsKey(KEY_ROOT_ID)
                 || !bundle.containsKey(KEY_SELECTED_TAB_ID)
                 || !bundle.containsKey(KEY_SOURCE_WINDOW_ID)
                 || !bundle.containsKey(KEY_TAB_GROUP_COLOR)
@@ -140,7 +133,6 @@ public class TabGroupMetadata {
                 || !bundle.containsKey(KEY_IS_INCOGNITO)) return null;
 
         return new TabGroupMetadata(
-                bundle.getInt(KEY_ROOT_ID),
                 bundle.getInt(KEY_SELECTED_TAB_ID),
                 bundle.getInt(KEY_SOURCE_WINDOW_ID),
                 tabGroupIdFromBundle,
@@ -158,8 +150,7 @@ public class TabGroupMetadata {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
         TabGroupMetadata that = (TabGroupMetadata) other;
-        return rootId == that.rootId
-                && selectedTabId == that.selectedTabId
+        return selectedTabId == that.selectedTabId
                 && sourceWindowId == that.sourceWindowId
                 && tabGroupColor == that.tabGroupColor
                 && tabGroupCollapsed == that.tabGroupCollapsed
@@ -174,7 +165,6 @@ public class TabGroupMetadata {
     @Override
     public int hashCode() {
         return Objects.hash(
-                this.rootId,
                 this.selectedTabId,
                 this.sourceWindowId,
                 this.tabGroupId,
@@ -189,8 +179,6 @@ public class TabGroupMetadata {
 
     public String toDebugString() {
         return "TabGroupMetadata{"
-                + "rootId="
-                + rootId
                 + "selectedTabId="
                 + selectedTabId
                 + "sourceWindowId="

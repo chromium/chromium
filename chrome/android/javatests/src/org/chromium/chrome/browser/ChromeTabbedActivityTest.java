@@ -654,7 +654,6 @@ public class ChromeTabbedActivityTest {
 
     private TabGroupMetadata createTabGroupMetadata() {
         return new TabGroupMetadata(
-                /* rootId= */ 1,
                 /* selectedTabId= */ 1,
                 /* sourceWindowId= */ 1,
                 TAB_GROUP_ID,

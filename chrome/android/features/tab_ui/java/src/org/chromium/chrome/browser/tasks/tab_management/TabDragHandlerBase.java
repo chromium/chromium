@@ -235,10 +235,12 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
     }
 
     protected ChromeDropDataAndroid prepareGroupDropData(Token tabGroupId, boolean isGroupShared) {
-        List<Tab> groupedTabs = getCurrentTabGroupModelFilter().getTabsInGroup(tabGroupId);
+        TabGroupModelFilter filter = getCurrentTabGroupModelFilter();
+        List<Tab> groupedTabs = filter.getTabsInGroup(tabGroupId);
         int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
+                        filter,
                         groupedTabs,
                         windowId,
                         getTabModelSelector().getCurrentTabId(),

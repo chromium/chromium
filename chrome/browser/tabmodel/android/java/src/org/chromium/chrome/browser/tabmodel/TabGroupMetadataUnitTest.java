@@ -42,7 +42,6 @@ public class TabGroupMetadataUnitTest {
                             new AbstractMap.SimpleEntry<>(2, "https://www.youtube.com"),
                             new AbstractMap.SimpleEntry<>(3, "https://www.facebook.com")));
     private static final Token TAB_GROUP_ID = new Token(2L, 2L);
-    private static final int ROOT_ID = 1;
     private static final int SELECTED_TAB_ID = 2;
     private static final int SOURCE_WINDOW_INDEX = 5;
     private static final @ColorInt int TAB_GROUP_COLOR = 0;
@@ -59,7 +58,6 @@ public class TabGroupMetadataUnitTest {
     public void setup() {
         mTabGroupMetadata =
                 new TabGroupMetadata(
-                        ROOT_ID,
                         SELECTED_TAB_ID,
                         SOURCE_WINDOW_INDEX,
                         TAB_GROUP_ID,

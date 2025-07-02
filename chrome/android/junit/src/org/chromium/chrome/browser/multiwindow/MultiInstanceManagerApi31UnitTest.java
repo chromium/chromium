@@ -357,7 +357,11 @@ public class MultiInstanceManagerApi31UnitTest {
         mGroupedTabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3));
         mTabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
-                        mGroupedTabs, INSTANCE_ID_1, mTab1.getId(), /* isGroupShared= */ false);
+                        mTabGroupModelFilter,
+                        mGroupedTabs,
+                        INSTANCE_ID_1,
+                        mTab1.getId(),
+                        /* isGroupShared= */ false);
 
         when(mActivityTask56.getTaskId()).thenReturn(TASK_ID_56);
         when(mActivityTask57.getTaskId()).thenReturn(TASK_ID_57);
@@ -1737,7 +1741,6 @@ public class MultiInstanceManagerApi31UnitTest {
                                 Map.entry(3, "https://www.facebook.com")));
         TabGroupMetadata tabGroupMetadata =
                 new TabGroupMetadata(
-                        /* rootId= */ -1,
                         /* selectedTabId= */ -1,
                         INSTANCE_ID_1,
                         /* tabGroupId= */ null,

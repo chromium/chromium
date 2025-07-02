@@ -486,7 +486,6 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         if (isGroupDrag) {
             TabGroupMetadata tabGroupMetadata =
                     new TabGroupMetadata(
-                            /* rootId= */ INTERACTING_VIEW_ID,
                             /* selectedTabId= */ INTERACTING_VIEW_ID,
                             /* sourceWindowId= */ 1,
                             /* tabGroupId= */ new Token(2L, 2L),

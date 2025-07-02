@@ -24,6 +24,7 @@ import android.util.Size;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -138,7 +139,9 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             @TabGroupColorId Integer actualColorId = null;
             boolean isIncognito = initialTab.isIncognitoBranded();
             if (filter != null && filter.isTabInTabGroup(initialTab)) {
-                actualColorId = filter.getTabGroupColorWithFallback(initialTab.getRootId());
+                Token tabGroupId = initialTab.getTabGroupId();
+                assumeNonNull(tabGroupId);
+                actualColorId = filter.getTabGroupColorWithFallback(tabGroupId);
             }
             mResolvedEmptyPlaceholderColor =
                     TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
