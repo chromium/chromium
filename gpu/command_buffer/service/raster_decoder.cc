@@ -3047,6 +3047,7 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   }
 
   cc::PlaybackParams playback_params(nullptr, SkM44());
+  playback_params.destination_hdr_headroom = sk_surface_hdr_headroom_;
   TransferCacheDeserializeHelperImpl impl(raster_decoder_id_, transfer_cache());
   cc::PaintOp::DeserializeOptions options{
       .transfer_cache = &impl,
@@ -3056,7 +3057,6 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
           *shared_context_state_->scratch_deserialization_buffer(),
       .crash_dump_on_failure = !gpu_preferences_.disable_oopr_debug_crash_dump,
       .is_privileged = is_privileged_,
-      .hdr_headroom = sk_surface_hdr_headroom_,
       .shared_image_provider = paint_op_shared_image_provider_.get()};
 
   alignas(cc::PaintOpBuffer::kPaintOpAlign) char

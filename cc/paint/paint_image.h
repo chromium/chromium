@@ -431,9 +431,6 @@ class CC_PAINT_EXPORT PaintImage {
   // This is used by createImageBitmap's colorSpaceConversion:"none".
   bool reinterpret_as_srgb_ = false;
 
-  // The target HDR headroom for gainmap and global tone map application.
-  float target_hdr_headroom_ = 1.f;
-
   // Gainmap HDR metadata.
   sk_sp<SkImage> gainmap_sk_image_;
   sk_sp<PaintImageGenerator> gainmap_paint_image_generator_;

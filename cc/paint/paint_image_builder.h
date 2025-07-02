@@ -95,10 +95,6 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.reinterpret_as_srgb_ = reinterpret_as_srgb;
     return std::move(*this);
   }
-  PaintImageBuilder&& set_target_hdr_headroom(float target_hdr_headroom) {
-    paint_image_.target_hdr_headroom_ = target_hdr_headroom;
-    return std::move(*this);
-  }
   PaintImageBuilder&& set_completion_state(PaintImage::CompletionState state) {
     paint_image_.completion_state_ = state;
     return std::move(*this);
