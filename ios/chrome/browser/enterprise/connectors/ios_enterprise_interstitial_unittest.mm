@@ -247,7 +247,7 @@ TEST_F(IOSEnterpriseInterstitialTest, EnterpriseWarn_MetricsRecorded) {
 
 TEST_F(IOSEnterpriseInterstitialTest, CustomMessageDisplayed) {
   std::string expected_primary_paragraph =
-      base::StrCat({"Your administrator says: \"<a target=\"_blank\" href=\"",
+      base::StrCat({"Your organization says: \"<a target=\"_blank\" href=\"",
                     kTestUrl, "\">", kTestMessage, "</a>\""});
 
   auto block_resource = CreateBlockUnsafeResource();

@@ -119,7 +119,7 @@ TEST_F(EnterprisePageTest, EnterpriseWarn_CustomMessageDisplayed) {
   base::Value::Dict load_time_data;
   std::string final_message = test_page.GetCustomMessageForTesting();
   std::string expected_message = base::StrCat(
-      {"Your administrator says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+      {"Your organization says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
        "\">", kTestWarnMessage, "</a>\""});
   EXPECT_EQ(expected_message, final_message);
 }
@@ -141,7 +141,7 @@ TEST_F(EnterprisePageTest, EnterpriseBlock_CustomMessageDisplayed) {
   base::Value::Dict load_time_data;
   std::string final_message = test_page.GetCustomMessageForTesting();
   std::string expected_message = base::StrCat(
-      {"Your administrator says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+      {"Your organization says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
        "\">", kTestBlockMessage, "</a>\""});
   EXPECT_EQ(expected_message, final_message);
 }
@@ -165,7 +165,7 @@ TEST_F(EnterprisePageTest, EnterpriseBlock_CustomMessagePrioritization) {
                                                         GURL(kTestUrl)));
 
   std::string expected_message = base::StrCat(
-      {"Your administrator says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+      {"Your organization says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
        "\">", kTestBlockMessage, "</a>\""});
   EXPECT_EQ(expected_message, test_page1.GetCustomMessageForTesting());
 
@@ -186,7 +186,7 @@ TEST_F(EnterprisePageTest, EnterpriseBlock_CustomMessagePrioritization) {
                                                         GURL(kTestUrl)));
 
   expected_message = base::StrCat(
-      {"Your administrator says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+      {"Your organization says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
        "\">", kTestBlockMessage, "</a>\""});
   EXPECT_EQ(expected_message, test_page2.GetCustomMessageForTesting());
 
@@ -207,7 +207,7 @@ TEST_F(EnterprisePageTest, EnterpriseBlock_CustomMessagePrioritization) {
                                                         GURL(kTestUrl)));
 
   expected_message = base::StrCat(
-      {"Your administrator says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+      {"Your organization says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
        "\">", "", "</a>\""});
   EXPECT_EQ(expected_message, test_page3.GetCustomMessageForTesting());
 }
