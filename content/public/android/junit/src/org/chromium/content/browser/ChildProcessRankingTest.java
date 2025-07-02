@@ -509,4 +509,49 @@ public class ChildProcessRankingTest {
 
         assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c2, c3, c1});
     }
+
+    // Regression test for crbug.com/428626207
+    @Test
+    public void testSpareRendererVisible() {
+        FeatureOverrides.overrideParam(
+                ContentFeatureList.sSpareRendererLowestRanking.getFeatureName(),
+                ContentFeatureList.sSpareRendererLowestRanking.getName(),
+                true);
+
+        ChildProcessConnection c1 = createConnection();
+        ChildProcessConnection c2 = createConnection();
+        ChildProcessConnection c3 = createConnection();
+        ChildProcessRanking ranking = new ChildProcessRanking();
+        ranking.enableServiceGroupImportance();
+
+        ranking.addConnection(
+                c1,
+                /* visible= */ true,
+                /* frameDepth= */ 10,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.NORMAL);
+        ranking.addConnection(
+                c2,
+                /* visible= */ true,
+                /* frameDepth= */ 0,
+                /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.IMPORTANT);
+        // If the spare renderer is marked as intersectsViewPort,
+        // the spare renderer attribute should be ignored. Thus
+        // c3 should be of higher rank than the non-visible c1.
+        ranking.addConnection(
+                c3,
+                /* visible= */ true,
+                /* frameDepth= */ 10,
+                /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ true,
+                ChildProcessImportance.NORMAL);
+
+        assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c2, c3, c1});
+        // Moreover, verify that c3 is not in the low ranking group.
+        assertNotInGroup(new ChildProcessConnection[] {c3, c2});
+        assertInGroupOrderedByImportance(new ChildProcessConnection[] {c1});
+    }
 }
