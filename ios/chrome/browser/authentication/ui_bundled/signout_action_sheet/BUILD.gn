@@ -83,6 +83,7 @@ source_set("eg2_tests") {
     "//build:branding_buildflags",
     "//components/policy/core/common:common_constants",
     "//components/signin/public/base",
+    "//components/strings:components_strings_grit",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",

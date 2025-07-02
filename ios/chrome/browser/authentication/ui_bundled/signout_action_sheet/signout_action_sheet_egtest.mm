@@ -5,6 +5,7 @@
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -219,8 +220,9 @@ void ClickSignOutInAccountSettings() {
   VerifySignoutDialogShownForManagedAccount();
 
   // Tap cancel and verify user is still signed in.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
 
   // Verify histogram metric for cancelling signout is recorded.
