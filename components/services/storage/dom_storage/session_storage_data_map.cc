@@ -38,7 +38,7 @@ scoped_refptr<SessionStorageDataMap> SessionStorageDataMap::CreateClone(
       listener, std::move(map_data), std::move(clone_from)));
 }
 
-void SessionStorageDataMap::DidCommit(leveldb::Status status) {
+void SessionStorageDataMap::DidCommit(DbStatus status) {
   listener_->OnCommitResult(status);
 }
 
@@ -94,7 +94,7 @@ void SessionStorageDataMap::RemoveBindingReference() {
   storage_area()->ScheduleImmediateCommit();
 }
 
-void SessionStorageDataMap::OnMapLoaded(leveldb::Status) {
+void SessionStorageDataMap::OnMapLoaded(DbStatus) {
   clone_from_data_map_.reset();
 }
 

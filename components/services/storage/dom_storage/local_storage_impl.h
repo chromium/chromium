@@ -29,8 +29,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/common/database/db_status.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
-#include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace blink {
 class StorageKey;
@@ -129,12 +129,11 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   // Part of our asynchronous directory opening called from RunWhenConnected().
   void InitiateConnection(bool in_memory_only = false);
-  void OnDatabaseOpened(leveldb::Status status);
-  void OnGotDatabaseVersion(leveldb::Status status,
-                            DomStorageDatabase::Value value);
+  void OnDatabaseOpened(DbStatus status);
+  void OnGotDatabaseVersion(DbStatus status, DomStorageDatabase::Value value);
   void OnConnectionFinished();
   void DeleteAndRecreateDatabase();
-  void OnDBDestroyed(bool recreate_in_memory, leveldb::Status status);
+  void OnDBDestroyed(bool recreate_in_memory, DbStatus status);
 
   StorageAreaHolder* GetOrCreateStorageArea(
       const blink::StorageKey& storage_key);
@@ -147,11 +146,11 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   void OnGotStorageUsageForShutdown(
       std::vector<mojom::StorageUsageInfoPtr> usage);
-  void OnStorageKeysDeleted(leveldb::Status status);
+  void OnStorageKeysDeleted(DbStatus status);
   void OnShutdownComplete();
 
   void GetStatistics(size_t* total_cache_size, size_t* unused_area_count);
-  void OnCommitResult(leveldb::Status status);
+  void OnCommitResult(DbStatus status);
 
   // These clear stale storage areas (not read/written to within 400 days) from
   // the database. See crbug.com/40281870 for more info.

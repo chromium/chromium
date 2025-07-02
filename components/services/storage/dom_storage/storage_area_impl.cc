@@ -24,7 +24,7 @@ void StorageAreaImpl::Delegate::PrepareToCommit(
     std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
     std::vector<DomStorageDatabase::Key>* extra_keys_to_delete) {}
 
-void StorageAreaImpl::Delegate::OnMapLoaded(leveldb::Status) {}
+void StorageAreaImpl::Delegate::OnMapLoaded(DbStatus) {}
 
 bool StorageAreaImpl::s_aggressive_flushing_enabled_ = false;
 
@@ -93,7 +93,7 @@ StorageAreaImpl::~StorageAreaImpl() {
 void StorageAreaImpl::InitializeAsEmpty() {
   DCHECK_EQ(map_state_, MapState::UNLOADED);
   map_state_ = MapState::LOADING_FROM_DATABASE;
-  OnMapLoaded(leveldb::Status::OK(), {});
+  OnMapLoaded(DbStatus::OK(), {});
 }
 
 void StorageAreaImpl::Bind(
@@ -527,7 +527,7 @@ void StorageAreaImpl::GetAll(
     AddObserver(std::move(new_observer));
 }
 
-base::OnceCallback<void(leveldb::Status)>
+base::OnceCallback<void(DbStatus)>
 StorageAreaImpl::GetCommitCompleteCallback() {
   return base::BindOnce(&StorageAreaImpl::OnCommitComplete,
                         weak_ptr_factory_.GetWeakPtr());
@@ -588,7 +588,7 @@ void StorageAreaImpl::LoadMap(base::OnceClosure completion_callback) {
   map_state_ = MapState::LOADING_FROM_DATABASE;
 
   if (!database_) {
-    OnMapLoaded(leveldb::Status::IOError(""), {});
+    OnMapLoaded(DbStatus::IOError("Database no longer valid."), {});
     return;
   }
 
@@ -597,7 +597,7 @@ void StorageAreaImpl::LoadMap(base::OnceClosure completion_callback) {
           [](const DomStorageDatabase::Key& prefix,
              const DomStorageDatabase& db) {
             std::vector<DomStorageDatabase::KeyValuePair> data;
-            leveldb::Status status = db.GetPrefixed(prefix, &data);
+            DbStatus status = db.GetPrefixed(prefix, &data);
             return std::make_tuple(status, std::move(data));
           },
           prefix_),
@@ -606,7 +606,7 @@ void StorageAreaImpl::LoadMap(base::OnceClosure completion_callback) {
 }
 
 void StorageAreaImpl::OnMapLoaded(
-    leveldb::Status status,
+    DbStatus status,
     std::vector<DomStorageDatabase::KeyValuePair> data) {
   DCHECK(keys_values_map_.empty());
   DCHECK_EQ(map_state_, MapState::LOADING_FROM_DATABASE);
@@ -817,13 +817,14 @@ StorageAreaImpl::CollectCommit() {
   return commit;
 }
 
-void StorageAreaImpl::OnCommitComplete(leveldb::Status status) {
+void StorageAreaImpl::OnCommitComplete(DbStatus status) {
   has_committed_data_ = true;
   --commit_batches_in_flight_;
   StartCommitTimer();
 
-  if (!status.ok())
+  if (!status.ok()) {
     SetCacheMode(CacheMode::KEYS_AND_VALUES);
+  }
 
   // Call before |DidCommit| as delegate can destroy this object.
   UnloadMapIfPossible();

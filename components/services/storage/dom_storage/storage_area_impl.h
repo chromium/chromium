@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "storage/common/database/db_status.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
 namespace base {
@@ -59,8 +60,8 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
     virtual void PrepareToCommit(
         std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
         std::vector<DomStorageDatabase::Key>* extra_keys_to_delete);
-    virtual void DidCommit(leveldb::Status error) = 0;
-    virtual void OnMapLoaded(leveldb::Status status);
+    virtual void DidCommit(DbStatus error) = 0;
+    virtual void OnMapLoaded(DbStatus status);
   };
 
   enum class CacheMode {
@@ -203,10 +204,9 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
 
   // Committer:
   std::optional<AsyncDomStorageDatabase::Commit> CollectCommit() override;
-  base::OnceCallback<void(leveldb::Status)> GetCommitCompleteCallback()
-      override;
+  base::OnceCallback<void(DbStatus)> GetCommitCompleteCallback() override;
 
-  void OnCommitComplete(leveldb::Status status);
+  void OnCommitComplete(DbStatus status);
 
   void SetOnLoadCallbackForTesting(base::OnceClosure callback) {
     on_load_callback_for_testing_ = std::move(callback);
@@ -294,7 +294,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   // Then if the |cache_mode_| is keys-only, it unloads the map to the
   // |keys_only_map_| and sets the |map_state_| to LOADED_KEYS_ONLY
   void LoadMap(base::OnceClosure completion_callback);
-  void OnMapLoaded(leveldb::Status status,
+  void OnMapLoaded(DbStatus status,
                    std::vector<DomStorageDatabase::KeyValuePair> data);
   void CalculateStorageAndMemoryUsed();
   void OnLoadComplete();

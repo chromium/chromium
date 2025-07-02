@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -77,7 +78,7 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
         db_name, /*memory_dump_id=*/std::nullopt, blocking_task_runner_,
         base::BindLambdaForTesting(
             [&](base::SequenceBound<DomStorageDatabase> database,
-                leveldb::Status status) {
+                DbStatus status) {
               result = std::move(database);
               loop.Quit();
             }));
@@ -96,7 +97,7 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
         blocking_task_runner_,
         base::BindLambdaForTesting(
             [&](base::SequenceBound<DomStorageDatabase> database,
-                leveldb::Status status) {
+                DbStatus status) {
               result = std::move(database);
               loop.Quit();
             }));
@@ -105,13 +106,13 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
   }
 
   // Helper for tests to block on the result of a Destroy call.
-  leveldb::Status DestroySync(const base::FilePath& directory,
-                              const std::string& db_name) {
-    leveldb::Status result;
+  DbStatus DestroySync(const base::FilePath& directory,
+                       const std::string& db_name) {
+    DbStatus result;
     base::RunLoop loop;
     DomStorageDatabase::Destroy(
         directory, db_name, blocking_task_runner_,
-        base::BindLambdaForTesting([&](leveldb::Status status) {
+        base::BindLambdaForTesting([&](DbStatus status) {
           result = status;
           loop.Quit();
         }));

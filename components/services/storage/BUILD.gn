@@ -111,6 +111,8 @@ source_set("storage") {
     "//services/network/public/mojom",
     "//storage/browser",
     "//storage/common",
+    "//storage/common:database_status",
+    "//storage/common:leveldb_status_helper",
   ]
 }
 
@@ -224,6 +226,7 @@ source_set("tests") {
     "//sql:test_support",
     "//storage/browser:browser",
     "//storage/browser:test_support",
+    "//storage/common:database_status",
     "//testing/gmock",
     "//testing/gtest",
   ]

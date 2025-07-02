@@ -3229,6 +3229,7 @@ test("content_unittests") {
     "//storage/browser",
     "//storage/browser:test_support",
     "//storage/common",
+    "//storage/common:database_status",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink",

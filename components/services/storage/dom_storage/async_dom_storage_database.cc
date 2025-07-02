@@ -66,11 +66,11 @@ void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
 void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
     RunBatchTasksContext context,
     std::vector<BatchDatabaseTask> tasks,
-    base::OnceCallback<void(leveldb::Status)> callback) {
+    base::OnceCallback<void(DbStatus)> callback) {
   RunDatabaseTask(base::BindOnce(
                       [](RunBatchTasksContext context,
                          std::vector<BatchDatabaseTask> tasks,
-                         const DomStorageDatabase& db) {
+                         const DomStorageDatabase& db) -> DbStatus {
                         leveldb::WriteBatch batch;
                         // TODO(crbug.com/40245293): Remove this after debugging
                         // is complete.
@@ -123,7 +123,7 @@ void AsyncDomStorageDatabase::RemoveCommitter(Committer* source) {
 
 void AsyncDomStorageDatabase::InitiateCommit(Committer* source) {
   std::vector<Commit> commits;
-  std::vector<base::OnceCallback<void(leveldb::Status)>> commit_dones;
+  std::vector<base::OnceCallback<void(DbStatus)>> commit_dones;
   size_t total_data_size = 0u;
   if (base::FeatureList::IsEnabled(kCoalesceStorageAreaCommits)) {
     commits.reserve(committers_.size());
@@ -149,8 +149,8 @@ void AsyncDomStorageDatabase::InitiateCommit(Committer* source) {
                                  /*buckets=*/100);
 
   auto run_all = base::BindOnce(
-      [](std::vector<base::OnceCallback<void(leveldb::Status)>> callbacks,
-         leveldb::Status status) {
+      [](std::vector<base::OnceCallback<void(DbStatus)>> callbacks,
+         DbStatus status) {
         for (auto& callback : callbacks) {
           std::move(callback).Run(status);
         }
@@ -192,7 +192,7 @@ void AsyncDomStorageDatabase::InitiateCommit(Committer* source) {
 void AsyncDomStorageDatabase::OnDatabaseOpened(
     StatusCallback callback,
     base::SequenceBound<DomStorageDatabase> database,
-    leveldb::Status status) {
+    DbStatus status) {
   database_ = std::move(database);
   std::vector<BoundDatabaseTask> tasks;
   std::swap(tasks, tasks_to_run_on_open_);

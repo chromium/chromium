@@ -22,6 +22,7 @@
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/types/pass_key.h"
+#include "storage/common/database/db_status.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/env.h"
@@ -47,10 +48,9 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
   using KeyView = base::span<const uint8_t>;
   using Value = std::vector<uint8_t>;
   using ValueView = base::span<const uint8_t>;
-  using Status = leveldb::Status;
 
   // Callback used for basic async operations on this class.
-  using StatusCallback = base::OnceCallback<void(Status)>;
+  using StatusCallback = base::OnceCallback<void(DbStatus)>;
 
   struct KeyValuePair {
     KeyValuePair();
@@ -77,7 +77,7 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
   // (possibly null, on failure) sequence-bound DomStorageDatabase instance.
   using OpenCallback =
       base::OnceCallback<void(base::SequenceBound<DomStorageDatabase> database,
-                              leveldb::Status status)>;
+                              DbStatus status)>;
 
   // Creates a DomStorageDatabase instance for a persistent database within a
   // filesystem directory given by |directory|, which must be an absolute path.
@@ -119,33 +119,34 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
       StatusCallback callback);
 
   // Retrieves the value for |key| in the database.
-  Status Get(KeyView key, Value* out_value) const;
+  DbStatus Get(KeyView key, Value* out_value) const;
 
   // Sets the database entry for |key| to |value|.
-  Status Put(KeyView key, ValueView value) const;
+  DbStatus Put(KeyView key, ValueView value) const;
 
   // Gets all database entries whose key starts with |prefix|.
-  Status GetPrefixed(KeyView prefix, std::vector<KeyValuePair>* entries) const;
+  DbStatus GetPrefixed(KeyView prefix,
+                       std::vector<KeyValuePair>* entries) const;
 
   // Adds operations to |batch| which will delete all database entries whose key
   // starts with |prefix| when committed.
-  Status DeletePrefixed(KeyView prefix, leveldb::WriteBatch* batch) const;
+  DbStatus DeletePrefixed(KeyView prefix, leveldb::WriteBatch* batch) const;
 
   // Adds operations to |batch| which when committed will copy all database
   // entries whose key starts with |prefix| over to new entries with |prefix|
   // replaced by |new_prefix| in each new key.
-  Status CopyPrefixed(KeyView prefix,
-                      KeyView new_prefix,
-                      leveldb::WriteBatch* batch) const;
+  DbStatus CopyPrefixed(KeyView prefix,
+                        KeyView new_prefix,
+                        leveldb::WriteBatch* batch) const;
 
   // Commits operations in |batch| to the database.
-  Status Commit(leveldb::WriteBatch* batch) const;
+  DbStatus Commit(leveldb::WriteBatch* batch) const;
 
   // Rewrites the database on disk to clean up traces of deleted entries.
   //
   // NOTE: If |RewriteDB()| fails, this DomStorageDatabase may no longer be
   // usable; in such cases, all future operations will return an IOError status.
-  Status RewriteDB();
+  DbStatus RewriteDB();
 
   void SetDestructionCallbackForTesting(base::OnceClosure callback) {
     destruction_callback_ = std::move(callback);

@@ -9,6 +9,8 @@ include_rules = [
   "+sql",
   "+storage/browser/quota/special_storage_policy.h",
   "+storage/browser/test/mock_special_storage_policy.h",
+  "+storage/common/database/db_status.h",
+  "+storage/common/database/leveldb_status_helper.h",
 ]
 
 specific_include_rules = {

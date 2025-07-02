@@ -86,8 +86,7 @@ void RecordSessionStorageCachePurgedHistogram(
   }
 }
 
-void SessionStorageErrorResponse(base::OnceClosure callback,
-                                 leveldb::Status status) {
+void SessionStorageErrorResponse(base::OnceClosure callback, DbStatus status) {
   std::move(callback).Run();
 }
 
@@ -552,7 +551,7 @@ bool SessionStorageImpl::OnMemoryDump(
 }
 
 void SessionStorageImpl::PretendToConnectForTesting() {
-  OnDatabaseOpened(leveldb::Status::OK());
+  OnDatabaseOpened(DbStatus::OK());
 }
 
 void SessionStorageImpl::FlushAreaForTesting(
@@ -602,7 +601,7 @@ void SessionStorageImpl::OnDataMapDestruction(
   data_maps_.erase(map_prefix);
 }
 
-void SessionStorageImpl::OnCommitResult(leveldb::Status status) {
+void SessionStorageImpl::OnCommitResult(DbStatus status) {
   if (connection_state_ == CONNECTION_SHUTDOWN)
     return;
 
@@ -630,7 +629,7 @@ void SessionStorageImpl::OnCommitResult(leveldb::Status status) {
 }
 
 void SessionStorageImpl::OnCommitResultWithCallback(base::OnceClosure callback,
-                                                    leveldb::Status status) {
+                                                    DbStatus status) {
   OnCommitResult(status);
   std::move(callback).Run();
 }
@@ -773,7 +772,7 @@ SessionStorageImpl::KeyValuePairsAndStatus::KeyValuePairsAndStatus(
 
 SessionStorageImpl::KeyValuePairsAndStatus::~KeyValuePairsAndStatus() = default;
 
-void SessionStorageImpl::OnDatabaseOpened(leveldb::Status status) {
+void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
   if (!status.ok()) {
     LogDatabaseOpenResult(OpenResult::kDatabaseOpenFailed);
     // If we failed to open the database, try to delete and recreate the
@@ -901,9 +900,9 @@ SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNamespaces(
     database_->RunBatchDatabaseTasks(
         RunBatchTasksContext::kParseNamespaces, std::move(migration_tasks),
         base::BindOnce(
-            [](base::OnceCallback<void(leveldb::Status)> callback,
+            [](base::OnceCallback<void(DbStatus)> callback,
                scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-               leveldb::Status status) {
+               DbStatus status) {
               callback_task_runner->PostTask(
                   FROM_HERE, base::BindOnce(std::move(callback), status));
             },
@@ -1008,7 +1007,7 @@ void SessionStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
 }
 
 void SessionStorageImpl::OnDBDestroyed(bool recreate_in_memory,
-                                       leveldb::Status status) {
+                                       DbStatus status) {
   // We're essentially ignoring the status here. Even if destroying failed we
   // still want to go ahead and try to recreate.
   InitiateConnection(recreate_in_memory);

@@ -21,6 +21,7 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/testing_legacy_session_storage_database.h"
+#include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -41,7 +42,7 @@ std::vector<uint8_t> SliceToVector(const leveldb::Slice& s) {
   return std::vector<uint8_t>(span.begin(), span.end());
 }
 
-void ErrorCallback(leveldb::Status* status_out, leveldb::Status status) {
+void ErrorCallback(DbStatus* status_out, DbStatus status) {
   *status_out = status;
 }
 
@@ -56,7 +57,7 @@ class SessionStorageMetadataTest : public testing::Test {
     database_ = AsyncDomStorageDatabase::OpenInMemory(
         std::nullopt, "SessionStorageMetadataTest",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-        base::BindLambdaForTesting([&](leveldb::Status) { loop.Quit(); }));
+        base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
     loop.Run();
 
     next_map_id_key_ = std::vector<uint8_t>(
@@ -151,7 +152,7 @@ class SessionStorageMetadataTest : public testing::Test {
     base::RunLoop loop;
     database_->database().PostTaskWithThisObject(
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
-          leveldb::Status status = db.GetPrefixed({}, &entries);
+          DbStatus status = db.GetPrefixed({}, &entries);
           ASSERT_TRUE(status.ok());
           loop.Quit();
         }));
@@ -164,11 +165,11 @@ class SessionStorageMetadataTest : public testing::Test {
   }
 
   void RunBatch(std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks,
-                base::OnceCallback<void(leveldb::Status)> callback) {
+                base::OnceCallback<void(DbStatus)> callback) {
     base::RunLoop loop;
     database_->RunBatchDatabaseTasks(
         RunBatchTasksContext::kTest, std::move(tasks),
-        base::BindLambdaForTesting([&](leveldb::Status status) {
+        base::BindLambdaForTesting([&](DbStatus status) {
           std::move(callback).Run(status);
           loop.Quit();
         }));
@@ -196,7 +197,7 @@ TEST_F(SessionStorageMetadataTest, SaveNewMetadata) {
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks =
       metadata.SetupNewDatabase();
 
-  leveldb::Status status;
+  DbStatus status;
   RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
   EXPECT_TRUE(status.ok());
 
@@ -256,7 +257,7 @@ TEST_F(SessionStorageMetadataTest, SaveNewMap) {
                    ->second[test_storage_key1_]
                    ->ReferenceCount());
 
-  leveldb::Status status;
+  DbStatus status;
   RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
   EXPECT_TRUE(status.ok());
 
@@ -280,7 +281,7 @@ TEST_F(SessionStorageMetadataTest, ShallowCopies) {
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
   metadata.RegisterShallowClonedNamespace(ns1_entry, ns3_entry, &tasks);
 
-  leveldb::Status status;
+  DbStatus status;
   RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
   EXPECT_TRUE(status.ok());
 
@@ -315,7 +316,7 @@ TEST_F(SessionStorageMetadataTest, DeleteNamespace) {
 
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
   metadata.DeleteNamespace(test_namespace1_id_, &tasks);
-  leveldb::Status status;
+  DbStatus status;
   RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
   EXPECT_TRUE(status.ok());
 
@@ -349,7 +350,7 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   // First delete an area with a shared map.
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
   metadata.DeleteArea(test_namespace1_id_, test_storage_key1_, &tasks);
-  leveldb::Status status;
+  DbStatus status;
   RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
   EXPECT_TRUE(status.ok());
 
@@ -533,7 +534,7 @@ TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
       AsyncDomStorageDatabase::OpenInMemory(
           std::nullopt, "SessionStorageMetadataMigrationTest",
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-          base::BindLambdaForTesting([&](leveldb::Status) { loop.Quit(); }));
+          base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
   loop.Run();
 
   // Run the tasks on our local batch object.

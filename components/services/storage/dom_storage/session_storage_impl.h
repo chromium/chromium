@@ -30,8 +30,8 @@
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "storage/common/database/db_status.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
-#include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -173,9 +173,8 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void OnDataMapCreation(const std::vector<uint8_t>& map_prefix,
                          SessionStorageDataMap* map) override;
   void OnDataMapDestruction(const std::vector<uint8_t>& map_prefix) override;
-  void OnCommitResult(leveldb::Status status) override;
-  void OnCommitResultWithCallback(base::OnceClosure callback,
-                                  leveldb::Status status);
+  void OnCommitResult(DbStatus status) override;
+  void OnCommitResultWithCallback(base::OnceClosure callback, DbStatus status);
 
   // SessionStorageNamespaceImpl::Delegate implementation:
   scoped_refptr<SessionStorageDataMap> MaybeGetExistingDataMapForId(
@@ -198,13 +197,13 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   // Part of our asynchronous directory opening called from RunWhenConnected().
   void InitiateConnection(bool in_memory_only = false);
-  void OnDatabaseOpened(leveldb::Status status);
+  void OnDatabaseOpened(DbStatus status);
 
   struct ValueAndStatus {
     ValueAndStatus();
     ValueAndStatus(ValueAndStatus&&);
     ~ValueAndStatus();
-    leveldb::Status status;
+    DbStatus status;
     DomStorageDatabase::Value value;
   };
 
@@ -212,7 +211,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
     KeyValuePairsAndStatus();
     KeyValuePairsAndStatus(KeyValuePairsAndStatus&&);
     ~KeyValuePairsAndStatus();
-    leveldb::Status status;
+    DbStatus status;
     std::vector<DomStorageDatabase::KeyValuePair> key_value_pairs;
   };
 
@@ -235,7 +234,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void OnConnectionFinished();
   void PurgeAllNamespaces();
   void DeleteAndRecreateDatabase(const char* histogram_name);
-  void OnDBDestroyed(bool recreate_in_memory, leveldb::Status status);
+  void OnDBDestroyed(bool recreate_in_memory, DbStatus status);
 
   void OnShutdownComplete();
 

@@ -30,6 +30,7 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -87,13 +88,13 @@ class MockDelegate : public StorageAreaImpl::Delegate {
   ~MockDelegate() override = default;
 
   void OnNoBindings() override {}
-  void DidCommit(leveldb::Status status) override {
+  void DidCommit(DbStatus status) override {
     if (!status.ok())
       LOG(ERROR) << "error committing!";
     if (committed_)
       std::move(committed_).Run();
   }
-  void OnMapLoaded(leveldb::Status) override { map_load_count_++; }
+  void OnMapLoaded(DbStatus) override { map_load_count_++; }
 
   int map_load_count() const { return map_load_count_; }
 
@@ -153,8 +154,7 @@ class StorageAreaImplTest : public testing::Test,
     db_ = AsyncDomStorageDatabase::OpenInMemory(
         std::nullopt, "StorageAreaImplTest",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-        base::BindLambdaForTesting(
-            [&](leveldb::Status status) { loop.Quit(); }));
+        base::BindLambdaForTesting([&](DbStatus status) { loop.Quit(); }));
     loop.Run();
 
     StorageAreaImpl::Options options =
@@ -202,7 +202,7 @@ class StorageAreaImplTest : public testing::Test,
 
   bool HasDatabaseEntry(std::string_view key) {
     base::RunLoop loop;
-    leveldb::Status status;
+    DbStatus status;
     db_->database().PostTaskWithThisObject(
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           std::vector<uint8_t> value;
