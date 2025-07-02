@@ -180,8 +180,12 @@ public class ChipView extends LinearLayout {
                                 .getDimensionPixelSize(
                                         R.dimen.chip_text_multiline_vertical_padding));
         boolean textAlignStart = a.getBoolean(R.styleable.ChipView_textAlignStart, false);
-        boolean reduceTextStartPadding =
-                a.getBoolean(R.styleable.ChipView_reduceTextStartPadding, false);
+        @Px
+        int textStartPadding =
+                a.getDimensionPixelSize(
+                        R.styleable.ChipView_primaryTextStartPadding,
+                        getResources()
+                                .getDimensionPixelSize(R.dimen.chip_primary_text_start_padding));
         a.recycle();
 
         mStartIcon = new ChromeImageView(getContext());
@@ -232,13 +236,11 @@ public class ChipView extends LinearLayout {
             // Default of 'center' is defined in the ChipTextView style.
             mPrimaryText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         }
-        if (reduceTextStartPadding) {
-            mPrimaryText.setPaddingRelative(
-                    getResources().getDimensionPixelSize(R.dimen.chip_text_reduced_leading_padding),
-                    mPrimaryText.getPaddingTop(),
-                    mPrimaryText.getPaddingEnd(),
-                    mPrimaryText.getPaddingBottom());
-        }
+        mPrimaryText.setPaddingRelative(
+                textStartPadding,
+                mPrimaryText.getPaddingTop(),
+                mPrimaryText.getPaddingEnd(),
+                mPrimaryText.getPaddingBottom());
         addView(mPrimaryText);
 
         // Reset icon and background:

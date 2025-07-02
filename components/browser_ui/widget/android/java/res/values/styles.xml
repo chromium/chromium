@@ -176,7 +176,7 @@ found in the LICENSE file.
     <style name="ChipTextView">
         <item name="android:gravity">center</item>
         <item name="android:maxLines">1</item>
-        <item name="android:paddingStart">@dimen/chip_view_start_padding</item>
+        <item name="android:paddingStart">@dimen/chip_primary_text_start_padding</item>
         <item name="android:textAlignment">center</item>
     </style>
 

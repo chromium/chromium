@@ -190,7 +190,8 @@ found in the LICENSE file.
     <dimen name="chip_end_icon_margin_end">6dp</dimen>
     <dimen name="chip_end_icon_extended_margin_end">16dp</dimen>
     <dimen name="chip_text_multiline_vertical_padding">12dp</dimen>
-    <dimen name="chip_text_reduced_leading_padding">4dp</dimen>
+    <dimen name="chip_primary_text_start_padding">8dp</dimen>
+    <dimen name="chip_primary_text_reduced_start_padding">4dp</dimen>
     <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(8dp) ) / 2 -->
     <dimen name="menu_chip_vertical_inset">10dp</dimen>
 
