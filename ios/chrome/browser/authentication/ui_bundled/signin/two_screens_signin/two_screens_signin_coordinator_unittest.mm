@@ -14,7 +14,9 @@
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_view_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
@@ -82,6 +84,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
 
   ~TwoScreensSigninCoordinatorTest() override {
     EXPECT_OCMOCK_VERIFY((id)profile_state_);
+    EXPECT_OCMOCK_VERIFY((id)fullscreen_signin_screen_coordinator_mock_);
+    EXPECT_OCMOCK_VERIFY((id)history_sync_coordinator_mock_);
   }
 
   // Initalize coordinator_ up to start.
@@ -89,7 +93,9 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   // expected_signin_completion_identity_
   void StartTwoScreensSigninCoordinator(
       SigninCoordinatorResult expected_result,
-      id<SystemIdentity> expected_signin_completion_identity) {
+      id<SystemIdentity> expected_signin_completion_identity,
+      bool is_signed_in,
+      bool history_sync) {
     coordinator_ = [[TwoScreensSigninCoordinator alloc]
         initWithBaseViewController:window_.rootViewController
                            browser:browser_.get()
@@ -107,19 +113,73 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
       completion_block_done_ = true;
     };
     EXPECT_EQ(PresentedViewController(), nil);
+
+    // Create FullscreenSigninScreenCoordinator mock.
+    fullscreen_signin_screen_coordinator_mock_ =
+        OCMStrictClassMock([FullscreenSigninScreenCoordinator class]);
+    OCMExpect([(id)fullscreen_signin_screen_coordinator_mock_ alloc])
+        .andReturn(fullscreen_signin_screen_coordinator_mock_);
+    ChangeProfileContinuationProvider* provider =
+        static_cast<base::RepeatingCallback<ChangeProfileContinuation()>*>(
+            [OCMArg anyPointer]);
+    OCMExpect(
+        [fullscreen_signin_screen_coordinator_mock_
+             initWithBaseNavigationController:[OCMArg any]
+                                      browser:browser_.get()
+                                     delegate:coordinator_
+                                 contextStyle:SigninContextStyle::kDefault
+                                  accessPoint:signin_metrics::AccessPoint::
+                                                  kSettings
+                                  promoAction:signin_metrics::PromoAction::
+                                                  PROMO_ACTION_NO_SIGNIN_PROMO
+            changeProfileContinuationProvider:*provider])
+        .andReturn(fullscreen_signin_screen_coordinator_mock_);
+    OCMExpect([fullscreen_signin_screen_coordinator_mock_ start])
+        .andDo(^(NSInvocation*) {
+          if (is_signed_in) {
+            // If there is a primary account, FullscreenSigninScreenCoordinator
+            // is skipped.
+            [coordinator_ screenWillFinishPresenting];
+          }
+        });
+    OCMExpect([fullscreen_signin_screen_coordinator_mock_ stop]);
+
+    if (history_sync) {
+      // Create HistorySyncCoordinator mock.
+      id<HistorySyncCoordinatorDelegate> history_sync_coordinator_delegate =
+          static_cast<id<HistorySyncCoordinatorDelegate>>(coordinator_);
+      history_sync_coordinator_mock_ =
+          OCMStrictClassMock([HistorySyncCoordinator class]);
+      OCMExpect([(id)history_sync_coordinator_mock_ alloc])
+          .andReturn(history_sync_coordinator_mock_);
+      OCMExpect(
+          [history_sync_coordinator_mock_
+              initWithBaseNavigationController:[OCMArg any]
+                                       browser:browser_.get()
+                                      delegate:history_sync_coordinator_delegate
+                                      firstRun:NO
+                                 showUserEmail:NO
+                                    isOptional:YES
+                                  contextStyle:SigninContextStyle::kDefault
+                                   accessPoint:signin_metrics::AccessPoint::
+                                                   kSettings])
+          .andReturn(history_sync_coordinator_mock_);
+      OCMExpect([history_sync_coordinator_mock_ start]).andDo(^(NSInvocation*) {
+        if (is_signed_in) {
+          // If there is a primary account, HistorySyncCoordinator
+          // is skipped.
+          [coordinator_ screenWillFinishPresenting];
+        }
+      });
+      OCMExpect([history_sync_coordinator_mock_ stop]);
+    }
+
     [coordinator_ start];
   }
 
   // Returns the presentedViewController.
   UIViewController* PresentedViewController() {
     return window_.rootViewController.presentedViewController;
-  }
-
-  // Returns the presented navigation controller's topViewController.
-  UIViewController* TopViewController() {
-    UIViewController* presented = PresentedViewController();
-    return base::apple::ObjCCast<UINavigationController>(presented)
-        .topViewController;
   }
 
   // Expects no preferences or metrics related to upgrade promo since the access
@@ -178,6 +238,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   UIWindow* window_;
   FakeSystemIdentity* fake_identity_ = nil;
   SceneState* scene_state_;
+  FullscreenSigninScreenCoordinator* fullscreen_signin_screen_coordinator_mock_;
+  HistorySyncCoordinator* history_sync_coordinator_mock_;
 
  private:
   // Required for UI blocker.
@@ -189,18 +251,16 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
 // Tests that the screens are presented.
 TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   base::HistogramTester histogram_tester;
-  StartTwoScreensSigninCoordinator(SigninCoordinatorResultInterrupted, nil);
+  StartTwoScreensSigninCoordinator(SigninCoordinatorResultInterrupted,
+                                   /*expected_signin_completion_identity=*/nil,
+                                   /*is_signed_in=*/false,
+                                   /*history_sync=*/false);
   // Expect the signin screen to be presented.
-  EXPECT_NE(PresentedViewController(), nil);
-  EXPECT_TRUE([TopViewController()
-      isKindOfClass:[FullscreenSigninScreenViewController class]]);
+  EXPECT_TRUE(
+      [PresentedViewController() isKindOfClass:[UINavigationController class]]);
   SigninFakeIdentity(/*has_history_sync_opt_in=*/false);
 
   NextScreen();
-
-  // Expect the history sync opt-in screen to be presented.
-  EXPECT_TRUE(
-      [TopViewController() isKindOfClass:[HistorySyncViewController class]]);
 
   // Shut it down.
   StopCoordinator();
@@ -208,11 +268,6 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   // caller.
   EXPECT_FALSE(completion_block_done_);
   ExpectNoUpgradePromoHistogram(&histogram_tester);
-  histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
-      "Signin.SignIn.Started", signin_metrics::AccessPoint::kSettings, 1);
-  histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
-      "Signin.SigninStartedAccessPoint", signin_metrics::AccessPoint::kSettings,
-      1);
   EXPECT_FALSE(scene_state_.signinInProgress);
 }
 
@@ -224,32 +279,27 @@ TEST_F(TwoScreensSigninCoordinatorTest,
   SigninFakeIdentity(/*has_history_sync_opt_in=*/true);
 
   StartTwoScreensSigninCoordinator(SigninCoordinatorResultSuccess,
-                                   fake_identity_);
+                                   fake_identity_, /*is_signed_in=*/true,
+                                   /*history_sync=*/false);
   // Expect the signin screen to not be presented.
   EXPECT_EQ(PresentedViewController(), nil);
-  EXPECT_FALSE([TopViewController()
-      isKindOfClass:[FullscreenSigninScreenViewController class]]);
   // Expect the history sync screen to not be presented.
-  EXPECT_FALSE(
-      [TopViewController() isKindOfClass:[HistorySyncViewController class]]);
 
   // Expect completion block to be run synchronously and be finished without
   // calling -stop. Since the user has already signed in and history sync
   // opt-in, the coordinator will call the completion block.
   EXPECT_TRUE(completion_block_done_);
   ExpectNoUpgradePromoHistogram(&histogram_tester);
-  histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
-      "Signin.SignIn.Started", signin_metrics::AccessPoint::kSettings, 0);
-  histogram_tester.ExpectUniqueSample<signin_metrics::AccessPoint>(
-      "Signin.SigninStartedAccessPoint", signin_metrics::AccessPoint::kSettings,
-      0);
   EXPECT_FALSE(scene_state_.signinInProgress);
 }
 
 // Tests that stopping the coordinator before it is done will interrupt it.
 TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
   base::HistogramTester histogram_tester;
-  StartTwoScreensSigninCoordinator(SigninCoordinatorResultInterrupted, nil);
+  StartTwoScreensSigninCoordinator(SigninCoordinatorResultInterrupted,
+                                   /*expected_signin_completion_identity=*/nil,
+                                   /*is_signed_in=*/false,
+                                   /*history_sync=*/false);
 
   StopCoordinator();
   // Expect completion block not to be run when the stop comes from an external
@@ -263,7 +313,10 @@ TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
 // Tests that the user can cancel without signing in.
 TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
   base::HistogramTester histogram_tester;
-  StartTwoScreensSigninCoordinator(SigninCoordinatorResultCanceledByUser, nil);
+  StartTwoScreensSigninCoordinator(SigninCoordinatorResultCanceledByUser,
+                                   /*expected_signin_completion_identity=*/nil,
+                                   /*is_signed_in=*/false,
+                                   /*history_sync=*/false);
 
   [coordinator_ screenWillFinishPresenting];
 
@@ -279,7 +332,10 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
 // Tests that the user can swipe to dismiss and that a user action is recorded.
 TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
   base::HistogramTester histogram_tester;
-  StartTwoScreensSigninCoordinator(SigninCoordinatorResultCanceledByUser, nil);
+  StartTwoScreensSigninCoordinator(SigninCoordinatorResultCanceledByUser,
+                                   /*expected_signin_completion_identity=*/nil,
+                                   /*is_signed_in=*/false,
+                                   /*history_sync=*/false);
 
   // Simulate a swipe-to-dismiss.
   EXPECT_EQ(0, user_actions_.GetActionCount("Signin_TwoScreens_SwipeDismiss"));
