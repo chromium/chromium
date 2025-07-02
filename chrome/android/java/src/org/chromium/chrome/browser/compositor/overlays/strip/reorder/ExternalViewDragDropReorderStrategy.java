@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
@@ -46,7 +47,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             TabModel model,
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
-            ObservableSupplierImpl<Integer> groupIdToHideSupplier,
+            ObservableSupplierImpl<Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Long> lastReorderScrollTimeSupplier) {
         super(
@@ -186,7 +187,8 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             destinationTabId = interactingTab.getId();
         } else {
             groupTitle = (StripLayoutGroupTitle) mInteractingViewDuringStop;
-            destinationTabId = groupTitle.getRootId();
+            Token destinationTabGroupId = groupTitle.getTabGroupId();
+            destinationTabId = mTabGroupModelFilter.getGroupLastShownTabId(destinationTabGroupId);
         }
 
         // 1. If hovered on view is not part of group or is collapsed, no-op.

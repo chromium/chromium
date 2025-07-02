@@ -8,6 +8,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.graphics.PointF;
 import android.view.View;
 
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -45,7 +46,7 @@ public class TabReorderStrategy extends ReorderStrategyBase {
             TabModel model,
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
-            ObservableSupplierImpl<Integer> groupIdToHideSupplier,
+            ObservableSupplierImpl<Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Long> lastReorderScrollTimeSupplier,
             Supplier<Boolean> inReorderModeSupplier) {
@@ -231,7 +232,7 @@ public class TabReorderStrategy extends ReorderStrategyBase {
         // Case B: Maybe drag out of group.
         if (isInGroup) {
             StripLayoutGroupTitle interactingGroupTitle =
-                    StripLayoutUtils.findGroupTitle(groupTitles, curTab.getRootId());
+                    StripLayoutUtils.findGroupTitle(groupTitles, curTab.getTabGroupId());
             float threshold = getDragOutThreshold(interactingGroupTitle, towardEnd);
             if (Math.abs(offset) <= threshold) return false;
 
@@ -246,7 +247,7 @@ public class TabReorderStrategy extends ReorderStrategyBase {
         }
 
         StripLayoutGroupTitle interactingGroupTitle =
-                StripLayoutUtils.findGroupTitle(groupTitles, adjTab.getRootId());
+                StripLayoutUtils.findGroupTitle(groupTitles, adjTab.getTabGroupId());
         if (interactingGroupTitle.isCollapsed()) {
             // Case C.1: Maybe drag past collapsed group.
             float threshold =

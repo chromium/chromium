@@ -13,6 +13,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -48,7 +50,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             TabModel model,
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
-            ObservableSupplierImpl<Integer> groupIdToHideSupplier,
+            ObservableSupplierImpl<Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Long> lastReorderScrollTimeSupplier) {
         super(
@@ -80,7 +82,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         mInteractingViews.add(mInteractingGroupTitle);
         List<StripLayoutTab> groupedTabs =
                 StripLayoutUtils.getGroupedTabs(
-                        mModel, stripTabs, mInteractingGroupTitle.getRootId());
+                        mModel, stripTabs, mInteractingGroupTitle.getTabGroupId());
         mFirstTabInGroup = groupedTabs.get(0);
         mLastTabInGroup = groupedTabs.get(groupedTabs.size() - 1);
         mLastTabInGroup.setForceHideEndDivider(/* forceHide= */ true);
@@ -96,7 +98,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
 
         // If the selected tab is part of the group, lift its container off the toolbar.
         int index = mModel.index();
-        if (mModel.getTabAt(index).getRootId() == mInteractingGroupTitle.getRootId()) {
+        if (mInteractingGroupTitle.getTabGroupId().equals(mModel.getTabAt(index).getTabGroupId())) {
             assert index >= 0 && index < stripTabs.length : "Not synced with TabModel.";
             mSelectedTab = stripTabs[index];
             ArrayList<Animator> animationList = new ArrayList<>();
@@ -231,7 +233,11 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             // Case B: Attempt to drab past ungrouped tab.
             if (Math.abs(offset) <= getTabSwapThreshold()) return false;
 
-            mTabGroupModelFilter.moveRelatedTabs(mInteractingGroupTitle.getRootId(), adjTabIndex);
+            @TabId
+            int tabId =
+                    mTabGroupModelFilter.getGroupLastShownTabId(
+                            mInteractingGroupTitle.getTabGroupId());
+            mTabGroupModelFilter.moveRelatedTabs(tabId, adjTabIndex);
             animateViewSliding(adjStripTab);
         }
 
@@ -248,11 +254,14 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
     private void movePastAdjacentGroup(
             StripLayoutTab[] stripTabs, StripLayoutGroupTitle adjTitle, boolean towardEnd) {
         // Move the interacting group to its new position.
-        List<Tab> adjTabs = mTabGroupModelFilter.getRelatedTabList(adjTitle.getRootId());
+        List<Tab> adjTabs = mTabGroupModelFilter.getTabsInGroup(adjTitle.getTabGroupId());
         int indexTowardStart = TabGroupUtils.getFirstTabModelIndexForList(mModel, adjTabs);
         int indexTowardEnd = TabGroupUtils.getLastTabModelIndexForList(mModel, adjTabs);
         int destIndex = towardEnd ? indexTowardEnd : indexTowardStart;
-        mTabGroupModelFilter.moveRelatedTabs(mInteractingGroupTitle.getRootId(), destIndex);
+        @TabId
+        int tabId =
+                mTabGroupModelFilter.getGroupLastShownTabId(mInteractingGroupTitle.getTabGroupId());
+        mTabGroupModelFilter.moveRelatedTabs(tabId, destIndex);
 
         // Animate the displaced views sliding to their new positions.
         List<Animator> animators = new ArrayList<>();

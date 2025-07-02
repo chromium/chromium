@@ -4,20 +4,21 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Objects;
 
 /**
  * Implementation of {@link TabModelActionListener} for the tab strip that helps manage the correct
@@ -39,18 +40,18 @@ public class StripTabModelActionListener implements TabModelActionListener {
         int CLOSE = 2;
     }
 
-    private final int mRootId;
+    private final Token mTabGroupId;
     private final @ActionType int mActionType;
     private final @Nullable View mToolbarContainerView;
-    private final ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
+    private final ObservableSupplierImpl<@Nullable Token> mGroupIdToHideSupplier;
     private final @Nullable Runnable mBeforeSyncDialogRunnable;
     private final @Nullable Runnable mOnSuccess;
 
     /**
-     * @param rootId The root ID of the tab group being acted on.
+     * @param tabGroupId The tab group ID of the tab group being acted on.
      * @param actionType The {@link ActionType} of the operation.
-     * @param groupIdToHideSupplier A supplier to set with the {@code rootId} to hide the group if
-     *     applicable.
+     * @param groupIdToHideSupplier A supplier to set with the {@code tabGroupId} to hide the group
+     *     if applicable.
      * @param toolbarContainerView The container view of the toolbar to control drag actions.
      * @param beforeSyncDialogRunnable A runnable invoked if the sync dialog will show before the
      *     show occurs.
@@ -58,13 +59,13 @@ public class StripTabModelActionListener implements TabModelActionListener {
      *     action.
      */
     public StripTabModelActionListener(
-            int rootId,
+            Token tabGroupId,
             @ActionType int actionType,
-            ObservableSupplierImpl<Integer> groupIdToHideSupplier,
+            ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
             @Nullable View toolbarContainerView,
             @Nullable Runnable beforeSyncDialogRunnable,
             @Nullable Runnable onSuccess) {
-        mRootId = rootId;
+        mTabGroupId = tabGroupId;
         mActionType = actionType;
         mGroupIdToHideSupplier = groupIdToHideSupplier;
         mToolbarContainerView = toolbarContainerView;
@@ -85,8 +86,8 @@ public class StripTabModelActionListener implements TabModelActionListener {
             mToolbarContainerView.cancelDragAndDrop();
         }
 
-        assert Objects.equals(mGroupIdToHideSupplier.get(), Tab.INVALID_TAB_ID);
-        mGroupIdToHideSupplier.set(mRootId);
+        assert mGroupIdToHideSupplier.get() == null;
+        mGroupIdToHideSupplier.set(mTabGroupId);
     }
 
     @Override
@@ -101,7 +102,8 @@ public class StripTabModelActionListener implements TabModelActionListener {
             case ActionConfirmationResult.CONFIRMATION_NEGATIVE:
                 // Restore the hidden group.
                 if (dialogType == DialogType.SYNC) {
-                    mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
+                    // This is safe. NullAway does not work well with generics.
+                    mGroupIdToHideSupplier.set(assumeNonNull(null));
                 }
                 break;
             default:

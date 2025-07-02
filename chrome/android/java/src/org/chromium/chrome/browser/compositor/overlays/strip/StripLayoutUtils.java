@@ -113,28 +113,15 @@ public class StripLayoutUtils {
 
     /**
      * @param groupTitles A list of {@link StripLayoutGroupTitle}.
-     * @param rootId The root ID for the tab group title we're searching for.
+     * @param tabGroupId The tab group ID for the tab group title we're searching for.
      * @return The {@link StripLayoutGroupTitle} with the given root ID. {@code null} otherwise.
      */
     public static @Nullable StripLayoutGroupTitle findGroupTitle(
-            StripLayoutGroupTitle[] groupTitles, int rootId) {
-        for (int i = 0; i < groupTitles.length; i++) {
-            final StripLayoutGroupTitle groupTitle = groupTitles[i];
-            if (groupTitle.getRootId() == rootId) return groupTitle;
-        }
-        return null;
-    }
-
-    /**
-     * @param groupTitles A list of {@link StripLayoutGroupTitle}.
-     * @param tabGroupId The {@link Token} for the tab group title we're searching for.
-     * @return The {@link StripLayoutGroupTitle} with the {@link Token}. {@code null} otherwise.
-     */
-    public static @Nullable StripLayoutGroupTitle findGroupTitle(
             StripLayoutGroupTitle[] groupTitles, @Nullable Token tabGroupId) {
+        if (tabGroupId == null) return null;
         for (int i = 0; i < groupTitles.length; i++) {
             final StripLayoutGroupTitle groupTitle = groupTitles[i];
-            if (groupTitle.getTabGroupId().equals(tabGroupId)) return groupTitle;
+            if (tabGroupId.equals(groupTitle.getTabGroupId())) return groupTitle;
         }
         return null;
     }
@@ -177,7 +164,7 @@ public class StripLayoutUtils {
                 context,
                 modelFilter,
                 tab.getTabGroupId(),
-                modelFilter.getTabGroupTitle(tab.getRootId()));
+                modelFilter.getTabGroupTitle(tab.getTabGroupId()));
     }
 
     /**
@@ -217,12 +204,12 @@ public class StripLayoutUtils {
     }
 
     public static List<StripLayoutTab> getGroupedTabs(
-            TabModel tabModel, StripLayoutTab[] stripTabs, int rootId) {
+            TabModel tabModel, StripLayoutTab[] stripTabs, Token tabGroupId) {
         ArrayList<StripLayoutTab> groupedTabs = new ArrayList<>();
         for (int i = 0; i < stripTabs.length; ++i) {
             final StripLayoutTab stripTab = stripTabs[i];
             final Tab tab = tabModel.getTabById(stripTab.getTabId());
-            if (tab != null && tab.getRootId() == rootId) groupedTabs.add(stripTab);
+            if (tab != null && tabGroupId.equals(tab.getTabGroupId())) groupedTabs.add(stripTab);
         }
         return groupedTabs;
     }

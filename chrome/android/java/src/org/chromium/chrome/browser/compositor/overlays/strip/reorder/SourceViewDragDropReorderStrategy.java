@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
@@ -61,7 +62,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             TabModel model,
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
-            ObservableSupplierImpl<Integer> groupIdToHideSupplier,
+            ObservableSupplierImpl<Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Long> lastReorderScrollTimeSupplier,
             @NonNull TabStripDragHandler tabStripDragHandler,
@@ -358,7 +359,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 // If tab was ungrouped during drag, restore group indicator.
                 if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, draggedTab.getTabId())
                         && mActionConfirmationManager.willSkipUngroupTabAttempt()) {
-                    mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
+                    mGroupIdToHideSupplier.set(null);
                 }
                 mAnimationHost.finishAnimationsAndPushTabUpdates();
                 draggedTab.setIsDraggedOffStrip(false);
@@ -427,7 +428,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             mViewsBeingDragged.add(draggedGroupTitle);
             mViewsBeingDragged.addAll(
                     StripLayoutUtils.getGroupedTabs(
-                            mModel, stripTabs, draggedGroupTitle.getRootId()));
+                            mModel, stripTabs, draggedGroupTitle.getTabGroupId()));
 
             return mTabStripDragHandler.startGroupDragAction(
                     mContainerView,

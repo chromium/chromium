@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
@@ -105,7 +106,7 @@ public class ReorderDelegate {
     private AnimationHost mAnimationHost;
     private StripUpdateDelegate mStripUpdateDelegate;
     private ScrollDelegate mScrollDelegate;
-    private ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
+    private ObservableSupplierImpl<Token> mGroupIdToHideSupplier;
     private View mContainerView;
 
     // Internal State.
@@ -208,7 +209,7 @@ public class ReorderDelegate {
             TabStripDragHandler tabStripDragHandler,
             ActionConfirmationManager actionConfirmationManager,
             Supplier<Float> tabWidthSupplier,
-            ObservableSupplierImpl<Integer> groupIdToHideSupplier,
+            ObservableSupplierImpl<Token> groupIdToHideSupplier,
             View containerView) {
         mAnimationHost = animationHost;
         mStripUpdateDelegate = stripUpdateDelegate;

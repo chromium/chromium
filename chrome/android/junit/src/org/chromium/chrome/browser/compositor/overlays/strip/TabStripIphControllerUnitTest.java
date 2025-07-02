@@ -48,7 +48,6 @@ public class TabStripIphControllerUnitTest {
     private static final float TAB_STRIP_HEIGHT = 40f;
     private static final float TAB_WIDTH = 150f;
     private static final float GROUP_TITLE_WIDTH = 100f;
-    private static final int ROOT_ID = 1;
     private static final int TAB_ID = 2;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
 
@@ -89,7 +88,6 @@ public class TabStripIphControllerUnitTest {
                         mStripLayoutGroupTitleDelegate,
                         mKeyboardFocusHandler,
                         /* incognito= */ false,
-                        ROOT_ID,
                         TAB_GROUP_ID);
         mTab =
                 new StripLayoutTab(

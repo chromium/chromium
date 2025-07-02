@@ -86,7 +86,6 @@ public class TabStripGroupContextMenuTest {
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private StripLayoutHelper mStripLayoutHelper;
-    private int mRootId;
     private Token mTabGroupId;
     private ModalDialogManager mModalDialogManager;
 
@@ -359,7 +358,7 @@ public class TabStripGroupContextMenuTest {
         assertEquals(
                 "The default grey color should be selected",
                 TabGroupColorId.GREY,
-                tabGroupModelFilter.getTabGroupColor(mRootId));
+                tabGroupModelFilter.getTabGroupColor(mTabGroupId));
 
         // Select the blue color.
         String blueColor =
@@ -379,7 +378,7 @@ public class TabStripGroupContextMenuTest {
         assertEquals(
                 "The blue color should be selected",
                 TabGroupColorId.BLUE,
-                tabGroupModelFilter.getTabGroupColor(mRootId));
+                tabGroupModelFilter.getTabGroupColor(mTabGroupId));
     }
 
     @Test
@@ -501,7 +500,6 @@ public class TabStripGroupContextMenuTest {
         StripLayoutGroupTitle stripLayoutGroupTitle = ((StripLayoutGroupTitle) views[0]);
         float x = stripLayoutGroupTitle.getPaddedX();
         float y = stripLayoutGroupTitle.getPaddedY();
-        mRootId = stripLayoutGroupTitle.getRootId();
         mTabGroupId = stripLayoutGroupTitle.getTabGroupId();
 
         final StripLayoutHelperManager manager =

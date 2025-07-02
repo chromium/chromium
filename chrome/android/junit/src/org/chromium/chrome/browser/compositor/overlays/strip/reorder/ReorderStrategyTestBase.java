@@ -72,7 +72,7 @@ public abstract class ReorderStrategyTestBase {
     @Mock protected StripUpdateDelegate mStripUpdateDelegate;
     @Mock protected ScrollDelegate mScrollDelegate;
     @Mock protected View mContainerView;
-    @Mock protected ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
+    @Mock protected ObservableSupplierImpl<Token> mGroupIdToHideSupplier;
     @Mock protected TabGroupModelFilter mTabGroupModelFilter;
     @Mock protected ReorderDelegate mReorderDelegate;
     @Mock protected Supplier<Float> mTabWidthSupplier;
@@ -107,7 +107,7 @@ public abstract class ReorderStrategyTestBase {
 
     protected StripLayoutGroupTitle buildGroupTitle(Integer rootId, Token groupId, int x) {
         StripLayoutGroupTitle title =
-                new StripLayoutGroupTitle(mActivity, null, null, false, rootId, groupId);
+                new StripLayoutGroupTitle(mActivity, null, null, false, groupId);
         setDrawProperties(title, x);
         return title;
     }
@@ -134,10 +134,13 @@ public abstract class ReorderStrategyTestBase {
         for (Tab tab : tabList) {
             when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
             when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabList);
+            when(mTabGroupModelFilter.getTabsInGroup(groupId)).thenReturn(tabList);
             tab.setTabGroupId(groupId);
             tab.setRootId(rootId);
         }
         when(mTabGroupModelFilter.getTabCountForGroup(groupId)).thenReturn(tabList.size());
+        when(mTabGroupModelFilter.getGroupLastShownTabId(groupId))
+                .thenReturn(tabList.get(0).getId());
     }
 
     private static class TestAnimationHost implements AnimationHost {

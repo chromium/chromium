@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 
@@ -263,8 +264,10 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
     // ============================================================================================
 
     private void verifySuccessfulDrag(int expectedIndex, float expectedOffset) {
-        verify(mTabGroupModelFilter)
-                .moveRelatedTabs(mInteractingGroupTitle.getRootId(), expectedIndex);
+        @TabId
+        int lastShownTabId =
+                mTabGroupModelFilter.getGroupLastShownTabId(mInteractingGroupTitle.getTabGroupId());
+        verify(mTabGroupModelFilter).moveRelatedTabs(lastShownTabId, expectedIndex);
         verify(mAnimationHost).startAnimations(anyList(), isNull());
 
         for (StripLayoutView view : mDraggedGroup) {
@@ -273,8 +276,10 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     private void verifyFailedDrag(float expectedOffset) {
-        verify(mTabGroupModelFilter, never())
-                .moveRelatedTabs(eq(mInteractingGroupTitle.getRootId()), anyInt());
+        @TabId
+        int lastShownTabId =
+                mTabGroupModelFilter.getGroupLastShownTabId(mInteractingGroupTitle.getTabGroupId());
+        verify(mTabGroupModelFilter, never()).moveRelatedTabs(eq(lastShownTabId), anyInt());
         verify(mAnimationHost, never()).startAnimations(anyList(), isNull());
 
         for (StripLayoutView view : mDraggedGroup) {

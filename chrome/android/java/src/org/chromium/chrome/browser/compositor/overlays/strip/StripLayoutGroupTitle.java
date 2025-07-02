@@ -21,7 +21,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.collaboration.CollaborationService;
@@ -106,9 +105,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private final StripLayoutGroupTitleDelegate mDelegate;
 
     // Tab group variables.
-    // Tab group's root Id this view refers to.
-    // @TODO(crbug.com/379941150) Deprecate rootId and transition to using tabGroupId
-    private int mRootId;
+    // Tab group's Id this view refers to.
     private final Token mTabGroupId; // Non-null because we assert in the constructor
     private @Nullable String mTitle;
     @TabGroupColorId private int mColorId;
@@ -129,12 +126,12 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @ColorInt private final int mReorderBackgroundTint;
 
     /**
-     * Create a {@link StripLayoutGroupTitle} that represents the TabGroup for the {@code rootId}.
+     * Create a {@link StripLayoutGroupTitle} that represents the TabGroup for the {@code
+     * tabGroupId}.
      *
      * @param delegate The delegate for additional strip group title functionality.
      * @param keyboardFocusHandler Handles keyboard focus gain/loss on this view.
      * @param incognito Whether or not this tab group is Incognito.
-     * @param rootId The root ID for the tab group.
      * @param tabGroupId The tab group ID for the tab group.
      */
     public StripLayoutGroupTitle(
@@ -142,12 +139,9 @@ public class StripLayoutGroupTitle extends StripLayoutView {
             StripLayoutGroupTitleDelegate delegate,
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             boolean incognito,
-            int rootId,
             @Nullable Token tabGroupId) {
         super(incognito, delegate, keyboardFocusHandler, context);
-        assert rootId != Tab.INVALID_TAB_ID && tabGroupId != null
-                : "Tried to create a group title for an invalid group.";
-        mRootId = rootId;
+        assert tabGroupId != null : "Tried to create a group title for an invalid group.";
         mDelegate = delegate;
         mTabGroupId = tabGroupId;
         mBubbleTint = TabUiThemeUtil.getGroupTitleBubbleColor(mContext);
@@ -269,25 +263,10 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /**
-     * @return The group's root ID.
-     */
-    public int getRootId() {
-        return mRootId;
-    }
-
-    /**
      * @return The group's tab group ID.
      */
     public Token getTabGroupId() {
         return mTabGroupId;
-    }
-
-    /**
-     * @param rootId The tab group's new rootId. Should be synced with the {@link
-     *     TabGroupModelFilter}.
-     */
-    protected void updateRootId(int rootId) {
-        mRootId = rootId;
     }
 
     /**
