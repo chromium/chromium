@@ -5,12 +5,12 @@ include_rules = [
   "+components/signin/internal/identity_manager/account_tracker_service.h",
   "+components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h",
   "+components/trusted_vault",
+  "+ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/browser_state/model/constants.h",
   "+ios/chrome/browser/browsing_data/model",
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/crash_report/model",
-  "+ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/web/model",
@@ -28,7 +28,7 @@ specific_include_rules = {
     "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   ],
   "^system_account_updater.mm": [
-    "+ios/chrome/browser/widget_kit/model/model_swift.h",
     "+ios/chrome/browser/widget_kit/model/features.h",
+    "+ios/chrome/browser/widget_kit/model/model_swift.h",
   ],
 }
