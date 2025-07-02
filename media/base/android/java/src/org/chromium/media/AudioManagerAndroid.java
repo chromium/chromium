@@ -565,10 +565,7 @@ class AudioManagerAndroid {
                         int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
                         if (DEBUG) logd("AudioManagerAndroidJni.get().setMute: " + (volume == 0));
                         AudioManagerAndroidJni.get()
-                                .setMute(
-                                        mNativeAudioManagerAndroid,
-                                        AudioManagerAndroid.this,
-                                        (volume == 0));
+                                .setMute(mNativeAudioManagerAndroid, (volume == 0));
                     }
                 };
 
@@ -745,6 +742,6 @@ class AudioManagerAndroid {
 
     @NativeMethods
     interface Natives {
-        void setMute(long nativeAudioManagerAndroid, AudioManagerAndroid caller, boolean muted);
+        void setMute(long nativeAudioManagerAndroid, boolean muted);
     }
 }

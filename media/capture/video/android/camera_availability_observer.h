@@ -25,9 +25,7 @@ class CAPTURE_EXPORT CameraAvailabilityObserver {
 
   // Implement
   // org.chromium.media.CameraAvailabilityObserver.nativeOnCameraAvailabilityChanged.
-  void OnCameraAvailabilityChanged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void OnCameraAvailabilityChanged(JNIEnv* env);
 
  private:
   base::android::ScopedJavaLocalRef<jobject> j_camera_availability_observer_;

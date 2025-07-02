@@ -494,8 +494,7 @@ class MediaCodecBridge {
 
     private synchronized void notifyBuffersAvailable() {
         if (mNativeMediaCodecBridge != 0) {
-            MediaCodecBridgeJni.get()
-                    .onBuffersAvailable(mNativeMediaCodecBridge, MediaCodecBridge.this);
+            MediaCodecBridgeJni.get().onBuffersAvailable(mNativeMediaCodecBridge);
         }
     }
 
@@ -1215,6 +1214,6 @@ class MediaCodecBridge {
 
     @NativeMethods
     interface Natives {
-        void onBuffersAvailable(long nativeMediaCodecBridge, MediaCodecBridge caller);
+        void onBuffersAvailable(long nativeMediaCodecBridge);
     }
 }

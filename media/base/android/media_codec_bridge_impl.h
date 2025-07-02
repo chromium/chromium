@@ -189,9 +189,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
                                           const uint8_t** addr,
                                           size_t* capacity);
 
-  void OnBuffersAvailable(
-      JNIEnv* /* env */,
-      const base::android::JavaParamRef<jobject>& /* obj */) override;
+  void OnBuffersAvailable(JNIEnv* /* env */) override;
 
   void ReportAnyErrorToUMA(MediaCodecStatus status);
 

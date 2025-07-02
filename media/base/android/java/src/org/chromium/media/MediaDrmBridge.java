@@ -675,8 +675,7 @@ public class MediaDrmBridge {
         // Provision only works for origin isolated storage.
         if (!mOriginSet) {
             Log.e(TAG, "Calling provision() without an origin.");
-            MediaDrmBridgeJni.get()
-                    .onProvisioningComplete(mNativeMediaDrmBridge, MediaDrmBridge.this, false);
+            MediaDrmBridgeJni.get().onProvisioningComplete(mNativeMediaDrmBridge, false);
             return;
         }
 
@@ -697,14 +696,12 @@ public class MediaDrmBridge {
             }
 
             // Indicate that provisioning succeeded.
-            MediaDrmBridgeJni.get()
-                    .onProvisioningComplete(mNativeMediaDrmBridge, MediaDrmBridge.this, true);
+            MediaDrmBridgeJni.get().onProvisioningComplete(mNativeMediaDrmBridge, true);
 
         } catch (android.media.NotProvisionedException e) {
             if (!startProvisioning()) {
                 // Indicate that provisioning failed.
-                MediaDrmBridgeJni.get()
-                        .onProvisioningComplete(mNativeMediaDrmBridge, MediaDrmBridge.this, false);
+                MediaDrmBridgeJni.get().onProvisioningComplete(mNativeMediaDrmBridge, false);
             }
         }
     }
@@ -1415,10 +1412,7 @@ public class MediaDrmBridge {
         Log.i(TAG, "Provisioning origin ID %s", mOriginSet ? mOrigin : "<none>");
         MediaDrmBridgeJni.get()
                 .onProvisionRequest(
-                        mNativeMediaDrmBridge,
-                        MediaDrmBridge.this,
-                        request.getDefaultUrl(),
-                        request.getData());
+                        mNativeMediaDrmBridge, request.getDefaultUrl(), request.getData());
         return true;
     }
 
@@ -1466,10 +1460,7 @@ public class MediaDrmBridge {
         Log.i(TAG, "Provisioning origin ID %s", mOriginSet ? mOrigin : "<none>");
         MediaDrmBridgeJni.get()
                 .onProvisionRequest(
-                        mNativeMediaDrmBridge,
-                        MediaDrmBridge.this,
-                        request.getDefaultUrl(),
-                        request.getData());
+                        mNativeMediaDrmBridge, request.getDefaultUrl(), request.getData());
         return true;
     }
 
@@ -1556,8 +1547,7 @@ public class MediaDrmBridge {
     void onProvisioned(boolean success) {
         if (!mRequiresMediaCrypto) {
             // No MediaCrypto required, so notify provisioning complete.
-            MediaDrmBridgeJni.get()
-                    .onProvisioningComplete(mNativeMediaDrmBridge, MediaDrmBridge.this, success);
+            MediaDrmBridgeJni.get().onProvisioningComplete(mNativeMediaDrmBridge, success);
             if (!success) {
                 release();
             }
@@ -1610,15 +1600,13 @@ public class MediaDrmBridge {
 
     private void onMediaCryptoReady(@Nullable MediaCrypto mediaCrypto) {
         if (isNativeMediaDrmBridgeValid()) {
-            MediaDrmBridgeJni.get()
-                    .onMediaCryptoReady(mNativeMediaDrmBridge, MediaDrmBridge.this, mediaCrypto);
+            MediaDrmBridgeJni.get().onMediaCryptoReady(mNativeMediaDrmBridge, mediaCrypto);
         }
     }
 
     private void onPromiseResolved(final long promiseId) {
         if (isNativeMediaDrmBridgeValid()) {
-            MediaDrmBridgeJni.get()
-                    .onPromiseResolved(mNativeMediaDrmBridge, MediaDrmBridge.this, promiseId);
+            MediaDrmBridgeJni.get().onPromiseResolved(mNativeMediaDrmBridge, promiseId);
         }
     }
 
@@ -1626,10 +1614,7 @@ public class MediaDrmBridge {
         if (isNativeMediaDrmBridgeValid()) {
             MediaDrmBridgeJni.get()
                     .onPromiseResolvedWithSession(
-                            mNativeMediaDrmBridge,
-                            MediaDrmBridge.this,
-                            promiseId,
-                            sessionId.emeId());
+                            mNativeMediaDrmBridge, promiseId, sessionId.emeId());
         }
     }
 
@@ -1638,12 +1623,7 @@ public class MediaDrmBridge {
         Log.e(TAG, "onPromiseRejected: %s", errorMessage);
         if (isNativeMediaDrmBridgeValid()) {
             MediaDrmBridgeJni.get()
-                    .onPromiseRejected(
-                            mNativeMediaDrmBridge,
-                            MediaDrmBridge.this,
-                            promiseId,
-                            systemCode,
-                            errorMessage);
+                    .onPromiseRejected(mNativeMediaDrmBridge, promiseId, systemCode, errorMessage);
         }
     }
 
@@ -1653,17 +1633,12 @@ public class MediaDrmBridge {
         int requestType = request.getRequestType();
         MediaDrmBridgeJni.get()
                 .onSessionMessage(
-                        mNativeMediaDrmBridge,
-                        MediaDrmBridge.this,
-                        sessionId.emeId(),
-                        requestType,
-                        request.getData());
+                        mNativeMediaDrmBridge, sessionId.emeId(), requestType, request.getData());
     }
 
     private void onSessionClosed(final SessionId sessionId) {
         if (isNativeMediaDrmBridgeValid()) {
-            MediaDrmBridgeJni.get()
-                    .onSessionClosed(mNativeMediaDrmBridge, MediaDrmBridge.this, sessionId.emeId());
+            MediaDrmBridgeJni.get().onSessionClosed(mNativeMediaDrmBridge, sessionId.emeId());
         }
     }
 
@@ -1676,7 +1651,6 @@ public class MediaDrmBridge {
             MediaDrmBridgeJni.get()
                     .onSessionKeysChange(
                             mNativeMediaDrmBridge,
-                            MediaDrmBridge.this,
                             sessionId.emeId(),
                             keysInfo,
                             hasAdditionalUsableKey,
@@ -1688,10 +1662,7 @@ public class MediaDrmBridge {
         if (isNativeMediaDrmBridgeValid()) {
             MediaDrmBridgeJni.get()
                     .onSessionExpirationUpdate(
-                            mNativeMediaDrmBridge,
-                            MediaDrmBridge.this,
-                            sessionId.emeId(),
-                            expirationTime);
+                            mNativeMediaDrmBridge, sessionId.emeId(), expirationTime);
         }
     }
 
@@ -1932,57 +1903,34 @@ public class MediaDrmBridge {
     // At the native side, must post the task immediately to avoid reentrancy issues.
     @NativeMethods
     interface Natives {
-        void onMediaCryptoReady(
-                long nativeMediaDrmBridge,
-                MediaDrmBridge caller,
-                @Nullable MediaCrypto mediaCrypto);
+        void onMediaCryptoReady(long nativeMediaDrmBridge, @Nullable MediaCrypto mediaCrypto);
 
-        void onProvisionRequest(
-                long nativeMediaDrmBridge,
-                MediaDrmBridge caller,
-                String defaultUrl,
-                byte[] requestData);
+        void onProvisionRequest(long nativeMediaDrmBridge, String defaultUrl, byte[] requestData);
 
-        void onProvisioningComplete(
-                long nativeMediaDrmBridge, MediaDrmBridge caller, boolean success);
+        void onProvisioningComplete(long nativeMediaDrmBridge, boolean success);
 
-        void onPromiseResolved(long nativeMediaDrmBridge, MediaDrmBridge caller, long promiseId);
+        void onPromiseResolved(long nativeMediaDrmBridge, long promiseId);
 
         void onPromiseResolvedWithSession(
-                long nativeMediaDrmBridge,
-                MediaDrmBridge caller,
-                long promiseId,
-                byte[] emeSessionId);
+                long nativeMediaDrmBridge, long promiseId, byte[] emeSessionId);
 
         void onPromiseRejected(
-                long nativeMediaDrmBridge,
-                MediaDrmBridge caller,
-                long promiseId,
-                long systemCode,
-                String errorMessage);
+                long nativeMediaDrmBridge, long promiseId, long systemCode, String errorMessage);
 
         void onSessionMessage(
-                long nativeMediaDrmBridge,
-                MediaDrmBridge caller,
-                byte[] emeSessionId,
-                int requestType,
-                byte[] message);
+                long nativeMediaDrmBridge, byte[] emeSessionId, int requestType, byte[] message);
 
-        void onSessionClosed(long nativeMediaDrmBridge, MediaDrmBridge caller, byte[] emeSessionId);
+        void onSessionClosed(long nativeMediaDrmBridge, byte[] emeSessionId);
 
         void onSessionKeysChange(
                 long nativeMediaDrmBridge,
-                MediaDrmBridge caller,
                 byte[] emeSessionId,
                 Object[] keysInfo,
                 boolean hasAdditionalUsableKey,
                 boolean isKeyRelease);
 
         void onSessionExpirationUpdate(
-                long nativeMediaDrmBridge,
-                MediaDrmBridge caller,
-                byte[] emeSessionId,
-                long expirationTime);
+                long nativeMediaDrmBridge, byte[] emeSessionId, long expirationTime);
 
         void onCreateError(long nativeMediaDrmBridge, int errorCode);
     }

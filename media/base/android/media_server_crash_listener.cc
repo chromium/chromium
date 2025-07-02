@@ -42,7 +42,6 @@ void MediaServerCrashListener::EnsureListening() {
 
 void MediaServerCrashListener::OnMediaServerCrashDetected(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jboolean watchdog_needs_release) {
   callback_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(on_server_crash_cb_, watchdog_needs_release));

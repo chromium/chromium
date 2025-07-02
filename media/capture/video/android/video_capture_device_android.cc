@@ -286,7 +286,6 @@ void VideoCaptureDeviceAndroid::SetPhotoOptions(
 
 void VideoCaptureDeviceAndroid::OnFrameAvailable(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jbyteArray>& data,
     jint length,
     jint rotation) {
@@ -326,7 +325,6 @@ void VideoCaptureDeviceAndroid::OnFrameAvailable(
 }
 
 void VideoCaptureDeviceAndroid::OnI420FrameAvailable(JNIEnv* env,
-                                                     jobject obj,
                                                      jobject y_buffer,
                                                      jint y_stride,
                                                      jobject u_buffer,
@@ -378,7 +376,6 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(JNIEnv* env,
 }
 
 void VideoCaptureDeviceAndroid::OnError(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
                                         int android_video_capture_error,
                                         const JavaParamRef<jstring>& message) {
   SetErrorState(
@@ -393,7 +390,6 @@ void VideoCaptureDeviceAndroid::OnError(JNIEnv* env,
 
 void VideoCaptureDeviceAndroid::OnFrameDropped(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     int android_video_capture_frame_drop_reason) {
   base::AutoLock lock(lock_);
   if (!client_)
@@ -402,11 +398,9 @@ void VideoCaptureDeviceAndroid::OnFrameDropped(
       android_video_capture_frame_drop_reason));
 }
 
-void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    jlong callback_id,
-    jobject result) {
+void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(JNIEnv* env,
+                                                            jlong callback_id,
+                                                            jobject result) {
   base::AutoLock lock(photo_callbacks_lock_);
 
   const auto reference_it = get_photo_state_callbacks_.find(callback_id);
@@ -557,7 +551,6 @@ void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
 
 void VideoCaptureDeviceAndroid::OnPhotoTaken(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jlong callback_id,
     const base::android::JavaParamRef<jbyteArray>& data) {
   DCHECK(callback_id);
@@ -593,15 +586,13 @@ void VideoCaptureDeviceAndroid::OnPhotoTaken(
   take_photo_callbacks_.erase(reference_it);
 }
 
-void VideoCaptureDeviceAndroid::OnStarted(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
+void VideoCaptureDeviceAndroid::OnStarted(JNIEnv* env) {
   if (client_)
     client_->OnStarted();
 }
 
 void VideoCaptureDeviceAndroid::DCheckCurrentlyOnIncomingTaskRunner(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+    JNIEnv* env) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 }
 

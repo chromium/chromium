@@ -148,7 +148,6 @@ public class VideoCaptureCamera extends VideoCapture
         @Override
         public void onError(int error, android.hardware.Camera camera) {
             VideoCaptureCamera.this.onError(
-                    VideoCaptureCamera.this,
                     AndroidVideoCaptureError.ANDROID_API_1_CAMERA_ERROR_CALLBACK_RECEIVED,
                     "Error id: " + error);
 
@@ -176,7 +175,7 @@ public class VideoCaptureCamera extends VideoCapture
             }
             synchronized (mPhotoTakenCallbackLock) {
                 if (mPhotoTakenCallbackId != 0) {
-                    onPhotoTaken(VideoCaptureCamera.this, mPhotoTakenCallbackId, data);
+                    onPhotoTaken(mPhotoTakenCallbackId, data);
                 }
                 mPhotoTakenCallbackId = 0;
             }
@@ -501,7 +500,7 @@ public class VideoCaptureCamera extends VideoCapture
 
         mPreviewBufferLock.lock();
         try {
-            onStarted(VideoCaptureCamera.this);
+            onStarted();
             mIsRunning = true;
         } finally {
             mPreviewBufferLock.unlock();
@@ -536,7 +535,7 @@ public class VideoCaptureCamera extends VideoCapture
         final android.hardware.Camera.Parameters parameters = getCameraParameters(mCamera);
         if (parameters == null) {
             mCamera = null;
-            onGetPhotoCapabilitiesReply(VideoCaptureCamera.this, callbackId, null);
+            onGetPhotoCapabilitiesReply(callbackId, null);
             return;
         }
         PhotoCapabilities.Builder builder = new PhotoCapabilities.Builder();
@@ -718,7 +717,7 @@ public class VideoCaptureCamera extends VideoCapture
             builder.setFillLightModeArray(integerArrayListToArray(modes));
         }
 
-        onGetPhotoCapabilitiesReply(VideoCaptureCamera.this, callbackId, builder.build());
+        onGetPhotoCapabilitiesReply(callbackId, builder.build());
     }
 
     @Override
@@ -983,11 +982,9 @@ public class VideoCaptureCamera extends VideoCapture
                 return;
             }
             if (data != null && data.length == mExpectedFrameSize) {
-                onFrameAvailable(
-                        VideoCaptureCamera.this, data, mExpectedFrameSize, getCameraRotation());
+                onFrameAvailable(data, mExpectedFrameSize, getCameraRotation());
             } else {
                 onFrameDropped(
-                        VideoCaptureCamera.this,
                         AndroidVideoCaptureFrameDropReason.ANDROID_API_1_UNEXPECTED_DATA_LENGTH);
             }
         } finally {

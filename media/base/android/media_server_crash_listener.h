@@ -39,10 +39,7 @@ class MediaServerCrashListener {
   void EnsureListening();
 
   // Called from JNI whenever a MEDIA_ERROR_SERVER_DIED is received.
-  void OnMediaServerCrashDetected(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jboolean watchdog_needs_release);
+  void OnMediaServerCrashDetected(JNIEnv* env, jboolean watchdog_needs_release);
 
   void ReleaseWatchdog();
 

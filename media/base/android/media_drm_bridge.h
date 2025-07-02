@@ -255,13 +255,11 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // Called by Java after a MediaCrypto object is created.
   void OnMediaCryptoReady(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_media_drm,
       const base::android::JavaParamRef<jobject>& j_media_crypto);
 
   // Called by Java when we need to send a provisioning request,
   void OnProvisionRequest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_media_drm,
       const base::android::JavaParamRef<jstring>& j_default_url,
       const base::android::JavaParamRef<jbyteArray>& j_request_data);
 
@@ -269,17 +267,14 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // provision() request.
   void OnProvisioningComplete(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_media_drm,
       bool success);
 
   // Callbacks to resolve the promise for |promise_id|.
   void OnPromiseResolved(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_media_drm,
       jint j_promise_id);
   void OnPromiseResolvedWithSession(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_media_drm,
       jint j_promise_id,
       const base::android::JavaParamRef<jbyteArray>& j_session_id);
 
@@ -288,7 +283,6 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // TODO(xhwang): Implement Exception code.
   void OnPromiseRejected(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_media_drm,
       jint j_promise_id,
       jint j_system_code,
       const base::android::JavaParamRef<jstring>& j_error_message);
@@ -297,13 +291,11 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   void OnSessionMessage(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_media_drm,
       const base::android::JavaParamRef<jbyteArray>& j_session_id,
       jint j_message_type,
       const base::android::JavaParamRef<jbyteArray>& j_message);
   void OnSessionClosed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_media_drm,
       const base::android::JavaParamRef<jbyteArray>& j_session_id);
 
   // Called when key statuses of session are changed. |is_key_release| is set to
@@ -311,7 +303,6 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // mapped to CDM key status differently (e.g. EXPIRE -> RELEASED).
   void OnSessionKeysChange(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_media_drm,
       const base::android::JavaParamRef<jbyteArray>& j_session_id,
       // List<KeyStatus>
       const base::android::JavaParamRef<jobjectArray>& j_keys_info,
@@ -323,7 +314,6 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // indicates that the keys never expire.
   void OnSessionExpirationUpdate(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_media_drm,
       const base::android::JavaParamRef<jbyteArray>& j_session_id,
       jlong expiry_time_ms);
 

@@ -239,9 +239,7 @@ class MEDIA_EXPORT MediaCodecBridge {
 
   // When the MediaCodec has been configured in async mode, this is called when
   // input or output buffers are available.
-  virtual void OnBuffersAvailable(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) = 0;
+  virtual void OnBuffersAvailable(JNIEnv* env) = 0;
 
   // Returns the CodecType this codec was created with.
   virtual CodecType GetCodecType() const = 0;

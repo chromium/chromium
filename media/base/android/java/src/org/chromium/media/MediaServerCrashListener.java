@@ -83,8 +83,7 @@ public class MediaServerCrashListener implements MediaPlayer.OnErrorListener {
                         > APPROX_MEDIA_SERVER_RESTART_TIME_IN_MS) {
             Log.e(TAG, "Unable to create watchdog player, treating it as server crash.");
             MediaServerCrashListenerJni.get()
-                    .onMediaServerCrashDetected(
-                            mNativeMediaServerCrashListener, MediaServerCrashListener.this, false);
+                    .onMediaServerCrashDetected(mNativeMediaServerCrashListener, false);
             mLastReportedWatchdogCreationFailure = currentTime;
         }
         return false;
@@ -94,8 +93,7 @@ public class MediaServerCrashListener implements MediaPlayer.OnErrorListener {
     public boolean onError(MediaPlayer mp, int what, int extra) {
         if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
             MediaServerCrashListenerJni.get()
-                    .onMediaServerCrashDetected(
-                            mNativeMediaServerCrashListener, MediaServerCrashListener.this, true);
+                    .onMediaServerCrashDetected(mNativeMediaServerCrashListener, true);
             releaseWatchdog();
         }
         return true;
@@ -104,8 +102,6 @@ public class MediaServerCrashListener implements MediaPlayer.OnErrorListener {
     @NativeMethods
     interface Natives {
         void onMediaServerCrashDetected(
-                long nativeMediaServerCrashListener,
-                MediaServerCrashListener caller,
-                boolean watchdogNeedsRelease);
+                long nativeMediaServerCrashListener, boolean watchdogNeedsRelease);
     }
 }

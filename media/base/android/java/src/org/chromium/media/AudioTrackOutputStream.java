@@ -154,26 +154,18 @@ class AudioTrackOutputStream {
                     public AudioBufferInfo onMoreData(ByteBuffer audioData, long delayInFrames) {
                         return AudioTrackOutputStreamJni.get()
                                 .onMoreData(
-                                        mNativeAudioTrackOutputStream,
-                                        AudioTrackOutputStream.this,
-                                        audioData,
-                                        delayInFrames);
+                                        mNativeAudioTrackOutputStream, audioData, delayInFrames);
                     }
 
                     @Override
                     public long getAddress(ByteBuffer byteBuffer) {
                         return AudioTrackOutputStreamJni.get()
-                                .getAddress(
-                                        mNativeAudioTrackOutputStream,
-                                        AudioTrackOutputStream.this,
-                                        byteBuffer);
+                                .getAddress(mNativeAudioTrackOutputStream, byteBuffer);
                     }
 
                     @Override
                     public void onError() {
-                        AudioTrackOutputStreamJni.get()
-                                .onError(
-                                        mNativeAudioTrackOutputStream, AudioTrackOutputStream.this);
+                        AudioTrackOutputStreamJni.get().onError(mNativeAudioTrackOutputStream);
                     }
                 };
     }
@@ -360,16 +352,10 @@ class AudioTrackOutputStream {
     @NativeMethods
     interface Natives {
         AudioBufferInfo onMoreData(
-                long nativeAudioTrackOutputStream,
-                AudioTrackOutputStream caller,
-                ByteBuffer audioData,
-                long delayInFrames);
+                long nativeAudioTrackOutputStream, ByteBuffer audioData, long delayInFrames);
 
-        void onError(long nativeAudioTrackOutputStream, AudioTrackOutputStream caller);
+        void onError(long nativeAudioTrackOutputStream);
 
-        long getAddress(
-                long nativeAudioTrackOutputStream,
-                AudioTrackOutputStream caller,
-                ByteBuffer byteBuffer);
+        long getAddress(long nativeAudioTrackOutputStream, ByteBuffer byteBuffer);
     }
 }

@@ -939,9 +939,7 @@ MediaCodecResult MediaCodecBridgeImpl::CopyFromOutputBuffer(
   return OkStatus();
 }
 
-void MediaCodecBridgeImpl::OnBuffersAvailable(
-    JNIEnv* /* env */,
-    const base::android::JavaParamRef<jobject>& /* obj */) {
+void MediaCodecBridgeImpl::OnBuffersAvailable(JNIEnv* /* env */) {
   on_buffers_available_cb_.Run();
 }
 

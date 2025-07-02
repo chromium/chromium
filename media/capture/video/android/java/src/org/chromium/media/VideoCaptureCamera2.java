@@ -89,7 +89,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
             mCameraDevice = null;
             changeCameraStateAndNotify(CameraState.STOPPED);
             VideoCaptureCamera2.this.onError(
-                    VideoCaptureCamera2.this,
                     AndroidVideoCaptureError.ANDROID_API_2_CAMERA_DEVICE_ERROR_RECEIVED,
                     "Camera device error " + Integer.toString(error));
         }
@@ -156,7 +155,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             }
 
             changeCameraStateAndNotify(CameraState.STARTED);
-            onStarted(VideoCaptureCamera2.this);
+            onStarted();
 
             // Frames will be arriving at CrPreviewReaderListener.onImageAvailable();
         }
@@ -171,7 +170,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
             changeCameraStateAndNotify(CameraState.STOPPED);
             mPreviewSession = null;
             onError(
-                    VideoCaptureCamera2.this,
                     AndroidVideoCaptureError.ANDROID_API_2_CAPTURE_SESSION_CONFIGURE_FAILED,
                     "Camera session configuration error");
         }
@@ -199,7 +197,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
             try (Image image = reader.acquireLatestImage()) {
                 if (image == null) {
                     onFrameDropped(
-                            VideoCaptureCamera2.this,
                             AndroidVideoCaptureFrameDropReason
                                     .ANDROID_API_2_ACQUIRED_IMAGE_IS_NULL);
                     return;
@@ -207,7 +204,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
                 if (image.getFormat() != ImageFormat.YUV_420_888 || image.getPlanes().length != 3) {
                     onError(
-                            VideoCaptureCamera2.this,
                             AndroidVideoCaptureError
                                     .ANDROID_API_2_IMAGE_READER_UNEXPECTED_IMAGE_FORMAT,
                             "Unexpected image format: "
@@ -220,7 +216,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 if (reader.getWidth() != image.getWidth()
                         || reader.getHeight() != image.getHeight()) {
                     onError(
-                            VideoCaptureCamera2.this,
                             AndroidVideoCaptureError
                                     .ANDROID_API_2_IMAGE_READER_SIZE_DID_NOT_MATCH_IMAGE_SIZE,
                             "ImageReader size ("
@@ -236,7 +231,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 }
 
                 onI420FrameAvailable(
-                        VideoCaptureCamera2.this,
                         image.getPlanes()[0].getBuffer(),
                         image.getPlanes()[0].getRowStride(),
                         image.getPlanes()[1].getBuffer(),
@@ -345,7 +339,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 }
 
                 final byte[] capturedData = readCapturedData(image);
-                onPhotoTaken(VideoCaptureCamera2.this, mCallbackId, capturedData);
+                onPhotoTaken(mCallbackId, capturedData);
 
             } catch (IllegalStateException ex) {
                 notifyTakePhotoError(mCallbackId);
@@ -393,7 +387,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
             PhotoCapabilities.Builder builder = new PhotoCapabilities.Builder();
             if (cameraCharacteristics == null) {
-                onGetPhotoCapabilitiesReply(VideoCaptureCamera2.this, mCallbackId, builder.build());
+                onGetPhotoCapabilitiesReply(mCallbackId, builder.build());
                 return;
             }
             int minIso = 0;
@@ -743,7 +737,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 builder.setFillLightModeArray(integerArrayListToArray(modes));
             }
 
-            onGetPhotoCapabilitiesReply(VideoCaptureCamera2.this, mCallbackId, builder.build());
+            onGetPhotoCapabilitiesReply(mCallbackId, builder.build());
         }
     }
 
@@ -1160,10 +1154,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         if (createPreviewObjectsAndStartPreview()) return;
 
         changeCameraStateAndNotify(CameraState.STOPPED);
-        onError(
-                VideoCaptureCamera2.this,
-                androidVideoCaptureError,
-                "Error starting or restarting preview");
+        onError(androidVideoCaptureError, "Error starting or restarting preview");
     }
 
     private boolean createPreviewObjectsAndStartPreview() {
@@ -1697,7 +1688,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
     VideoCaptureCamera2(int id, long nativeVideoCaptureDeviceAndroid) {
         super(id, nativeVideoCaptureDeviceAndroid);
 
-        dCheckCurrentlyOnIncomingTaskRunner(VideoCaptureCamera2.this);
+        dCheckCurrentlyOnIncomingTaskRunner();
 
         HandlerThread thread = new HandlerThread("VideoCaptureCamera2_CameraThread");
         thread.start();
@@ -1723,7 +1714,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
     @Override
     public boolean allocate(int width, int height, int frameRate, boolean enableFaceDetection) {
         Log.d(TAG, "allocate: requested (%d x %d) @%dfps", width, height, frameRate);
-        dCheckCurrentlyOnIncomingTaskRunner(VideoCaptureCamera2.this);
+        dCheckCurrentlyOnIncomingTaskRunner();
         synchronized (mCameraStateLock) {
             if (mCameraState == CameraState.OPENING || mCameraState == CameraState.CONFIGURING) {
                 Log.e(TAG, "allocate() invoked while Camera is busy opening/configuring.");
@@ -1797,7 +1788,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     @Override
     public boolean startCaptureMaybeAsync() {
-        dCheckCurrentlyOnIncomingTaskRunner(VideoCaptureCamera2.this);
+        dCheckCurrentlyOnIncomingTaskRunner();
 
         changeCameraStateAndNotify(CameraState.OPENING);
         final CameraManager manager =
@@ -1827,7 +1818,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     @Override
     public boolean stopCaptureAndBlockUntilStopped() {
-        dCheckCurrentlyOnIncomingTaskRunner(VideoCaptureCamera2.this);
+        dCheckCurrentlyOnIncomingTaskRunner();
         try (TraceEvent trace_event =
                 TraceEvent.scoped("VideoCaptureCamera2.stopCaptureAndBlockUntilStopped")) {
             // With Camera2 API, the capture is started asynchronously, which will cause problem if
@@ -1854,7 +1845,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     @Override
     public void getPhotoCapabilitiesAsync(long callbackId) {
-        dCheckCurrentlyOnIncomingTaskRunner(VideoCaptureCamera2.this);
+        dCheckCurrentlyOnIncomingTaskRunner();
         mCameraThreadHandler.post(new GetPhotoCapabilitiesTask(callbackId));
     }
 
@@ -1878,7 +1869,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             boolean hasTorch,
             boolean torch,
             double colorTemperature) {
-        dCheckCurrentlyOnIncomingTaskRunner(VideoCaptureCamera2.this);
+        dCheckCurrentlyOnIncomingTaskRunner();
         mCameraThreadHandler.post(
                 new SetPhotoOptionsTask(
                         new PhotoOptions(
@@ -1904,7 +1895,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     @Override
     public void takePhotoAsync(long callbackId) {
-        dCheckCurrentlyOnIncomingTaskRunner(VideoCaptureCamera2.this);
+        dCheckCurrentlyOnIncomingTaskRunner();
         TraceEvent.instant("VideoCaptureCamera2.java", "takePhotoAsync");
 
         mCameraThreadHandler.post(new TakePhotoTask(callbackId));

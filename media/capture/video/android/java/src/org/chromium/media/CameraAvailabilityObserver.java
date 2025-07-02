@@ -72,7 +72,7 @@ class CameraAvailabilityObserver extends CameraManager.AvailabilityCallback {
                 return;
             }
             CameraAvailabilityObserverJni.get()
-                    .onCameraAvailabilityChanged(mNativeCameraAvailabilityObserver, this);
+                    .onCameraAvailabilityChanged(mNativeCameraAvailabilityObserver);
         }
     }
 
@@ -83,7 +83,7 @@ class CameraAvailabilityObserver extends CameraManager.AvailabilityCallback {
                 return;
             }
             CameraAvailabilityObserverJni.get()
-                    .onCameraAvailabilityChanged(mNativeCameraAvailabilityObserver, this);
+                    .onCameraAvailabilityChanged(mNativeCameraAvailabilityObserver);
         }
     }
 
@@ -95,7 +95,6 @@ class CameraAvailabilityObserver extends CameraManager.AvailabilityCallback {
 
     @NativeMethods
     interface Natives {
-        void onCameraAvailabilityChanged(
-                long nativeCameraAvailabilityObserver, CameraAvailabilityObserver caller);
+        void onCameraAvailabilityChanged(long nativeCameraAvailabilityObserver);
     }
 }
