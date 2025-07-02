@@ -527,6 +527,7 @@ source_set("extensions") {
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/unowned_user_data",
     "//chrome/common",
     "//chrome/common/safe_browsing:proto",
     "//components/bookmarks/browser",

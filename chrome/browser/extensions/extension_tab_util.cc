@@ -124,14 +124,11 @@ enum class NavigationScheme {
   kMaxValue = kOther,
 };
 
-// TODO(b/361838438) Remove this. The code should consistently use
-// ExtensionBrowserWindow but during the transition code uses both that and
-// Browser* and we need to convert between the two.
-//
-// Guaranteed non-null when the extensions system is still attached to the
-// Browser (callers shouldn't need to null check).
-WindowController* WindowControllerFromBrowser(Browser* browser) {
-  return browser->GetFeatures().extension_window_controller();
+// Guaranteed non-null for any initialized browser window when the extensions
+// system is still attached to the Browser (callers shouldn't need to null
+// check).
+WindowController* WindowControllerFromBrowser(BrowserWindowInterface* browser) {
+  return BrowserExtensionWindowController::From(browser);
 }
 
 Browser* CreateBrowser(Profile* profile, bool user_gesture) {

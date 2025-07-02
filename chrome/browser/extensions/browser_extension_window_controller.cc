@@ -78,6 +78,8 @@ api::tabs::WindowType GetTabsWindowType(const BrowserWindowInterface* browser) {
 
 }  // anonymous namespace
 
+DEFINE_USER_DATA(BrowserExtensionWindowController);
+
 BrowserExtensionWindowController::BrowserExtensionWindowController(
     BrowserWindowInterface* browser)
     : WindowController(browser->GetWindow(), browser->GetProfile()),
@@ -87,12 +89,19 @@ BrowserExtensionWindowController::BrowserExtensionWindowController(
       tab_strip_model_(browser->GetTabStripModel()),
 #endif
       session_id_(browser->GetSessionID()),
-      window_type_(GetTabsWindowType(browser)) {
+      window_type_(GetTabsWindowType(browser)),
+      scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {
   WindowControllerList::GetInstance()->AddExtensionWindow(this);
 }
 
 BrowserExtensionWindowController::~BrowserExtensionWindowController() {
   WindowControllerList::GetInstance()->RemoveExtensionWindow(this);
+}
+
+BrowserExtensionWindowController* BrowserExtensionWindowController::From(
+    BrowserWindowInterface* browser_window_interface) {
+  return ScopedUnownedUserData<BrowserExtensionWindowController>::Get(
+      browser_window_interface->GetUnownedUserDataHost());
 }
 
 int BrowserExtensionWindowController::GetWindowId() const {
