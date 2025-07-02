@@ -351,7 +351,14 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, HiddenForExtensions) {
   EXPECT_EQ(nullptr, observer);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, Blocklist) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Blocklist DISABLED_Blocklist
+#else
+#define MAYBE_Blocklist Blocklist
+#endif
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, MAYBE_Blocklist) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://facebook.com/my-profile");
