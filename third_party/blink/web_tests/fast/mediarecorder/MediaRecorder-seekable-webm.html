@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<canvas id="sourceCanvas" width="320" height="240" style="display:none;"></canvas>
+<video id="recordedVideo" controls></video>
+<script>
+promise_test(async t => {
+  const canvas = document.getElementById('sourceCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'green';
+  ctx.fillRect(10, 10, 100, 100); // Draw something on the canvas
+
+  const stream = canvas.captureStream(10); // 10 fps
+  assert_true(!!stream, "Canvas stream should be created.");
+
+  const mimeType = 'video/webm; codecs=vp8';
+  assert_true(MediaRecorder.isTypeSupported(mimeType));
+  const recorder = new MediaRecorder(stream, { mimeType: mimeType });
+  const chunks = [];
+
+  recorder.ondataavailable = t.step_func(event => {
+    if (event.data.size > 0) {
+      chunks.push(event.data);
+    }
+  });
+
+  const recordingStopped = new Promise((resolve, reject) => {
+    recorder.onstop = t.step_func(resolve);
+    recorder.onerror = t.step_func(e => reject(new Error(`MediaRecorder error: ${e.name}`)));
+  });
+
+  const recordingStarted = new Promise((resolve, reject) => {
+    recorder.onstart = t.step_func(resolve);
+  });
+
+  recorder.start();
+  await recordingStarted;
+  assert_equals(recorder.state, "recording", "Recorder state should be 'recording'.");
+
+  // Record for 100ms
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+
+  recorder.stop();
+  await recordingStopped;
+  assert_true(chunks.length > 0, "Recorded data chunks should exist.");
+
+  const blob = new Blob(chunks, { type: mimeType });
+  assert_true(blob.size > 0, "Recorded blob should have a size greater than 0.");
+
+  const recordedVideo = document.getElementById('recordedVideo');
+  const videoLoadedMetadata = new Promise((resolve, reject) => {
+    recordedVideo.onloadedmetadata = t.step_func(resolve);
+    recordedVideo.onerror = t.step_func(e => {
+      // Accessing error details can be tricky, sometimes it's just an event.
+      // For more robust error handling, one might inspect recordedVideo.error.
+      reject(new Error(`Video element error: ${recordedVideo.error ? recordedVideo.error.message : 'Unknown error'}`));
+    });
+  });
+
+  recordedVideo.src = URL.createObjectURL(blob);
+  await videoLoadedMetadata;
+
+  assert_true(recordedVideo.duration > 0, `Video duration should be greater than 0. Actual: ${recordedVideo.duration}`);
+  assert_false(isNaN(recordedVideo.duration), "Video duration should not be NaN.");
+  assert_true(isFinite(recordedVideo.duration), "Video duration should be a finite number.");
+}, "MediaRecorder records a WebM video and the resulting video element has a valid duration.");
+</script>

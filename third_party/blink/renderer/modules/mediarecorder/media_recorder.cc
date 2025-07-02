@@ -441,9 +441,8 @@ void MediaRecorder::WriteData(base::span<const uint8_t> data,
                               bool last_in_slice,
                               ErrorEvent* error_event) {
   if (!first_write_received_) {
-    mime_type_ = recorder_handler_->ActualMimeType();
-    ScheduleDispatchEvent(Event::Create(event_type_names::kStart));
-    first_write_received_ = true;
+    // If we haven't yet started, treat the first write as the start signal.
+    OnStarted();
   }
 
   if (error_event) {
@@ -465,6 +464,13 @@ void MediaRecorder::WriteData(base::span<const uint8_t> data,
   const uint64_t blob_data_length = blob_data_->length();
   CreateBlobEvent(MakeGarbageCollected<Blob>(
       BlobDataHandle::Create(std::move(blob_data_), blob_data_length)));
+}
+
+void MediaRecorder::OnStarted() {
+  DCHECK(!first_write_received_);
+  mime_type_ = recorder_handler_->ActualMimeType();
+  ScheduleDispatchEvent(Event::Create(event_type_names::kStart));
+  first_write_received_ = true;
 }
 
 void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {

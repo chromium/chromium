@@ -9263,6 +9263,9 @@ crbug.com/427523525 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/c
 # Issues found with test suite 2025-06-21
 crbug.com/426602897 external/wpt/screen-capture/delegate-request.https.sub.html [ Failure Pass ]
 
+# Until MediaRecorderSeekableWebm launches, this test won't pass.
+crbug.com/40482588 fast/mediarecorder/MediaRecorder-seekable-webm.html [ Failure ]
+
 # Gardener 2025-06-26
 crbug.com/427778335 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-after-text.tentative.html [ Failure Pass ]
 crbug.com/427766096 virtual/soft-navigation-heuristics-pre-paint-attribution/external/wpt/soft-navigation-heuristics/load-classic-script-history-push.tentative.html [ Failure Pass ]
