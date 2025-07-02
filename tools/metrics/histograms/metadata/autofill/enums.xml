@@ -4157,10 +4157,11 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <enum name="TouchToFill.LoyaltyCard.Outcome">
-  <int value="0" label="Loyalty card selected from the sheet"/>
-  <int value="1" label="Google Wallet settings option is selected"/>
-  <int value="2" label="Manage loyalty cards option selected"/>
-  <int value="3" label="Bottom sheet dismissed"/>
+  <int value="0" label="Affiliated loyalty card selected"/>
+  <int value="1" label="Non-affiliated loyalty card selected"/>
+  <int value="2" label="Google Wallet settings option is selected"/>
+  <int value="3" label="Manage loyalty cards option selected"/>
+  <int value="4" label="Bottom sheet dismissed"/>
 </enum>
 
 <enum name="TouchToFill.PaymentMethod.TriggerOutcome">

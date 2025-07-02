@@ -1065,6 +1065,43 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
+    public void testSelectNonAffiliatedLoyaltyCard() {
+        mCoordinator.showLoyaltyCards(
+                List.of(LOYALTY_CARD_1),
+                List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
+                /* firstTimeUsage= */ false);
+
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+        // Open the screen with all loyalty cards of a user.
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, ALL_LOYALTY_CARDS).size(), is(1));
+        getModelsOfType(itemList, ALL_LOYALTY_CARDS)
+                .get(0)
+                .get(AllLoyaltyCardsItemProperties.ON_CLICK_ACTION)
+                .run();
+
+        // Verify that both loyalty cards are shown.
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ALL_LOYALTY_CARDS_SCREEN));
+        itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(TOUCH_TO_FILL_LOYALTY_CARD_INDEX_SELECTED, -1)
+                        .expectIntRecord(
+                                TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
+                                TouchToFillLoyaltyCardOutcome.NON_AFFILIATED_LOYALTY_CARD)
+                        .build();
+
+        assertThat(getModelsOfType(itemList, LOYALTY_CARD).size(), is(2));
+        PropertyModel loyaltyCardModel = itemList.get(1).model;
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        loyaltyCardModel.get(ON_LOYALTY_CARD_CLICK_ACTION).run();
+        verify(mDelegateMock).loyaltyCardSuggestionSelected(LOYALTY_CARD_2);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testPressBackButtonToShowHomeScreen() {
         mCoordinator.showLoyaltyCards(
                 List.of(LOYALTY_CARD_1),
@@ -1099,7 +1136,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     @Test
     public void testCallsDelegateWhenLoyaltyCardIsSelected() {
         mCoordinator.showLoyaltyCards(
-                List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ false);
+                List.of(LOYALTY_CARD_1),
+                List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
+                /* firstTimeUsage= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -1110,7 +1149,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                         .expectIntRecord(TOUCH_TO_FILL_LOYALTY_CARD_INDEX_SELECTED, 0)
                         .expectIntRecord(
                                 TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
-                                TouchToFillLoyaltyCardOutcome.LOYALTY_CARD)
+                                TouchToFillLoyaltyCardOutcome.AFFILIATED_LOYALTY_CARD)
                         .build();
 
         PropertyModel loyaltyCardModel = itemList.get(1).model;

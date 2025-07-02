@@ -141,17 +141,19 @@ class TouchToFillPaymentMethodMediator {
      * in sync with TouchToFill.LoyaltyCard.Outcome in enums.xml.
      */
     @IntDef({
-        TouchToFillLoyaltyCardOutcome.LOYALTY_CARD,
+        TouchToFillLoyaltyCardOutcome.AFFILIATED_LOYALTY_CARD,
+        TouchToFillLoyaltyCardOutcome.NON_AFFILIATED_LOYALTY_CARD,
         TouchToFillLoyaltyCardOutcome.WALLET_SETTINGS,
         TouchToFillLoyaltyCardOutcome.MANAGE_LOYALTY_CARDS,
         TouchToFillLoyaltyCardOutcome.DISMISS
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface TouchToFillLoyaltyCardOutcome {
-        int LOYALTY_CARD = 0;
-        int WALLET_SETTINGS = 1;
-        int MANAGE_LOYALTY_CARDS = 2;
-        int DISMISS = 3;
+        int AFFILIATED_LOYALTY_CARD = 0;
+        int NON_AFFILIATED_LOYALTY_CARD = 1;
+        int WALLET_SETTINGS = 2;
+        int MANAGE_LOYALTY_CARDS = 3;
+        int DISMISS = 4;
         int MAX_VALUE = DISMISS;
     }
 
@@ -470,7 +472,11 @@ class TouchToFillPaymentMethodMediator {
     private void onSelectedLoyaltyCard(LoyaltyCard loyaltyCard) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
         mDelegate.loyaltyCardSuggestionSelected(loyaltyCard);
-        recordTouchToFillLoyaltyCardOutcomeHistogram(TouchToFillLoyaltyCardOutcome.LOYALTY_CARD);
+        final boolean affiliatedLoyaltyCardSelected = mAffiliatedLoyaltyCards.contains(loyaltyCard);
+        recordTouchToFillLoyaltyCardOutcomeHistogram(
+                affiliatedLoyaltyCardSelected
+                        ? TouchToFillLoyaltyCardOutcome.AFFILIATED_LOYALTY_CARD
+                        : TouchToFillLoyaltyCardOutcome.NON_AFFILIATED_LOYALTY_CARD);
         RecordHistogram.recordCount100Histogram(
                 TOUCH_TO_FILL_LOYALTY_CARD_INDEX_SELECTED,
                 mAffiliatedLoyaltyCards.indexOf(loyaltyCard));
