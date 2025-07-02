@@ -776,5 +776,40 @@
             android:layout_height="wrap_content"
             android:checked = "false"
             android:text="@string/use_separate_task_text" />
+
+        <CheckBox
+            android:id="@+id/add_image_custom_menu_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/add_image_custom_menu_item_text" />
+
+        <CheckBox
+            android:id="@+id/add_extra_image_custom_menu_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/add_extra_image_custom_menu_item_text" />
+
+        <CheckBox
+            android:id="@+id/add_link_custom_menu_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/add_link_custom_menu_item_text" />
+
+        <CheckBox
+            android:id="@+id/add_extra_link_custom_menu_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/add_extra_link_custom_menu_item_text" />
+
+        <CheckBox
+            android:id="@+id/add_overflow_custom_menu_item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/add_overflow_custom_menu_item_text" />
     </LinearLayout>
 </ScrollView>

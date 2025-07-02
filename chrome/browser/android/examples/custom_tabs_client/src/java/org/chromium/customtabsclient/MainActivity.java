@@ -10,6 +10,8 @@ import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_D
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_START;
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP;
+import static androidx.browser.customtabs.CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE;
+import static androidx.browser.customtabs.CustomTabsIntent.CONTENT_TARGET_TYPE_LINK;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION;
@@ -78,6 +80,7 @@ import androidx.browser.auth.AuthTabCallback;
 import androidx.browser.auth.AuthTabColorSchemeParams;
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.auth.AuthTabSession;
+import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -142,6 +145,15 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON = "EngagementSignalsButton";
     private static final String SHARED_PREF_CUSTOM_SCHEME = "CustomScheme";
     private static final String SHARED_PREF_USE_SEPARATE_TASK_BUTTON = "SeparateTaskButton";
+    private static final String SHARED_PREF_IMAGE_CONTEXTUAL_MENU_ITEM_BUTTON =
+            "ImageMenuItemButton";
+    private static final String SHARED_PREF_ADDITIONAL_IMAGE_CONTEXTUAL_MENU_ITEM_BUTTON =
+            "AdditionalImageMenuItemButton";
+    private static final String SHARED_PREF_LINK_CONTEXTUAL_MENU_ITEM_BUTTON = "LinkMenuItemButton";
+    private static final String SHARED_PREF_ADDITIONAL_LINK_CONTEXTUAL_MENU_ITEM_BUTTON =
+            "AdditionalLinkMenuItemButton";
+    private static final String SHARED_PREF_OVERFLOW_CONTEXTUAL_MENU_ITEM_BUTTON =
+            "OverflowMenuItemButton";
     private static final String CCT_OPTION_REGULAR = "CCT";
     private static final String CCT_OPTION_PARTIAL = "Partial CCT";
     private static final String CCT_OPTION_INCOGNITO = "Incognito CCT";
@@ -204,6 +216,11 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mSendToExternalAppCheckbox;
     private CheckBox mShareIdentityCheckbox;
     private CheckBox mUseSeparateTaskCheckbox;
+    private CheckBox mImageContextualMenuItemCheckbox;
+    private CheckBox mAdditionalImageContextualMenuItemCheckbox;
+    private CheckBox mLinkContextualMenuItemCheckbox;
+    private CheckBox mAdditionalLinkContextualMenuItemCheckbox;
+    private CheckBox mOverflowContextualMenuItemCheckbox;
     private TextView mPcctBreakpointLabel;
     private SeekBar mPcctBreakpointSlider;
     private TextView mPcctInitialHeightLabel;
@@ -809,6 +826,30 @@ public class MainActivity extends AppCompatActivity
         mUseSeparateTaskCheckbox = findViewById(R.id.use_separate_task_checkbox);
         mUseSeparateTaskCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_USE_SEPARATE_TASK_BUTTON, UNCHECKED) == CHECKED);
+        mImageContextualMenuItemCheckbox = findViewById(R.id.add_image_custom_menu_item_checkbox);
+        mImageContextualMenuItemCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_IMAGE_CONTEXTUAL_MENU_ITEM_BUTTON, CHECKED)
+                        == CHECKED);
+        mAdditionalImageContextualMenuItemCheckbox =
+                findViewById(R.id.add_extra_image_custom_menu_item_checkbox);
+        mAdditionalImageContextualMenuItemCheckbox.setChecked(
+                mSharedPref.getInt(
+                                SHARED_PREF_ADDITIONAL_IMAGE_CONTEXTUAL_MENU_ITEM_BUTTON, CHECKED)
+                        == CHECKED);
+        mLinkContextualMenuItemCheckbox = findViewById(R.id.add_link_custom_menu_item_checkbox);
+        mLinkContextualMenuItemCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_LINK_CONTEXTUAL_MENU_ITEM_BUTTON, CHECKED)
+                        == CHECKED);
+        mAdditionalLinkContextualMenuItemCheckbox =
+                findViewById(R.id.add_extra_link_custom_menu_item_checkbox);
+        mAdditionalLinkContextualMenuItemCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_ADDITIONAL_LINK_CONTEXTUAL_MENU_ITEM_BUTTON, CHECKED)
+                        == CHECKED);
+        mOverflowContextualMenuItemCheckbox =
+                findViewById(R.id.add_overflow_custom_menu_item_checkbox);
+        mOverflowContextualMenuItemCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_OVERFLOW_CONTEXTUAL_MENU_ITEM_BUTTON, CHECKED)
+                        == CHECKED);
         EditText customSchemeEdit = (EditText) findViewById(R.id.custom_scheme);
         customSchemeEdit.setText(mCustomScheme, TextView.BufferType.NORMAL);
     }
@@ -1096,6 +1137,7 @@ public class MainActivity extends AppCompatActivity
         CustomTabsSession session = getSession();
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
         prepareMenuItems(builder);
+        handleContextualMenuItems(builder);
         if (mShowActionButtonCheckbox.isChecked()) {
             prepareActionButton(builder);
         }
@@ -1247,6 +1289,21 @@ public class MainActivity extends AppCompatActivity
         editor.putInt(
                 SHARED_PREF_USE_SEPARATE_TASK_BUTTON,
                 mUseSeparateTaskCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                SHARED_PREF_IMAGE_CONTEXTUAL_MENU_ITEM_BUTTON,
+                mImageContextualMenuItemCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                SHARED_PREF_ADDITIONAL_IMAGE_CONTEXTUAL_MENU_ITEM_BUTTON,
+                mAdditionalImageContextualMenuItemCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                SHARED_PREF_LINK_CONTEXTUAL_MENU_ITEM_BUTTON,
+                mLinkContextualMenuItemCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                SHARED_PREF_ADDITIONAL_LINK_CONTEXTUAL_MENU_ITEM_BUTTON,
+                mAdditionalLinkContextualMenuItemCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                SHARED_PREF_OVERFLOW_CONTEXTUAL_MENU_ITEM_BUTTON,
+                mOverflowContextualMenuItemCheckbox.isChecked() ? CHECKED : UNCHECKED);
         editor.putInt(SHARED_PREF_DECORATION, decorationType);
         editor.apply();
     }
@@ -1452,6 +1509,92 @@ public class MainActivity extends AppCompatActivity
             if (!TextUtils.isEmpty(mPackageNameToBind)) {
                 customTabsIntent.intent.setPackage(mPackageNameToBind);
             }
+        }
+    }
+
+    private void handleContextualMenuItems(CustomTabsIntent.Builder builder) {
+        addMenuItemIfChecked(
+                builder,
+                mImageContextualMenuItemCheckbox,
+                ContextualMenuItemReceiver.ACTION_IMAGE_ITEM_CLICKED,
+                101,
+                1,
+                "Image contextual menu item",
+                CONTENT_TARGET_TYPE_IMAGE);
+
+        addMenuItemIfChecked(
+                builder,
+                mAdditionalImageContextualMenuItemCheckbox,
+                ContextualMenuItemReceiver.ACTION_IMAGE_ITEM_CLICKED,
+                102,
+                2,
+                "Additional image contextual menu item",
+                CONTENT_TARGET_TYPE_IMAGE);
+
+        addMenuItemIfChecked(
+                builder,
+                mLinkContextualMenuItemCheckbox,
+                ContextualMenuItemReceiver.ACTION_LINK_ITEM_CLICKED,
+                201,
+                3,
+                "Link contextual menu item",
+                CONTENT_TARGET_TYPE_LINK);
+
+        addMenuItemIfChecked(
+                builder,
+                mAdditionalLinkContextualMenuItemCheckbox,
+                ContextualMenuItemReceiver.ACTION_LINK_ITEM_CLICKED,
+                202,
+                4,
+                "Additional link contextual menu item",
+                CONTENT_TARGET_TYPE_LINK);
+
+        addMenuItemIfChecked(
+                builder,
+                mOverflowContextualMenuItemCheckbox,
+                ContextualMenuItemReceiver.ACTION_IMAGE_ITEM_CLICKED,
+                301,
+                5,
+                "Overflow contextual menu item",
+                CONTENT_TARGET_TYPE_IMAGE);
+    }
+
+    /**
+     * A helper method to create and add a CustomContentAction to the builder if the corresponding
+     * checkbox is checked.
+     *
+     * @param builder The CustomTabsIntent.Builder to add the action to.
+     * @param checkbox The CheckBox to check for state.
+     * @param action The Intent action string.
+     * @param requestCode A unique request code for the PendingIntent.
+     * @param actionId A unique ID for the CustomContentAction.
+     * @param description The user-visible description of the menu item.
+     * @param targetType The type of content this action targets (e.g., image or link).
+     */
+    private void addMenuItemIfChecked(
+            CustomTabsIntent.Builder builder,
+            CheckBox checkbox,
+            String action,
+            int requestCode,
+            int actionId,
+            String description,
+            @CustomTabsIntent.ContentTargetType int targetType) {
+
+        if (checkbox.isChecked()) {
+            Intent contextualMenuItemIntent = new Intent(this, ContextualMenuItemReceiver.class);
+            contextualMenuItemIntent.setAction(action);
+
+            PendingIntent pi =
+                    PendingIntent.getBroadcast(
+                            this,
+                            requestCode,
+                            contextualMenuItemIntent,
+                            PendingIntent.FLAG_MUTABLE);
+
+            CustomContentAction cca =
+                    new CustomContentAction.Builder(actionId, description, pi, targetType).build();
+
+            builder.addCustomContentAction(cca);
         }
     }
 
