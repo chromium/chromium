@@ -255,7 +255,8 @@ class AttributesCollector {
 
 }  // namespace
 
-gin::WrapperInfo WebAXObjectProxy::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo WebAXObjectProxy::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 WebAXObjectProxy::WebAXObjectProxy(const blink::WebAXObject& object,
                                    WebAXObjectProxy::Factory* factory)
@@ -281,7 +282,8 @@ ui::AXNodeData WebAXObjectProxy::GetAXNodeData() const {
 
 gin::ObjectTemplateBuilder WebAXObjectProxy::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<WebAXObjectProxy>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<WebAXObjectProxy>::GetObjectTemplateBuilder(
+             isolate)
       .SetProperty("role", &WebAXObjectProxy::Role)
       .SetProperty("stringValue", &WebAXObjectProxy::StringValue)
       .SetProperty("language", &WebAXObjectProxy::Language)

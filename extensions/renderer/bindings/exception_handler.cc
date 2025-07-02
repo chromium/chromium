@@ -28,13 +28,14 @@ struct ExceptionHandlerPerContextData : public base::SupportsUserData::Data {
 constexpr char ExceptionHandlerPerContextData::kPerContextDataKey[];
 
 // A helper class to wrap an ExceptionHandler WeakPtr in a v8::Value.
-class WrappedExceptionHandler : public gin::Wrappable<WrappedExceptionHandler> {
+class WrappedExceptionHandler
+    : public gin::DeprecatedWrappable<WrappedExceptionHandler> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
   base::WeakPtr<ExceptionHandler> exception_handler;
 };
 
-gin::WrapperInfo WrappedExceptionHandler::kWrapperInfo = {
+gin::DeprecatedWrapperInfo WrappedExceptionHandler::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
 }  // namespace

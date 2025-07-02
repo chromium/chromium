@@ -18,13 +18,13 @@ namespace gin {
 
 namespace {
 
-WrappableBase* WrappableFromV8(v8::Isolate* isolate,
-                               v8::Local<v8::Value> val) {
+DeprecatedWrappableBase* WrappableFromV8(v8::Isolate* isolate,
+                                         v8::Local<v8::Value> val) {
   if (!val->IsObject()) {
     return nullptr;
   }
   v8::Local<v8::Object> obj = v8::Local<v8::Object>::Cast(val);
-  WrapperInfo* info = WrapperInfo::From(obj);
+  DeprecatedWrapperInfo* info = DeprecatedWrapperInfo::From(obj);
 
   // If this fails, the object is not managed by Gin.
   if (!info) {
@@ -34,13 +34,13 @@ WrappableBase* WrappableFromV8(v8::Isolate* isolate,
   // We don't further validate the type of the object, but assume it's derived
   // from WrappableBase. We look up the pointer in a global registry, to make
   // sure it's actually pointed to a valid life object.
-  return static_cast<WrappableBase*>(
+  return static_cast<DeprecatedWrappableBase*>(
       obj->GetAlignedPointerFromInternalField(kEncodedValueIndex));
 }
 
 NamedPropertyInterceptor* NamedInterceptorFromV8(v8::Isolate* isolate,
                                                  v8::Local<v8::Value> val) {
-  WrappableBase* base = WrappableFromV8(isolate, val);
+  DeprecatedWrappableBase* base = WrappableFromV8(isolate, val);
   if (!base) {
     return nullptr;
   }
@@ -50,7 +50,7 @@ NamedPropertyInterceptor* NamedInterceptorFromV8(v8::Isolate* isolate,
 IndexedPropertyInterceptor* IndexedInterceptorFromV8(
     v8::Isolate* isolate,
     v8::Local<v8::Value> val) {
-  WrappableBase* base = WrappableFromV8(isolate, val);
+  DeprecatedWrappableBase* base = WrappableFromV8(isolate, val);
   if (!base) {
     return nullptr;
   }

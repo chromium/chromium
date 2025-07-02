@@ -17,7 +17,7 @@
 
 namespace content {
 
-gin::WrapperInfo DomAutomationController::kWrapperInfo = {
+gin::DeprecatedWrapperInfo DomAutomationController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
 // static
@@ -51,8 +51,8 @@ DomAutomationController::~DomAutomationController() {}
 
 gin::ObjectTemplateBuilder DomAutomationController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<DomAutomationController>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::DeprecatedWrappable<
+             DomAutomationController>::GetObjectTemplateBuilder(isolate)
       .SetMethod("send", &DomAutomationController::SendMsg);
 }
 

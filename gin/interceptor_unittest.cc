@@ -22,14 +22,14 @@
 
 namespace gin {
 
-class MyInterceptor : public Wrappable<MyInterceptor>,
+class MyInterceptor : public DeprecatedWrappable<MyInterceptor>,
                       public NamedPropertyInterceptor,
                       public IndexedPropertyInterceptor {
  public:
   MyInterceptor(const MyInterceptor&) = delete;
   MyInterceptor& operator=(const MyInterceptor&) = delete;
 
-  static WrapperInfo kWrapperInfo;
+  static DeprecatedWrapperInfo kWrapperInfo;
 
   static gin::Handle<MyInterceptor> Create(v8::Isolate* isolate) {
     return CreateHandle(isolate, new MyInterceptor(isolate));
@@ -106,10 +106,10 @@ class MyInterceptor : public Wrappable<MyInterceptor>,
         template_cache_(isolate) {}
   ~MyInterceptor() override = default;
 
-  // gin::Wrappable
+  // gin::DeprecatedWrappable
   ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
-    return Wrappable<MyInterceptor>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<MyInterceptor>::GetObjectTemplateBuilder(isolate)
         .AddNamedPropertyInterceptor()
         .AddIndexedPropertyInterceptor();
   }
@@ -138,7 +138,7 @@ class MyInterceptor : public Wrappable<MyInterceptor>,
   v8::StdGlobalValueMap<std::string, v8::FunctionTemplate> template_cache_;
 };
 
-WrapperInfo MyInterceptor::kWrapperInfo = {kEmbedderNativeGin};
+DeprecatedWrapperInfo MyInterceptor::kWrapperInfo = {kEmbedderNativeGin};
 
 class InterceptorTest : public V8Test {
  public:

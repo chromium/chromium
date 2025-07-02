@@ -286,12 +286,13 @@ CreateMojomClearMethodFromParameters(
 }
 
 // SharedStorageMethod represents a method for modifying shared storage. This
-// class inherits from gin::Wrappable to leverage gin's JavaScript object
-// lifetime management capabilities. When the JavaScript object is garbage
-// collected, the corresponding C++ object will be properly cleaned up.
-class SharedStorageMethod : public gin::Wrappable<SharedStorageMethod> {
+// class inherits from gin::DeprecatedWrappable to leverage gin's JavaScript
+// object lifetime management capabilities. When the JavaScript object is
+// garbage collected, the corresponding C++ object will be properly cleaned up.
+class SharedStorageMethod
+    : public gin::DeprecatedWrappable<SharedStorageMethod> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   SharedStorageMethod(
       v8::Isolate* isolate,
@@ -312,7 +313,8 @@ class SharedStorageMethod : public gin::Wrappable<SharedStorageMethod> {
   network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method_;
 };
 
-gin::WrapperInfo SharedStorageMethod::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo SharedStorageMethod::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 }  // namespace
 

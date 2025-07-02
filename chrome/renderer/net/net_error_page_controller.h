@@ -17,9 +17,10 @@ class RenderFrame;
 // This class makes various helper functions available to the
 // error page loaded by NetErrorHelper.  It is bound to the JavaScript
 // window.errorPageController object.
-class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
+class NetErrorPageController
+    : public gin::DeprecatedWrappable<NetErrorPageController> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   // Interface used to notify creator of user actions invoked on the error page.
   class Delegate {

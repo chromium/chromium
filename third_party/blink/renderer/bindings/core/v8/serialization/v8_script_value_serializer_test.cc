@@ -774,7 +774,6 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMMatrixReadOnly) {
       0x10, 0x40, 0xcd, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0x10, 0x40, 0x33, 0x33,
       0x33, 0x33, 0x33, 0x33, 0x11, 0x40, 0x9a, 0x99, 0x99, 0x99, 0x99, 0x99,
       0x11, 0x40,
-
   });
   v8::Local<v8::Value> result =
       V8ScriptValueDeserializer(script_state, input).Deserialize();
@@ -2270,7 +2269,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfigNullValues) {
 
 namespace {
 
-class GinWrappable : public gin::Wrappable<GinWrappable> {
+class GinWrappable : public gin::DeprecatedWrappable<GinWrappable> {
  public:
   static v8::Local<v8::Object> Create(v8::Isolate* isolate) {
     auto* instance = new GinWrappable();
@@ -2278,13 +2277,14 @@ class GinWrappable : public gin::Wrappable<GinWrappable> {
   }
   ~GinWrappable() override = default;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
  private:
   GinWrappable() = default;
 };
 
-gin::WrapperInfo GinWrappable::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo GinWrappable::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 }  // namespace
 

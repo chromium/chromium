@@ -17,7 +17,8 @@ class APIBindingHooks;
 // An object that serves as a bridge between the current JS-centric bindings and
 // the new native bindings system. This basically needs to conform to the public
 // methods of the Binding prototype in binding.js.
-class APIBindingBridge final : public gin::Wrappable<APIBindingBridge> {
+class APIBindingBridge final
+    : public gin::DeprecatedWrappable<APIBindingBridge> {
  public:
   APIBindingBridge(APIBindingHooks* hooks,
                    v8::Local<v8::Context> context,
@@ -30,9 +31,9 @@ class APIBindingBridge final : public gin::Wrappable<APIBindingBridge> {
 
   ~APIBindingBridge() override;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
 

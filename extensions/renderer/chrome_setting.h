@@ -23,7 +23,7 @@ class APIRequestHandler;
 class BindingAccessChecker;
 
 // The custom implementation of the ChromeSetting type exposed to APIs.
-class ChromeSetting final : public gin::Wrappable<ChromeSetting> {
+class ChromeSetting final : public gin::DeprecatedWrappable<ChromeSetting> {
  public:
   ChromeSetting(const ChromeSetting&) = delete;
   ChromeSetting& operator=(const ChromeSetting&) = delete;
@@ -40,7 +40,7 @@ class ChromeSetting final : public gin::Wrappable<ChromeSetting> {
       APITypeReferenceMap* type_refs,
       const BindingAccessChecker* access_checker);
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;

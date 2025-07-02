@@ -22,9 +22,9 @@ class ChromePluginPlaceholder final
       public content::RenderThreadObserver,
       public blink::mojom::ContextMenuClient,
       public prerender::NoStatePrefetchObserver,
-      public gin::Wrappable<ChromePluginPlaceholder> {
+      public gin::DeprecatedWrappable<ChromePluginPlaceholder> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   static ChromePluginPlaceholder* CreateBlockedPlugin(
       content::RenderFrame* render_frame,
@@ -59,7 +59,7 @@ class ChromePluginPlaceholder final
   // content::LoadablePluginPlaceholder overrides.
   blink::WebPlugin* CreatePlugin() override;
 
-  // gin::Wrappable (via PluginPlaceholder) method
+  // gin::DeprecatedWrappable (via PluginPlaceholder) method
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
 

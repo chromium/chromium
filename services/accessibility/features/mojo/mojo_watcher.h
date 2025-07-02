@@ -29,10 +29,10 @@ class MojoWatchCallback;
 // Provides MojoWatcher object to the Accessibility Service's V8 Javascript.
 // This class is a parallel to blink::MojoWatcher, which does the same for
 // any blink renderer.
-class MojoWatcher : public gin::Wrappable<MojoWatcher>,
+class MojoWatcher : public gin::DeprecatedWrappable<MojoWatcher>,
                     public RegisteredWrappable {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   static v8::Local<v8::Object> Create(
       v8::Local<v8::Context> context,
@@ -49,13 +49,13 @@ class MojoWatcher : public gin::Wrappable<MojoWatcher>,
   // RegisteredWrappable:
   void OnIsolateWillDestroy() override;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
   //
   // Methods exposed to Javascript.
-  // Note: gin::Wrappable's bound methods need to be public.
+  // Note: gin::DeprecatedWrappable's bound methods need to be public.
   //
 
   // Stops watching a pipe.

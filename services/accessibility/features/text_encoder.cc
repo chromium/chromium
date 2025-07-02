@@ -29,7 +29,8 @@
 namespace ax {
 
 // static
-gin::WrapperInfo TextEncoder::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo TextEncoder::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // static
 gin::Handle<TextEncoder> TextEncoder::Create(v8::Local<v8::Context> context) {
@@ -39,7 +40,8 @@ gin::Handle<TextEncoder> TextEncoder::Create(v8::Local<v8::Context> context) {
 gin::ObjectTemplateBuilder TextEncoder::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   // Note: We do not support TextEncoder::encodeInto.
-  return gin::Wrappable<TextEncoder>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<TextEncoder>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("encode", &TextEncoder::Encode);
 }
 

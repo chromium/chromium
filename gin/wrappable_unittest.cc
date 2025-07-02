@@ -41,13 +41,12 @@ class BaseClass {
   int value_;
 };
 
-class MyObject : public BaseClass,
-                 public Wrappable<MyObject> {
+class MyObject : public BaseClass, public DeprecatedWrappable<MyObject> {
  public:
   MyObject(const MyObject&) = delete;
   MyObject& operator=(const MyObject&) = delete;
 
-  static WrapperInfo kWrapperInfo;
+  static DeprecatedWrapperInfo kWrapperInfo;
 
   static gin::Handle<MyObject> Create(v8::Isolate* isolate) {
     return CreateHandle(isolate, new MyObject());
@@ -61,7 +60,7 @@ class MyObject : public BaseClass,
  protected:
   MyObject() : value_(0) {}
   ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate) final {
-    return Wrappable<MyObject>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<MyObject>::GetObjectTemplateBuilder(isolate)
         .SetProperty("value", &MyObject::value, &MyObject::set_value)
         .SetMethod("memberMethod", &MyObject::Method)
         .SetMethod("nonMemberMethod", &NonMemberMethod);
@@ -72,17 +71,17 @@ class MyObject : public BaseClass,
   int value_;
 };
 
-class MyObject2 : public Wrappable<MyObject2> {
+class MyObject2 : public DeprecatedWrappable<MyObject2> {
  public:
-  static WrapperInfo kWrapperInfo;
+  static DeprecatedWrapperInfo kWrapperInfo;
 };
 
-class MyNamedObject : public Wrappable<MyNamedObject> {
+class MyNamedObject : public DeprecatedWrappable<MyNamedObject> {
  public:
   MyNamedObject(const MyNamedObject&) = delete;
   MyNamedObject& operator=(const MyNamedObject&) = delete;
 
-  static WrapperInfo kWrapperInfo;
+  static DeprecatedWrapperInfo kWrapperInfo;
 
   static gin::Handle<MyNamedObject> Create(v8::Isolate* isolate) {
     return CreateHandle(isolate, new MyNamedObject());
@@ -93,7 +92,7 @@ class MyNamedObject : public Wrappable<MyNamedObject> {
  protected:
   MyNamedObject() = default;
   ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate) final {
-    return Wrappable<MyNamedObject>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<MyNamedObject>::GetObjectTemplateBuilder(isolate)
         .SetMethod("memberMethod", &MyNamedObject::Method)
         .SetMethod("nonMemberMethod", &NonMemberMethod);
   }
@@ -101,9 +100,9 @@ class MyNamedObject : public Wrappable<MyNamedObject> {
   ~MyNamedObject() override = default;
 };
 
-WrapperInfo MyObject::kWrapperInfo = { kEmbedderNativeGin };
-WrapperInfo MyObject2::kWrapperInfo = { kEmbedderNativeGin };
-WrapperInfo MyNamedObject::kWrapperInfo = {kEmbedderNativeGin};
+DeprecatedWrapperInfo MyObject::kWrapperInfo = {kEmbedderNativeGin};
+DeprecatedWrapperInfo MyObject2::kWrapperInfo = {kEmbedderNativeGin};
+DeprecatedWrapperInfo MyNamedObject::kWrapperInfo = {kEmbedderNativeGin};
 
 }  // namespace
 
@@ -296,13 +295,13 @@ TEST_F(WrappableTest, MethodInvocationErrorsOnNamedObject) {
 }
 
 class MyObjectWithLazyProperties
-    : public Wrappable<MyObjectWithLazyProperties> {
+    : public DeprecatedWrappable<MyObjectWithLazyProperties> {
  public:
   MyObjectWithLazyProperties(const MyObjectWithLazyProperties&) = delete;
   MyObjectWithLazyProperties& operator=(const MyObjectWithLazyProperties&) =
       delete;
 
-  static WrapperInfo kWrapperInfo;
+  static DeprecatedWrapperInfo kWrapperInfo;
 
   static gin::Handle<MyObjectWithLazyProperties> Create(v8::Isolate* isolate) {
     return CreateHandle(isolate, new MyObjectWithLazyProperties());
@@ -314,7 +313,7 @@ class MyObjectWithLazyProperties
   MyObjectWithLazyProperties() = default;
 
   ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate) final {
-    return Wrappable::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable::GetObjectTemplateBuilder(isolate)
         .SetLazyDataProperty("fortyTwo", &MyObjectWithLazyProperties::FortyTwo)
         .SetLazyDataProperty("self",
                              base::BindRepeating([](gin::Arguments* arguments) {
@@ -332,7 +331,8 @@ class MyObjectWithLazyProperties
   int access_count_ = 0;
 };
 
-WrapperInfo MyObjectWithLazyProperties::kWrapperInfo = {kEmbedderNativeGin};
+DeprecatedWrapperInfo MyObjectWithLazyProperties::kWrapperInfo = {
+    kEmbedderNativeGin};
 
 TEST_F(WrappableTest, LazyPropertyGetterIsCalledOnce) {
   v8::Isolate* isolate = instance_->isolate();

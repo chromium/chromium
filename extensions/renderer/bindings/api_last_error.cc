@@ -25,20 +25,21 @@ constexpr char kUncheckedErrorPrefix[] = "Unchecked runtime.lastError: ";
 // property ('message') with the last error. This object is stored on the parent
 // (chrome.runtime in production) as a private property, and is returned via an
 // accessor which marks the error as accessed.
-class LastErrorObject final : public gin::Wrappable<LastErrorObject> {
+class LastErrorObject final : public gin::DeprecatedWrappable<LastErrorObject> {
  public:
   explicit LastErrorObject(const std::string& error) : error_(error) {}
 
   LastErrorObject(const LastErrorObject&) = delete;
   LastErrorObject& operator=(const LastErrorObject&) = delete;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
     DCHECK(isolate);
-    return Wrappable<LastErrorObject>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<LastErrorObject>::GetObjectTemplateBuilder(
+               isolate)
         .SetProperty("message", &LastErrorObject::error);
   }
 
@@ -56,7 +57,8 @@ class LastErrorObject final : public gin::Wrappable<LastErrorObject> {
   bool accessed_ = false;
 };
 
-gin::WrapperInfo LastErrorObject::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo LastErrorObject::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // An accessor to retrieve the last error property (curried in through data),
 // and mark it as accessed.

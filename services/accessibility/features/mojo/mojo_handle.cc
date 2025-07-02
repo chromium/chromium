@@ -36,7 +36,7 @@
 namespace ax {
 
 // static
-gin::WrapperInfo MojoHandle::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo MojoHandle::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 // static
 gin::Handle<MojoHandle> MojoHandle::Create(v8::Local<v8::Context> context,
@@ -49,7 +49,7 @@ MojoHandle::~MojoHandle() = default;
 
 gin::ObjectTemplateBuilder MojoHandle::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<MojoHandle>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<MojoHandle>::GetObjectTemplateBuilder(isolate)
       .SetMethod("watch", &MojoHandle::Watch)
       .SetMethod("close", &MojoHandle::Close)
       .SetMethod("readMessage", &MojoHandle::ReadMessage)

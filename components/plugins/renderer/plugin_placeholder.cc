@@ -142,7 +142,8 @@ void PluginPlaceholderBase::NotifyPlaceholderReadyForTestingCallback() {
 void PluginPlaceholderBase::OnDestruct() {}
 
 // static
-gin::WrapperInfo PluginPlaceholder::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo PluginPlaceholder::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 PluginPlaceholder::PluginPlaceholder(content::RenderFrame* render_frame,
                                      const blink::WebPluginParams& params)
@@ -161,7 +162,8 @@ bool PluginPlaceholderBase::IsErrorPlaceholder() {
 
 gin::ObjectTemplateBuilder PluginPlaceholder::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<PluginPlaceholder>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<PluginPlaceholder>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod<void (plugins::PluginPlaceholder::*)()>(
           "hide", &PluginPlaceholder::HideCallback);
 }

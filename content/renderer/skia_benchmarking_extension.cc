@@ -117,7 +117,8 @@ class PicturePlaybackController : public SkPicture::AbortCallback {
 
 }  // namespace
 
-gin::WrapperInfo SkiaBenchmarking::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo SkiaBenchmarking::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // static
 void SkiaBenchmarking::Install(blink::WebLocalFrame* frame) {
@@ -162,7 +163,8 @@ SkiaBenchmarking::~SkiaBenchmarking() {}
 
 gin::ObjectTemplateBuilder SkiaBenchmarking::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<SkiaBenchmarking>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<SkiaBenchmarking>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("rasterize", &SkiaBenchmarking::Rasterize)
       .SetMethod("getOps", &SkiaBenchmarking::GetOps)
       .SetMethod("getOpTimings", &SkiaBenchmarking::GetOpTimings)
@@ -353,4 +355,4 @@ void SkiaBenchmarking::GetInfo(gin::Arguments* args) {
   args->Return(result);
 }
 
-} // namespace content
+}  // namespace content

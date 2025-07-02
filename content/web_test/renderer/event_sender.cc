@@ -546,9 +546,10 @@ const char* kSourceDeviceStringTouchscreen = "touchscreen";
 
 }  // namespace
 
-class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
+class EventSenderBindings
+    : public gin::DeprecatedWrappable<EventSenderBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   EventSenderBindings(const EventSenderBindings&) = delete;
   EventSenderBindings& operator=(const EventSenderBindings&) = delete;
@@ -576,7 +577,7 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
                                WebFrameTestProxy* frame);
   ~EventSenderBindings() override;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -673,7 +674,8 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
   const raw_ptr<blink::WebLocalFrame> frame_;
 };
 
-gin::WrapperInfo EventSenderBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo EventSenderBindings::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 EventSenderBindings::EventSenderBindings(base::WeakPtr<EventSender> sender,
                                          WebFrameTestProxy* frame)
@@ -707,7 +709,8 @@ void EventSenderBindings::Install(base::WeakPtr<EventSender> sender,
 
 gin::ObjectTemplateBuilder EventSenderBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<EventSenderBindings>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<
+             EventSenderBindings>::GetObjectTemplateBuilder(isolate)
       .SetMethod("enableDOMUIEventLogging",
                  &EventSenderBindings::EnableDOMUIEventLogging)
       .SetMethod("fireKeyboardEventsToElement",

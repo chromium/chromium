@@ -199,16 +199,16 @@ TEST_F(ConverterTest, VectorOfVectors) {
 
 namespace {
 
-class MyObject : public Wrappable<MyObject> {
+class MyObject : public DeprecatedWrappable<MyObject> {
  public:
-  static WrapperInfo kWrapperInfo;
+  static DeprecatedWrapperInfo kWrapperInfo;
 
   static gin::Handle<MyObject> Create(v8::Isolate* isolate) {
     return CreateHandle(isolate, new MyObject());
   }
 };
 
-WrapperInfo MyObject::kWrapperInfo = {kEmbedderNativeGin};
+DeprecatedWrapperInfo MyObject::kWrapperInfo = {kEmbedderNativeGin};
 
 }  // namespace
 

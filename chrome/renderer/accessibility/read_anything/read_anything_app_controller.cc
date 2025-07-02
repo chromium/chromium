@@ -390,7 +390,7 @@ std::optional<T> ToEnum(int value) {
 }  // namespace
 
 // static
-gin::WrapperInfo ReadAnythingAppController::kWrapperInfo = {
+gin::DeprecatedWrapperInfo ReadAnythingAppController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
 // static
@@ -910,8 +910,8 @@ void ReadAnythingAppController::ScreenAIServiceReady() {
 
 gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<ReadAnythingAppController>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::DeprecatedWrappable<
+             ReadAnythingAppController>::GetObjectTemplateBuilder(isolate)
       .SetProperty("rootId", &ReadAnythingAppController::RootId)
       .SetProperty("startNodeId", &ReadAnythingAppController::StartNodeId)
       .SetProperty("startOffset", &ReadAnythingAppController::StartOffset)

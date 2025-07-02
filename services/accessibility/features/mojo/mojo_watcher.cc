@@ -143,7 +143,8 @@ void MojoWatcher::Persistent::RunReadyCallback(MojoResult result) {
 //                            //
 
 // static
-gin::WrapperInfo MojoWatcher::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo MojoWatcher::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // static
 v8::Local<v8::Object> MojoWatcher::Create(
@@ -213,7 +214,8 @@ void MojoWatcher::OnIsolateWillDestroy() {
 
 gin::ObjectTemplateBuilder MojoWatcher::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<MojoWatcher>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<MojoWatcher>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("cancel", &MojoWatcher::Cancel);
 }
 

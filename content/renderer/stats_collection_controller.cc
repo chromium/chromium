@@ -21,9 +21,8 @@
 namespace content {
 
 // static
-gin::WrapperInfo StatsCollectionController::kWrapperInfo = {
-    gin::kEmbedderNativeGin
-};
+gin::DeprecatedWrapperInfo StatsCollectionController::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // static
 void StatsCollectionController::Install(blink::WebLocalFrame* frame) {
@@ -52,8 +51,8 @@ StatsCollectionController::~StatsCollectionController() {}
 
 gin::ObjectTemplateBuilder StatsCollectionController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<StatsCollectionController>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::DeprecatedWrappable<
+             StatsCollectionController>::GetObjectTemplateBuilder(isolate)
       .SetMethod("getHistogram", &StatsCollectionController::GetHistogram)
       .SetMethod("getBrowserHistogram",
                  &StatsCollectionController::GetBrowserHistogram);

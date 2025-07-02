@@ -23,17 +23,18 @@ class WebLocalFrame;
 
 namespace content {
 
-class GinJavaBridgeObject : public gin::Wrappable<GinJavaBridgeObject>,
-                            public gin::NamedPropertyInterceptor {
+class GinJavaBridgeObject
+    : public gin::DeprecatedWrappable<GinJavaBridgeObject>,
+      public gin::NamedPropertyInterceptor {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   GinJavaBridgeObject(const GinJavaBridgeObject&) = delete;
   GinJavaBridgeObject& operator=(const GinJavaBridgeObject&) = delete;
 
   GinJavaBridgeDispatcher::ObjectID object_id() const { return object_id_; }
 
-  // gin::Wrappable.
+  // gin::DeprecatedWrappable.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 

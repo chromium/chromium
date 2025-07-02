@@ -19,9 +19,9 @@ class Arguments;
 
 namespace content {
 
-class GCController : public gin::Wrappable<GCController> {
+class GCController : public gin::DeprecatedWrappable<GCController> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   GCController(const GCController&) = delete;
   GCController& operator=(const GCController&) = delete;

@@ -42,9 +42,9 @@ int64_t CurrentTimeInMicroseconds() {
 }  // namespace
 
 class GamepadControllerBindings
-    : public gin::Wrappable<GamepadControllerBindings> {
+    : public gin::DeprecatedWrappable<GamepadControllerBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   GamepadControllerBindings(const GamepadControllerBindings&) = delete;
   GamepadControllerBindings& operator=(const GamepadControllerBindings&) =
@@ -58,7 +58,7 @@ class GamepadControllerBindings
       base::WeakPtr<GamepadController> controller);
   ~GamepadControllerBindings() override;
 
-  // gin::Wrappable.
+  // gin::DeprecatedWrappable.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -82,7 +82,7 @@ class GamepadControllerBindings
   base::WeakPtr<GamepadController> controller_;
 };
 
-gin::WrapperInfo GamepadControllerBindings::kWrapperInfo = {
+gin::DeprecatedWrapperInfo GamepadControllerBindings::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
 // static
@@ -116,8 +116,8 @@ GamepadControllerBindings::~GamepadControllerBindings() {}
 
 gin::ObjectTemplateBuilder GamepadControllerBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<GamepadControllerBindings>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::DeprecatedWrappable<
+             GamepadControllerBindings>::GetObjectTemplateBuilder(isolate)
       .SetMethod("connect", &GamepadControllerBindings::Connect)
       .SetMethod("dispatchConnected",
                  &GamepadControllerBindings::DispatchConnected)

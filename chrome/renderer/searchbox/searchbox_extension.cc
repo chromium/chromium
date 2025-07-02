@@ -367,9 +367,9 @@ static const char kDispatchThemeChangeEventScript[] =
 
 // ----------------------------------------------------------------------------
 
-class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
+class SearchBoxBindings : public gin::DeprecatedWrappable<SearchBoxBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   SearchBoxBindings();
 
@@ -379,7 +379,7 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   ~SearchBoxBindings() override;
 
  private:
-  // gin::Wrappable.
+  // gin::DeprecatedWrappable.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
 
@@ -392,7 +392,8 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   static void StopCapturingKeyStrokes();
 };
 
-gin::WrapperInfo SearchBoxBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo SearchBoxBindings::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 SearchBoxBindings::SearchBoxBindings() = default;
 
@@ -400,7 +401,8 @@ SearchBoxBindings::~SearchBoxBindings() = default;
 
 gin::ObjectTemplateBuilder SearchBoxBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<SearchBoxBindings>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<SearchBoxBindings>::GetObjectTemplateBuilder(
+             isolate)
       .SetProperty("rtl", &base::i18n::IsRTL)
       .SetProperty("isFocused", &SearchBoxBindings::IsFocused)
       .SetProperty("isKeyCaptureEnabled",
@@ -443,9 +445,9 @@ void SearchBoxBindings::StopCapturingKeyStrokes() {
   search_box->StopCapturingKeyStrokes();
 }
 
-class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
+class NewTabPageBindings : public gin::DeprecatedWrappable<NewTabPageBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   NewTabPageBindings();
 
@@ -455,7 +457,7 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
   ~NewTabPageBindings() override;
 
  private:
-  // gin::Wrappable.
+  // gin::DeprecatedWrappable.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
 
@@ -480,7 +482,8 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
                                                      int rid);
 };
 
-gin::WrapperInfo NewTabPageBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo NewTabPageBindings::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 NewTabPageBindings::NewTabPageBindings() = default;
 
@@ -488,7 +491,8 @@ NewTabPageBindings::~NewTabPageBindings() = default;
 
 gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<NewTabPageBindings>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<NewTabPageBindings>::GetObjectTemplateBuilder(
+             isolate)
       .SetProperty("isInputInProgress", &NewTabPageBindings::IsInputInProgress)
       .SetProperty("mostVisited", &NewTabPageBindings::GetMostVisited)
       .SetProperty("mostVisitedAvailable",

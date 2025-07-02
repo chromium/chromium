@@ -62,10 +62,11 @@ class PluginPlaceholderBase : public content::RenderFrameObserver,
 };
 
 // A basic placeholder that supports only hiding.
-class PluginPlaceholder final : public PluginPlaceholderBase,
-                                public gin::Wrappable<PluginPlaceholder> {
+class PluginPlaceholder final
+    : public PluginPlaceholderBase,
+      public gin::DeprecatedWrappable<PluginPlaceholder> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   ~PluginPlaceholder() override;
 
@@ -80,7 +81,7 @@ class PluginPlaceholder final : public PluginPlaceholderBase,
   // WebViewPlugin::Delegate methods:
   v8::Local<v8::Value> GetV8Handle(v8::Isolate* isolate) final;
 
-  // gin::Wrappable method:
+  // gin::DeprecatedWrappable method:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 };

@@ -68,26 +68,28 @@ PerIsolateData* PerIsolateData::From(Isolate* isolate) {
   return static_cast<PerIsolateData*>(isolate->GetData(kEmbedderNativeGin));
 }
 
-void PerIsolateData::SetObjectTemplate(WrapperInfo* info,
-                                       Local<ObjectTemplate> templ) {
-  object_templates_[info] = Eternal<ObjectTemplate>(isolate_, templ);
+void PerIsolateData::DeprecatedSetObjectTemplate(DeprecatedWrapperInfo* info,
+                                                 Local<ObjectTemplate> templ) {
+  deprecated_object_templates_[info] = Eternal<ObjectTemplate>(isolate_, templ);
 }
 
-void PerIsolateData::SetFunctionTemplate(WrapperInfo* info,
+void PerIsolateData::SetFunctionTemplate(DeprecatedWrapperInfo* info,
                                          Local<FunctionTemplate> templ) {
   function_templates_[info] = Eternal<FunctionTemplate>(isolate_, templ);
 }
 
-v8::Local<v8::ObjectTemplate> PerIsolateData::GetObjectTemplate(
-    WrapperInfo* info) {
-  ObjectTemplateMap::iterator it = object_templates_.find(info);
-  if (it == object_templates_.end())
+v8::Local<v8::ObjectTemplate> PerIsolateData::DeprecatedGetObjectTemplate(
+    DeprecatedWrapperInfo* info) {
+  DeprecatedObjectTemplateMap::iterator it =
+      deprecated_object_templates_.find(info);
+  if (it == deprecated_object_templates_.end()) {
     return v8::Local<v8::ObjectTemplate>();
+  }
   return it->second.Get(isolate_);
 }
 
 v8::Local<v8::FunctionTemplate> PerIsolateData::GetFunctionTemplate(
-    WrapperInfo* info) {
+    DeprecatedWrapperInfo* info) {
   FunctionTemplateMap::iterator it = function_templates_.find(info);
   if (it == function_templates_.end())
     return v8::Local<v8::FunctionTemplate>();
@@ -95,19 +97,19 @@ v8::Local<v8::FunctionTemplate> PerIsolateData::GetFunctionTemplate(
 }
 
 void PerIsolateData::SetIndexedPropertyInterceptor(
-    WrappableBase* base,
+    DeprecatedWrappableBase* base,
     IndexedPropertyInterceptor* interceptor) {
   indexed_interceptors_[base] = interceptor;
 }
 
 void PerIsolateData::SetNamedPropertyInterceptor(
-    WrappableBase* base,
+    DeprecatedWrappableBase* base,
     NamedPropertyInterceptor* interceptor) {
   named_interceptors_[base] = interceptor;
 }
 
 void PerIsolateData::ClearIndexedPropertyInterceptor(
-    WrappableBase* base,
+    DeprecatedWrappableBase* base,
     IndexedPropertyInterceptor* interceptor) {
   IndexedPropertyInterceptorMap::iterator it = indexed_interceptors_.find(base);
   if (it != indexed_interceptors_.end())
@@ -117,7 +119,7 @@ void PerIsolateData::ClearIndexedPropertyInterceptor(
 }
 
 void PerIsolateData::ClearNamedPropertyInterceptor(
-    WrappableBase* base,
+    DeprecatedWrappableBase* base,
     NamedPropertyInterceptor* interceptor) {
   NamedPropertyInterceptorMap::iterator it = named_interceptors_.find(base);
   if (it != named_interceptors_.end())
@@ -127,7 +129,7 @@ void PerIsolateData::ClearNamedPropertyInterceptor(
 }
 
 IndexedPropertyInterceptor* PerIsolateData::GetIndexedPropertyInterceptor(
-    WrappableBase* base) {
+    DeprecatedWrappableBase* base) {
   IndexedPropertyInterceptorMap::iterator it = indexed_interceptors_.find(base);
   if (it != indexed_interceptors_.end())
     return it->second;
@@ -136,7 +138,7 @@ IndexedPropertyInterceptor* PerIsolateData::GetIndexedPropertyInterceptor(
 }
 
 NamedPropertyInterceptor* PerIsolateData::GetNamedPropertyInterceptor(
-    WrappableBase* base) {
+    DeprecatedWrappableBase* base) {
   NamedPropertyInterceptorMap::iterator it = named_interceptors_.find(base);
   if (it != named_interceptors_.end())
     return it->second;

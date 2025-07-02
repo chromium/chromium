@@ -21,7 +21,7 @@ namespace ui {
 // chrome.automation extension api. If so, please update
 // extensions/common/api/automation.idl.
 class COMPONENT_EXPORT(AX_PLATFORM) AutomationPosition final
-    : public gin::Wrappable<AutomationPosition> {
+    : public gin::DeprecatedWrappable<AutomationPosition> {
  public:
   AutomationPosition(const AXNode& node,
                      AXPositionKind kind,
@@ -33,9 +33,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationPosition final
 
   ~AutomationPosition() override;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 

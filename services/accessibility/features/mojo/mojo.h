@@ -20,9 +20,9 @@ namespace ax {
 // Provides Mojo object to the Accessibility Service's V8 Javascript.
 // This class is a parallel to blink::Mojo, which does the same for
 // any blink renderer.
-class Mojo : public gin::Wrappable<Mojo>, public RegisteredWrappable {
+class Mojo : public gin::DeprecatedWrappable<Mojo>, public RegisteredWrappable {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   static gin::Handle<Mojo> Create(v8::Local<v8::Context> context);
 
@@ -30,13 +30,13 @@ class Mojo : public gin::Wrappable<Mojo>, public RegisteredWrappable {
   Mojo(const Mojo&) = delete;
   Mojo& operator=(const Mojo&) = delete;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
   //
   // Methods exposed to Javascript.
-  // Note: gin::Wrappable's bound methods need to be public.
+  // Note: gin::DeprecatedWrappable's bound methods need to be public.
   //
 
   // Returns two MojoHandles, one for each end of a new pipe.

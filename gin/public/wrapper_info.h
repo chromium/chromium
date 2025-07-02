@@ -22,8 +22,8 @@ enum InternalFields {
   kNumberOfInternalFields,
 };
 
-struct GIN_EXPORT WrapperInfo {
-  static WrapperInfo* From(v8::Local<v8::Object> object);
+struct GIN_EXPORT DeprecatedWrapperInfo {
+  static DeprecatedWrapperInfo* From(v8::Local<v8::Object> object);
   const GinEmbedder embedder;
 };
 

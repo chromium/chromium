@@ -77,7 +77,7 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
 
 namespace js_injection {
 
-gin::WrapperInfo JsBinding::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo JsBinding::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 // static
 base::WeakPtr<JsBinding> JsBinding::Install(
@@ -212,7 +212,7 @@ void JsBinding::Bind(
 
 gin::ObjectTemplateBuilder JsBinding::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<JsBinding>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<JsBinding>::GetObjectTemplateBuilder(isolate)
       .SetMethod(kPostMessage, &JsBinding::PostMessage)
       .SetMethod(kAddEventListener, &JsBinding::AddEventListener)
       .SetMethod(kRemoveEventListener, &JsBinding::RemoveEventListener)

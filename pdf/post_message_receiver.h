@@ -33,8 +33,9 @@ class V8ValueConverter;
 // `PostMessageReceiver`'s lifetime is managed by the V8 garbage collector,
 // meaning it can outlive the `Client`. Messages are dropped if the `Client` is
 // destroyed.
-class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver>,
-                                  public gin::NamedPropertyInterceptor {
+class PostMessageReceiver final
+    : public gin::DeprecatedWrappable<PostMessageReceiver>,
+      public gin::NamedPropertyInterceptor {
  public:
   // The interface for a plugin client that handles messages from its embedder.
   class Client {
@@ -47,7 +48,7 @@ class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver>,
     ~Client() = default;
   };
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   // Creates a scriptable object with an implemented `postMessage()` method.
   // Messages are posted asynchronously to `client` using `client_task_runner`.
@@ -70,7 +71,7 @@ class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver>,
       base::WeakPtr<Client> client,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner);
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
   const char* GetTypeName() override;

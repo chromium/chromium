@@ -12,8 +12,9 @@
 
 namespace gin {
 
-NamedPropertyInterceptor::NamedPropertyInterceptor(v8::Isolate* isolate,
-                                                   WrappableBase* base)
+NamedPropertyInterceptor::NamedPropertyInterceptor(
+    v8::Isolate* isolate,
+    DeprecatedWrappableBase* base)
     : isolate_(isolate), base_(base) {
   PerIsolateData::From(isolate_)->SetNamedPropertyInterceptor(base_, this);
 }
@@ -44,8 +45,9 @@ void NamedPropertyInterceptor::ClearForTesting() {
   isolate_ = nullptr;
 }
 
-IndexedPropertyInterceptor::IndexedPropertyInterceptor(v8::Isolate* isolate,
-                                                       WrappableBase* base)
+IndexedPropertyInterceptor::IndexedPropertyInterceptor(
+    v8::Isolate* isolate,
+    DeprecatedWrappableBase* base)
     : isolate_(isolate), base_(base) {
   PerIsolateData::From(isolate_)->SetIndexedPropertyInterceptor(base_, this);
 }

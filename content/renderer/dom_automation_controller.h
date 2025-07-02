@@ -28,10 +28,11 @@ class RenderFrame;
 // Javascript can call domAutomationController.send(...) to send arbitrary data
 // to the browser.  On the browser side, the data is received via the
 // DOMMessageQueue class.
-class DomAutomationController : public gin::Wrappable<DomAutomationController>,
-                                public RenderFrameObserver {
+class DomAutomationController
+    : public gin::DeprecatedWrappable<DomAutomationController>,
+      public RenderFrameObserver {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   DomAutomationController(const DomAutomationController&) = delete;
   DomAutomationController& operator=(const DomAutomationController&) = delete;

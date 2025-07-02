@@ -24,7 +24,8 @@ class ExceptionHandler;
 // An object that exposes utility methods to the existing JS bindings, such as
 // sendRequest and registering event argument massagers. If/when we get rid of
 // some of our JS bindings, we can reduce or remove this class.
-class APIBindingJSUtil final : public gin::Wrappable<APIBindingJSUtil> {
+class APIBindingJSUtil final
+    : public gin::DeprecatedWrappable<APIBindingJSUtil> {
  public:
   APIBindingJSUtil(APITypeReferenceMap* type_refs,
                    APIRequestHandler* request_handler,
@@ -36,9 +37,9 @@ class APIBindingJSUtil final : public gin::Wrappable<APIBindingJSUtil> {
 
   ~APIBindingJSUtil() override;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
 

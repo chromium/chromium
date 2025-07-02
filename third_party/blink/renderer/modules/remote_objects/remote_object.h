@@ -16,10 +16,10 @@ namespace blink {
 
 // Gin wrapper for representing objects that could be injected by the browser.
 // Recreated every time the window object is cleared.
-class RemoteObject : public gin::Wrappable<RemoteObject>,
+class RemoteObject : public gin::DeprecatedWrappable<RemoteObject>,
                      public gin::NamedPropertyInterceptor {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   RemoteObject(v8::Isolate*, RemoteObjectGatewayImpl*, int32_t);
   // Not copyable or movable
@@ -27,7 +27,7 @@ class RemoteObject : public gin::Wrappable<RemoteObject>,
   RemoteObject& operator=(const RemoteObject&) = delete;
   ~RemoteObject() override;
 
-  // gin::Wrappable.
+  // gin::DeprecatedWrappable.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 

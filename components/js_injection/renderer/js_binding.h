@@ -32,13 +32,13 @@ class RenderFrame;
 namespace js_injection {
 class JsCommunication;
 
-// A gin::Wrappable class used for providing JavaScript API. JsCommunication
-// creates an instance of JsBinding for each unique name exposed to the page.
-// JsBinding is owned by v8.
-class JsBinding final : public gin::Wrappable<JsBinding>,
+// A gin::DeprecatedWrappable class used for providing JavaScript API.
+// JsCommunication creates an instance of JsBinding for each unique name exposed
+// to the page. JsBinding is owned by v8.
+class JsBinding final : public gin::DeprecatedWrappable<JsBinding>,
                         public mojom::BrowserToJsMessaging {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   JsBinding(const JsBinding&) = delete;
   JsBinding& operator=(const JsBinding&) = delete;
@@ -66,7 +66,7 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
                      const std::u16string& js_object_name,
                      base::WeakPtr<JsCommunication> js_java_configurator);
 
-  // gin::Wrappable implementation
+  // gin::DeprecatedWrappable implementation
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 

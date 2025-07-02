@@ -34,7 +34,8 @@ constexpr char kPropertyName[] = "postMessage";
 }  // namespace
 
 // static
-gin::WrapperInfo PostMessageReceiver::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo PostMessageReceiver::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // static
 v8::Local<v8::Object> PostMessageReceiver::Create(
@@ -78,7 +79,8 @@ gin::ObjectTemplateBuilder PostMessageReceiver::GetObjectTemplateBuilder(
   // treated like a static method for all other instances.
   //
   // An interceptor allows for the creation of a function template per instance.
-  return gin::Wrappable<PostMessageReceiver>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<
+             PostMessageReceiver>::GetObjectTemplateBuilder(isolate)
       .AddNamedPropertyInterceptor();
 }
 

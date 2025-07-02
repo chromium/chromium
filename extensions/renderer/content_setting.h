@@ -24,7 +24,7 @@ class BindingAccessChecker;
 
 // The custom implementation of the contentSettings.ContentSetting type exposed
 // to APIs.
-class ContentSetting final : public gin::Wrappable<ContentSetting> {
+class ContentSetting final : public gin::DeprecatedWrappable<ContentSetting> {
  public:
   ContentSetting(const ContentSetting&) = delete;
   ContentSetting& operator=(const ContentSetting&) = delete;
@@ -41,7 +41,7 @@ class ContentSetting final : public gin::Wrappable<ContentSetting> {
       APITypeReferenceMap* type_refs,
       const BindingAccessChecker* access_checker);
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;

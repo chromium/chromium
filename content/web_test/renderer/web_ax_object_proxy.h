@@ -24,7 +24,7 @@ class WebLocalFrame;
 
 namespace content {
 
-class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
+class WebAXObjectProxy : public gin::DeprecatedWrappable<WebAXObjectProxy> {
  public:
   class Factory {
    public:
@@ -34,7 +34,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
     virtual blink::WebAXContext* GetAXContext() = 0;
   };
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   WebAXObjectProxy(const blink::WebAXObject& object, Factory* factory);
 

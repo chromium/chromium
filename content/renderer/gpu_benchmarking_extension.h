@@ -24,9 +24,9 @@ namespace content {
 class RenderFrameImpl;
 
 // gin class for gpu benchmarking
-class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
+class GpuBenchmarking : public gin::DeprecatedWrappable<GpuBenchmarking> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   GpuBenchmarking(const GpuBenchmarking&) = delete;
   GpuBenchmarking& operator=(const GpuBenchmarking&) = delete;

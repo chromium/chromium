@@ -19,7 +19,7 @@
 
 namespace security_interstitials {
 
-gin::WrapperInfo SecurityInterstitialPageController::kWrapperInfo = {
+gin::DeprecatedWrapperInfo SecurityInterstitialPageController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
 void SecurityInterstitialPageController::Install(
@@ -201,7 +201,7 @@ void SecurityInterstitialPageController::SendCommand(
 gin::ObjectTemplateBuilder
 SecurityInterstitialPageController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<SecurityInterstitialPageController>::
+  return gin::DeprecatedWrappable<SecurityInterstitialPageController>::
       GetObjectTemplateBuilder(isolate)
           .SetMethod("dontProceed",
                      &SecurityInterstitialPageController::DontProceed)

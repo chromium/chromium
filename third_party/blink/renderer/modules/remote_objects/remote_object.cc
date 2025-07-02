@@ -15,7 +15,8 @@
 
 namespace blink {
 
-gin::WrapperInfo RemoteObject::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo RemoteObject::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 namespace {
 
@@ -310,7 +311,8 @@ RemoteObject::~RemoteObject() {
 
 gin::ObjectTemplateBuilder RemoteObject::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<RemoteObject>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<RemoteObject>::GetObjectTemplateBuilder(
+             isolate)
       .AddNamedPropertyInterceptor();
 }
 

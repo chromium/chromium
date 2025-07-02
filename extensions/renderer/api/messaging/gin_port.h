@@ -31,7 +31,7 @@ struct Message;
 // other. This message-passing usually involves IPCs to the browser; we delegate
 // out this responsibility. This class only handles the JS interface (both calls
 // from JS and forward events to JS).
-class GinPort final : public gin::Wrappable<GinPort> {
+class GinPort final : public gin::DeprecatedWrappable<GinPort> {
  public:
   class Delegate {
    public:
@@ -59,7 +59,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
 
   ~GinPort() override;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(

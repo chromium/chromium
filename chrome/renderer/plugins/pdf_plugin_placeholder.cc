@@ -13,7 +13,8 @@
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
-gin::WrapperInfo PDFPluginPlaceholder::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo PDFPluginPlaceholder::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // static
 PDFPluginPlaceholder* PDFPluginPlaceholder::CreatePDFPlaceholder(
@@ -38,7 +39,8 @@ v8::Local<v8::Value> PDFPluginPlaceholder::GetV8Handle(v8::Isolate* isolate) {
 gin::ObjectTemplateBuilder PDFPluginPlaceholder::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   gin::ObjectTemplateBuilder builder =
-      gin::Wrappable<PDFPluginPlaceholder>::GetObjectTemplateBuilder(isolate)
+      gin::DeprecatedWrappable<PDFPluginPlaceholder>::GetObjectTemplateBuilder(
+          isolate)
           .SetMethod<void (PDFPluginPlaceholder::*)()>(
               "openPDF", &PDFPluginPlaceholder::OpenPDFCallback);
 

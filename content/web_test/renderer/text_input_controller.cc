@@ -26,9 +26,9 @@
 namespace content {
 
 class TextInputControllerBindings
-    : public gin::Wrappable<TextInputControllerBindings> {
+    : public gin::DeprecatedWrappable<TextInputControllerBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   TextInputControllerBindings(const TextInputControllerBindings&) = delete;
   TextInputControllerBindings& operator=(const TextInputControllerBindings&) =
@@ -42,7 +42,7 @@ class TextInputControllerBindings
       base::WeakPtr<TextInputController> controller);
   ~TextInputControllerBindings() override;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -68,7 +68,7 @@ class TextInputControllerBindings
   base::WeakPtr<TextInputController> controller_;
 };
 
-gin::WrapperInfo TextInputControllerBindings::kWrapperInfo = {
+gin::DeprecatedWrapperInfo TextInputControllerBindings::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
 // static
@@ -102,8 +102,8 @@ TextInputControllerBindings::~TextInputControllerBindings() {}
 
 gin::ObjectTemplateBuilder
 TextInputControllerBindings::GetObjectTemplateBuilder(v8::Isolate* isolate) {
-  return gin::Wrappable<TextInputControllerBindings>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::DeprecatedWrappable<
+             TextInputControllerBindings>::GetObjectTemplateBuilder(isolate)
       .SetMethod("insertText", &TextInputControllerBindings::InsertText)
       .SetMethod("unmarkText", &TextInputControllerBindings::UnmarkText)
       .SetMethod("unmarkAndUnselectText",

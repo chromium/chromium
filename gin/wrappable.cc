@@ -10,37 +10,38 @@
 
 namespace gin {
 
-WrappableBase::WrappableBase() = default;
+DeprecatedWrappableBase::DeprecatedWrappableBase() = default;
 
-WrappableBase::~WrappableBase() {
+DeprecatedWrappableBase::~DeprecatedWrappableBase() {
   wrapper_.Reset();
 }
 
-ObjectTemplateBuilder WrappableBase::GetObjectTemplateBuilder(
+ObjectTemplateBuilder DeprecatedWrappableBase::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return ObjectTemplateBuilder(isolate, GetTypeName());
 }
 
-const char* WrappableBase::GetTypeName() {
+const char* DeprecatedWrappableBase::GetTypeName() {
   return nullptr;
 }
 
-void WrappableBase::FirstWeakCallback(
-    const v8::WeakCallbackInfo<WrappableBase>& data) {
-  WrappableBase* wrappable = data.GetParameter();
+void DeprecatedWrappableBase::FirstWeakCallback(
+    const v8::WeakCallbackInfo<DeprecatedWrappableBase>& data) {
+  DeprecatedWrappableBase* wrappable = data.GetParameter();
   wrappable->dead_ = true;
   wrappable->wrapper_.Reset();
   data.SetSecondPassCallback(SecondWeakCallback);
 }
 
-void WrappableBase::SecondWeakCallback(
-    const v8::WeakCallbackInfo<WrappableBase>& data) {
-  WrappableBase* wrappable = data.GetParameter();
+void DeprecatedWrappableBase::SecondWeakCallback(
+    const v8::WeakCallbackInfo<DeprecatedWrappableBase>& data) {
+  DeprecatedWrappableBase* wrappable = data.GetParameter();
   delete wrappable;
 }
 
-v8::MaybeLocal<v8::Object> WrappableBase::GetWrapperImpl(v8::Isolate* isolate,
-                                                         WrapperInfo* info) {
+v8::MaybeLocal<v8::Object> DeprecatedWrappableBase::GetWrapperImpl(
+    v8::Isolate* isolate,
+    DeprecatedWrapperInfo* info) {
   if (!wrapper_.IsEmpty()) {
     return v8::MaybeLocal<v8::Object>(
         v8::Local<v8::Object>::New(isolate, wrapper_));
@@ -50,11 +51,11 @@ v8::MaybeLocal<v8::Object> WrappableBase::GetWrapperImpl(v8::Isolate* isolate,
     return v8::MaybeLocal<v8::Object>();
 
   PerIsolateData* data = PerIsolateData::From(isolate);
-  v8::Local<v8::ObjectTemplate> templ = data->GetObjectTemplate(info);
+  v8::Local<v8::ObjectTemplate> templ = data->DeprecatedGetObjectTemplate(info);
   if (templ.IsEmpty()) {
     templ = GetObjectTemplateBuilder(isolate).Build();
     CHECK(!templ.IsEmpty());
-    data->SetObjectTemplate(info, templ);
+    data->DeprecatedSetObjectTemplate(info, templ);
   }
   CHECK_EQ(kNumberOfInternalFields, templ->InternalFieldCount());
   v8::Local<v8::Object> wrapper;
@@ -77,12 +78,13 @@ v8::MaybeLocal<v8::Object> WrappableBase::GetWrapperImpl(v8::Isolate* isolate,
 
 namespace internal {
 
-void* FromV8Impl(v8::Isolate* isolate, v8::Local<v8::Value> val,
-                 WrapperInfo* wrapper_info) {
+void* FromV8Impl(v8::Isolate* isolate,
+                 v8::Local<v8::Value> val,
+                 DeprecatedWrapperInfo* wrapper_info) {
   if (!val->IsObject())
     return NULL;
   v8::Local<v8::Object> obj = v8::Local<v8::Object>::Cast(val);
-  WrapperInfo* info = WrapperInfo::From(obj);
+  DeprecatedWrapperInfo* info = DeprecatedWrapperInfo::From(obj);
 
   // If this fails, the object is not managed by Gin. It is either a normal JS
   // object that's not wrapping any external C++ object, or it is wrapping some

@@ -19,10 +19,12 @@ namespace extensions {
 class APIRequestHandler;
 class APITypeReferenceMap;
 
-// A gin::Wrappable object for declarative events (i.e., events that support
-// "rules"). Unlike regular events, these do not have associated listeners, and
-// extensions register an action to perform when the event happens.
-class DeclarativeEvent final : public gin::Wrappable<DeclarativeEvent> {
+// A gin::DeprecatedWrappable object for declarative events (i.e., events that
+// support "rules"). Unlike regular events, these do not have associated
+// listeners, and extensions register an action to perform when the event
+// happens.
+class DeclarativeEvent final
+    : public gin::DeprecatedWrappable<DeclarativeEvent> {
  public:
   DeclarativeEvent(const std::string& name,
                    APITypeReferenceMap* type_refs,
@@ -34,7 +36,7 @@ class DeclarativeEvent final : public gin::Wrappable<DeclarativeEvent> {
   DeclarativeEvent& operator=(const DeclarativeEvent&) = delete;
   ~DeclarativeEvent() override;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(

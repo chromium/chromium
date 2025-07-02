@@ -27,7 +27,7 @@ namespace {
 
 // An interface to allow for registration of custom hooks from JavaScript.
 // Contains registered hooks for a single API.
-class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
+class JSHookInterface final : public gin::DeprecatedWrappable<JSHookInterface> {
  public:
   explicit JSHookInterface(const std::string& api_name)
       : api_name_(api_name) {}
@@ -35,12 +35,13 @@ class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
   JSHookInterface(const JSHookInterface&) = delete;
   JSHookInterface& operator=(const JSHookInterface&) = delete;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
-    return Wrappable<JSHookInterface>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<JSHookInterface>::GetObjectTemplateBuilder(
+               isolate)
         .SetMethod("setHandleRequest", &JSHookInterface::SetHandleRequest)
         .SetMethod("setUpdateArgumentsPreValidate",
                    &JSHookInterface::SetUpdateArgumentsPreValidate)
@@ -138,7 +139,7 @@ class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
 const char kExtensionAPIHooksPerContextKey[] = "extension_api_hooks";
 
 struct APIHooksPerContextData : public base::SupportsUserData::Data {
-  APIHooksPerContextData(v8::Isolate* isolate) : isolate(isolate) {}
+  explicit APIHooksPerContextData(v8::Isolate* isolate) : isolate(isolate) {}
   ~APIHooksPerContextData() override {
     v8::HandleScope scope(isolate);
     for (const auto& pair : hook_interfaces) {
@@ -163,8 +164,8 @@ struct APIHooksPerContextData : public base::SupportsUserData::Data {
   std::map<int, ActiveRequest> active_requests;
 };
 
-gin::WrapperInfo JSHookInterface::kWrapperInfo =
-    {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo JSHookInterface::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // Gets the v8::Object of the JSHookInterface, optionally creating it if it
 // doesn't exist.
@@ -487,7 +488,7 @@ void APIBindingHooks::CompleteHandleRequest(int request_id,
     request_handler_->CompleteRequest(request_id, arguments->GetAll(),
                                       /*error*/ std::string());
   } else {
-    CHECK(arguments->Length() == 1);
+    CHECK_EQ(arguments->Length(), 1);
     v8::Local<v8::Value> error = arguments->GetAll()[0];
     DCHECK(error->IsString());
 

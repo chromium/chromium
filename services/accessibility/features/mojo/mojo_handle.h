@@ -22,10 +22,10 @@ namespace ax {
 // Provides a MojoHandle object to the Accessibility Service's V8 Javascript.
 // This class is parallel to blink::MojoHandle, which does the same for any
 // blink renderer.
-class MojoHandle : public gin::Wrappable<MojoHandle>,
+class MojoHandle : public gin::DeprecatedWrappable<MojoHandle>,
                    public RegisteredWrappable {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   static gin::Handle<MojoHandle> Create(v8::Local<v8::Context> context,
                                         mojo::ScopedHandle handle);
@@ -33,13 +33,13 @@ class MojoHandle : public gin::Wrappable<MojoHandle>,
   MojoHandle(const MojoHandle&) = delete;
   MojoHandle& operator=(const MojoHandle&) = delete;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
   //
   // Methods exposed to Javascript.
-  // Note: gin::Wrappable's bound methods need to be public.
+  // Note: gin::DeprecatedWrappable's bound methods need to be public.
   //
 
   // Calls a callback any time a pipe handle becomes (e.g.) readable; returns a

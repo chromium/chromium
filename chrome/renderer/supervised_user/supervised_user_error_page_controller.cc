@@ -20,7 +20,7 @@
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
 
-gin::WrapperInfo SupervisedUserErrorPageController::kWrapperInfo = {
+gin::DeprecatedWrapperInfo SupervisedUserErrorPageController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
 void SupervisedUserErrorPageController::Install(
@@ -114,7 +114,7 @@ void SupervisedUserErrorPageController::OnRequestUrlAccessRemote(bool success) {
 gin::ObjectTemplateBuilder
 SupervisedUserErrorPageController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<SupervisedUserErrorPageController>::
+  return gin::DeprecatedWrappable<SupervisedUserErrorPageController>::
       GetObjectTemplateBuilder(isolate)
           .SetMethod("goBack", &SupervisedUserErrorPageController::GoBack)
           .SetMethod("requestUrlAccessRemote",

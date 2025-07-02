@@ -27,7 +27,8 @@ constexpr const char kEventEmitterTypeName[] = "Event";
 
 }  // namespace
 
-gin::WrapperInfo EventEmitter::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo EventEmitter::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 EventEmitter::EventEmitter(bool supports_filters,
                            std::unique_ptr<APIEventListeners> listeners,
@@ -40,7 +41,7 @@ EventEmitter::~EventEmitter() = default;
 
 gin::ObjectTemplateBuilder EventEmitter::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return Wrappable<EventEmitter>::GetObjectTemplateBuilder(isolate)
+  return DeprecatedWrappable<EventEmitter>::GetObjectTemplateBuilder(isolate)
       .SetMethod("addListener", &EventEmitter::AddListener)
       .SetMethod("removeListener", &EventEmitter::RemoveListener)
       .SetMethod("hasListener", &EventEmitter::HasListener)

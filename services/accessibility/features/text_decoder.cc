@@ -25,7 +25,8 @@
 namespace ax {
 
 // static
-gin::WrapperInfo TextDecoder::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo TextDecoder::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // static
 gin::Handle<TextDecoder> TextDecoder::Create(v8::Local<v8::Context> context) {
@@ -34,7 +35,8 @@ gin::Handle<TextDecoder> TextDecoder::Create(v8::Local<v8::Context> context) {
 
 gin::ObjectTemplateBuilder TextDecoder::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<TextDecoder>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<TextDecoder>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("decode", &TextDecoder::Decode);
 }
 

@@ -21,9 +21,9 @@
 namespace content {
 
 class AccessibilityControllerBindings
-    : public gin::Wrappable<AccessibilityControllerBindings> {
+    : public gin::DeprecatedWrappable<AccessibilityControllerBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   AccessibilityControllerBindings(const AccessibilityControllerBindings&) =
       delete;
@@ -38,7 +38,7 @@ class AccessibilityControllerBindings
       base::WeakPtr<AccessibilityController> controller);
   ~AccessibilityControllerBindings() override;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -53,7 +53,7 @@ class AccessibilityControllerBindings
   base::WeakPtr<AccessibilityController> controller_;
 };
 
-gin::WrapperInfo AccessibilityControllerBindings::kWrapperInfo = {
+gin::DeprecatedWrapperInfo AccessibilityControllerBindings::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
 // static
@@ -88,7 +88,7 @@ AccessibilityControllerBindings::~AccessibilityControllerBindings() {}
 gin::ObjectTemplateBuilder
 AccessibilityControllerBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<
+  return gin::DeprecatedWrappable<
              AccessibilityControllerBindings>::GetObjectTemplateBuilder(isolate)
       .SetMethod("logAccessibilityEvents",
                  &AccessibilityControllerBindings::LogAccessibilityEvents)

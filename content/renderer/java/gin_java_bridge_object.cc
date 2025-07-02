@@ -77,7 +77,8 @@ GinJavaBridgeObject::~GinJavaBridgeObject() {
 
 gin::ObjectTemplateBuilder GinJavaBridgeObject::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<GinJavaBridgeObject>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<
+             GinJavaBridgeObject>::GetObjectTemplateBuilder(isolate)
       .AddNamedPropertyInterceptor();
 }
 
@@ -135,6 +136,7 @@ mojom::GinJavaBridgeRemoteObject* GinJavaBridgeObject::GetRemote() {
   return remote_.get();
 }
 
-gin::WrapperInfo GinJavaBridgeObject::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo GinJavaBridgeObject::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 }  // namespace content

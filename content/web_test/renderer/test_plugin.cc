@@ -133,10 +133,10 @@ blink::WebPluginContainer::TouchEventRequestType ParseTouchEventRequestType(
   return blink::WebPluginContainer::kTouchEventRequestTypeNone;
 }
 
-class ScriptableObject : public gin::Wrappable<ScriptableObject>,
+class ScriptableObject : public gin::DeprecatedWrappable<ScriptableObject>,
                          public gin::NamedPropertyInterceptor {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   static v8::Local<v8::Object> Create(v8::Isolate* isolate) {
     ScriptableObject* scriptable_object = new ScriptableObject(isolate);
@@ -159,16 +159,18 @@ class ScriptableObject : public gin::Wrappable<ScriptableObject>,
   explicit ScriptableObject(v8::Isolate* isolate)
       : gin::NamedPropertyInterceptor(isolate, this) {}
 
-  // gin::Wrappable
+  // gin::DeprecatedWrappable
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
-    return gin::Wrappable<ScriptableObject>::GetObjectTemplateBuilder(isolate)
+    return gin::DeprecatedWrappable<ScriptableObject>::GetObjectTemplateBuilder(
+               isolate)
         .AddNamedPropertyInterceptor();
   }
 };
 
 // static
-gin::WrapperInfo ScriptableObject::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo ScriptableObject::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 }  // namespace
 

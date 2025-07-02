@@ -7,10 +7,11 @@
 
 namespace gin {
 
-WrapperInfo* WrapperInfo::From(v8::Local<v8::Object> object) {
+DeprecatedWrapperInfo* DeprecatedWrapperInfo::From(
+    v8::Local<v8::Object> object) {
   if (object->InternalFieldCount() != kNumberOfInternalFields)
     return NULL;
-  WrapperInfo* info = static_cast<WrapperInfo*>(
+  DeprecatedWrapperInfo* info = static_cast<DeprecatedWrapperInfo*>(
       object->GetAlignedPointerFromInternalField(kWrapperInfoIndex));
   return info->embedder == kEmbedderNativeGin ? info : NULL;
 }

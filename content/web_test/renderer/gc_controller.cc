@@ -17,7 +17,8 @@
 
 namespace content {
 
-gin::WrapperInfo GCController::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo GCController::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // static
 void GCController::Install(blink::WebLocalFrame* frame) {
@@ -46,7 +47,8 @@ GCController::~GCController() = default;
 
 gin::ObjectTemplateBuilder GCController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<GCController>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<GCController>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("collect", &GCController::Collect)
       .SetMethod("collectAll", &GCController::CollectAll)
       .SetMethod("minorCollect", &GCController::MinorCollect)

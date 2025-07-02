@@ -16,13 +16,13 @@
 
 namespace gin {
 
-class WrappableBase;
+class DeprecatedWrappableBase;
 
 // Base class for gin::Wrappable-derived classes that want to implement a
 // property interceptor.
 class GIN_EXPORT NamedPropertyInterceptor {
  public:
-  NamedPropertyInterceptor(v8::Isolate* isolate, WrappableBase* base);
+  NamedPropertyInterceptor(v8::Isolate* isolate, DeprecatedWrappableBase* base);
   NamedPropertyInterceptor(const NamedPropertyInterceptor&) = delete;
   NamedPropertyInterceptor& operator=(const NamedPropertyInterceptor&) = delete;
   virtual ~NamedPropertyInterceptor();
@@ -41,12 +41,13 @@ class GIN_EXPORT NamedPropertyInterceptor {
 
  private:
   raw_ptr<v8::Isolate> isolate_;
-  raw_ptr<WrappableBase> base_;
+  raw_ptr<DeprecatedWrappableBase> base_;
 };
 
 class GIN_EXPORT IndexedPropertyInterceptor {
  public:
-  IndexedPropertyInterceptor(v8::Isolate* isolate, WrappableBase* base);
+  IndexedPropertyInterceptor(v8::Isolate* isolate,
+                             DeprecatedWrappableBase* base);
   IndexedPropertyInterceptor(const IndexedPropertyInterceptor&) = delete;
   IndexedPropertyInterceptor& operator=(const IndexedPropertyInterceptor&) =
       delete;
@@ -66,7 +67,7 @@ class GIN_EXPORT IndexedPropertyInterceptor {
 
  private:
   raw_ptr<v8::Isolate> isolate_;
-  raw_ptr<WrappableBase> base_;
+  raw_ptr<DeprecatedWrappableBase> base_;
 };
 
 }  // namespace gin

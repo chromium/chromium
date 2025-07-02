@@ -17,9 +17,9 @@ class Arguments;
 
 namespace content {
 
-class SkiaBenchmarking : public gin::Wrappable<SkiaBenchmarking> {
+class SkiaBenchmarking : public gin::DeprecatedWrappable<SkiaBenchmarking> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   SkiaBenchmarking(const SkiaBenchmarking&) = delete;
   SkiaBenchmarking& operator=(const SkiaBenchmarking&) = delete;

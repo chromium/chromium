@@ -18,9 +18,9 @@ namespace content {
 // Its use must be enabled specifically via the
 // --enable-stats-collection-bindings command line flag.
 class StatsCollectionController
-    : public gin::Wrappable<StatsCollectionController> {
+    : public gin::DeprecatedWrappable<StatsCollectionController> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   StatsCollectionController(const StatsCollectionController&) = delete;
   StatsCollectionController& operator=(const StatsCollectionController&) =

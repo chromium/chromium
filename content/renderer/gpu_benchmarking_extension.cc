@@ -591,7 +591,8 @@ static sk_sp<SkDocument> MakeXPSDocument(SkWStream* s) {
 #endif
 }  // namespace
 
-gin::WrapperInfo GpuBenchmarking::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo GpuBenchmarking::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // static
 void GpuBenchmarking::Install(base::WeakPtr<RenderFrameImpl> frame) {
@@ -632,7 +633,8 @@ void GpuBenchmarking::EnsureRemoteInterface() {
 
 gin::ObjectTemplateBuilder GpuBenchmarking::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<GpuBenchmarking>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<GpuBenchmarking>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("setNeedsDisplayOnAllLayers",
                  &GpuBenchmarking::SetNeedsDisplayOnAllLayers)
       .SetMethod("setRasterizeOnlyVisibleContent",

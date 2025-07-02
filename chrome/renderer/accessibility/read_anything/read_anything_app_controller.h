@@ -73,12 +73,12 @@ class ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 //
 class ReadAnythingAppController
     : public content::RenderFrameObserver,
-      public gin::Wrappable<ReadAnythingAppController>,
+      public gin::DeprecatedWrappable<ReadAnythingAppController>,
       public ReadAnythingAppModel::ModelObserver,
       public read_anything::mojom::UntrustedPage,
       public ui::AXTreeObserver {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   ReadAnythingAppController(const ReadAnythingAppController&) = delete;
   ReadAnythingAppController& operator=(const ReadAnythingAppController&) =

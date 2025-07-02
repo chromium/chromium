@@ -103,7 +103,8 @@ std::unique_ptr<APISignature> BuildAddRulesSignature(
 
 }  // namespace
 
-gin::WrapperInfo DeclarativeEvent::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo DeclarativeEvent::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 DeclarativeEvent::DeclarativeEvent(
     const std::string& name,
@@ -141,7 +142,8 @@ DeclarativeEvent::~DeclarativeEvent() = default;
 
 gin::ObjectTemplateBuilder DeclarativeEvent::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return Wrappable<DeclarativeEvent>::GetObjectTemplateBuilder(isolate)
+  return DeprecatedWrappable<DeclarativeEvent>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("addRules", &DeclarativeEvent::AddRules)
       .SetMethod("removeRules", &DeclarativeEvent::RemoveRules)
       .SetMethod("getRules", &DeclarativeEvent::GetRules);

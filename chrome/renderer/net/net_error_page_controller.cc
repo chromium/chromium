@@ -12,7 +12,7 @@
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
 
-gin::WrapperInfo NetErrorPageController::kWrapperInfo = {
+gin::DeprecatedWrapperInfo NetErrorPageController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
 NetErrorPageController::Delegate::Delegate() = default;
@@ -106,8 +106,8 @@ NetErrorPageController::~NetErrorPageController() = default;
 
 gin::ObjectTemplateBuilder NetErrorPageController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<NetErrorPageController>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::DeprecatedWrappable<
+             NetErrorPageController>::GetObjectTemplateBuilder(isolate)
       .SetMethod("downloadButtonClick",
                  &NetErrorPageController::DownloadButtonClick)
       .SetMethod("reloadButtonClick",

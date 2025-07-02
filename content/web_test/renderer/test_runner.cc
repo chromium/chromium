@@ -198,9 +198,9 @@ void ConvertAndSet(gin::Arguments* args, blink::WebString* set_param) {
 
 }  // namespace
 
-class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
+class TestRunnerBindings : public gin::DeprecatedWrappable<TestRunnerBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   TestRunnerBindings(const TestRunnerBindings&) = delete;
   TestRunnerBindings& operator=(const TestRunnerBindings&) = delete;
@@ -255,7 +255,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                               SpellCheckClient* spell_check);
   ~TestRunnerBindings() override;
 
-  // gin::Wrappable overrides.
+  // gin::DeprecatedWrappable overrides.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -444,7 +444,8 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   base::WeakPtrFactory<TestRunnerBindings> weak_ptr_factory_{this};
 };
 
-gin::WrapperInfo TestRunnerBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo TestRunnerBindings::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 // static
 void TestRunnerBindings::Install(TestRunner* test_runner,
@@ -549,7 +550,8 @@ TestRunnerBindings::~TestRunnerBindings() = default;
 
 gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<TestRunnerBindings>::GetObjectTemplateBuilder(isolate)
+  return gin::DeprecatedWrappable<TestRunnerBindings>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("abortModal", &TestRunnerBindings::NotImplemented)
       .SetMethod("addDisallowedURL", &TestRunnerBindings::NotImplemented)
       .SetMethod("addOriginAccessAllowListEntry",

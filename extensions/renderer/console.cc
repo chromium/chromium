@@ -51,7 +51,7 @@ void BoundLogMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   AddMessage(script_context, level, message);
 }
 
-gin::WrapperInfo kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo kWrapperInfo = {gin::kEmbedderNativeGin};
 
 }  // namespace
 
@@ -84,7 +84,8 @@ void AddMessage(ScriptContext* script_context,
 v8::Local<v8::Object> AsV8Object(v8::Isolate* isolate) {
   v8::EscapableHandleScope handle_scope(isolate);
   gin::PerIsolateData* data = gin::PerIsolateData::From(isolate);
-  v8::Local<v8::ObjectTemplate> templ = data->GetObjectTemplate(&kWrapperInfo);
+  v8::Local<v8::ObjectTemplate> templ =
+      data->DeprecatedGetObjectTemplate(&kWrapperInfo);
   if (templ.IsEmpty()) {
     templ = v8::ObjectTemplate::New(isolate);
     static const struct {
@@ -103,7 +104,7 @@ v8::Local<v8::Object> AsV8Object(v8::Isolate* isolate) {
           v8::Local<v8::Signature>(), 0, v8::ConstructorBehavior::kThrow);
       templ->Set(gin::StringToSymbol(isolate, method.name), function);
     }
-    data->SetObjectTemplate(&kWrapperInfo, templ);
+    data->DeprecatedSetObjectTemplate(&kWrapperInfo, templ);
   }
   return handle_scope.Escape(
       templ->NewInstance(isolate->GetCurrentContext()).ToLocalChecked());

@@ -90,7 +90,7 @@ class PlaceholderSet : public base::SupportsUserData::Data {
 
 }  // namespace
 
-gin::WrapperInfo ChromePluginPlaceholder::kWrapperInfo = {
+gin::DeprecatedWrapperInfo ChromePluginPlaceholder::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
 ChromePluginPlaceholder::ChromePluginPlaceholder(
@@ -323,7 +323,8 @@ blink::WebPlugin* ChromePluginPlaceholder::CreatePlugin() {
 gin::ObjectTemplateBuilder ChromePluginPlaceholder::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   gin::ObjectTemplateBuilder builder =
-      gin::Wrappable<ChromePluginPlaceholder>::GetObjectTemplateBuilder(isolate)
+      gin::DeprecatedWrappable<
+          ChromePluginPlaceholder>::GetObjectTemplateBuilder(isolate)
           .SetMethod<void (ChromePluginPlaceholder::*)()>(
               "hide", &ChromePluginPlaceholder::HideCallback)
           .SetMethod<void (ChromePluginPlaceholder::*)()>(

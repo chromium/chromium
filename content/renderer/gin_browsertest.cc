@@ -18,9 +18,9 @@ namespace content {
 
 namespace {
 
-class TestGinObject : public gin::Wrappable<TestGinObject> {
+class TestGinObject : public gin::DeprecatedWrappable<TestGinObject> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   static gin::Handle<TestGinObject> Create(v8::Isolate* isolate, bool* alive) {
     return gin::CreateHandle(isolate, new TestGinObject(alive));
@@ -30,17 +30,18 @@ class TestGinObject : public gin::Wrappable<TestGinObject> {
   TestGinObject& operator=(const TestGinObject&) = delete;
 
  private:
-  TestGinObject(bool* alive) : alive_(alive) { *alive_ = true; }
+  explicit TestGinObject(bool* alive) : alive_(alive) { *alive_ = true; }
   ~TestGinObject() override { *alive_ = false; }
 
   raw_ptr<bool> alive_;
 };
 
-gin::WrapperInfo TestGinObject::kWrapperInfo = { gin::kEmbedderNativeGin };
+gin::DeprecatedWrapperInfo TestGinObject::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 class GinBrowserTest : public RenderViewTest {
  public:
-  GinBrowserTest() {}
+  GinBrowserTest() = default;
 
   GinBrowserTest(const GinBrowserTest&) = delete;
   GinBrowserTest& operator=(const GinBrowserTest&) = delete;
@@ -80,6 +81,6 @@ TEST_F(GinBrowserTest, GinAndGarbageCollection) {
   CHECK(!alive);
 }
 
-} // namespace
+}  // namespace
 
 }  // namespace content

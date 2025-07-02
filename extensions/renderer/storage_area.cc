@@ -56,7 +56,8 @@ namespace {
 // gin::Wrappables for each of the storage areas. Since each has slightly
 // different properties, and the object template is shared between all
 // instances, this is a little verbose.
-class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
+class LocalStorageArea final
+    : public gin::DeprecatedWrappable<LocalStorageArea> {
  public:
   LocalStorageArea(APIRequestHandler* request_handler,
                    APIEventHandler* event_handler,
@@ -73,11 +74,12 @@ class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
 
   ~LocalStorageArea() override = default;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
-    return Wrappable<LocalStorageArea>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<LocalStorageArea>::GetObjectTemplateBuilder(
+               isolate)
         .SetMethod("get", &LocalStorageArea::Get)
         .SetMethod("getKeys", &LocalStorageArea::GetKeys)
         .SetMethod("set", &LocalStorageArea::Set)
@@ -94,9 +96,10 @@ class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
   StorageArea storage_area_;
 };
 
-gin::WrapperInfo LocalStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo LocalStorageArea::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
-class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
+class SyncStorageArea final : public gin::DeprecatedWrappable<SyncStorageArea> {
  public:
   SyncStorageArea(APIRequestHandler* request_handler,
                   APIEventHandler* event_handler,
@@ -113,11 +116,12 @@ class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
 
   ~SyncStorageArea() override = default;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
-    return Wrappable<SyncStorageArea>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<SyncStorageArea>::GetObjectTemplateBuilder(
+               isolate)
         .SetMethod("get", &SyncStorageArea::Get)
         .SetMethod("getKeys", &SyncStorageArea::GetKeys)
         .SetMethod("set", &SyncStorageArea::Set)
@@ -144,9 +148,11 @@ class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
   StorageArea storage_area_;
 };
 
-gin::WrapperInfo SyncStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo SyncStorageArea::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
-class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
+class ManagedStorageArea final
+    : public gin::DeprecatedWrappable<ManagedStorageArea> {
  public:
   ManagedStorageArea(APIRequestHandler* request_handler,
                      APIEventHandler* event_handler,
@@ -163,11 +169,12 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
 
   ~ManagedStorageArea() override = default;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
-    return Wrappable<ManagedStorageArea>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<ManagedStorageArea>::GetObjectTemplateBuilder(
+               isolate)
         .SetMethod("get", &ManagedStorageArea::Get)
         .SetMethod("getKeys", &ManagedStorageArea::GetKeys)
         .SetMethod("set", &ManagedStorageArea::Set)
@@ -183,9 +190,11 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
   StorageArea storage_area_;
 };
 
-gin::WrapperInfo ManagedStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo ManagedStorageArea::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
-class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
+class SessionStorageArea final
+    : public gin::DeprecatedWrappable<SessionStorageArea> {
  public:
   SessionStorageArea(APIRequestHandler* request_handler,
                      APIEventHandler* event_handler,
@@ -202,11 +211,12 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
 
   ~SessionStorageArea() override = default;
 
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
-    return Wrappable<SessionStorageArea>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<SessionStorageArea>::GetObjectTemplateBuilder(
+               isolate)
         .SetMethod("get", &SessionStorageArea::Get)
         .SetMethod("getKeys", &SessionStorageArea::GetKeys)
         .SetMethod("set", &SessionStorageArea::Set)
@@ -230,7 +240,8 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
   StorageArea storage_area_;
 };
 
-gin::WrapperInfo SessionStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo SessionStorageArea::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 #undef DEFINE_STORAGE_AREA_HANDLERS
 

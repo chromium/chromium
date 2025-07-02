@@ -26,7 +26,8 @@ v8::Local<v8::Private> GetPrivatePropertyName(v8::Isolate* isolate,
 
 }  // namespace
 
-gin::WrapperInfo APIBindingBridge::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo APIBindingBridge::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 APIBindingBridge::APIBindingBridge(APIBindingHooks* hooks,
                                    v8::Local<v8::Context> context,
@@ -53,7 +54,8 @@ APIBindingBridge::~APIBindingBridge() = default;
 
 gin::ObjectTemplateBuilder APIBindingBridge::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return Wrappable<APIBindingBridge>::GetObjectTemplateBuilder(isolate)
+  return DeprecatedWrappable<APIBindingBridge>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("registerCustomHook", &APIBindingBridge::RegisterCustomHook);
 }
 

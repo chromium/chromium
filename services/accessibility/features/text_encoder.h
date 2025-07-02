@@ -20,10 +20,10 @@ namespace ax {
 // This class is a parallel to blink::TextEncoder, which does the same for
 // any blink renderer.
 // Note that this only supports UTF-8 encoding.
-class TextEncoder : public gin::Wrappable<TextEncoder>,
+class TextEncoder : public gin::DeprecatedWrappable<TextEncoder>,
                     public RegisteredWrappable {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   static gin::Handle<TextEncoder> Create(v8::Local<v8::Context> context);
 
@@ -31,13 +31,13 @@ class TextEncoder : public gin::Wrappable<TextEncoder>,
   TextEncoder(const TextEncoder&) = delete;
   TextEncoder& operator=(const TextEncoder&) = delete;
 
-  // gin::Wrappable:
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
   //
   // Methods exposed to Javascript.
-  // Note: gin::Wrappable's bound methods need to be public.
+  // Note: gin::DeprecatedWrappable's bound methods need to be public.
   //
 
   // Encodes a Javascript string into a v8::Uint8Array.

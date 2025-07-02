@@ -54,11 +54,11 @@ GinPort::GinPort(v8::Local<v8::Context> context,
 
 GinPort::~GinPort() = default;
 
-gin::WrapperInfo GinPort::kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::DeprecatedWrapperInfo GinPort::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 gin::ObjectTemplateBuilder GinPort::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return Wrappable<GinPort>::GetObjectTemplateBuilder(isolate)
+  return DeprecatedWrappable<GinPort>::GetObjectTemplateBuilder(isolate)
       .SetMethod("disconnect", &GinPort::DisconnectHandler)
       .SetMethod("postMessage", &GinPort::PostMessageHandler)
       .SetLazyDataProperty("name", &GinPort::GetName)
