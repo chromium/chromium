@@ -124,6 +124,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy shared_image.
     std::optional<gpu::ExportedSharedImage> shared_image;
     gpu::SyncToken sync_token;
+#if BUILDFLAG(IS_CHROMEOS)
     if (input->HasSharedImage()) {
       shared_image = input->shared_image()->Export(
           /*with_buffer_handle=*/is_mappable_si_enabled);
@@ -142,6 +143,17 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
         media::mojom::GpuMemoryBufferSharedImageVideoFrameData::New(
             std::move(gpu_memory_buffer_handle), std::move(shared_image),
             std::move(sync_token)));
+#else
+    CHECK(input->HasSharedImage());
+    CHECK(is_mappable_si_enabled);
+    shared_image = input->shared_image()->Export(
+        /*with_buffer_handle=*/true);
+    sync_token = input->acquire_sync_token();
+    return media::mojom::VideoFrameData::NewSharedImageData(
+        media::mojom::SharedImageVideoFrameData::New(
+            std::move(shared_image.value()), std::move(sync_token),
+            /*is_mappable_si_enabled=*/true, std::move(input->ycbcr_info())));
+#endif
   }
 
   if (input->HasSharedImage()) {
@@ -328,6 +340,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       frame->BackWithOwnedSharedMemory(std::move(region), std::move(mapping));
     }
   } else if (data.is_gpu_memory_buffer_shared_image_data()) {
+#if BUILDFLAG(IS_CHROMEOS)
     media::mojom::GpuMemoryBufferSharedImageVideoFrameDataDataView
         gpu_memory_buffer_data;
     data.GetGpuMemoryBufferSharedImageDataDataView(&gpu_memory_buffer_data);
@@ -384,6 +397,9 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer), shared_image,
         sync_token, base::NullCallback(), timestamp);
+#else
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   } else if (data.is_shared_image_data()) {
     media::mojom::SharedImageVideoFrameDataDataView shared_image_data;
     data.GetSharedImageDataDataView(&shared_image_data);
