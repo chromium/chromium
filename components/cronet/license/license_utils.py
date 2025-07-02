@@ -21,6 +21,7 @@ KNOWN_FIELDS = {
     "Shipped",  # Whether the package is in the shipped product.
     "Version",  # The version for the package.
     "Revision",  # This is equivalent to Version but Chromium is lenient.
+    "CPEPrefix",  # NIST Common Platform Enumeration identifier; used for security tagging.
 }
 
 # The metadata fields that can have multiple values.
