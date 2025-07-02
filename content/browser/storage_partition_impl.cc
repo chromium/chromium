@@ -1472,7 +1472,7 @@ void StoragePartitionImpl::Initialize(
 
   if (blink::features::IsKeepAliveURLLoaderServiceEnabled()) {
     keep_alive_url_loader_service_ =
-        std::make_unique<KeepAliveURLLoaderService>(browser_context_);
+        std::make_unique<KeepAliveURLLoaderService>(this);
   }
 
   cookie_store_manager_ =
@@ -3811,6 +3811,36 @@ StoragePartitionImpl::GetRenderFrameHostIdFromNetworkContext() {
   // not `kRenderFrameHostContext`.
   return render_frame_host ? render_frame_host->GetGlobalId()
                            : GlobalRenderFrameHostId();
+}
+
+void StoragePartitionImpl::IncrementActiveDocumentCount(
+    const net::NetworkIsolationKey& nik) {
+  if (active_document_per_nik_count_.contains(nik)) {
+    active_document_per_nik_count_[nik]++;
+    CHECK_GT(active_document_per_nik_count_[nik], 1);
+  } else {
+    active_document_per_nik_count_[nik] = 1;
+    if (keep_alive_url_loader_service_) {
+      keep_alive_url_loader_service_->DidObserveNewlyActiveDocumentWithNIK(nik);
+    }
+  }
+}
+
+void StoragePartitionImpl::DecrementActiveDocumentCount(
+    const net::NetworkIsolationKey& nik) {
+  CHECK(active_document_per_nik_count_.contains(nik));
+  active_document_per_nik_count_[nik]--;
+  if (active_document_per_nik_count_[nik] == 0) {
+    active_document_per_nik_count_.erase(nik);
+  }
+}
+
+int StoragePartitionImpl::GetActiveDocumentCount(
+    const net::NetworkIsolationKey& nik) {
+  if (!active_document_per_nik_count_.contains(nik)) {
+    return 0;
+  }
+  return active_document_per_nik_count_[nik];
 }
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(

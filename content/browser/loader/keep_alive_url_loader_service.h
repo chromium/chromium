@@ -24,7 +24,6 @@
 
 namespace content {
 
-class BrowserContext;
 class NavigationHandle;
 class PolicyContainerHost;
 
@@ -150,9 +149,9 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     base::WeakPtrFactory<FactoryContext> weak_ptr_factory{this};
   };
 
-  // `browser_context` owns the StoragePartition creating the instance of this
-  // service. It must not be null and surpass the lifetime of this service.
-  explicit KeepAliveURLLoaderService(BrowserContext* browser_context);
+  // `storage_partition` creates and owns the instance of this service. It
+  //  must not be null and surpass the lifetime of this service.
+  explicit KeepAliveURLLoaderService(StoragePartitionImpl* storage_partition);
   ~KeepAliveURLLoaderService();
 
   // Not Copyable.
@@ -196,6 +195,12 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // loads as well.
   void ClearKeepAliveURLLoadersAttemptingRetry();
 
+  // Called when a new document with the given NetworkIsolationKey became
+  // active, allowing potentially pending retry attempts with the same NIK
+  // that are waiting for a same-document NIK to continue.
+  void DidObserveNewlyActiveDocumentWithNIK(
+      const net::NetworkIsolationKey& nik);
+
   // For testing only:
   base::WeakPtr<KeepAliveURLLoader> GetLoaderWithRequestIdForTesting(
       int32_t request_id) const;
@@ -234,8 +239,9 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // that the retry is allowed, to update the global retry limit tracker.
   void OnRetryScheduled(const net::NetworkIsolationKey&);
 
-  // The browsing session that owns this instance of the service.
-  const raw_ptr<BrowserContext> browser_context_;
+  // The StoragePartition that owns this instance of the service. raw_ptr is OK
+  // since it must outlive this service.
+  const raw_ptr<StoragePartitionImpl> storage_partition_;
 
   // Many-to-one mojo receiver of URLLoaderFactory for Fetch keepalive requests.
   std::unique_ptr<KeepAliveURLLoaderFactories> url_loader_factories_;

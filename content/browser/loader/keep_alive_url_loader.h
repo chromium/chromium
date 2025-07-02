@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -47,7 +48,6 @@ class URLLoaderThrottle;
 
 namespace content {
 
-class BrowserContext;
 class KeepAliveAttributionRequestHelper;
 class KeepAliveRequestTracker;
 class KeepAliveRequestBrowserTestBase;
@@ -136,7 +136,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
       WeakDocumentPtr weak_document_ptr,
       net::NetworkIsolationKey network_isolation_key,
       std::optional<ukm::SourceId> ukm_source_id,
-      BrowserContext* browser_context,
+      StoragePartitionImpl* storage_partition,
       URLLoaderThrottlesGetter throttles_getter,
       base::PassKey<KeepAliveURLLoaderService>,
       std::unique_ptr<KeepAliveAttributionRequestHelper>
@@ -174,6 +174,12 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   // Called when the `browser_context_` is shutting down.
   void Shutdown();
+
+  // Called when a new document with the given NetworkIsolationKey became
+  // active, which might allow this loader to attempt a retry, if it's currently
+  // waiting for a same-NetworkIsolationKey document to become active.
+  void DidObserveNewlyActiveDocumentWithNIK(
+      const net::NetworkIsolationKey& nik);
 
   bool IsAttemptingRetry() const;
 
@@ -440,10 +446,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // The tracker to record the browser-side UKM metrics for this request.
   std::unique_ptr<KeepAliveRequestTracker> request_tracker_;
 
-  // The BrowserContext that initiates this loader.
+  // The StoragePartition that initiates this loader.
   // It is ensured to outlive this because it owns KeepAliveURLLoaderService
   // which owns this loader.
-  const raw_ptr<BrowserContext> browser_context_;
+  const raw_ptr<StoragePartitionImpl> storage_partition_;
 
   // Tells if this loader has been started or not.
   bool is_started_ = false;
