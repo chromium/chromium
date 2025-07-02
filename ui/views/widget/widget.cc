@@ -1836,6 +1836,9 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
   observers_.Notify(&WidgetObserver::OnWidgetActivationChanged, this, active);
 
   if (active) {
+    internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetActivated(
+        this);
+
     base::AutoReset<bool> is_traversing_widget_tree(&is_traversing_widget_tree_,
                                                     true);
     Widget* root = nullptr;

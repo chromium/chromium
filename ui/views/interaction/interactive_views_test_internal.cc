@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/map_util.h"
-#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -24,11 +23,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/native_window_tracker/native_window_tracker.h"
-#include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -41,29 +40,21 @@ namespace {
 
 // Basic observer for low-level activation changes. Relays when a widget
 // receives focus.
-class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier,
-                                      public NativeViewFocusChangeListener {
+class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier {
  public:
-  NativeViewWidgetFocusSupplier() {
-    observation_.Observe(NativeViewFocusManager::GetInstance());
+  NativeViewWidgetFocusSupplier() : observer_(test::AnyWidgetTestPasskey{}) {
+    observer_.set_activated_callback(
+        base::BindRepeating(&NativeViewWidgetFocusSupplier::OnWidgetActivated,
+                            base::Unretained(this)));
   }
   ~NativeViewWidgetFocusSupplier() override = default;
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
-  void OnNativeFocusChanged(gfx::NativeView focused_now) override {
-    // TODO(dfried): There's an order-of-operations issue on some platforms
-    // where focus transfers between two native views, and the blur for the old
-    // view is received after the focus for the new view. This results in
-    // `focused_now` being null rather than the currently-focused view.
-    //
-    // While it's slightly less correct, ignore blur events until this can be
-    // fixed. In general, one would not expect windows not from the application
-    // under test to become focused, so this will be a valid choice most of the
-    // time.
-    if (focused_now) {
-      OnWidgetFocusChanged(focused_now);
-    }
+  void OnWidgetActivated(Widget* widget) {
+    // OnAnyWidgetActivated is only called for activation, so we don't have to
+    // worry about spurious nullptrs from deactivation.
+    OnWidgetFocusChanged(widget->GetNativeView());
   }
 
  protected:
@@ -85,8 +76,7 @@ class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier,
   }
 
  private:
-  base::ScopedObservation<NativeViewFocusManager, NativeViewFocusChangeListener>
-      observation_{this};
+  AnyWidgetObserver observer_;
 };
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(NativeViewWidgetFocusSupplier)

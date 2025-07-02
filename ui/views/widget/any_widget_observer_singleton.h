@@ -29,6 +29,7 @@ class AnyWidgetObserverSingleton {
   void OnAnyWidgetShown(Widget* widget);
   void OnAnyWidgetHidden(Widget* widget);
   void OnAnyWidgetClosing(Widget* widget);
+  void OnAnyWidgetActivated(Widget* widget);
 
   void AddObserver(AnyWidgetObserver* observer);
   void RemoveObserver(AnyWidgetObserver* observer);

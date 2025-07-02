@@ -1593,7 +1593,10 @@ if (enable_nocompile_tests) {
 source_set("views_interactive_ui_tests") {
   testonly = true
 
-  sources = [ "widget/widget_interactive_uitest.cc" ]
+  sources = [
+    "widget/any_widget_observer_uitest.cc",
+    "widget/widget_interactive_uitest.cc"
+  ]
 
   deps = [
     ":test_support",

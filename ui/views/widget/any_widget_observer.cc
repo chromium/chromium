@@ -35,6 +35,7 @@ PROPAGATE_NOTIFICATION(OnAnyWidgetInitialized, initialized_callback_)
 PROPAGATE_NOTIFICATION(OnAnyWidgetShown, shown_callback_)
 PROPAGATE_NOTIFICATION(OnAnyWidgetHidden, hidden_callback_)
 PROPAGATE_NOTIFICATION(OnAnyWidgetClosing, closing_callback_)
+PROPAGATE_NOTIFICATION(OnAnyWidgetActivated, activated_callback_)
 
 #undef PROPAGATE_NOTIFICATION
 
