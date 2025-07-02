@@ -40,15 +40,14 @@ class ProfilePickerAppStepController : public ProfileManagementStepController {
 
   ~ProfilePickerAppStepController() override = default;
 
-  void Show(base::OnceCallback<void(bool)> step_shown_callback,
+  void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
+    base::OnceClosure step_shown_success =
+        base::BindOnce(std::move(step_shown_callback.value()), true);
     if (!loaded_ui_in_picker_contents_) {
       loaded_ui_in_picker_contents_ = true;
-      host()->ShowScreenInPickerContents(
-          initial_url_,
-          step_shown_callback
-              ? base::BindOnce(std::move(step_shown_callback), true)
-              : base::OnceClosure());
+      host()->ShowScreenInPickerContents(initial_url_,
+                                         std::move(step_shown_success));
       return;
     }
 
@@ -56,10 +55,7 @@ class ProfilePickerAppStepController : public ProfileManagementStepController {
       // Don't do a full reset, just go back to the beginning of the history:
       host()->GetPickerContents()->GetController().GoToIndex(0);
     }
-    host()->ShowScreenInPickerContents(GURL());
-    if (step_shown_callback) {
-      std::move(step_shown_callback).Run(true);
-    }
+    host()->ShowScreenInPickerContents(GURL(), std::move(step_shown_success));
   }
 
   void OnNavigateBackRequested() override {
@@ -93,7 +89,7 @@ class DiceSignInStepController : public ProfileManagementStepController {
 
   void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
-    DCHECK(step_shown_callback);
+    CHECK(!step_shown_callback->is_null());
     DCHECK(signed_in_callback_) << "Attempting to show Dice step again while "
                                    "it was previously completed";
     // Unretained ok because the provider is owned by `this`.
@@ -168,7 +164,7 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
     }
   }
 
-  void Show(base::OnceCallback<void(bool)> step_shown_callback,
+  void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
     // First, stop showing `contents_` to free it up so it can be moved to a new
     // browser window.
@@ -176,7 +172,8 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
         GURL(url::kAboutBlankURL),
         /*navigation_finished_closure=*/
         base::BindOnce(&FinishSamlSignInStepController::OnSignInContentsFreedUp,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(step_shown_callback)));
   }
 
   void OnNavigateBackRequested() override {
@@ -198,8 +195,10 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
         ProfileMetrics::ProfileSignedInFlowOutcome::kSAML);
   }
 
-  void OnSignInContentsFreedUp() {
+  void OnSignInContentsFreedUp(StepSwitchFinishedCallback step_shown_callback) {
     DCHECK(finish_picker_section_callback_);
+    CHECK(!step_shown_callback->is_null());
+    std::move(step_shown_callback.value()).Run(true);
 
     ProfileMetrics::LogProfileAddNewUser(
         ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
@@ -242,12 +241,9 @@ class PostSignInStepController : public ProfileManagementStepController {
 
   ~PostSignInStepController() override = default;
 
-  void Show(base::OnceCallback<void(bool)> step_shown_callback,
+  void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
-    signed_in_flow_->Init();
-    if (step_shown_callback) {
-      std::move(step_shown_callback).Run(true);
-    }
+    signed_in_flow_->Init(std::move(step_shown_callback));
   }
   void OnHidden() override { signed_in_flow_->Cancel(); }
 
@@ -272,13 +268,11 @@ class FinishFlowAndRunInBrowserStepController
     CHECK(finish_flow_and_run_in_browser_callback_);
   }
 
-  void Show(base::OnceCallback<void(bool success)> step_shown_callback,
+  void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
     CHECK(reset_state);
-
-    if (step_shown_callback) {
-      std::move(step_shown_callback).Run(true);
-    }
+    CHECK(!step_shown_callback->is_null());
+    std::move(step_shown_callback.value()).Run(true);
     std::move(finish_flow_and_run_in_browser_callback_).Run();
   }
 
@@ -309,12 +303,14 @@ class SearchEngineChoiceStepController
     CHECK(web_contents_);
   }
 
-  void Show(base::OnceCallback<void(bool success)> step_shown_callback,
+  void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
     CHECK(reset_state);
+    CHECK(!step_shown_callback->is_null());
 
     if (!search_engine_choice_dialog_service_) {
-      // Forward `step_shown_callback`, as this step is skipped.
+      // Mark that this step was skipped and proceed with the next one.
+      std::move(step_shown_callback.value()).Run(false);
       std::move(step_completed_callback_).Run();
       return;
     }
@@ -322,12 +318,10 @@ class SearchEngineChoiceStepController
     base::OnceClosure navigation_finished_closure =
         base::BindOnce(&SearchEngineChoiceStepController::OnLoadFinished,
                        base::Unretained(this));
-    if (step_shown_callback) {
-      // Notify the caller first.
-      navigation_finished_closure =
-          base::BindOnce(std::move(step_shown_callback), true)
-              .Then(std::move(navigation_finished_closure));
-    }
+    // Notify the caller first.
+    navigation_finished_closure =
+        base::BindOnce(std::move(step_shown_callback.value()), true)
+            .Then(std::move(navigation_finished_closure));
 
     search_engines::SearchEngineChoiceScreenEvents choice_screen_event =
         search_engines::SearchEngineChoiceScreenEvents::

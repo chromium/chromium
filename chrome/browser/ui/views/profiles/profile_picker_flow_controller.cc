@@ -179,14 +179,15 @@ class ProfileCreationSignedInFlowController
   }
 
   // ProfilePickerSignedInFlowController:
-  void Init() override {
+  void Init(StepSwitchFinishedCallback step_switch_callback) override {
     // Stop with the sign-in navigation and show a spinner instead. The spinner
     // will be shown until TurnSyncOnHelper figures out whether it's a
     // managed account and whether sync is disabled by policies (which in some
     // cases involves fetching policies and can take a couple of seconds).
-    host()->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/true));
+    host()->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/true),
+                       base::OnceClosure());
 
-    ProfilePickerSignedInFlowController::Init();
+    ProfilePickerSignedInFlowController::Init(std::move(step_switch_callback));
 
     // Listen for extended account info getting fetched.
     signin::IdentityManager* identity_manager =
@@ -287,9 +288,9 @@ class ReauthFlowStepController : public ProfileManagementStepController {
 
   ~ReauthFlowStepController() override = default;
 
-  void Show(base::OnceCallback<void(bool)> step_shown_callback,
+  void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
-    reauth_provider_->SwitchToReauth();
+    reauth_provider_->SwitchToReauth(std::move(step_shown_callback));
   }
 
   void OnHidden() override { host()->SetNativeToolbarVisible(false); }
@@ -551,9 +552,9 @@ void ProfilePickerFlowController::OnReauthCompleted(
 
     SwitchToStep(
         Step::kProfilePicker, /*reset_state=*/true,
-        base::BindOnce(
+        StepSwitchFinishedCallback(base::BindOnce(
             &ProfilePickerFlowController::OnProfilePickerStepShownReauthError,
-            base::Unretained(this), std::move(on_error_callback), error));
+            base::Unretained(this), std::move(on_error_callback), error)));
     return;
   }
 

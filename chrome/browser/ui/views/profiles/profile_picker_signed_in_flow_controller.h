@@ -54,7 +54,7 @@ class ProfilePickerSignedInFlowController
       const ProfilePickerSignedInFlowController&) = delete;
 
   // Inits the flow, must be called before any other calls below.
-  virtual void Init();
+  virtual void Init(StepSwitchFinishedCallback step_switch_callback);
 
   // Cancels the flow explicitly.
   // By default does not do anything, in the flow it will be as if the dialog
@@ -151,6 +151,11 @@ class ProfilePickerSignedInFlowController
   // for GAIA sign-in (that uses the ThemeProvider of the current profile).
   // std::nullopt if the profile should use the default theme.
   std::optional<SkColor> profile_color_;
+
+  // This callback will only return once the content of the step decided if it
+  // should be shown or not. E.g: Sync confirmation screen, profile switch, or
+  // enterprise management.
+  StepSwitchFinishedCallback step_switch_callback_;
 
   // Email of the signed-in account. It is set after the user finishes the
   // sign-in flow on GAIA and Chrome receives the account info.

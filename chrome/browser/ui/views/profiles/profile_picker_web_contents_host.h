@@ -43,14 +43,13 @@ class ProfilePickerWebContentsHost {
   // when the navigation commits (if it never commits such as when the
   // navigation is replaced by another navigation or if an internal page fails
   // to load, the closure is never called).
-  virtual void ShowScreen(
-      content::WebContents* contents,
-      const GURL& url,
-      base::OnceClosure navigation_finished_closure = base::OnceClosure()) = 0;
+  virtual void ShowScreen(content::WebContents* contents,
+                          const GURL& url,
+                          base::OnceClosure navigation_finished_closure) = 0;
   // Like ShowScreen() but uses the picker WebContents.
   virtual void ShowScreenInPickerContents(
       const GURL& url,
-      base::OnceClosure navigation_finished_closure = base::OnceClosure()) = 0;
+      base::OnceClosure navigation_finished_closure) = 0;
 
   // Returns whether dark colors should be used (based on native theme).
   virtual bool ShouldUseDarkColors() const = 0;

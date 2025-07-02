@@ -32,10 +32,18 @@ void ProfileManagementFlowController::SwitchToStep(
   DCHECK_NE(Step::kUnknown, step);
   DCHECK_NE(current_step_, step);
 
+  // TODO(crbug.com/428678438): add the metrics Skipped/Shown callback.
+  StepSwitchFinishedCallback do_nothing =
+      StepSwitchFinishedCallback(base::DoNothing());
+
+  StepSwitchFinishedCallback combined_step_switch_callbacks =
+      CombineCallbacks<StepSwitchFinishedCallback, bool>(
+          std::move(step_switch_finished_callback), std::move(do_nothing));
+
   auto* new_step_controller = initialized_steps_.at(step).get();
   DCHECK(new_step_controller);
   new_step_controller->set_pop_step_callback(std::move(pop_step_callback));
-  new_step_controller->Show(std::move(step_switch_finished_callback),
+  new_step_controller->Show(std::move(combined_step_switch_callbacks),
                             reset_state);
 
   if (initialized_steps_.contains(current_step_)) {
