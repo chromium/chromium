@@ -7041,13 +7041,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.TouchToFill.LoyaltyCard.NumberOfAffiliatedLoyaltyCardsShown"
+    units="loyalty cards" expires_after="2025-12-31">
+  <owner>tchudakov@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of affiliatd loyalty cards shown in the Touch To Fill bottom
+    sheet. Recorded when showing the bottom sheet.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TouchToFill.LoyaltyCard.NumberOfLoyaltyCardsShown"
     units="loyalty cards" expires_after="2025-12-31">
   <owner>tchudakov@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    The number of loyalty cards shown in the Touch To Fill bottom sheet.
+    The number of all loyalty cards of a user shown in the Touch To Fill bottom
+    sheet. All loyalty cards are shown on the second screen in the bottom sheet
+    and are available under the &quot;All your loyalty cards&quot; menu.
     Recorded when showing the bottom sheet.
   </summary>
 </histogram>
