@@ -23198,6 +23198,21 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileBWGSettingsBack">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    Reported when user goes back from BWG Settings UI to root Settings screen.
+    iOS only.
+  </description>
+</action>
+
+<action name="MobileBWGSettingsClose">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    Reported when BWG Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobileClearBrowsingDataClose">
   <owner>edchin@chromium.org</owner>
   <owner>gambard@chromium.org</owner>

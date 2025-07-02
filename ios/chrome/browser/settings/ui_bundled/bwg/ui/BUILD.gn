@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "bwg_settings_view_controller.h",
+    "bwg_settings_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+  ]
+}

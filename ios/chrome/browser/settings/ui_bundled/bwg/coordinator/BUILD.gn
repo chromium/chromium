@@ -1,0 +1,11 @@
+source_set("coordinator") {
+  sources = [
+    "bwg_settings_coordinator.h",
+    "bwg_settings_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/settings/ui_bundled/bwg/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+  ]
+}
