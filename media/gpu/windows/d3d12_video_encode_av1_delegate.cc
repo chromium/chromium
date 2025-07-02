@@ -330,7 +330,7 @@ EncoderStatus::Or<D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS> GetEnabledAV1Features(
   if (is_screen) {
     auto scc_tools = D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_PALETTE_ENCODING |
                      D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_INTRA_BLOCK_COPY;
-    if (supported_features & scc_tools) {
+    if ((supported_features & scc_tools) == scc_tools) {
       enabled_features |= scc_tools;
     }
   }
