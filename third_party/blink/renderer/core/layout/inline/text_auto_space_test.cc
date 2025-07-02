@@ -52,7 +52,7 @@ class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
                                       String container_css = String()) {
     LayoutBlockFlow* container = PreparePageLayoutBlock(html, container_css);
     InlineNodeData* node_data = container->GetInlineNodeData();
-    TextAutoSpace auto_space(*node_data);
+    TextAutoSpace auto_space(container->StyleRef(), *node_data);
     AutoSpaceCallback callback;
     auto_space.SetCallbackForTesting(&callback);
     auto_space.ApplyIfNeeded(InlineNode(container), *node_data);
@@ -88,7 +88,7 @@ TEST_P(MayApplyTest, MayApply) {
   const String string = test.ToString();
   LayoutBlockFlow* block_flow = PreparePageLayoutBlock(string);
   const InlineNodeData* inline_node_data = block_flow->GetInlineNodeData();
-  TextAutoSpace auto_space(*inline_node_data);
+  TextAutoSpace auto_space(block_flow->StyleRef(), *inline_node_data);
   EXPECT_EQ(auto_space.MayApply(), test.may_apply);
 }
 

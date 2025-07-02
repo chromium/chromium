@@ -1378,7 +1378,8 @@ void InlineNode::ShapeText(InlineItemsData* data,
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   ShapeResultSpacing<String> spacing(text_content, IsSvgText());
-  TextAutoSpace auto_space(*data);
+  const ComputedStyle& block_style = Style();
+  TextAutoSpace auto_space(block_style, *data);
 
   const bool allow_shape_cache =
       IsNGShapeCacheAllowed(text_content, override_font, *items, spacing) &&
