@@ -1539,7 +1539,7 @@
     "args": [
       "--enable-gpu-rasterization"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "never"
   },
   {
     "prefix": "hdr",
