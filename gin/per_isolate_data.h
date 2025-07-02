@@ -60,10 +60,6 @@ class GIN_EXPORT PerIsolateData {
   void DeprecatedSetObjectTemplate(
       DeprecatedWrapperInfo* info,
       v8::Local<v8::ObjectTemplate> object_template);
-
-  void SetObjectTemplate(WrapperInfo* info,
-                         v8::Local<v8::ObjectTemplate> object_template);
-
   void SetFunctionTemplate(DeprecatedWrapperInfo* info,
                            v8::Local<v8::FunctionTemplate> function_template);
 
@@ -73,9 +69,6 @@ class GIN_EXPORT PerIsolateData {
   // these templates if they haven't already been created.
   v8::Local<v8::ObjectTemplate> DeprecatedGetObjectTemplate(
       DeprecatedWrapperInfo* info);
-
-  v8::Local<v8::ObjectTemplate> GetObjectTemplate(WrapperInfo* info);
-
   v8::Local<v8::FunctionTemplate> GetFunctionTemplate(
       DeprecatedWrapperInfo* info);
 
@@ -116,8 +109,6 @@ class GIN_EXPORT PerIsolateData {
  private:
   typedef std::map<DeprecatedWrapperInfo*, v8::Eternal<v8::ObjectTemplate>>
       DeprecatedObjectTemplateMap;
-  typedef std::map<WrapperInfo*, v8::Eternal<v8::ObjectTemplate>>
-      ObjectTemplateMap;
   typedef std::map<DeprecatedWrapperInfo*, v8::Eternal<v8::FunctionTemplate>>
       FunctionTemplateMap;
   typedef std::map<DeprecatedWrappableBase*,
@@ -132,7 +123,6 @@ class GIN_EXPORT PerIsolateData {
   raw_ptr<v8::Isolate, AcrossTasksDanglingUntriaged> isolate_;
   raw_ptr<v8::ArrayBuffer::Allocator, DanglingUntriaged> allocator_;
   DeprecatedObjectTemplateMap deprecated_object_templates_;
-  ObjectTemplateMap object_templates_;
   FunctionTemplateMap function_templates_;
   IndexedPropertyInterceptorMap indexed_interceptors_;
   NamedPropertyInterceptorMap named_interceptors_;

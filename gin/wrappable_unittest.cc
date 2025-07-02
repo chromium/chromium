@@ -13,8 +13,6 @@
 #include "gin/test/v8_test.h"
 #include "gin/try_catch.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "v8/include/cppgc/allocation.h"
-#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-message.h"
 #include "v8/include/v8-script.h"
@@ -31,7 +29,7 @@ void NonMemberMethod() {}
 // WrappableBase base.
 class BaseClass {
  public:
-  BaseClass() = default;
+  BaseClass() : value_(23) {}
   BaseClass(const BaseClass&) = delete;
   BaseClass& operator=(const BaseClass&) = delete;
   virtual ~BaseClass() = default;
@@ -40,19 +38,18 @@ class BaseClass {
   int value() const { return value_; }
 
  private:
-  int value_ = 23;
+  int value_;
 };
 
-class MyObject : public BaseClass, public Wrappable<MyObject> {
+class MyObject : public BaseClass, public DeprecatedWrappable<MyObject> {
  public:
   MyObject(const MyObject&) = delete;
   MyObject& operator=(const MyObject&) = delete;
 
-  MyObject() = default;
+  static DeprecatedWrapperInfo kWrapperInfo;
 
-  static MyObject* Create(v8::Isolate* isolate) {
-    return cppgc::MakeGarbageCollected<MyObject>(
-        isolate->GetCppHeap()->GetAllocationHandle());
+  static gin::Handle<MyObject> Create(v8::Isolate* isolate) {
+    return CreateHandle(isolate, new MyObject());
   }
 
   int value() const { return value_; }
@@ -60,69 +57,52 @@ class MyObject : public BaseClass, public Wrappable<MyObject> {
 
   void Method() {}
 
-  static WrapperInfo kWrapperInfo;
-
-  WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
-
-  const char* GetHumanReadableName() const final { return "MyObject"; }
-
  protected:
+  MyObject() : value_(0) {}
   ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate) final {
-    return Wrappable<MyObject>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<MyObject>::GetObjectTemplateBuilder(isolate)
         .SetProperty("value", &MyObject::value, &MyObject::set_value)
         .SetMethod("memberMethod", &MyObject::Method)
         .SetMethod("nonMemberMethod", &NonMemberMethod);
   }
+  ~MyObject() override = default;
 
  private:
-  int value_ = 0;
+  int value_;
 };
 
-class MyObject2 : public Wrappable<MyObject2> {
+class MyObject2 : public DeprecatedWrappable<MyObject2> {
  public:
-  MyObject2() = default;
-
-  static WrapperInfo kWrapperInfo;
-
-  WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
-
-  const char* GetHumanReadableName() const final { return "MyObject2"; }
-
-  static MyObject2* Create(v8::Isolate* isolate) {
-    return cppgc::MakeGarbageCollected<MyObject2>(
-        isolate->GetCppHeap()->GetAllocationHandle());
-  }
+  static DeprecatedWrapperInfo kWrapperInfo;
 };
 
-class MyNamedObject : public Wrappable<MyNamedObject> {
+class MyNamedObject : public DeprecatedWrappable<MyNamedObject> {
  public:
   MyNamedObject(const MyNamedObject&) = delete;
   MyNamedObject& operator=(const MyNamedObject&) = delete;
-  MyNamedObject() = default;
 
-  static WrapperInfo kWrapperInfo;
+  static DeprecatedWrapperInfo kWrapperInfo;
 
-  WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
-
-  static MyNamedObject* Create(v8::Isolate* isolate) {
-    return cppgc::MakeGarbageCollected<MyNamedObject>(
-        isolate->GetCppHeap()->GetAllocationHandle());
+  static gin::Handle<MyNamedObject> Create(v8::Isolate* isolate) {
+    return CreateHandle(isolate, new MyNamedObject());
   }
 
   void Method() {}
 
  protected:
+  MyNamedObject() = default;
   ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate) final {
-    return Wrappable<MyNamedObject>::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable<MyNamedObject>::GetObjectTemplateBuilder(isolate)
         .SetMethod("memberMethod", &MyNamedObject::Method)
         .SetMethod("nonMemberMethod", &NonMemberMethod);
   }
-  const char* GetHumanReadableName() const final { return "MyNamedObject"; }
+  const char* GetTypeName() final { return "MyNamedObject"; }
+  ~MyNamedObject() override = default;
 };
 
-WrapperInfo MyObject::kWrapperInfo = {{kEmbedderNativeGin}, kTestObject};
-WrapperInfo MyObject2::kWrapperInfo = {{kEmbedderNativeGin}, kTestObject2};
-WrapperInfo MyNamedObject::kWrapperInfo = {{kEmbedderNativeGin}, kTestObject2};
+DeprecatedWrapperInfo MyObject::kWrapperInfo = {kEmbedderNativeGin};
+DeprecatedWrapperInfo MyObject2::kWrapperInfo = {kEmbedderNativeGin};
+DeprecatedWrapperInfo MyNamedObject::kWrapperInfo = {kEmbedderNativeGin};
 
 }  // namespace
 
@@ -132,34 +112,44 @@ TEST_F(WrappableTest, WrapAndUnwrap) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
 
-  MyObject* obj = MyObject::Create(isolate);
+  Handle<MyObject> obj = MyObject::Create(isolate);
 
-  v8::Local<v8::Value> wrapper = ConvertToV8(isolate, obj).ToLocalChecked();
+  v8::Local<v8::Value> wrapper =
+      ConvertToV8(isolate, obj.get()).ToLocalChecked();
   EXPECT_FALSE(wrapper.IsEmpty());
 
-  MyObject* unwrapped = nullptr;
+  MyObject* unwrapped = NULL;
   EXPECT_TRUE(ConvertFromV8(isolate, wrapper, &unwrapped));
-  EXPECT_EQ(obj, unwrapped);
+  EXPECT_EQ(obj.get(), unwrapped);
 }
 
-TEST_F(WrappableTest, UnwrapNull) {
+TEST_F(WrappableTest, UnwrapFailures) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
 
-  MyObject* obj = nullptr;
-  v8::Local<v8::Value> wrapper = ConvertToV8(isolate, obj).ToLocalChecked();
-  EXPECT_FALSE(wrapper.IsEmpty());
+  // Something that isn't an object.
+  v8::Local<v8::Value> thing = v8::Number::New(isolate, 42);
+  MyObject* unwrapped = NULL;
+  EXPECT_FALSE(ConvertFromV8(isolate, thing, &unwrapped));
+  EXPECT_FALSE(unwrapped);
 
-  MyObject* unwrapped = nullptr;
-  ConvertFromV8(isolate, wrapper, &unwrapped);
-  EXPECT_EQ(obj, unwrapped);
+  // An object that's not wrapping anything.
+  thing = v8::Object::New(isolate);
+  EXPECT_FALSE(ConvertFromV8(isolate, thing, &unwrapped));
+  EXPECT_FALSE(unwrapped);
+
+  // An object that's wrapping a C++ object of the wrong type.
+  thing.Clear();
+  thing = ConvertToV8(isolate, new MyObject2()).ToLocalChecked();
+  EXPECT_FALSE(ConvertFromV8(isolate, thing, &unwrapped));
+  EXPECT_FALSE(unwrapped);
 }
 
 TEST_F(WrappableTest, GetAndSetProperty) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
 
-  MyObject* obj = MyObject::Create(isolate);
+  gin::Handle<MyObject> obj = MyObject::Create(isolate);
 
   obj->set_value(42);
   EXPECT_EQ(42, obj->value());
@@ -178,7 +168,7 @@ TEST_F(WrappableTest, GetAndSetProperty) {
   v8::Local<v8::Function> func;
   EXPECT_TRUE(ConvertFromV8(isolate, val, &func));
   v8::Local<v8::Value> argv[] = {
-      ConvertToV8(isolate, obj).ToLocalChecked(),
+      ConvertToV8(isolate, obj.get()).ToLocalChecked(),
   };
   func->Call(context_.Get(isolate), v8::Undefined(isolate), 1, argv)
       .ToLocalChecked();
@@ -193,10 +183,10 @@ TEST_F(WrappableTest, MethodInvocationErrorsOnUnnamedObject) {
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
 
-  MyObject* obj = MyObject::Create(isolate);
+  gin::Handle<MyObject> obj = MyObject::Create(isolate);
 
   v8::Local<v8::Object> v8_object =
-      ConvertToV8(isolate, obj).ToLocalChecked().As<v8::Object>();
+      ConvertToV8(isolate, obj.get()).ToLocalChecked().As<v8::Object>();
   v8::Local<v8::Value> member_method =
       v8_object->Get(context, StringToV8(isolate, "memberMethod"))
           .ToLocalChecked();
@@ -230,16 +220,16 @@ TEST_F(WrappableTest, MethodInvocationErrorsOnUnnamedObject) {
   EXPECT_EQ(std::string(), get_error(member_method, v8_object));
   EXPECT_EQ(std::string(), get_error(non_member_method, v8_object));
 
-  EXPECT_TRUE(get_error(member_method, v8::Null(isolate))
-                  .starts_with("Uncaught TypeError: Illegal invocation"));
+  EXPECT_EQ("Uncaught TypeError: Illegal invocation",
+            get_error(member_method, v8::Null(isolate)));
   // A non-member function shouldn't throw errors for being applied on a
   // null (or invalid) object.
   EXPECT_EQ(std::string(), get_error(non_member_method, v8::Null(isolate)));
 
   v8::Local<v8::Object> wrong_object = v8::Object::New(isolate);
   // We should get an error for passing the wrong object.
-  EXPECT_TRUE(get_error(member_method, wrong_object)
-                  .starts_with("Uncaught TypeError: Illegal invocation"));
+  EXPECT_EQ("Uncaught TypeError: Illegal invocation",
+            get_error(member_method, wrong_object));
   // But again, not for a "static" method.
   EXPECT_EQ(std::string(), get_error(non_member_method, v8::Null(isolate)));
 }
@@ -249,10 +239,10 @@ TEST_F(WrappableTest, MethodInvocationErrorsOnNamedObject) {
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
 
-  MyNamedObject* obj = MyNamedObject::Create(isolate);
+  gin::Handle<MyNamedObject> obj = MyNamedObject::Create(isolate);
 
   v8::Local<v8::Object> v8_object =
-      ConvertToV8(isolate, obj).ToLocalChecked().As<v8::Object>();
+      ConvertToV8(isolate, obj.get()).ToLocalChecked().As<v8::Object>();
   v8::Local<v8::Value> member_method =
       v8_object->Get(context, StringToV8(isolate, "memberMethod"))
           .ToLocalChecked();
@@ -305,31 +295,25 @@ TEST_F(WrappableTest, MethodInvocationErrorsOnNamedObject) {
 }
 
 class MyObjectWithLazyProperties
-    : public Wrappable<MyObjectWithLazyProperties> {
+    : public DeprecatedWrappable<MyObjectWithLazyProperties> {
  public:
   MyObjectWithLazyProperties(const MyObjectWithLazyProperties&) = delete;
   MyObjectWithLazyProperties& operator=(const MyObjectWithLazyProperties&) =
       delete;
-  MyObjectWithLazyProperties() = default;
 
-  static WrapperInfo kWrapperInfo;
+  static DeprecatedWrapperInfo kWrapperInfo;
 
-  WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
-
-  const char* GetHumanReadableName() const final {
-    return "MyObjectWithLazyProperties";
-  }
-
-  static MyObjectWithLazyProperties* Create(v8::Isolate* isolate) {
-    return cppgc::MakeGarbageCollected<MyObjectWithLazyProperties>(
-        isolate->GetCppHeap()->GetAllocationHandle());
+  static gin::Handle<MyObjectWithLazyProperties> Create(v8::Isolate* isolate) {
+    return CreateHandle(isolate, new MyObjectWithLazyProperties());
   }
 
   int access_count() const { return access_count_; }
 
  private:
+  MyObjectWithLazyProperties() = default;
+
   ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate) final {
-    return Wrappable::GetObjectTemplateBuilder(isolate)
+    return DeprecatedWrappable::GetObjectTemplateBuilder(isolate)
         .SetLazyDataProperty("fortyTwo", &MyObjectWithLazyProperties::FortyTwo)
         .SetLazyDataProperty("self",
                              base::BindRepeating([](gin::Arguments* arguments) {
@@ -347,17 +331,16 @@ class MyObjectWithLazyProperties
   int access_count_ = 0;
 };
 
-WrapperInfo MyObjectWithLazyProperties::kWrapperInfo = {{kEmbedderNativeGin},
-                                                        kTestObject};
+DeprecatedWrapperInfo MyObjectWithLazyProperties::kWrapperInfo = {
+    kEmbedderNativeGin};
 
 TEST_F(WrappableTest, LazyPropertyGetterIsCalledOnce) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
 
-  MyObjectWithLazyProperties* obj = MyObjectWithLazyProperties::Create(isolate);
-  v8::Local<v8::Object> v8_object =
-      ConvertToV8(isolate, obj).ToLocalChecked().As<v8::Object>();
+  auto handle = MyObjectWithLazyProperties::Create(isolate);
+  v8::Local<v8::Object> v8_object = handle.ToV8().As<v8::Object>();
   v8::Local<v8::String> key = StringToSymbol(isolate, "fortyTwo");
   v8::Local<v8::Value> value;
 
@@ -365,15 +348,15 @@ TEST_F(WrappableTest, LazyPropertyGetterIsCalledOnce) {
   ASSERT_TRUE(v8_object->HasOwnProperty(context, key).To(&has_own_property));
   EXPECT_TRUE(has_own_property);
 
-  EXPECT_EQ(0, obj->access_count());
+  EXPECT_EQ(0, handle->access_count());
 
   ASSERT_TRUE(v8_object->Get(context, key).ToLocal(&value));
   EXPECT_TRUE(value->StrictEquals(v8::Int32::New(isolate, 42)));
-  EXPECT_EQ(1, obj->access_count());
+  EXPECT_EQ(1, handle->access_count());
 
   ASSERT_TRUE(v8_object->Get(context, key).ToLocal(&value));
   EXPECT_TRUE(value->StrictEquals(v8::Int32::New(isolate, 42)));
-  EXPECT_EQ(1, obj->access_count());
+  EXPECT_EQ(1, handle->access_count());
 }
 
 TEST_F(WrappableTest, LazyPropertyGetterCanBeSetFirst) {
@@ -381,13 +364,12 @@ TEST_F(WrappableTest, LazyPropertyGetterCanBeSetFirst) {
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
 
-  auto* obj = MyObjectWithLazyProperties::Create(isolate);
-  v8::Local<v8::Object> v8_object =
-      ConvertToV8(isolate, obj).ToLocalChecked().As<v8::Object>();
+  auto handle = MyObjectWithLazyProperties::Create(isolate);
+  v8::Local<v8::Object> v8_object = handle.ToV8().As<v8::Object>();
   v8::Local<v8::String> key = StringToSymbol(isolate, "fortyTwo");
   v8::Local<v8::Value> value;
 
-  EXPECT_EQ(0, obj->access_count());
+  EXPECT_EQ(0, handle->access_count());
 
   bool set_ok = false;
   ASSERT_TRUE(
@@ -395,7 +377,7 @@ TEST_F(WrappableTest, LazyPropertyGetterCanBeSetFirst) {
   ASSERT_TRUE(set_ok);
   ASSERT_TRUE(v8_object->Get(context, key).ToLocal(&value));
   EXPECT_TRUE(value->StrictEquals(v8::Int32::New(isolate, 1701)));
-  EXPECT_EQ(0, obj->access_count());
+  EXPECT_EQ(0, handle->access_count());
 }
 
 TEST_F(WrappableTest, LazyPropertyGetterCanBindSpecialArguments) {
@@ -403,9 +385,8 @@ TEST_F(WrappableTest, LazyPropertyGetterCanBindSpecialArguments) {
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
 
-  auto* obj = MyObjectWithLazyProperties::Create(isolate);
-  v8::Local<v8::Object> v8_object =
-      ConvertToV8(isolate, obj).ToLocalChecked().As<v8::Object>();
+  auto handle = MyObjectWithLazyProperties::Create(isolate);
+  v8::Local<v8::Object> v8_object = handle.ToV8().As<v8::Object>();
   v8::Local<v8::Value> value;
   ASSERT_TRUE(
       v8_object->Get(context, StringToSymbol(isolate, "self")).ToLocal(&value));
@@ -417,8 +398,9 @@ TEST_F(WrappableTest, CannotConstruct) {
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = context_.Get(isolate);
 
-  MyObject* obj = MyObject::Create(isolate);
-  v8::Local<v8::Value> wrapper = ConvertToV8(isolate, obj).ToLocalChecked();
+  Handle<MyObject> obj = MyObject::Create(isolate);
+  v8::Local<v8::Value> wrapper =
+      ConvertToV8(isolate, obj.get()).ToLocalChecked();
   ASSERT_FALSE(wrapper.IsEmpty());
 
   v8::Local<v8::String> source =

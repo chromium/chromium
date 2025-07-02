@@ -7,9 +7,7 @@
 
 #include "gin/gin_export.h"
 #include "gin/public/gin_embedders.h"
-#include "gin/public/wrappable_pointer_tags.h"
 #include "v8/include/v8-forward.h"
-#include "v8/include/v8-object.h"
 
 namespace gin {
 
@@ -27,10 +25,6 @@ enum InternalFields {
 struct GIN_EXPORT DeprecatedWrapperInfo {
   static DeprecatedWrapperInfo* From(v8::Local<v8::Object> object);
   const GinEmbedder embedder;
-};
-
-struct GIN_EXPORT WrapperInfo : v8::Object::WrapperTypeInfo {
-  const WrappablePointerTag pointer_tag;
 };
 
 }  // namespace gin

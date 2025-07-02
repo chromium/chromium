@@ -15,6 +15,3 @@ per-file v8_platform_thread_isolated_allocator.*=sroettger@google.com
 
 # For PartitionAlloc related changes.
 per-file array_buffer.cc=file://base/allocator/partition_allocator/OWNERS
-
-# New users of gin::Wrappable can pick a new tag by themselves.
-per-file public/wrappable_pointer_tags.h=*
