@@ -92,6 +92,15 @@ class BrowserWindowInterface : public content::PageNavigator {
   // state, etc.
   virtual ui::BaseWindow* GetWindow() = 0;
 
+  // Returns the profile that semantically owns this browser window. On desktop
+  // platforms (including the experimental desktop android platform), this value
+  // is never null, and never changes for the lifetime of a given browser
+  // window. All tabs contained in a browser window have the same
+  // profile/BrowserContext as the browser window itself. On mobile platforms,
+  // there may be multiple profiles for a given window; when implemented, this
+  // should return the profile of the currently-selected context.
+  virtual Profile* GetProfile() = 0;
+
   // S T O P
   // Please do not add new features here without consulting desktop leads
   // (erikchen@) and Clank leads (twellington@, dtrainor@). See comment at the
@@ -106,12 +115,6 @@ class BrowserWindowInterface : public content::PageNavigator {
   // active tab switches, the contents of the views::WebView is modified, but
   // the instance itself remains the same.
   virtual views::WebView* GetWebView() = 0;
-
-  // Returns the profile that semantically owns this browser window. This value
-  // is never null, and never changes for the lifetime of a given browser
-  // window. All tabs contained in a browser window have the same
-  // profile/BrowserContext as the browser window itself.
-  virtual Profile* GetProfile() = 0;
 
   // Opens a URL, with the given disposition. This is a convenience wrapper
   // around OpenURL from content::PageNavigator.
