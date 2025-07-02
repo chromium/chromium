@@ -17,6 +17,7 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -76,7 +77,7 @@ using LensOverlaySuggestInputsCallback =
     base::RepeatingCallback<void(lens::proto::LensOverlaySuggestInputs)>;
 // Callback type alias for the thumbnail image creation.
 using LensOverlayThumbnailCreatedCallback =
-    base::RepeatingCallback<void(const std::string&)>;
+    base::RepeatingCallback<void(const std::string&, const SkBitmap&)>;
 // Callback type alias for the OAuth headers created.
 using OAuthHeadersCreatedCallback =
     base::OnceCallback<void(std::vector<std::string>)>;
@@ -506,7 +507,7 @@ class LensOverlayQueryController {
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
-      std::optional<lens::ImageCrop> image_crop);
+      std::optional<lens::ImageCropAndBitmap> image_crop_and_bitmap);
 
   // Creates the OAuth headers that get attached to the interaction request to
   // authenticate the user. After, tries to perform the interaction request. If

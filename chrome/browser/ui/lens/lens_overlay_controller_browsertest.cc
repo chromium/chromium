@@ -779,7 +779,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
          {lens::features::kLensOverlayLatencyOptimizations,
           {{"enable-early-start-query-flow-optimization", "true"}}},
          {lens::features::kLensOverlaySurvey, {}},
-         {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}},
+         {lens::features::kLensOverlaySidePanelOpenInNewTab, {}},
+         {lens::features::kLensOverlayBackToPage, {}}},
         /*disabled_features=*/{
             lens::features::kLensOverlaySimplifiedSelection});
   }
@@ -3665,7 +3666,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
   EXPECT_FALSE(controller->get_selected_text_for_region());
   EXPECT_EQ(fake_query_controller->last_queried_region(), kTestRegion);
-  EXPECT_FALSE(fake_query_controller->last_queried_region_bytes().has_value());
+  EXPECT_TRUE(fake_query_controller->last_queried_region_bytes().has_value());
   EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
             lens::REGION_SEARCH);
 

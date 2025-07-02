@@ -480,8 +480,16 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart3(
     viewport_screenshot_ = bitmap;
     sending_bitmap = true;
 
-    // Send the updated bitmap to the searchbox controller.
-    GetSearchboxController()->HandleThumbnailCreatedBitmap(bitmap);
+    // If the overlay is NOT showing/initializing, then the selections should be
+    // cleared so future contextual queries do not include it. The thumbnail
+    // will be updated by the query controller on region searches if needed.
+    if (!lens_search_controller_->lens_overlay_controller()
+             ->IsOverlayShowing() &&
+        !lens_search_controller_->lens_overlay_controller()
+             ->IsOverlayInitializing()) {
+      lens_search_controller_->lens_overlay_controller()->ClearAllSelections();
+      GetSearchboxController()->HandleThumbnailCreatedBitmap(bitmap);
+    }
   }
   last_retrieved_most_visible_page_ = most_visible_page;
 

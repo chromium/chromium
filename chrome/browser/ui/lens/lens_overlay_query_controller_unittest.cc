@@ -757,7 +757,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -887,7 +887,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -952,7 +952,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -1093,7 +1093,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -1163,7 +1163,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -1299,7 +1299,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -1431,7 +1431,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -1502,7 +1502,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -1646,7 +1646,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -1789,7 +1789,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -1932,7 +1932,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -2000,7 +2000,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -2072,7 +2072,7 @@ TEST_F(
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -2131,7 +2131,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -2195,7 +2195,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -2335,7 +2335,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -2489,7 +2489,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -2639,7 +2639,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -2798,7 +2798,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -2870,7 +2870,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -3160,7 +3160,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -3225,7 +3225,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -3388,7 +3388,7 @@ TEST_F(LensOverlayQueryControllerTest, GetVsridForNewTab) {
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -3474,7 +3474,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -3542,7 +3542,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -3612,7 +3612,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -3680,7 +3680,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -3739,7 +3739,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -3810,7 +3810,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
@@ -3866,7 +3866,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF) {
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -4021,7 +4021,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF_SmallPdf) {
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -4099,7 +4099,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -4248,7 +4248,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDFWithNewContentPayload) {
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -4421,7 +4421,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -4601,7 +4601,7 @@ TEST_F(LensOverlayQueryControllerMockTimeTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
