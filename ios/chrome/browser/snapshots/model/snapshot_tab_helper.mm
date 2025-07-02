@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_util.h"
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 #import "ios/web/public/web_state.h"
 
@@ -49,60 +50,32 @@ void SnapshotTabHelper::SetSnapshotStorage(id<SnapshotStorage> storage) {
   [snapshot_manager_ setStorage:storage];
 }
 
-void SnapshotTabHelper::RetrieveColorSnapshot(void (^callback)(UIImage*)) {
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  void (^wrapped_callback)(UIImage*) = ^(UIImage* image) {
-    base::TimeTicks end_time = base::TimeTicks::Now();
-    base::UmaHistogramTimes("IOS.Snapshots.RetrieveColorSnapshotTime",
-                            end_time - start_time);
-    if (callback) {
-      callback(image);
-    }
-  };
-
+void SnapshotTabHelper::RetrieveColorSnapshot(SnapshotRetrievedBlock callback) {
   CHECK(snapshot_manager_);
-  [snapshot_manager_ retrieveSnaphotWithKind:SnapshotKindColor
-                                  completion:wrapped_callback];
+  [snapshot_manager_
+      retrieveSnaphotWithKind:SnapshotKindColor
+                   completion:BlockRecordingElapsedTime(
+                                  SnapshotOperation::kRetrieveColorSnapshot,
+                                  callback)];
 }
 
-void SnapshotTabHelper::RetrieveGreySnapshot(void (^callback)(UIImage*)) {
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  void (^wrapped_callback)(UIImage*) = ^(UIImage* image) {
-    base::TimeTicks end_time = base::TimeTicks::Now();
-    base::UmaHistogramTimes("IOS.Snapshots.RetrieveGreySnapshotTime",
-                            end_time - start_time);
-    if (callback) {
-      callback(image);
-    }
-  };
-
+void SnapshotTabHelper::RetrieveGreySnapshot(SnapshotRetrievedBlock callback) {
   CHECK(snapshot_manager_);
-  [snapshot_manager_ retrieveSnaphotWithKind:SnapshotKindGreyscale
-                                  completion:wrapped_callback];
+  [snapshot_manager_
+      retrieveSnaphotWithKind:SnapshotKindGreyscale
+                   completion:BlockRecordingElapsedTime(
+                                  SnapshotOperation::kRetrieveGreyscaleSnapshot,
+                                  callback)];
 }
 
-void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
+void SnapshotTabHelper::UpdateSnapshotWithCallback(
+    SnapshotRetrievedBlock callback) {
+  CHECK(snapshot_manager_);
   was_loading_during_last_snapshot_ = web_state_->IsLoading();
-
-  // `wrapped_callback` is possibly called multiple times as a completion
-  // handler in `takeSnapshotWithConfiguration:completionHandler:`.
-  __block void (^block_callback)(UIImage*) = callback;
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  void (^wrapped_callback)(UIImage*) = ^(UIImage* image) {
-    base::TimeTicks end_time = base::TimeTicks::Now();
-    base::UmaHistogramTimes("IOS.Snapshots.UpdateSnapshotTime",
-                            end_time - start_time);
-
-    if (block_callback) {
-      block_callback(image);
-      // Nullify the callback to ensure that the original callback is called
-      // only once.
-      block_callback = nil;
-    }
-  };
-
-  CHECK(snapshot_manager_);
-  [snapshot_manager_ updateSnapshotWithCompletion:wrapped_callback];
+  [snapshot_manager_
+      updateSnapshotWithCompletion:BlockRecordingElapsedTime(
+                                       SnapshotOperation::kUpdateSnapshot,
+                                       callback)];
 }
 
 void SnapshotTabHelper::UpdateSnapshotStorageWithImage(UIImage* image) {

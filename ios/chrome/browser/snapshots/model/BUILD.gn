@@ -56,6 +56,9 @@ source_set("model_common") {
     "snapshot_kind.h",
     "snapshot_scale.h",
     "snapshot_scale.mm",
+    "snapshot_types.h",
+    "snapshot_util.h",
+    "snapshot_util.mm",
     "web_state_snapshot_info.h",
     "web_state_snapshot_info.mm",
   ]

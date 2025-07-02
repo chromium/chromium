@@ -7,9 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "ios/chrome/browser/snapshots/model/snapshot_types.h"
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
@@ -43,19 +44,19 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // snapshot available in memory, otherwise it will be invoked asynchronously
   // after retrieved from disk. Invokes `callback` with nil if a snapshot does
   // not exist.
-  void RetrieveColorSnapshot(void (^callback)(UIImage*));
+  void RetrieveColorSnapshot(SnapshotRetrievedBlock callback);
 
   // Retrieves a grey snapshot for the current page, invoking `callback`
   // with the image. The callback may be called synchronously is there is
   // a cached snapshot available in memory, otherwise it will be invoked
   // asynchronously after retrieved from disk or re-generated. Invokes
   // `callback` with nil if a snapshot does not exist.
-  void RetrieveGreySnapshot(void (^callback)(UIImage*));
+  void RetrieveGreySnapshot(SnapshotRetrievedBlock callback);
 
   // Asynchronously generates a new snapshot, updates the snapshot storage, and
   // invokes `callback` with the new snapshot image. Invokes `callback` with nil
   // if snapshot generation fails.
-  void UpdateSnapshotWithCallback(void (^callback)(UIImage*));
+  void UpdateSnapshotWithCallback(SnapshotRetrievedBlock callback);
 
   // Updates the snapshot storage with `snapshot`.
   void UpdateSnapshotStorageWithImage(UIImage* image);
