@@ -147,6 +147,7 @@ source_set("shared") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/tab_groups",
+    "//components/tabs:split_tabs",
     "//components/variations",
     "//crypto",
     "//skia",

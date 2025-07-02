@@ -9,8 +9,6 @@ source_set("public") {
     "public/pinned_tab_collection.h",
     "public/split_tab_collection.h",
     "public/split_tab_data.h",
-    "public/split_tab_id.h",
-    "public/split_tab_visual_data.h",
     "public/supports_handles.h",
     "public/tab_collection.h",
     "public/tab_group.h",
@@ -25,10 +23,27 @@ source_set("public") {
   sources += [ "public/tab_collection_storage.h" ]
 
   public_deps = [
+    ":split_tabs",
     "//base",
     "//components/tab_groups",
   ]
+
   deps = [ "//ui/gfx/range" ]
+}
+
+source_set("split_tabs") {
+  sources = [
+    "impl/split_tab_visual_data.cc",
+    "public/split_tab_id.h",
+    "public/split_tab_visual_data.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/gfx/range",
+  ]
+
+  deps = [ "//components/tab_groups" ]
 }
 
 source_set("tabs") {
@@ -36,7 +51,6 @@ source_set("tabs") {
     "impl/pinned_tab_collection.cc",
     "impl/split_tab_collection.cc",
     "impl/split_tab_data.cc",
-    "impl/split_tab_visual_data.cc",
     "impl/supports_handles.cc",
     "impl/tab_collection.cc",
     "impl/tab_collection_storage.cc",
@@ -45,7 +59,11 @@ source_set("tabs") {
     "impl/tab_strip_collection.cc",
     "impl/unpinned_tab_collection.cc",
   ]
-  deps = [ ":public" ]
+
+  deps = [
+    ":public",
+    ":split_tabs",
+  ]
 }
 
 source_set("test_support") {
@@ -79,6 +97,7 @@ source_set("unit_tests") {
 
   deps = [
     ":public",
+    ":split_tabs",
     ":tabs",
     "//testing/gmock",
     "//testing/gtest",
