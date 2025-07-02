@@ -83,7 +83,7 @@ version = "2.0.0"
 default-features = false
 
 [dependencies.llguidance]
-version = "0.7.13"
+version = "1.0.0"
 default-features = false
 features = ["lark"]
 

@@ -10,18 +10,18 @@ import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
   crate_name = "toktrie"
-  epoch = "0.7"
+  epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/toktrie-v0_7/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/toktrie-v0_7/src/bytes.rs",
-    "//third_party/rust/chromium_crates_io/vendor/toktrie-v0_7/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/toktrie-v0_7/src/recognizer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/toktrie-v0_7/src/rng.rs",
-    "//third_party/rust/chromium_crates_io/vendor/toktrie-v0_7/src/svob.rs",
-    "//third_party/rust/chromium_crates_io/vendor/toktrie-v0_7/src/tokenv.rs",
-    "//third_party/rust/chromium_crates_io/vendor/toktrie-v0_7/src/toktree.rs",
+    "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/recognizer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/rng.rs",
+    "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/svob.rs",
+    "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/tokenv.rs",
+    "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/toktree.rs",
   ]
   inputs = []
 
@@ -29,7 +29,7 @@ cargo_crate("lib") {
   edition = "2021"
   cargo_pkg_name = "toktrie"
   cargo_pkg_description = "LLM Token Trie library"
-  cargo_pkg_version = "0.7.30"
+  cargo_pkg_version = "1.0.0"
 
   allow_unsafe = false
 

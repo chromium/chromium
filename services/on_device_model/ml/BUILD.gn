@@ -68,7 +68,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
     ]
     if (enable_constraints) {
       defines += [ "ENABLE_ON_DEVICE_CONSTRAINTS" ]
-      deps += [ "//third_party/rust/llguidance/v0_7:lib" ]
+      deps += [ "//third_party/rust/llguidance/v1:lib" ]
     }
     if (use_blink) {
       deps += [ "//gpu/config" ]
