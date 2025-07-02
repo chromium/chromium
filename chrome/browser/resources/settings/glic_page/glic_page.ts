@@ -146,6 +146,11 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
         computed: `computeTabAccessLearnMoreUrl_(prefs.${
             SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
       },
+
+      spark_: {
+        type: String,
+        computed: `computeSpark_()`,
+      },
     };
   }
 
@@ -174,6 +179,7 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   declare private microphoneSubLabel_: string;
   declare private tabAccessSubLabel_: string;
   declare private tabAccessLearnMoreUrl_: string;
+  declare private spark_: string;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -386,6 +392,12 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
             userStatus?.isEnterpriseAccountDataProtected ?
         this.i18n('glicTabAccessToggleLearnMoreUrlDataProtected') :
         this.i18n('glicTabAccessToggleLearnMoreUrl');
+  }
+
+  private computeSpark_() {
+    return loadTimeData.getBoolean('glicAssetsV2Enabled') ?
+        'settings-internal:sparkv2' :
+        'settings-internal:spark';
   }
 }
 

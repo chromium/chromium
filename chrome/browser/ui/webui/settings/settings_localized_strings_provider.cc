@@ -808,6 +808,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "glicUserStatusCheckFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicUserStatusCheck));
+  html_source->AddBoolean("glicAssetsV2Enabled", base::FeatureList::IsEnabled(
+                                                     features::kGlicAssetsV2));
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
