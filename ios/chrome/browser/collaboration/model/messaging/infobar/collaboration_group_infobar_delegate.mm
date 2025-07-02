@@ -225,7 +225,7 @@ CollaborationGroupInfoBarDelegate::GetInstantMessageIdentifier() const {
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 CollaborationGroupInfoBarDelegate::GetIdentifier() const {
-  return TAB_SHARING_INFOBAR_DELEGATE;
+  return COLLABORATION_GROUP_UPDATE_INFOBAR_DELEGATE;
 }
 
 std::u16string CollaborationGroupInfoBarDelegate::GetMessageText() const {
