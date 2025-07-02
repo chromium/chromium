@@ -1223,12 +1223,12 @@ const FeatureEntry::FeatureVariation kTextSafetyClassifierVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
-    {"autofill_address", "true"},   {"discounts", "true"},
-    {"lens_overlay", "true"},       {"translate", "true"},
-    {"memory_saver", "true"},       {"price_insights", "true"},
-    {"offer_notification", "true"}, {"intent_picker", "true"},
-    {"file_system_access", "true"}, {"zoom", "true"},
-    {"pwa_install", "true"},
+    {"autofill_address", "true"},       {"discounts", "true"},
+    {"lens_overlay", "true"},           {"translate", "true"},
+    {"memory_saver", "true"},           {"price_insights", "true"},
+    {"offer_notification", "true"},     {"intent_picker", "true"},
+    {"file_system_access", "true"},     {"zoom", "true"},
+    {"product_specifications", "true"}, {"pwa_install", "true"},
 };
 const FeatureEntry::FeatureVariation kPageActionsMigrationVariations[] = {
     {"with all migrated page actions enabled", kPageActionsMigrationParams,
