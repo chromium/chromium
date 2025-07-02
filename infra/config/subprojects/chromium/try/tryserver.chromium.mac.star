@@ -663,7 +663,8 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
+    # TODO(crbug.com/429129326): Add back to the CQ when recovered.
+    #tryjob = try_.job(),
     use_clang_coverage = True,
     xcode = xcode.xcode_default,
 )
@@ -722,11 +723,12 @@ ios_builder(
     coverage_test_types = ["overall", "unit"],
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        location_filters = [
-            "ios/.+",
-        ],
-    ),
+    # TODO(crbug.com/429129326): Add back to the CQ when recovered.
+    #tryjob = try_.job(
+    #    location_filters = [
+    #        "ios/.+",
+    #    ],
+    #),
     use_clang_coverage = True,
 )
 
