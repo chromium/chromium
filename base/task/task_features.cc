@@ -59,10 +59,4 @@ BASE_FEATURE(kRunTasksByBatches,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kThreadPoolCap2, "ThreadPoolCap2", FEATURE_DISABLED_BY_DEFAULT);
-
-// Note: Do not use the prepared macro as of no need for a local cache.
-constinit const FeatureParam<int> kThreadPoolCapRestrictedCount{
-    &kThreadPoolCap2, "restricted_count", 3};
-
 }  // namespace base

@@ -12,11 +12,6 @@
 
 namespace base {
 
-// Fixed amount of threads that will be used as a cap for thread pools.
-BASE_EXPORT BASE_DECLARE_FEATURE(kThreadPoolCap2);
-
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kThreadPoolCapRestrictedCount);
-
 // Under this feature, a utility_thread_group will be created for
 // running USER_VISIBLE tasks.
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseUtilityThreadGroup);

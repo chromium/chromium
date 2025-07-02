@@ -81,15 +81,6 @@ GetThreadPoolInitParams() {
   size_t desired_num_threads =
       std::max(kMaxNumThreadsInForegroundPoolLowerBound,
                content::GetMinForegroundThreadsInRendererThreadPool());
-  if (base::FeatureList::IsEnabled(base::kThreadPoolCap2)) {
-    // Cap the threadpool to an initial fixed size.
-    // Note: The size can still grow beyond the value set here
-    // when tasks are blocked for a certain period of time.
-    const int max_allowed_workers_per_pool =
-        base::kThreadPoolCapRestrictedCount.Get();
-    desired_num_threads = std::min(
-        desired_num_threads, static_cast<size_t>(max_allowed_workers_per_pool));
-  }
   return std::make_unique<base::ThreadPoolInstance::InitParams>(
       desired_num_threads);
 }
