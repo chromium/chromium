@@ -209,7 +209,6 @@ final class ChromeBluetoothDevice {
                 ChromeBluetoothDeviceJni.get()
                         .onConnectionStateChange(
                                 mNativeBluetoothDeviceAndroid,
-                                ChromeBluetoothDevice.this,
                                 status,
                                 newState == android.bluetooth.BluetoothProfile.STATE_CONNECTED);
             }
@@ -265,14 +264,10 @@ final class ChromeBluetoothDevice {
                                     + service.getInstanceId();
                     ChromeBluetoothDeviceJni.get()
                             .createGattRemoteService(
-                                    mNativeBluetoothDeviceAndroid,
-                                    ChromeBluetoothDevice.this,
-                                    serviceInstanceId,
-                                    service);
+                                    mNativeBluetoothDeviceAndroid, serviceInstanceId, service);
                 }
                 ChromeBluetoothDeviceJni.get()
-                        .onGattServicesDiscovered(
-                                mNativeBluetoothDeviceAndroid, ChromeBluetoothDevice.this);
+                        .onGattServicesDiscovered(mNativeBluetoothDeviceAndroid);
             }
         }
 
@@ -386,20 +381,15 @@ final class ChromeBluetoothDevice {
     interface Natives {
         // Binds to BluetoothDeviceAndroid::OnConnectionStateChange.
         void onConnectionStateChange(
-                long nativeBluetoothDeviceAndroid,
-                ChromeBluetoothDevice caller,
-                int status,
-                boolean connected);
+                long nativeBluetoothDeviceAndroid, int status, boolean connected);
 
         // Binds to BluetoothDeviceAndroid::CreateGattRemoteService.
         void createGattRemoteService(
                 long nativeBluetoothDeviceAndroid,
-                ChromeBluetoothDevice caller,
                 String instanceId,
                 BluetoothGattServiceWrapper serviceWrapper);
 
         // Binds to BluetoothDeviceAndroid::GattServicesDiscovered.
-        void onGattServicesDiscovered(
-                long nativeBluetoothDeviceAndroid, ChromeBluetoothDevice caller);
+        void onGattServicesDiscovered(long nativeBluetoothDeviceAndroid);
     }
 }

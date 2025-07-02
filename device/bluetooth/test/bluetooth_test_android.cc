@@ -654,8 +654,7 @@ void BluetoothTestAndroid::OnFakeAdapterStateChanged(
   // Delegate to the real implementation if the adapter is still alive.
   if (adapter_) {
     static_cast<BluetoothAdapterAndroid*>(adapter_.get())
-        ->OnAdapterStateChanged(
-            env, base::android::JavaParamRef<jobject>(nullptr), powered);
+        ->OnAdapterStateChanged(env, powered);
   }
 }
 

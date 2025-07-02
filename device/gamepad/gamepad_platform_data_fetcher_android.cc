@@ -204,7 +204,6 @@ void GamepadPlatformDataFetcherAndroid::ResetVibration(
 
 static void JNI_GamepadList_SetGamepadData(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jlong data_fetcher,
     jint index,
     jboolean mapping,

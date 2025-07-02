@@ -85,7 +85,6 @@ final class ChromeBluetoothRemoteGattService {
             ChromeBluetoothRemoteGattServiceJni.get()
                     .createGattRemoteCharacteristic(
                             mNativeBluetoothRemoteGattServiceAndroid,
-                            ChromeBluetoothRemoteGattService.this,
                             characteristicInstanceId,
                             characteristic,
                             mChromeDevice);
@@ -97,7 +96,6 @@ final class ChromeBluetoothRemoteGattService {
         // Binds to BluetoothRemoteGattServiceAndroid::CreateGattRemoteCharacteristic.
         void createGattRemoteCharacteristic(
                 long nativeBluetoothRemoteGattServiceAndroid,
-                ChromeBluetoothRemoteGattService caller,
                 String instanceId,
                 BluetoothGattCharacteristicWrapper characteristicWrapper,
                 ChromeBluetoothDevice chromeBluetoothDevice);

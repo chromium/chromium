@@ -170,7 +170,6 @@ void BluetoothRemoteGattServiceAndroid::SetDiscoveryComplete(bool complete) {
 
 void BluetoothRemoteGattServiceAndroid::CreateGattRemoteCharacteristic(
     JNIEnv* env,
-    const JavaParamRef<jobject>& caller,
     const JavaParamRef<jstring>& instance_id,
     const JavaParamRef<jobject>& /* BluetoothGattCharacteristicWrapper */
         bluetooth_gatt_characteristic_wrapper,

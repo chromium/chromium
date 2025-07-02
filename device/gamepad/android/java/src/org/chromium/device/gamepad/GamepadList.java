@@ -308,7 +308,6 @@ public class GamepadList {
                     device.updateButtonsAndAxesMapping();
                     GamepadListJni.get()
                             .setGamepadData(
-                                    GamepadList.this,
                                     webGamepadsPtr,
                                     /* index= */ i,
                                     device.isStandardGamepad(),
@@ -324,7 +323,6 @@ public class GamepadList {
                 } else {
                     GamepadListJni.get()
                             .setGamepadData(
-                                    GamepadList.this,
                                     webGamepadsPtr,
                                     /* index= */ i,
                                     /* mapping= */ false,
@@ -397,7 +395,6 @@ public class GamepadList {
     @NativeMethods
     interface Natives {
         void setGamepadData(
-                GamepadList caller,
                 long webGamepadsPtr,
                 int index,
                 boolean mapping,

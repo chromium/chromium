@@ -91,18 +91,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
 
   // Called when adapter state changes.
   void OnAdapterStateChanged(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& caller,
                              const bool powered);
 
   // Handles a scan error event by invalidating all discovery sessions.
-  void OnScanFailed(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& caller);
+  void OnScanFailed(JNIEnv* env);
 
   // Creates or updates device with advertised UUID information when a device is
   // discovered during a scan.
   void CreateOrUpdateDeviceOnScan(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaParamRef<jstring>& address,
       const base::android::JavaParamRef<jobject>&
           bluetooth_device_wrapper,  // Java Type: bluetoothDeviceWrapper
@@ -125,7 +122,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   // paired. It creates a device if it isn't in |devices_|
   void PopulateOrUpdatePairedDevice(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaParamRef<jstring>& address,
       const base::android::JavaParamRef<jobject>&
           bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
@@ -133,7 +129,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
 
   // Called when the Android system notifies us that a device is unpaired.
   void OnDeviceUnpaired(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& caller,
                         const base::android::JavaParamRef<jstring>& address);
 
   // Updates the connected state of the device with |address| if it's in the
@@ -141,7 +136,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   // not in |devices_| and connected.
   void UpdateDeviceAclConnectState(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaParamRef<jstring>& address,
       const base::android::JavaParamRef<jobject>&
           bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
