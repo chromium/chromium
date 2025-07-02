@@ -162,8 +162,8 @@ class WTFStringImplPrinter(StringPrinter):
         return int(str(self.val['hash_and_flags_'])) % 2
 
 
-class WTFStringPrinter(StringPrinter):
-    "Print a WTF::String"
+class BlinkStringPrinter(StringPrinter):
+    "Print a blink::String"
 
     def stringimpl_ptr(self):
         return self.val['impl_']['ptr_']
@@ -228,9 +228,9 @@ class blinkQualifiedNamePrinter(StringPrinter):
         self.prefix_length = 0
         self.length = 0
         if self.val['impl_']:
-            self.prefix_printer = WTFStringPrinter(
+            self.prefix_printer = BlinkStringPrinter(
                 self.val['impl_']['ptr_']['prefix_']['string_'])
-            self.local_name_printer = WTFStringPrinter(
+            self.local_name_printer = BlinkStringPrinter(
                 self.val['impl_']['ptr_']['local_name_']['string_'])
             self.prefix_length = self.prefix_printer.get_length()
             if self.prefix_length > 0:
@@ -492,7 +492,6 @@ def add_pretty_printers():
     pretty_printers = (
         (re.compile("^WTF::Vector<.*>$"), WTFVectorPrinter),
         (re.compile("^WTF::HashTable<.*>$"), WTFHashTablePrinter),
-        (re.compile("^WTF::String$"), WTFStringPrinter),
         (re.compile("^WTF::StringImpl$"), WTFStringImplPrinter),
         (re.compile("^blink::AtomicString$"), BlinkAtomicStringPrinter),
         (re.compile("^blink::FixedPoint<.*>$"), blinkFixedPointPrinter),
@@ -502,6 +501,7 @@ def add_pretty_printers():
         (re.compile("^blink::QualifiedName$"), blinkQualifiedNamePrinter),
         (re.compile("^blink::PixelsAndPercent$"),
          BlinkPixelsAndPercentPrinter),
+        (re.compile("^blink::String$"), BlinkStringPrinter),
         (re.compile("^blink::Length$"), BlinkLengthPrinter),
         (re.compile("^blink::DataRef<.*>$"), BlinkDataRefPrinter),
         (re.compile("^blink::JSONValue$"), BlinkJSONValuePrinter),

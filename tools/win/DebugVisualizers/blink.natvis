@@ -47,7 +47,7 @@
       <ExpandedItem Condition="raw_ != 0">raw_</ExpandedItem>
     </Expand>
   </Type>
-  <Type Name="WTF::String">
+  <Type Name="blink::String">
     <DisplayString Condition="impl_.ptr_ == 0">(null)</DisplayString>
     <DisplayString IncludeView="bare">{*impl_.ptr_,view(bare)}</DisplayString>
     <DisplayString>{*impl_.ptr_}</DisplayString>
