@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
+import("//build/config/c++/modules.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -78,12 +79,100 @@ if (use_libcxx_modules) {
                              ])
       use_libcxx_modules = false
       sources = [ invoker.modulemap ]
+
+      # By always including all module maps, we can get it to error out if
+      # we attempt to include something not in your dependencies.
+      # Otherwise, it would silently add it to your own AST.
+      cflags = module_map_flags
       configs -= configs_to_remove
       configs += configs_to_add
     }
   }
 
-  if (is_mac) {
+  # When I change sysroot_features from an alias to a group, it omits
+  # -fmodule-file for the aliased target from the command-line.
+  # This seems like it might be a bug in GN, but I'm not waiting for a fix
+  # before submitting this.
+  template("alias") {
+    source_set(target_name) {
+      public_deps = invoker.actual
+      use_libcxx_modules = false
+    }
+  }
+
+  if (defined(sysroot_modulemap)) {
+    template("sysroot_modules") {
+      modulemap(target_name) {
+        forward_variables_from(invoker, [ "public_deps" ])
+        modulemap = sysroot_modulemap
+        deps = [
+          ":copy_custom_headers",
+          ":copy_libcxx_headers",
+        ]
+      }
+    }
+  }
+
+  if (is_linux || is_chromeos) {
+    textual_module("sysroot_ctype") {
+    }
+    textual_module("sysroot_errno") {
+      public_deps = [ ":sysroot" ]
+    }
+    textual_module("sysroot_fenv") {
+    }
+    alias("sysroot_features") {
+      actual = [ ":sysroot_limits" ]
+    }
+    textual_module("sysroot_inttypes") {
+      public_deps = [
+        ":_Builtin_stdint",
+        ":sysroot_features",
+      ]
+    }
+    sysroot_modules("sysroot_limits") {
+    }
+    textual_module("sysroot_math") {
+      public_deps = [ ":sysroot_stdlib" ]
+    }
+    textual_module("sysroot_stdatomic") {
+    }
+    textual_module("sysroot_stdint") {
+      public_deps = [ ":sysroot_features" ]
+    }
+    alias("sysroot_stdlib") {
+      actual = [ ":sysroot" ]
+    }
+    textual_module("sysroot_string") {
+      public_deps = [
+        ":_Builtin_stddef",
+        ":sysroot",
+      ]
+    }
+    textual_module("sysroot_uchar") {
+      public_deps = [ ":_Builtin_stddef" ]
+    }
+    alias("sysroot_wchar") {
+      actual = [ ":sysroot" ]
+    }
+    textual_module("sysroot_wctype") {
+    }
+
+    sysroot_modules("sysroot") {
+      public_deps = [
+        ":_Builtin_limits",
+        ":_Builtin_stdarg",
+        ":_Builtin_stddef",
+      ]
+    }
+
+    alias("all_sysroot") {
+      actual = [
+        ":sysroot_limits",
+        ":sysroot",
+      ]
+    }
+  } else if (is_mac) {
     template("DarwinBasic_modules") {
       modulemap(target_name) {
         forward_variables_from(invoker, [ "public_deps" ])
@@ -175,40 +264,69 @@ if (use_libcxx_modules) {
     c_standard_library_modules("_wctype") {
       public_deps = [ ":__wctype" ]
     }
-  }
 
-  template("sysroot_modules") {
-    modulemap(target_name) {
-      forward_variables_from(invoker, [ "public_deps" ])
-      modulemap = SYSROOT_MODULEMAP
-      deps = [
-        ":copy_custom_headers",
-        ":copy_libcxx_headers",
+    alias("all_sysroot") {
+      actual = [
+        ":DarwinFoundation",
+        ":__wctype",
+        ":_assert",
+        ":_ctype",
+        ":_errno",
+        ":_inttypes",
+        ":_limits",
+        ":_locale",
+        ":_setjmp",
+        ":_signal",
+        ":_stdint",
+        ":_stdio",
+        ":_stdlib",
+        ":_string",
+        ":_time",
+        ":_wchar",
+        ":_wctype",
+        ":sys_select",
+        ":sys_types",
       ]
     }
-  }
 
-  if (is_linux || is_chromeos) {
-    sysroot_modules("sysroot_features") {
+    alias("sysroot_ctype") {
+      actual = [ ":_ctype" ]
     }
-
-    sysroot_modules("sysroot_bits") {
-      public_deps = [
-        ":sysroot_features",
-        ":sysroot_time",
-      ]
+    alias("sysroot_errno") {
+      actual = [ ":_errno" ]
     }
-
-    sysroot_modules("sysroot_time") {
-      public_deps = [ ":sysroot_features" ]
+    alias("sysroot_fenv") {
+      actual = []
     }
-
-    sysroot_modules("sysroot_types") {
-      public_deps = [
-        ":sysroot_bits",
-        ":sysroot_features",
-        ":sysroot_time",
-      ]
+    alias("sysroot_inttypes") {
+      actual = [ ":_inttypes" ]
+    }
+    alias("sysroot_limits") {
+      actual = [ ":_limits" ]
+    }
+    alias("sysroot_math") {
+      actual = []
+    }
+    alias("sysroot_stdatomic") {
+      actual = []
+    }
+    alias("sysroot_stdint") {
+      actual = [ ":_stdint" ]
+    }
+    alias("sysroot_stdlib") {
+      actual = []
+    }
+    alias("sysroot_string") {
+      actual = [ ":_string" ]
+    }
+    alias("sysroot_uchar") {
+      actual = []
+    }
+    alias("sysroot_wchar") {
+      actual = [ ":_wchar" ]
+    }
+    alias("sysroot_wctype") {
+      actual = [ ":_wctype" ]
     }
   }
 
@@ -224,21 +342,18 @@ if (use_libcxx_modules) {
   }
 
   builtin_modules("_Builtin_intrinsics") {
-    if (is_linux) {
-      public_deps = [
-        ":_Builtin_limits",
-        ":_Builtin_stddef",
-      ]
-    }
-    if (is_mac) {
-      public_deps = [ ":_Builtin_stdint" ]
-    }
+    public_deps = [ ":sysroot_stdlib" ]
   }
 
   builtin_modules("_Builtin_inttypes") {
+    public_deps = [ ":sysroot_inttypes" ]
   }
 
   builtin_modules("_Builtin_limits") {
+    public_deps = [
+      ":std_float_h",
+      ":sysroot_limits",
+    ]
   }
 
   builtin_modules("_Builtin_stdalign") {
@@ -248,6 +363,11 @@ if (use_libcxx_modules) {
   }
 
   builtin_modules("_Builtin_stdatomic") {
+    public_deps = [
+      ":_Builtin_stddef",
+      ":_Builtin_stdint",
+      ":sysroot_stdatomic",
+    ]
   }
 
   builtin_modules("_Builtin_stdbool") {
@@ -257,23 +377,31 @@ if (use_libcxx_modules) {
   }
 
   builtin_modules("_Builtin_stdint") {
-    if (is_mac) {
-      public_deps = [
-        ":_Builtin_stdarg",
-        ":_Builtin_stddef",
-      ]
-    }
+    public_deps = [ ":sysroot_stdint" ]
   }
 
   builtin_modules("_Builtin_unwind") {
-    if (is_linux || is_mac) {
-      public_deps = [ ":_Builtin_stdint" ]
-    }
+    public_deps = [ ":_Builtin_stdint" ]
   }
 
-  if (is_mac) {
-    builtin_modules("ptrauth") {
-    }
+  builtin_modules("ptrauth") {
+  }
+
+  alias("all_builtins") {
+    actual = [
+      "//buildtools/third_party/libc++:_Builtin_float",
+      "//buildtools/third_party/libc++:_Builtin_intrinsics",
+      "//buildtools/third_party/libc++:_Builtin_inttypes",
+      "//buildtools/third_party/libc++:_Builtin_limits",
+      "//buildtools/third_party/libc++:_Builtin_stdalign",
+      "//buildtools/third_party/libc++:_Builtin_stdarg",
+      "//buildtools/third_party/libc++:_Builtin_stdatomic",
+      "//buildtools/third_party/libc++:_Builtin_stdbool",
+      "//buildtools/third_party/libc++:_Builtin_stddef",
+      "//buildtools/third_party/libc++:_Builtin_stdint",
+      "//buildtools/third_party/libc++:_Builtin_unwind",
+      "//buildtools/third_party/libc++:ptrauth",
+    ]
   }
 
   # We need to have libc++ headers, __assertion_handler and __config_site in the
@@ -308,6 +436,7 @@ if (use_libcxx_modules) {
 
   libcxx_modules("std") {
     public_deps = [
+      ":_Builtin_stdalign",
       ":std_core",
       ":std_ctype_h",
       ":std_errno_h",
@@ -322,61 +451,128 @@ if (use_libcxx_modules) {
     ]
   }
 
-  libcxx_modules("std_config") {
+  textual_module("std_config") {
+    # Snippet from __configuration/platform.h:
+    # #if defined(__linux__) || defined(__AMDGPU__) || defined(__NVPTX__)
+    #  if __has_include(<features.h>)
+    #    include <features.h>
+    if (is_linux || is_chromeos || is_android) {
+      public_deps = [ ":sysroot_features" ]
+    }
   }
 
   libcxx_modules("std_core") {
+    public_deps = [
+      ":_Builtin_stddef",
+      ":_Builtin_stdint",
+      ":std_config",
+    ]
   }
 
   libcxx_modules("std_ctype_h") {
+    public_deps = [
+      ":std_config",
+      ":sysroot_ctype",
+    ]
   }
 
   libcxx_modules("std_errno_h") {
+    public_deps = [
+      ":std_config",
+      ":sysroot_errno",
+    ]
   }
 
   libcxx_modules("std_fenv_h") {
+    public_deps = [
+      ":std_config",
+      ":sysroot_fenv",
+    ]
   }
 
   libcxx_modules("std_float_h") {
+    public_deps = [
+      ":_Builtin_float",
+      ":std_config",
+    ]
   }
 
   libcxx_modules("std_inttypes_h") {
+    public_deps = [
+      ":_Builtin_inttypes",
+      ":std_config",
+    ]
   }
 
   libcxx_modules("std_math_h") {
-    if (is_linux || is_mac) {
-      public_deps = [ ":std_core" ]
-    }
+    public_deps = [
+      ":std_core",
+      ":sysroot_math",
+    ]
   }
 
   libcxx_modules("std_private_mbstate_t") {
+    public_deps = [
+      ":std_config",
+      ":sysroot_wchar",
+    ]
   }
 
   libcxx_modules("std_stdatomic_h") {
-  }
-
-  libcxx_modules("std_stdbool_h") {
-  }
-
-  libcxx_modules("std_stddef_h") {
+    public_deps = [
+      ":_Builtin_stdatomic",
+      ":std_config",
+      ":sysroot_stdint",
+    ]
   }
 
   libcxx_modules("std_string_h") {
+    public_deps = [
+      ":std_config",
+      ":sysroot_string",
+    ]
   }
 
   libcxx_modules("std_uchar_h") {
-    if (is_linux || is_mac) {
-      public_deps = [ ":std_private_mbstate_t" ]
-    }
-  }
-
-  libcxx_modules("std_wchar_h") {
+    public_deps = [
+      ":std_private_mbstate_t",
+      ":sysroot_uchar",
+    ]
   }
 
   libcxx_modules("std_wctype_h") {
-    if (is_mac) {
-      public_deps = [ ":std_ctype_h" ]
-    }
+    public_deps = [
+      ":std_config",
+      ":sysroot_wctype",
+    ]
+  }
+
+  alias("all_std") {
+    # There are more modules than this, but since the others are purely
+    # textual, they don't need to be compiled to a pcm.
+    actual = [
+      ":std",
+      ":std_core",
+      ":std_ctype_h",
+      ":std_errno_h",
+      ":std_fenv_h",
+      ":std_float_h",
+      ":std_inttypes_h",
+      ":std_math_h",
+      ":std_private_mbstate_t",
+      ":std_stdatomic_h",
+      ":std_string_h",
+      ":std_uchar_h",
+      ":std_wctype_h",
+    ]
+  }
+
+  alias("all_modules") {
+    actual = [
+      ":all_builtins",
+      ":all_std",
+      ":all_sysroot",
+    ]
   }
 }
 

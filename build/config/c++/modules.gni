@@ -1,0 +1,43 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_mac) {
+  import("//build/config/mac/mac_sdk.gni")
+}
+
+if (use_libcxx_modules) {
+  if (is_linux || is_chromeos) {
+    sysroot_modulemap = "//build/linux/amd64/module.modulemap"
+  } else if (is_mac) {
+    sysroot_modulemaps = [
+      "$mac_sdk_path/usr/include/DarwinBasic.modulemap",
+      "$mac_sdk_path/usr/include/DarwinFoundation.modulemap",
+      "$mac_sdk_path/usr/include/c_standard_library.modulemap",
+    ]
+  }
+
+  if (defined(sysroot_modulemap)) {
+    sysroot_modulemaps = [ sysroot_modulemap ]
+  }
+
+  module_map_flags = [
+    "-fmodule-map-file=" + rebase_path(
+            "${root_gen_dir}/third_party/libc++/src/include/module.modulemap",
+            root_build_dir),
+    "-fbuiltin-module-map",
+  ]
+  foreach(modulemap, sysroot_modulemaps) {
+    module_map_flags +=
+        [ "-fmodule-map-file=" + rebase_path(modulemap, root_build_dir) ]
+  }
+
+  # Textual modules do not need to be precompiled.
+  # However, like regular modules, they do need to include things.
+  template("textual_module") {
+    source_set(target_name) {
+      forward_variables_from(invoker, [ "public_deps" ])
+      use_libcxx_modules = false
+    }
+  }
+}

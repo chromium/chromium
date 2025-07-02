@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/c++/c++.gni")
+import("//build/config/c++/modules.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/clang/clang.gni")
@@ -1804,36 +1805,25 @@ config("compiler_arm") {
 
 config("libcxx_module") {
   if (use_libcxx_modules) {
-    modulemap = rebase_path(
-            "${root_gen_dir}/third_party/libc++/src/include/module.modulemap",
-            root_build_dir)
+    cflags_cc =
+        [
+          "-fmodules",
+          "-fno-implicit-module-maps",
+          "-fno-implicit-modules",
 
-    cflags_cc = [
-      "-fmodules",
-      "-fmodule-map-file=" + modulemap,
-      "-fbuiltin-module-map",
-      "-fno-implicit-module-maps",
-      "-fno-implicit-modules",
+          "-Xclang",
+          "-fmodules-local-submodule-visibility",  # required for builtins
 
-      "-Xclang",
-      "-fmodules-local-submodule-visibility",  # required for builtins
+          # TODO(crbug.com/1456385): Figure out if this can be removed.
+          "-Wno-modules-ambiguous-internal-linkage",
 
-      # TODO(crbug.com/1456385): Figure out if this can be removed.
-      "-Wno-modules-ambiguous-internal-linkage",
+          # TODO(crbug.com/40440396): Clean up.
+          "-Wno-modules-import-nested-redundant",
 
-      # TODO(crbug.com/40440396): Clean up.
-      "-Wno-modules-import-nested-redundant",
-
-      # Needed to allow using builtin modules when the headers are
-      # unnecessarily using extern "C".
-      "-Wno-module-import-in-extern-c",
-    ]
-
-    if (is_linux || is_chromeos) {
-      sysroot_modulemap = rebase_path(SYSROOT_MODULEMAP, root_build_dir)
-
-      cflags_cc += [ "-fmodule-map-file=" + sysroot_modulemap ]
-    }
+          # Needed to allow using builtin modules when the headers are
+          # unnecessarily using extern "C".
+          "-Wno-module-import-in-extern-c",
+        ] + module_map_flags
   }
 }
 

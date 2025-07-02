@@ -544,47 +544,6 @@ set_defaults("rust_proc_macro") {
   configs = default_rust_proc_macro_configs
 }
 
-DEFAULT_MODULE_DEPS = [
-  "//buildtools/third_party/libc++:_Builtin_intrinsics",
-  "//buildtools/third_party/libc++:_Builtin_limits",
-  "//buildtools/third_party/libc++:_Builtin_stdarg",
-  "//buildtools/third_party/libc++:_Builtin_stdbool",
-  "//buildtools/third_party/libc++:_Builtin_stdint",
-  "//buildtools/third_party/libc++:_Builtin_unwind",
-  "//buildtools/third_party/libc++:std",
-  "//buildtools/third_party/libc++:std_stdatomic_h",
-]
-
-if (is_linux || is_chromeos) {
-  SYSROOT_MODULEMAP = "//build/linux/amd64/module.modulemap"
-  DEFAULT_MODULE_DEPS += [
-    "//buildtools/third_party/libc++:sysroot_features",
-    "//buildtools/third_party/libc++:sysroot_types",
-  ]
-}
-
-if (is_mac) {
-  DEFAULT_MODULE_DEPS += [
-    "//buildtools/third_party/libc++:__wctype",
-    "//buildtools/third_party/libc++:_assert",
-    "//buildtools/third_party/libc++:_ctype",
-    "//buildtools/third_party/libc++:_errno",
-    "//buildtools/third_party/libc++:_inttypes",
-    "//buildtools/third_party/libc++:_limits",
-    "//buildtools/third_party/libc++:_locale",
-    "//buildtools/third_party/libc++:_setjmp",
-    "//buildtools/third_party/libc++:_stdio",
-    "//buildtools/third_party/libc++:_stdlib",
-    "//buildtools/third_party/libc++:_string",
-    "//buildtools/third_party/libc++:_sys_select",
-    "//buildtools/third_party/libc++:_time",
-    "//buildtools/third_party/libc++:_wchar",
-    "//buildtools/third_party/libc++:_wctype",
-    "//buildtools/third_party/libc++:ptrauth",
-    "//buildtools/third_party/libc++:sys_types",
-  ]
-}
-
 # A helper for forwarding testonly and visibility.
 # Forwarding "*" does not include variables from outer scopes (to avoid copying
 # all globals into each template invocation), so it will not pick up
@@ -641,7 +600,7 @@ foreach(_target_type,
 
       if (is_clang && _use_libcxx_modules) {
         # This is necessary for Clang modules builds.
-        deps += DEFAULT_MODULE_DEPS
+        deps += [ "//buildtools/third_party/libc++:all_modules" ]
         if (!defined(defines)) {
           defines = []
         }
@@ -761,7 +720,7 @@ foreach(_target_type,
 
       if (is_clang && _use_libcxx_modules) {
         # These are necessary for Clang modules builds.
-        deps += DEFAULT_MODULE_DEPS
+        deps += [ "//buildtools/third_party/libc++:all_modules" ]
         if (!defined(defines)) {
           defines = []
         }
