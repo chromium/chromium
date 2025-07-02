@@ -676,7 +676,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="4116038641877404294">Pobierz strony, by przeglądać je w trybie offline</translation>
 <translation id="4121654769234887259">Nie musisz zapamiętywać tego hasła. Menedżer haseł Google zapisze je na koncie <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Proces wyrażania zgody na wyświetlanie powiadomień otwarty na całą wysokość</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Przeglądarka Chrome wyłączyła powiadomienia z tej witryny. Możesz je przeglądać i nimi zarządzać.}few{Przeglądarka Chrome wyłączyła powiadomienia z tych witryn. Możesz je przeglądać i nimi zarządzać.}many{Przeglądarka Chrome wyłączyła powiadomienia z tych witryn. Możesz je przeglądać i nimi zarządzać.}other{Przeglądarka Chrome wyłączyła powiadomienia z tych witryn. Możesz je przeglądać i nimi zarządzać.}}</translation>
 <translation id="4132137475637520539">Pozwól dołączyć każdej osobie, która ma link</translation>
 <translation id="4135200667068010335">Lista urządzeń, którym udostępnisz kartę, jest zamknięta.</translation>
 <translation id="4137746084635924146">Aktualny język urządzenia</translation>

@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">అవును</translation>
 <translation id="1429187656584513419">పాస్‌వర్డ్‌లను తెరవండి</translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
+<translation id="1433478348197382180">రీడింగ్ మోడ్</translation>
 <translation id="1436671784520050284">సెటప్‌ని కొనసాగించండి</translation>
 <translation id="143681031165817424">ఈ పరికరంలో మాత్రమే అడ్రస్ సేవ్ చేయబడింది</translation>
 <translation id="1445276840641906250">మీ అన్ని ట్యాబ్‌లు ఒకే బ్రౌజర్‌లో</translation>
@@ -187,6 +188,7 @@
 <translation id="1740650426894359238">మరొక ప్రొఫైల్‌కు మారండి</translation>
 <translation id="1741219894094057085">స్మార్ట్ వాచ్</translation>
 <translation id="1743244221910283364">మార్పులను విస్మరించండి</translation>
+<translation id="1748975028205587434">మీ ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="174998178145075354">{count,plural, =1{అడ్రస్ కోసం {count} ఆప్షన్ మీ కీబోర్డ్ పైన అందుబాటులో ఉంది.}other{అడ్రస్ కోసం {count} ఆప్షన్‌లు మీ కీబోర్డ్ పైన అందుబాటులో ఉన్నాయి.}}</translation>
 <translation id="1750238553597293878">మీ Google ఖాతాలోని పాస్‌వర్డ్‌లను ఉపయోగించడం కొనసాగించండి</translation>
 <translation id="17513872634828108">తెరిచిన ట్యాబ్‍లు</translation>
@@ -199,6 +201,7 @@
 <translation id="178400879184240105">మీ పాస్‌వర్డ్‌లు భిన్నంగా ఉన్నాయి</translation>
 <translation id="17906873777101817">పాస్‌వర్డ్‌లను, పాస్-కీలను సేవ్ చేసే ఆప్షన్</translation>
 <translation id="1794893174442046596">ట్యాబ్ గ్రూప్</translation>
+<translation id="1807246157184219062">లేత</translation>
 <translation id="1807893857950749072">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను అనుమతించండి…</translation>
 <translation id="1810976980198522421">రద్దు చేయండి</translation>
 <translation id="1812514023095547458">రంగుని ఎంచుకోండి</translation>
@@ -207,6 +210,7 @@
 <translation id="1819374301217551116">ధర ట్రాకింగ్, గణాంకాలు</translation>
 <translation id="1820195936249950412">చెల్లుబాటు అయ్యే ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="1820259098641718022">పఠన లిస్ట్‌కు జోడించబడింది</translation>
+<translation id="1823768272150895732">ఫాంట్</translation>
 <translation id="1824490729233982311">మీరు మీ ఇతర పరికరాల నుండి ట్యాబ్‌లను స్వీకరించినప్పుడు అలర్ట్‌లను పొందండి.</translation>
 <translation id="1827529786398596735">మొదటి స్క్రీన్‌ను నొక్కి, పట్టుకోండి</translation>
 <translation id="1832848789136765277">మీ సింక్ చేసిన డేటాను మీరు ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోవడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
@@ -364,6 +368,7 @@
 <translation id="2394659309569789395">ఎదేమైనా సైట్‌ను తెరవండి</translation>
 <translation id="2403129868389095715">మీ ప్యాకేజీని డెలివరీ చేయడం సాధ్యపడదు</translation>
 <translation id="2410754283952462441">ఖాతాను ఎంచుకోండి</translation>
+<translation id="2414886740292270097">ముదురు</translation>
 <translation id="2422174748424038845">మీరు దీన్ని తొలగించినట్లయితే, అందరూ వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్ కోల్పోతారు, ఇంకా ఇది అన్ని పరికరాల నుండి తొలగించబడుతుంది.</translation>
 <translation id="2424805048070062787">ఈ ట్యాబ్‌తో కొనసాగించండి</translation>
 <translation id="2426805022920575512">మరొక ఖాతాను ఎంచుకోండి</translation>
@@ -401,6 +406,7 @@
 <translation id="2559843230610279254">ట్యాబ్ గ్రూప్, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ట్యాబ్‌లు.</translation>
 <translation id="2577522251608256362">పరిసరాలు</translation>
 <translation id="2579713773888829241">షేర్ చేసిన డ్రైవ్‌లు</translation>
+<translation id="2593272815202181319">మోనోస్పేస్</translation>
 <translation id="2597486707832946298">మీ iPhoneలో మీకు తెలిసిన, ఇష్టపడే డెస్క్‌టాప్ బ్రౌజర్ నుండి ఉత్తమమైన వాటిని పొందండి.</translation>
 <translation id="2601778637777010194">ప్రోడక్ట్‌లకు సంబంధించిన ధర తగ్గుదలను ట్రాక్ చేయండి</translation>
 <translation id="260378315836159338">స్క్రీన్‌కు ఎగువున ఉన్న, + చిహ్నాన్ని ట్యాప్ చేయండి</translation>
@@ -529,6 +535,7 @@
 <translation id="3119874402040566234">మీరు సైన్ అవుట్ అవుతారు, అలాగే బ్రౌజింగ్ డేటా తొలగించబడుతుంది</translation>
 <translation id="3124568093781685165">మీ పాస్‌వర్డ్‌లను మీ ఫ్యామిలీతో షేర్ చేయండి</translation>
 <translation id="3130863904455712965">హిస్టరీ, ఇంకా మరెన్నో</translation>
+<translation id="3132584647087998639">మీ డేటాను దిగుమతి చేయండి</translation>
 <translation id="313283613037595347">కొత్త అజ్ఞాత ట్యాబ్‌ను క్రియేట్ చేయండి.</translation>
 <translation id="3136739222562075778">ఈ కార్డ్ మీరు తెరిచిన ట్యాబ్‌లలో ప్రోడక్ట్‌లపై ధరల తగ్గుదలలను చూపుతుంది</translation>
 <translation id="3138611310073113613">ఎంపికను విస్మరించండి</translation>
@@ -740,6 +747,7 @@
 <translation id="4047337302138771011">మీ పాస్‌వర్డ్‌లను షేర్ చేయండి</translation>
 <translation id="4049419681095579435">ప్యాకేజీ ఇప్పటికే ట్రాక్ చేయబడింది</translation>
 <translation id="4049507953662678203">మీ ఇంట‌ర్నెట్ ప‌ని చేస్తోందో లేదో చెక్ చేసుకుని మళ్లీ ట్రై చేయండి.</translation>
+<translation id="4056223980640387499">సెపియా</translation>
 <translation id="4070132839822635162">సైన్ ఇన్ చేయవద్దు</translation>
 <translation id="4094361089640885693">ధరలను సులభంగా ట్రాక్ చేయండి, ధరల గణాంకాలను పొందండి.</translation>
 <translation id="4099756562043439968">రిమైండర్‌ను సెట్ చేయండి</translation>
@@ -982,6 +990,7 @@
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
 <translation id="5009127379503001909">బ్రౌజ్ చేస్తూ ఉండండి</translation>
 <translation id="5012914568031465281">ధరను ట్రాక్ చేయడం సాధ్యం కాలేదు.</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" />‌కు పంపండి</translation>
 <translation id="5017529052065664584">గత 15 నిమిషాల డేటా</translation>
 <translation id="5020732097997376541">"Lens చిహ్నాన్ని" ట్యాప్ చేయండి</translation>
@@ -1118,6 +1127,7 @@
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="560322036295180549">మీ సంస్థ ఆఫ్ చేసింది</translation>
 <translation id="5611398002774823980">ఖాతాలో సేవ్ చేయండి</translation>
+<translation id="561269594905823128"><ph name="BEGIN_BOLD" />మీ ఫైల్‌ను ఎంచుకోండి<ph name="END_BOLD" /> అనే ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="5613297089029360427">ఇటీవలి లేబుల్ టెక్స్ట్ ఆధారంగా క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="5614553682702429503">పాస్‌వర్డ్‌ను సేవ్ చేయాలా?</translation>
 <translation id="5619871095170816857">ఈ కార్డ్ గత 24 గంటల్లో మీ సింక్ చేయబడిన అన్ని పరికరాలలో మీరు చివరిగా ఉపయోగించిన ఓపెన్ ట్యాబ్‌ను చూపుతుంది.</translation>
@@ -1569,6 +1579,7 @@
 <translation id="7367530036083223701">Password Manager విడ్జెట్‌తో మొదటి స్క్రీన్ నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా యాక్సెస్ చేయండి.</translation>
 <translation id="7369285139974632858">బుక్‌మార్క్‌లకు జోడించండి</translation>
 <translation id="7380220816562673297">ప్రస్తుతానికి, మీరు పాస్‌వర్డ్‌లను ఫ్యామిలీ మెంబర్‌లతో మాత్రమే షేర్ చేయగలరు. గరిష్ఠంగా 6 మంది మెంబర్‌లతో <ph name="BEGIN_LINK" />ఫ్యామిలీ గ్రూప్‌ను క్రియేట్ చేసి<ph name="END_LINK" />, Googleలోని మీ ప్రోడక్ట్‌లు, సబ్‌స్క్రిప్షన్‌ల నుండి ఎక్కువ ప్రయోజనాలను పొందండి.</translation>
+<translation id="7380698179418029202">మీ Safari ఎక్స్‌పోర్ట్ <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="739101637685146669">మీరు ఏ URLను బుక్‌మార్క్ చేయాలనుకుంటున్నారు?</translation>
 <translation id="7393747756726387725">జూమ్ - ఇన్</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 సైట్}other{# సైట్‌లు}}</translation>
@@ -1708,6 +1719,7 @@
 <translation id="7887552845761062935">మరిన్ని ఆప్షన్‌లను తెరవడానికి డబుల్ ట్యాప్ చేసి ఉంచండి</translation>
 <translation id="7889910613639381518">Google Password Manager విడ్జెట్‌తో సులభమైన, సురక్షితమైన యాక్సెస్.</translation>
 <translation id="7899199123054742721">అన్నీ చదవనివిగా మార్క్ చేయండి</translation>
+<translation id="7908957400505794782"><ph name="BEGIN_BOLD" />పూర్తయింది<ph name="END_BOLD" /> అనే ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="7911190106180361398">అన్నింటిని సింక్ చేయడానికి మీ సంస్థ మిమ్మల్ని అనుమతించదు.</translation>
 <translation id="792357691529995513">ఎటువంటి సమస్యలూ కనుగొనబడలేదు</translation>
 <translation id="7925108652071887026">స్వీయపూర్తి డేటా</translation>
@@ -1770,6 +1782,7 @@
 <translation id="8096559642098770318">భవిష్యత్తులో ఈ సైట్‌ను మళ్ళీ చూడటానికి మీరు ట్యాబ్ రిమైండర్‌ను సెట్ చేయవచ్చు</translation>
 <translation id="8101409298456377967">మీ పాస్‌వర్డ్‌లను క్రియేట్ చేయండి, సేవ్ చేయండి, అలాగే మేనేజ్ చేయండి, తద్వారా మీరు సైట్‌లకు, యాప్‌లకు సులభంగా సైన్ ఇన్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">కొత్త</translation>
+<translation id="8105368624971345109">ఆఫ్ చేయి</translation>
 <translation id="8114753159095730575">ఫైల్ డౌన్‌లోడ్ అందుబాటులో ఉంది. ఎంపికలు స్క్రీన్ దిగువ భాగంలో అందుబాటులో ఉంటాయి.</translation>
 <translation id="8123502380991596210">కొత్తగా ఏమి ఉన్నాయో వాటిని దాచండి</translation>
 <translation id="8123953306357309250">సింక్‌ను రద్దు చేయాలా? సింక్‌ను సెట్టింగ్‌లలో మీరు ఎప్పుడైనా ఆన్ చేయవచ్చు.</translation>

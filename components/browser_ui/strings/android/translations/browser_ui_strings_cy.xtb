@@ -69,6 +69,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="1799920918471566157">Awgrymiadau Chrome</translation>
 <translation id="1816835383954230954">Pan fydd ymlaen, mae Chrome yn rhedeg yn gyflymach a dylai nodweddion sy'n defnyddio JavaScript weithio fel y'u dyluniwyd. Pan fydd wedi'i ddiffodd, mae hyn yn lleihau perfformiad ond yn gwneud V8 yn fwy ymwrthol i ymosodiadau.</translation>
 <translation id="1818308510395330587">I ganiatáu i <ph name="APP_NAME" /> ddefnyddio AR, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Ymddangosiad tudalen tab newydd y ddalen waelod</translation>
 <translation id="1887786770086287077">Mae mynediad lleoliad wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Mae gwefannau fel arfer yn cyrchu ffeiliau a ffolderi ar eich dyfais ar gyfer nodweddion megis cadw eich gwaith yn awtomatig</translation>
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
@@ -459,6 +460,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="6398765197997659313">Gadael y sgrîn lawn</translation>
 <translation id="640163077447496506">Yn darfod heddiw</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Casgliadau Thema</translation>
 <translation id="6439114592976064011">Rhwystro gwefannau rhag defnyddio eich dyfais rhithwrionedd a'i data</translation>
 <translation id="6447842834002726250">Cwcis</translation>
 <translation id="6452138246455930388">Gostyngiad pris ar eich tab agored, o <ph name="OLD_PRICE" /> i <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="7791543448312431591">Ychwanegu</translation>
 <translation id="780301667611848630">Dim diolch</translation>
 <translation id="7804248752222191302">Mae gwefan yn defnyddio'ch camera</translation>
+<translation id="7805832099057502789">Ymddangosiad dalen waelod tudalen tab newydd wedi'i hagor ar uchder llawn</translation>
 <translation id="7807060072011926525">Darperir gan Google</translation>
 <translation id="7815680994978050279">Rhwystrwyd lawrlwythiad peryglus</translation>
 <translation id="7835852323729233924">Chwarae cyfryngau</translation>
@@ -581,6 +584,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
 <translation id="8042586301629853791">Trefnu yn ôl:</translation>
 <translation id="8051193500142930381">Ni fydd nodweddion sydd angen camera yn gweithio</translation>
+<translation id="8056330801132235235">Diofyn Chrome</translation>
 <translation id="8067883171444229417">Chwarae'r fideo</translation>
 <translation id="8068648041423924542">Methu â dewis tystysgrif.</translation>
 <translation id="8077120325605624147">Gall unrhyw wefan yr ymwelwch â hi ddangos unrhyw hysbyseb i chi</translation>

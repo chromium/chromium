@@ -676,7 +676,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4116038641877404294">Download pages to use them offline</translation>
 <translation id="4121654769234887259">You won’t need to remember this password. It will be saved to Google Password Manager for <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Notification permission flow opened at full height</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome stopped notifications from this site. You can review and manage.}other{Chrome stopped notifications from these sites. You can review and manage.}}</translation>
 <translation id="4132137475637520539">Let anyone with the link join</translation>
 <translation id="4135200667068010335">List of devices with which to share a tab is closed.</translation>
 <translation id="4137746084635924146">Current device language</translation>

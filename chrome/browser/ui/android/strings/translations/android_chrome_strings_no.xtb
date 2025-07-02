@@ -676,7 +676,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4116038641877404294">Last ned sidene for å bruke dem uten nett</translation>
 <translation id="4121654769234887259">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Flyt for varslingstillatelser er åpnet i full høyde</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome har stoppet varsler fra dette nettstedet. Du kan gjennomgå og administrere dem.}other{Chrome har stoppet varsler fra disse nettstedene. Du kan gjennomgå og administrere dem.}}</translation>
 <translation id="4132137475637520539">La alle som har linken, bli med</translation>
 <translation id="4135200667068010335">Listen over enheter du kan dele faner med, er lukket.</translation>
 <translation id="4137746084635924146">Nåværende enhetsspråk</translation>

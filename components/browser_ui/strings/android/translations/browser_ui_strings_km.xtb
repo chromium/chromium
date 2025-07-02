@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">គន្លឹះ Chrome</translation>
 <translation id="1816835383954230954">នៅពេល​បើក, Chrome ដំណើរការ​លឿន​ជាងមុន ហើយ​មុខងារ​ដែលប្រើ JavaScript គួរតែ​ដំណើរការ​ដូចដែល​បានរចនាឡើង។ នៅពេល​បិទ វា​កាត់បន្ថយ​ប្រតិបត្តិការ ប៉ុន្តែ​ធ្វើឱ្យ V8 កាន់តែមាន​ភាពធន់នឹង​ការវាយ​ប្រហារ។</translation>
 <translation id="1818308510395330587">ដើម្បី​អនុញ្ញាតឱ្យ <ph name="APP_NAME" /> ប្រើ AR អ្នកក៏ត្រូវបើក​កាមេរ៉ា​នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" /> ផងដែរ។</translation>
+<translation id="1881806992065048905">សន្លឹក​ខាងក្រោមនៃ​រូបរាង​ទំព័រ​ផ្ទាំងថ្មី</translation>
 <translation id="1887786770086287077">ការចូល​ប្រើ​ទីតាំងត្រូវបាន​បិទ​សម្រាប់​ឧបករណ៍​នេះ។ សូម​បើក​វា​នៅក្នុង<ph name="BEGIN_LINK" />ការ​កំណត់ Android<ph name="END_LINK" /> ។</translation>
 <translation id="1906181697255754968">ជាធម្មតា គេហទំព័រចូលប្រើឯកសារ និងថតនៅក្នុងឧបករណ៍របស់អ្នកសម្រាប់មុខងារផ្សេងៗដូចជា ការរក្សាទុកកិច្ចការរបស់អ្នកដោយស្វ័យប្រវត្តិជាដើម</translation>
 <translation id="1915307458270490472">បញ្ចប់​ការ​សន្ទនា</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">ចាកចេញពីអេក្រង់ពេញ</translation>
 <translation id="640163077447496506">ផុតកំណត់​ថ្ងៃនេះ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">បណ្ដុំ​ទម្រង់រចនា</translation>
 <translation id="6439114592976064011">ទប់ស្កាត់​គេហទំព័រ​មិនឱ្យ​ប្រើទិន្នន័យ និង​ឧបករណ៍ VR របស់អ្នក</translation>
 <translation id="6447842834002726250">ខុកឃី</translation>
 <translation id="6452138246455930388">ការធ្លាក់តម្លៃ​នៅលើ​ផ្ទាំងដែលអ្នកបើក​ពី <ph name="OLD_PRICE" /> ទៅ <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="780301667611848630">ទេ អរគុណ</translation>
 <translation id="7804248752222191302">គេហទំព័រមួយកំពុងប្រើប្រាស់កាមេរ៉ារបស់អ្នក</translation>
+<translation id="7805832099057502789">បានបើក​សន្លឹក​ខាងក្រោមនៃ​រូបរាងទំព័រ​ផ្ទាំងថ្មី​ពេញ​អេក្រង់</translation>
 <translation id="7807060072011926525">បានផ្ដល់ដោយ Google</translation>
 <translation id="7815680994978050279">បាន​ទប់ស្កាត់​ការទាញយក​ដែល​មាន​គ្រោះថ្នាក់</translation>
 <translation id="7835852323729233924">ការចាក់មេឌៀ</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">បានបរាជ័យក្នុងការទាញយក</translation>
 <translation id="8042586301629853791">តម្រៀបតាម៖</translation>
 <translation id="8051193500142930381">មុខងារដែលត្រូវការកាមេរ៉ានឹងមិនដំណើរការទេ</translation>
+<translation id="8056330801132235235">លំនាំដើម Chrome</translation>
 <translation id="8067883171444229417">ចាក់​វីដេអូ</translation>
 <translation id="8068648041423924542">មិនអាចជ្រើសរើសវិញ្ញាបនបត្រទេ</translation>
 <translation id="8077120325605624147">គ្រប់គេហទំព័រដែល​អ្នក​ចូលមើល អាច​បង្ហាញ​ការ​ផ្សាយពាណិជ្ជកម្ម​ណាក៏បាន​ដល់​អ្នក</translation>

@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1816835383954230954">启用此设置后，Chrome 的运行速度会更快，并且使用 JavaScript 的功能能按预期运行。关闭此设置会降低性能，但提高 V8 防范攻击的能力。</translation>
 <translation id="1818308510395330587">若要允许 <ph name="APP_NAME" /> 使用 AR 功能，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
+<translation id="1881806992065048905">“新标签页”页面外观底部动作条</translation>
 <translation id="1887786770086287077">此设备的位置信息使用权已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
 <translation id="1906181697255754968">网站通常会访问您设备上的文件和文件夹以实现某些功能（例如自动保存您的工作成果）</translation>
 <translation id="1915307458270490472">中止</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="640163077447496506">今天过期</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">主题集合</translation>
 <translation id="6439114592976064011">禁止网站使用您的虚拟现实设备和数据</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">您打开的标签页中有降价，原价为 <ph name="OLD_PRICE" />，现价为 <ph name="NEW_PRICE" />”，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">添加</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7804248752222191302">有一个网站正在使用您的摄像头</translation>
+<translation id="7805832099057502789">“新标签页”页面外观底部动作条已按最大高度显示</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7815680994978050279">已屏蔽危险的下载内容</translation>
 <translation id="7835852323729233924">正在播放媒体</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8042586301629853791">排序方式：</translation>
 <translation id="8051193500142930381">所有需要使用摄像头的功能都将无法正常运行</translation>
+<translation id="8056330801132235235">Chrome 默认选项</translation>
 <translation id="8067883171444229417">播放视频</translation>
 <translation id="8068648041423924542">无法选择证书。</translation>
 <translation id="8077120325605624147">您访问的任何网站都可向您展示任何广告</translation>

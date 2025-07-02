@@ -69,6 +69,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="1799920918471566157">Chrome padomi</translation>
 <translation id="1816835383954230954">Kad tas ir ieslēgts, pārlūks Chrome darbojas ātrāk, un funkcijām, kas izmanto JavaScript, ir jādarbojas paredzētajā veidā. Ja izslēgts, tiek samazināta veiktspēja, bet uzlabojas V8 noturība pret uzbrukumiem.</translation>
 <translation id="1818308510395330587">Lai atļautu lietotnei <ph name="APP_NAME" /> izmantot papildināto realitāti, ieslēdziet arī kameru <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Jaunas cilnes lapas izskata ekrāna apakšdaļas lapa</translation>
 <translation id="1887786770086287077">Piekļuve šīs ierīces atrašanās vietai ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Parasti piekļuve failiem un mapēm ierīcē vietnēm ir nepieciešama, lai nodrošinātu noteiktas funkcijas, piemēram, automātisku darba saglabāšanu.</translation>
 <translation id="1915307458270490472">Pārtraukt</translation>
@@ -459,6 +460,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="6398765197997659313">Iziet no pilnekrāna režīma</translation>
 <translation id="640163077447496506">Derīguma termiņš beidzas šodien</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Motīvu kolekcijas</translation>
 <translation id="6439114592976064011">Neļaut vietnēm izmantot jūsu virtuālās realitātes ierīci un datus</translation>
 <translation id="6447842834002726250">Sīkfaili</translation>
 <translation id="6452138246455930388">Cenas kritums atvērtajā cilnē no <ph name="OLD_PRICE" /> uz <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7791543448312431591">Pievienot</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
 <translation id="7804248752222191302">Kāda vietne izmanto jūsu kameru</translation>
+<translation id="7805832099057502789">Jaunas cilnes lapas izskata ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="7807060072011926525">Nodrošina Google</translation>
 <translation id="7815680994978050279">Tika bloķēta bīstama lejupielāde</translation>
 <translation id="7835852323729233924">Multivides atskaņošana</translation>
@@ -581,6 +584,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8042586301629853791">Kārtot pēc:</translation>
 <translation id="8051193500142930381">Funkcijas, kurām nepieciešama piekļuve kamerai, nedarbosies</translation>
+<translation id="8056330801132235235">Chrome noklusējums</translation>
 <translation id="8067883171444229417">Atskaņot videoklipu</translation>
 <translation id="8068648041423924542">Nevar atlasīt sertifikātu.</translation>
 <translation id="8077120325605624147">Jebkurā jūsu apmeklētā vietnē var tikt rādītas jebkādas reklāmas</translation>

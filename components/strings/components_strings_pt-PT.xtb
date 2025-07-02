@@ -256,6 +256,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir a sincronização</translation>
 <translation id="1421484961346698724">Conta eliminada</translation>
 <translation id="14222610277930434">Visita frequentemente</translation>
+<translation id="1422795627423046860">A data é inválida</translation>
 <translation id="1422930527989633628">Pode solicitar a deteção de dispositivos Bluetooth próximos</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1427192966110103169">Piscinas, saunas e spas domésticos</translation>
@@ -4818,6 +4819,7 @@ Detalhes adicionais:
 <translation id="9155211586651734179">Periféricos de áudio ligados</translation>
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">A configurar...</translation>
+<translation id="9158491153040481956">Alterou recentemente uma palavra-passe encontrada numa violação de dados pública. Em caso de problemas, o Gestor de Palavras-passe pode ajudar a iniciar sessão.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluir conteúdo sensível}other{<ph name="FILE_COUNT" /> ficheiros podem incluir conteúdo sensível}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Para sair do modo de ecrã inteiro, prima |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mensagem do Slack</translation>

@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Съвети за Chrome</translation>
 <translation id="1816835383954230954">Когато тази опция е включена, Chrome е по-бърз и функциите, които използват JavaScript, би трябвало да работят нормално. Когато тя е изключена, това намалява ефективността, но прави оптимизатора V8 по-устойчив на атаки.</translation>
 <translation id="1818308510395330587">За да разрешите на <ph name="APP_NAME" /> да използва AR, камерата трябва да бъде включена от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Долен лист с облика на новия раздел в браузъра</translation>
 <translation id="1887786770086287077">Достъпът до местоположението е изключен за това устройство. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Сайтовете обикновено осъществяват достъп до файловете и папките на устройството ви, за да осигуряват функции като автоматично запазване на работата ви</translation>
 <translation id="1915307458270490472">Затваряне</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">Изход от цял екран</translation>
 <translation id="640163077447496506">Изтича днес</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Колекции от теми</translation>
 <translation id="6439114592976064011">Блокиране на сайтовете, така че да не използват устройствата и данните ви за виртуална реалност</translation>
 <translation id="6447842834002726250">„Бисквитки“</translation>
 <translation id="6452138246455930388">Цената на <ph name="PRODUCT_NAME" /> в отворения раздел е понижена от <ph name="OLD_PRICE" /> на <ph name="NEW_PRICE" /> в сайта <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7804248752222191302">Сайт използва камерата ви</translation>
+<translation id="7805832099057502789">Долният лист с облика на новия раздел в браузъра е отворен на пълната височина</translation>
 <translation id="7807060072011926525">Предоставено от Google</translation>
 <translation id="7815680994978050279">Блокирано е опасно изтегляне</translation>
 <translation id="7835852323729233924">Възпроизвеждане на мултимедия</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
 <translation id="8042586301629853791">Сортиране по:</translation>
 <translation id="8051193500142930381">Функциите, за които е необходима камера, няма да работят</translation>
+<translation id="8056330801132235235">Стандартно за Chrome</translation>
 <translation id="8067883171444229417">Възпроизвеждане на видеоклипа</translation>
 <translation id="8068648041423924542">Сертификатът не може да бъде избран.</translation>
 <translation id="8077120325605624147">Всички посещавани от вас сайтове могат да ви показват всякакви реклами</translation>

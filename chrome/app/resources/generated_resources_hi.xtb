@@ -7890,7 +7890,7 @@
 <translation id="6560151649238390891">सुझाव डाला गया</translation>
 <translation id="656065428026159829">ज़्यादा देखें</translation>
 <translation id="6561726789132298588">enter</translation>
-<translation id="6561877237303825108">इस तरह की फ़ाइल (<ph name="TYPE" />) खतरनाक हो सकती है. अगर आपको <ph name="ORIGIN" /> पर भरोसा है, तो ही इस फ़ाइल को सेव करें</translation>
+<translation id="6561877237303825108">यह फ़ाइल टाइप (<ph name="TYPE" />) खतरनाक हो सकता है. अगर आपको <ph name="ORIGIN" /> पर भरोसा है, तभी इस फ़ाइल को सेव करें</translation>
 <translation id="6562117348069327379">सिस्टम लॉग, डाउनलोड डायरेक्ट्री में सेव करें.</translation>
 <translation id="656293578423618167">फ़ाइल पाथ या नाम बहुत बड़ा है.  कृपया छोटे नाम के साथ या किसी दूसरी जगह पर सेव करें.</translation>
 <translation id="6563002009564846727">Windows से इंपोर्ट किए गए सर्टिफ़िकेट देखें</translation>

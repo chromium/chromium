@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">是</translation>
 <translation id="1429187656584513419">開啟「密碼」</translation>
 <translation id="1430915738399379752">列印</translation>
+<translation id="1433478348197382180">閱讀模式</translation>
 <translation id="1436671784520050284">繼續設定</translation>
 <translation id="143681031165817424">地址淨係會儲存喺呢部裝置度</translation>
 <translation id="1445276840641906250">集中在同一個瀏覽器使用所有分頁</translation>
@@ -200,6 +201,7 @@
 <translation id="178400879184240105">你沒有重用密碼</translation>
 <translation id="17906873777101817">提示儲存密碼和密鑰</translation>
 <translation id="1794893174442046596">分頁群組</translation>
+<translation id="1807246157184219062">淺色</translation>
 <translation id="1807893857950749072">允許價格追蹤通知…</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1812514023095547458">選取顏色</translation>
@@ -208,6 +210,7 @@
 <translation id="1819374301217551116">價格追蹤和分析資料</translation>
 <translation id="1820195936249950412">請使用有效的帳戶登入</translation>
 <translation id="1820259098641718022">已加入閣讀清單</translation>
+<translation id="1823768272150895732">字型</translation>
 <translation id="1824490729233982311">收到其他裝置的分頁時顯示快訊。</translation>
 <translation id="1827529786398596735">按住主畫面</translation>
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
@@ -365,6 +368,7 @@
 <translation id="2394659309569789395">仍要開啟網站</translation>
 <translation id="2403129868389095715">包裹無法送達</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
+<translation id="2414886740292270097">灰暗</translation>
 <translation id="2422174748424038845">如果刪除，所有人將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，且該群組將從所有裝置中刪除。</translation>
 <translation id="2424805048070062787">繼續使用此分頁</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
@@ -402,6 +406,7 @@
 <translation id="2559843230610279254">分頁群組，<ph name="GROUP_TITLE" />，<ph name="TABS_NUMBER" /> 個分頁。</translation>
 <translation id="2577522251608256362">社區</translation>
 <translation id="2579713773888829241">共用雲端硬碟</translation>
+<translation id="2593272815202181319">等寬</translation>
 <translation id="2597486707832946298">在 iPhone 上充分善用你熟悉又喜愛的桌面電腦瀏覽器。</translation>
 <translation id="2601778637777010194">追蹤產品的減價資訊</translation>
 <translation id="260378315836159338">輕按畫面頂部的「+」圖示</translation>
@@ -742,6 +747,7 @@
 <translation id="4047337302138771011">分享密碼</translation>
 <translation id="4049419681095579435">已追蹤包裹</translation>
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
+<translation id="4056223980640387499">棕褐色</translation>
 <translation id="4070132839822635162">不要登入</translation>
 <translation id="4094361089640885693">輕鬆追蹤價格和取得價格分析資料。</translation>
 <translation id="4099756562043439968">設定提醒</translation>
@@ -984,6 +990,7 @@
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5009127379503001909">繼續瀏覽</translation>
 <translation id="5012914568031465281">無法追蹤價格。</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">傳送至 <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">過去 15 分鐘</translation>
 <translation id="5020732097997376541">輕按「智能鏡頭」圖示</translation>
@@ -1775,6 +1782,7 @@
 <translation id="8096559642098770318">你可設定分頁提醒，方便日後再次查看此網站</translation>
 <translation id="8101409298456377967">建立、儲存及管理密碼，讓您輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">新</translation>
+<translation id="8105368624971345109">關閉</translation>
 <translation id="8114753159095730575">您可以下載檔案。可用選項喺螢幕底部附近。</translation>
 <translation id="8123502380991596210">隱藏「最新資訊」</translation>
 <translation id="8123953306357309250">要取消同步功能嗎？你可隨時在設定中開啟同步功能。</translation>

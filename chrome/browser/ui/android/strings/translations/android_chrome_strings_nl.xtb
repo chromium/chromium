@@ -676,7 +676,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4116038641877404294">Download pagina's om ze offline te gebruiken</translation>
 <translation id="4121654769234887259">Je hoeft dit wachtwoord niet te onthouden. Het wordt opgeslagen in Google Wachtwoordmanager voor <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Proces voor meldingsrechten is op volledige hoogte geopend</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome heeft meldingen van deze site gestopt. Je kunt ze checken en beheren.}other{Chrome heeft meldingen van deze sites gestopt. Je kunt deze checken en beheren.}}</translation>
 <translation id="4132137475637520539">Iedereen met de link toestaan om deel te nemen</translation>
 <translation id="4135200667068010335">De lijst met apparaten om een tabblad mee te delen is gesloten.</translation>
 <translation id="4137746084635924146">Huidige apparaattaal</translation>

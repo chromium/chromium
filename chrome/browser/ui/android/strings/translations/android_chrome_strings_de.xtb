@@ -676,7 +676,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4116038641877404294">Seiten zur Offline-Ansicht herunterladen</translation>
 <translation id="4121654769234887259">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager für <ph name="USERNAME" /> gespeichert.</translation>
 <translation id="4124152339699379357">Ablauf für die Berechtigung zum Senden von Benachrichtigungen vollständig geöffnet</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome hat Benachrichtigungen von dieser Website deaktiviert. Du kannst deine Einstellungen jederzeit prüfen und verwalten.}other{Chrome hat Benachrichtigungen von diesen Websites deaktiviert. Du kannst deine Einstellungen jederzeit prüfen und verwalten.}}</translation>
 <translation id="4132137475637520539">Alle Nutzer mit dem Link beitreten lassen</translation>
 <translation id="4135200667068010335">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist geschlossen.</translation>
 <translation id="4137746084635924146">Aktuelle Gerätesprache</translation>

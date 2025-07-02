@@ -858,6 +858,11 @@ Si no estableces esta política, los usuarios podrán agregar excepciones para p
       Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, el permiso seguirá la configuración predeterminada del navegador y permitirá a los usuarios escoger este permiso para cada sitio.</translation>
 <translation id="1574258262373444557">No usar <ph name="AES_KL_NAME" /> como el algoritmo de encriptación para la encriptación del almacenamiento de datos del usuario</translation>
 <translation id="1575015449587326319">Política de configuración para el Conector de Chrome Enterprise OnFileDownloaded</translation>
+<translation id="1575714464739424740">Una política que controla si se debe habilitar o inhabilitar el parámetro de configuración de Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" /> en el modo Incógnito para los usuarios.
+
+Si inhabilitas la política, se desactivará el parámetro de configuración de la función Fingerprinting Protection para los usuarios.
+Si la habilitas, los usuarios tendrán activado el parámetro de configuración de la función Fingerprinting Protection en el modo Incógnito.
+Si no estableces la política, los usuarios podrán activar o desactivar la función Fingerprinting Protection para el modo Incógnito en la configuración de la IU. El estado predeterminado será falso o inhabilitado, lo que significa que se desactivará la función Fingerprinting Protection.</translation>
 <translation id="1576797364335927541">Inhabilitar <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="1577162851453388235">La API de Direct Sockets permite la comunicación con endpoints arbitrarios a través de TCP y UDP.
 Para obtener más información, consulta https://github.com/WICG/direct-sockets.
@@ -885,6 +890,11 @@ Nota: Esta política solo afectará la IU, y ChromeOS mantendrá la configuraci�
 <translation id="1595013560176869154">Si habilitas la política, se permitirá el uso de PIN poco seguros. Algunas características de los PIN poco seguros: usan un solo dígito (1111), los dígitos están ordenados de forma ascendente (1234), los dígitos están ordenados de forma descendente (4321) o son PIN comunes. Si inhabilitas esta política, los usuarios no podrán establecer PIN poco seguros y fáciles de adivinar.
 
       Si no la estableces, los usuarios reciben una advertencia (no un mensaje de error) cuando usan un PIN poco seguro.</translation>
+<translation id="1596396758769156412">Si inhabilitas esta política o no la estableces, tu dispositivo <ph name="PRODUCT_OS_NAME" /> rechazará las solicitudes de vinculación "Just Works" que inicien los periféricos Bluetooth cercanos.
+
+Si la habilitas, tu dispositivo <ph name="PRODUCT_OS_NAME" /> aceptará las solicitudes de vinculación "Just Works" que inicien los periféricos Bluetooth cercanos.
+
+Nota: Esta política solo se aplica una vez que el usuario accede a su cuenta y no se aplica a la pantalla de acceso.</translation>
 <translation id="1597684038583138808">Habilitar las definiciones de Respuestas rápidas</translation>
 <translation id="1598258379228800626">Habilitar la función para destacar el cursor del teclado en la pantalla de acceso</translation>
 <translation id="1599424828227887013">Habilitar el aislamiento de sitios para orígenes específicos en dispositivos Android</translation>
@@ -1702,6 +1712,7 @@ Si no estableces la política para los usuarios generales, equivale a habilitarl
 <translation id="2180958780733364832">Controlar el uso del modo sin interfaz gráfica</translation>
 <translation id="2182291258410176649">El usuario decide si habilita la copia de seguridad y el restablecimiento</translation>
 <translation id="2183338188392346527">No informar los contadores de tiempo de ejecución del dispositivo</translation>
+<translation id="2187361040843865450">Aceptar solicitudes de vinculación de Bluetooth "Just Works"</translation>
 <translation id="2187372280917024033">La plantilla de URI del agente de resolución de DNS-over-HTTPS deseado. Si quieres especificar varios agentes de resolución de DNS-over-HTTPS, separa las plantillas de URI correspondientes con espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" /> y, si la especificas, se anulará.
 A diferencia de la política <ph name="DOH_TEMPLATES_POLICY_NAME" />, esta política permite especificar la información de identidad.
 Los identificadores se especifican con marcadores de posición de variables que se reemplazan por la información del usuario o del dispositivo en <ph name="PRODUCT_NAME" />. Los identificadores no se envían al servidor DNS en texto sin formato. En su lugar, se les genera un hash con el algoritmo <ph name="SHA256" /> y se codifican con el formato hexadecimal en mayúsculas.
@@ -3975,6 +3986,7 @@ Para conocer las restricciones de <ph name="PRIVATE_NETWORK_ACCESS" />, consulta
       Si no se establecen estas políticas, los usuarios podrán elegir la configuración de proxy.</translation>
 <translation id="3758249152301468420">Inhabilitar herramientas para desarrolladores</translation>
 <translation id="3758910737665387561">Permitir que los dispositivos utilicen PluginVm</translation>
+<translation id="3759342194253299115">Permitir que los usuarios activen o desactiven el parámetro de configuración de Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" /> en el modo Incógnito en sus dispositivos.</translation>
 <translation id="3759650373178711405">A menos que establezcas la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> para restablecer las URL de sesiones anteriores de forma definitiva, la configuración de <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> te permitirá crear una lista de patrones de URL donde se especifiquen los sitios que pueden y no pueden configurar cookies para una sesión determinada.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario. En el caso de URL que no estén contempladas en los patrones especificados, también se utilizará la configuración predeterminada.
@@ -4146,6 +4158,7 @@ Ten en cuenta que esta política no tiene efecto si la política <ph name="ENTER
 
       Si esta política se deja sin configurar, SPDY estará disponible.</translation>
 <translation id="3885896818093825047">Permitir la configuración de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="388940400023402072">Habilitar la función Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" /> en el modo Incógnito.</translation>
 <translation id="3889458462150559611">Permitir que los sitios web envíen solicitudes a cualquier extremo de red de forma no segura</translation>
 <translation id="388999630001435491">Permitir que <ph name="PRODUCT_NAME" /> solo se conecte a dispositivos con direcciones IP privadas</translation>
 <translation id="3891175633496805812">Inhabilitar el controlador de telemetría y diagnósticos wilco</translation>
@@ -5170,6 +5183,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       * Si estableces <ph name="FILTER_PLACEHOLDER" /> como <ph name="EMPTY_DICTIONARY" />, no se aplicarán restricciones adicionales a la selección de certificados de cliente. Ten en cuenta que se seguirán aplicando los filtros que proporciona el servidor web.
 
       Si no estableces la política, no se implementará la selección automática para ningún sitio.</translation>
+<translation id="4607499333275488034">Inhabilitar la función Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" /> en el modo incógnito.</translation>
 <translation id="4611983465824842867">No mostrar advertencias ni inhabilitar la opción Autocompletar en los formularios poco seguros</translation>
 <translation id="4615003180013429835">Modo de análisis de la lista de sitios</translation>
 <translation id="4615436471607987736">A partir de la versión M131, esta política dejará de estar disponible. Esta política ofrece una inhabilitación temporal para dos correcciones relacionadas con el comportamiento del diálogo de confirmación que muestra el evento beforeunload.
@@ -6945,6 +6959,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 <translation id="5722577409367087850">Cargar la extensión</translation>
 <translation id="5728154254076636808">Habilita la creación de las copias de itinerancia para los datos de perfil de <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Contraseña de Kerberos. La contraseña de acceso reemplaza al marcador de posición <ph name="PASSWORD_PLACEHOLDER" />.</translation>
+<translation id="5730610899971390601">Rechazar solicitudes de vinculación de Bluetooth "Just Works"</translation>
 <translation id="5732972008943405952">Importar el formulario de Autocompletar del navegador predeterminado en la primera ejecución</translation>
 <translation id="5733040281451845496">Si habilitas la política, se iniciarán los tiempos de espera para la administración de la energía y los límites de extensión de la sesión después de la primera actividad del usuario en una sesión.
 
@@ -7465,6 +7480,7 @@ disponible hasta la versión 114 de
 
 NOTA: Solo los procesos del renderizador recién iniciados reflejarán los cambios de esta
 política mientras se esté ejecutando el navegador.</translation>
+<translation id="6083281887050888160">Habilitar la vinculación de Bluetooth "Just Works"</translation>
 <translation id="6083631234867522991">Windows (clientes de Windows):</translation>
 <translation id="6087413944876892918">Usar el algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Establecer en porcentaje el umbral de la batería para el cambio de carga fuera del horario de mayor consumo</translation>
@@ -7814,15 +7830,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 Los orígenes deben corresponder a las aplicaciones web que se instalan de manera automática con la política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (desde la versión 125) o que están configuradas como aplicaciones de kiosco. Para conocer las especificaciones de la API de Device Attributes, consulta https://wicg.github.io/WebApiDevice/device_attributes.
 
 Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos (desde la versión 127), consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
-<translation id="6286385444341934784">Esta configuración permite las integraciones de la app de Gemini.
-
-0 o no establecido = La integración con Gemini estará disponible para los usuarios.
-
-1 = La integración con Gemini no estará disponible para los usuarios.
-
-Si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para obtener más información, consulta las notas de la versión de Enterprise (https://support.google.com/chrome/a/answer/7679408).</translation>
 <translation id="6287128640500683781">Permitir que acceda cualquier usuario</translation>
 <translation id="6287310684159482272">Configuración de cookies</translation>
 <translation id="6287742528823584153">Habilitar el servicio de <ph name="PRODUCT_NAME" /> y abrir el escritorio remoto al acceder</translation>
@@ -8499,6 +8506,7 @@ En <ph name="MS_WIN_NAME" />, siempre se respeta la política de KDC.</translati
 <translation id="6665670272107384733">Establecer la frecuencia con la que el usuario debe ingresar la contraseña para usar el desbloqueo rápido</translation>
 <translation id="6667586534922258705">Muestra el botón para ver la contraseña en la pantalla de inicio o de bloqueo</translation>
 <translation id="6667636336079341367">Permitir Scanner sin mejorar los modelos de IA.</translation>
+<translation id="6669244130218275293">Elige si deseas habilitar la función Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" /> en el modo Incógnito.</translation>
 <translation id="6669691206059842248">Configurar URLs de redireccionamiento de OAuth adicionales por extensión</translation>
 <translation id="6669700740683748046">Esta función permite ver la URL completa en la barra de direcciones.
       Si estableces esta política como verdadera, se mostrará la URL completa en la barra de direcciones, incluidos sus esquemas y subdominios.
@@ -9101,6 +9109,13 @@ Se ignoran las entradas no válidas.</translation>
 <translation id="7046113122884041950">No permitir Smart Lock</translation>
 <translation id="7046997898355294677">Mostrar las notificaciones de privacidad hasta que el usuario las descarte</translation>
 <translation id="7047495632846973438">Especificar si se marca o se omite la política de permisos para la captura de pantalla</translation>
+<translation id="7053807509123417914">Esta política controla una etiqueta personalizada que se usa para indicar un navegador administrado. En el caso de los navegadores administrados, esta etiqueta se mostrará en una cláusula de exención de responsabilidad de administración en el pie de página de la página Nueva pestaña. No se traducirá la etiqueta personalizada.
+
+Ten en cuenta que esta política solo se aplica a los navegadores administrados, por lo que no tendrá efecto en los usuarios administrados en navegadores no administrados.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="7055022222176591388">No permitir el complemento de <ph name="FLASH_PLUGIN_NAME" /> desactualizado</translation>
 <translation id="7056040036973126753">Enviar datos de confiabilidad de dominios a Google en función de la política de Métricas del usuario (UMA) de Chrome</translation>
 <translation id="7062803946218028349">Permitir que se habilite Phone Hub</translation>

@@ -816,6 +816,11 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent ajouter des exce
       Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
 <translation id="1574258262373444557">Ne pas utiliser <ph name="AES_KL_NAME" /> comme algorithme de chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="1575015449587326319">Règle de configuration du connecteur Chrome Enterprise OnFileDownloaded</translation>
+<translation id="1575714464739424740">Règle permettant de définir si la fonctionnalité de protection contre le fingerprinting de la <ph name="PRIVACY_SANDBOX_NAME" /> doit être activée en mode navigation privée ou désactivée pour vos utilisateurs.
+
+Si cette règle est désactivée, cette fonctionnalité le sera aussi pour les utilisateurs.
+Si cette règle est activée, cette fonctionnalité le sera aussi pour les utilisateurs en mode navigation privée.
+Si cette règle n'est pas configurée, les utilisateurs pourront activer ou désactiver la fonctionnalité de protection contre le fingerprinting en mode navigation privée dans les paramètres de l'interface utilisateur. L'état par défaut est "False" ou "Désactivé", ce qui signifie que cette fonctionnalité de protection est désactivée.</translation>
 <translation id="1576797364335927541">Désactiver <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="1577162851453388235">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
 Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
@@ -843,6 +848,11 @@ Remarque : Cette règle ne concerne que l'UI. ChromeOS conserve les paramètres
 <translation id="1595013560176869154">Si cette règle est activée, les utilisateurs peuvent définir des codes peu sécurisés. Exemples de codes peu sécurisés : les séries de chiffres identiques (1111), dans l'ordre croissant (1234) et dans l'ordre décroissant (4321), et les codes trop communs. Si cette règle est désactivée, les utilisateurs ne peuvent pas définir de codes peu sécurisés et faciles à deviner.
 
       Si cette règle n'est pas configurée, un message d'avertissement (et non un message d'erreur) s'affiche quand le code choisi par l'utilisateur est peu sécurisé.</translation>
+<translation id="1596396758769156412">Si cette règle est désactivée ou qu'elle n'est pas configurée, votre appareil <ph name="PRODUCT_OS_NAME" /> refusera les demandes d'association "Just Works" initiées par des périphériques Bluetooth à proximité.
+
+Si cette règle est activée, votre appareil <ph name="PRODUCT_OS_NAME" /> acceptera les demandes d'association "Just Works" initiées par les périphériques Bluetooth à proximité.
+
+Remarque : Cette règle ne prend effet qu'une fois que l'utilisateur s'est connecté, et ne s'applique pas à l'écran de connexion.</translation>
 <translation id="1597684038583138808">Activer la définition pour Réponses rapides</translation>
 <translation id="1598258379228800626">Activer la mise en surbrillance des éléments sélectionnés au clavier sur l'écran de connexion</translation>
 <translation id="1599424828227887013">Activer l'isolation des sites pour des origines définies sur les appareils Android</translation>
@@ -1622,6 +1632,7 @@ Si cette règle n'est pas configurée : pour les utilisateurs standards, c'est 
 <translation id="2180958780733364832">Contrôler l'utilisation du mode headless</translation>
 <translation id="2182291258410176649">L'utilisateur décide d'activer ou non le service de sauvegarde et de restauration</translation>
 <translation id="2183338188392346527">Ne pas signaler les compteurs d'exécution de l'appareil</translation>
+<translation id="2187361040843865450">Accepter les demandes d'association Bluetooth "Just Works"</translation>
 <translation id="2187372280917024033">Modèle URI du résolveur DNS-over-HTTPS souhaité. Pour définir plusieurs résolveurs DNS-over-HTTPS, vous devez séparer les modèles URI correspondants à l'aide d'espaces. Cette règle est très semblable à <ph name="DOH_TEMPLATES_POLICY_NAME" /> et l'ignore lorsqu'elle est spécifiée.
 Contrairement à <ph name="DOH_TEMPLATES_POLICY_NAME" />, cette règle permet de spécifier des informations d'identification.
 Les identifiants sont spécifiés à l'aide d'espaces réservés servant de variables et remplacés par des informations sur l'utilisateur ou l'appareil dans <ph name="PRODUCT_NAME" />. Les identifiants ne sont pas envoyés au serveur DNS en texte brut. Ils sont hachés avec l'algorithme <ph name="SHA256" /> et encodés en hexadécimal avec majuscules.
@@ -3801,6 +3812,7 @@ Pour connaître les restrictions concernant <ph name="PRIVATE_NETWORK_ACCESS" />
       Si ces règles ne sont pas configurées, les utilisateurs peuvent choisir eux-mêmes leurs paramètres de proxy.</translation>
 <translation id="3758249152301468420">Désactiver les outils pour les développeurs</translation>
 <translation id="3758910737665387561">Autoriser les appareils à utiliser Plugin VM</translation>
+<translation id="3759342194253299115">Autoriser les utilisateurs à activer ou désactiver la fonctionnalité de protection contre le fingerprinting de la <ph name="PRIVACY_SANDBOX_NAME" /> en mode navigation privée sur leur appareil.</translation>
 <translation id="3759650373178711405">La règle <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> vous permet de dresser la liste des formats d'URL indiquant les sites autorisés ou non à placer des cookies lors d'une session, à moins que la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> soit définie pour restaurer définitivement les URL des sessions précédentes.
 
       Si cette règle n'est pas configurée, <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> est utilisé pour tous les sites (si configuré). Sinon, le paramètre défini par l'utilisateur s'applique. Si le format d'URL concerné ne figure pas dans la liste établie, le paramètre par défaut est utilisé.
@@ -3972,6 +3984,7 @@ Notez que cette règle n'aura aucun effet si la règle <ph name="ENTERPRISE_PROF
 
       Si cette règle n'est pas définie, le protocole SPDY est disponible.</translation>
 <translation id="3885896818093825047">Autoriser la configuration de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="388940400023402072">Activer la fonctionnalité de protection contre le fingerprinting de la <ph name="PRIVACY_SANDBOX_NAME" /> en mode navigation privée.</translation>
 <translation id="3889458462150559611">Autorise les sites Web à envoyer des requêtes à n'importe quel point de terminaison du réseau de façon non sécurisée.</translation>
 <translation id="388999630001435491">Autoriser <ph name="PRODUCT_NAME" /> à ne se connecter qu'aux appareils sur des adresses IP privées</translation>
 <translation id="3891175633496805812">Désactiver le dispositif de contrôle de diagnostic et de télémétrie de Wilco</translation>
@@ -4959,6 +4972,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       * Lorsque le filtre <ph name="FILTER_PLACEHOLDER" /> est défini sur <ph name="EMPTY_DICTIONARY" />, la sélection de certificats client ne fait pas l'objet de restrictions supplémentaires. Notez que les filtres fournis par le serveur Web restent appliqués.
 
       Si cette règle n'est pas configurée, aucune sélection automatique n'est effectuée pour aucun site.</translation>
+<translation id="4607499333275488034">Désactiver la fonctionnalité de protection contre le fingerprinting de la <ph name="PRIVACY_SANDBOX_NAME" /> en mode navigation privée.</translation>
 <translation id="4611983465824842867">Ne pas afficher d'avertissements ni désactiver la saisie automatique sur les formulaires non sécurisés</translation>
 <translation id="4615003180013429835">Mode d'analyse de la liste des sites</translation>
 <translation id="4615436471607987736">Cette règle est obsolète depuis la version M131. Elle permet de désactiver temporairement deux correctifs associés concernant le comportement de la boîte de dialogue de confirmation affichée par l'événement beforeunload.
@@ -6685,6 +6699,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="5722577409367087850">Charger l'extension</translation>
 <translation id="5728154254076636808">Permet de créer des copies itinérantes pour les données de profil <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Mot de passe Kerberos. L'espace réservé <ph name="PASSWORD_PLACEHOLDER" /> est remplacé par le mot de passe de connexion.</translation>
+<translation id="5730610899971390601">Refuser les demandes d'association Bluetooth "Just Works"</translation>
 <translation id="5732972008943405952">Importer les données de saisie automatique du navigateur par défaut à la première exécution</translation>
 <translation id="5733040281451845496">Si cette règle est activée, les délais liés à la gestion de l'alimentation et les limites relatives à la durée de session ne sont activés que lorsque l'utilisateur a effectué une première activité au cours d'une session.
 
@@ -7183,6 +7198,7 @@ Si elle est activée, l'API est prise en charge.
 Cette règle peut être utilisée si l'élimination de la prise en charge de l'API entraîne des problèmes. Si vous devez utiliser cette règle, veuillez signaler un bug sur crbug.com en expliquant votre cas d'utilisation et mettez en copie {blundell, vasilyt}@chromium.org. La règle est disponible jusqu'à la version 114 de <ph name="PRODUCT_NAME" />, après laquelle la prise en charge de cette API a été supprimée sans conditions.
 
 REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.</translation>
+<translation id="6083281887050888160">Activer l'association Bluetooth "Just Works"</translation>
 <translation id="6083631234867522991">Windows (clients Windows) :</translation>
 <translation id="6087413944876892918">Utiliser l'algorithme <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Définir le niveau de batterie minimal autorisé avec l'alimentation alternée en heures pleines</translation>
@@ -7501,15 +7517,6 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 Les origines doivent correspondre aux applis Web installées d'office à l'aide de la règle <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (depuis la version 125), ou configurées en tant qu'applis kiosque. Pour connaître les spécifications de l'API Device Attributes, veuillez consulter https://wicg.github.io/WebApiDevice/device_attributes.
 
 Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides (depuis la version 127), consultez https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
-<translation id="6286385444341934784">Ce paramètre autorise les intégrations de l'appli Gemini.
-
-0/non défini = l'intégration de Gemini sera disponible pour les utilisateurs.
-
-1 = l'intégration de Gemini ne sera pas disponible pour les utilisateurs.
-
-Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Pour en savoir plus, veuillez consulter les notes de version Enterprise (https://support.google.com/chrome/a/answer/7679408).</translation>
 <translation id="6287128640500683781">Autoriser tous les utilisateurs à se connecter</translation>
 <translation id="6287310684159482272">Paramètres des cookies</translation>
 <translation id="6287742528823584153">Activer le service <ph name="PRODUCT_NAME" /> et lancer le bureau à distance lors de la connexion</translation>
@@ -8136,6 +8143,7 @@ Sous <ph name="MS_WIN_NAME" />, la règle KDC est toujours respectée.</transla
 <translation id="6665670272107384733">Définir la fréquence à laquelle l'utilisateur doit saisir le mot de passe pour utiliser le déverrouillage rapide</translation>
 <translation id="6667586534922258705">Activer le bouton permettant d'afficher le mot de passe sur l'écran de connexion et de verrouillage</translation>
 <translation id="6667636336079341367">Autoriser Scanner sans améliorer les modèles d'IA.</translation>
+<translation id="6669244130218275293">Activer ou non la fonctionnalité de protection contre le fingerprinting de la <ph name="PRIVACY_SANDBOX_NAME" /> en mode navigation privée.</translation>
 <translation id="6669691206059842248">Configurer des URL de redirection OAuth supplémentaires par extension</translation>
 <translation id="6669700740683748046">Permet d'afficher ou non l'URL complète dans la barre d'adresse.
       Si cette règle est définie sur "True", l'URL complète est affichée dans la barre d'adresse, y compris les schémas et les sous-domaines.
@@ -8722,6 +8730,13 @@ Les entrées non valides sont ignorées.</translation>
 <translation id="7046113122884041950">Ne pas autoriser Smart Lock</translation>
 <translation id="7046997898355294677">Afficher les notifications de confidentialité jusqu'à leur suppression par l'utilisateur</translation>
 <translation id="7047495632846973438">Indique si la règle display-capture permissions-policy est sélectionnée ou ignorée.</translation>
+<translation id="7053807509123417914">Cette règle permet de définir un libellé personnalisé servant à indiquer un navigateur géré. Pour les navigateurs gérés, ce libellé sera affiché dans un avis de non-responsabilité de gestion, dans le pied de page de la page "Nouvel onglet". Le libellé personnalisé ne sera pas traduit.
+
+Notez que cette règle ne s'applique qu'aux navigateurs gérés. Elle n'aura donc aucune incidence pour les utilisateurs gérés sur les navigateurs non gérés.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="7055022222176591388">Interdire le plug-in obsolète <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7056040036973126753">Les données sur la fiabilité du domaine peuvent être envoyées à Google, en fonction des règles sur les métriques utilisateur de Chrome (UMA, User Metrics Analysis)</translation>
 <translation id="7062803946218028349">Autoriser l'activation de Phone Hub</translation>

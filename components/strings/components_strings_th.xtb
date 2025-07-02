@@ -420,7 +420,7 @@
 <translation id="1706625117072057435">ระดับการซูม</translation>
 <translation id="1706922226983368260">พาสคีย์ • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{เซิร์ฟเวอร์นี้พิสูจน์ไม่ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยควรจะเริ่มใช้งานได้ตั้งแต่วันพรุ่งนี้ โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ}other{เซิร์ฟเวอร์นี้พิสูจน์ไม่ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยควรจะเริ่มใช้งานได้ในอีก # วันข้างหน้า โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ}}</translation>
-<translation id="1709711942721576168">ปุ่มโหมด AI เปิดใช้งานเพื่อถามโหมด AI</translation>
+<translation id="1709711942721576168">ปุ่มโหมด AI เปิดใช้งานเพื่อเปิดใช้โหมด AI</translation>
 <translation id="1710259589646384581">ระบบปฏิบัติการ</translation>
 <translation id="1711234383449478798">ละเว้นเนื่องจาก <ph name="POLICY_NAME" /> ไม่ได้ตั้งค่าเป็น "<ph name="VALUE" />"</translation>
 <translation id="1712552549805331520"><ph name="URL" /> ต้องการจัดเก็บข้อมูลถาวรในเครื่องคอมพิวเตอร์ของคุณ</translation>
@@ -3034,7 +3034,7 @@
 <translation id="6108849843016142864">สัตว์เลื้อยคลานและสัตว์ครึ่งบกครึ่งน้ำ</translation>
 <translation id="610911394827799129">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">ระบบจะส่งการค้นหาของคุณ ผลลัพธ์ที่ตรงที่สุด และเนื้อหาในหน้าไปยัง Google และเจ้าหน้าที่ตรวจสอบอาจเห็นข้อมูลดังกล่าวเพื่อนำไปใช้ปรับปรุงฟีเจอร์นี้</translation>
-<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Enter เพื่อถามโหมด AI</translation>
+<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Enter เพื่อเปิดใช้โหมด AI</translation>
 <translation id="6116338172782435947">ดูข้อความและรูปภาพที่คัดลอกไปที่คลิปบอร์ด</translation>
 <translation id="6117833587752089929">รูปภาพ (ซาติน)</translation>
 <translation id="6118782133429281336">รายการต้นทางว่างเปล่า</translation>

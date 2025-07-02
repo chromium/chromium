@@ -676,7 +676,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4116038641877404294">Download halaman untuk melihat secara offline</translation>
 <translation id="4121654769234887259">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi Google untuk <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Alur izin notifikasi terbuka sepenuhnya</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome menghentikan notifikasi dari situs ini. Anda dapat meninjau dan mengelolanya.}other{Chrome menghentikan notifikasi dari situs ini. Anda dapat meninjau dan mengelolanya.}}</translation>
 <translation id="4132137475637520539">Izinkan siapa saja yang memiliki link ini untuk bergabung</translation>
 <translation id="4135200667068010335">Daftar perangkat yang dapat digunakan untuk berbagi tab tertutup.</translation>
 <translation id="4137746084635924146">Bahasa perangkat saat ini</translation>

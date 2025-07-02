@@ -676,7 +676,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4116038641877404294">Sayfaları çevrimdışı olarak kullanmak için indirin</translation>
 <translation id="4121654769234887259">Bu şifreyi hatırlamanız gerekmez. <ph name="USERNAME" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="4124152339699379357">Bildirim izni akışı tam ekranda açıldı</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome, bu siteden gelen bildirimleri durdurdu. Bunları inceleyip yönetebilirsiniz.}other{Chrome, bu sitelerden gelen bildirimleri durdurdu. Bunları inceleyip yönetebilirsiniz.}}</translation>
 <translation id="4132137475637520539">Bağlantıya sahip herkesin katılmasına izin ver</translation>
 <translation id="4135200667068010335">Sekme paylaşılacak cihazların listesi kapalı.</translation>
 <translation id="4137746084635924146">Mevcut cihaz dili</translation>

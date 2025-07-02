@@ -676,7 +676,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4116038641877404294">Töltse le az oldalakat offline használatra</translation>
 <translation id="4121654769234887259">Nem kell megjegyeznie a jelszót. A rendszer elmenti a fiókhoz (<ph name="USERNAME" />) tartozó Google Jelszókezelőbe.</translation>
 <translation id="4124152339699379357">Az értesítések engedélyezési folyamata teljes magasságban van megnyitva</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{A Chrome leállította az erről a webhelyről küldött értesítéseket. Áttekintheti és kezelheti őket.}other{A Chrome leállította az ezekről a webhelyekről küldött értesítéseket. Áttekintheti és kezelheti őket.}}</translation>
 <translation id="4132137475637520539">A link birtokában bárki csatlakozhat</translation>
 <translation id="4135200667068010335">Lap megosztására szolgáló eszközök listája bezárva.</translation>
 <translation id="4137746084635924146">Eszköz jelenlegi nyelve</translation>

@@ -69,6 +69,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="1799920918471566157">Consells per a Chrome</translation>
 <translation id="1816835383954230954">Quan està activat, Chrome s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar. Quan està desactivat, es redueix el rendiment, però fa que V8 sigui més resistent als atacs.</translation>
 <translation id="1818308510395330587">Per permetre que <ph name="APP_NAME" /> utilitzi RA, activa també la càmera a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Full inferior de l'aparença de la pàgina Pestanya nova</translation>
 <translation id="1887786770086287077">L'accés a la ubicació està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Els llocs web solen accedir als fitxers i a les carpetes del dispositiu per a funcions com ara desar automàticament la teva feina</translation>
 <translation id="1915307458270490472">Penja</translation>
@@ -459,6 +460,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
 <translation id="640163077447496506">Caduca avui</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Col·leccions de temes</translation>
 <translation id="6439114592976064011">Impedeix que els llocs web utilitzin les teves dades i el teu dispositiu de realitat virtual</translation>
 <translation id="6447842834002726250">Galetes</translation>
 <translation id="6452138246455930388">Baixada de preu a la pestanya oberta (abans <ph name="OLD_PRICE" />, ara <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
@@ -562,6 +564,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7791543448312431591">Afegeix</translation>
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7804248752222191302">Un lloc web està utilitzant la càmera</translation>
+<translation id="7805832099057502789">Full inferior de l'aparença de la pàgina Pestanya nova obert a alçada completa</translation>
 <translation id="7807060072011926525">Proporcionat per Google</translation>
 <translation id="7815680994978050279">S'ha bloquejat una baixada perillosa</translation>
 <translation id="7835852323729233924">Reproduint contingut multimèdia</translation>
@@ -581,6 +584,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="802154636333426148">Error de baixada</translation>
 <translation id="8042586301629853791">Ordena per:</translation>
 <translation id="8051193500142930381">Les funcions que necessiten una càmera no funcionaran</translation>
+<translation id="8056330801132235235">Predeterminat de Chrome</translation>
 <translation id="8067883171444229417">Reprodueix el vídeo</translation>
 <translation id="8068648041423924542">No es pot seleccionar el certificat.</translation>
 <translation id="8077120325605624147">Qualsevol lloc web que visitis pot mostrar-te qualsevol anunci</translation>

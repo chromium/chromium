@@ -69,6 +69,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="1799920918471566157">„Chrome“ patarimai</translation>
 <translation id="1816835383954230954">Įjungus „Chrome“ veikia sparčiau, o „JavaScript“ naudojančios funkcijos turėtų veikti, kaip numatyta. Išjungus sumažėja našumas, bet V8 tampa atsparesnė atakoms.</translation>
 <translation id="1818308510395330587">Norėdami leisti „<ph name="APP_NAME" />“ naudoti AR, taip pat įjunkite fotoaparatą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Naujo skirtuko puslapio išvaizdos apatinis lapas</translation>
 <translation id="1887786770086287077">Vietos prieiga išjungta šiame įrenginyje. Įjunkite ją skiltyje <ph name="BEGIN_LINK" />„Android“ nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Paprastai svetainės pasiekia failus ir aplankus jūsų įrenginyje vykdydamos tokias funkcijas kaip automatinis darbo išsaugojimas</translation>
 <translation id="1915307458270490472">Baigti</translation>
@@ -459,6 +460,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="6398765197997659313">Išeiti iš viso ekrano režimo</translation>
 <translation id="640163077447496506">Galiojimo laikas baigsis šiandien</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Temų rinkiniai</translation>
 <translation id="6439114592976064011">Neleisti svetainėms naudoti virtualiosios realybės įrenginio ir duomenų</translation>
 <translation id="6447842834002726250">Slapukai</translation>
 <translation id="6452138246455930388">Sumažinta kaina atidarytame skirtuke: iš <ph name="OLD_PRICE" /> į <ph name="NEW_PRICE" />, „<ph name="PRODUCT_NAME" />“, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7791543448312431591">Pridėti</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="7804248752222191302">Svetainėje naudojamas jūsų fotoaparatas</translation>
+<translation id="7805832099057502789">Naujo skirtuko puslapio išvaizdos apatinis lapas atidarytas per visą aukštį</translation>
 <translation id="7807060072011926525">Pateikė „Google“</translation>
 <translation id="7815680994978050279">Užblokuotas pavojingas atsisiuntimas</translation>
 <translation id="7835852323729233924">Leidžiama medija</translation>
@@ -581,6 +584,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="802154636333426148">Įvyko atsisiuntimo klaida</translation>
 <translation id="8042586301629853791">Rūšiuoti pagal:</translation>
 <translation id="8051193500142930381">Funkcijos, kurioms reikalingas fotoaparatas, neveiks</translation>
+<translation id="8056330801132235235">Numatytoji „Chrome“ parinktis</translation>
 <translation id="8067883171444229417">Leisti vaizdo įrašą</translation>
 <translation id="8068648041423924542">Nepavyko pasirinkti sertifikato.</translation>
 <translation id="8077120325605624147">Bet kokia svetainė, kurioje lankotės, gali rodyti jums bet kokį skelbimą</translation>

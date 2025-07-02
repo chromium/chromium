@@ -815,6 +815,11 @@ Als je dit beleid niet instelt, kunnen gebruikers uitzonderingen toevoegen om bl
       Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld, anders worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze dit recht willen verlenen.</translation>
 <translation id="1574258262373444557"><ph name="AES_KL_NAME" /> niet gebruiken als het versleutelingsalgoritme voor versleuteling van gebruikersopslag</translation>
 <translation id="1575015449587326319">Configuratiebeleid voor de Chrome Enterprise-connector OnFileDownloaded</translation>
+<translation id="1575714464739424740">Beleid om te bepalen of de instelling voor vingerafdrukbeveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet in de incognitomodus of uitgezet voor je gebruikers.
+
+Als je dit beleid niet toepast, wordt de instelling voor vingerafdrukbeveiliging uitgezet voor je gebruikers.
+Als je dit beleid toepast, staat de functie voor vingerafdrukbeveiliging aan voor je gebruikers in de incognitomodus.
+Als je het beleid niet instelt, kunnen gebruikers de functie voor vingerafdrukbeveiliging voor de incognitomodus aan- of uitzetten in de instellingen van de gebruikersinterface. De standaardstatus is onwaar of uit. Dit betekent dat de functie voor vingerafdrukbeveiliging wordt uitgezet.</translation>
 <translation id="1576797364335927541"><ph name="ALR_FEATURE_NAME" /> uitzetten</translation>
 <translation id="1577162851453388235">Met de Direct Sockets API kun je via TCP en UDP communiceren met willekeurige eindpunten.
 Ga naar https://github.com/WICG/direct-sockets voor meer informatie.
@@ -842,6 +847,11 @@ Opmerking: Dit beleid heeft alleen invloed op de UI. ChromeOS behoudt de bestaan
 <translation id="1595013560176869154">Als je dit beleid toepast, worden zwakke pincodes toegestaan. Enkele kenmerken van zwakke pincodes: hetzelfde teken (1111), tekens die worden verhoogd met 1 (1234), tekens die worden verlaagd met 1 (4321) en veelgebruikte pincodes. Als je het beleid niet toepast, kunnen gebruikers geen zwakke, makkelijk te raden pincodes instellen.
 
 Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats van een fout) voor een zwakke pincode.</translation>
+<translation id="1596396758769156412">Als je dit beleid niet toepast of niet instelt, weigert je <ph name="PRODUCT_OS_NAME" />-apparaat Just Works-koppelingsverzoeken die worden gestart door bluetooth-randapparatuur in de buurt.
+
+Als je dit beleid toepast, accepteert je <ph name="PRODUCT_OS_NAME" />-apparaat Just Works-koppelingsverzoeken die worden gestart door bluetooth-randapparatuur in de buurt.
+
+Opmerking: Dit beleid wordt pas van kracht nadat een gebruiker is ingelogd en is niet van toepassing op het inlogscherm.</translation>
 <translation id="1597684038583138808">Definitie van Snelle antwoorden aanzetten</translation>
 <translation id="1598258379228800626">Toetsenbordfocusmarking op het inlogscherm aanzetten</translation>
 <translation id="1599424828227887013">Site-isolatie aanzetten voor opgegeven oorsprongen op Android-apparaten</translation>
@@ -1622,6 +1632,7 @@ Als je dit beleid niet instelt voor gewone gebruikers, is dit functioneel vergel
 <translation id="2180958780733364832">Gebruik van de stand zonder interface beheer</translation>
 <translation id="2182291258410176649">De gebruiker beslist of back-up maken en terugzetten moet worden aangezet</translation>
 <translation id="2183338188392346527">Runtime-tellers voor apparaat niet rapporteren</translation>
+<translation id="2187361040843865450">Just Works-koppelingsverzoeken voor bluetooth accepteren</translation>
 <translation id="2187372280917024033">De URI-template van de gewenste DNS-over-HTTPS-resolver. Als je meerdere DNS-over-HTTPS-resolvers wilt invoeren, scheid je de overeenkomstige URI-templates met een spatie. Dit beleid lijkt sterk op <ph name="DOH_TEMPLATES_POLICY_NAME" />, dat wordt overschreven als dit is gespecificeerd.
 In tegenstelling tot het beleid <ph name="DOH_TEMPLATES_POLICY_NAME" /> ondersteunt dit beleid het invoeren van identiteitsgegevens.
 ID's worden ingevoerd met variabele tijdelijke aanduidingen die worden vervangen door gebruikers- of apparaatgegevens in <ph name="PRODUCT_NAME" />. De ID's worden niet in platte tekst naar de DNS-server gestuurd. In plaats daarvan worden ze gehasht met het <ph name="SHA256" />-algoritme en worden ze in hoofdletters hex-gecodeerd.
@@ -3796,6 +3807,7 @@ Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opti
       Als je dit beleid niet instelt, kunnen gebruikers zelf de gewenste proxyinstellingen selecteren.</translation>
 <translation id="3758249152301468420">Ontwikkelaarstools uitzetten</translation>
 <translation id="3758910737665387561">Apparaten toestaan een PluginVm te gebruiken</translation>
+<translation id="3759342194253299115">Sta toe dat gebruikers de instelling voor vingerafdrukbeveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> aan- of uitzetten in de incognitomodus op hun apparaat.</translation>
 <translation id="3759650373178711405">Als je <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> instelt, kun je een lijst met URL-patronen opgeven van sites die geen cookies kunnen instellen voor 1 sessie, tenzij het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> is ingesteld op het permanent herstellen van URL's uit vorige sessies.
 
       Als je het beleid niet instelt, wordt <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> gebruikt voor alle sites als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker. Voor URL's die niet overeenkomen met de opgegeven patronen worden de standaardwaarden gebruikt.
@@ -3967,6 +3979,7 @@ Dit beleid heeft geen effect als het beleid <ph name="ENTERPRISE_PROFILE_BADGE_T
 
       Als dit beleid niet wordt ingesteld, is het SPDY-protocol beschikbaar.</translation>
 <translation id="3885896818093825047">Instellen van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> toestaan</translation>
+<translation id="388940400023402072">Zet de functie voor vingerafdrukbeveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> aan in de incognitomodus.</translation>
 <translation id="3889458462150559611">Sta toe dat websites op een onbeveiligde manier verzoeken naar een netwerkeindpunt sturen.</translation>
 <translation id="388999630001435491"><ph name="PRODUCT_NAME" /> niet toestaan verbinding te maken met apparaten op privé-IP-adressen</translation>
 <translation id="3891175633496805812">De wilco-controller voor diagnostische gegevens en telemetrie uitzetten</translation>
@@ -4941,6 +4954,7 @@ In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor ins
       * Als <ph name="FILTER_PLACEHOLDER" /> is ingesteld op <ph name="EMPTY_DICTIONARY" />, wordt de selectie van clientcertificaten niet verder beperkt. Houd er rekening mee dat filters die door de webserver worden geleverd, nog steeds van toepassing zijn.
 
       Als je het beleid niet instelt, worden clientcertificaten voor geen enkele site automatisch geselecteerd.</translation>
+<translation id="4607499333275488034">Zet de functie voor vingerafdrukbeveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> uit in de incognitomodus.</translation>
 <translation id="4611983465824842867">Geen waarschuwingen tonen en automatisch invullen niet uitzetten voor onveilige formulieren</translation>
 <translation id="4615003180013429835">Modus voor sitelijstparsering</translation>
 <translation id="4615436471607987736">Vanaf M131 is dit beleid beëindigd. Dit beleid biedt een tijdelijk afmeldingsmechanisme voor 2 gerelateerde oplossingen voor het gedrag van het bevestigingsdialoogvenster dat door de beforeunload-gebeurtenis wordt getoond.
@@ -6649,6 +6663,7 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="5722577409367087850">De extensie laden</translation>
 <translation id="5728154254076636808">Aanmaak van roaming-exemplaren voor <ph name="PRODUCT_NAME" />-profielgegevens aanzetten</translation>
 <translation id="5729308727912841256">Kerberos-wachtwoord. De tijdelijke aanduiding <ph name="PASSWORD_PLACEHOLDER" /> wordt vervangen door het wachtwoord voor inloggen.</translation>
+<translation id="5730610899971390601">Just Works-koppelingsverzoeken voor bluetooth weigeren</translation>
 <translation id="5732972008943405952">Formuliergegevens voor Automatisch invullen importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="5733040281451845496">Als je het beleid toepast, gaan de perioden voor stroombeheer en voor de maximale sessielengte pas in zodra de eerste gebruikersactiviteit plaatsvindt in een sessie.
 
@@ -7138,6 +7153,7 @@ Als je het beleid toepast, wordt de API ondersteund.
 Dit beleid kan worden gebruikt als de lopende beëindiging van ondersteuning voor deze API problemen aan het licht brengt. Als je het beleid moet gebruiken, dien je een bug in op crbug.com, met een cc naar {blundell, vasilyt}@chromium.org, waarin je je use case uitlegt. Het beleid is beschikbaar via <ph name="PRODUCT_NAME" /> versie 114, waarna support voor deze API onvoorwaardelijk is beëindigd.
 
 OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.</translation>
+<translation id="6083281887050888160">Just Works-koppeling voor bluetooth aanzetten</translation>
 <translation id="6083631234867522991">Windows (Windows-clients):</translation>
 <translation id="6087413944876892918">Het algoritme <ph name="HAPPY_EYEBALLS_V3" /> gebruiken</translation>
 <translation id="608788685013546076">Drempel voor stroompiekverschuiving van batterij instellen in procenten</translation>
@@ -7455,15 +7471,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 Oorsprongen moeten overeenkomen met web-apps die afgedwongen zijn geïnstalleerd met het beleid <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> of <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (sinds versie 125) of die zijn ingesteld als kiosk-app. Ga naar https://wicg.github.io/WebApiDevice/device_attributes voor de specificaties van de Device Attributes API.
 
 Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen (sinds versie 127). <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
-<translation id="6286385444341934784">Met deze instelling worden Gemini-app-integraties toegestaan.
-
-0/niet ingesteld = Gemini-integratie is beschikbaar voor gebruikers.
-
-1 = Gemini-integratie is niet beschikbaar voor gebruikers.
-
-Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Check de release-opmerkingen voor Chrome Enterprise (https://support.google.com/chrome/a/answer/7679408) voor meer informatie.</translation>
 <translation id="6287128640500683781">Elke gebruiker toestaan in te loggen</translation>
 <translation id="6287310684159482272">Instellingen voor cookies</translation>
 <translation id="6287742528823584153"><ph name="PRODUCT_NAME" />-service aanzetten en extern bureau starten bij inloggen</translation>
@@ -8090,6 +8097,7 @@ Op <ph name="MS_WIN_NAME" /> wordt het KDC-beleid altijd gerespecteerd.</transla
 <translation id="6665670272107384733">Instellen hoe vaak een gebruiker het wachtwoord moet opgeven om de functie voor snel ontgrendelen te kunnen gebruiken</translation>
 <translation id="6667586534922258705">Knop 'Wachtwoord tonen' tonen op het inlog- en vergrendelscherm.</translation>
 <translation id="6667636336079341367">Scanner toestaan zonder AI-modellen te verbeteren.</translation>
+<translation id="6669244130218275293">Kies of de functie voor vingerafdrukbeveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet in de incognitomodus.</translation>
 <translation id="6669691206059842248">Extra OAuth-omleidingen per extensie instellen</translation>
 <translation id="6669700740683748046">Met deze functie is de volledige URL in de adresbalk zichtbaar.
       Als je dit beleid instelt op True, is de volledige URL zichtbaar in de adresbalk, inclusief schema's en subdomeinen.
@@ -8672,6 +8680,13 @@ Ongeldige vermeldingen worden genegeerd.</translation>
 <translation id="7046113122884041950">Smart Lock niet toestaan</translation>
 <translation id="7046997898355294677">Privacymeldingen tonen totdat deze worden gesloten door de gebruiker</translation>
 <translation id="7047495632846973438">Geeft aan of het rechtenbeleid voor schermopname is aangevinkt of wordt overgeslagen.</translation>
+<translation id="7053807509123417914">Dit beleid beheert een aangepast label waarmee een beheerde browser wordt aangegeven. Voor beheerde browsers wordt dit label getoond in een beheerdisclaimer in de voettekst op de pagina Nieuw tabblad. Het aangepaste label wordt niet vertaald.
+
+Dit beleid wordt alleen toegepast voor beheerde browsers. Het heeft dus geen effect voor beheerde gebruikers in onbeheerde browsers.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="7055022222176591388">Verouderde <ph name="FLASH_PLUGIN_NAME" /> niet toestaan</translation>
 <translation id="7056040036973126753">Gegevens over domeinbetrouwbaarheid kunnen naar Google worden gestuurd, afhankelijk van het Chrome-beleid voor gebruikersstatistieken</translation>
 <translation id="7062803946218028349">Toestaan dat Telefoonhub wordt aangezet</translation>

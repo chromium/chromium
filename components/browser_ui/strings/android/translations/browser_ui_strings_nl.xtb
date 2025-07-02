@@ -69,6 +69,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1816835383954230954">Als deze optie aanstaat, werkt Chrome sneller en zouden functies die JavaScript gebruiken, naar behoren moeten werken. Als deze optie uitstaat, worden de prestaties slechter, maar is V8 beter bestand tegen aanvallen.</translation>
 <translation id="1818308510395330587">Als je <ph name="APP_NAME" /> AR wilt laten gebruiken, moet je ook de camera aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Blad onderaan voor het uiterlijk van de pagina Nieuw tabblad</translation>
 <translation id="1887786770086287077">Locatietoegang staat uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sites vragen meestal toegang tot bestanden en mappen op je apparaat voor functies zoals het automatisch opslaan van je werk</translation>
 <translation id="1915307458270490472">Ophangen</translation>
@@ -459,6 +460,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="6398765197997659313">Volledig scherm sluiten</translation>
 <translation id="640163077447496506">Verloopt vandaag</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Themacollecties</translation>
 <translation id="6439114592976064011">Voorkomen dat sites je virtualreality-apparaat en -gegevens gebruiken</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Prijsdaling op je geopende tabblad, van <ph name="OLD_PRICE" /> naar <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7804248752222191302">Een site gebruikt de camera</translation>
+<translation id="7805832099057502789">Blad onderaan voor het uiterlijk van de pagina Nieuw tabblad is op volledige hoogte geopend</translation>
 <translation id="7807060072011926525">Geleverd door Google</translation>
 <translation id="7815680994978050279">Gevaarlijke download geblokkeerd</translation>
 <translation id="7835852323729233924">Media afspelen</translation>
@@ -581,6 +584,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8042586301629853791">Sorteren op:</translation>
 <translation id="8051193500142930381">Functies waarvoor een camera nodig is, werken niet</translation>
+<translation id="8056330801132235235">Standaardthema van Chrome</translation>
 <translation id="8067883171444229417">Video afspelen</translation>
 <translation id="8068648041423924542">Kan certificaat niet selecteren.</translation>
 <translation id="8077120325605624147">Elke site die je bezoekt, kan elke advertentie aan je tonen</translation>

@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Ábendingar fyrir Chrome</translation>
 <translation id="1816835383954230954">Þegar kveikt er á því virkar Chrome hraðar og eiginleikar sem nota JavaScript ættu að virka sem skyldi. Þegar slökkt er á því dregur það úr afköstum en auðveldar V8 að verjast árásum.</translation>
 <translation id="1818308510395330587">Til að leyfa <ph name="APP_NAME" /> að nota AR þarftu einnig að kveikja á myndavél í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Neðsta blað nýrrar flipasíðu</translation>
 <translation id="1887786770086287077">Slökkt er á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Vefsvæði opna yfirleitt skrár og möppur í tækinu þínu til að nota eiginleika eins og að vista það sem þú gerðir sjálfkrafa</translation>
 <translation id="1915307458270490472">Leggja á</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
 <translation id="640163077447496506">Rennur út í dag</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Þemasöfn</translation>
 <translation id="6439114592976064011">Loka á að vefsvæði fái að nota sýndarveruleikatækið og -gögnin þín</translation>
 <translation id="6447842834002726250">Fótspor</translation>
 <translation id="6452138246455930388">Verðlækkun í opnum flipa, úr <ph name="OLD_PRICE" /> í <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" /> <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">Bæta við</translation>
 <translation id="780301667611848630">Nei, takk</translation>
 <translation id="7804248752222191302">Vefsvæði er að nota myndavélina</translation>
+<translation id="7805832099057502789">Neðsta blað nýrrar flipasíðu er opnað í fullri hæð</translation>
 <translation id="7807060072011926525">Frá Google</translation>
 <translation id="7815680994978050279">Lokað á hættulegt niðurhal</translation>
 <translation id="7835852323729233924">Spilar efni</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">Niðurhal mistókst</translation>
 <translation id="8042586301629853791">Raða eftir:</translation>
 <translation id="8051193500142930381">Eiginleikar sem þurfa myndavél munu ekki virka</translation>
+<translation id="8056330801132235235">Sjálfgefin stilling Chrome</translation>
 <translation id="8067883171444229417">Spila myndskeið</translation>
 <translation id="8068648041423924542">Ekki er hægt að velja vottorðið.</translation>
 <translation id="8077120325605624147">Öll vefsvæði sem þú heimsækir mega birta þér hvaða auglýsingar sem er</translation>

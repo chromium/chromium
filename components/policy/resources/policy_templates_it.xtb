@@ -853,6 +853,11 @@ Se questa policy non viene configurata, gli utenti potranno aggiungere eccezioni
       Se la policy non viene configurata per un sito, la policy di <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> viene applicata al sito, se configurata, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
 <translation id="1574258262373444557">Non usare <ph name="AES_KL_NAME" /> come algoritmo di crittografia per la crittografia dello spazio di archiviazione degli utenti</translation>
 <translation id="1575015449587326319">Policy di configurazione per il connettore OnFileDownloaded di Chrome Enterprise</translation>
+<translation id="1575714464739424740">Una policy per stabilire se i tuoi utenti possono attivare o disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla protezione dal fingerprinting in modalità di navigazione in incognito.
+
+Se imposti questa policy su Disattivata, l'impostazione della funzionalità di protezione dal fingerprinting verrà disattivata per i tuoi utenti.
+Se imposti questa policy su Attivata, l'impostazione della funzionalità di protezione dal fingerprinting verrà attivata per i tuoi utenti in modalità di navigazione in incognito.
+Se la policy non viene configurata, gli utenti potranno attivare o disattivare la funzionalità di protezione dal fingerprinting in modalità di navigazione in incognito tramite le impostazioni della UI. Lo stato predefinito sarà False o Disattivata, il che significa che la funzionalità di protezione dal fingerprinting verrà disattivata.</translation>
 <translation id="1576797364335927541">Disattiva <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="1577162851453388235">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
 Visita la pagina https://github.com/WICG/direct-sockets per informazioni dettagliate.
@@ -880,6 +885,11 @@ Nota: questa policy influirà solo sull'interfaccia utente e ChromeOS manterrà 
 <translation id="1595013560176869154">Se la policy viene impostata su Enabled, vengono consentiti PIN inefficaci. Ecco alcune caratteristiche dei PIN inefficaci: una sola cifra ripetuta (1111), cifre con incrementi di 1 (1234), cifre con decrementi di 1 (4321) e PIN comuni. Se la policy viene impostata su Disabled, gli utenti non possono impostare PIN inefficaci e facili da indovinare.
 
       Se la policy non viene configurata, gli utenti ricevono un avviso, e non un messaggio di errore, se usano un PIN inefficace.</translation>
+<translation id="1596396758769156412">Se questa policy viene disattivata o se non viene configurata, il tuo dispositivo <ph name="PRODUCT_OS_NAME" /> rifiuterà le richieste di accoppiamento "Just Works" avviate da periferiche Bluetooth nelle vicinanze.
+
+Se questa policy viene attivata, il tuo dispositivo <ph name="PRODUCT_OS_NAME" /> accetterà le richieste di accoppiamento "Just Works" avviate da periferiche Bluetooth nelle vicinanze.
+
+Nota: questa policy ha effetto solo dopo l'accesso di un utente e non si applica alla schermata di accesso.</translation>
 <translation id="1597684038583138808">Attiva definizioni di Risposte rapide</translation>
 <translation id="1598258379228800626">Attiva l'evidenziazione dell'elemento attivo tramite tastiera nella schermata di accesso</translation>
 <translation id="1599424828227887013">Attiva isolamento dei siti per origini specificate su dispositivi Android</translation>
@@ -1682,6 +1692,7 @@ Se questa policy non viene configurata, equivale ad attivarla per gli utenti nor
 <translation id="2180958780733364832">Controlla l'uso della modalità headless</translation>
 <translation id="2182291258410176649">L'utente decide se abilitare il backup e il ripristino</translation>
 <translation id="2183338188392346527">Non segnalare i contatori del tempo di esecuzione del dispositivo</translation>
+<translation id="2187361040843865450">Accetta le richieste di accoppiamento Bluetooth "Just Works"</translation>
 <translation id="2187372280917024033">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi. Questa policy è molto simile a <ph name="DOH_TEMPLATES_POLICY_NAME" /> e la sostituirà se verrà specificato.
 A differenza della policy <ph name="DOH_TEMPLATES_POLICY_NAME" />, questa policy consente di specificare le informazioni sull'identità.
 Gli identificatori vengono specificati mediante segnaposto di variabili che vengono sostituiti con informazioni sull'utente o sul dispositivo in <ph name="PRODUCT_NAME" />. Gli identificatori non vengono inviati al server DNS come testo normale; vengono invece sottoposti ad hashing con l'algoritmo <ph name="SHA256" /> e con codifica esadecimale maiuscola.
@@ -1747,6 +1758,7 @@ Se viene impostata su Disattivata, gli utenti non possono utilizzare questa funz
 
       Se viene impostato <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2), non è possibile applicare al browser tutte le varianti nella schermata di accesso. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_OS_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
 <translation id="2215746393279570703">Impostazioni del servizio SSO mobile</translation>
+<translation id="2219724363635419721">Disattiva Sottotitoli in tempo reale</translation>
 <translation id="2221779615493499989">Consente agli utenti di segnalare lo stato di rete su dispositivi registrati.
 
       Se la policy viene impostata su False, le informazioni non vengono segnalate.
@@ -3887,6 +3899,7 @@ Visita la pagina https://wicg.github.io/private-network-access/ per conoscere le
       Se queste norme non vengono impostate, gli utenti possono scegliere autonomamente le impostazioni del proxy.</translation>
 <translation id="3758249152301468420">Disabilita Strumenti per sviluppatori</translation>
 <translation id="3758910737665387561">Consenti ai dispositivi di utilizzare PluginVm</translation>
+<translation id="3759342194253299115">Consenti agli utenti di attivare o disattivare l'impostazione relativa alla protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità di navigazione in incognito sul proprio dispositivo.</translation>
 <translation id="3759650373178711405">A meno che la policy <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> non sia impostata per ripristinare in modo permanente gli URL delle sessioni precedenti, l'impostazione di <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ti consente di creare un elenco di pattern URL che specificano i siti che possono o meno impostare i cookie per una sessione.
 
       Se la policy non viene configurata, viene usata <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente. In caso di URL non interessati dai pattern specificati, vengono applicate le impostazioni predefinite.
@@ -4058,6 +4071,7 @@ Tieni presente che questa policy non ha alcun effetto se <ph name="ENTERPRISE_PR
 
       Se la norma non viene impostata, il protocollo SPDY sarà disponibile.</translation>
 <translation id="3885896818093825047">Consenti la configurazione di <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="388940400023402072">Attiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità di navigazione in incognito.</translation>
 <translation id="3889458462150559611">Consenti ai siti web di effettuare richieste a qualsiasi endpoint di rete in modo non sicuro.</translation>
 <translation id="388999630001435491">Consenti a <ph name="PRODUCT_NAME" /> di connettersi solo a dispositivi su indirizzi IP privati</translation>
 <translation id="3891175633496805812">Disattiva il controller DTC (Diagnostics and Telemetry Controller) wilco</translation>
@@ -5054,6 +5068,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
       * Quando <ph name="FILTER_PLACEHOLDER" /> è impostato su <ph name="EMPTY_DICTIONARY" />, la selezione dei certificati client non viene limitata ulteriormente. Nota: si applicano ancora i filtri forniti dal server web.
 
       Se la policy non viene configurata, non viene eseguita la selezione automatica per nessun sito.</translation>
+<translation id="4607499333275488034">Disattiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità di navigazione in incognito.</translation>
 <translation id="4611983465824842867">Non mostrare avvisi o non disattivare la compilazione automatica sui moduli non sicuri</translation>
 <translation id="4615003180013429835">Modalità di analisi degli elenchi dei siti</translation>
 <translation id="4615436471607987736">A partire da M131, questa policy è deprecata. Consente di disattivare temporaneamente due correzioni correlate al comportamento della finestra di dialogo di conferma mostrata dall'evento beforeunload.
@@ -5589,6 +5604,15 @@ che a loro volta hanno la priorità sul valore predefinito configurato.
 Se la policy non viene configurata per un sito, la policy di <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> viene applicata al sito, se configurata, altrimenti
 l'ottimizzazione di JavaScript viene attivata per il sito.</translation>
 <translation id="4960597185231686653">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di input vocale.</translation>
+<translation id="49677896192199414">Attiva la funzionalità Sottotitoli in tempo reale.
+
+Se questa policy viene attivata, Sottotitoli in tempo reale sarà sempre attivata.
+
+Se viene disattivata, Sottotitoli in tempo reale sarà sempre disattivata.
+
+Se configuri questa policy come obbligatoria, gli utenti non potranno modificarla o eseguire il relativo override.
+
+Se questa policy non viene configurata, inizialmente Sottotitoli in tempo reale sarà disattivata, ma l'utente potrà attivarla in qualsiasi momento.</translation>
 <translation id="4970046075219007744">Consenti alle app web di richiedere all'utente l'accesso ai tipi di file tramite l'API File Handling</translation>
 <translation id="4970855112942626932">Disattiva accesso al browser</translation>
 <translation id="4974091268178043378">Modalità colore di ChromeOS</translation>
@@ -6361,6 +6385,7 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite.</translation
 <translation id="5476152378885134514">Blocca gli appunti su questi siti</translation>
 <translation id="5479841110985196412">Attiva tastiera virtuale di accessibilità</translation>
 <translation id="5480380613778757009">Se questa policy viene disattivata o se non viene configurata, tutte le impostazioni di visualizzazione configurate nella sessione Ospite gestita verranno reimpostate al termine della sessione. Se questa policy viene impostata su True, le proprietà di visualizzazione verranno memorizzate dopo la chiusura della sessione Ospite gestita.</translation>
+<translation id="548137908954174608">Attiva Sottotitoli in tempo reale</translation>
 <translation id="5483012943408894695">Origini o pattern di nomi host a cui non dovrebbero essere applicate limitazioni previste per le origini non sicure.</translation>
 <translation id="5483065054530244863">Consenti i certificati SHA-1 firmati emessi dai trust anchor locali</translation>
 <translation id="5486352219019836984">Se questa policy viene attivata, si consiglia di attivare per impostazione predefinita la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di <ph name="PRODUCT_NAME" />. Gli utenti potranno comunque modificare questa impostazione.
@@ -6793,6 +6818,7 @@ Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="5722577409367087850">Carica l'estensione</translation>
 <translation id="5728154254076636808">Consente la creazione di copie di roaming per i dati dei profili <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">La password Kerberos. Il segnaposto <ph name="PASSWORD_PLACEHOLDER" /> viene sostituito dalla password di accesso.</translation>
+<translation id="5730610899971390601">Rifiuta le richieste di accoppiamento Bluetooth "Just Works"</translation>
 <translation id="5732972008943405952">Importa i dati della compilazione automatica dei moduli dal browser predefinito alla prima esecuzione</translation>
 <translation id="5733040281451845496">Se la policy viene impostata su Attivata, i ritardi di gestione dell'alimentazione e i limiti di durata delle sessioni iniziano soltanto dopo il rilevamento della prima attività dell'utente in una sessione.
 
@@ -7292,6 +7318,7 @@ Se la policy viene impostata su Enabled, l'API sarà supportata.
 Questa policy può essere usata qualora la nostra procedura in corso di eliminazione del supporto di questa API presenti problemi. Se devi usare la policy, invia una segnalazione di bug su crbug.com spiegando il tuo caso d'uso e aggiungendo in copia per conoscenza {blundell, vasilyt}@chromium.org. La policy è disponibile tramite la versione 114 di <ph name="PRODUCT_NAME" />, dopodiché il supporto per questa API è stato eliminato incondizionatamente.
 
 NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
+<translation id="6083281887050888160">Attiva l'accoppiamento Bluetooth "Just Works"</translation>
 <translation id="6083631234867522991">Windows (client Windows):</translation>
 <translation id="6087413944876892918">Utilizza l'algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Imposta un valore percentuale per il limite di consumo della batteria per la variazione dei picchi energetici</translation>
@@ -7613,15 +7640,6 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 Le origini devono corrispondere alle applicazioni web con installazione forzata tramite la policy <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (dalla versione 125) o configurate come app kiosk. Per le specifiche dell'API Device Attributes, visita la pagina https://wicg.github.io/WebApiDevice/device_attributes.
 
 Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi (dalla versione 127), visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
-<translation id="6286385444341934784">Questa impostazione consente le integrazioni delle app Gemini.
-
-0/non impostata = l'integrazione di Gemini sarà disponibile per gli utenti.
-
-1 = L'integrazione di Gemini non sarà disponibile per gli utenti.
-
-Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Per scoprire di più, consulta le note di rilascio di Chrome Enterprise (https://support.google.com/chrome/a/answer/7679408).</translation>
 <translation id="6287128640500683781">Consenti a qualsiasi utente di accedere</translation>
 <translation id="6287310684159482272">Impostazioni dei cookie</translation>
 <translation id="6287742528823584153">Attiva il servizio <ph name="PRODUCT_NAME" /> e avvia la scrivania remota all'accesso</translation>
@@ -8278,6 +8296,7 @@ Su <ph name="MS_WIN_NAME" />, la policy KDC viene sempre rispettata.</translatio
 <translation id="6665670272107384733">Imposta la frequenza di inserimento della password per poter usare lo sblocco rapido</translation>
 <translation id="6667586534922258705">Mostra il pulsante di visualizzazione della password nella schermata di accesso e di blocco</translation>
 <translation id="6667636336079341367">Consenti la funzionalità di scansione senza migliorare i modelli di AI.</translation>
+<translation id="6669244130218275293">Scegli se attivare la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità di navigazione in incognito.</translation>
 <translation id="6669691206059842248">Configurare URL di reindirizzamento OAuth aggiuntivi per estensione</translation>
 <translation id="6669700740683748046">Questa funzionalità consente la visualizzazione dell'URL completo nella barra degli indirizzi.
       Se questa policy viene impostata su True, l'URL completo viene visualizzato nella barra degli indirizzi, inclusi gli schemi e i sottodomini.
@@ -8871,6 +8890,13 @@ Le voci non valide vengono ignorate.</translation>
 <translation id="7046113122884041950">Non consentire Smart Lock</translation>
 <translation id="7046997898355294677">Mostra le notifiche sulla privacy finché non vengono ignorate dagli utenti</translation>
 <translation id="7047495632846973438">Specifica se le policy relative alle autorizzazioni dell'acquisizione del display vengono controllate o saltate.</translation>
+<translation id="7053807509123417914">Questa policy consente di controllare un'etichetta personalizzata utilizzata per indicare un browser gestito. Per i browser gestiti, questa etichetta verrà mostrata in un disclaimer relativo alla gestione in un piè di pagina nella pagina Nuova scheda. L'etichetta personalizzata non viene tradotta.
+
+Tieni presente che questa policy viene applicata solo ai browser gestiti, quindi non avrà alcun effetto per gli utenti gestiti su browser non gestiti.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="7055022222176591388">Non consentire il plug-in <ph name="FLASH_PLUGIN_NAME" /> obsoleto</translation>
 <translation id="7056040036973126753">I dati relativi all'attendibilità dei domini potrebbero essere inviati a Google in base alla policy Metriche utente di Chrome (UMA)</translation>
 <translation id="7062803946218028349">Consenti l'attivazione di Phone Hub</translation>
@@ -9849,6 +9875,9 @@ Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY
 <translation id="7841883965249733328">Disattiva l'upgrade automatico del contenuto misto</translation>
 <translation id="7845130996290850593">Attiva Kerberos</translation>
 <translation id="7846952520291088817">URL per cui vengono esposti IP locali nei candidati ICE WebRTC</translation>
+<translation id="7847374643492493038">Se la policy è impostata su true (o se <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> è impostata su false), le pagine web non possono accedere all'API WebGL.
+
+      Se la policy è impostata su false o non viene configurata, le pagine web possono usare l'API WebGL, ma le impostazioni predefinite del browser potrebbero comunque richiedere argomenti della riga di comando per usare queste API.</translation>
 <translation id="7848641140449742406">Impostazioni del sistema operativo</translation>
 <translation id="7850846808758624237">Se la policy viene impostata su Attivata, la home page del precedente browser predefinito verrà importata alla prima esecuzione. Se la policy viene impostata su Disattivata o se non viene configurata, la home page non verrà importata alla prima esecuzione.
 
@@ -11128,6 +11157,17 @@ gli utenti non potranno modificarla o eseguirne l'override.</translation>
 <translation id="8705895771006864851">Se la policy viene impostata su True, agli utenti viene fornita una funzionalità di traduzione, quando opportuno, tramite una barra degli strumenti di traduzione integrata in <ph name="PRODUCT_NAME" /> e un'opzione di traduzione nel menu contestuale visualizzabile facendo clic con il pulsante destro del mouse. Se la policy viene impostata su False, tutte le funzionalità di traduzione integrate vengono disattivate.
 
       Se imposti la policy, gli utenti non possono modificare questa funzione. Se non viene impostata, gli utenti possono cambiare l'impostazione.</translation>
+<translation id="8707290517123095787">Attiva la traduzione dei sottotitoli in tempo reale. I sottotitoli codificati verranno inviati a Google per essere tradotti.
+
+Se questa policy viene attivata, Traduzione dal Vivo sarà sempre attivata.
+
+Se viene disattivata, Traduzione dal Vivo sarà sempre disattivata.
+
+Se configuri questa policy come obbligatoria, gli utenti non potranno modificarla o eseguire il relativo override.
+
+Se questa policy non viene configurata, inizialmente Traduzione dal Vivo sarà disattivata, ma l'utente potrà attivarla in qualsiasi momento.
+
+Se la policy <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> viene disattivata, Traduzione dal Vivo verrà disattivata indipendentemente dall'impostazione di questa policy.</translation>
 <translation id="8707790573162457301">Esegui la pulizia automatica del disco durante l'accesso</translation>
 <translation id="8712609946151927008">Pianifica intervalli di sospensione settimanali</translation>
 <translation id="8713535263782304771">Disattiva Navigazione sicura</translation>

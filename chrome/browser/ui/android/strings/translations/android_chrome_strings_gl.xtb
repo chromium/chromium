@@ -676,7 +676,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4116038641877404294">Descarga as páxinas para velas cando non teñas conexión</translation>
 <translation id="4121654769234887259">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google para <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Fluxo de permiso de notificación aberto completamente</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome detivo as notificacións deste sitio. Podes revisalas e xestionalas.}other{Chrome detivo as notificacións destes sitios. Podes revisalas e xestionalas.}}</translation>
 <translation id="4132137475637520539">Permitir que se una calquera persoa que teña a ligazón</translation>
 <translation id="4135200667068010335">A lista de dispositivos cos que compartir unha pestana está pechada.</translation>
 <translation id="4137746084635924146">Idioma actual do dispositivo</translation>

@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">ແມ່ນແລ້ວ</translation>
 <translation id="1429187656584513419">ເປີດລະຫັດຜ່ານ</translation>
 <translation id="1430915738399379752">ພິມ</translation>
+<translation id="1433478348197382180">ໂໝດການອ່ານ</translation>
 <translation id="1436671784520050284">ສືບຕໍ່ການຕັ້ງຄ່າ</translation>
 <translation id="143681031165817424">ບັນທຶກທີ່ຢູ່ໃນອຸປະກອນເຄື່ອງນີ້ເທົ່ານັ້ນ</translation>
 <translation id="1445276840641906250">ແຖບທັງໝົດຂອງທ່ານໃນໂປຣແກຣມທ່ອງເວັບດຽວ</translation>
@@ -187,6 +188,7 @@
 <translation id="1740650426894359238">ສະຫຼັບໄປໃຊ້ໂປຣໄຟລ໌ອື່ນ</translation>
 <translation id="1741219894094057085">ສະມາດວອດ</translation>
 <translation id="1743244221910283364">ຍົກເລີກການປ່ຽນແປງ</translation>
+<translation id="1748975028205587434">ເລືອກໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="174998178145075354">{count,plural, =1{ຕົວເລືອກສຳລັບທີ່ຢູ່ {count} ລາຍການພ້ອມໃຫ້ນຳໃຊ້ຢູ່ເທິງແປ້ນພິມຂອງທ່ານ.}other{ຕົວເລືອກສຳລັບທີ່ຢູ່ {count} ລາຍການພ້ອມໃຫ້ນຳໃຊ້ຢູ່ເທິງແປ້ນພິມຂອງທ່ານ.}}</translation>
 <translation id="1750238553597293878">ໃຊ້ລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ</translation>
 <translation id="17513872634828108">ແຖບ​ເປີດ</translation>
@@ -199,6 +201,7 @@
 <translation id="178400879184240105">ລະຫັດຜ່ານຂອງທ່ານບໍ່ຊ້ຳກັນເລີຍ</translation>
 <translation id="17906873777101817">ສະເໜີໃຫ້ບັນທຶກລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານ</translation>
 <translation id="1794893174442046596">ກຸ່ມແຖບ</translation>
+<translation id="1807246157184219062">ແສງ​</translation>
 <translation id="1807893857950749072">ອະນຸຍາດການແຈ້ງເຕືອນການຕິດຕາມລາຄາ…</translation>
 <translation id="1810976980198522421">ຍົກເລີກ</translation>
 <translation id="1812514023095547458">ເລືອກ​ສີ</translation>
@@ -207,6 +210,7 @@
 <translation id="1819374301217551116">ການຕິດຕາມລາຄາ ແລະ ຂໍ້ມູນເຈາະເລິກ</translation>
 <translation id="1820195936249950412">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ຖືກຕ້ອງ</translation>
 <translation id="1820259098641718022">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
+<translation id="1823768272150895732">ຟອນ</translation>
 <translation id="1824490729233982311">ແຈ້ງເຕືອນເມື່ອທ່ານໄດ້ຮັບແຖບຈາກອຸປະກອນເຄື່ອງອື່ນໆຂອງທ່ານ.</translation>
 <translation id="1827529786398596735">ແຕະໂຮມສະກຣີນຄ້າງໄວ້</translation>
 <translation id="1832848789136765277">ເພື່ອກວດສອບວ່າທ່ານຈະສາມາດເຂົ້າເຖິງການຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ສະເໝີ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້ກ່ອນ</translation>
@@ -364,6 +368,7 @@
 <translation id="2394659309569789395">ແນວໃດກໍເປີດເວັບໄຊ</translation>
 <translation id="2403129868389095715">ບໍ່ສາມາດຈັດສົ່ງພັດສະດຸຂອງທ່ານໄດ້</translation>
 <translation id="2410754283952462441">ເລືອກໜຶ່ງບັນຊີ</translation>
+<translation id="2414886740292270097">ມືດ</translation>
 <translation id="2422174748424038845">ຫາກທ່ານລຶບກຸ່ມນີ້, ທຸກຄົນຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ “<ph name="GROUP_NAME" />" ທັນທີ ແລະ ມັນຈະຖືກລຶບຈາກອຸປະກອນທັງໝົດ.</translation>
 <translation id="2424805048070062787">ສືບຕໍ່ໃຊ້ແຖບນີ້</translation>
 <translation id="2426805022920575512">ເລືອກບັນຊີອື່ນ</translation>
@@ -401,6 +406,7 @@
 <translation id="2559843230610279254">ກຸ່ມແຖບ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ແຖບ.</translation>
 <translation id="2577522251608256362">ຄຸ້ມບ້ານ</translation>
 <translation id="2579713773888829241">ໄດຣຟ໌ທີ່ແບ່ງປັນ</translation>
+<translation id="2593272815202181319">Monospace</translation>
 <translation id="2597486707832946298">ຮັບປະໂຫຍດສູງສຸດຈາກໂປຣແກຣມທ່ອງເວັບເດັສທັອບທີ່ທ່ານຮູ້ຈັກ ແລະ ມັກຢູ່ iPhone ຂອງທ່ານ.</translation>
 <translation id="2601778637777010194">ຕິດຕາມລາຄາທີ່ຫຼຸດລົງຂອງຜະລິດຕະພັນ</translation>
 <translation id="260378315836159338">ຢູ່ເທິງສຸດຂອງໜ້າຈໍ, ໃຫ້ແຕະ +</translation>
@@ -529,6 +535,7 @@
 <translation id="3119874402040566234">ທ່ານຈະອອກຈາກລະບົບ ແລະ ຂໍ້ມູນການທ່ອງເວັບຈະຖືກລຶບອອກ</translation>
 <translation id="3124568093781685165">ແບ່ງປັນລະຫັດຜ່ານຂອງທ່ານກັບຄອບຄົວຂອງທ່ານ</translation>
 <translation id="3130863904455712965">ປະຫວັດ ແລະ ອື່ນໆ</translation>
+<translation id="3132584647087998639">ນຳເຂົ້າຂໍ້ມູນຂອງທ່ານ</translation>
 <translation id="313283613037595347">ສ້າງແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່.</translation>
 <translation id="3136739222562075778">ບັດນີ້ສະແດງລາຄາຕ່ຳລົງຂອງຜະລິດຕະພັນໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານ</translation>
 <translation id="3138611310073113613">ຍົກເລີກການເລືອກ</translation>
@@ -740,6 +747,7 @@
 <translation id="4047337302138771011">ແບ່ງປັນລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="4049419681095579435">ຕິດຕາມພັດສະດຸແລ້ວ</translation>
 <translation id="4049507953662678203">ກະລຸນາກວດສອບວ່າທ່ານມີການເຊື່ອມຕໍ່ເຄືອຂ່າຍ ແລ້ວລອງອີກຄັ້ງ.</translation>
+<translation id="4056223980640387499">ສີນໍ້າຕານດໍາ</translation>
 <translation id="4070132839822635162">ບໍ່ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="4094361089640885693">ຕິດຕາມລາຄາ ແລະ ຮັບຂໍ້ມູນເຈາະເລິກດ້ານລາຄາໄດ້ຢ່າງງ່າຍດາຍ.</translation>
 <translation id="4099756562043439968">ຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
@@ -982,6 +990,7 @@
 <translation id="5005498671520578047">ອັດ​ສຳ​ເນົາ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="5009127379503001909">ເລືອກເບິ່ງຕໍ່</translation>
 <translation id="5012914568031465281">ບໍ່ສາມາດຕິດຕາມລາຄາໄດ້.</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">ສົ່ງໄປຫາ <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">15 ນາທີຜ່ານມາ</translation>
 <translation id="5020732097997376541">ແຕະ "ໄອຄອນ Lens"</translation>
@@ -1118,6 +1127,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="560322036295180549">ຖືກປິດໄວ້ໂດຍອົງການຂອງທ່ານ</translation>
 <translation id="5611398002774823980">ບັນທຶກໃນບັນຊີ</translation>
+<translation id="561269594905823128">ແຕະ <ph name="BEGIN_BOLD" />ເລືອກໄຟລ໌ຂອງທ່ານ<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">ຈັດຮຽງຕາມຫຼ້າສຸດ</translation>
 <translation id="5614553682702429503">ບັນທຶກລະຫັດຜ່ານໄວ້ບໍ?</translation>
 <translation id="5619871095170816857">ບັດນີ້ສະແດງແຖບເປີດທີ່ໃຊ້ຫຼ້າສຸດຂອງທ່ານໃນທົ່ວອຸປະກອນທັງໝົດທີ່ຊິ້ງແລ້ວພາຍໃນ 24 ຊົ່ວໂມງທີ່ຜ່ານມາ.</translation>
@@ -1569,6 +1579,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7367530036083223701">ເຂົ້າເຖິງລະຫັດຂອງທ່ານໄດ້ຢ່າງປອດໄພຈາກໂຮມສະກຣີນດ້ວຍວິດເຈັດຕົວຈັດການລະຫັດຜ່ານ.</translation>
 <translation id="7369285139974632858">ເພີ່ມໃສ່ບຸກມາກ</translation>
 <translation id="7380220816562673297">ສຳລັບຕອນນີ້, ທ່ານສາມາດແບ່ງປັນລະຫັດຜ່ານກັບສະມາຊິກຄອບຄົວໄດ້ເທົ່ານັ້ນ. <ph name="BEGIN_LINK" />ສ້າງກຸ່ມຄອບຄົວ<ph name="END_LINK" /> ທີ່ມີສະມາຊິກໄດ້ສູງສຸດ 6 ຄົນ ແລະ ໃຊ້ປະໂຫຍດຈາກຜະລິດຕະພັນ ແລະ ການສະໝັກໃຊ້ຂອງທ່ານໃນທົ່ວ Google ໄດ້ຫຼາຍຂຶ້ນ.</translation>
+<translation id="7380698179418029202">ເລືອກໄຟລ໌ <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> ທີ່ສົ່ງອອກຈາກ Safari ຂອງທ່ານ</translation>
 <translation id="739101637685146669">ທ່ານຕ້ອງການບຸກມາກ URL ໃດ?</translation>
 <translation id="7393747756726387725">ຊູມເຂົ້າ</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 ເວັບໄຊ}other{# ເວັບໄຊ}}</translation>
@@ -1708,6 +1719,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7887552845761062935">ແຕະສອງເທື່ອຄ້າງໄວ້ເພື່ອເປີດຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="7889910613639381518">ເຂົ້າເຖິງໄດ້ງ່າຍ ແລະ ປອດໄພດ້ວຍວິດເຈັດຕົວຈັດການລະຫັດຜ່ານ Google.</translation>
 <translation id="7899199123054742721">ໝາຍທັງໝົດວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
+<translation id="7908957400505794782">ແຕະ <ph name="BEGIN_BOLD" />ແລ້ວໆ<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">ອົງການຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ທ່ານຊິ້ງຂໍ້ມູນທຸກຢ່າງ.</translation>
 <translation id="792357691529995513">ບໍ່ພົບບັນຫາ</translation>
 <translation id="7925108652071887026">ຂໍ້​ມູນຕື່ມ​ຂໍ້​ມູນ​ອັດ​ຕະ​ໂນ​ມັດ</translation>
@@ -1770,6 +1782,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8096559642098770318">ທ່ານສາມາດຕັ້ງການແຈ້ງເຕືອນກ່ຽວກັບແຖບເພື່ອເບິ່ງເວັບໄຊນີ້ອີກຄັ້ງໃນອະນາຄົດໄດ້</translation>
 <translation id="8101409298456377967">ສ້າງ, ບັນທຶກ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຫ້ທ່ານສາມາດເຂົ້າສູ່ລະບົບຫາເວັບໄຊ ແລະ ແອັບໄດ້ຢ່າງງ່າຍດາຍ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
+<translation id="8105368624971345109">ປິດ</translation>
 <translation id="8114753159095730575">ການດາວໂຫຼດໄຟລ໌ບໍ່ສາມາດໃຊ້ໄດ້. ມີຕົວເລືອກຕ່າງໆຢູ່ໃກ້ສ່ວນລຸ່ມຂອງໜ້າຈໍ.</translation>
 <translation id="8123502380991596210">ເຊື່ອງ ມີຫຍັງໃໝ່</translation>
 <translation id="8123953306357309250">ຍົກເລີກການຊິ້ງບໍ? ທ່ານສາມາດເປີດການຊິ້ງໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ.</translation>

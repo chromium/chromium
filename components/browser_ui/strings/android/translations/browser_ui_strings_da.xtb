@@ -69,6 +69,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="1799920918471566157">Tips til Chrome</translation>
 <translation id="1816835383954230954">Når denne indstilling er aktiveret, kører Chrome hurtigere, og funktioner, der anvender JavaScript, bør fungere som forventet. Når denne indstilling er deaktiveret, reducerer den ydeevnen, men gør V8 mere modstandsdygtig over for angreb.</translation>
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
+<translation id="1881806992065048905">Feltet i bunden, der viser udseendet af siden Ny fane</translation>
 <translation id="1887786770086287077">Lokationsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Websites får normalt adgang til filer og mapper på din enhed for at kunne gemme dit arbejde automatisk</translation>
 <translation id="1915307458270490472">Læg på</translation>
@@ -459,6 +460,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="6398765197997659313">Afslut fuld skærm</translation>
 <translation id="640163077447496506">Udløber i dag</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Temasamlinger</translation>
 <translation id="6439114592976064011">Bloker websites fra at benytte dine virtual reality-enheder og -data</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Prisfald på din åbne fane fra <ph name="OLD_PRICE" /> til <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7804248752222191302">Et website anvender dit kamera</translation>
+<translation id="7805832099057502789">Feltet i bunden, der viser udseendet af siden Ny fane, er åbnet i fuld højde</translation>
 <translation id="7807060072011926525">Leveret af Google</translation>
 <translation id="7815680994978050279">En farlig download blev blokeret</translation>
 <translation id="7835852323729233924">Afspilning af medier</translation>
@@ -581,6 +584,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="802154636333426148">Download mislykkedes</translation>
 <translation id="8042586301629853791">Sortér efter:</translation>
 <translation id="8051193500142930381">Funktioner, der skal bruge et kamera, fungerer ikke</translation>
+<translation id="8056330801132235235">Standard i Chrome</translation>
 <translation id="8067883171444229417">Afspil video</translation>
 <translation id="8068648041423924542">Certifikatet kunne ikke vælges.</translation>
 <translation id="8077120325605624147">Ethvert website, du besøger, kan vise dig en hvilken som helst annonce</translation>

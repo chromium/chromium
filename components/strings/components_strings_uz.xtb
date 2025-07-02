@@ -256,6 +256,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1420920093772172268">Ulanishga ruxsat berish uchun <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">Oʻchirilgan hisob</translation>
 <translation id="14222610277930434">Tez-tez kirgansiz</translation>
+<translation id="1422795627423046860">Sana yaroqsiz</translation>
 <translation id="1422930527989633628">Atrofdagi Bluetooth qurilmalarni tekshirish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="1426410128494586442">Ha</translation>
 <translation id="1427192966110103169">Uy hovuzlari, sauna va spa</translation>
@@ -4811,6 +4812,7 @@ Batafsil axborot:
 <translation id="9155211586651734179">Audio jihozlar biriktirildi</translation>
 <translation id="9155646082713385498">Jurnallar</translation>
 <translation id="9157595877708044936">Sozlanmoqda...</translation>
+<translation id="9158491153040481956">Yaqinda oʻzgartirilgan parolingiz ommaviy oshkor qilinganligi aniqlandi. Muammo yuz bersa, hisobga Paroller menejeri orqali kirishingiz mumkin.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ta fayl tarkibida maxfiy kontent boʻlishi mumkin}other{<ph name="FILE_COUNT" /> ta fayl tarkibida maxfiy kontent boʻlishi mumkin}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" />: Butun ekrandan chiqish uchun |<ph name="ACCELERATOR" />| tugmasini bosing</translation>
 <translation id="9163287596625611517">Slack xabari</translation>

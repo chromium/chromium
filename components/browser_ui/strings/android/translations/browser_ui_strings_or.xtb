@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome ଟିପ୍ସ</translation>
 <translation id="1816835383954230954">ଚାଲୁ ଥିଲେ, Chrome ଆହୁରି ଦ୍ରୁତ ଭାବରେ ଚାଲେ ଏବଂ JavaScript ବ୍ୟବହାର କରୁଥିବା ଫିଚରଗୁଡ଼ିକ ଡିଜାଇନ କରାଯାଇଥିବା ଅନୁଯାୟୀ କାମ କରିବା ଉଚିତ। ବନ୍ଦ ଥିଲେ, ଏହା ପରଫରମାନ୍ସକୁ ହ୍ରାସ କରେ, କିନ୍ତୁ V8କୁ ଅଧିକ ଆକ୍ରମଣ ପ୍ରତିରୋଧୀ କରେ।</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />କୁ AR ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ, <ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ କ୍ୟାମେରା ମଧ୍ୟ ଚାଲୁ କରନ୍ତୁ।</translation>
+<translation id="1881806992065048905">ନୂଆ ଟାବ ପୃଷ୍ଠା ଏପିଏରେନ୍ସ ବଟମ ସିଟ</translation>
 <translation id="1887786770086287077">ଏହି ଡିଭାଇସ୍ ପାଇଁ ଲୋକେସନ୍ ଆକ୍ସେସ୍ ବନ୍ଦ ଅଛି। <ph name="BEGIN_LINK" />Android ସେଟିଂସ୍‍<ph name="END_LINK" />ରେ ଏହାକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="1906181697255754968">ଆପଣଙ୍କ କାର୍ଯ୍ୟ ସ୍ୱଚାଳିତ ଭାବେ ସେଭ୍ କରିବା ପରି ଫିଚରଗୁଡ଼ିକ ପାଇଁ ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଆପଣଙ୍କ ଡିଭାଇସରେ ଫାଇଲ୍ ଏବଂ ଫୋଲ୍ଡରଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିଥାଏ</translation>
 <translation id="1915307458270490472">ସମାପ୍ତ କରନ୍ତୁ</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
 <translation id="640163077447496506">ଆଜି ମିଆଦ ଶେଷ ହେବ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">ଥିମ ସଂଗ୍ରହ</translation>
 <translation id="6439114592976064011">ଆପଣଙ୍କର ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାରୁ ସାଇଟଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="6447842834002726250">କୁକୀଗୁଡିକ</translation>
 <translation id="6452138246455930388">ଆପଣଙ୍କ ଖୋଲା ଥିବା ଟାବରେ ମୂଲ୍ୟ ହ୍ରାସ, <ph name="OLD_PRICE" />ରୁ <ph name="NEW_PRICE" />କୁ, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
 <translation id="780301667611848630">ନା, ଧନ୍ୟବାଦ</translation>
 <translation id="7804248752222191302">କୌଣସି ସାଇଟ୍ ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରୁଛି</translation>
+<translation id="7805832099057502789">ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଥିବା ନୂଆ ଟାବ ପୃଷ୍ଠା ଏପିଏରେନ୍ସ ବଟମ ସିଟ</translation>
 <translation id="7807060072011926525">Google ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଛି</translation>
 <translation id="7815680994978050279">ବିପଜ୍ଜନକ ଡାଉନ୍‌ଲୋଡ୍ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="7835852323729233924">ମିଡିଆ ପ୍ଲେ ହେଉଛି</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8042586301629853791">ଏହି ଅନୁସାରେ ସର୍ଟ କରନ୍ତୁ:</translation>
 <translation id="8051193500142930381">କୌଣସି କ୍ୟାମେରା ଆବଶ୍ୟକ କରୁଥିବା ଫିଚରଗୁଡ଼ିକ କାମ କରିବ ନାହିଁ</translation>
+<translation id="8056330801132235235">Chrome ଡିଫଲ୍ଟ</translation>
 <translation id="8067883171444229417">ଭିଡିଓ ଚଲାନ୍ତୁ</translation>
 <translation id="8068648041423924542">ସାର୍ଟିଫିକେଟ୍ ଚୟନ କରିବାକୁ ଅକ୍ଷମ।</translation>
 <translation id="8077120325605624147">ଆପଣ ଭିଜିଟ କରୁଥିବା ଯେ କୌଣସି ସାଇଟ ଆପଣଙ୍କୁ ଯେ କୌଣସି ବିଜ୍ଞାପନ ଦେଖାଇପାରିବ</translation>

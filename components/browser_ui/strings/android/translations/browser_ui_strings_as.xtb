@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chromeৰ কিটিপ</translation>
 <translation id="1816835383954230954">অন থাকিলে, Chrome অধিক দ্ৰুততাৰে চলে আৰু JavaScript ব্যৱহাৰ কৰা সুবিধাসমূহে ডিজাইন কৰা অনুসৰি কাম কৰিব লাগে। অফ থাকিলে, ই কাৰ্যদক্ষতা কম কৰে কিন্তু V8ক আক্ৰমণৰ বাবে অধিক প্ৰতিৰোধী কৰে।</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />ক AR ব্যৱহাৰ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো কেমেৰা অন কৰক।</translation>
+<translation id="1881806992065048905">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা তলৰ শ্বীট</translation>
 <translation id="1887786770086287077">এই ডিভাইচটোত অৱস্থান এক্সেছ বন্ধ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />লৈ গৈ অন কৰক।</translation>
 <translation id="1906181697255754968">ছাইটসমূহে সচৰাচৰ আপোনাৰ কাম স্বয়ংক্ৰিয়ভাৱে ছেভ কৰাৰ দৰে সুবিধাসমূহৰ বাবে আপোনাৰ ডিভাইচৰ ফাইল আৰু ফ'ল্ডাৰসমূহ এক্সেছ কৰে</translation>
 <translation id="1915307458270490472">কল শেষ কৰক</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীন ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="640163077447496506">আজি ম্যাদ উকলিব</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">থীমৰ সংগ্ৰহ</translation>
 <translation id="6439114592976064011">ছাইটসমূহে আপোনাৰ ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ আৰু ডেটা এক্সেছ কৰাটো অৱৰোধ কৰক</translation>
 <translation id="6447842834002726250">কুকীসমূহ</translation>
 <translation id="6452138246455930388">আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য, <ph name="OLD_PRICE" />ৰ পৰা <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">যোগ কৰক</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7804248752222191302">এটা ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে</translation>
+<translation id="7805832099057502789">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা তলৰ শ্বীটখন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="7807060072011926525">Googleএ প্ৰদান কৰিছে</translation>
 <translation id="7815680994978050279">ক্ষতিকাৰক সমলৰ ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
 <translation id="7835852323729233924">মিডিয়া প্লে’ হৈ আছে</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="8042586301629853791">এই অনুসৰি সজাওক:</translation>
 <translation id="8051193500142930381">কেমেৰাৰ আৱশ্যক হোৱা সুবিধাসমূহে কাম নকৰিব</translation>
+<translation id="8056330801132235235">Chrome ডিফ’ল্ট</translation>
 <translation id="8067883171444229417">ভিডিঅ’ প্লে কৰক</translation>
 <translation id="8068648041423924542">প্ৰমাণপত্ৰ বাছনি কৰিব পৰা নগ'ল।</translation>
 <translation id="8077120325605624147">আপুনি চোৱা যিকোনো ছাইটে আপোনাক যিকোনো বিজ্ঞাপন দেখুৱাব পাৰে</translation>

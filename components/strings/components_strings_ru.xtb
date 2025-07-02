@@ -256,6 +256,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, чтобы разрешить подключение</translation>
 <translation id="1421484961346698724">Аккаунт удален</translation>
 <translation id="14222610277930434">Часто посещаете</translation>
+<translation id="1422795627423046860">Недопустимая дата.</translation>
 <translation id="1422930527989633628">Разрешено отправлять запрос на поиск устройств Bluetooth поблизости</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1427192966110103169">Домашние плавательные бассейны, сауны и спа</translation>
@@ -4817,6 +4818,7 @@
 <translation id="9155211586651734179">Какие периферийные аудиоустройства подключены.</translation>
 <translation id="9155646082713385498">Журналы</translation>
 <translation id="9157595877708044936">Настройка...</translation>
+<translation id="9158491153040481956">Недавно вы изменили пароль, оказавшийся в открытом доступе из-за утечки данных. В случае проблем Менеджер паролей поможет войти в аккаунт.</translation>
 <translation id="9161794544616754735">{0,plural, =1{Файл "<ph name="FILE_NAME" />" может содержать конфиденциальные данные.}one{<ph name="FILE_COUNT" /> файл может содержать конфиденциальные данные.}few{<ph name="FILE_COUNT" /> файла могут содержать конфиденциальные данные.}many{<ph name="FILE_COUNT" /> файлов могут содержать конфиденциальные данные.}other{<ph name="FILE_COUNT" /> файла могут содержать конфиденциальные данные.}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" />: чтобы выйти из полноэкранного режима, нажмите |<ph name="ACCELERATOR" />|.</translation>
 <translation id="9163287596625611517">Сообщение в Slack</translation>

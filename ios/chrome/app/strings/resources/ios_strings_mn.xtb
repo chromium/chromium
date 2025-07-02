@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">Тийм</translation>
 <translation id="1429187656584513419">Нууц үгийг нээнэ үү</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
+<translation id="1433478348197382180">Уншлагын горим</translation>
 <translation id="1436671784520050284">Тохируулгыг үргэлжлүүлэх</translation>
 <translation id="143681031165817424">Хаягийг зөвхөн энэ төхөөрөмжид хадгалдаг</translation>
 <translation id="1445276840641906250">Таны бүх таб нэг хөтчид</translation>
@@ -200,6 +201,7 @@
 <translation id="178400879184240105">Таны нууц үгнүүд өвөрмөц байна</translation>
 <translation id="17906873777101817">Нууц үг, нэвтрэх түлхүүр хадгалахыг санал болгох</translation>
 <translation id="1794893174442046596">Табын бүлэг</translation>
+<translation id="1807246157184219062">Гэрэлтүүлэг</translation>
 <translation id="1807893857950749072">Үнэ мөшгөх онцлогийн мэдэгдлийг зөвшөөрөх…</translation>
 <translation id="1810976980198522421">Цуцлах</translation>
 <translation id="1812514023095547458">Өнгийг сонгох</translation>
@@ -208,6 +210,7 @@
 <translation id="1819374301217551116">Үнэ мөшгөх, статистик</translation>
 <translation id="1820195936249950412">Хүчинтэй бүртгэлээр нэвтэрнэ үү</translation>
 <translation id="1820259098641718022">Унших жагсаалтад нэмсэн</translation>
+<translation id="1823768272150895732">Фонт</translation>
 <translation id="1824490729233982311">Таныг бусад төхөөрөмжөөсөө таб хүлээн авахад мэдэгдэнэ.</translation>
 <translation id="1827529786398596735">Үндсэн нүүрэнд хүрээд удаан дарна уу</translation>
 <translation id="1832848789136765277">Та синк хийсэн өгөгдөлдөө үргэлж хандах боломжтой эсэхээ баталгаажуулахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
@@ -365,6 +368,7 @@
 <translation id="2394659309569789395">Сайтыг ямартай ч нээх</translation>
 <translation id="2403129868389095715">Таны илгээмжийг хүргэх боломжгүй</translation>
 <translation id="2410754283952462441">Бүртгэл сонгох</translation>
+<translation id="2414886740292270097">Хар</translation>
 <translation id="2422174748424038845">Хэрэв та бүлгийг устгавал хүн бүр “<ph name="GROUP_NAME" />" табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд тус бүлгийг бүх төхөөрөмжөөс устгана.</translation>
 <translation id="2424805048070062787">Энэ табтай үргэлжлүүлэх</translation>
 <translation id="2426805022920575512">Өөр бүртгэл сонгох</translation>
@@ -402,6 +406,7 @@
 <translation id="2559843230610279254">Табын бүлэг, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> таб.</translation>
 <translation id="2577522251608256362">Хөрш</translation>
 <translation id="2579713773888829241">Дундын драйвууд</translation>
+<translation id="2593272815202181319">Моноспэйс</translation>
 <translation id="2597486707832946298">iPhone дээрээ өөрийн мэддэг, дуртай десктоп хөтчийн шилдэг хэрэглээг аваарай.</translation>
 <translation id="2601778637777010194">Бүтээгдэхүүний үнийн бууралтыг мөшгөх</translation>
 <translation id="260378315836159338">Дэлгэцийн дээд хэсэгт + тэмдгийг товшино уу</translation>
@@ -742,6 +747,7 @@
 <translation id="4047337302138771011">Нууц үгээ хуваалцах</translation>
 <translation id="4049419681095579435">Илгээмжийг аль хэдийн хянасан</translation>
 <translation id="4049507953662678203">Сүлжээнд холбогдсон эсэхээ шалгаад, дахин оролдоно уу.</translation>
+<translation id="4056223980640387499">Сепиа</translation>
 <translation id="4070132839822635162">Бүү нэвтэр</translation>
 <translation id="4094361089640885693">Үнийг хялбархан хянаж, үнийн статистик аваарай.</translation>
 <translation id="4099756562043439968">Сануулагч тохируулах</translation>
@@ -984,6 +990,7 @@
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
 <translation id="5009127379503001909">Үргэлжлүүлэн үзэх</translation>
 <translation id="5012914568031465281">Үнийг мөшгөж чадсангүй.</translation>
+<translation id="5016205925109358554">Сериф</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" />-д илгээх</translation>
 <translation id="5017529052065664584">Сүүлийн 15 минут</translation>
 <translation id="5020732097997376541">"Lens-н дүрс тэмдэг" дээр товшино уу</translation>
@@ -1775,6 +1782,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8096559642098770318">Та энэ сайтыг ирээдүйд дахин сонирхохын тулд табын сануулагч тохируулах боломжтой</translation>
 <translation id="8101409298456377967">Нууц үгээ үүсгэж, хадгалж мөн удирдсанаар та сайтууд болон аппуудад хялбархан нэвтрэх боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Ш</translation>
+<translation id="8105368624971345109">Унтраах</translation>
 <translation id="8114753159095730575">Файл татаж авах боломжтой. Дэлгэцийн доод хэсгийн сонголтууд боломжтой.</translation>
 <translation id="8123502380991596210">Шинэ юм юу байна табыг нуух</translation>
 <translation id="8123953306357309250">Синк хийхийг цуцлах уу? Та синк хийхийг тохиргоонд хүссэн үедээ асааж болно.</translation>

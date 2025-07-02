@@ -69,6 +69,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="1799920918471566157">Mga Tip sa Chrome</translation>
 <translation id="1816835383954230954">Kapag naka-on, mas mabilis na tatakbo ang Chrome at gagana ang mga feature na gumagamit ng JavaScript ayon sa pagkakadisenyo sa mga ito. Kapag naka-off, pinapahina nito ang performance pero ginagawang mas matatag ang V8 laban sa mga attack.</translation>
 <translation id="1818308510395330587">Para payagan ang <ph name="APP_NAME" /> na gumamit ng AR, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Bottom sheet ng hitsura ng page ng bagong tab</translation>
 <translation id="1887786770086287077">Naka-off ang access sa lokasyon para sa device na ito. I-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Karaniwang ina-access ng mga site ang mga file at folder sa iyong device para sa mga feature gaya ng awtomatikong pag-save sa trabaho mo</translation>
 <translation id="1915307458270490472">Ibaba</translation>
@@ -459,6 +460,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="6398765197997659313">Lumabas sa buong screen</translation>
 <translation id="640163077447496506">Mag-e-expire ngayong araw</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Mga Koleksyon ng Tema</translation>
 <translation id="6439114592976064011">I-block ang mga site sa paggamit sa iyong virtual reality device at data</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">May pagbaba ng presyo sa iyong nakabukas na tab, <ph name="NEW_PRICE" /> na dating <ph name="OLD_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7804248752222191302">Ginagamit ng isang site ang iyong camera</translation>
+<translation id="7805832099057502789">Binuksan nang buo ang bottom sheet ng hitsura ng page ng bagong tab</translation>
 <translation id="7807060072011926525">Ibinibigay ng Google</translation>
 <translation id="7815680994978050279">Na-block ang mapanganib na download</translation>
 <translation id="7835852323729233924">Nagpe-play ng media</translation>
@@ -581,6 +584,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="802154636333426148">Hindi na-download</translation>
 <translation id="8042586301629853791">Pagbukud-bukurin ayon sa:</translation>
 <translation id="8051193500142930381">Hindi gagana ang mga feature na nangangailangan ng camera</translation>
+<translation id="8056330801132235235">Default ng Chrome</translation>
 <translation id="8067883171444229417">I-play ang video</translation>
 <translation id="8068648041423924542">Hindi makapili ng certificate.</translation>
 <translation id="8077120325605624147">Puwedeng magpakita ng anumang ad sa iyo ang anumang site na bibisitahin mo</translation>

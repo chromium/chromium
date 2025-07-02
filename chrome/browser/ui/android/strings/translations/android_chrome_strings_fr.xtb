@@ -676,7 +676,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4116038641877404294">Téléchargez des pages pour y accéder hors connexion</translation>
 <translation id="4121654769234887259">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe de Google pour <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Flux d'autorisation de notification ouvert à pleine hauteur</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a bloqué les notifications de ce site. Vous pouvez les consulter et les gérer.}one{Chrome a bloqué les notifications de ce site. Vous pouvez les consulter et les gérer.}other{Chrome a bloqué les notifications de ces sites. Vous pouvez les consulter et les gérer.}}</translation>
 <translation id="4132137475637520539">Autoriser toutes les personnes disposant du lien à rejoindre</translation>
 <translation id="4135200667068010335">La liste des appareils avec lesquels vous pouvez partager un onglet est fermée.</translation>
 <translation id="4137746084635924146">Langue actuelle de l'appareil</translation>

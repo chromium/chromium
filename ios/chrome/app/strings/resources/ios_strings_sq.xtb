@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">Po</translation>
 <translation id="1429187656584513419">Hap "Fjalëkalimet"</translation>
 <translation id="1430915738399379752">Printo</translation>
+<translation id="1433478348197382180">Modaliteti i leximit</translation>
 <translation id="1436671784520050284">Vazhdo konfigurimin</translation>
 <translation id="143681031165817424">Adresa është ruajtur vetëm në këtë pajisje</translation>
 <translation id="1445276840641906250">Të gjitha skedat e tua në një shfletues të vetëm</translation>
@@ -187,6 +188,7 @@
 <translation id="1740650426894359238">Kalo te një profil tjetër</translation>
 <translation id="1741219894094057085">Orë inteligjente</translation>
 <translation id="1743244221910283364">Hiq ndryshimet</translation>
+<translation id="1748975028205587434">Zgjidh skedarin tënd</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opsion për adresën është i disponueshëm mbi tastierën tënde.}other{{count} opsione për adresën janë të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="1750238553597293878">Vazhdo të përdorësh fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="17513872634828108">Hap skedat</translation>
@@ -199,6 +201,7 @@
 <translation id="178400879184240105">Fjalëkalimet e tua janë unike</translation>
 <translation id="17906873777101817">Ofro ruajtjen e fjalëkalimeve dhe çelësave të kalimit</translation>
 <translation id="1794893174442046596">Grupi i skedave</translation>
+<translation id="1807246157184219062">I lehtë</translation>
 <translation id="1807893857950749072">Lejo njoftimet për monitorimin e çmimeve…</translation>
 <translation id="1810976980198522421">Anulo</translation>
 <translation id="1812514023095547458">Zgjidh ngjyrën</translation>
@@ -207,6 +210,7 @@
 <translation id="1819374301217551116">Monitorimi dhe statistikat e çmimeve</translation>
 <translation id="1820195936249950412">Identifikohu me një llogari të vlefshme</translation>
 <translation id="1820259098641718022">U shtua te lista e leximit</translation>
+<translation id="1823768272150895732">Fonti</translation>
 <translation id="1824490729233982311">Sinjalizimet kur ti merr skeda nga pajisjet e tjera.</translation>
 <translation id="1827529786398596735">Prek dhe mbaj shtypur ekranin bazë</translation>
 <translation id="1832848789136765277">Për t'u siguruar që mund të qasesh gjithmonë te të dhënat e tua të sinkronizuara, verifiko që je ti</translation>
@@ -364,6 +368,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2394659309569789395">Hape sajtin gjithsesi</translation>
 <translation id="2403129868389095715">Pakoja jote nuk mund të dorëzohet</translation>
 <translation id="2410754283952462441">Zgjidh një llogari</translation>
+<translation id="2414886740292270097">E errët</translation>
 <translation id="2422174748424038845">Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet.</translation>
 <translation id="2424805048070062787">Vazhdo me këtë skedë</translation>
 <translation id="2426805022920575512">Zgjidh llogari tjetër</translation>
@@ -401,6 +406,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2559843230610279254">Grupi i skedave, "<ph name="GROUP_TITLE" />", <ph name="TABS_NUMBER" /> skeda.</translation>
 <translation id="2577522251608256362">Lagjja</translation>
 <translation id="2579713773888829241">Disqet e ndara</translation>
+<translation id="2593272815202181319">Me hapësirë fikse</translation>
 <translation id="2597486707832946298">Merr më të mirën nga shfletuesi për desktop që e njeh dhe që të pëlqen në telefonin tënd iPhone.</translation>
 <translation id="2601778637777010194">Monitoro rëniet e çmimeve të produkteve</translation>
 <translation id="260378315836159338">Në krye të ekranit, trokit te +</translation>
@@ -529,6 +535,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3119874402040566234">Do të dalësh nga llogaria dhe të dhënat e shfletimit do të fshihen</translation>
 <translation id="3124568093781685165">Ndaj fjalëkalimet e tua me familjen tënde</translation>
 <translation id="3130863904455712965">Historiku etj.</translation>
+<translation id="3132584647087998639">Importo të dhënat e tua</translation>
 <translation id="313283613037595347">Krijo një skedë të re "të fshehtë".</translation>
 <translation id="3136739222562075778">Kjo kartë shfaq rëniet e çmimeve për produktet në skedat e tua të hapura</translation>
 <translation id="3138611310073113613">Hiqe zgjedhjen</translation>
@@ -740,6 +747,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4047337302138771011">Ndaj fjalëkalimet e tua</translation>
 <translation id="4049419681095579435">Pakoja është gjurmuar tashmë</translation>
 <translation id="4049507953662678203">Sigurohu që ke një lidhje interneti dhe provo përsëri.</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4070132839822635162">Mos u identifiko</translation>
 <translation id="4094361089640885693">Monitoro me lehtësi çmimet dhe merr statistika për to.</translation>
 <translation id="4099756562043439968">Cakto një alarm rikujtues</translation>
@@ -982,6 +990,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
 <translation id="5009127379503001909">Vazhdo të shfletosh</translation>
 <translation id="5012914568031465281">Çmimi nuk mund të monitorohej.</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Dërgo te <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">15 minutat e fundit</translation>
 <translation id="5020732097997376541">Trokit tek "Ikona e 'Lentes'"</translation>
@@ -1118,6 +1127,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="560322036295180549">Çaktivizuar nga organizata jote</translation>
 <translation id="5611398002774823980">Ruaje te llogaria</translation>
+<translation id="561269594905823128">Trokit te <ph name="BEGIN_BOLD" />Zgjidh skedarin tënd<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Rendit sipas "Më të fundit"</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
 <translation id="5619871095170816857">Kjo kartë shfaq skedën e hapur të përdorur për herë të fundit në të gjitha pajisjet e tua të sinkronizuara brenda 24 orëve të fundit.</translation>
@@ -1569,6 +1579,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7367530036083223701">Qasu në mënyrë të sigurt në fjalëkalimet e tua nga ekrani bazë me miniaplikacionin "Menaxheri i fjalëkalimeve".</translation>
 <translation id="7369285139974632858">Shto te faqeshënuesit</translation>
 <translation id="7380220816562673297">Për momentin, mund t'i ndash fjalëkalimet vetëm me anëtarët e familjes. <ph name="BEGIN_LINK" />Krijo një grup të familjes<ph name="END_LINK" /> me deri në 6 anëtarë dhe merr më shumë nga produktet dhe abonimet e tua nëpër Google.</translation>
+<translation id="7380698179418029202">Zgjidh skedarin <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> të eksportimit të Safari</translation>
 <translation id="739101637685146669">Cilën URL dëshiron të shtosh te faqeshënuesit?</translation>
 <translation id="7393747756726387725">Zmadho</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 sajt}other{# sajte}}</translation>
@@ -1708,6 +1719,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7887552845761062935">Trokit dy herë dhe mbaj shtypur për të hapur më shumë opsione</translation>
 <translation id="7889910613639381518">Qasje e lehtë dhe e sigurt me miniaplikacionin e "Menaxherit të fjalëkalimeve të Google"</translation>
 <translation id="7899199123054742721">Shëno të gjitha si të palexuara</translation>
+<translation id="7908957400505794782">Trokit tek <ph name="BEGIN_BOLD" />U krye<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">Organizata jote nuk të lejon të sinkronizosh gjithçka.</translation>
 <translation id="792357691529995513">Nuk u gjet asnjë problem</translation>
 <translation id="7925108652071887026">Plotëso automatikisht të dhënat</translation>
@@ -1770,6 +1782,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8096559642098770318">Mund të caktosh një alarm rikujtues për skedën për ta shikuar këtë sajt përsëri në të ardhmen</translation>
 <translation id="8101409298456377967">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">E re</translation>
+<translation id="8105368624971345109">Çaktivizo</translation>
 <translation id="8114753159095730575">Ofrohet shkarkimi i skedarit. Opsionet ofrohen pranë fundit të ekranit.</translation>
 <translation id="8123502380991596210">Fshih "Ç'të reja ka"</translation>
 <translation id="8123953306357309250">Të anulohet sinkronizimi? Mund ta aktivizosh sinkronizimin në çdo kohë te cilësimet.</translation>

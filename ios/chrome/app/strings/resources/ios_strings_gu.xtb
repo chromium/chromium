@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">હા</translation>
 <translation id="1429187656584513419">પાસવર્ડ ખોલો</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
+<translation id="1433478348197382180">વાંચન મોડ</translation>
 <translation id="1436671784520050284">સેટઅપ ચાલુ રાખો</translation>
 <translation id="143681031165817424">માત્ર આ ડિવાઇસ પર સરનામું સાચવવામાં આવે છે</translation>
 <translation id="1445276840641906250">તમારા બધા ટૅબ એક જ બ્રાઉઝરમાં</translation>
@@ -200,6 +201,7 @@
 <translation id="178400879184240105">તમારા પાસવર્ડ વિશિષ્ટ છે</translation>
 <translation id="17906873777101817">પાસવર્ડ અને પાસકી સાચવવાની ઑફર આપો</translation>
 <translation id="1794893174442046596">ટૅબનું ગ્રૂપ</translation>
+<translation id="1807246157184219062">આછું</translation>
 <translation id="1807893857950749072">કિંમતને ટ્રૅક કરવા સંબંધિત નોટિફિકેશનને મંજૂરી આપો…</translation>
 <translation id="1810976980198522421">રદ કરો</translation>
 <translation id="1812514023095547458">રંગ પસંદ કરો</translation>
@@ -208,6 +210,7 @@
 <translation id="1819374301217551116">કિંમતને ટ્રૅક કરવી અને જાણકારીઓ</translation>
 <translation id="1820195936249950412">કોઈ માન્ય એકાઉન્ટ વડે સાઇન ઇન કરો</translation>
 <translation id="1820259098641718022">વાંચન સૂચિમાં ઉમેર્યું</translation>
+<translation id="1823768272150895732">ફોન્ટ</translation>
 <translation id="1824490729233982311">જ્યારે તમે તમારા અન્ય ડિવાઇસ પરથી ટૅબ મેળવો ત્યારે મળતા અલર્ટ.</translation>
 <translation id="1827529786398596735">હોમ સ્ક્રીનને ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="1832848789136765277">તમે તમારો સિંક કરેલો ડેટા ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
@@ -365,6 +368,7 @@
 <translation id="2394659309569789395">તેમ છતાં સાઇટ ખોલો</translation>
 <translation id="2403129868389095715">તમારું પૅકેજ ડિલિવર કરી શકાતું નથી</translation>
 <translation id="2410754283952462441">એકાઉન્ટ પસંદ કરો</translation>
+<translation id="2414886740292270097">ઘાટું</translation>
 <translation id="2422174748424038845">જો તમે તેને ડિલીટ કરશો, તો દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.</translation>
 <translation id="2424805048070062787">આ ટૅબ સાથે ચાલુ રાખો</translation>
 <translation id="2426805022920575512">બીજું એકાઉન્ટ પસંદ કરો</translation>
@@ -402,6 +406,7 @@
 <translation id="2559843230610279254">ટૅબનું ગ્રૂપ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ટૅબ.</translation>
 <translation id="2577522251608256362">પડોશ</translation>
 <translation id="2579713773888829241">શેર કરેલી ડ્રાઇવ</translation>
+<translation id="2593272815202181319">મોનોસ્પેસ</translation>
 <translation id="2597486707832946298">તમે જાણતા હો અને તમને પસંદ હોય તેવા ડેસ્કટૉપ બ્રાઉઝરની મહત્તમ સુવિધા તમારા iPhone પર મેળવો.</translation>
 <translation id="2601778637777010194">પ્રોડક્ટની કિંમતમાંના ઘટાડા ટ્રૅક કરો</translation>
 <translation id="260378315836159338">સ્ક્રીનમાં સૌથી ઉપર, + ટૅપ કરો</translation>
@@ -742,6 +747,7 @@
 <translation id="4047337302138771011">તમારા પાસવર્ડ શેર કરો</translation>
 <translation id="4049419681095579435">પૅકેજને પહેલેથી જ ટ્રૅક કરવામાં આવ્યું છે</translation>
 <translation id="4049507953662678203">તમારી પાસે નેટવર્ક કનેક્શન છે તેની ખાતરી કરો અને ફરીથી પ્રયાસ કરો.</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4070132839822635162">સાઇન ઇન કરશો નહીં</translation>
 <translation id="4094361089640885693">કિંમતો સરળતાથી ટ્રૅક કરો અને કિંમત સંબંધી જાણકારીઓ મેળવો.</translation>
 <translation id="4099756562043439968">રિમાઇન્ડર સેટ કરો</translation>
@@ -984,6 +990,7 @@
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
 <translation id="5009127379503001909">બ્રાઉઝ કરવાનું ચાલુ રાખો</translation>
 <translation id="5012914568031465281">કિંમત ટ્રૅક કરી શક્યા નથી.</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> પર મોકલો</translation>
 <translation id="5017529052065664584">છેલ્લી 15 મિનિટ</translation>
 <translation id="5020732097997376541">"Lens આઇકન" પર ટૅપ કરો</translation>
@@ -1775,6 +1782,7 @@
 <translation id="8096559642098770318">ભવિષ્યમાં આ સાઇટ ફરીથી જોવા માટે તમે ટૅબ રિમાઇન્ડર સેટ કરી શકો છો</translation>
 <translation id="8101409298456377967">તમારા પાસવર્ડ બનાવો, સાચવો અને મેનેજ કરો, જેથી તમે સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરી શકો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">નવો</translation>
+<translation id="8105368624971345109">બંધ કરો</translation>
 <translation id="8114753159095730575">ફાઇલ ડાઉનલોડ માટે ઉપલબ્ધ છે. સ્ક્રીનના તળિયે વિકલ્પો ઉપલબ્ધ છે.</translation>
 <translation id="8123502380991596210">'નવું શું છે' છુપાવો</translation>
 <translation id="8123953306357309250">સિંક કરવાનું રદ કરીએ? તમે કોઈ પણ સમયે સેટિંગમાં જઈને સિંક કરવાની પ્રક્રિયા ચાલુ કરી શકો છો.</translation>

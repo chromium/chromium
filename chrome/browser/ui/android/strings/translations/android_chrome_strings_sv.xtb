@@ -677,7 +677,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4116038641877404294">Ladda ned sidor så att du kan använda dem offline</translation>
 <translation id="4121654769234887259">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering för <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Behörighetsflödet för aviseringar har öppnats över hela skärmen</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome har stoppat aviseringar från den här webbplatsen. Du kan granska och hantera detta.}other{Chrome har stoppat aviseringar från dessa webbplatser. Du kan granska och hantera detta.}}</translation>
 <translation id="4132137475637520539">Låt alla med länken gå med</translation>
 <translation id="4135200667068010335">Listan över enheter som fliken kan delas med är stängd.</translation>
 <translation id="4137746084635924146">Aktuellt enhetsspråk</translation>

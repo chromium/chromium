@@ -69,6 +69,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="1799920918471566157">Tipy Chrome</translation>
 <translation id="1816835383954230954">Když je tento přepínač zapnutý, běží Chrome rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy. Když je vypnutý, je Chrome pomalejší, ale V8 je odolnější proti útokům.</translation>
 <translation id="1818308510395330587">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit používání rozšířené reality, zapněte také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> fotoaparát.</translation>
+<translation id="1881806992065048905">Spodní panelu vzhledu stránky Nová karta</translation>
 <translation id="1887786770086287077">Přístup k poloze je v tomto zařízení vypnut. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Weby obvykle využívají přístup k souborům a složkám v zařízení k funkcím, jako je automatické ukládání práce</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
@@ -459,6 +460,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="6398765197997659313">Ukončit režim celé obrazovky</translation>
 <translation id="640163077447496506">Platnost skončí dnes</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Sbírka motivů</translation>
 <translation id="6439114592976064011">Bránit webům v používání zařízení a dat pro virtuální realitu</translation>
 <translation id="6447842834002726250">Soubory cookie</translation>
 <translation id="6452138246455930388">Pokles ceny na otevřené kartě z <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
 <translation id="7804248752222191302">Web používá váš fotoaparát</translation>
+<translation id="7805832099057502789">Spodní panel vzhledu stránky Nová karta otevřený na celou výšku</translation>
 <translation id="7807060072011926525">Poskytuje Google</translation>
 <translation id="7815680994978050279">Bylo zablokováno stahování nebezpečného souboru</translation>
 <translation id="7835852323729233924">Přehrávání médií</translation>
@@ -581,6 +584,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
 <translation id="8042586301629853791">Řadit podle:</translation>
 <translation id="8051193500142930381">Funkce vyžadující fotoaparát nebudou k dispozici</translation>
+<translation id="8056330801132235235">Výchozí nastavení Chromu</translation>
 <translation id="8067883171444229417">Přehrát video</translation>
 <translation id="8068648041423924542">Certifikát nelze vybrat.</translation>
 <translation id="8077120325605624147">Kterýkoliv web, který navštívíte, vám může zobrazit jakoukoliv reklamu</translation>

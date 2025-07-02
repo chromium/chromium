@@ -69,6 +69,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="1799920918471566157">Chrome – wskazówki</translation>
 <translation id="1816835383954230954">Gdy ta opcja jest włączona, Chrome działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami. Po jej wyłączeniu wydajność spada, ale mechanizm V8 jest bardziej odporny na ataki.</translation>
 <translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Plansza dolna wyglądu strony nowej karty</translation>
 <translation id="1887786770086287077">Dostęp do lokalizacji jest wyłączony na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Strony zwykle korzystają z dostępu do plików i folderów na Twoim urządzeniu, by na przykład automatycznie zapisywać efekty Twojej pracy</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
@@ -459,6 +460,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="6398765197997659313">Zamknij pełny ekran</translation>
 <translation id="640163077447496506">Wygasa dzisiaj</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Kolekcje motywów</translation>
 <translation id="6439114592976064011">Nie zezwalaj stronom na korzystanie z urządzenia ani danych rzeczywistości wirtualnej</translation>
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6452138246455930388">Obniżka ceny na otwartej karcie. Poprzednio: <ph name="OLD_PRICE" />, teraz: <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7804248752222191302">Strona używa kamery</translation>
+<translation id="7805832099057502789">Plansza dolna wyglądu strony nowej karty otwarta na całą wysokość</translation>
 <translation id="7807060072011926525">Udostępniany przez Google</translation>
 <translation id="7815680994978050279">Zablokowano niebezpieczne pobieranie</translation>
 <translation id="7835852323729233924">Odtwarzanie multimediów</translation>
@@ -581,6 +584,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8042586301629853791">Sortuj według:</translation>
 <translation id="8051193500142930381">Nie będą działać funkcje, które potrzebują kamery</translation>
+<translation id="8056330801132235235">Wartość domyślna Chrome</translation>
 <translation id="8067883171444229417">Odtwórz film</translation>
 <translation id="8068648041423924542">Nie można wybrać certyfikatu.</translation>
 <translation id="8077120325605624147">Każda witryna, którą odwiedzasz, może wyświetlać Ci dowolne reklamy</translation>

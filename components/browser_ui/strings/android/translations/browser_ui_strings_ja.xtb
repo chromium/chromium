@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome のおすすめの使い方</translation>
 <translation id="1816835383954230954">オンにすると、Chrome の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します。オフにすると、パフォーマンスは低下しますが、攻撃に対する V8 の耐性が強化されます。</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> に AR の使用を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
+<translation id="1881806992065048905">新しいタブページの外観のボトムシート</translation>
 <translation id="1887786770086287077">位置情報へのアクセスがデバイスでオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="1906181697255754968">多くのサイトは、作業内容を自動的に保存するためにデバイスのファイルやフォルダにアクセスします。</translation>
 <translation id="1915307458270490472">通話を終了</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="640163077447496506">今日で期限切れ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">テーマ コレクション</translation>
 <translation id="6439114592976064011">サイトによるバーチャル リアリティ デバイスとデータの使用をブロックする</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">開いているタブの値下げ情報（<ph name="OLD_PRICE" /> から <ph name="NEW_PRICE" />、<ph name="PRODUCT_NAME" />、<ph name="DOMAIN_NAME" />）</translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">追加</translation>
 <translation id="780301667611848630">キャンセル</translation>
 <translation id="7804248752222191302">サイトでカメラが使用されています</translation>
+<translation id="7805832099057502789">新しいタブページの外観のボトムシートが画面全体に表示されています</translation>
 <translation id="7807060072011926525">Google から提供</translation>
 <translation id="7815680994978050279">危険なダウンロードがブロックされました</translation>
 <translation id="7835852323729233924">再生中のメディア</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">ダウンロード エラー</translation>
 <translation id="8042586301629853791">並べ替え:</translation>
 <translation id="8051193500142930381">カメラを必要とする機能は動作しなくなります</translation>
+<translation id="8056330801132235235">Chrome のデフォルト</translation>
 <translation id="8067883171444229417">動画を再生します</translation>
 <translation id="8068648041423924542">証明書を選択できません</translation>
 <translation id="8077120325605624147">アクセスしたすべてのサイトであらゆる広告の表示が許可されます</translation>

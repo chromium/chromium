@@ -69,6 +69,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="1799920918471566157">Astuces de Chrome</translation>
 <translation id="1816835383954230954">Lorsque l'optimiseur est activé, Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu. Lorsque l'optimiseur est désactivé, les performances s'en trouvent réduites, mais le V8 est plus résistant aux attaques.</translation>
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez aussi l'accès à l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Zone de contenu dans le bas de l'écran concernant l'apparence de la page Nouvel onglet</translation>
 <translation id="1887786770086287077">L'accès à la localisation est désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Les sites accèdent généralement aux fichiers et aux dossiers sur votre appareil pour proposer des fonctionnalités, comme la sauvegarde automatique de votre travail</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
@@ -459,6 +460,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
 <translation id="640163077447496506">Expire aujourd'hui</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Collections de thèmes</translation>
 <translation id="6439114592976064011">Empêcher les sites d'utiliser vos appareils et vos données de réalité virtuelle</translation>
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6452138246455930388">Baisse de prix sur votre onglet ouvert, de <ph name="OLD_PRICE" /> à <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7804248752222191302">Un site utilise votre appareil photo</translation>
+<translation id="7805832099057502789">Zone de contenu dans le bas de l'écran concernant l'apparence de la page Nouvel onglet ouverte à pleine hauteur</translation>
 <translation id="7807060072011926525">Fourni par Google</translation>
 <translation id="7815680994978050279">Téléchargement dangereux bloqué</translation>
 <translation id="7835852323729233924">Élém. multim. en cours de lecture</translation>
@@ -581,6 +584,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8042586301629853791">Trier par :</translation>
 <translation id="8051193500142930381">Les fonctionnalités qui nécessitent une caméra ne seront pas accessibles</translation>
+<translation id="8056330801132235235">Chrome par défaut</translation>
 <translation id="8067883171444229417">Lire la vidéo</translation>
 <translation id="8068648041423924542">Impossible de sélectionner le certificat.</translation>
 <translation id="8077120325605624147">Tous les sites que vous visitez peuvent vous suggérer n’importe quelle annonce</translation>

@@ -565,7 +565,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3575464060651642446">Verificando as senhas neste dispositivo…</translation>
 <translation id="3577473026931028326">Algo deu errado. Tente novamente.</translation>
 <translation id="3577558748185201054">Gerencie seus interesses e suas preferências</translation>
-<translation id="3587482841069643663">Tudo</translation>
+<translation id="3587482841069643663">Todas</translation>
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3614126103057878858">Informações de preço</translation>
 <translation id="3616113530831147358">Áudio</translation>
@@ -676,7 +676,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4116038641877404294">Baixe páginas e acesse off-line</translation>
 <translation id="4121654769234887259">Você não precisa se lembrar dessa senha. Ela vai ficar salva na conta <ph name="USERNAME" /> do Gerenciador de senhas do Google</translation>
 <translation id="4124152339699379357">Fluxo de permissão de notificações aberto no tamanho máximo</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{O Chrome bloqueou as notificações desse site. Você pode as revisar e gerenciar.}one{O Chrome bloqueou as notificações desse site. Você pode as revisar e gerenciar.}other{O Chrome bloqueou as notificações desses sites. Você pode as revisar e gerenciar.}}</translation>
 <translation id="4132137475637520539">Permitir que qualquer pessoa com o link participe</translation>
 <translation id="4135200667068010335">A lista de dispositivos com os quais é possível compartilhar uma guia está fechada.</translation>
 <translation id="4137746084635924146">Idioma atual do dispositivo</translation>

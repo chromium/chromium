@@ -676,7 +676,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4116038641877404294">Download sider for at bruge dem, når du er offline</translation>
 <translation id="4121654769234887259">Du behøver ikke at huske denne adgangskode. Den gemmes i Google Adgangs­kode­admin­istrator for <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Flow for notifikationstilladelse er åbnet i fuld højde</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome har stoppet notifikationer fra dette website. Du kan gennemgå og administrere dette.}one{Chrome har stoppet notifikationer fra dette website. Du kan gennemgå og administrere dette.}other{Chrome har stoppet notifikationer fra disse websites. Du kan gennemgå og administrere dette.}}</translation>
 <translation id="4132137475637520539">Giv alle med linket mulighed for at deltage</translation>
 <translation id="4135200667068010335">Lukket liste over enheder, der skal deles en fane med.</translation>
 <translation id="4137746084635924146">Aktuelt enhedssprog</translation>

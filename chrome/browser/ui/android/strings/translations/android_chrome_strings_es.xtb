@@ -676,7 +676,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4116038641877404294">Descarga páginas para usarlas sin conexión</translation>
 <translation id="4121654769234887259">No tendrás que recordar esta contraseña. Se guardará en el Gestor de contraseñas de Google de <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Flujo del permiso de notificaciones abierto a altura completa</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ha detenido las notificaciones de este sitio. Puedes revisar y gestionar el ajuste.}other{Chrome ha detenido las notificaciones de estos sitios. Puedes revisar y gestionar el ajuste.}}</translation>
 <translation id="4132137475637520539">Permitir que cualquier persona con el enlace se una</translation>
 <translation id="4135200667068010335">La lista de dispositivos con los que puedes compartir una pestaña está cerrada.</translation>
 <translation id="4137746084635924146">Idioma actual del dispositivo</translation>

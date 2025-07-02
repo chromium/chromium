@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">Jah</translation>
 <translation id="1429187656584513419">Avage valik Passwords</translation>
 <translation id="1430915738399379752">Printimine</translation>
+<translation id="1433478348197382180">Lugemisrežiim</translation>
 <translation id="1436671784520050284">Jätka seadistamist</translation>
 <translation id="143681031165817424">Aadress salvestatakse ainult sellesse seadmesse</translation>
 <translation id="1445276840641906250">Kõik teie vahelehed ühes brauseris</translation>
@@ -200,6 +201,7 @@
 <translation id="178400879184240105">Teie paroolid on kordumatud</translation>
 <translation id="17906873777101817">Paku paroolide ja pääsuvõtmete salvestamist</translation>
 <translation id="1794893174442046596">Vahelehegrupp</translation>
+<translation id="1807246157184219062">Hele</translation>
 <translation id="1807893857950749072">Hinnajälgimise märguannete lubamine …</translation>
 <translation id="1810976980198522421">Tühista</translation>
 <translation id="1812514023095547458">Värvi valimine</translation>
@@ -208,6 +210,7 @@
 <translation id="1819374301217551116">Hinnajälgimine ja statistika</translation>
 <translation id="1820195936249950412">Logige sisse kehtiva kontoga</translation>
 <translation id="1820259098641718022">Lisati lugemisloendisse</translation>
+<translation id="1823768272150895732">Font</translation>
 <translation id="1824490729233982311">Märguannete saamine, kui teile saadetakse teie teistest seadmetest vahelehti.</translation>
 <translation id="1827529786398596735">Puudutage pikalt avakuva</translation>
 <translation id="1832848789136765277">Selleks, et pääseksite alati oma sünkroonitud andmetele juurde, kinnitage oma isik</translation>
@@ -365,6 +368,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2394659309569789395">Ava sait ikkagi</translation>
 <translation id="2403129868389095715">Teie saadetist ei saa kohale toimetada</translation>
 <translation id="2410754283952462441">Konto valimine</translation>
+<translation id="2414886740292270097">Tume</translation>
 <translation id="2422174748424038845">Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph name="GROUP_NAME" />“ ja see kustutatakse kõigist seadmetest.</translation>
 <translation id="2424805048070062787">Jätka selle vahelehega</translation>
 <translation id="2426805022920575512">Vali muu konto</translation>
@@ -402,6 +406,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2559843230610279254">Vahelehegrupp <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> vahelehte.</translation>
 <translation id="2577522251608256362">Naabruskond</translation>
 <translation id="2579713773888829241">Jagatud kettad</translation>
+<translation id="2593272815202181319">Püsisammkiri</translation>
 <translation id="2597486707832946298">Võtke oma lemmikust arvutibrauserist iPhone'is maksimum.</translation>
 <translation id="2601778637777010194">Jälgige toodete hinnalangusi</translation>
 <translation id="260378315836159338">Puudutage ekraanikuva ülaosas nuppu +</translation>
@@ -742,6 +747,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4047337302138771011">Paroolide jagamine</translation>
 <translation id="4049419681095579435">Saadetist jälgitakse juba</translation>
 <translation id="4049507953662678203">Veenduge, et oleksite võrguga ühendatud, ja proovige uuesti.</translation>
+<translation id="4056223980640387499">Seepia</translation>
 <translation id="4070132839822635162">Ära logi sisse</translation>
 <translation id="4094361089640885693">Jälgige hindu hõlpsalt ja hankige hinnastatistika.</translation>
 <translation id="4099756562043439968">Meeldetuletuse määramine</translation>
@@ -984,6 +990,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5005498671520578047">Parooli kopeerimine</translation>
 <translation id="5009127379503001909">Sirvige edasi</translation>
 <translation id="5012914568031465281">Hinda ei saanud jälgida.</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Saatmine aadressile <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Viimased 15 minutit</translation>
 <translation id="5020732097997376541">Puudutage Lensi ikooni</translation>
@@ -1775,6 +1782,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8096559642098770318">Võite seada vahelehemeeldetuletuse, et hiljem seda saiti uuesti külastada</translation>
 <translation id="8101409298456377967">Looge, salvestage ja hallake oma paroole, et saaksite hõlpsalt saitidele ja rakendustesse sisse logida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">U</translation>
+<translation id="8105368624971345109">Lülita välja</translation>
 <translation id="8114753159095730575">Allalaaditav fail on saadaval. Valikud kuvatakse ekraani alaosas.</translation>
 <translation id="8123502380991596210">Peida valik „Mis on uut?“</translation>
 <translation id="8123953306357309250">Kas tühistada sünkroonimine? Saate sünkroonimise seadetes alati sisse lülitada.</translation>

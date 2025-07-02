@@ -69,6 +69,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1816835383954230954">Quando a opção está ativada, o Chrome fica mais rápido, e os recursos que usam JavaScript funcionam conforme o esperado. Quando desativada, isso reduz o desempenho, mas torna o V8 mais resistente a ataques.</translation>
 <translation id="1818308510395330587">Para permitir que o app <ph name="APP_NAME" /> use RA, também é necessário ativar a câmera nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Página inferior de aparência da página "Nova guia"</translation>
 <translation id="1887786770086287077">O acesso ao local está desativado neste dispositivo. Ative nas <ph name="BEGIN_LINK" />Configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Os sites geralmente acessam arquivos e pastas no dispositivo para recursos como salvamento automático</translation>
 <translation id="1915307458270490472">Desligar</translation>
@@ -459,6 +460,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
 <translation id="640163077447496506">Expira hoje</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Coleções de temas</translation>
 <translation id="6439114592976064011">Impedir que sites usem seus dispositivos e dados de realidade virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Redução no preço na sua guia aberta: <ph name="PRODUCT_NAME" /> de <ph name="OLD_PRICE" /> por <ph name="NEW_PRICE" /> em <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="780301667611848630">Agora não</translation>
 <translation id="7804248752222191302">Um site está usando sua câmera</translation>
+<translation id="7805832099057502789">A página inferior de aparência da página "Nova guia" está aberta no tamanho máximo</translation>
 <translation id="7807060072011926525">Fornecido pelo Google</translation>
 <translation id="7815680994978050279">Download perigoso bloqueado</translation>
 <translation id="7835852323729233924">Tocando mídia</translation>
@@ -581,6 +584,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">Recursos que precisam de câmera não funcionarão</translation>
+<translation id="8056330801132235235">Padrão do Chrome</translation>
 <translation id="8067883171444229417">Assistir vídeo</translation>
 <translation id="8068648041423924542">Não foi possível selecionar certificado.</translation>
 <translation id="8077120325605624147">Qualquer site que você visitar poderá mostrar anúncios para você</translation>

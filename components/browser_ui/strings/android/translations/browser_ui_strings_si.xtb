@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome ඉඟි</translation>
 <translation id="1816835383954230954">ක්‍රියාත්මක වූ විට, Chrome වේගයෙන් ක්‍රියාත්මක වන අතර JavaScript භාවිත කරන විශේෂාංග සැලසුම් කළ පරිදි ක්‍රියා කළ යුතු ය. ක්‍රියාවිරහිත වූ විට, මෙය කාර්ය සාධනය අඩු කරන නමුත් V8 ප්‍රහාරවලට වඩාත් ප්‍රතිරෝධී වෙයි.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> හට AR භාවිත කිරීමට ඉඩ දීමට, <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ කැමරාවද ක්‍රියාත්මක කරන්න.</translation>
+<translation id="1881806992065048905">නව පටිති පිටුවේ පෙනුම පහළ පත්‍රය</translation>
 <translation id="1887786770086287077">මෙම උපාංගය සඳහා ස්ථාන ප්‍රවේශය ක්‍රියා විරහිතයි. <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ එය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="1906181697255754968">අඩවි සාමාන්‍යයෙන් ඔබේ වැඩ ස්වයංක්‍රියව සුරැකීම වැනි විශේෂාංග සඳහා ඔබගේ උපාංගයේ ගොනු සහ ෆෝල්ඩරවලට ප්‍රවේශ වේ</translation>
 <translation id="1915307458270490472">විසන්ධි කරන්න</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">සම්පුර්ණ තිරයෙන් ඉවත් වන්න</translation>
 <translation id="640163077447496506">අද කල් ඉකුත් වෙයි</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">තේමා එකතු</translation>
 <translation id="6439114592976064011">වෙබ් අඩවි ඔබේ අතත්‍ය යථාර්ථ උපාංගය සහ දත්ත හඹා යෑමෙන් අවහිර කරන්න</translation>
 <translation id="6447842834002726250">කුකීස්</translation>
 <translation id="6452138246455930388">ඔබේ විවෘත පටිත්ත මත මිල පහත වැටීම, <ph name="OLD_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">එක් කරන්න</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7804248752222191302">වෙබ් අඩවියක් ඔබේ කැමරාව භාවිත කරයි</translation>
+<translation id="7805832099057502789">නව පටිති පිටු පෙනුම පහළ පත්‍රය සම්පූර්ණ උසින් විවෘත කර ඇත</translation>
 <translation id="7807060072011926525">Google විසින් සපයනු ලැබේ</translation>
 <translation id="7815680994978050279">හානිකර බාගැනීම් අවහිර කරන ලදී</translation>
 <translation id="7835852323729233924">මාධ්‍ය ධාවනය</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">බාගැනීම අසමත් විය</translation>
 <translation id="8042586301629853791">අනුපිළිවෙළට සකසන්න:</translation>
 <translation id="8051193500142930381">කැමරාවක් අවශ්‍ය විශේෂාංග ක්‍රියා නොකරනු ඇත</translation>
+<translation id="8056330801132235235">Chrome පෙරනිමිය</translation>
 <translation id="8067883171444229417">වීඩියෝව ධාවන කරන්න</translation>
 <translation id="8068648041423924542">සහතිකය තේරීමට නොහැකිය.</translation>
 <translation id="8077120325605624147">ඔබ පිවිසෙන ඕනෑම අඩවියක් ඔබට ඕනෑම දැන්වීමක් පෙන්විය හැක</translation>

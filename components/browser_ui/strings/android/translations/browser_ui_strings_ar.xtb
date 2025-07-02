@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">‏نصائح قيّمة من Chrome</translation>
 <translation id="1816835383954230954">‏عند تفعيل هذا الخيار، سيعمل Chrome بشكل أسرع ومن المفترض أن تعمل الميزات التي تستخدِم JavaScript على النحو المطلوب. ويؤدي إيقافه إلى تقليل مستوى الأداء ولكنّه يجعل V8 أكثر مقاومة للهجمات.</translation>
 <translation id="1818308510395330587">‏للسماح لتطبيق <ph name="APP_NAME" /> باستخدام ميزة الواقع المعزَّز، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">البطاقة السفلية لمظهر صفحة "علامة تبويب جديدة"</translation>
 <translation id="1887786770086287077">‏الوصول إلى الموقع الجغرافي متوقف لهذا الجهاز. يمكنك تفعليه في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">تطلب المواقع الإلكترونية عادةً الوصول إلى الملفات والمجلدات على جهازك لتتيح ميزات مثل حفظ عملك تلقائيًا.</translation>
 <translation id="1915307458270490472">قطع الاتصال</translation>
@@ -460,6 +461,7 @@
 <translation id="6398765197997659313">إنهاء وضع ملء الشاشة</translation>
 <translation id="640163077447496506">تنتهي الصلاحية اليوم</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">مجموعات المظاهر</translation>
 <translation id="6439114592976064011">منع المواقع الإلكترونية من استخدام جهاز الواقع الافتراضي وبياناته.</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
 <translation id="6452138246455930388">‏انخفاض في السعر ضِمن علامة التبويب المفتوحة من ‎<ph name="OLD_PRICE" /> إلى ‎<ph name="NEW_PRICE" />، للمنتج "<ph name="PRODUCT_NAME" />"، على النطاق <ph name="DOMAIN_NAME" /></translation>
@@ -563,6 +565,7 @@
 <translation id="7791543448312431591">إضافة</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
 <translation id="7804248752222191302">هناك موقع إلكتروني يستخدم الكاميرا.</translation>
+<translation id="7805832099057502789">تم فتح البطاقة السفلية لمظهر صفحة "علامة تبويب جديدة" بطول الشاشة</translation>
 <translation id="7807060072011926525">‏خلاصة مقدَّمة من Google</translation>
 <translation id="7815680994978050279">تم حظر عملية تنزيل خطيرة</translation>
 <translation id="7835852323729233924">تشغيل الوسائط</translation>
@@ -582,6 +585,7 @@
 <translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8042586301629853791">الترتيب حسب:</translation>
 <translation id="8051193500142930381">لن تعمل الميزات التي تحتاج إلى كاميرا.</translation>
+<translation id="8056330801132235235">‏خيار Chrome التلقائي</translation>
 <translation id="8067883171444229417">تشغيل الفيديو</translation>
 <translation id="8068648041423924542">يتعذر تحديد الشهادة.</translation>
 <translation id="8077120325605624147">السماح لأي موقع إلكتروني تزوره بعرض أي إعلان لك</translation>

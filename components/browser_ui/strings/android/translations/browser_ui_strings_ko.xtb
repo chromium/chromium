@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome 사용 팁</translation>
 <translation id="1816835383954230954">사용 설정하면 Chrome이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동합니다. 사용 중지하면 성능은 저하되지만 V8의 공격에 대한 저항력이 강화됩니다.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />에서 AR을 사용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
+<translation id="1881806992065048905">새 탭 페이지 모양 하단 시트</translation>
 <translation id="1887786770086287077">이 기기의 위치 액세스가 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="1906181697255754968">사이트에서는 일반적으로 작업 자동 저장 등의 기능을 위해 기기의 파일과 폴더에 액세스합니다.</translation>
 <translation id="1915307458270490472">종료</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="640163077447496506">오늘 만료됨</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">테마 컬렉션</translation>
 <translation id="6439114592976064011">사이트에서 내 가상 현실 기기 및 데이터를 사용하지 못하도록 차단</translation>
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6452138246455930388">열려 있는 탭의 가격 인하(<ph name="OLD_PRICE" />~<ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">추가</translation>
 <translation id="780301667611848630">나중에</translation>
 <translation id="7804248752222191302">사이트에서 카메라 사용 중</translation>
+<translation id="7805832099057502789">새 탭 페이지 모양 하단 시트가 전체 높이로 열림</translation>
 <translation id="7807060072011926525">Google 제공</translation>
 <translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7835852323729233924">재생 중인 미디어</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8042586301629853791">정렬 기준:</translation>
 <translation id="8051193500142930381">카메라가 필요한 기능이 작동하지 않음</translation>
+<translation id="8056330801132235235">Chrome 기본값</translation>
 <translation id="8067883171444229417">동영상 재생</translation>
 <translation id="8068648041423924542">인증서를 선택할 수 없습니다.</translation>
 <translation id="8077120325605624147">어떤 사이트에서나 광고를 게재할 수 있습니다.</translation>

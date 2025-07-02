@@ -676,7 +676,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4116038641877404294">Lataa sivuja offline-käyttöä varten</translation>
 <translation id="4121654769234887259">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Google Salasanoihin sähköpostiosoitteella <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Ilmoitusluvan työnkulku koko näytön kokoisena</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome on estänyt ilmoitukset tältä sivustolta. Voit tarkistaa ja muokata tätä.}other{Chrome on estänyt ilmoitukset näiltä sivustolta. Voit tarkistaa ja muokata tätä.}}</translation>
 <translation id="4132137475637520539">Kaikki linkin saaneet voivat liittyä</translation>
 <translation id="4135200667068010335">Välilehden jakamisen laiteluettelo on suljettu.</translation>
 <translation id="4137746084635924146">Laitteen kieli</translation>

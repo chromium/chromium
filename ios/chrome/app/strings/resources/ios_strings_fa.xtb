@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">بله</translation>
 <translation id="1429187656584513419">باز کردن «گذرواژه‌ها»</translation>
 <translation id="1430915738399379752">چاپ</translation>
+<translation id="1433478348197382180">حالت خواندن</translation>
 <translation id="1436671784520050284">ادامه راه‌اندازی</translation>
 <translation id="143681031165817424">نشانی فقط در این دستگاه ذخیره می‌شود</translation>
 <translation id="1445276840641906250">همه برگه‌های شما در یک مرورگر</translation>
@@ -200,6 +201,7 @@
 <translation id="178400879184240105">گذرواژه‌هایتان غیرتکراری است</translation>
 <translation id="17906873777101817">پیشنهاد برای ذخیره کردن گذرواژه‌ها و گذرکلیدها</translation>
 <translation id="1794893174442046596">گروه زبانه</translation>
+<translation id="1807246157184219062">روشن</translation>
 <translation id="1807893857950749072">مجاز کردن اعلان‌های پیگیری قیمت…</translation>
 <translation id="1810976980198522421">لغو کردن</translation>
 <translation id="1812514023095547458">انتخاب رنگ</translation>
@@ -208,6 +210,7 @@
 <translation id="1819374301217551116">ردگیری قیمت و اطلاعات آماری</translation>
 <translation id="1820195936249950412">با حساب معتبر به سیستم وارد شوید</translation>
 <translation id="1820259098641718022">به فهرست خواندن اضافه شد</translation>
+<translation id="1823768272150895732">قلم</translation>
 <translation id="1824490729233982311">وقتی از دستگاه‌های دیگر برگه دریافت می‌کنید، هشدار می‌دهد.</translation>
 <translation id="1827529786398596735">صفحه اصلی را لمس کنید و نگه دارید</translation>
 <translation id="1832848789136765277">برای اینکه مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید، هویتتان را درستی‌سنجی کنید</translation>
@@ -365,6 +368,7 @@
 <translation id="2394659309569789395">سایت درهرصورت باز شود</translation>
 <translation id="2403129868389095715">بسته شما را نمی‌توان تحویل داد</translation>
 <translation id="2410754283952462441">انتخاب حساب</translation>
+<translation id="2414886740292270097">تاریک</translation>
 <translation id="2422174748424038845">اگر گروه برگه را حذف کنید، همه دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و این گروه برگه از همه دستگاه‌ها حذف می‌شود.</translation>
 <translation id="2424805048070062787">ادامه کار با این برگه</translation>
 <translation id="2426805022920575512">انتخاب یک حساب دیگر</translation>
@@ -402,6 +406,7 @@
 <translation id="2559843230610279254">گروه برگه، <ph name="GROUP_TITLE" />،‏ <ph name="TABS_NUMBER" /> برگه.</translation>
 <translation id="2577522251608256362">محله</translation>
 <translation id="2579713773888829241">درایوهای مشترک</translation>
+<translation id="2593272815202181319">قلم‌های با عرض ثابت</translation>
 <translation id="2597486707832946298">‏در iPhone خود، از مرورگر رایانه‌ای که می‌شناسید و دوست دارید بیشترین بهره را ببرید.</translation>
 <translation id="2601778637777010194">کاهش قیمت محصولات را پیگیری کنید</translation>
 <translation id="260378315836159338">در بالای صفحه، روی + تک‌ضرب بزنید</translation>
@@ -742,6 +747,7 @@
 <translation id="4047337302138771011">هم‌رسانی گذرواژه‌ها</translation>
 <translation id="4049419681095579435">بسته درحال‌حاضر رهگیری می‌شود</translation>
 <translation id="4049507953662678203">مطمئن شوید اتصال شبکه دارید و دوباره امتحان کنید.</translation>
+<translation id="4056223980640387499">سپیا</translation>
 <translation id="4070132839822635162">وارد سیستم نشدن</translation>
 <translation id="4094361089640885693">قیمت‌ها را به‌راحتی پیگیری کنید و اطلاعات آماری قیمت را دریافت کنید.</translation>
 <translation id="4099756562043439968">تنظیم یادآور</translation>
@@ -984,6 +990,7 @@
 <translation id="5005498671520578047">کپی گذرواژه</translation>
 <translation id="5009127379503001909">ادامه مرور</translation>
 <translation id="5012914568031465281">امکان رهگیری قیمت وجود ندارد.</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">ارسال به <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">۱۵ دقیقه اخیر</translation>
 <translation id="5020732097997376541">روی «نماد لنز» تک‌ضرب بزنید</translation>
@@ -1775,6 +1782,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8096559642098770318">می‌توانید برای بررسی مجدد این سایت در آینده، یک یادآور زبانه تنظیم کنید</translation>
 <translation id="8101409298456377967">گذرواژه‌هایتان را ایجاد، ذخیره، و مدیریت کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">ج</translation>
+<translation id="8105368624971345109">خاموش کردن</translation>
 <translation id="8114753159095730575">بارگیری فایل دردسترس است. گزینه‌ها نزدیک انتهای صفحه دردسترس است.</translation>
 <translation id="8123502380991596210">پنهان کردن «ویژگی‌های جدید»</translation>
 <translation id="8123953306357309250">همگام‌سازی لغو شود؟ هرزمان بخواهید می‌توانید همگام‌سازی را در تنظیمات روشن کنید.</translation>

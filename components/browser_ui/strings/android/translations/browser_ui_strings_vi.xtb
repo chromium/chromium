@@ -68,6 +68,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="1799920918471566157">Mẹo dùng Chrome</translation>
 <translation id="1816835383954230954">Khi bạn bật công cụ này, Chrome sẽ hoạt động nhanh hơn và các tính năng sử dụng JavaScript sẽ hoạt động như dự kiến. Khi bạn tắt công cụ này, hiệu suất sẽ giảm nhưng V8 có thể chống lại các cuộc tấn công tốt hơn.</translation>
 <translation id="1818308510395330587">Để cho phép <ph name="APP_NAME" /> sử dụng công nghệ thực tế tăng cường (AR), hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Bảng giao diện trang thẻ mới ở dưới cùng</translation>
 <translation id="1887786770086287077">Đã tắt quyền truy cập vị trí đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Các trang web thường truy cập vào tệp và thư mục trên thiết bị của bạn để áp dụng những tính năng như tự động lưu công việc</translation>
 <translation id="1915307458270490472">Kết thúc</translation>
@@ -458,6 +459,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="6398765197997659313">Thoát khỏi chế độ toàn màn hình</translation>
 <translation id="640163077447496506">Hết hạn hôm nay</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Bộ sưu tập chủ đề</translation>
 <translation id="6439114592976064011">Không cho các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">Có ưu đãi giảm giá trên một thẻ đang mở, từ <ph name="OLD_PRICE" /> xuống còn <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -561,6 +563,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7804248752222191302">Một trang web đang sử dụng máy ảnh của bạn</translation>
+<translation id="7805832099057502789">Bảng giao diện trang thẻ mới ở dưới cùng đã mở toàn bộ</translation>
 <translation id="7807060072011926525">Do Google cung cấp</translation>
 <translation id="7815680994978050279">Tải xuống nguy hiểm đã chặn</translation>
 <translation id="7835852323729233924">Phát nội dung nghe nhìn</translation>
@@ -580,6 +583,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="802154636333426148">Tải xuống không thành công</translation>
 <translation id="8042586301629853791">Sắp xếp theo:</translation>
 <translation id="8051193500142930381">Các tính năng cần sử dụng máy ảnh sẽ không hoạt động</translation>
+<translation id="8056330801132235235">Chrome mặc định</translation>
 <translation id="8067883171444229417">Phát video</translation>
 <translation id="8068648041423924542">Không thể chọn chứng chỉ.</translation>
 <translation id="8077120325605624147">Mọi trang web bạn truy cập đều có thể hiện quảng cáo cho bạn</translation>

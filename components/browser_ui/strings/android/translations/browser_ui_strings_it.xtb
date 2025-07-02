@@ -69,6 +69,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="1799920918471566157">Suggerimenti per Chrome</translation>
 <translation id="1816835383954230954">Quando l'opzione è attivata, Chrome funziona più velocemente e le funzionalità che utilizzano JavaScript dovrebbero avere il comportamento previsto. Se disattivata, le prestazioni vengono ridotte, ma V8 diventa più resistente agli attacchi.</translation>
 <translation id="1818308510395330587">Per consentire all'app <ph name="APP_NAME" /> di utilizzare la realtà aumentata, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Riquadro inferiore di Aspetto della pagina Nuova scheda</translation>
 <translation id="1887786770086287077">L'accesso alla posizione è disattivato per questo dispositivo. Attivalo nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">In genere, i siti accedono a file e cartelle sul tuo dispositivo per funzionalità come il salvataggio automatico del tuo lavoro</translation>
 <translation id="1915307458270490472">Chiudi</translation>
@@ -459,6 +460,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="6398765197997659313">Esci da schermo intero</translation>
 <translation id="640163077447496506">Scade oggi</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Raccolte di temi</translation>
 <translation id="6439114592976064011">Impedisci ai siti di usare i dati e dispositivi della realtà virtuale</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">Calo di prezzo nella scheda aperta, da <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="780301667611848630">No, grazie</translation>
 <translation id="7804248752222191302">Un sito sta utilizzando la fotocamera</translation>
+<translation id="7805832099057502789">Riquadro inferiore di Aspetto della pagina Nuova scheda aperto a schermo intero</translation>
 <translation id="7807060072011926525">Fornito da Google</translation>
 <translation id="7815680994978050279">Download pericoloso bloccato</translation>
 <translation id="7835852323729233924">Contenuti in riproduzione</translation>
@@ -581,6 +584,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="802154636333426148">Download non riuscito</translation>
 <translation id="8042586301629853791">Ordina per:</translation>
 <translation id="8051193500142930381">Le funzionalità che richiedono una videocamera non funzioneranno</translation>
+<translation id="8056330801132235235">Impostazione predefinita di Chrome</translation>
 <translation id="8067883171444229417">Guarda il video</translation>
 <translation id="8068648041423924542">Impossibile selezionare il certificato.</translation>
 <translation id="8077120325605624147">Qualsiasi sito visitato può mostrarti qualsiasi annuncio</translation>

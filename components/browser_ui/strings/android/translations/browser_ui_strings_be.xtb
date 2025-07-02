@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Парады адносна Chrome</translation>
 <translation id="1816835383954230954">Калі функцыя ўключана, павышаецца хуткасць Chrome і правільна працуюць функцыі, якія выкарыстоўваюць JavaScript. Калі функцыя выключана, прадукцыйнасць зніжаецца, але ўстойлівасць V8 супраць атак павышаецца.</translation>
 <translation id="1818308510395330587">Каб праграма "<ph name="APP_NAME" />" магла выкарыстоўваць дапоўненую рэальнасць, уключыце таксама камеру ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Ніжні аркуш "Выгляд старонкі новай укладкі"</translation>
 <translation id="1887786770086287077">Доступ да месцазнаходжання для гэтай прылады выключаны. Уключыце яго ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Сайты звычайна атрымліваюць доступ да файлаў і папак на прыладзе для работы такіх функцый, як аўтаматычнае захаванне зробленага</translation>
 <translation id="1915307458270490472">Закрыць</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">Выключыць поўнаэкранны рэжым</translation>
 <translation id="640163077447496506">Тэрмін дзеяння заканчваецца сёння</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Калекцыі тэм</translation>
 <translation id="6439114592976064011">Забараніць сайтам выкарыстоўваць даныя і прылады віртуальнай рэальнасці</translation>
 <translation id="6447842834002726250">Файлы cookie</translation>
 <translation id="6452138246455930388">На адкрытай укладцы цана знізілася з <ph name="OLD_PRICE" /> да <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">Дадаць</translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7804248752222191302">Сайт выкарыстоўвае камеру</translation>
+<translation id="7805832099057502789">Ніжні аркуш "Выгляд старонкі новай укладкі" адкрыты на ўсю вышыню</translation>
 <translation id="7807060072011926525">Ад кампаніі Google</translation>
 <translation id="7815680994978050279">Небяспечная спампоўка заблакіравана</translation>
 <translation id="7835852323729233924">Прайграванне мультымедыя</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">Збой спампоўкі</translation>
 <translation id="8042586301629853791">Сартаваць па:</translation>
 <translation id="8051193500142930381">Функцыі, якім патрэбна камера, не будуць працаваць</translation>
+<translation id="8056330801132235235">Chrome (стандартна)</translation>
 <translation id="8067883171444229417">Прайграць відэа</translation>
 <translation id="8068648041423924542">Не ўдаецца выбраць сертыфікат.</translation>
 <translation id="8077120325605624147">Любы наведаны вамі сайт будзе паказваць вам рэкламу</translation>

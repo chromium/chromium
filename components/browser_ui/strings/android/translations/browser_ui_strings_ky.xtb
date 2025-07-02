@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome'ду колдонуу кеңештери</translation>
 <translation id="1816835383954230954">Күйгүзүлсө, Chrome ылдамыраак иштейт жана JavaScript'ти колдонгон функциялар туура иштеши керек. Өчүрүлсө, майнаптуулук төмөндөйт, бирок V8 чабуулдарга туруктуураак болуп калат.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> колдонмосуна AR'ди колдоонуусуна уруксат берүү үчүн камераны <ph name="BEGIN_LINK" />Android параметрлеринен<ph name="END_LINK" /> күйгүзүңүз.</translation>
+<translation id="1881806992065048905">Ылдыйкы экрандагы жаңы өтмөктөр бети</translation>
 <translation id="1887786770086287077">Жайгашкан жерди аныктоо жөндөөсү бул түзмөктө өчүрүлгөн. Аны <ph name="BEGIN_LINK" />Android параметрлерине<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>
 <translation id="1906181697255754968">Сайттар адатта ишиңизди автоматтык түрдө сактоо сыяктуу функциялар үчүн түзмөгүңүздөгү файлдарды жана папкаларды колдонот</translation>
 <translation id="1915307458270490472">Жогоруда кадоо</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">Толук экран режиминен чыгуу</translation>
 <translation id="640163077447496506">Мөөнөтү бүгүн бүтөт</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Темалардын жыйнактары</translation>
 <translation id="6439114592976064011">Сайттарга виртуалдык чындык түзмөктөрүңүздү жана маалыматты колдонууга тыюу салуу</translation>
 <translation id="6447842834002726250">Кукилер</translation>
 <translation id="6452138246455930388">Ачылган өтмөктө баа арзандады. <ph name="PRODUCT_NAME" /> баасы <ph name="OLD_PRICE" /> ордуна <ph name="NEW_PRICE" /> болуп калды. Домен: <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">Кошуу</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
 <translation id="7804248752222191302">Сайт камераңызды колдонуп жатат</translation>
+<translation id="7805832099057502789">Ылдыйкы экрандагы жаңы өтмөктөр бети толук ачылды</translation>
 <translation id="7807060072011926525">Google сунуштайт</translation>
 <translation id="7815680994978050279">Кооптуу файлды жүктөп алуу бөгөттөлдү</translation>
 <translation id="7835852323729233924">Медиа ойнотулууда</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">Жүктөлүп алынбай калды</translation>
 <translation id="8042586301629853791">Төмөнкү боюнча иргөө:</translation>
 <translation id="8051193500142930381">Камераны колдонгон функциялар иштебейт</translation>
+<translation id="8056330801132235235">Демейки Chrome</translation>
 <translation id="8067883171444229417">Видеону ойнотуу</translation>
 <translation id="8068648041423924542">Тастыктаманы тандоо мүмкүн эмес.</translation>
 <translation id="8077120325605624147">Сиз кирген бардык сайттар каалаган жарнаманы көрсөтө алышат</translation>

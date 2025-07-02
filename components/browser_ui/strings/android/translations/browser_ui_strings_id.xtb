@@ -69,6 +69,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="1799920918471566157">Tips untuk Chrome</translation>
 <translation id="1816835383954230954">Jika diaktifkan, Chrome berjalan lebih cepat dan fitur yang menggunakan JavaScript akan berfungsi sebagaimana mestinya. Jika dinonaktifkan, performa akan berkurang tetapi akan membuat V8 lebih tahan terhadap serangan.</translation>
 <translation id="1818308510395330587">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan Augmented Reality (AR), aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Panel bawah tampilan halaman tab baru</translation>
 <translation id="1887786770086287077">Akses lokasi dinonaktifkan untuk perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Situs biasanya mengakses file dan folder di perangkat Anda untuk fitur seperti penyimpanan tugas otomatis</translation>
 <translation id="1915307458270490472">Akhiri</translation>
@@ -459,6 +460,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
 <translation id="640163077447496506">Berakhir hari ini</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Kumpulan Tema</translation>
 <translation id="6439114592976064011">Blokir situs agar tidak menggunakan perangkat dan data virtual reality Anda</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">Penurunan harga di tab yang terbuka, dari <ph name="OLD_PRICE" /> menjadi <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7791543448312431591">Tambahkan</translation>
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7804248752222191302">Situs menggunakan kamera Anda</translation>
+<translation id="7805832099057502789">Panel bawah tampilan halaman tab baru terbuka sepenuhnya</translation>
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
 <translation id="7815680994978050279">Download berbahaya diblokir</translation>
 <translation id="7835852323729233924">Media yang sedang diputar</translation>
@@ -581,6 +584,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="802154636333426148">Download gagal</translation>
 <translation id="8042586301629853791">Urutkan menurut:</translation>
 <translation id="8051193500142930381">Fitur yang memerlukan kamera tidak akan berfungsi</translation>
+<translation id="8056330801132235235">Default Chrome</translation>
 <translation id="8067883171444229417">Putar video</translation>
 <translation id="8068648041423924542">Tidak dapat memilih sertifikat.</translation>
 <translation id="8077120325605624147">Setiap situs yang Anda buka dapat menampilkan iklan apa pun kepada Anda</translation>

@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome-ды пайдалану кеңестері</translation>
 <translation id="1816835383954230954">Қосулы болса, Chrome жылдам жұмыс істейді және JavaScript қолданатын функциялар тиісті түрде жұмыс істеуі керек. Өшірілсе, өнімділік азаяды, бірақ V8 оңтайлаушысы шабуылдарға төзімді болады.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> браузеріне AR режимін пайдалануға рұқсат ету үшін <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> камераны да қосыңыз.</translation>
+<translation id="1881806992065048905">Жаңа қойынды беті көрінісінің төменгі парақшасы</translation>
 <translation id="1887786770086287077">Бұл құрылғыда орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>
 <translation id="1906181697255754968">Жұмысыңызды автоматты түрде сақтау сияқты функциялар үшін сайттар құрылғыңыздағы файлдар мен қалталарға кіреді.</translation>
 <translation id="1915307458270490472">Жабу</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">Толық экраннан шығу</translation>
 <translation id="640163077447496506">Мерзімі бүгін бітеді</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Тақырып жинақтары</translation>
 <translation id="6439114592976064011">Сайттардың виртуалдық шындық құрылғыңызды және деректеріңізді пайдалануына тыйым салу</translation>
 <translation id="6447842834002726250">Cookie файлдары</translation>
 <translation id="6452138246455930388">Ашық қойындыда баға төмендеді: <ph name="OLD_PRICE" /> &gt; <ph name="NEW_PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">Қосу</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
 <translation id="7804248752222191302">Сайт камераны пайдаланып жатыр.</translation>
+<translation id="7805832099057502789">Толығымен ашылған жаңа қойынды беті көрінісінің төменгі парақшасы</translation>
 <translation id="7807060072011926525">Google ұсынған деректер</translation>
 <translation id="7815680994978050279">Қауіпті жүктеп алу әрекеті бөгелді</translation>
 <translation id="7835852323729233924">Медиамазмұн ойнату</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">Жүктеу сәтсіз аяқталды</translation>
 <translation id="8042586301629853791">Сұрыптау шарты:</translation>
 <translation id="8051193500142930381">Камераны қажет ететін функциялар жұмыс істемейді.</translation>
+<translation id="8056330801132235235">Chrome әдепкі опциясы</translation>
 <translation id="8067883171444229417">Бейнені ойнату</translation>
 <translation id="8068648041423924542">Сертификатты таңдау мүмкін емес.</translation>
 <translation id="8077120325605624147">Сіз кірген кез келген сайт сізге кез келген жарнаманы көрсете алады</translation>

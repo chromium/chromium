@@ -69,6 +69,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="1799920918471566157">Savjeti za Chrome</translation>
 <translation id="1816835383954230954">Kada je ovo uključeno, Chrome radi brže i funkcije koje koriste JavaScript bi trebale raditi kako je predviđeno. Kada je ovo isključeno, ovo smanjuje performanse, ali postiže da V8 bude otporniji na napade.</translation>
 <translation id="1818308510395330587">Da aplikaciji <ph name="APP_NAME" /> dozvolite korištenje AR-a, također uključite kameru u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Donja tabela izgleda stranice Nova kartica</translation>
 <translation id="1887786770086287077">Pristup lokaciji je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Web lokacije obično pristupaju fajlovima i folderima na vašem uređaju radi funkcija kao što je automatsko snimanje napretka</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
@@ -459,6 +460,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="6398765197997659313">Napusti prikaz preko cijelog ekrana</translation>
 <translation id="640163077447496506">Ističe danas</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Kolekcije tema</translation>
 <translation id="6439114592976064011">Blokira web lokacijama korištenje uređaja i podataka virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6452138246455930388">Pad cijene na otvorenoj kartici, sa <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Web lokacija koristi vašu kameru</translation>
+<translation id="7805832099057502789">Donja tabela izgleda stranice Nova kartica je otvorena u punoj visini</translation>
 <translation id="7807060072011926525">Pruža Google</translation>
 <translation id="7815680994978050279">Opasno preuzimanje je blokirano</translation>
 <translation id="7835852323729233924">Reproduciranje medija</translation>
@@ -581,6 +584,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8042586301629853791">Poredaj po:</translation>
 <translation id="8051193500142930381">Funkcije za koje je potrebna kamera neće funkcionirati</translation>
+<translation id="8056330801132235235">Zadano za Chrome</translation>
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
 <translation id="8068648041423924542">Nije moguće odabrati potvrdu.</translation>
 <translation id="8077120325605624147">Bilo koja web lokacija koju posjetite vam može prikazivati bilo koje oglase</translation>

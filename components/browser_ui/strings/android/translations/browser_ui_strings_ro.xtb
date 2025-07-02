@@ -69,6 +69,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="1799920918471566157">Sfaturi Chrome</translation>
 <translation id="1816835383954230954">Când opțiunea este activată, Chrome rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze corespunzător. Când este dezactivată, performanța scade, dar motorul V8 devine mai rezistent la atacuri.</translation>
 <translation id="1818308510395330587">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească RA, activează camera foto și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Foaia din partea de jos cu aspectul paginii Filă nouă</translation>
 <translation id="1887786770086287077">Accesul la locație este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Site-urile accesează de obicei fișiere și dosare de pe dispozitiv pentru funcții cum ar fi salvarea automată a ceea ce ai lucrat</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
@@ -459,6 +460,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="640163077447496506">Expiră astăzi</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Colecții tematice</translation>
 <translation id="6439114592976064011">Împiedică site-urile să folosească dispozitivul de realitate virtuală și datele conexe</translation>
 <translation id="6447842834002726250">Cookie-uri</translation>
 <translation id="6452138246455930388">Scădere de preț în fila deschisă, de la <ph name="OLD_PRICE" /> la <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7804248752222191302">Un site folosește camera foto</translation>
+<translation id="7805832099057502789">Foaia din partea de jos cu aspectul paginii Filă nouă deschisă la înălțimea completă</translation>
 <translation id="7807060072011926525">Oferit de Google</translation>
 <translation id="7815680994978050279">A fost blocată o descărcare periculoasă</translation>
 <translation id="7835852323729233924">Se redă conținutul media</translation>
@@ -581,6 +584,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
 <translation id="8042586301629853791">Sortează după:</translation>
 <translation id="8051193500142930381">Funcțiile care au nevoie de cameră nu vor funcționa</translation>
+<translation id="8056330801132235235">Tema Chrome prestabilită</translation>
 <translation id="8067883171444229417">Redă videoclipul</translation>
 <translation id="8068648041423924542">Certificatul nu poate fi selectat.</translation>
 <translation id="8077120325605624147">Orice site pe care îl accesezi îți poate afișa orice anunț</translation>

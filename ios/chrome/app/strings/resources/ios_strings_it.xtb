@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1429187656584513419">Apri Password</translation>
 <translation id="1430915738399379752">Stampa</translation>
+<translation id="1433478348197382180">Modalità Lettura</translation>
 <translation id="1436671784520050284">Continua configurazione</translation>
 <translation id="143681031165817424">Indirizzo salvato solo su questo dispositivo</translation>
 <translation id="1445276840641906250">Tutte le tue schede in un unico browser</translation>
@@ -187,6 +188,7 @@
 <translation id="1740650426894359238">Passa a un altro profilo</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Ignora modifiche</translation>
+<translation id="1748975028205587434">Seleziona il file</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opzione per l'indirizzo disponibile sopra la tastiera.}other{{count} opzioni per l'indirizzo disponibili sopra la tastiera.}}</translation>
 <translation id="1750238553597293878">Continua a usare le password nel tuo Account Google</translation>
 <translation id="17513872634828108">Schede aperte</translation>
@@ -199,6 +201,7 @@
 <translation id="178400879184240105">Le tue password sono univoche</translation>
 <translation id="17906873777101817">Chiedi di salvare password e passkey</translation>
 <translation id="1794893174442046596">Gruppo di schede</translation>
+<translation id="1807246157184219062">Chiaro</translation>
 <translation id="1807893857950749072">Consenti notifiche per il monitoraggio del prezzo…</translation>
 <translation id="1810976980198522421">Annulla</translation>
 <translation id="1812514023095547458">Seleziona colore</translation>
@@ -207,6 +210,7 @@
 <translation id="1819374301217551116">Monitoraggio dei prezzi e approfondimenti</translation>
 <translation id="1820195936249950412">Accedi con un account valido</translation>
 <translation id="1820259098641718022">Aggiunta all'elenco di lettura</translation>
+<translation id="1823768272150895732">Carattere</translation>
 <translation id="1824490729233982311">Avvisi quando ricevi schede da altri dispositivi.</translation>
 <translation id="1827529786398596735">Tocca e tieni premuta la schermata Home</translation>
 <translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
@@ -364,6 +368,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2394659309569789395">Apri comunque il sito</translation>
 <translation id="2403129868389095715">Il pacco non può essere consegnato</translation>
 <translation id="2410754283952462441">Scegli un account</translation>
+<translation id="2414886740292270097">Scuro</translation>
 <translation id="2422174748424038845">Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i dispositivi.</translation>
 <translation id="2424805048070062787">Continua con questa scheda</translation>
 <translation id="2426805022920575512">Scegli un altro account</translation>
@@ -401,6 +406,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2559843230610279254">Gruppo di schede, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> schede.</translation>
 <translation id="2577522251608256362">Quartiere</translation>
 <translation id="2579713773888829241">Drive condivisi</translation>
+<translation id="2593272815202181319">Monospace</translation>
 <translation id="2597486707832946298">Ottieni il meglio dal browser desktop che conosci e apprezzi sul tuo iPhone.</translation>
 <translation id="2601778637777010194">Monitora i cali di prezzo dei prodotti</translation>
 <translation id="260378315836159338">Nella parte superiore dello schermo, tocca +</translation>
@@ -529,6 +535,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3119874402040566234">Il tuo account verrà disconnesso e i dati di navigazione verranno eliminati</translation>
 <translation id="3124568093781685165">Condividi le password con la tua famiglia</translation>
 <translation id="3130863904455712965">Cronologia e altro ancora</translation>
+<translation id="3132584647087998639">Importa i dati</translation>
 <translation id="313283613037595347">Crea nuova scheda di navigazione in incognito.</translation>
 <translation id="3136739222562075778">Questa scheda mostra i cali di prezzo dei prodotti nelle schede aperte</translation>
 <translation id="3138611310073113613">Ignora la selezione</translation>
@@ -740,6 +747,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4047337302138771011">Condividi le tue password</translation>
 <translation id="4049419681095579435">Pacco già tracciato</translation>
 <translation id="4049507953662678203">Controlla la connessione di rete e riprova.</translation>
+<translation id="4056223980640387499">Seppia</translation>
 <translation id="4070132839822635162">Non accedere</translation>
 <translation id="4094361089640885693">Monitora facilmente i prezzi e ottieni approfondimenti in merito.</translation>
 <translation id="4099756562043439968">Imposta un promemoria</translation>
@@ -982,6 +990,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5009127379503001909">Continua a navigare</translation>
 <translation id="5012914568031465281">Impossibile monitorare il prezzo.</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Invia a <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Ultimi 15 minuti</translation>
 <translation id="5020732097997376541">Tocca l'icona di "Lens"</translation>
@@ -1118,6 +1127,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="560322036295180549">Opzione disattivata dall'organizzazione</translation>
 <translation id="5611398002774823980">Salva nell'account</translation>
+<translation id="561269594905823128">Tocca <ph name="BEGIN_BOLD" />Seleziona il file<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordina per Più recenti</translation>
 <translation id="5614553682702429503">Salvare la password?</translation>
 <translation id="5619871095170816857">Questa scheda mostra l'ultima scheda aperta usata su tutti i dispositivi sincronizzati nelle ultime 24 ore.</translation>
@@ -1569,6 +1579,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7367530036083223701">Accedi in sicurezza alle tue password dalla schermata Home con il widget Gestore delle password.</translation>
 <translation id="7369285139974632858">Aggiungi ai preferiti</translation>
 <translation id="7380220816562673297">Al momento puoi condividere le password solo con i membri del gruppo Famiglia. <ph name="BEGIN_LINK" />Crea un gruppo Famiglia<ph name="END_LINK" /> formato da un massimo di 6 membri e usa al meglio i tuoi prodotti e abbonamenti su Google.</translation>
+<translation id="7380698179418029202">Seleziona il file di esportazione di Safari <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /></translation>
 <translation id="739101637685146669">Quale URL vuoi aggiungere ai preferiti?</translation>
 <translation id="7393747756726387725">Aumenta lo zoom</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 sito}other{# siti}}</translation>
@@ -1708,6 +1719,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7887552845761062935">Tocca due volte e tieni premuto per aprire altre opzioni</translation>
 <translation id="7889910613639381518">Accesso facile e sicuro con il widget Gestore delle password di Google.</translation>
 <translation id="7899199123054742721">Segna tutti come da leggere</translation>
+<translation id="7908957400505794782">Tocca <ph name="BEGIN_BOLD" />Fine<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">La tua organizzazione non ti consente di sincronizzare tutti i dati.</translation>
 <translation id="792357691529995513">Nessun problema rilevato</translation>
 <translation id="7925108652071887026">Dati della Compilazione automatica</translation>
@@ -1770,6 +1782,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8096559642098770318">Puoi impostare un promemoria della scheda per tornare a visitare questo sito in futuro</translation>
 <translation id="8101409298456377967">Crea, salva e gestisci le tue password in modo da poter accedere facilmente ai siti e alle app. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
+<translation id="8105368624971345109">Disattiva</translation>
 <translation id="8114753159095730575">È possibile il download dei file. Le opzioni sono disponibili nella parte inferiore della schermata.</translation>
 <translation id="8123502380991596210">Nascondi Novità</translation>
 <translation id="8123953306357309250">Annullare la sincronizzazione? Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni.</translation>

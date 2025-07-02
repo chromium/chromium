@@ -256,6 +256,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, kad leistumėte susieti</translation>
 <translation id="1421484961346698724">Ištrinta paskyra</translation>
 <translation id="14222610277930434">Dažnai lankotės</translation>
+<translation id="1422795627423046860">Data netinkama</translation>
 <translation id="1422930527989633628">Gali būti prašoma atrasti netoliese esančius „Bluetooth“ įrenginius</translation>
 <translation id="1426410128494586442">Taip</translation>
 <translation id="1427192966110103169">Baseinai, saunos ir SPA namuose</translation>
@@ -4820,6 +4821,7 @@ Papildoma išsami informacija:
 <translation id="9155211586651734179">Pridėti garso įrenginiai</translation>
 <translation id="9155646082713385498">Žurnalai</translation>
 <translation id="9157595877708044936">Nustatoma...</translation>
+<translation id="9158491153040481956">Neseniai pakeitėte slaptažodį, kuris buvo rastas viešajame duomenų saugos pažeidime. Kilus problemų, Slaptažodžių tvarkyklė gali padėti prisijungti.</translation>
 <translation id="9161794544616754735">{0,plural, =1{Faile „<ph name="FILE_NAME" />“ gali būti neskelbtino turinio}one{<ph name="FILE_COUNT" /> faile gali būti neskelbtino turinio}few{<ph name="FILE_COUNT" /> failuose gali būti neskelbtino turinio}many{<ph name="FILE_COUNT" /> failo gali būti neskelbtino turinio}other{<ph name="FILE_COUNT" /> failų gali būti neskelbtino turinio}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – jei norite išeiti iš viso ekrano režimo, paspauskite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">„Slack“ pranešimas</translation>

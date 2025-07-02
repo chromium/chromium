@@ -676,7 +676,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4116038641877404294">Laai bladsye af om hulle vanlyn te gebruik</translation>
 <translation id="4121654769234887259">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal vir <ph name="USERNAME" /> in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="4124152339699379357">Kennisgewingtoestemmingvloei is teen volle hoogte oopgemaak</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome het kennisgewings van hierdie werf af gestop. Jy kan dit nagaan en bestuur.}other{Chrome het kennisgewings van hierdie werwe af gestop. Jy kan dit nagaan en bestuur.}}</translation>
 <translation id="4132137475637520539">Laat enigiemand met die skakel aansluit</translation>
 <translation id="4135200667068010335">Lys toestelle om 'n oortjie mee te deel, is toegemaak.</translation>
 <translation id="4137746084635924146">Huidige toesteltaal</translation>

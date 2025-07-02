@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">დაწყვილების დასაშვებად, <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">წაშლილი ანგარიში</translation>
 <translation id="14222610277930434">თქვენ მიერ ხშირად მონახულებული</translation>
+<translation id="1422795627423046860">თარიღი არასწორია</translation>
 <translation id="1422930527989633628">შეუძლია ახლომდებარე Bluetooth-მოწყობილობების აღმოჩენის თხოვნა</translation>
 <translation id="1426410128494586442">დიახ</translation>
 <translation id="1427192966110103169">სახლის საცურაო აუზები, საუნები და სპები</translation>
@@ -3730,6 +3731,7 @@
 <translation id="7292031607255951991">მიმღების სახელი</translation>
 <translation id="7298195798382681320">რეკომენდირებულია</translation>
 <translation id="7299471494012161875">მიერთებული პერიფერიული მოწყობილობების ჩვენება</translation>
+<translation id="7299769361777046949">ერთგული კლიენტის ბარათების მართვა Google საფულეში</translation>
 <translation id="7300012071106347854">კობალტისფერი</translation>
 <translation id="7304030187361489308">მაღალი</translation>
 <translation id="7304562222803846232">Google ანგარიშის კონფიდენციალურობის პარამეტრების მართვა</translation>
@@ -4817,6 +4819,7 @@
 <translation id="9155211586651734179">მიერთებული პერიფერიული აუდიომოწყობილობები</translation>
 <translation id="9155646082713385498">ჟურნალები</translation>
 <translation id="9157595877708044936">დაყენება…</translation>
+<translation id="9158491153040481956">თქვენ მიერ ახლახან შეცვლილი პაროლი აღმოჩნდა მონაცემთა საჯარო დარღვევაში. პრობლემის შემთხვევაში პაროლების მმართველი დაგეხმარებათ სისტემაში შესვლაში.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />, შესაძლოა, შეიცავდეს სენსიტიურ კონტენტს}other{<ph name="FILE_COUNT" /> ფაილი, შესაძლოა, შეიცავდეს სენსიტიურ კონტენტს}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> — სრულეკრანიანი რეჟიმიდან გასასვლელად დააჭირეთ |<ph name="ACCELERATOR" />|-ს</translation>
 <translation id="9163287596625611517">Slack შეტყობინება</translation>

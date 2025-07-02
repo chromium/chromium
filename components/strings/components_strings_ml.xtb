@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">ജോടിയാക്കുന്നതിന്, <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">ഇല്ലാതാക്കിയ അക്കൗണ്ട്</translation>
 <translation id="14222610277930434">നിങ്ങൾ പതിവായി സന്ദർശിക്കുന്നത്</translation>
+<translation id="1422795627423046860">തീയതി അസാധുവാണ്</translation>
 <translation id="1422930527989633628">സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ ആവശ്യപ്പെടുക</translation>
 <translation id="1426410128494586442">അതെ</translation>
 <translation id="1427192966110103169">വീട്ടിലെ സ്വിമ്മിംഗ് പൂളുകൾ, സോനകൾ, സ്പാകൾ</translation>
@@ -4815,6 +4816,7 @@
 <translation id="9155211586651734179">അറ്റാച്ച് ചെയ്ത ഓഡിയോ പെരിഫറലുകൾ</translation>
 <translation id="9155646082713385498">മാഗസിനുകൾ</translation>
 <translation id="9157595877708044936">സജ്ജീകരിക്കുന്നു...</translation>
+<translation id="9158491153040481956">പബ്ലിക് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയ ഒരു പാസ്‌വേഡ് നിങ്ങൾ അടുത്തിടെ മാറ്റി. എന്തെങ്കിലും പ്രശ്‌നമുണ്ടായാൽ, സൈൻ ഇൻ ചെയ്യാൻ Password Manager-ന് നിങ്ങളെ സഹായിക്കാനാകും.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> എന്ന ഫയലിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഉള്ളടക്കം അടങ്ങിയിരിക്കാം}other{<ph name="FILE_COUNT" /> ഫയലുകളിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഉള്ളടക്കം അടങ്ങിയിരിക്കാം}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ, |<ph name="ACCELERATOR" />| അമർത്തുക</translation>
 <translation id="9163287596625611517">Slack സന്ദേശം</translation>

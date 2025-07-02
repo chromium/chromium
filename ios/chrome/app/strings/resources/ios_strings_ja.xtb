@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">はい</translation>
 <translation id="1429187656584513419">[パスワード] を開く</translation>
 <translation id="1430915738399379752">印刷</translation>
+<translation id="1433478348197382180">リーディング モード</translation>
 <translation id="1436671784520050284">設定を続行</translation>
 <translation id="143681031165817424">住所はこのデバイスにのみ保存されました</translation>
 <translation id="1445276840641906250">1 つのブラウザですべてのタブを管理</translation>
@@ -187,6 +188,7 @@
 <translation id="1740650426894359238">別のプロファイルに切り替え</translation>
 <translation id="1741219894094057085">スマートウォッチ</translation>
 <translation id="1743244221910283364">変更を破棄</translation>
+<translation id="1748975028205587434">ファイルを選択</translation>
 <translation id="174998178145075354">{count,plural, =1{キーボードの上部に利用可能な住所の候補が {count} 件表示されています。}other{キーボードの上部に利用可能な住所の候補が {count} 件表示されています。}}</translation>
 <translation id="1750238553597293878">Google アカウントのパスワードを引き続き使用してください</translation>
 <translation id="17513872634828108">開いているタブ</translation>
@@ -199,6 +201,7 @@
 <translation id="178400879184240105">使い回されているパスワードはありません</translation>
 <translation id="17906873777101817">パスワードとパスキーを保存するか確認する</translation>
 <translation id="1794893174442046596">タブグループ</translation>
+<translation id="1807246157184219062">ライト</translation>
 <translation id="1807893857950749072">価格の追跡の通知を許可…</translation>
 <translation id="1810976980198522421">キャンセル</translation>
 <translation id="1812514023095547458">色を選択</translation>
@@ -207,6 +210,7 @@
 <translation id="1819374301217551116">価格のトラッキングと分析情報</translation>
 <translation id="1820195936249950412">有効なアカウントでログインしてください</translation>
 <translation id="1820259098641718022">リーディング リストに追加しました</translation>
+<translation id="1823768272150895732">フォント</translation>
 <translation id="1824490729233982311">他のデバイスからタブを受け取ったときに通知。</translation>
 <translation id="1827529786398596735">ホーム画面を長押し</translation>
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
@@ -364,6 +368,7 @@
 <translation id="2394659309569789395">そのままサイトを開く</translation>
 <translation id="2403129868389095715">配達不能</translation>
 <translation id="2410754283952462441">アカウントの選択</translation>
+<translation id="2414886740292270097">ダーク</translation>
 <translation id="2422174748424038845">削除すると、全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます。</translation>
 <translation id="2424805048070062787">このタブを続行</translation>
 <translation id="2426805022920575512">別のアカウントを選択</translation>
@@ -401,6 +406,7 @@
 <translation id="2559843230610279254">タブグループ、<ph name="GROUP_TITLE" />、<ph name="TABS_NUMBER" /> 個のタブ。</translation>
 <translation id="2577522251608256362">近隣住区（neighborhood）</translation>
 <translation id="2579713773888829241">共有ドライブ</translation>
+<translation id="2593272815202181319">等幅</translation>
 <translation id="2597486707832946298">使い慣れたパソコンのブラウザを iPhone で最大限に活用できます。</translation>
 <translation id="2601778637777010194">商品の値下げを追跡</translation>
 <translation id="260378315836159338">画面上部の [+] をタップ</translation>
@@ -529,6 +535,7 @@
 <translation id="3119874402040566234">ログアウトして閲覧データを削除します</translation>
 <translation id="3124568093781685165">家族とパスワードを共有する</translation>
 <translation id="3130863904455712965">履歴、その他</translation>
+<translation id="3132584647087998639">データをインポート</translation>
 <translation id="313283613037595347">新しいシークレット タブを作成します。</translation>
 <translation id="3136739222562075778">このカードには、開いているタブの商品の値下げ情報が表示されます</translation>
 <translation id="3138611310073113613">選択を破棄</translation>
@@ -740,6 +747,7 @@
 <translation id="4047337302138771011">パスワードの共有</translation>
 <translation id="4049419681095579435">荷物はすでに追跡されています</translation>
 <translation id="4049507953662678203">ネットワークに接続していることを確認してから、もう一度お試しください。</translation>
+<translation id="4056223980640387499">セピア</translation>
 <translation id="4070132839822635162">ログインしない</translation>
 <translation id="4094361089640885693">簡単に価格をトラッキングして検討できます。</translation>
 <translation id="4099756562043439968">リマインダーを設定</translation>
@@ -982,6 +990,7 @@
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5009127379503001909">閲覧を続ける</translation>
 <translation id="5012914568031465281">価格を追跡できませんでした。</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">送信先: <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">過去 15 分間</translation>
 <translation id="5020732097997376541">「レンズアイコン」をタップする</translation>
@@ -1118,6 +1127,7 @@
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="560322036295180549">組織によって無効にされています</translation>
 <translation id="5611398002774823980">アカウントに保存</translation>
+<translation id="561269594905823128">[<ph name="BEGIN_BOLD" />ファイルを選択<ph name="END_BOLD" />] をタップします</translation>
 <translation id="5613297089029360427">最新で並べ替え</translation>
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>
 <translation id="5619871095170816857">このカードには、同期したすべてのデバイスで過去 24 時間以内に使用し開いたタブが表示されます。</translation>
@@ -1569,6 +1579,7 @@
 <translation id="7367530036083223701">パスワード マネージャー ウィジェットを使用すると、ホーム画面からパスワードに安全にアクセスできます。</translation>
 <translation id="7369285139974632858">ブックマークに追加</translation>
 <translation id="7380220816562673297">現在のところ、パスワードはファミリー メンバーとのみ共有できます。最大 6 人のメンバーを招待して<ph name="BEGIN_LINK" />ファミリー グループを作成<ph name="END_LINK" />すると、Google のさまざまなサービスやサブスクリプションをさらに活用できます。</translation>
+<translation id="7380698179418029202">Safari のエクスポート <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> ファイルを選択します</translation>
 <translation id="739101637685146669">ブックマークする URL を指定してください。</translation>
 <translation id="7393747756726387725">拡大</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 件のサイト}other{# 件のサイト}}</translation>
@@ -1708,6 +1719,7 @@
 <translation id="7887552845761062935">ダブルタップして長押しするとその他のオプションが開きます</translation>
 <translation id="7889910613639381518">Google パスワード マネージャー ウィジェットを使えば簡単かつ安全にアクセスできます。</translation>
 <translation id="7899199123054742721">すべて未読にする</translation>
+<translation id="7908957400505794782">[<ph name="BEGIN_BOLD" />完了<ph name="END_BOLD" />] をタップします</translation>
 <translation id="7911190106180361398">お客様の組織では、[すべてを同期する] の設定は許可されていません。</translation>
 <translation id="792357691529995513">問題は検出されませんでした</translation>
 <translation id="7925108652071887026">自動入力のデータ</translation>
@@ -1770,6 +1782,7 @@
 <translation id="8096559642098770318">このサイトに後で再度アクセスするようタブ リマインダーを設定できます</translation>
 <translation id="8101409298456377967">パスワードを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">新</translation>
+<translation id="8105368624971345109">オフにする</translation>
 <translation id="8114753159095730575">ファイルのダウンロードが利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="8123502380991596210">最新情報を非表示</translation>
 <translation id="8123953306357309250">同期をキャンセルしますか？同期は設定でいつでもオンにできます。</translation>

@@ -676,7 +676,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4116038641877404294">I-download ang mga page para magamit ang mga ito offline</translation>
 <translation id="4121654769234887259">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Google Password Manager para sa <ph name="USERNAME" /></translation>
 <translation id="4124152339699379357">Nakabukas ang proseso ng pahintulot sa notification nang buo ang taas</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Inihinto ng Chrome ang mga notification mula sa site na ito. Puwede mong suriin at pamahalaan.}one{Inihinto ng Chrome ang mga notification mula sa mga site na ito. Puwede mong suriin at pamahalaan.}other{Inihinto ng Chrome ang mga notification mula sa mga site na ito. Puwede mong suriin at pamahalaan.}}</translation>
 <translation id="4132137475637520539">Hayaang sumali ang sinumang may link</translation>
 <translation id="4135200667068010335">Nakasara ang listahan ng mga device kung saan magbabahagi ng tab.</translation>
 <translation id="4137746084635924146">Kasalukuyang wika ng device</translation>

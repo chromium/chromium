@@ -69,6 +69,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="1799920918471566157">Chrome সংক্রান্ত পরামর্শ</translation>
 <translation id="1816835383954230954">চালু থাকলে, Chrome আরও দ্রুত কাজ করে এবং যেসব ফিচার জাভাস্ক্রিপ্ট ব্যবহার করে, সেগুলি ডিজাইন করা হিসেবে কাজ করতে হবে। বন্ধ থাকলে, এটি পারফর্ম্যান্স কমিয়ে দেয় তবে অ্যাটাকের থেকে ভি৮-এর প্রতিরোধ ক্ষমতা আরও বেশি বাড়িয়ে তোলে।</translation>
 <translation id="1818308510395330587">তাছাড়া, যাতে <ph name="APP_NAME" /> এ আর (AR) ব্যবহার করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও ক্যামেরা চালু করে দিন।</translation>
+<translation id="1881806992065048905">স্ক্রিনের নিচে অ্যাটাচ করা শিটে নতুন ট্যাব পৃষ্ঠা কেমন দেখাবে</translation>
 <translation id="1887786770086287077">এই ডিভাইসে লোকেশন অ্যাক্সেস বন্ধ আছে। চালু করতে <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> যান।</translation>
 <translation id="1906181697255754968">আপনার কাজ অটোমেটিক সেভ করার মতো ফিচারের জন্য সাইট সাধারণত আপনার ডিভাইসের ফাইল ও ফোল্ডারগুলি অ্যাক্সেস করে</translation>
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
@@ -459,6 +460,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
 <translation id="640163077447496506">আজ মেয়াদ শেষ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">থিম কালেকশন</translation>
 <translation id="6439114592976064011">সাইটগুলিকে আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে দেবেন না</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6452138246455930388">আপনার খোলা ট্যাবে দাম কমার তথ্য, <ph name="OLD_PRICE" /> থেকে <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="780301667611848630">না থাক</translation>
 <translation id="7804248752222191302">একটি সাইট আপনার ক্যামেরা ব্যবহার করছে</translation>
+<translation id="7805832099057502789">স্ক্রিনের নিচে অ্যাটাচ করা শিট সম্পূর্ণভাবে খুলে রাখলে সেখানে নতুন ট্যাব পৃষ্ঠা কেমন দেখাবে</translation>
 <translation id="7807060072011926525">Google-এর প্রদান করা ফিড</translation>
 <translation id="7815680994978050279">ক্ষতিকারক ডাউনলোড ব্লক করা হয়েছে</translation>
 <translation id="7835852323729233924">মিডিয়া চালানো হচ্ছে</translation>
@@ -581,6 +584,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
 <translation id="8042586301629853791">এটি অনুযায়ী সাজান:</translation>
 <translation id="8051193500142930381">যেসব ফিচার ব্যবহার করতে ক্যামেরা দরকার সেগুলি কাজ করবে না</translation>
+<translation id="8056330801132235235">Chrome ডিফল্ট</translation>
 <translation id="8067883171444229417">ভিডিও চালানোর বোতাম</translation>
 <translation id="8068648041423924542">সার্টিফিকেট বেছে নিতে পারেনি।</translation>
 <translation id="8077120325605624147">আপনি ভিজিট করেন এমন যেকোনও সাইট আপনাকে যেকোনও বিজ্ঞাপন দেখাতে পারে</translation>

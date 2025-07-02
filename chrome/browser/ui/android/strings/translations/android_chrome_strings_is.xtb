@@ -676,7 +676,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4116038641877404294">Náðu í síður til að nota þær án nettengingar</translation>
 <translation id="4121654769234887259">Þú þarft ekki að muna þetta aðgangsorð. Það verður vistað í Google-aðgangsorðastjórnun fyrir <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Flæði tilkynningaheimildar opnað í fullri hæð</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome stöðvaði tilkynningar frá þessu vefsvæði. Þú getur farið yfir það og stjórnað því.}one{Chrome stöðvaði tilkynningar frá þessum vefsvæðum. Þú getur farið yfir það og stjórnað því.}other{Chrome stöðvaði tilkynningar frá þessum vefsvæðum. Þú getur farið yfir það og stjórnað því.}}</translation>
 <translation id="4132137475637520539">Leyfa öllum með tengilinn að taka þátt</translation>
 <translation id="4135200667068010335">Tækjalisti fyrir deilingu flipa er lokaður.</translation>
 <translation id="4137746084635924146">Núverandi tungumál tækis</translation>

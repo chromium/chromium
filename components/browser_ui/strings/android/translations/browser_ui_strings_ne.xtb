@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome को प्रयोगसम्बन्धी सुझावहरू</translation>
 <translation id="1816835383954230954">यो अन भएका बेला Chrome अझ चाँडो चल्छ र JavaScript प्रयोग गर्ने सुविधाहरूले डिजाइन गरिएअनुसार काम गर्नु पर्ने हो। यो अफ भएका बेला पर्फर्मेन्सको स्तर घट्छ तर साइबर आक्रमणबाट बच्ने V8 को क्षमता बढ्छ।</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> लाई AR प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
+<translation id="1881806992065048905">नयाँ ट्याब पेजमा देखिने पुछारको पाना</translation>
 <translation id="1887786770086287077">यो डिभाइसको स्थानमाथिको पहुँच अफ छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="1906181697255754968">तपाईंको कार्य स्वतः सुरक्षित गर्नेलगायतका सुविधाहरू प्रदान गर्न साइटहरूले सामान्यतया तपाईंको डिभाइसमा भएका फाइल र फोल्डरहरू प्रयोग गर्छन्</translation>
 <translation id="1915307458270490472">ह्याङ्ग अप</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
 <translation id="640163077447496506">आज म्याद सकिन्छ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">थिमका सङ्ग्रहहरू</translation>
 <translation id="6439114592976064011">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न रोक लगाउनुहोस्</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
 <translation id="6452138246455930388">तपाईंको खुला ट्याब <ph name="DOMAIN_NAME" /> मा भएको <ph name="PRODUCT_NAME" /> को मूल्य <ph name="OLD_PRICE" /> बाट घटेर <ph name="NEW_PRICE" /> पुगेको छ</translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="780301667611848630">पर्दैन, धन्यवाद</translation>
 <translation id="7804248752222191302">कुनै साइटले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
+<translation id="7805832099057502789">नयाँ ट्याब पेजमा देखिने पुछारको पाना पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="7807060072011926525">Google ले प्रदान गरेको</translation>
 <translation id="7815680994978050279">खतरनाक डाउनलोडमाथि रोक लगाइयो</translation>
 <translation id="7835852323729233924">प्ले भइरहेको मिडिया</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>
 <translation id="8042586301629853791">यसअनुसार क्रमबद्ध गर्नुहोस्:</translation>
 <translation id="8051193500142930381">क्यामेरा प्रयोग गर्ने सुविधाहरूले काम गर्ने छैनन्</translation>
+<translation id="8056330801132235235">Chrome को डिफल्ट थिम</translation>
 <translation id="8067883171444229417">भिडियो प्ले गर्नुहोस्</translation>
 <translation id="8068648041423924542">प्रमाणपत्र चयन गर्न असमर्थ।</translation>
 <translation id="8077120325605624147">तपाईंले खोल्ने कुनै पनि साइटले तपाईंलाई जुनसुकै विज्ञापन देखाउन सक्छ</translation>

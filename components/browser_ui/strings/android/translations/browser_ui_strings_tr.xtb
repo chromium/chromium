@@ -69,6 +69,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="1799920918471566157">Chrome ipuçları</translation>
 <translation id="1816835383954230954">Etkinleştirildiğinde Chrome daha hızlı çalışır ve JavaScript kullanan özellikler tasarlandığı şekilde çalışır. Devre dışı bırakılması performansı düşürür ancak V8'i saldırılara karşı daha dirençli hale getirir.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> uygulamasının artırılmış gerçekliği (AR) kullanması için <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kamerayı da açın.</translation>
+<translation id="1881806992065048905">Yeni sekme sayfası görünümü alt sayfası</translation>
 <translation id="1887786770086287077">Konum erişimi bu cihaz için kapalı. Konum erişimini <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>
 <translation id="1906181697255754968">Çalışmanızı otomatik olarak kaydetme gibi özelliklerin kullanılması için siteler genellikle cihazınızdaki dosyalar ile klasörlere erişir</translation>
 <translation id="1915307458270490472">Kapat</translation>
@@ -459,6 +460,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="6398765197997659313">Tam ekrandan çık</translation>
 <translation id="640163077447496506">Süresi bugün dolacak</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Tema Koleksiyonları</translation>
 <translation id="6439114592976064011">Sitelerin sanal gerçeklik cihazımı ve verilerimi kullanmasını engelle</translation>
 <translation id="6447842834002726250">Çerezler</translation>
 <translation id="6452138246455930388"><ph name="DOMAIN_NAME" /> adresinin açık olduğu sekmenizde <ph name="PRODUCT_NAME" /> ürününün <ph name="OLD_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
@@ -562,6 +564,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="7791543448312431591">Ekle</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7804248752222191302">Bir site kameranızı kullanıyor</translation>
+<translation id="7805832099057502789">Yeni sekme sayfası görünümü alt sayfası tam boyutta açıldı</translation>
 <translation id="7807060072011926525">Google tarafından sağlanır</translation>
 <translation id="7815680994978050279">Tehlikeli indirme işlemi engellendi</translation>
 <translation id="7835852323729233924">Medya oynatma/çalma</translation>
@@ -581,6 +584,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8042586301629853791">Sıralama ölçütü:</translation>
 <translation id="8051193500142930381">Kameranın kullanılmasını gerektiren özellikler çalışmaz</translation>
+<translation id="8056330801132235235">Chrome Varsayılanı</translation>
 <translation id="8067883171444229417">Videoyu oynat</translation>
 <translation id="8068648041423924542">Sertifika seçilemiyor.</translation>
 <translation id="8077120325605624147">Ziyaret ettiğiniz herhangi bir site size reklam gösterebilir</translation>

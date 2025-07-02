@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">የChrome ጠቃሚ ምክሮች</translation>
 <translation id="1816835383954230954">በሚበራበት ጊዜ Chrome በበለጠ ፍጥነት ይሄዳል እና ጃቫስክሪፕት የሚጠቀሙ ባህሪያት እንደተነደፉት ሊሠሩ ይገባል። በሚጠፋበት ጊዜ ይህ አፈጻጸምን ይቀንሳል ነገር ግን V8 ጥቃቶችን ይበልጥ እንዲቋቋም ያደርጋል።</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ኤአር እንዲጠቀም ለማስቻል፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
+<translation id="1881806992065048905">የአዲስ ትር ገፅ ዕይታ ግርጌ ሉህ</translation>
 <translation id="1887786770086287077">የአካባቢ መዳረሻ ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
 <translation id="1906181697255754968">ጣቢያዎች እንደ ስራዎን በራስ-ሰር ማስቀመጥ ያሉ ባህሪያትን ለማግኘት አብዛኛውን ጊዜ በመሣሪያዎ ላይ ያሉትን ፋይሎች እና አቃፊዎች ይደርሳሉ።</translation>
 <translation id="1915307458270490472">ዝጋ</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">ከሙሉ ማሳያ መስኮት ይውጡ</translation>
 <translation id="640163077447496506">ዛሬ ጊዜው ያበቃል</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">የገጽታ ስብስቦች</translation>
 <translation id="6439114592976064011">ጣቢያዎች የእርስዎን የምናባዊ እውነታ መሣሪያ እና ውሂብ እንዳይጠቀሙ ያግዷቸው</translation>
 <translation id="6447842834002726250">ኩኪዎች</translation>
 <translation id="6452138246455930388">ክፍት በሆነ ትርዎ ላይ የዋጋ ቅናሽ ከ<ph name="OLD_PRICE" /> ወደ <ph name="NEW_PRICE" />፣ <ph name="PRODUCT_NAME" />፣ <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
 <translation id="7804248752222191302">አንድ ጣቢያ ካሜራዎን እየተጠቀመ ነው</translation>
+<translation id="7805832099057502789">በሙሉ ቁመት የተከፈተ የአዲስ ትር ገፅ ካርዶች ግርጌ ሉህ</translation>
 <translation id="7807060072011926525">በGoogle የቀረበ</translation>
 <translation id="7815680994978050279">አደገኛ ውርድ ታግዷል</translation>
 <translation id="7835852323729233924">ሚዲያን በማጫወት ላይ</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">ማውረድ አልተሳካም</translation>
 <translation id="8042586301629853791">ደርድር በ፦</translation>
 <translation id="8051193500142930381">ካሜራ የሚያስፈልጋቸው ባህሪዎች አይሰሩም</translation>
+<translation id="8056330801132235235">Chrome ነባሪ</translation>
 <translation id="8067883171444229417">ቪዲዮ አጫውት</translation>
 <translation id="8068648041423924542">የዕውቅና ማረጋገጫን መምረጥ አልተቻለም።</translation>
 <translation id="8077120325605624147">የሚጎበኙት ማንኛውም ጣቢያ ማንኛውንም ማስታወቂያ ሊያሳይዎ ይችላል</translation>

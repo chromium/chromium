@@ -69,6 +69,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="1799920918471566157">Tipy pre Chrome</translation>
 <translation id="1816835383954230954">Keď je prepínač zapnutý, Chrome je rýchlejší a funkcie používajúce JavaScript by mali fungovať podľa očakávaní. Keď je vypnutý, zníži sa výkonnosť, ale optimalizátor V8 bude odolnejší voči útokom.</translation>
 <translation id="1818308510395330587">Fotoaparát zapnite aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />, aby mohla aplikácia <ph name="APP_NAME" /> používať RR.</translation>
+<translation id="1881806992065048905">Dolný hárok vzhľadu stránky na novej karte</translation>
 <translation id="1887786770086287077">Prístup k polohe je v tomto zariadení vypnutý. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Weby zvyčajne získavajú prístup k súborom a priečinkom vo vašom zariadení, aby mohli poskytovať funkcie, ako je automatické ukladanie vašej práce</translation>
 <translation id="1915307458270490472">Zložiť</translation>
@@ -459,6 +460,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="6398765197997659313">Ukončiť zobrazenie na celú obrazovku</translation>
 <translation id="640163077447496506">Vyprší dnes</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Zbierky motívov</translation>
 <translation id="6439114592976064011">Brániť webom používať zariadenie a dáta pre virtuálnu realitu</translation>
 <translation id="6447842834002726250">Súbory cookie</translation>
 <translation id="6452138246455930388">Pokles ceny na vašej otvorenej karte z <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7791543448312431591">Pridať</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
 <translation id="7804248752222191302">Váš fotoaparát používa nejaký web</translation>
+<translation id="7805832099057502789">Dolný hárok vzhľadu stránky na novej karte je otvorený na celú výšku</translation>
 <translation id="7807060072011926525">Poskytuje Google</translation>
 <translation id="7815680994978050279">Bolo zablokované sťahovanie nebezpečného súboru</translation>
 <translation id="7835852323729233924">Prehrávanie médií</translation>
@@ -581,6 +584,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
 <translation id="8042586301629853791">Zoradiť podľa:</translation>
 <translation id="8051193500142930381">Funkcie vyžadujúce kameru nebudú fungovať</translation>
+<translation id="8056330801132235235">Predvolené Chromom</translation>
 <translation id="8067883171444229417">Prehrať video</translation>
 <translation id="8068648041423924542">Nedá sa vybrať certifikát</translation>
 <translation id="8077120325605624147">Všetky weby, ktoré navštívite, vám môžu zobrazovať ľubovoľné reklamy</translation>

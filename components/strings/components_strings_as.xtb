@@ -256,6 +256,7 @@
 <translation id="1420920093772172268">যোৰা লগোৱাৰ অনুমতি দিবলৈ <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1421484961346698724">মচি পেলোৱা একাউণ্ট</translation>
 <translation id="14222610277930434">আপুনি প্ৰায়ে চায়</translation>
+<translation id="1422795627423046860">তাৰিখটো অমান্য</translation>
 <translation id="1422930527989633628">নিকটৱৰ্তী ডিভাইচ ব্লুটুথ ডিভাইচসমূহ বিচাৰিবলৈ অনুমতি বিচাৰিব পাৰে</translation>
 <translation id="1426410128494586442">হয়</translation>
 <translation id="1427192966110103169">ঘৰৰ চুইমিং পুল, চ’না আৰু স্পা</translation>
@@ -4812,6 +4813,7 @@
 <translation id="9155211586651734179">অডিঅ’ পৰিধীয় সংযুক্ত কৰা হ’ল</translation>
 <translation id="9155646082713385498">আলোচনী</translation>
 <translation id="9157595877708044936">ছেট আপ কৰি থকা হৈছে...</translation>
+<translation id="9158491153040481956">এটা ৰাজহুৱা ডেটা উলংঘনত পোৱা এটা পাছৱৰ্ড আপুনি শেহতীয়াকৈ সলনি কৰিছে। যদি কিবা সমস্যা হয়, Password Managerএ আপোনাক ছাইন ইন কৰাত সহায় কৰিব পাৰে।</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />ত সংবেদনশীল সমল থাকিব পাৰে}one{<ph name="FILE_COUNT" /> টা ফাইলত সংবেদনশীল সমল থাকিব পাৰে}other{<ph name="FILE_COUNT" /> টা ফাইলত সংবেদনশীল সমল থাকিব পাৰে}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হ’বলৈ, |<ph name="ACCELERATOR" />| টিপক</translation>
 <translation id="9163287596625611517">Slack Message</translation>

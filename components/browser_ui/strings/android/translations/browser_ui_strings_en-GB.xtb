@@ -69,6 +69,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="1799920918471566157">Chrome tips</translation>
 <translation id="1816835383954230954">When on, Chrome runs faster and features that use JavaScript should work as designed. When off, this reduces performance but makes V8 more resistant to attacks.</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">New tab page appearance bottom sheet</translation>
 <translation id="1887786770086287077">Location access is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sites usually access files and folders on your device for features like automatically saving your work</translation>
 <translation id="1915307458270490472">Hang up</translation>
@@ -459,6 +460,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="640163077447496506">Expires today</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Theme collections</translation>
 <translation id="6439114592976064011">Block sites from using your virtual reality device and data</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Price drop on your open tab, from <ph name="OLD_PRICE" /> to <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7791543448312431591">Add</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7804248752222191302">A site is using your camera</translation>
+<translation id="7805832099057502789">New tab page appearance bottom sheet opened at full height</translation>
 <translation id="7807060072011926525">Provided by Google</translation>
 <translation id="7815680994978050279">Dangerous download blocked</translation>
 <translation id="7835852323729233924">Playing media</translation>
@@ -581,6 +584,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8042586301629853791">Sort by:</translation>
 <translation id="8051193500142930381">Features that need a camera won't work</translation>
+<translation id="8056330801132235235">Chrome default</translation>
 <translation id="8067883171444229417">Play video</translation>
 <translation id="8068648041423924542">Unable to select certificate.</translation>
 <translation id="8077120325605624147">Any site that you visit can show any ad to you</translation>

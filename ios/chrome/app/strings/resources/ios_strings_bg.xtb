@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">Да</translation>
 <translation id="1429187656584513419">Отворете Passwords</translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1433478348197382180">Режим на четене</translation>
 <translation id="1436671784520050284">Продължаване с настройването</translation>
 <translation id="143681031165817424">Адресът е запазен само на това устройство</translation>
 <translation id="1445276840641906250">Един браузър за всичките ви раздели</translation>
@@ -187,6 +188,7 @@
 <translation id="1740650426894359238">Превключване към друг потребителски профил</translation>
 <translation id="1741219894094057085">Смартчасовник</translation>
 <translation id="1743244221910283364">Отхвърляне на промените</translation>
+<translation id="1748975028205587434">Избиране на файл</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} опция за адрес е налице над клавиатурата ви.}other{{count} опции за адрес са налице над клавиатурата ви.}}</translation>
 <translation id="1750238553597293878">Продължете да използвате паролите в профила си в Google</translation>
 <translation id="17513872634828108">Отворени раздели</translation>
@@ -199,6 +201,7 @@
 <translation id="178400879184240105">Паролите ви са уникални</translation>
 <translation id="17906873777101817">Показване на предложение за запазване на паролите и ключовете за достъп</translation>
 <translation id="1794893174442046596">Група раздели</translation>
+<translation id="1807246157184219062">Светло</translation>
 <translation id="1807893857950749072">Разрешаване на известията за проследяване на цените…</translation>
 <translation id="1810976980198522421">Отказ</translation>
 <translation id="1812514023095547458">Избор на цвят</translation>
@@ -207,6 +210,7 @@
 <translation id="1819374301217551116">Проследяване на цени и статистика</translation>
 <translation id="1820195936249950412">Влезте с валиден профил</translation>
 <translation id="1820259098641718022">Добавихте към списъка за четене</translation>
+<translation id="1823768272150895732">Шрифт</translation>
 <translation id="1824490729233982311">Изпраща сигнали, когато получавате раздели от другите си устройства.</translation>
 <translation id="1827529786398596735">Докоснете и задръжте началния екран.</translation>
 <translation id="1832848789136765277">Потвърдете, че сте вие, за да имате постоянен достъп до синхронизираните си данни</translation>
@@ -364,6 +368,7 @@
 <translation id="2394659309569789395">Отваряне на сайта въпреки това</translation>
 <translation id="2403129868389095715">Пратката ви не може да бъде доставена</translation>
 <translation id="2410754283952462441">Изберете профил</translation>
+<translation id="2414886740292270097">Тъмно</translation>
 <translation id="2422174748424038845">Ако я изтриете, всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всички устройства.</translation>
 <translation id="2424805048070062787">Продължаване с този раздел</translation>
 <translation id="2426805022920575512">Избиране на друг профил</translation>
@@ -401,6 +406,7 @@
 <translation id="2559843230610279254">Група раздели <ph name="GROUP_TITLE" />, съдържа <ph name="TABS_NUMBER" /> раздела.</translation>
 <translation id="2577522251608256362">Квартал</translation>
 <translation id="2579713773888829241">Споделени дискове</translation>
+<translation id="2593272815202181319">Непропорционален</translation>
 <translation id="2597486707832946298">Възползвайте се максимално от настолния браузър, който познавате и харесвате, на своя iPhone.</translation>
 <translation id="2601778637777010194">Проследяване на пониженията на цените на продукти</translation>
 <translation id="260378315836159338">В горната част на екрана докоснете +.</translation>
@@ -529,6 +535,7 @@
 <translation id="3119874402040566234">Ще излезете от профила си и данните за сърфирането ще бъдат изтрити</translation>
 <translation id="3124568093781685165">Споделете паролите със семейството си</translation>
 <translation id="3130863904455712965">История и др.</translation>
+<translation id="3132584647087998639">Импортиране на данните ви</translation>
 <translation id="313283613037595347">Създаване на нов раздел в режим „инкогнито“.</translation>
 <translation id="3136739222562075778">Тази карта показва понижения на цените на продуктите в отворените ви раздели</translation>
 <translation id="3138611310073113613">Отхвърляне на избора</translation>
@@ -740,6 +747,7 @@
 <translation id="4047337302138771011">Споделяне на паролите ви</translation>
 <translation id="4049419681095579435">Пратката вече се проследява</translation>
 <translation id="4049507953662678203">Уверете се, че сте свързани с мрежа, и опитайте отново.</translation>
+<translation id="4056223980640387499">Сепия</translation>
 <translation id="4070132839822635162">Без влизане в профила</translation>
 <translation id="4094361089640885693">Лесно проследявайте цени и получавайте статистика за тях.</translation>
 <translation id="4099756562043439968">Задаване на напомняне</translation>
@@ -982,6 +990,7 @@
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5009127379503001909">Продължаване на разглеждането</translation>
 <translation id="5012914568031465281">Проследяването на цената не бе успешно.</translation>
+<translation id="5016205925109358554">Серифен</translation>
 <translation id="5016420433031926653">Изпращане до <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Последните 15 минути</translation>
 <translation id="5020732097997376541">Докоснете иконата на Обектив.</translation>
@@ -1118,6 +1127,7 @@
 <translation id="5596627076506792578">Още опции</translation>
 <translation id="560322036295180549">Изключено от организацията ви</translation>
 <translation id="5611398002774823980">Запазване в профила</translation>
+<translation id="561269594905823128">Докоснете <ph name="BEGIN_BOLD" />Избиране на файл<ph name="END_BOLD" />.</translation>
 <translation id="5613297089029360427">Сортиране по актуалност</translation>
 <translation id="5614553682702429503">Да се запази ли паролата?</translation>
 <translation id="5619871095170816857">Тази карта показва последно използвания от вас отворен раздел на всичките ви синхронизирани устройства през последните 24 часа.</translation>
@@ -1569,6 +1579,7 @@
 <translation id="7367530036083223701">Осъществявайте сигурен достъп до паролите си от началния екран посредством приспособлението на Мениджър на пароли.</translation>
 <translation id="7369285139974632858">Добавяне към отметките</translation>
 <translation id="7380220816562673297">Засега можете да споделяте пароли само с членове на семейството. <ph name="BEGIN_LINK" />Създайте семейна група<ph name="END_LINK" /> с до 6 членове и се възползвайте в по-голяма степен от продуктите и абонаментите си за услуги на Google.</translation>
+<translation id="7380698179418029202">Изберете <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> файла за експортиране от Safari.</translation>
 <translation id="739101637685146669">Към кой URL адрес искате да запазите отметка?</translation>
 <translation id="7393747756726387725">Приближаване</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 сайт}other{# сайта}}</translation>
@@ -1708,6 +1719,7 @@
 <translation id="7887552845761062935">Докоснете два пъти и задръжте, за да отворите още опции</translation>
 <translation id="7889910613639381518">Лесен и сигурен достъп с приспособлението на Google Мениджър на пароли.</translation>
 <translation id="7899199123054742721">Означаване на всичко като непрочетено</translation>
+<translation id="7908957400505794782">Докоснете <ph name="BEGIN_BOLD" />Готово<ph name="END_BOLD" />.</translation>
 <translation id="7911190106180361398">Организацията ви не разрешава синхронизирането на всичко.</translation>
 <translation id="792357691529995513">Няма открити проблеми</translation>
 <translation id="7925108652071887026">Автоматично попълване на данни</translation>
@@ -1770,6 +1782,7 @@
 <translation id="8096559642098770318">Можете да зададете напомняне за раздел, за да прегледате отново този сайт в бъдеще</translation>
 <translation id="8101409298456377967">Създавайте, запазвайте и управлявайте паролите си, така че лесно да можете да влизате в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Н</translation>
+<translation id="8105368624971345109">Изключване</translation>
 <translation id="8114753159095730575">Наличен е файл за изтегляне. Съответните опции са достъпни в долната част на екрана.</translation>
 <translation id="8123502380991596210">Скриване на „Новите неща“</translation>
 <translation id="8123953306357309250">Да се анулира ли синхронизирането? Можете да го включите по всяко време в настройките.</translation>

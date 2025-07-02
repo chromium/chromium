@@ -69,6 +69,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="1799920918471566157">Sugerencias de Chrome</translation>
 <translation id="1816835383954230954">Cuando está activado, Chrome se ejecuta más rápido y las funciones que usan JavaScript deberían funcionar según lo previsto. Si está desactivado, se reduce el rendimiento, pero V8 es más resistente a los ataques.</translation>
 <translation id="1818308510395330587">Para permitir el uso de la RA en <ph name="APP_NAME" />, también debes activar la cámara en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Hoja inferior de la apariencia de la página Nueva pestaña</translation>
 <translation id="1887786770086287077">En este dispositivo, el acceso a la ubicación está desactivado. Actívalo en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Por lo general los sitios acceden a archivos y carpetas de tu dispositivo para habilitar funciones, como la de guardar las tareas de forma automática.</translation>
 <translation id="1915307458270490472">Colgar</translation>
@@ -459,6 +460,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="6398765197997659313">Salir de pantalla completa</translation>
 <translation id="640163077447496506">Vence hoy</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Colecciones de temas</translation>
 <translation id="6439114592976064011">Impedir que los sitios utilicen tus datos y dispositivos de realidad virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Reducción de precio en la pestaña abierta, de <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="7791543448312431591">Agregar</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804248752222191302">Un sitio está utilizando la cámara</translation>
+<translation id="7805832099057502789">La hoja inferior de la apariencia de la página Nueva pestaña está totalmente abierta</translation>
 <translation id="7807060072011926525">Proporcionado por Google</translation>
 <translation id="7815680994978050279">Se bloqueó una descarga peligrosa</translation>
 <translation id="7835852323729233924">Reproduciendo contenido multimedia</translation>
@@ -581,6 +584,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="802154636333426148">Error en la descarga</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">No se habilitarán las funciones que necesitan una cámara.</translation>
+<translation id="8056330801132235235">Chrome predeterminado</translation>
 <translation id="8067883171444229417">Reproducir video</translation>
 <translation id="8068648041423924542">No es posible seleccionar un certificado</translation>
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>

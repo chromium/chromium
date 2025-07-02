@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome చిట్కాలు</translation>
 <translation id="1816835383954230954">ఆన్‌లో ఉన్నప్పుడు, Chrome వేగంగా పని చేస్తుంది, JavaScriptను ఉపయోగించే ఫీచర్‌లు డిజైన్ చేసిన విధంగా పని చేస్తాయి. ఆఫ్‌లో ఉన్నప్పుడు, పనితీరును తగ్గిస్తుంది, కానీ అటాక్‌ల నుండి మరింత రక్షణ ఇచ్చేలా V8ను సిద్ధంగా ఉంచుతుంది.</translation>
 <translation id="1818308510395330587">ARని వినియోగించడానికి <ph name="APP_NAME" />ని అనుమతించేందుకు, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా కెమెరాను ఆన్ చేయండి.</translation>
+<translation id="1881806992065048905">కొత్త ట్యాబ్ పేజీలో కనిపించే దిగువున ఉన్న షీట్</translation>
 <translation id="1887786770086287077">ఈ పరికరానికి స్థానం యాక్సెస్ ఆఫ్ చేయబడింది. దీనిని <ph name="BEGIN_LINK" />Android సెట్టింగ్‌లు<ph name="END_LINK" />లో తిరిగి ఆన్ చేయండి.</translation>
 <translation id="1906181697255754968">మీ పనిని ఆటోమేటిక్‌గా సేవ్ చేయడం వంటి ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు మీ పరికరంలోని ఫైళ్లను, ఫోల్డర్‌లను యాక్సెస్ చేస్తాయి</translation>
 <translation id="1915307458270490472">కాల్‌ను ముగించు</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించండి</translation>
 <translation id="640163077447496506">ఈ రోజు గడువు ముగుస్తుంది</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">థీమ్ కలెక్షన్‌లు</translation>
 <translation id="6439114592976064011">మీ వర్చువల్ రియాలిటీ పరికరాన్ని, డేటాను ఉపయోగించనివ్వకుండా సైట్‌లను బ్లాక్ చేస్తుంది</translation>
 <translation id="6447842834002726250">కుక్కీలు</translation>
 <translation id="6452138246455930388"><ph name="DOMAIN_NAME" />‌కు చెందిన <ph name="PRODUCT_NAME" /> ధర <ph name="OLD_PRICE" /> నుండి <ph name="NEW_PRICE" />‌కు తగ్గింది, ఆ ధర తెరిచిన మీ ట్యాబ్‌లో చూపబడింది</translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">జోడించండి</translation>
 <translation id="780301667611848630">వద్దు</translation>
 <translation id="7804248752222191302">ఒక సైట్ మీ కెమెరాను ఉపయోగిస్తోంది</translation>
+<translation id="7805832099057502789">కొత్త ట్యాబ్ పేజీలో కనిపించే, దిగువున ఉన్న షీట్, కొత్త పేజీలో తెరవబడింది</translation>
 <translation id="7807060072011926525">దీనిని Google అందించినది</translation>
 <translation id="7815680994978050279">ప్రమాదకరమైన డౌన్‌లోడ్ బ్లాక్ చేయబడింది</translation>
 <translation id="7835852323729233924">మీడియా ప్లే అవుతోంది</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
 <translation id="8042586301629853791">దీని ఆధారంగా క్రమపద్ధతిలో అమర్చండి:</translation>
 <translation id="8051193500142930381">ఏ ఫీచర్‌లకు కెమెరా అవసరం అవుతుందో అవి పని చేయవు</translation>
+<translation id="8056330801132235235">Chrome ఆటోమేటిక్ సెట్టింగ్</translation>
 <translation id="8067883171444229417">వీడియోను ప్లే చేయి</translation>
 <translation id="8068648041423924542">ప్రమాణపత్రం ఎంపిక చేయడం సాధ్యపడలేదు.</translation>
 <translation id="8077120325605624147">మీరు చూసే ఏ సైట్ అయినా మీకు ఏ యాడ్‌ను అయినా చూపవచ్చు</translation>

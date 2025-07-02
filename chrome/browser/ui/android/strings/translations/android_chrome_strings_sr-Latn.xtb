@@ -676,7 +676,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4116038641877404294">Preuzmite stranice da biste ih koristili oflajn</translation>
 <translation id="4121654769234887259">Ne morate da zapamtite ovu lozinku. Čuva se u Google menadžeru lozinki za <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Tok dozvole za obaveštenja je otvoren u punoj visini</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je zaustavio obaveštenja sa ovog sajta. Možete da pregledate i upravljate.}one{Chrome je zaustavio obaveštenja sa ovih sajtova. Možete da pregledate i upravljate.}few{Chrome je zaustavio obaveštenja sa ovih sajtova. Možete da pregledate i upravljate.}other{Chrome je zaustavio obaveštenja sa ovih sajtova. Možete da pregledate i upravljate.}}</translation>
 <translation id="4132137475637520539">Neka se pridruži svako sa linkom</translation>
 <translation id="4135200667068010335">Lista uređaja sa kojima se deli kartica je zatvorena.</translation>
 <translation id="4137746084635924146">Aktuelni jezik uređaja</translation>

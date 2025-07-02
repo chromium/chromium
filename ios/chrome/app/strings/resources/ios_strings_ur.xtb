@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="1429187656584513419">پاس ورڈز کھولیں</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
+<translation id="1433478348197382180">Reading Mode</translation>
 <translation id="1436671784520050284">سیٹ اپ جاری رکھیں</translation>
 <translation id="143681031165817424">پتہ صرف اس آلہ پر محفوظ ہے</translation>
 <translation id="1445276840641906250">ایک ہی براؤزر میں آپ کے سبھی ٹیبز</translation>
@@ -200,6 +201,7 @@
 <translation id="178400879184240105">آپ کے پاس ورڈز منفرد ہیں</translation>
 <translation id="17906873777101817">پاس ورڈز اور پاس کیز محفوظ کرنے کی پیشکش</translation>
 <translation id="1794893174442046596">ٹیب گروپ</translation>
+<translation id="1807246157184219062">روشنی</translation>
 <translation id="1807893857950749072">قیمت کی ٹریکنگ سے متعلق اطلاعات کی اجازت دیں…</translation>
 <translation id="1810976980198522421">منسوخ کریں</translation>
 <translation id="1812514023095547458">رنگ منتخب کریں</translation>
@@ -208,6 +210,7 @@
 <translation id="1819374301217551116">قیمت کی ٹریکنگ اور بصیرتیں</translation>
 <translation id="1820195936249950412">ایک درست اکاؤنٹ سے سائن ان کریں</translation>
 <translation id="1820259098641718022">پڑھنے کی فہرست میں شامل کر دیا گیا ہے</translation>
+<translation id="1823768272150895732">فونٹ</translation>
 <translation id="1824490729233982311">آپ کو اپنے دیگر آلات سے ٹیبز موصول ہونے پر الرٹ کرتا ہے۔</translation>
 <translation id="1827529786398596735">ہوم اسکرین کو ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="1832848789136765277">یقینی بنانے کیلئے کہ آپ اپنے مطابقت پذیر ڈیٹا تک ہمیشہ رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
@@ -365,6 +368,7 @@
 <translation id="2394659309569789395">بہر صورت سائٹ کھولیں</translation>
 <translation id="2403129868389095715">آپ کا پیکیج ڈیلیور نہیں کیا جا سکا</translation>
 <translation id="2410754283952462441">اکاؤنٹ منتخب کریں</translation>
+<translation id="2414886740292270097">گہری</translation>
 <translation id="2422174748424038845">اگر آپ اسے حذف کرتے ہیں تو ہر کوئی فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور اسے تمام آلات سے حذف کر دیا جائے گا۔</translation>
 <translation id="2424805048070062787">اس ٹیب کے ساتھ جاری رکھیں</translation>
 <translation id="2426805022920575512">دوسرا اکاؤنٹ منتخب کریں</translation>
@@ -402,6 +406,7 @@
 <translation id="2559843230610279254">ٹیب گروپ، <ph name="GROUP_TITLE" />، <ph name="TABS_NUMBER" /> ٹیبز</translation>
 <translation id="2577522251608256362">نواحی علاقہ</translation>
 <translation id="2579713773888829241">مشترکہ ڈرائیوز</translation>
+<translation id="2593272815202181319">مونو اسپیس</translation>
 <translation id="2597486707832946298">‏اپنے iPhone فون پر، اپنے پسندیدہ ڈیسک ٹاپ براؤزر کا بھرپور فائدہ اٹھائیں۔</translation>
 <translation id="2601778637777010194">پروڈکٹس کی قیمتوں میں کمی کو ٹریک کریں</translation>
 <translation id="260378315836159338">اسکرین کے اوپری حصے پر، + پر تھپتھپائیں</translation>
@@ -742,6 +747,7 @@
 <translation id="4047337302138771011">اپنے پاس ورڈز کا اشتراک کریں</translation>
 <translation id="4049419681095579435">پیکیج پہلے ہی ٹریک کیا گیا ہے</translation>
 <translation id="4049507953662678203">یقینی بنائیں کہ آپ کے پاس نیٹ ورک کنکشن ہے اور دوبارہ کوشش کریں۔</translation>
+<translation id="4056223980640387499">سیپیا</translation>
 <translation id="4070132839822635162">سائن ان نہ کریں</translation>
 <translation id="4094361089640885693">آسانی سے قیمتیں ٹریک کریں اور قیمت سے متعلق حقائق جانیں۔</translation>
 <translation id="4099756562043439968">ایک یاد دہانی سیٹ کریں</translation>
@@ -984,6 +990,7 @@
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
 <translation id="5009127379503001909">براؤز کرنا جاری رکھیں</translation>
 <translation id="5012914568031465281">قیمت کو ٹریک نہیں کیا جا سکا۔</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> پر بھیجیں</translation>
 <translation id="5017529052065664584">آخری 15 منٹ</translation>
 <translation id="5020732097997376541">"لینز آئیکن" پر تھپتھپائیں</translation>
@@ -1775,6 +1782,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8096559642098770318">آپ مستقبل میں اس سائٹ کو دوبارہ چیک آؤٹ کرنے کیلئے ایک ٹیب یاد دہانی سیٹ کر سکتے ہیں</translation>
 <translation id="8101409298456377967">اپنے پاس ورڈز تخلیق کریں، محفوظ کریں اور ان کا نظم کریں تاکہ آپ آسانی سے سائٹس اور ایپس میں سائن ان کر سکیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">نئی</translation>
+<translation id="8105368624971345109">آف کریں</translation>
 <translation id="8114753159095730575">فائل ڈاؤن لوڈ دستیاب ہے۔ اختیارات اسکرین کے نچلے حصے کے قریب دستیاب ہیں۔</translation>
 <translation id="8123502380991596210">'نیا کیا ہے' کو چھپائیں</translation>
 <translation id="8123953306357309250">مطابقت پذیری منسوخ کریں؟ آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو آن کر سکتے ہیں۔</translation>

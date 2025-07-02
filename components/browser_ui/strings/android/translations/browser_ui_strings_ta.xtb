@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome உதவிக்குறிப்புகள்</translation>
 <translation id="1816835383954230954">இயக்கப்பட்டிருந்தால் Chrome வேகமாக இயங்கும். அத்துடன், JavaScriptடைப் பயன்படுத்தும் அம்சங்கள் வடிவமைக்கப்பட்டுள்ளபடி செயல்படும். முடக்கப்பட்டிருந்தால் செயல்திறன் குறையும். ஆனால், தாக்குதல்களில் இருந்து V8 இன்ஜினைத் திறம்படப் பாதுகாக்கும்.</translation>
 <translation id="1818308510395330587">ARரைப் பயன்படுத்த <ph name="APP_NAME" /> ஆப்ஸை அனுமதிப்பதற்கு <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> கேமராவிற்கான அனுமதியை இயக்கவும்.</translation>
+<translation id="1881806992065048905">புதிய பக்கத்தின் தோற்றத்திற்கான கீழ்ப்புறச் சீட்டு</translation>
 <translation id="1887786770086287077">இந்தச் சாதனத்திற்கான இருப்பிட அணுகல் முடக்கப்பட்டுள்ளது. அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> இயக்கவும்.</translation>
 <translation id="1906181697255754968">வழக்கமாக பணியைத் தானாகவே சேமிப்பது போன்ற அம்சங்களுக்காகக் கோப்புகளையும் ஃபோல்டர்களையும் தளங்கள் அணுகும்</translation>
 <translation id="1915307458270490472">மூடுக</translation>
@@ -334,6 +335,7 @@
 <translation id="4972737347717125191">விர்ச்சுவல் ரியாலிட்டி சாதனங்களையும் தரவையும் தளங்கள் பயன்படுத்த முயலும்போது அனுமதி கேள்</translation>
 <translation id="497421865427891073">முன் செல்க</translation>
 <translation id="4976702386844183910">கடைசியாகப் பார்த்தது: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Discover ஊட்டம் குறித்து மேலும் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="4994033804516042629">தொடர்புகள் எதுவும் இல்லை</translation>
 <translation id="4996978546172906250">இதன்வழியாக பகிர்</translation>
 <translation id="5001526427543320409">மூன்றாம் தரப்புக் குக்கீகள்</translation>
@@ -458,6 +460,7 @@
 <translation id="6398765197997659313">முழுத்திரையிலிருந்து வெளியேறு</translation>
 <translation id="640163077447496506">இன்று காலாவதியாகிறது</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">தீம் தொகுப்புகள்</translation>
 <translation id="6439114592976064011">விர்ச்சுவல் ரியாலிட்டி சாதனத்தையும் தரவையும் தளங்கள் பயன்படுத்துவதைத் தடு</translation>
 <translation id="6447842834002726250">குக்கீகள்</translation>
 <translation id="6452138246455930388">திறந்துள்ள பக்கத்தில் தயாரிப்பின் விலை குறைந்துள்ளது, <ph name="DOMAIN_NAME" /> தளத்தில் <ph name="PRODUCT_NAME" /> <ph name="OLD_PRICE" /> இல் இருந்து <ph name="NEW_PRICE" /> ஆகக் குறைந்துள்ளது</translation>
@@ -561,6 +564,7 @@
 <translation id="7791543448312431591">சேர்</translation>
 <translation id="780301667611848630">வேண்டாம்</translation>
 <translation id="7804248752222191302">ஒரு தளம் உங்கள் கேமராவைப் பயன்படுத்துகிறது</translation>
+<translation id="7805832099057502789">புதிய பக்கத்தின் தோற்றத்திற்கான கீழ்ப்புறச் சீட்டு முழு உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="7807060072011926525">Google வழங்கியது</translation>
 <translation id="7815680994978050279">ஆபத்தான பதிவிறக்கம் தடுக்கப்பட்டது</translation>
 <translation id="7835852323729233924">மீடியாவைப் பிளே செய்கிறது</translation>
@@ -580,6 +584,7 @@
 <translation id="802154636333426148">பதிவிறக்க முடியவில்லை</translation>
 <translation id="8042586301629853791">இதன்படி வரிசைப்படுத்து:</translation>
 <translation id="8051193500142930381">கேமராவின் உதவியுடன் இயங்கும் அம்சங்கள் செயல்படாது</translation>
+<translation id="8056330801132235235">Chromeமின் இயல்பு</translation>
 <translation id="8067883171444229417">வீடியோவை பிளே செய்</translation>
 <translation id="8068648041423924542">சான்றிதழைத் தேர்ந்தெடுக்க முடியவில்லை.</translation>
 <translation id="8077120325605624147">நீங்கள் பார்வையிடும் எந்தத் தளமும் எத்தகைய விளம்பரத்தையும் உங்களுக்குக் காட்டலாம்</translation>

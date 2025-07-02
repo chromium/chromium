@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1429187656584513419">Ouvrez le réglage Mots de passe</translation>
 <translation id="1430915738399379752">Imprimer</translation>
+<translation id="1433478348197382180">Mode de lecture</translation>
 <translation id="1436671784520050284">Poursuivre la configuration</translation>
 <translation id="143681031165817424">Adresse enregistrée uniquement sur cet appareil</translation>
 <translation id="1445276840641906250">Tous vos onglets dans un seul navigateur</translation>
@@ -187,6 +188,7 @@
 <translation id="1740650426894359238">Passer à un autre profil</translation>
 <translation id="1741219894094057085">Montre intelligente</translation>
 <translation id="1743244221910283364">Supprimer les modifications</translation>
+<translation id="1748975028205587434">Sélectionner votre fichier</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} option d'adresse accessible au-dessus de votre clavier.}one{{count} option d'adresse accessible au-dessus de votre clavier.}other{{count} options d'adresse accessibles au-dessus de votre clavier.}}</translation>
 <translation id="1750238553597293878">Continuer à utiliser les mots de passe de votre compte Google</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
@@ -199,6 +201,7 @@
 <translation id="178400879184240105">Vos mots de passe sont uniques</translation>
 <translation id="17906873777101817">Proposer d'enregistrer les mots de passe et les clés d'accès</translation>
 <translation id="1794893174442046596">Groupe d'onglets</translation>
+<translation id="1807246157184219062">Clair</translation>
 <translation id="1807893857950749072">Autoriser les notifications de Suivi des prix…</translation>
 <translation id="1810976980198522421">Annuler</translation>
 <translation id="1812514023095547458">Sélectionner une couleur</translation>
@@ -207,6 +210,7 @@
 <translation id="1819374301217551116">Suivi des prix et statistiques</translation>
 <translation id="1820195936249950412">Se connecter au moyen d'un compte valide</translation>
 <translation id="1820259098641718022">Ajoutée à la liste de lecture</translation>
+<translation id="1823768272150895732">Police</translation>
 <translation id="1824490729233982311">Alertes lorsque vous recevez des onglets de vos autres appareils.</translation>
 <translation id="1827529786398596735">Maintenez le doigt sur l'écran d'accueil</translation>
 <translation id="1832848789136765277">Pour vous assurer de toujours pouvoir accéder à vos données de synchronisation, vérifiez qu'il s'agit bien de vous</translation>
@@ -364,6 +368,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2394659309569789395">Ouvrir le site quand même</translation>
 <translation id="2403129868389095715">Votre colis ne peut pas être livré</translation>
 <translation id="2410754283952462441">Choisir un compte</translation>
+<translation id="2414886740292270097">Foncé</translation>
 <translation id="2422174748424038845">Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et ce dernier sera supprimé de tous les appareils.</translation>
 <translation id="2424805048070062787">Continuer avec cet onglet</translation>
 <translation id="2426805022920575512">Choisir un autre compte</translation>
@@ -401,6 +406,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2559843230610279254">Groupe d'onglets, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> onglets.</translation>
 <translation id="2577522251608256362">Quartier</translation>
 <translation id="2579713773888829241">Disques partagés</translation>
+<translation id="2593272815202181319">Espace simple</translation>
 <translation id="2597486707832946298">Tirez le meilleur parti du navigateur de bureau que vous connaissez et que vous aimez sur votre iPhone.</translation>
 <translation id="2601778637777010194">Suivez les baisses de prix des produits</translation>
 <translation id="260378315836159338">En haut de l'écran, touchez +</translation>
@@ -529,6 +535,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3119874402040566234">Vous serez déconnecté et les données de navigation seront supprimées</translation>
 <translation id="3124568093781685165">Partager vos mots de passe avec votre famille</translation>
 <translation id="3130863904455712965">Historique et plus</translation>
+<translation id="3132584647087998639">Importer vos données</translation>
 <translation id="313283613037595347">Ouvrir un nouvel onglet de navigation privée.</translation>
 <translation id="3136739222562075778">Cette carte indique les baisses de prix sur les produits dans vos onglets ouverts</translation>
 <translation id="3138611310073113613">Supprimer la sélection</translation>
@@ -740,6 +747,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4047337302138771011">Partager vos mots de passe</translation>
 <translation id="4049419681095579435">Colis déjà suivi</translation>
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
+<translation id="4056223980640387499">Sépia</translation>
 <translation id="4070132839822635162">Ne pas se connecter</translation>
 <translation id="4094361089640885693">Suivez facilement les prix et obtenez des statistiques sur ceux-ci.</translation>
 <translation id="4099756562043439968">Créer un rappel</translation>
@@ -982,6 +990,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5009127379503001909">Continuer à naviguer</translation>
 <translation id="5012914568031465281">Impossible de suivre le prix.</translation>
+<translation id="5016205925109358554">Avec empattement</translation>
 <translation id="5016420433031926653">Envoyer à <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Les 15 dernières minutes</translation>
 <translation id="5020732097997376541">Touchez « Icône de Lentille »</translation>
@@ -1118,6 +1127,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="560322036295180549">Option désactivée par votre organisation</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
+<translation id="561269594905823128">Touchez <ph name="BEGIN_BOLD" />Sélectionner votre fichier<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Trier par Plus récents</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
 <translation id="5619871095170816857">Cette carte affiche le dernier onglet ouvert utilisé sur tous vos appareils synchronisés au cours des dernières 24 heures.</translation>
@@ -1569,6 +1579,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7367530036083223701">Accédez en toute sécurité à vos mots de passe depuis l'écran d'accueil avec le widget gestionnaire de mots de passe.</translation>
 <translation id="7369285139974632858">Ajouter aux favoris</translation>
 <translation id="7380220816562673297">Pour l'instant, vous ne pouvez partager les mots de passe qu'avec les membres de la famille. <ph name="BEGIN_LINK" />Créez un groupe familial<ph name="END_LINK" /> comptant jusqu'à six membres et tirez le meilleur parti de vos produits et de vos abonnements sur Google.</translation>
+<translation id="7380698179418029202">Sélectionnez votre fichier d'exportation Safari <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /></translation>
 <translation id="739101637685146669">Quelle URL souhaitez-vous ajouter à vos favoris?</translation>
 <translation id="7393747756726387725">Zoomer</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 site}one{# site}other{# sites}}</translation>
@@ -1708,6 +1719,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7887552845761062935">Touchez deux fois et maintenez le doigt pour ouvrir plus d'options</translation>
 <translation id="7889910613639381518">Accès facile et sécurisé avec le widget Gestionnaire de mots de passe Google.</translation>
 <translation id="7899199123054742721">Tout marquer comme non lu</translation>
+<translation id="7908957400505794782">Touchez <ph name="BEGIN_BOLD" />Terminé<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">Votre organisation ne vous autorise pas à tout synchroniser.</translation>
 <translation id="792357691529995513">Aucun problème trouvé</translation>
 <translation id="7925108652071887026">Données de remplissage automatique</translation>
@@ -1770,6 +1782,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8096559642098770318">Vous pouvez définir un rappel d'onglet pour revoir ce site à l'avenir</translation>
 <translation id="8101409298456377967">Créez, enregistrez et gérez vos mots de passe pour pouvoir vous connecter facilement aux sites et aux applications. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
+<translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Le téléchargement du fichier est disponible. Options présentées vers le bas de l’écran.</translation>
 <translation id="8123502380991596210">Masquer les nouveautés</translation>
 <translation id="8123953306357309250">Annuler la synchronisation? Vous pouvez activer la synchronisation à tout moment dans les paramètres.</translation>

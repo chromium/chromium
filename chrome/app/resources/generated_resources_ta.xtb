@@ -7893,6 +7893,7 @@
 <translation id="6560151649238390891">பரிந்துரை சேர்க்கப்பட்டது</translation>
 <translation id="656065428026159829">மேலும் காட்டு</translation>
 <translation id="6561726789132298588">எண்டர்</translation>
+<translation id="6561877237303825108">இந்த வகை ஃபைல் (<ph name="TYPE" />) ஆபத்தானதாக இருக்கலாம். <ph name="ORIGIN" /> தளத்தை நம்பினால் மட்டுமே இந்த ஃபைலைச் சேமியுங்கள்.</translation>
 <translation id="6562117348069327379">சிஸ்டம் தொடர்பான பதிவுகளை ‘பதிவிறக்கங்கள்’ கோப்பகத்தில் சேமிக்கும்.</translation>
 <translation id="656293578423618167">ஃபைல் பாதை அல்லது பெயர் மிக நீளமாக உள்ளது. பெயரைச் சுருக்கியோ அல்லது மற்றொரு இடத்திலோ சேமிக்கவும்.</translation>
 <translation id="6563002009564846727">Windowsஸில் இருந்து பதிவிறக்கிய சான்றிதழ்களைக் காட்டு</translation>
@@ -9697,6 +9698,7 @@
 <translation id="7830833461614351956">திறப்பதற்காக <ph name="NUM_OF_FILES" /> ஃபைல்களை <ph name="CLOUD_PROVIDER" />விற்கு நகலெடுக்கவா?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">சேமித்த பிரத்தியேக சொற்கள் இங்கே தோன்றும்</translation>
+<translation id="7834832693620032149">ஆடியோவைப் பகிர, பக்கத்தையோ சாளரத்தையோ பகிரவும்</translation>
 <translation id="7836577093182643605">தளங்களுடன் பகிர விரும்பாமல் நீங்கள் தடுத்துள்ள தலைப்புகளின் பட்டியல்</translation>
 <translation id="7836745198769390202">தற்சமயம் உங்களிடம் <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> மற்றும் பல உள்ளன. இந்தத் தரவை உங்கள் நிறுவனத்தால் பார்க்கவும் நிர்வகிக்கவும் முடியும்.</translation>
 <translation id="7836850009646241041">உங்கள் பாதுகாப்பு விசையை மீண்டும் தொடவும்</translation>
@@ -11305,6 +11307,7 @@
 <translation id="8940081510938872932">உங்கள் கம்ப்யூட்டர் தற்போது பல விஷயங்களைச் செய்கிறது. பின்னர் மீண்டும் முயலவும்.</translation>
 <translation id="8940888110818450052">உள்நுழைவு விருப்பங்கள்</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' அனுமதியை அகற்று</translation>
+<translation id="8941209844691374403"><ph name="APP_NAME" /> ஒரு சாளரத்தையும் ஆடியோவையும் பகிர்கிறது.</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> முடக்கப்பட்டுள்ளது</translation>
 <translation id="894191600409472540">வலிமையான கடவுச்சொற்களை உருவாக்குங்கள்</translation>
 <translation id="8942714513622077633">Microsoft 365 அமைவை ரத்துசெய்யவா?</translation>

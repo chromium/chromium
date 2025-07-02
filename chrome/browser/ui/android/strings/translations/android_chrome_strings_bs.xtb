@@ -676,7 +676,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4116038641877404294">Preuzmite stranice da ih koristite van mreže.</translation>
 <translation id="4121654769234887259">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Google upravitelju lozinki za račun <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Tok odobrenja za obavještenja je otvoren u punoj visini</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je zaustavio obavještenja ove web lokacije. Možete ih pregledati i upravljati njima.}one{Chrome je zaustavio obavještenja ovih web lokacija. Možete ih pregledati i upravljati njima.}few{Chrome je zaustavio obavještenja ovih web lokacija. Možete ih pregledati i upravljati njima.}other{Chrome je zaustavio obavještenja ovih web lokacija. Možete ih pregledati i upravljati njima.}}</translation>
 <translation id="4132137475637520539">Omogući svima koji imaju link da se pridruže</translation>
 <translation id="4135200667068010335">Spisak uređaja s kojim će se dijeliti kartica je zatvoren.</translation>
 <translation id="4137746084635924146">Trenutni jezik uređaja</translation>

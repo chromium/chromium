@@ -676,7 +676,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4116038641877404294">Descarregue páginas para as utilizar offline.</translation>
 <translation id="4121654769234887259">Não vai ter de memorizar esta palavra-passe. Vai ser guardada no Gestor de Palavras-passe da Google de <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Fluxo de autorização de notificações aberto à altura total</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{O Chrome parou as notificações deste site. Pode rever e gerir.}other{O Chrome parou as notificações destes sites. Pode rever e gerir.}}</translation>
 <translation id="4132137475637520539">Permitir a adesão de qualquer pessoa com o link</translation>
 <translation id="4135200667068010335">A lista de dispositivos com os quais quer partilhar um separador está fechada.</translation>
 <translation id="4137746084635924146">Idioma do dispositivo atual</translation>

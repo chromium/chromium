@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">เคล็ดลับในการใช้ Chrome</translation>
 <translation id="1816835383954230954">เมื่อเปิดใช้ Chrome จะทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้ เมื่อปิดใช้ ตัวเลือกนี้จะลดประสิทธิภาพแต่ทำให้ V8 ต้านทานการโจมตีได้มากขึ้น</translation>
 <translation id="1818308510395330587">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ใช้ AR ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
+<translation id="1881806992065048905">Bottom Sheet ลักษณะที่ปรากฏของหน้าแท็บใหม่</translation>
 <translation id="1887786770086287077">ตอนนี้ตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดตำแหน่งได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="1906181697255754968">โดยปกติแล้วเว็บไซต์จะเข้าถึงไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณเพื่อดำเนินการตามฟีเจอร์ต่างๆ เช่น การบันทึกงานให้คุณโดยอัตโนมัติ</translation>
 <translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
 <translation id="640163077447496506">หมดอายุวันนี้</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">คอลเล็กชันธีม</translation>
 <translation id="6439114592976064011">บล็อกเว็บไซต์ไม่ให้ใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ</translation>
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6452138246455930388">ราคาต่ำลงในแท็บที่เปิดอยู่ จาก <ph name="OLD_PRICE" /> เป็น <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">เพิ่ม</translation>
 <translation id="780301667611848630">ไม่เป็นไร</translation>
 <translation id="7804248752222191302">มีเว็บไซต์กำลังใช้กล้อง</translation>
+<translation id="7805832099057502789">Bottom Sheet ลักษณะที่ปรากฏของหน้าแท็บใหม่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="7807060072011926525">ให้บริการโดย Google</translation>
 <translation id="7815680994978050279">บล็อกการดาวน์โหลดที่เป็นอันตรายแล้ว</translation>
 <translation id="7835852323729233924">การเล่นสื่อ</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8042586301629853791">จัดเรียงตาม</translation>
 <translation id="8051193500142930381">ฟีเจอร์ที่ต้องใช้กล้องจะไม่ทำงาน</translation>
+<translation id="8056330801132235235">ค่าเริ่มต้นของ Chrome</translation>
 <translation id="8067883171444229417">เล่นวิดีโอ</translation>
 <translation id="8068648041423924542">เลือกใบรับรองไม่ได้</translation>
 <translation id="8077120325605624147">เว็บไซต์ที่คุณเข้าชมจะแสดงโฆษณาต่อคุณได้</translation>

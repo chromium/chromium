@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Поради щодо Chrome</translation>
 <translation id="1816835383954230954">Коли оптимізатор увімкнено, продуктивність Chrome підвищується, а функції, які використовують JavaScript, мають працювати належним чином. Коли його вимкнено, продуктивність знижується, однак система V8 стає стійкішою до атак.</translation>
 <translation id="1818308510395330587">Щоб дозволити додатку <ph name="APP_NAME" /> використовувати доповнену реальність, увімкніть камеру в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Нижній екран сторінки нової вкладки</translation>
 <translation id="1887786770086287077">На цьому пристрої вимкнено доступ до геоданих. Увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Сайти зазвичай отримують доступ до файлів і папок на пристрої для роботи таких функцій, як автоматичне зберігання вашої роботи</translation>
 <translation id="1915307458270490472">Закрити</translation>
@@ -334,6 +335,7 @@
 <translation id="4972737347717125191">Сайти можуть запитувати дозвіл на використання пристроїв і даних віртуальної реальності</translation>
 <translation id="497421865427891073">Перейти вперед</translation>
 <translation id="4976702386844183910">Останнє відвідування: <ph name="DATE" /></translation>
+<translation id="4978178243417029856">Докладніше про стрічку рекомендацій</translation>
 <translation id="4994033804516042629">Немає контактів</translation>
 <translation id="4996978546172906250">Надіслати</translation>
 <translation id="5001526427543320409">Сторонні файли cookie</translation>
@@ -458,6 +460,7 @@
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
 <translation id="640163077447496506">Строк дії закінчується сьогодні</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Колекції тем</translation>
 <translation id="6439114592976064011">Заборонити сайтам доступ до даних і пристрою віртуальної реальності</translation>
 <translation id="6447842834002726250">Файли cookie</translation>
 <translation id="6452138246455930388">Зниження ціни на відкритій вкладці з <ph name="OLD_PRICE" /> до <ph name="NEW_PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
@@ -561,6 +564,7 @@
 <translation id="7791543448312431591">Додати</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7804248752222191302">Сайт використовує камеру</translation>
+<translation id="7805832099057502789">Нижній екран сторінки нової вкладки відкрито на всю висоту</translation>
 <translation id="7807060072011926525">Надано компанією Google</translation>
 <translation id="7815680994978050279">Заблоковано небезпечне завантаження</translation>
 <translation id="7835852323729233924">Відтворення медіафайлу</translation>
@@ -580,6 +584,7 @@
 <translation id="802154636333426148">Не вдалося завантажити</translation>
 <translation id="8042586301629853791">Порядок сортування:</translation>
 <translation id="8051193500142930381">Функції, яким потрібна камера, не працюватимуть</translation>
+<translation id="8056330801132235235">Chrome за умовчанням</translation>
 <translation id="8067883171444229417">Дивитися відео</translation>
 <translation id="8068648041423924542">Не вдалося вибрати сертифікат.</translation>
 <translation id="8077120325605624147">Усі сайти, які ви відвідуєте, можуть показувати вам будь-які оголошення</translation>

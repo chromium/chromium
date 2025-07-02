@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">‏טיפים ל-Chrome</translation>
 <translation id="1816835383954230954">‏כשהאפשרות הזו מופעלת, דפדפן Chrome פועל מהר יותר ותכונות שמתבססות על JavaScript אמורות לפעול כמו שצריך. כשהאפשרות הזו מושבתת, יש ירידה ברמת הביצועים בתמורה להגברת העמידות של V8 בפני מתקפות.</translation>
 <translation id="1818308510395330587">‏כדי לאפשר ל-<ph name="APP_NAME" /> להשתמש ב-AR, צריך להפעיל את המצלמה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">הגיליון התחתון של המראה של דף הכרטיסייה החדשה</translation>
 <translation id="1887786770086287077">‏הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">אתרים ניגשים בדרך כלל לקבצים ולתיקיות כדי לתמוך בתכונות כמו שמירה אוטומטית של עבודה</translation>
 <translation id="1915307458270490472">ניתוק</translation>
@@ -460,6 +461,7 @@
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="640163077447496506">התוקף יפוג היום</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">אוספי עיצובים</translation>
 <translation id="6439114592976064011">תיחסם האפשרות של אתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
 <translation id="6452138246455930388">זוהתה ירידה במחיר בכרטיסייה הפתוחה שלך, מ-<ph name="OLD_PRICE" /> ל-<ph name="NEW_PRICE" />,‏ <ph name="PRODUCT_NAME" />,‏ <ph name="DOMAIN_NAME" /></translation>
@@ -563,6 +565,7 @@
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7804248752222191302">אתר כלשהו משתמש במצלמה שלך</translation>
+<translation id="7805832099057502789">הגיליון התחתון של הכרטיסים בדף הכרטיסייה החדשה נפתח בגובה מלא</translation>
 <translation id="7807060072011926525">‏סופק על ידי Google</translation>
 <translation id="7815680994978050279">הורדה מסוכנת נחסמה</translation>
 <translation id="7835852323729233924">מדיה פועלת</translation>
@@ -582,6 +585,7 @@
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8042586301629853791">מיון לפי:</translation>
 <translation id="8051193500142930381">תכונות שצריכות מצלמה לא יפעלו</translation>
+<translation id="8056330801132235235">‏ברירת המחדל של Chrome</translation>
 <translation id="8067883171444229417">הפעלת הסרטון</translation>
 <translation id="8068648041423924542">אין אפשרות לבחור אישור.</translation>
 <translation id="8077120325605624147">לכל אתר שבו מבקרים יש הרשאה להציג כל מודעה</translation>

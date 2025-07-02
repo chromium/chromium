@@ -69,6 +69,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="1799920918471566157">Chrome-ri buruzko aholkuak</translation>
 <translation id="1816835383954230954">Aktibatuta dagoenean, Chrome-k bizkorrago funtzionatzen du eta JavaScript darabilten eginbideek behar bezala funtzionatu beharko lukete. Desaktibatuta dagoenean, errendimendua gutxitzen du, baina V8 erasoen aurrean indartzen du.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> aplikazioari errealitate areagotua erabiltzeko baimena emateko, kamera erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Pantailaren behealdean ainguratutako orria, fitxa berriaren itxura duena</translation>
 <translation id="1887786770086287077">Kokapenerako sarbidea desaktibatuta dago gailuan. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Webguneek gailuko fitxategi eta karpetak atzitu ohi dituzte lana automatikoki gordetzeko eta antzeko funtzioak gauzatzeko</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
@@ -459,6 +460,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="6398765197997659313">Irten pantaila osoko modutik</translation>
 <translation id="640163077447496506">Gaur iraungiko da</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Gaien bildumak</translation>
 <translation id="6439114592976064011">Ez utzi webguneei errealitate birtualeko gailuak eta datuak erabiltzen</translation>
 <translation id="6447842834002726250">Cookieak</translation>
 <translation id="6452138246455930388">Prezio-jaitsiera irekitako fitxan. Lehen <ph name="OLD_PRICE" />, orain <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />.</translation>
@@ -562,6 +564,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="7791543448312431591">Gehitu</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7804248752222191302">Webgune bat kamera erabiltzen ari da</translation>
+<translation id="7805832099057502789">Pantailaren behealdean ainguratutako orria, fitxa berriaren itxura duena, altuera osoan irekita dago</translation>
 <translation id="7807060072011926525">Google-k eman du</translation>
 <translation id="7815680994978050279">Deskarga arriskutsu bat blokeatu da</translation>
 <translation id="7835852323729233924">Multimedia-edukia erreproduzitzen</translation>
@@ -581,6 +584,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
 <translation id="8042586301629853791">Ordenatzeko irizpidea:</translation>
 <translation id="8051193500142930381">Kamera bat behar duten eginbideek ez dute funtzionatuko</translation>
+<translation id="8056330801132235235">Chrome-ren gai lehenetsia</translation>
 <translation id="8067883171444229417">Erreproduzitu bideoa</translation>
 <translation id="8068648041423924542">Ezin da hautatu ziurtagiria.</translation>
 <translation id="8077120325605624147">Bisitatzen dituzun webgune guztiek edozein iragarki erakusteko aukera dute</translation>

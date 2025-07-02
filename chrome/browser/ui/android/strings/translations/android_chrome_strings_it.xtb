@@ -676,7 +676,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4116038641877404294">Scarica le pagine per usarle offline</translation>
 <translation id="4121654769234887259">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google per <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Flusso di autorizzazione alle notifiche aperto a schermo intero</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ha interrotto la ricezione di notifiche da questo sito. Puoi esaminare e gestire questa impostazione.}other{Chrome ha interrotto la ricezione di notifiche da questi siti. Puoi esaminare e gestire questa impostazione.}}</translation>
 <translation id="4132137475637520539">Consenti a chiunque abbia il link di partecipare</translation>
 <translation id="4135200667068010335">L'elenco di dispositivi con cui condividere una scheda è chiuso.</translation>
 <translation id="4137746084635924146">Lingua attuale del dispositivo</translation>

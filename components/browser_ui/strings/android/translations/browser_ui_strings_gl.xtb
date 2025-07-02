@@ -69,6 +69,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="1799920918471566157">Consellos de Chrome</translation>
 <translation id="1816835383954230954">Cando esta opción está activada, Chrome execútase máis rápido e as funcións que usen JavaScript deberían funcionar tal como se deseñaron. Se está desactivada, redúcese o rendemento, pero o motor V8 é máis resistente os ataques.</translation>
 <translation id="1818308510395330587">Para permitir que <ph name="APP_NAME" /> utilice a realidade aumentada, tamén debes activar a cámara en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Panel inferior do aspecto da páxina Nova pestana</translation>
 <translation id="1887786770086287077">O acceso á localización está desactivado neste dispositivo. Actívao na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Os sitios adoitan acceder aos ficheiros e aos cartafoles do dispositivo para ofrecerche determinadas funcións (por exemplo, gardar automaticamente o teu traballo)</translation>
 <translation id="1915307458270490472">Deter</translation>
@@ -459,6 +460,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="6398765197997659313">Saír do modo de pantalla completa</translation>
 <translation id="640163077447496506">Caduca hoxe</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Coleccións de temas</translation>
 <translation id="6439114592976064011">Impide que os sitios utilicen os teus datos e dispositivos de realidade virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Baixada de prezo na pestana aberta, de <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7791543448312431591">Engadir</translation>
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7804248752222191302">Un sitio está utilizando a cámara</translation>
+<translation id="7805832099057502789">Panel inferior do aspecto da páxina Nova pestana aberto a altura completa</translation>
 <translation id="7807060072011926525">Ofrecido por Google</translation>
 <translation id="7815680994978050279">Bloqueouse unha descarga perigosa</translation>
 <translation id="7835852323729233924">Reproducindo contido multimedia</translation>
@@ -581,6 +584,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="802154636333426148">Produciuse un erro na descarga</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">As funcións que requiran unha cámara non estarán dispoñibles</translation>
+<translation id="8056330801132235235">Chrome predeterminado</translation>
 <translation id="8067883171444229417">Reproducir vídeo</translation>
 <translation id="8068648041423924542">Non se pode seleccionar o certificado.</translation>
 <translation id="8077120325605624147">Calquera sitio que visites pode mostrarche anuncios</translation>

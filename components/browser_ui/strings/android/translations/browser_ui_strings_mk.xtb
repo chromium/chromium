@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Совети за Chrome</translation>
 <translation id="1816835383954230954">Кога е вклучен, Chrome работи побрзо, а функциите што користат JavaScript би требало да функционираат според очекувањата. Кога е вклучен, ја намалува изведбата, но прави V8 да биде поотпорен на напади.</translation>
 <translation id="1818308510395330587">За да овозможите <ph name="APP_NAME" /> да користи AR, вклучете ја дозволата за камерата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Долен лист со изглед на страница во нова картичка</translation>
 <translation id="1887786770086287077">Пристапот до локацијата е исклучен за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Сајтовите обично пристапуваат до датотеките и папките на вашиот уред за функции како што е автоматското зачувување на вашата работа</translation>
 <translation id="1915307458270490472">Спушти</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">Излези од цел екран</translation>
 <translation id="640163077447496506">Истекува денес</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Збирки теми</translation>
 <translation id="6439114592976064011">Не дозволувај сајтовите да ги користат уредот и податоците за виртуелна реалност</translation>
 <translation id="6447842834002726250">Колачиња</translation>
 <translation id="6452138246455930388">Намалување на цената на вашата отворена картичка, од <ph name="OLD_PRICE" /> до <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">Додај</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7804248752222191302">Сајтот ја користи камерата</translation>
+<translation id="7805832099057502789">Долниот лист со изглед на страница во нова картичка е отворен на целосна висина</translation>
 <translation id="7807060072011926525">Обезбедено од Google</translation>
 <translation id="7815680994978050279">Блокирано е опасно преземање</translation>
 <translation id="7835852323729233924">Пуштање аудиовизуелни содржини</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8042586301629853791">Подреди по:</translation>
 <translation id="8051193500142930381">Функциите на коишто им треба камерата нема да работат</translation>
+<translation id="8056330801132235235">Стандардно за Chrome</translation>
 <translation id="8067883171444229417">Пушти го видеото</translation>
 <translation id="8068648041423924542">Сертификатот не може да се избере.</translation>
 <translation id="8077120325605624147">Секој сајт што го посетувате може да ви прикаже која било реклама</translation>

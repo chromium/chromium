@@ -69,6 +69,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="1799920918471566157">Chrome-tippek</translation>
 <translation id="1816835383954230954">Ha be van kapcsolva, a Chrome gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük. Ha ki van kapcsolva, csökken a teljesítmény, de ellenállóbb lesz a V8 a támadásokkal szemben.</translation>
 <translation id="1818308510395330587">Ahhoz, hogy a(z) <ph name="APP_NAME" /> használhassa az AR-t, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
+<translation id="1881806992065048905">Az Új lap oldal megjelenésének alsó lapja</translation>
 <translation id="1887786770086287077">A helyhozzáférés ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="1906181697255754968">A webhelyek általában bizonyos funkciók (például a munkák automatikus mentése) érdekében férnek hozzá az Ön eszközén lévő fájlokhoz és mappákhoz</translation>
 <translation id="1915307458270490472">Hívás befejezése</translation>
@@ -459,6 +460,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="6398765197997659313">Kilépés a teljes képernyős módból</translation>
 <translation id="640163077447496506">Ma jár le</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Témagyűjtemények</translation>
 <translation id="6439114592976064011">A virtuálisvalóság-eszközök és -adatok használatának letiltása a webhelyek számára</translation>
 <translation id="6447842834002726250">Cookie-k</translation>
 <translation id="6452138246455930388">Árcsökkenés a megnyitott lapon: <ph name="OLD_PRICE" /> helyett <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7791543448312431591">Hozzáadás</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7804248752222191302">Egy webhely használja az Ön kameráját</translation>
+<translation id="7805832099057502789">Az Új lap oldal megjelenésének alsó lapja teljes magasságban megnyitva</translation>
 <translation id="7807060072011926525">A Google biztosítja</translation>
 <translation id="7815680994978050279">Veszélyes letöltés letiltva</translation>
 <translation id="7835852323729233924">Médiatartalom lejátszása…</translation>
@@ -581,6 +584,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
 <translation id="8042586301629853791">Rendezés:</translation>
 <translation id="8051193500142930381">A kamerát igénylő funkciók nem működnek majd</translation>
+<translation id="8056330801132235235">Chrome – Alapértelmezett</translation>
 <translation id="8067883171444229417">Videó lejátszása</translation>
 <translation id="8068648041423924542">A tanúsítvány kiválasztása nem sikerült.</translation>
 <translation id="8077120325605624147">Bármely felkeresett webhely bármilyen hirdetést megjeleníthet Önnek</translation>

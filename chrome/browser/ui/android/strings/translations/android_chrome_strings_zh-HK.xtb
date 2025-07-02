@@ -676,7 +676,6 @@
 <translation id="4116038641877404294">下載網頁，以便在離線時使用</translation>
 <translation id="4121654769234887259">您不需記住此密碼。系統會將密碼儲存至 <ph name="USERNAME" /> 的「Google 密碼管理工具」。</translation>
 <translation id="4124152339699379357">通知權限流程宜家顯示喺成個畫面</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已停止接收此網站的通知。你可以查看及管理。}other{Chrome 已停止接收這些網站的通知。你可以查看及管理。}}</translation>
 <translation id="4132137475637520539">讓任何擁有連結的使用者參加</translation>
 <translation id="4135200667068010335">要共用分頁嘅裝置清單閂咗。</translation>
 <translation id="4137746084635924146">目前的裝置語言</translation>

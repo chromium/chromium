@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">ເຄັດລັບກ່ຽວກັບ Chrome</translation>
 <translation id="1816835383954230954">ເມື່ອເປີດຢູ່, Chrome ຈະເຮັດວຽກໄດ້ໄວຂຶ້ນ ແລະ ຄຸນສົມບັດທີ່ໃຊ້ JavaScript ຄວນເຮັດວຽກຕາມທີ່ອອກແບບໄວ້. ເມື່ອປິດຢຸດ, ການດໍາເນີນການນີ້ຈະຫຼຸດປະສິດທິພາບ ແຕ່ເຮັດໃຫ້ V8 ທົນທານຕໍ່ການໂຈມຕີໄດ້ຫຼາຍຂຶ້ນ.</translation>
 <translation id="1818308510395330587">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ໃຊ້ AR, ກະລຸນາເປີດກ້ອງໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
+<translation id="1881806992065048905">ຊີດລຸ່ມສຸດລັກສະນະທີ່ປາກົດຂອງໜ້າແຖບໃໝ່</translation>
 <translation id="1887786770086287077">ການເຂົ້າເຖິງສະຖານທີ່ປິດຢູ່ສຳລັບອຸປະກອນນີ້. ກະລຸນາເປີດມັນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະເຂົ້າເຖິງໄຟລ໌ ແລະ ໂຟນເດີໃນອຸປະກອນຂອງທ່ານສຳລັບຄຸນສົມບັດ ເຊັ່ນ: ການບັນທຶກວຽກຂອງທ່ານໄວ້ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1915307458270490472">ວາງສາຍ</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">ອອກຈາກເຕັມໜ້າຈໍ</translation>
 <translation id="640163077447496506">ໝົດອາຍຸມື້ນີ້</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">ຄໍເລັກຊັນຮູບແບບສີສັນ</translation>
 <translation id="6439114592976064011">ບລັອກບໍ່ໃຫ້ເວັບໄຊໃຊ້ອຸປະກອນ ແລະ ຂໍ້ມູນເວີຊົວ ຣິອາລິຕີຂອງທ່ານ</translation>
 <translation id="6447842834002726250">ຄຸກກີ້</translation>
 <translation id="6452138246455930388">ລາຄາຕ່ຳລົງໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານ, ຈາກ <ph name="OLD_PRICE" /> ເປັນ <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">ເພີ່ມ</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
 <translation id="7804248752222191302">ເວັບໄຊກຳລັງໃຊ້ກ້ອງຂອງທ່ານຢູ່</translation>
+<translation id="7805832099057502789">ຊີດລຸ່ມສຸດລັກສະນະທີ່ປາກົດຂອງໜ້າແຖບໃໝ່ເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ</translation>
 <translation id="7807060072011926525">ສະໜອງໃຫ້ໂດຍ Google</translation>
 <translation id="7815680994978050279">ບລັອກການດາວໂຫຼດອັນຕະລາຍໄວ້ແລ້ວ</translation>
 <translation id="7835852323729233924">ກຳລັງຫຼິ້ນສື່</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8042586301629853791">ຈັດຮຽງຕາມ:</translation>
 <translation id="8051193500142930381">ຄຸນສົມບັດທີ່ຈໍາເປັນຕ້ອງໃຊ້ກ້ອງຈະໃຊ້ບໍ່ໄດ້</translation>
+<translation id="8056330801132235235">ຄ່າເລີ່ມຕົ້ນຂອງ Chrome</translation>
 <translation id="8067883171444229417">ຫຼິ້ນວິດີໂອ</translation>
 <translation id="8068648041423924542">ບໍ່​ສາ​ມາດ​ເລືອກ​ໃບ​ຢັ້ງ​ຢືນ​ໄດ້.</translation>
 <translation id="8077120325605624147">ເວັບໄຊໃດກໍ່ຕາມທີ່ທ່ານເຂົ້າເບິ່ງສາມາດສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນໄດ້</translation>

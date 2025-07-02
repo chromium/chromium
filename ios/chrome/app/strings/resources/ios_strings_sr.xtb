@@ -110,6 +110,7 @@
 <translation id="1426410128494586442">Да</translation>
 <translation id="1429187656584513419">Отворите Лозинке</translation>
 <translation id="1430915738399379752">Штампај</translation>
+<translation id="1433478348197382180">Режим читања</translation>
 <translation id="1436671784520050284">Настави са подешавањем</translation>
 <translation id="143681031165817424">Адреса је сачувана само на овом уређају</translation>
 <translation id="1445276840641906250">Све картице у једном прегледачу</translation>
@@ -200,6 +201,7 @@
 <translation id="178400879184240105">Ваше лозинке су јединствене</translation>
 <translation id="17906873777101817">Понуди чување лозинки и приступних кључева</translation>
 <translation id="1794893174442046596">Група картица</translation>
+<translation id="1807246157184219062">Светлa</translation>
 <translation id="1807893857950749072">Дозволите обавештења о праћењу цена…</translation>
 <translation id="1810976980198522421">Откажи</translation>
 <translation id="1812514023095547458">Избор боја</translation>
@@ -208,6 +210,7 @@
 <translation id="1819374301217551116">Праћење цена и увиди</translation>
 <translation id="1820195936249950412">Пријавите се помоћу важећег налога</translation>
 <translation id="1820259098641718022">Додато је на листу за читање</translation>
+<translation id="1823768272150895732">Фонт</translation>
 <translation id="1824490729233982311">Обавештава вас када примате картице са других уређаја.</translation>
 <translation id="1827529786398596735">Додирните и задржите почетни екран</translation>
 <translation id="1832848789136765277">Да бисте били сигурни да увек можете да приступате синхронизованим подацима, потврдите да сте то ви</translation>
@@ -365,6 +368,7 @@
 <translation id="2394659309569789395">Ипак отвори сајт</translation>
 <translation id="2403129868389095715">Није могуће испоручити пакет</translation>
 <translation id="2410754283952462441">Изаберите налог</translation>
+<translation id="2414886740292270097">Тамнa</translation>
 <translation id="2422174748424038845">Ако је избришете, сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја.</translation>
 <translation id="2424805048070062787">Наставите са овом картицом</translation>
 <translation id="2426805022920575512">Изаберите други налог</translation>
@@ -402,6 +406,7 @@
 <translation id="2559843230610279254">Група картица, <ph name="GROUP_TITLE" />, картица: <ph name="TABS_NUMBER" />.</translation>
 <translation id="2577522251608256362">Део града</translation>
 <translation id="2579713773888829241">Дељени Дискови</translation>
+<translation id="2593272815202181319">Фиксне ширине</translation>
 <translation id="2597486707832946298">Искористите све предности прегледача за рачунаре који знате и волите на iPhone-у.</translation>
 <translation id="2601778637777010194">Пратите пад цена производа</translation>
 <translation id="260378315836159338">У врху екрана додирните +</translation>
@@ -742,6 +747,7 @@
 <translation id="4047337302138771011">Делите лозинке</translation>
 <translation id="4049419681095579435">Пакет се већ прати</translation>
 <translation id="4049507953662678203">Проверите да ли сте повезани на мрежу и покушајте поново.</translation>
+<translation id="4056223980640387499">Сепија</translation>
 <translation id="4070132839822635162">Не пријављуј ме</translation>
 <translation id="4094361089640885693">Лако пратите цене и стекните увид у њих.</translation>
 <translation id="4099756562043439968">Подеси подсетник</translation>
@@ -984,6 +990,7 @@
 <translation id="5005498671520578047">Копирање лозинке</translation>
 <translation id="5009127379503001909">Настави да прегледаш</translation>
 <translation id="5012914568031465281">Праћење цене није успело.</translation>
+<translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653">Пошаљите на <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Последњих 15 минута</translation>
 <translation id="5020732097997376541">Додирните икону Објектива</translation>
@@ -1775,6 +1782,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8096559642098770318">Можете да подесите подсетник за картицу да бисте поново погледали овај сајт у будућности</translation>
 <translation id="8101409298456377967">Правите и чувајте лозинке и управљајте њима да бисте се лако пријављивали на сајтове и у апликације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Н</translation>
+<translation id="8105368624971345109">Искључи</translation>
 <translation id="8114753159095730575">Преузимање датотеке није доступно. Опције су наведене у дну екрана.</translation>
 <translation id="8123502380991596210">Сакриј опцију Шта је ново</translation>
 <translation id="8123953306357309250">Желите да откажете синхронизацију? Можете да укључите синхронизацију у подешавањима у било ком тренутку.</translation>

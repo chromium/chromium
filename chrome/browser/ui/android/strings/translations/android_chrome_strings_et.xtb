@@ -676,7 +676,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4116038641877404294">Laadige lehed alla, et neid võrguühenduseta kasutada</translation>
 <translation id="4121654769234887259">Te ei pea seda parooli meelde jätma. See salvestatakse konto <ph name="USERNAME" /> Google'i paroolihaldurisse.</translation>
 <translation id="4124152339699379357">Märguandeloa voog on avatud täiskõrgusel</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome peatas sellelt saidilt pärinevad märguanded. Saate need üle vaadata ja neid hallata.}other{Chrome peatas nendelt saitidelt pärinevad märguanded. Saate need üle vaadata ja neid hallata.}}</translation>
 <translation id="4132137475637520539">Luba liituda kõigil, kellel on link</translation>
 <translation id="4135200667068010335">Vahelehe jagamise seadmete loend on suletud.</translation>
 <translation id="4137746084635924146">Seadme praegune keel</translation>

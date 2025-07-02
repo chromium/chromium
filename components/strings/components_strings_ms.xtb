@@ -256,6 +256,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> untuk membolehkan penggandingan</translation>
 <translation id="1421484961346698724">Akaun dipadamkan</translation>
 <translation id="14222610277930434">Sering Anda Lawati</translation>
+<translation id="1422795627423046860">Tarikh tidak sah</translation>
 <translation id="1422930527989633628">Boleh meminta untuk menemukan peranti Bluetooth berdekatan</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1427192966110103169">Kolam Renang, Sauna &amp; Spa di Rumah</translation>
@@ -4820,6 +4821,7 @@ Butiran tambahan:
 <translation id="9155211586651734179">Persisian audio dilampirkan</translation>
 <translation id="9155646082713385498">Majalah</translation>
 <translation id="9157595877708044936">Menyediakan...</translation>
+<translation id="9158491153040481956">Baru-baru ini anda telah menukar kata laluan yang ditemukan dalam pelanggaran data umum. Sekiranya terdapat masalah, Password Manager boleh membantu anda log masuk.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> mungkin mengandungi kandungan sensitif}other{<ph name="FILE_COUNT" /> fail mungkin mengandungi kandungan sensitif}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Untuk keluar daripada skrin penuh, tekan |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mesej Slack</translation>

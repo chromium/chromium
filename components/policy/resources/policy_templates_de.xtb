@@ -817,6 +817,11 @@ Ist diese Richtlinie nicht konfiguriert, dürfen Nutzer Ausnahmen hinzufügen, u
       Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="1574258262373444557"><ph name="AES_KL_NAME" /> nicht als Algorithmus für die Verschlüsselung des Nutzerdatenspeichers verwenden</translation>
 <translation id="1575015449587326319">Konfigurationsrichtlinie für den Chrome Enterprise-Connector "OnFileDownloaded"</translation>
+<translation id="1575714464739424740">Eine Richtlinie, mit der festgelegt wird, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung „Fingerprinting-Schutz“ für deine Nutzer im Inkognitomodus aktiviert oder deaktiviert werden soll.
+
+Ist die Richtlinie deaktiviert, wird die Einstellung „Fingerprinting-Schutz“ für deine Nutzer deaktiviert.
+Wenn diese Richtlinie aktiviert ist, wird die Einstellung „Fingerprinting-Schutz“ für deine Nutzer im Inkognitomodus aktiviert.
+Ist die Richtlinie nicht konfiguriert, können Nutzer die Einstellung „Fingerprinting-Schutz“ in ihren Einstellungen der Benutzeroberfläche für den Inkognitomodus aktivieren oder deaktivieren. Die Standardeinstellung ist „false“ oder „disabled“, wodurch die Einstellung „Fingerprinting-Schutz“ deaktiviert ist.</translation>
 <translation id="1576797364335927541">„<ph name="ALR_FEATURE_NAME" />“ deaktivieren</translation>
 <translation id="1577162851453388235">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
 Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
@@ -844,6 +849,11 @@ Hinweis: Diese Richtlinie wirkt sich nur auf die Benutzeroberfläche aus. Die vo
 <translation id="1595013560176869154">Wenn diese Richtlinie aktiviert ist, sind schwache PINs zulässig. Einige Eigenschaften von schwachen PINs: Sie können aus nur einer Ziffer bestehen (1111) und aufeinanderfolgende Ziffern der PIN können jeweils eins höher (1234) oder eins niedriger sein (4321). Auch häufig verwendete PINs gelten als schwache PINs. Ist die Richtlinie deaktiviert, können Nutzer keine schwachen, einfach zu erratenden PINs verwenden.
 
       Wenn die Richtlinie nicht konfiguriert ist, erhalten Nutzer eine Warnung und keinen Fehler, wenn sie eine schwache PIN festlegen.</translation>
+<translation id="1596396758769156412">Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, lehnt dein <ph name="PRODUCT_OS_NAME" />-Gerät „Just Works“-Kopplungsanfragen ab, die von Bluetooth-Peripheriegeräten in der Nähe initiiert werden.
+
+Wenn diese Richtlinie aktiviert ist, akzeptiert dein <ph name="PRODUCT_OS_NAME" />-Gerät „Just Works“-Kopplungsanfragen, die von Bluetooth-Peripheriegeräten in der Nähe initiiert werden.
+
+Hinweis: Diese Richtlinie tritt erst in Kraft, nachdem sich ein Nutzer angemeldet hat, und gilt nicht für den Anmeldebildschirm.</translation>
 <translation id="1597684038583138808">Definition über „Schnellinfo“ aktivieren</translation>
 <translation id="1598258379228800626">„Objekt mit Tastaturfokus hervorheben“ auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="1599424828227887013">Website-Isolierung für angegebene Ursprünge auf Android-Geräten aktivieren</translation>
@@ -1622,6 +1632,7 @@ Wird diese Richtlinie nicht konfiguriert, entspricht dies für normale Nutzer ei
 <translation id="2180958780733364832">Verwendung des monitorlosen Modus verwalten</translation>
 <translation id="2182291258410176649">Der Nutzer entscheidet, ob "Sicherung und Wiederherstellung" aktiviert werden soll</translation>
 <translation id="2183338188392346527">Gerätelaufzeitzähler nicht melden</translation>
+<translation id="2187361040843865450">„Just Works“-Bluetooth-Kopplungsanfragen akzeptieren</translation>
 <translation id="2187372280917024033">Die URI-Vorlage des gewünschten DNS-over-HTTPS-Resolvers. Wenn du mehrere DNS-over-HTTPS-Resolver angeben möchtest, trenne die dazugehörigen URI-Vorlagen durch Leerzeichen. Diese Richtlinie ist der Richtlinie „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ sehr ähnlich, die sie überschreibt, wenn sie konfiguriert ist.
 Im Gegensatz zur Richtlinie „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ unterstützt diese Richtlinie die Angabe von Informationen zur Identität.
 IDs werden mithilfe von Variablenplatzhaltern angegeben, die in <ph name="PRODUCT_NAME" /> durch Nutzer- oder Geräteinformationen ersetzt werden. Die IDs werden nicht in Nur-Text an den DNS-Server gesendet. Stattdessen werden sie mit dem <ph name="SHA256" />-Algorithmus gehasht und im Hexadezimalsystem mit Großbuchstaben codiert.
@@ -3804,6 +3815,7 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
       Sind diese Richtlinien nicht konfiguriert, so können Nutzer ihre eigenen Proxy-Einstellungen wählen.</translation>
 <translation id="3758249152301468420">Entwicklertools deaktivieren</translation>
 <translation id="3758910737665387561">Geräten erlauben, PluginVm zu verwenden</translation>
+<translation id="3759342194253299115">Nutzern erlauben, die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung „Fingerprinting-Schutz“ auf ihrem Gerät im Inkognitomodus zu aktivieren oder zu deaktivieren.</translation>
 <translation id="3759650373178711405">Wenn die Richtlinie <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> nicht so konfiguriert ist, dass URLs aus vorherigen Sitzungen dauerhaft wiederhergestellt werden, lässt sich durch die Konfiguration von <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> eine Liste von URL-Mustern erstellen, die angeben, welche Websites Cookies für eine Sitzung setzen dürfen oder nicht.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird für alle Websites <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> verwendet, sofern diese Einstellung konfiguriert ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet. Bei URLs, die nicht zu den angegebenen Mustern gehören, werden ebenfalls die Standardeinstellungen verwendet.
@@ -3974,6 +3986,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
       Ist die Richtlinie nicht konfiguriert, steht SPDY zur Verfügung.</translation>
 <translation id="3885896818093825047">Einrichtung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> zulassen</translation>
+<translation id="388940400023402072"><ph name="PRIVACY_SANDBOX_NAME" />-Funktion „Fingerprinting-Schutz“ im Inkognitomodus aktivieren.</translation>
 <translation id="3889458462150559611">Zulassen, dass Websites unsichere Anfragen an Netzwerkendpunkte senden.</translation>
 <translation id="388999630001435491"><ph name="PRODUCT_NAME" /> nur erlauben, Verbindungen zu Geräten unter privaten IP-Adressen herzustellen</translation>
 <translation id="3891175633496805812">Wilco Diagnostics and Telemetry Controller (DTC) deaktivieren</translation>
@@ -4949,6 +4962,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
       * Wenn für <ph name="FILTER_PLACEHOLDER" /> <ph name="EMPTY_DICTIONARY" /> festgelegt ist, wird die Auswahl der Clientzertifikate nicht zusätzlich eingeschränkt. Beachte, dass vom Webserver bereitgestellte Filter weiterhin gelten.
 
       Wenn die Richtlinie nicht konfiguriert ist, findet für keine Website eine automatische Auswahl statt.</translation>
+<translation id="4607499333275488034"><ph name="PRIVACY_SANDBOX_NAME" />-Funktion „Fingerprinting-Schutz“ im Inkognitomodus deaktivieren.</translation>
 <translation id="4611983465824842867">In unsicheren Formularen keine Warnungen anzeigen und auch nicht Autofill deaktivieren</translation>
 <translation id="4615003180013429835">Parsing-Modus für Websiteliste</translation>
 <translation id="4615436471607987736">Diese Richtlinie wird ab M131 eingestellt. Sie bietet vorübergehend die Möglichkeit, zwei zusammenhängende Korrekturen für das Verhalten des Bestätigungsdialogfelds, das vom „beforeunload“-Ereignis angezeigt wird, zu deaktivieren.
@@ -6680,6 +6694,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="5722577409367087850">Erweiterung laden</translation>
 <translation id="5728154254076636808">Erstellung von Roaming-Kopien für <ph name="PRODUCT_NAME" />-Profildaten aktivieren</translation>
 <translation id="5729308727912841256">Kerberos-Passwort. Der Platzhalter „<ph name="PASSWORD_PLACEHOLDER" />“ wird durch das Anmeldepasswort ersetzt.</translation>
+<translation id="5730610899971390601">„Just Works“-Bluetooth-Kopplungsanfragen ablehnen</translation>
 <translation id="5732972008943405952">Bei erstmaliger Ausführung Autofill-Formulardaten aus Standardbrowser importieren</translation>
 <translation id="5733040281451845496">Wenn die Richtlinie aktiviert ist, wird die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge verwendet.
 
@@ -7170,6 +7185,7 @@ Ist die Richtlinie aktiviert, wird die API unterstützt.
 Diese Richtlinie kann verwendet werden, wenn die fehlende Unterstützung für diese API Probleme bereitet. Wenn du die Richtlinie verwenden musst, melde auf crbug.com einen Fehler unter Angabe deines Anwendungsfalls und setze {blundell, vasilyt}@chromium.org in Cc. Die Richtlinie kann bis Version 114 von <ph name="PRODUCT_NAME" /> verwendet werden. In den Versionen danach wurde die Unterstützung für diese API vollständig beendet.
 
 HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.</translation>
+<translation id="6083281887050888160">„Just Works“-Bluetooth-Kopplung aktivieren</translation>
 <translation id="6083631234867522991">Windows (Windows-Clients):</translation>
 <translation id="6087413944876892918"><ph name="HAPPY_EYEBALLS_V3" />-Algorithmus verwenden</translation>
 <translation id="608788685013546076">Schwellenwert des Akkus für das Umschalten bei Leistungsspitzen in Prozent festlegen</translation>
@@ -7490,15 +7506,6 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 Die Ursprünge müssen Webanwendungen sein, deren Installation über die Richtlinien „<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“ oder „<ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“ (ab Version 125) erzwungen wird oder die als Kiosk-App eingerichtet sind. Technische Daten und Informationen zur Device Attributes API findest du unter https://wicg.github.io/WebApiDevice/device_attributes.
 
 Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern (ab Version 127) findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
-<translation id="6286385444341934784">Mit dieser Einstellung werden Gemini-App-Integrationen zugelassen.
-
-0 / nicht festgelegt = Gemini-Integration ist für Nutzer verfügbar.
-
-1 = Gemini-Integration ist für Nutzer nicht verfügbar.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
-
-Weitere Informationen findest du in den Versionshinweisen für Chrome Enterprise unter https://support.google.com/chrome/a/answer/7679408.</translation>
 <translation id="6287128640500683781">Anmeldung für alle Nutzer zulassen</translation>
 <translation id="6287310684159482272">Cookie-Einstellungen</translation>
 <translation id="6287742528823584153">Den Dienst „<ph name="PRODUCT_NAME" />“ aktivieren und Remote-Desktop nach der Anmeldung starten</translation>
@@ -8124,6 +8131,7 @@ Unter <ph name="MS_WIN_NAME" /> wird die KDC-Richtlinie immer umgesetzt.</transl
 <translation id="6665670272107384733">Festlegen, wie oft der Nutzer das Passwort eingeben muss, um das schnelle Entsperren zu verwenden</translation>
 <translation id="6667586534922258705">Schaltfläche zum Anzeigen des Passworts auf dem Start- oder Sperrbildschirm anzeigen</translation>
 <translation id="6667636336079341367">Funktion „Scanner“ zulassen, ohne KI‑Modelle zu verbessern.</translation>
+<translation id="6669244130218275293">Festlegen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „Fingerprinting-Schutz“ im Inkognitomodus aktiviert werden soll.</translation>
 <translation id="6669691206059842248">Zusätzliche OAuth-Weiterleitungs-URLs pro Erweiterung konfigurieren</translation>
 <translation id="6669700740683748046">Durch diese Funktion wird die vollständige URL in der Adressleiste angezeigt.
       Wenn diese Richtlinie auf "True" gesetzt ist, wird die vollständige URL in der Adressleiste angezeigt, einschließlich Schemas und Subdomains.
@@ -8708,6 +8716,13 @@ Ungültige Einträge werden ignoriert.</translation>
 <translation id="7046113122884041950">Smart Lock nicht zulassen</translation>
 <translation id="7046997898355294677">Datenschutzhinweise anzeigen, bis sie vom Nutzer geschlossen werden</translation>
 <translation id="7047495632846973438">Gibt an, ob die Richtlinie für Berechtigungen zur Display-Erfassung ausgewählt ist oder übersprungen wird.</translation>
+<translation id="7053807509123417914">Über diese Richtlinie wird ein benutzerdefiniertes Label konfiguriert, mit dem ein verwalteter Browser gekennzeichnet wird. Bei verwalteten Browsern wird dieses Label in einem Haftungsausschluss für die Verwaltung in der Fußzeile der Seite „Neuer Tab“ angezeigt. Das benutzerdefinierte Label wird nicht übersetzt.
+
+Diese Richtlinie wird nur auf verwaltete Browser angewendet. Sie hat also keine Auswirkungen auf verwaltete Nutzer von nicht verwalteten Browsern.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="7055022222176591388">Veraltete <ph name="FLASH_PLUGIN_NAME" />-Plug-ins nicht zulassen</translation>
 <translation id="7056040036973126753">Abhängig von der Richtlinie für Chrome-Nutzermesswerte werden möglicherweise Daten zur Domainzuverlässigkeit an Google gesendet</translation>
 <translation id="7062803946218028349">Aktivieren des Phone Hub zulassen</translation>

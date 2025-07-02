@@ -69,6 +69,7 @@
 <translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1816835383954230954">啟用後，可提高 Chrome 執行速度，使用 JavaScript 的功能應該會正常運作。關閉時，效能會降低，但可提高 V8 防範攻擊的能力。</translation>
 <translation id="1818308510395330587">如要允許 <ph name="APP_NAME" /> 使用 AR，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟攝影機。</translation>
+<translation id="1881806992065048905">新分頁外觀底部功能表</translation>
 <translation id="1887786770086287077">這部裝置的位置資訊存取權已關閉。請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中予以開啟。</translation>
 <translation id="1906181697255754968">網站通常會存取裝置上的檔案和資料夾，以提供自動儲存等功能</translation>
 <translation id="1915307458270490472">掛斷</translation>
@@ -459,6 +460,7 @@
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="640163077447496506">今天到期</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">主題系列</translation>
 <translation id="6439114592976064011">禁止網站使用你的虛擬實境裝置和資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">開啟的分頁中有商品降價，原價為 <ph name="OLD_PRICE" />，現價為 <ph name="NEW_PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@
 <translation id="7791543448312431591">新增</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804248752222191302">有網站正在使用你的攝影機</translation>
+<translation id="7805832099057502789">新分頁外觀底部功能表已完整開啟</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7815680994978050279">已封鎖危險下載內容</translation>
 <translation id="7835852323729233924">正在播放媒體</translation>
@@ -581,6 +584,7 @@
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8042586301629853791">排序依據：</translation>
 <translation id="8051193500142930381">需要攝影機的功能將無法運作</translation>
+<translation id="8056330801132235235">Chrome 預設主題</translation>
 <translation id="8067883171444229417">播放影片</translation>
 <translation id="8068648041423924542">無法選取憑證。</translation>
 <translation id="8077120325605624147">你造訪的網站都能對你顯示所有廣告</translation>

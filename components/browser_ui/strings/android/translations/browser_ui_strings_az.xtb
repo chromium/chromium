@@ -69,6 +69,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="1799920918471566157">Chrome ipucuları</translation>
 <translation id="1816835383954230954">Aktiv olduqda Chrome daha sürətli işləyir və JavaScript istifadə edən funksiyalar nəzərdə tutulan kimi işləməlidir. Deaktiv olduqda bu, performansı azaldır, lakin V8-i hücumlara qarşı daha davamlı edir.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> tətbiqinə AR-dan istifadə icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
+<translation id="1881806992065048905">Yeni tab səhifəsi görünüşü üzrə aşağıdakı vərəq</translation>
 <translation id="1887786770086287077">Bu cihazda məkan girişi də deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> girişi aktiv edin.</translation>
 <translation id="1906181697255754968">Saytlar adətən işinizi avtomatik yaddaşda saxlamaq kimi xüsusiyyətlər üçün cihazınızdakı fayllar və qovluqlara giriş edir</translation>
 <translation id="1915307458270490472">Dəstəyi qoyun</translation>
@@ -459,6 +460,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
 <translation id="640163077447496506">Bu gün vaxtı bitir</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Tema kolleksiyaları</translation>
 <translation id="6439114592976064011">Saytların virtual reallıq cihazınızı və datanızı istifadə etməsinin qarşısını alın</translation>
 <translation id="6447842834002726250">Kukilər</translation>
 <translation id="6452138246455930388">Açıq tabda qiymət <ph name="OLD_PRICE" /> məbləğindən <ph name="NEW_PRICE" /> məbləğinə düşdü: <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="7791543448312431591">Əlavə etmək</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
 <translation id="7804248752222191302">Sayt kameranızdan istifadə edir</translation>
+<translation id="7805832099057502789">Yeni tab səhifəsi görünüşü üzrə aşağıdakı vərəq tam hündürlükdə açıldı</translation>
 <translation id="7807060072011926525">Google tərəfindən təmin edilib</translation>
 <translation id="7815680994978050279">Təhlükəli endirmə blok edildi</translation>
 <translation id="7835852323729233924">Medianın oxudulması</translation>
@@ -581,6 +584,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="802154636333426148">Endirmə alınmadı</translation>
 <translation id="8042586301629853791">Sıralama metodu:</translation>
 <translation id="8051193500142930381">Kamera tələb edən xüsusiyyətlər işləmir</translation>
+<translation id="8056330801132235235">Defolt Chrome</translation>
 <translation id="8067883171444229417">Videonu oxudun</translation>
 <translation id="8068648041423924542">Sertifikatı seçmək mümkün deyil.</translation>
 <translation id="8077120325605624147">Ziyarət etdiyiniz istənilən sayt sizə istənilən reklamı göstərə bilər</translation>

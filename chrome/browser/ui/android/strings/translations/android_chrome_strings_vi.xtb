@@ -676,7 +676,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4116038641877404294">Tải trang xuống để sử dụng ngoại tuyến</translation>
 <translation id="4121654769234887259">Bạn không cần ghi nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào Trình quản lý mật khẩu của Google cho <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Quy trình cấp quyền gửi thông báo đã mở trên toàn màn hình</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome đã dừng thông báo của trang web này. Bạn có thể xem lại và quản lý.}other{Chrome đã dừng thông báo từ các trang web này. Bạn có thể xem lại và quản lý.}}</translation>
 <translation id="4132137475637520539">Cho phép bất kỳ ai có đường liên kết tham gia</translation>
 <translation id="4135200667068010335">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã đóng.</translation>
 <translation id="4137746084635924146">Ngôn ngữ hiện tại của thiết bị</translation>

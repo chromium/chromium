@@ -257,6 +257,7 @@
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> ដើម្បីអនុញ្ញាតការផ្គូផ្គង</translation>
 <translation id="1421484961346698724">បានលុប​គណនី</translation>
 <translation id="14222610277930434">អ្នក​ចូលមើល​ញឹកញាប់</translation>
+<translation id="1422795627423046860">កាលបរិច្ឆេទ​មិនត្រឹមត្រូវទេ</translation>
 <translation id="1422930527989633628">អាចស្នើសុំ​ស្វែងរក​ឧបករណ៍​ប៊្លូធូស​ដែលនៅជិត</translation>
 <translation id="1426410128494586442">បាទ/ចាស</translation>
 <translation id="1427192966110103169">ស្ប៉ា សូណា និង​អាងហែលទឹក​តាមផ្ទះ</translation>
@@ -4822,6 +4823,7 @@
 <translation id="9155211586651734179">បានភ្ជាប់ឧបករណ៍សំឡេងខាងក្រៅ</translation>
 <translation id="9155646082713385498">ទស្សនាវដ្ដី</translation>
 <translation id="9157595877708044936">កំពុងតំឡើង...</translation>
+<translation id="9158491153040481956">ថ្មីៗនេះ អ្នក​បានប្ដូរ​ពាក្យ​សម្ងាត់​ដែលត្រូវបាន​រកឃើញ​នៅក្នុង​ការបែកធ្លាយ​ទិន្នន័យ​សាធារណៈ។ ក្នុងករណី​ដែលមានបញ្ហា កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់​អាចជួយអ្នក​ក្នុងការ​ចូលគណនី​បាន។</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> អាចមាន​ខ្លឹមសារ​រសើប}other{ឯកសារ <ph name="FILE_COUNT" /> អាចមាន​ខ្លឹមសារ​រសើប}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ សូមចុច |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">សារ Slack</translation>

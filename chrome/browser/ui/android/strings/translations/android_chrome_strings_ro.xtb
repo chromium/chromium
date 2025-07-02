@@ -676,7 +676,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4116038641877404294">Descarcă paginile pentru a le folosi offline</translation>
 <translation id="4121654769234887259">Nu va trebui să reții parola. Ea se va salva în Managerul de parole Google pentru <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Fluxul de permisiune pentru notificări a fost deschis la înălțimea completă</translation>
-<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a oprit notificările de la acest site. Poți să examinezi și să gestionezi.}few{Chrome a oprit notificările de la aceste site-uri. Poți să examinezi și să gestionezi.}other{Chrome a oprit notificările de la aceste site-uri. Poți să examinezi și să gestionezi.}}</translation>
 <translation id="4132137475637520539">Permite tuturor celor care au linkul să se alăture</translation>
 <translation id="4135200667068010335">Lista de dispozitive pe care să trimiți o filă este închisă.</translation>
 <translation id="4137746084635924146">Limba actuală a dispozitivului</translation>

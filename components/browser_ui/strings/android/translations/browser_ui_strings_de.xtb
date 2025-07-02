@@ -69,6 +69,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="1799920918471566157">Chrome-Tipps</translation>
 <translation id="1816835383954230954">Wenn diese Option aktiviert ist, wird Chrome schneller ausgeführt und Funktionen, die JavaScript verwenden, sollten wie vorgesehen laufen. Ist sie deaktiviert, wird die Leistung reduziert, V8 ist dafür aber widerstandsfähiger gegen Angriffe.</translation>
 <translation id="1818308510395330587">Damit <ph name="APP_NAME" /> AR verwenden kann, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert sein.</translation>
+<translation id="1881806992065048905">Ansicht am unteren Rand – Darstellung „Neuer Tab“-Seite</translation>
 <translation id="1887786770086287077">Der Standortzugriff ist für dieses Gerät deaktiviert. Du kannst ihn in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="1906181697255754968">Websites greifen normalerweise auf Dateien und Ordner auf deinem Gerät zu, um Funktionen wie die automatische Speicherung deiner Arbeit umsetzen zu können</translation>
 <translation id="1915307458270490472">Auflegen</translation>
@@ -459,6 +460,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
 <translation id="640163077447496506">Läuft heute ab</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Designsammlungen</translation>
 <translation id="6439114592976064011">Websites daran hindern, mein Virtual-Reality-Gerät und meine Virtual-Reality-Daten zu verwenden</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Preissenkung auf dem geöffneten Tab von <ph name="OLD_PRICE" /> auf <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="780301667611848630">Nein, danke</translation>
 <translation id="7804248752222191302">Eine Website verwendet deine Kamera</translation>
+<translation id="7805832099057502789">Ansicht am unteren Rand – Darstellung „Neuer Tab“-Seite – in vollständiger Höhe geöffnet</translation>
 <translation id="7807060072011926525">Von Google bereitgestellt</translation>
 <translation id="7815680994978050279">Gefährlicher Download blockiert</translation>
 <translation id="7835852323729233924">Medien werden wiedergegeben</translation>
@@ -581,6 +584,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8042586301629853791">Sortieren nach:</translation>
 <translation id="8051193500142930381">Funktionen, die eine Kamera benötigen, funktionieren dann nicht</translation>
+<translation id="8056330801132235235">Chrome-Standardeinstellung</translation>
 <translation id="8067883171444229417">Video ansehen</translation>
 <translation id="8068648041423924542">Zertifikat kann nicht ausgewählt werden.</translation>
 <translation id="8077120325605624147">Jede Website, die du besuchst, kann dir beliebige Werbung präsentieren</translation>

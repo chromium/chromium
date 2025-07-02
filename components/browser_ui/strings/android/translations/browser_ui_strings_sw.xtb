@@ -69,6 +69,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="1799920918471566157">Vidokezo vya Chrome</translation>
 <translation id="1816835383954230954">Ikiwa imewashwa, Chrome hufanya kazi haraka zaidi na vipengele vinavyotumia JavaScript vinapaswa kufanya kazi kama vilivyokusudiwa. Ikiwa imezimwa, hatua hii hupunguza utendaji lakini hufanya V8 kustahimili zaidi mashambulizi.</translation>
 <translation id="1818308510395330587">Ili uruhusu <ph name="APP_NAME" /> itumie Uhalisia Ulioboreshwa, washa pia kamera katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
+<translation id="1881806992065048905">Safu ya chini ya mwonekano wa ukurasa wa kichupo kipya</translation>
 <translation id="1887786770086287077">Kipengele cha mahali kimezimwa kwenye kifaa hiki. Kiwashe katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Tovuti hufikia faili na folda kwenye kifaa chako kwa ajili ya vipengele kama vile kuhifadhi kazi yako kiotomatiki</translation>
 <translation id="1915307458270490472">Kata simu</translation>
@@ -459,6 +460,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="6398765197997659313">Ondoka kwenye Skrini nzima</translation>
 <translation id="640163077447496506">Muda wa matumizi unaisha leo</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6413980879783180524">Mikusanyiko ya Mandhari</translation>
 <translation id="6439114592976064011">Zuia tovuti zisitumie data na vifaa vyako vya uhalisia pepe</translation>
 <translation id="6447842834002726250">Vidakuzi</translation>
 <translation id="6452138246455930388">Punguzo la bei kwenye kichupo chako kilichofunguliwa, kutoka <ph name="OLD_PRICE" /> hadi <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
@@ -562,6 +564,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="7791543448312431591">Ongeza</translation>
 <translation id="780301667611848630">Hapana</translation>
 <translation id="7804248752222191302">Tovuti inatumia kamera yako</translation>
+<translation id="7805832099057502789">Safu ya chini ya mwonekano wa ukurasa wa kichupo kipya imefunguliwa katika skrini nzima</translation>
 <translation id="7807060072011926525">Imetolewa na Google</translation>
 <translation id="7815680994978050279">Upakuaji hatari umezuiwa</translation>
 <translation id="7835852323729233924">Kucheza maudhui</translation>
@@ -581,6 +584,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="802154636333426148">Haikuweza kupakua</translation>
 <translation id="8042586301629853791">Panga kulingana na:</translation>
 <translation id="8051193500142930381">Vipengele vinavyohitaji kamera havitafanya kazi</translation>
+<translation id="8056330801132235235">Mipangilio Chaguomsingi ya Chrome</translation>
 <translation id="8067883171444229417">Cheza video</translation>
 <translation id="8068648041423924542">Imeshindwa kuchagua cheti.</translation>
 <translation id="8077120325605624147">Tovuti yoyote unayotembelea inaweza kukuonyesha tangazo lolote</translation>

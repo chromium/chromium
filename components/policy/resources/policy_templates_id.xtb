@@ -858,6 +858,11 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan untuk menambahkan peng
       Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau izin akan mengikuti setelan default browser dan memungkinkan pengguna memilih izin ini untuk setiap situs.</translation>
 <translation id="1574258262373444557">Jangan gunakan <ph name="AES_KL_NAME" /> sebagai algoritme enkripsi untuk enkripsi penyimpanan pengguna</translation>
 <translation id="1575015449587326319">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileDownloaded</translation>
+<translation id="1575714464739424740">Kebijakan untuk mengontrol apakah setelan Perlindungan Pelacakan Sidik Jari <ph name="PRIVACY_SANDBOX_NAME" /> akan diaktifkan dalam mode Samaran atau dinonaktifkan bagi pengguna Anda.
+
+Jika Anda menyetel kebijakan ini ke Nonaktif, setelan fitur Perlindungan Pelacakan Sidik Jari akan dinonaktifkan bagi pengguna Anda.
+Jika Anda menyetel kebijakan ini ke Aktif, setelan fitur Perlindungan Pelacakan Sidik Jari akan diaktifkan bagi pengguna Anda di mode Samaran.
+Jika kebijakan ini tidak disetel, pengguna akan dapat mengaktifkan atau menonaktifkan fitur Perlindungan Pelacakan Sidik Jari untuk mode Samaran di setelan UI. Status default kebijakan ini adalah salah (false) atau nonaktif, yang berarti fitur Perlindungan Pelacakan Sidik Jari akan dinonaktifkan.</translation>
 <translation id="1576797364335927541">Nonaktifkan <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="1577162851453388235">Direct Sockets API memungkinkan komunikasi dengan endpoint arbitrer menggunakan TCP dan UDP.
 Lihat https://github.com/WICG/direct-sockets untuk mengetahui detail selengkapnya.
@@ -885,6 +890,11 @@ Catatan: Kebijakan ini hanya akan memengaruhi UI, dan ChromeOS akan mempertahank
 <translation id="1595013560176869154">Jika kebijakan ini disetel ke Aktif, PIN yang lemah akan diizinkan. Beberapa karakteristik PIN yang lemah: hanya satu digit (1111), digit ditambah 1 secara berurutan (1234), digit dikurangi 1 secara berurutan (4321), dan PIN yang umum dipakai. Jika kebijakan ini disetel ke Nonaktif, pengguna tidak akan dapat menyetel PIN yang lemah dan mudah ditebak.
 
       Jika kebijakan tidak disetel, pengguna akan mendapatkan peringatan PIN lemah, bukan error.</translation>
+<translation id="1596396758769156412">Jika kebijakan ini disetel ke nonaktif atau tidak disetel, perangkat <ph name="PRODUCT_OS_NAME" /> Anda akan menolak permintaan penyambungan "Just Works" yang dilakukan oleh periferal Bluetooth di sekitar.
+
+Jika kebijakan ini disetel ke aktif, perangkat <ph name="PRODUCT_OS_NAME" /> Anda akan menerima permintaan penyambungan "Just Works" yang dilakukan oleh periferal Bluetooth di sekitar.
+
+Catatan: Kebijakan ini hanya berlaku setelah pengguna login dan tidak berlaku untuk layar login.</translation>
 <translation id="1597684038583138808">Aktifkan Definisi Jawaban Instan</translation>
 <translation id="1598258379228800626">Aktifkan sorotan fokus keyboard di layar login</translation>
 <translation id="1599424828227887013">Mengaktifkan Isolasi Situs untuk asal yang ditentukan di perangkat Android</translation>
@@ -1707,6 +1717,7 @@ Jika kebijakan ini tidak disetel, hal ini setara dengan menyetelnya ke aktif (ya
 <translation id="2180958780733364832">Mengontrol penggunaan Mode Headless</translation>
 <translation id="2182291258410176649">Pengguna memutuskan apakah akan mengaktifkan opsi pencadangan dan pemulihan</translation>
 <translation id="2183338188392346527">Jangan laporkan penghitung runtime perangkat</translation>
+<translation id="2187361040843865450">Terima permintaan penyambungan Bluetooth "Just Works"</translation>
 <translation id="2187372280917024033">Template URI pada resolver DNS-over-HTTPS yang diinginkan. Untuk menentukan beberapa resolver DNS-over-HTTPS, pisahkan template URI terkait dengan spasi. Kebijakan ini sangat mirip dengan <ph name="DOH_TEMPLATES_POLICY_NAME" /> yang akan diganti jika ditentukan.
 Berbeda dengan kebijakan <ph name="DOH_TEMPLATES_POLICY_NAME" />, kebijakan ini mendukung penentuan informasi identitas.
 ID ditentukan menggunakan placeholder variabel yang diganti dengan informasi pengguna atau perangkat di <ph name="PRODUCT_NAME" />. ID tidak dikirim ke server DNS dalam bentuk teks biasa, tetapi ID akan di-hash dengan algoritma <ph name="SHA256" /> dan dienkode dengan heksadesimal huruf besar.
@@ -3986,6 +3997,7 @@ Lihat https://wicg.github.io/private-network-access/ untuk melihat batasan <ph n
       Membiarkan kebijakan ini tidak tersetel akan memungkinkan pengguna memilih setelan proxy-nya sendiri.</translation>
 <translation id="3758249152301468420">Nonaktifkan Alat Pengembang</translation>
 <translation id="3758910737665387561">Izinkan perangkat menggunakan PluginVm</translation>
+<translation id="3759342194253299115">Mengizinkan pengguna mengaktifkan atau menonaktifkan setelan Perlindungan Pelacakan Sidik Jari <ph name="PRIVACY_SANDBOX_NAME" /> dalam mode Samaran di perangkat mereka.</translation>
 <translation id="3759650373178711405">Menyetel <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> memungkinkan Anda membuat daftar pola URL yang menentukan situs yang dapat dan tidak dapat menyetel cookie untuk satu sesi, kecuali jika kebijakan <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> disetel untuk memulihkan URL dari sesi sebelumnya secara permanen.
 
       Jika kebijakan tidak disetel berarti <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> akan digunakan untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan. Jika URL tidak dicakup oleh pola yang ditentukan, setelan default juga akan digunakan.
@@ -4157,6 +4169,7 @@ Perhatikan bahwa kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="E
 
       Jika kebijakan ini tidak disetel, SPDY akan tersedia.</translation>
 <translation id="3885896818093825047">Izinkan penyiapan <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="388940400023402072">Aktifkan fitur Perlindungan Pelacakan Sidik Jari <ph name="PRIVACY_SANDBOX_NAME" /> di mode Samaran.</translation>
 <translation id="3889458462150559611">Izinkan situs membuat permintaan ke endpoint jaringan mana pun dengan cara yang tidak aman.</translation>
 <translation id="388999630001435491">Izinkan <ph name="PRODUCT_NAME" /> untuk hanya terhubung ke perangkat di alamat IP pribadi</translation>
 <translation id="3891175633496805812">Nonaktifkan diagnostik dan pengontrol telemetri wilco</translation>
@@ -5178,6 +5191,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
       * Jika <ph name="FILTER_PLACEHOLDER" /> disetel ke <ph name="EMPTY_DICTIONARY" />, pemilihan sertifikat klien tidak akan dibatasi lebih lanjut. Perhatikan bahwa filter yang diberikan oleh server web masih berlaku.
 
       Jika kebijakan tidak disetel, tidak akan ada pemilihan otomatis untuk situs apa pun.</translation>
+<translation id="4607499333275488034">Nonaktifkan fitur Perlindungan Pelacakan Sidik Jari <ph name="PRIVACY_SANDBOX_NAME" /> di mode Samaran.</translation>
 <translation id="4611983465824842867">Jangan menampilkan peringatan atau menonaktifkan isi otomatis pada formulir yang tidak aman</translation>
 <translation id="4615003180013429835">Mode penguraian sitelist</translation>
 <translation id="4615436471607987736">Mulai M131, kebijakan ini tidak digunakan lagi. Kebijakan ini menyediakan pilihan penonaktifan sementara untuk dua perbaikan terkait perilaku dialog konfirmasi yang ditunjukkan oleh peristiwa beforeunload.
@@ -6956,6 +6970,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
 <translation id="5722577409367087850">Muat ekstensi</translation>
 <translation id="5728154254076636808">Mengaktifkan pembuatan salinan roaming untuk data profil <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Sandi Kerberos. Placeholder <ph name="PASSWORD_PLACEHOLDER" /> diganti dengan sandi login.</translation>
+<translation id="5730610899971390601">Tolak permintaan penyambungan Bluetooth "Just Works"</translation>
 <translation id="5732972008943405952">Mengimpor data formulir isi-otomatis dari browser default saat pertama kali dijalankan</translation>
 <translation id="5733040281451845496">Jika kebijakan disetel ke Aktif, penundaan pengelolaan daya dan batas durasi sesi tidak akan dimulai hingga aktivitas pengguna pertama terjadi dalam suatu sesi.
 
@@ -7474,6 +7489,7 @@ versi 114, setelah itu dukungan untuk API ini akan dihapus tanpa syarat.
 
 CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
 kebijakan ini saat browser berjalan.</translation>
+<translation id="6083281887050888160">Aktifkan penyambungan Bluetooth "Just Works"</translation>
 <translation id="6083631234867522991">Windows (klien Windows):</translation>
 <translation id="6087413944876892918">Menggunakan algoritma <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Menetapkan ambang batas pergeseran puncak daya baterai dalam persen</translation>
@@ -7824,15 +7840,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 Origin harus sesuai dengan aplikasi web yang diinstal otomatis menggunakan kebijakan <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> atau <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (sejak versi 125) atau disiapkan sebagai aplikasi kios. Untuk spesifikasi Device Attributes API, lihat https://wicg.github.io/WebApiDevice/device_attributes.
 
 Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid (sejak versi 127), lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
-<translation id="6286385444341934784">Setelan ini mengizinkan integrasi aplikasi Gemini.
-
-Nilai 0/tidak disetel = Integrasi Gemini akan tersedia untuk pengguna.
-
-Nilai 1 = Integrasi Gemini tidak akan tersedia untuk pengguna.
-
-Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Untuk mengetahui informasi selengkapnya, baca Catatan Rilis Enterprise (https://support.google.com/chrome/a/answer/7679408).</translation>
 <translation id="6287128640500683781">Izinkan semua pengguna login</translation>
 <translation id="6287310684159482272">Setelan cookie</translation>
 <translation id="6287742528823584153">Aktifkan Layanan <ph name="PRODUCT_NAME" /> dan luncurkan desktop jarak jauh saat login</translation>
@@ -8507,6 +8514,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan KDC selalu dipatuhi.</translation>
 <translation id="6665670272107384733">Setel seberapa sering pengguna harus memasukkan sandi untuk menggunakan buka kunci cepat.</translation>
 <translation id="6667586534922258705">Memperlihatkan tombol tampilkan sandi pada layar login dan layar kunci</translation>
 <translation id="6667636336079341367">Izinkan Scanner tanpa meningkatkan kualitas model AI.</translation>
+<translation id="6669244130218275293">Memilih apakah fitur Perlindungan Pelacakan Sidik Jari <ph name="PRIVACY_SANDBOX_NAME" /> akan diaktifkan dalam mode Samaran.</translation>
 <translation id="6669691206059842248">Mengonfigurasi URL alihan OAuth tambahan per ekstensi</translation>
 <translation id="6669700740683748046">Fitur ini memungkinkan tampilan URL lengkap di kolom URL.
       Jika kebijakan ini disetel ke Benar (True), URL lengkap akan ditampilkan di kolom URL, termasuk skema dan subdomain.
@@ -9111,6 +9119,13 @@ Entri yang tidak valid akan diabaikan.</translation>
 <translation id="7046113122884041950">Jangan izinkan Smart Lock</translation>
 <translation id="7046997898355294677">Tampilkan notifikasi privasi sampai ditutup oleh pengguna</translation>
 <translation id="7047495632846973438">Menentukan apakah kebijakan izin perekaman layar dicentang atau dilewati.</translation>
+<translation id="7053807509123417914">Kebijakan ini mengontrol label khusus yang digunakan untuk menunjukkan browser terkelola. Untuk browser terkelola, label ini akan ditampilkan dalam pernyataan penyangkalan pengelolaan di footer pada halaman Tab Baru. Label khusus tidak akan diterjemahkan.
+
+Perhatikan bahwa kebijakan ini hanya diterapkan untuk browser terkelola, sehingga tidak akan memengaruhi pengguna terkelola di browser tidak terkelola.
+
+Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="7055022222176591388">Larang <ph name="FLASH_PLUGIN_NAME" /> yang sudah tidak berlaku</translation>
 <translation id="7056040036973126753">Data Keandalan Domain dapat dikirim ke Google bergantung pada kebijakan Metrik Pengguna Chrome (UMA)</translation>
 <translation id="7062803946218028349">Izinkan pengaktifan Phone Hub</translation>
