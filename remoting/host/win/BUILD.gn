@@ -108,36 +108,11 @@ source_set("trust_util") {
   libs = [ "Wintrust.lib" ]
 }
 
-component("rdp_window") {
-  sources = [
-    "com_imported_mstscax.h",
-    "rdp_client_window.cc",
-    "rdp_client_window.h",
-  ]
-
-  if (is_clang) {
-    # TODO(thakis): Remove this once midl.exe no longer produces nonstandard
-    # C++ (see the enums in com_imported_mstscax.h).
-    cflags = [ "-Wno-microsoft-enum-forward-reference" ]
-  }
-
-  defines = [
-    "WEBRTC_CHROMIUM_BUILD",
-    "RDP_WINDOW_IMPL",
-  ]
-
-  deps = [
-    "//net:net",
-    "//remoting/host/base",
-    "//third_party/webrtc_overrides:webrtc_component",
-    "//third_party/wtl",
-  ]
-}
-
 source_set("win") {
   sources = [
     "audio_volume_filter_win.cc",
     "audio_volume_filter_win.h",
+    "com_imported_mstscax.h",
     "com_security.cc",
     "com_security.h",
     "core_resource.h",
@@ -156,6 +131,8 @@ source_set("win") {
     "launch_process_with_token.h",
     "rdp_client.cc",
     "rdp_client.h",
+    "rdp_client_window.cc",
+    "rdp_client_window.h",
     "session_action_executor.cc",
     "session_action_executor.h",
     "session_input_injector.cc",
@@ -194,7 +171,6 @@ source_set("win") {
 
   public_deps = [ ":security_descriptor" ]
   deps = [
-    ":rdp_window",
     "//base:i18n",
     "//components/policy/core/common",
     "//crypto",
