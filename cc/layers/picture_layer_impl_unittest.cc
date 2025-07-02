@@ -718,7 +718,6 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledBoundsOverflowInt) {
 TEST_F(LegacySWPictureLayerImplTest, PinchGestureTilings) {
   gfx::Size layer_bounds(1300, 1900);
 
-  float low_res_factor = 0.25f;
   SetupDefaultTrees(layer_bounds);
   ResetTilingsAndRasterScales();
 
@@ -752,8 +751,7 @@ TEST_F(LegacySWPictureLayerImplTest, PinchGestureTilings) {
   active_layer()->MarkAllTilingsUsed();
 
   // Zoom out further. We should create a new tiling.
-  SetContentsScaleOnBothLayers(low_res_factor * 2.1f, 1.0f,
-                               low_res_factor * 2.1f);
+  SetContentsScaleOnBothLayers(.525f, 1.0f, .525f);
   ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
 
   // Zoom in a lot now. Since we increase by increments of
@@ -2252,7 +2250,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   EXPECT_EQ(HIGH_RESOLUTION, high_res->resolution());
 }
 
-TEST_F(PictureLayerImplTest, NoLowResTilingWithGpuRasterization) {
+TEST_F(PictureLayerImplTest, OnlyHighResTilingWithGpuRasterization) {
   gfx::Size default_tile_size(host_impl()->settings().default_tile_size);
   gfx::Size layer_bounds(default_tile_size.width() * 4,
                          default_tile_size.height() * 4);
