@@ -107,6 +107,8 @@ source_set("crc32c_arm64") {
   configs += [ ":crc32c_config" ]
   if (current_cpu == "arm64") {
     if (is_clang) {
+      # The -march arguments below are incompatible with libc++ modules.
+      use_libcxx_modules = false
       cflags = [
         "-march=armv8-a",
 
