@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.download.home;
 
+import android.content.Context;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 
 /** Helper class to build default or base {@link DownloadManagerUiConfig.Builder} instances. */
 @NullMarked
@@ -14,13 +17,15 @@ public class DownloadManagerUiConfigHelper {
     private DownloadManagerUiConfigHelper() {}
 
     /** Creates a {@link DownloadManagerUiConfig.Builder} based on feature flags. */
-    public static DownloadManagerUiConfig.Builder fromFlags() {
+    public static DownloadManagerUiConfig.Builder fromFlags(Context context) {
         boolean showDangerousItems =
                 ChromeFeatureList.sMaliciousApkDownloadCheck.isEnabled()
                         && !ChromeFeatureList.sMaliciousApkDownloadCheckTelemetryOnly.getValue();
         return new DownloadManagerUiConfig.Builder()
                 .setShowDangerousItems(showDangerousItems)
                 .setSupportsGrouping(true)
-                .setAutoFocusSearchBox(DeviceFormFactor.isTablet());
+                .setAutoFocusSearchBox(
+                        DeviceInput.supportsKeyboard()
+                                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context));
     }
 }

@@ -48,7 +48,7 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
         ThreadUtils.assertOnUiThread();
 
         DownloadManagerUiConfig config =
-                DownloadManagerUiConfigHelper.fromFlags()
+                DownloadManagerUiConfigHelper.fromFlags(activity)
                         .setOtrProfileId(otrProfileId)
                         .setIsSeparateActivity(false)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())

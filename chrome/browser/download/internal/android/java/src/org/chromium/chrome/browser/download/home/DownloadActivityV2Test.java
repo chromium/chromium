@@ -201,7 +201,7 @@ public class DownloadActivityV2Test {
 
     private void setUpUi(boolean showDangerousItems, boolean autoFocusSearchBox) {
         DownloadManagerUiConfig config =
-                DownloadManagerUiConfigHelper.fromFlags()
+                DownloadManagerUiConfigHelper.fromFlags(sActivity)
                         .setOtrProfileId(null)
                         .setIsSeparateActivity(true)
                         .setShowDangerousItems(showDangerousItems)

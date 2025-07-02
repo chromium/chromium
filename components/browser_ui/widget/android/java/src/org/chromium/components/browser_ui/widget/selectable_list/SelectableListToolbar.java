@@ -524,12 +524,14 @@ public class SelectableListToolbar<E> extends Toolbar
 
         showSearchViewInternal();
 
-        mSearchEditText.requestFocus();
-        if (showKeyboard) {
-            KeyboardVisibilityDelegate.getInstance().showKeyboard(mSearchEditText);
-        }
-
         setTitle(null);
+        mSearchEditText.post(
+                () -> {
+                    mSearchEditText.requestFocus();
+                    if (showKeyboard) {
+                        KeyboardVisibilityDelegate.getInstance().showKeyboard(mSearchEditText);
+                    }
+                });
     }
 
     /** Hides the search edit text box and related views. Notifies delegate of the change. */

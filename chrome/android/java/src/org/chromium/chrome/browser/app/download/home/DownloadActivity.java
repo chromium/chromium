@@ -75,7 +75,7 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         mOtrProfileId = DownloadUtils.getOtrProfileIdFromIntent(getIntent());
 
         DownloadManagerUiConfig config =
-                DownloadManagerUiConfigHelper.fromFlags()
+                DownloadManagerUiConfigHelper.fromFlags(this)
                         .setOtrProfileId(mOtrProfileId)
                         .setIsSeparateActivity(true)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
