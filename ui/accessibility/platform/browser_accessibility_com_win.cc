@@ -858,7 +858,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
     // vector, subtract the number of Blink actions.
     int32_t aria_action_id = aria_actions[action_index - actions.size()];
     BrowserAccessibilityComWin* aria_action_obj = GetFromID(aria_action_id);
-    std::string html_id = aria_action_obj->GetStringAttribute(
+    const std::string& html_id = aria_action_obj->GetStringAttribute(
         ax::mojom::StringAttribute::kHtmlId);
     action_verb = html_id.empty()
                       ? AXPlatformNodeBase::kAriaActionsPrefix
@@ -1161,17 +1161,17 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
   }
 
   // For OmniPass—rebranded as Fiserv Verifast. See https://crbug.com/378908266.
-  std::string type_attr =
+  const std::string& type_attr =
       owner->GetStringAttribute(ax::mojom::StringAttribute::kInputType);
   if (!type_attr.empty()) {
     ADD_ATTRIBUTE("type", type_attr);
   }
-  std::string value_attr =
+  const std::string& value_attr =
       owner->GetStringAttribute(ax::mojom::StringAttribute::kValue);
   if (!value_attr.empty()) {
     ADD_ATTRIBUTE("value", value_attr);
   }
-  std::string name_attr =
+  const std::string& name_attr =
       owner->GetStringAttribute(ax::mojom::StringAttribute::kHtmlInputName);
   if (!name_attr.empty()) {
     ADD_ATTRIBUTE("name", name_attr);
@@ -1184,7 +1184,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
 
   // Vispero's Inspect tool needs this temporarily, until they start tracking
   // nodes using the unique id. Also used by OmniPass / Fiserve Verifast.
-  std::string id_attr =
+  const std::string& id_attr =
       owner->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
   if (!id_attr.empty()) {
     ADD_ATTRIBUTE("id", id_attr);

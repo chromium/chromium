@@ -107,84 +107,57 @@ std::string TreeToString(const AXNode* node,
   return TreeToStringHelper(node, indent, verbose, max_items);
 }
 
-template <typename K, typename V>
-bool KeyValuePairsKeysMatch(std::vector<std::pair<K, V>> pairs1,
-                            std::vector<std::pair<K, V>> pairs2) {
-  return std::ranges::equal(pairs1, pairs2, std::equal_to(),
-                            &std::pair<K, V>::first, &std::pair<K, V>::first);
-}
-
 // Given two vectors of <K, V> key, value pairs representing an "old" vs "new"
 // state, or "before" vs "after", calls a callback function for each key that
 // changed value. Note that if an attribute is removed, that will result in
 // a call to the callback with the value changing from the previous value to
 // |empty_value|, and similarly when an attribute is added.
-template <typename K, typename V, typename F>
-void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& old_pairs,
-                                  const std::vector<std::pair<K, V>>& new_pairs,
+template <typename C, typename V, typename F>
+void CallIfAttributeValuesChanged(const C& old_pairs,
+                                  const C& new_pairs,
                                   const V& empty_value,
                                   F callback) {
-  // Fast path - if they both have the same keys in the same order.
-  if (KeyValuePairsKeysMatch(old_pairs, new_pairs)) {
-    for (size_t i = 0; i < old_pairs.size(); ++i) {
-      const auto& old_entry = old_pairs[i];
-      const auto& new_entry = new_pairs[i];
-      if (old_entry.second != new_entry.second) {
-        callback(old_entry.first, old_entry.second, new_entry.second);
-      }
-    }
-    return;
-  }
-
-  // Slower path - they don't have the same keys in the same order, so
-  // check all keys against each other.
-  using VectorOfPairs = std::vector<std::pair<K, V>>&;
-  auto comp = [](const auto& lhs, const auto& rhs) {
-    return lhs.first < rhs.first;
-  };
-  std::sort(const_cast<VectorOfPairs>(old_pairs).begin(),
-            const_cast<VectorOfPairs>(old_pairs).end(), comp);
-  std::sort(const_cast<VectorOfPairs>(new_pairs).begin(),
-            const_cast<VectorOfPairs>(new_pairs).end(), comp);
-  for (size_t old_i = 0, new_i = 0;
-       old_i < old_pairs.size() || new_i < new_pairs.size();) {
+  for (auto old_it = old_pairs.begin(), new_it = new_pairs.begin(),
+            old_end = old_pairs.end(), new_end = new_pairs.end();
+       old_it != old_end || new_it != new_end;) {
     // If we reached the end of one of the vectors.
-    if (old_i >= old_pairs.size()) {
-      const auto& new_pair = new_pairs[new_i];
-      if (new_pair.second != empty_value) {
-        callback(new_pair.first, empty_value, new_pair.second);
+    if (old_it == old_end) {
+      const auto& [new_key, new_value] = *new_it;
+      if (new_value != empty_value) {
+        callback(new_key, empty_value, new_value);
       }
-      new_i++;
+      ++new_it;
       continue;
-    } else if (new_i >= new_pairs.size()) {
-      const auto& old_pair = old_pairs[old_i];
-      if (old_pair.second != empty_value) {
-        callback(old_pair.first, old_pair.second, empty_value);
+    }
+    if (new_it == new_end) {
+      const auto& [old_key, old_value] = *old_it;
+      if (old_value != empty_value) {
+        callback(old_key, old_value, empty_value);
       }
-      old_i++;
+      ++old_it;
       continue;
     }
 
-    const auto& old_pair = old_pairs[old_i];
-    const auto& new_pair = new_pairs[new_i];
-    if (old_pair.first == new_pair.first) {
-      if (old_pair.second != new_pair.second) {
-        callback(old_pair.first, old_pair.second, new_pair.second);
+    const auto& [old_key, old_value] = *old_it;
+    const auto& [new_key, new_value] = *new_it;
+    if (old_key == new_key) {
+      if (old_value != new_value) {
+        callback(old_key, old_value, new_value);
       }
-      old_i++;
-      new_i++;
-    } else if (old_pair.first < new_pair.first) {
-      // This means `new_pairs` has no key for `old_pair.first`.
-      if (old_pair.second != empty_value) {
-        callback(old_pair.first, old_pair.second, empty_value);
+      ++old_it;
+      ++new_it;
+    } else if (old_key < new_key) {
+      // This means `new_pairs` has no key for `old_key`.
+      if (old_value != empty_value) {
+        callback(old_key, old_value, empty_value);
       }
-      old_i++;
+      ++old_it;
     } else {
-      // This means `old_pairs` has no key for `new_pair.first`.
-      if (new_pair.second != empty_value) {
-        callback(new_pair.first, empty_value, new_pair.second);
+      // This means `old_pairs` has no key for `new_key`.
+      if (new_value != empty_value) {
+        callback(new_key, empty_value, new_value);
       }
-      new_i++;
+      ++new_it;
     }
   }
 }

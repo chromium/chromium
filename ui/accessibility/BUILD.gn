@@ -63,6 +63,8 @@ component("ax_base") {
     "ax_action_handler_registry.cc",
     "ax_action_handler_registry.h",
     "ax_action_target.h",
+    "ax_attributes.cc",
+    "ax_attributes.h",
     "ax_base_export.h",
     "ax_bitset.h",
     "ax_enum_util.cc",
@@ -309,6 +311,7 @@ static_library("test_support") {
 test("accessibility_unittests") {
   testonly = true
   sources = [
+    "ax_attributes_unittest.cc",
     "ax_bitset_unittest.cc",
     "ax_computed_node_data_unittest.cc",
     "ax_enum_util_unittest.cc",

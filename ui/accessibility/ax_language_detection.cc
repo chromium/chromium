@@ -285,7 +285,8 @@ void AXLanguageDetectionManager::DetectLanguagesForNode(AXNode* node) {
   // TODO(chrishall): implement strategy for nodes which are too small to get
   // reliable language detection results. Consider combination of
   // concatenation and bubbling up results.
-  auto text = node->GetStringAttribute(ax::mojom::StringAttribute::kName);
+  const auto& text =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kName);
 
   // FindTopNMostFreqLangs() will pad the results with
   // |NNetLanguageIdentifier::kUnknown| in order to reach the requested number
@@ -418,7 +419,7 @@ AXLanguageDetectionManager::GetLanguageAnnotationForStringAttribute(
   if (!node.HasStringAttribute(attr))
     return language_annotation;
 
-  std::string attr_value = node.GetStringAttribute(attr);
+  const std::string& attr_value = node.GetStringAttribute(attr);
 
   // Use author-provided language if present.
   if (node.HasStringAttribute(ax::mojom::StringAttribute::kLanguage)) {

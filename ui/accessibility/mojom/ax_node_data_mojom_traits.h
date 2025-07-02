@@ -17,31 +17,31 @@ struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
   static ax::mojom::Role role(const ui::AXNodeData& p) { return p.role; }
   static uint32_t state(const ui::AXNodeData& p) { return p.state.value(); }
   static uint64_t actions(const ui::AXNodeData& p) { return p.actions; }
-  static const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
+  static const base::flat_map<ax::mojom::StringAttribute, std::string>&
   string_attributes(const ui::AXNodeData& p) {
-    return p.string_attributes;
+    return p.string_attributes.container();
   }
-  static const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
-  int_attributes(const ui::AXNodeData& p) {
-    return p.int_attributes;
+  static const base::flat_map<ax::mojom::IntAttribute, int32_t>& int_attributes(
+      const ui::AXNodeData& p) {
+    return p.int_attributes.container();
   }
-  static const std::vector<std::pair<ax::mojom::FloatAttribute, float>>&
+  static const base::flat_map<ax::mojom::FloatAttribute, float>&
   float_attributes(const ui::AXNodeData& p) {
-    return p.float_attributes;
+    return p.float_attributes.container();
   }
-  static const std::vector<std::pair<ax::mojom::BoolAttribute, bool>>&
-  bool_attributes(const ui::AXNodeData& p) {
-    return p.bool_attributes;
+  static const base::flat_map<ax::mojom::BoolAttribute, bool>& bool_attributes(
+      const ui::AXNodeData& p) {
+    return p.bool_attributes.container();
   }
-  static const std::vector<
-      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+  static const base::flat_map<ax::mojom::IntListAttribute,
+                              std::vector<int32_t>>&
   intlist_attributes(const ui::AXNodeData& p) {
-    return p.intlist_attributes;
+    return p.intlist_attributes.container();
   }
-  static const std::vector<
-      std::pair<ax::mojom::StringListAttribute, std::vector<std::string>>>&
+  static const base::flat_map<ax::mojom::StringListAttribute,
+                              std::vector<std::string>>&
   stringlist_attributes(const ui::AXNodeData& p) {
-    return p.stringlist_attributes;
+    return p.stringlist_attributes.container();
   }
   static const std::vector<std::pair<std::string, std::string>>&
   html_attributes(const ui::AXNodeData& p) {

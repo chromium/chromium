@@ -741,27 +741,27 @@ TEST_F(AXTableInfoTest, TableWithNoRows) {
   initial_state.nodes[0].child_ids = {11, 12, 13, 14};
   initial_state.nodes[1].id = 11;
   initial_state.nodes[1].role = ax::mojom::Role::kCell;
-  initial_state.nodes[1].int_attributes.emplace_back(
+  initial_state.nodes[1].int_attributes.Set(
       ax::mojom::IntAttribute::kTableCellRowIndex, 0);
-  initial_state.nodes[1].int_attributes.emplace_back(
+  initial_state.nodes[1].int_attributes.Set(
       ax::mojom::IntAttribute::kTableCellColumnIndex, 0);
   initial_state.nodes[2].id = 12;
   initial_state.nodes[2].role = ax::mojom::Role::kCell;
-  initial_state.nodes[2].int_attributes.emplace_back(
+  initial_state.nodes[2].int_attributes.Set(
       ax::mojom::IntAttribute::kTableCellRowIndex, 0);
-  initial_state.nodes[2].int_attributes.emplace_back(
+  initial_state.nodes[2].int_attributes.Set(
       ax::mojom::IntAttribute::kTableCellColumnIndex, 1);
   initial_state.nodes[3].id = 13;
   initial_state.nodes[3].role = ax::mojom::Role::kCell;
-  initial_state.nodes[3].int_attributes.emplace_back(
+  initial_state.nodes[3].int_attributes.Set(
       ax::mojom::IntAttribute::kTableCellRowIndex, 1);
-  initial_state.nodes[3].int_attributes.emplace_back(
+  initial_state.nodes[3].int_attributes.Set(
       ax::mojom::IntAttribute::kTableCellColumnIndex, 0);
   initial_state.nodes[4].id = 14;
   initial_state.nodes[4].role = ax::mojom::Role::kCell;
-  initial_state.nodes[4].int_attributes.emplace_back(
+  initial_state.nodes[4].int_attributes.Set(
       ax::mojom::IntAttribute::kTableCellRowIndex, 1);
-  initial_state.nodes[4].int_attributes.emplace_back(
+  initial_state.nodes[4].int_attributes.Set(
       ax::mojom::IntAttribute::kTableCellColumnIndex, 1);
   AXTree tree(initial_state);
   AXNode* table = tree.root();

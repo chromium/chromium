@@ -367,16 +367,14 @@ class AX_EXPORT AXNode final {
     return data().GetFloatAttribute(attribute);
   }
 
-  const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
-  GetIntAttributes() const {
+  const AXIntAttributes& GetIntAttributes() const {
     return data().int_attributes;
   }
   bool HasIntAttribute(ax::mojom::IntAttribute attribute) const;
   bool CanComputeIntAttribute(ax::mojom::IntAttribute attribute) const;
   int GetIntAttribute(ax::mojom::IntAttribute attribute) const;
 
-  const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
-  GetStringAttributes() const {
+  const AXStringAttributes& GetStringAttributes() const {
     return data().string_attributes;
   }
   bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
@@ -393,9 +391,7 @@ class AX_EXPORT AXNode final {
   std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const;
 
-  const std::vector<
-      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
-  GetIntListAttributes() const {
+  const AXIntListAttributes& GetIntListAttributes() const {
     return data().intlist_attributes;
   }
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;

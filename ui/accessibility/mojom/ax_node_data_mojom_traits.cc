@@ -30,74 +30,63 @@ bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
   out->state = ui::AXStates(data.state());
   out->actions = data.actions();
 
-  // TODO(dcheng): AXNodeData should probably just switch over to absl's
-  // flat_hash_map for simplicity at some point.
-  base::flat_map<ax::mojom::StringAttribute, std::string> string_attributes;
-  if (!data.ReadStringAttributes(&string_attributes))
+  if (!data.ReadStringAttributes(&out->string_attributes.container())) {
     return false;
-  out->string_attributes = std::move(string_attributes).extract();
+  }
+  if (!data.ReadIntAttributes(&out->int_attributes.container())) {
+    return false;
+  }
+  if (!data.ReadFloatAttributes(&out->float_attributes.container())) {
+    return false;
+  }
+  if (!data.ReadBoolAttributes(&out->bool_attributes.container())) {
+    return false;
+  }
 
-  base::flat_map<ax::mojom::IntAttribute, int32_t> int_attributes;
-  if (!data.ReadIntAttributes(&int_attributes))
+  auto& intlist_attributes = out->intlist_attributes.container();
+  if (!data.ReadIntlistAttributes(&intlist_attributes)) {
     return false;
-  out->int_attributes = std::move(int_attributes).extract();
+  }
 
-  base::flat_map<ax::mojom::FloatAttribute, float> float_attributes;
-  if (!data.ReadFloatAttributes(&float_attributes))
-    return false;
-  out->float_attributes = std::move(float_attributes).extract();
-
-  base::flat_map<ax::mojom::BoolAttribute, bool> bool_attributes;
-  if (!data.ReadBoolAttributes(&bool_attributes))
-    return false;
-  out->bool_attributes = std::move(bool_attributes).extract();
-
-  base::flat_map<ax::mojom::IntListAttribute, std::vector<int32_t>>
-      intlist_attributes;
-  if (!data.ReadIntlistAttributes(&intlist_attributes))
-    return false;
   // Enforce some invariants:
   //  If marker types are present, marker starts and ends must be present.
   //  If any marker type is a highlight, highlights must be present.
-  if (intlist_attributes.contains(ax::mojom::IntListAttribute::kMarkerTypes)) {
-    if (!intlist_attributes.contains(
-            ax::mojom::IntListAttribute::kMarkerStarts)) {
+  if (auto types_it =
+          intlist_attributes.find(ax::mojom::IntListAttribute::kMarkerTypes);
+      types_it != intlist_attributes.end()) {
+    auto starts_it =
+        intlist_attributes.find(ax::mojom::IntListAttribute::kMarkerStarts);
+    if (starts_it == intlist_attributes.end()) {
       return false;
     }
-    if (!intlist_attributes.contains(
-            ax::mojom::IntListAttribute::kMarkerEnds)) {
+    auto ends_it =
+        intlist_attributes.find(ax::mojom::IntListAttribute::kMarkerEnds);
+    if (ends_it == intlist_attributes.end()) {
       return false;
     }
-    auto& marker_types =
-        intlist_attributes[ax::mojom::IntListAttribute::kMarkerTypes];
-    auto& marker_starts =
-        intlist_attributes[ax::mojom::IntListAttribute::kMarkerStarts];
-    auto& marker_ends =
-        intlist_attributes[ax::mojom::IntListAttribute::kMarkerEnds];
+    auto& marker_types = types_it->second;
+    auto& marker_starts = starts_it->second;
+    auto& marker_ends = ends_it->second;
     if (marker_types.size() != marker_starts.size() ||
         marker_types.size() != marker_ends.size()) {
       return false;
     }
     if (HasAnyHighlightEntries(marker_types)) {
-      if (!intlist_attributes.contains(
-              ax::mojom::IntListAttribute::kHighlightTypes)) {
+      auto highlight_types_it =
+          intlist_attributes.find(ax::mojom::IntListAttribute::kHighlightTypes);
+      if (highlight_types_it == intlist_attributes.end()) {
         return false;
       }
-      auto& highlight_types =
-          intlist_attributes[ax::mojom::IntListAttribute::kHighlightTypes];
+      auto& highlight_types = highlight_types_it->second;
       if (marker_types.size() != highlight_types.size()) {
         return false;
       }
     }
   }
 
-  out->intlist_attributes = std::move(intlist_attributes).extract();
-
-  base::flat_map<ax::mojom::StringListAttribute, std::vector<std::string>>
-      stringlist_attributes;
-  if (!data.ReadStringlistAttributes(&stringlist_attributes))
+  if (!data.ReadStringlistAttributes(&out->stringlist_attributes.container())) {
     return false;
-  out->stringlist_attributes = std::move(stringlist_attributes).extract();
+  }
 
   base::flat_map<std::string, std::string> html_attributes;
   if (!data.ReadHtmlAttributes(&html_attributes))

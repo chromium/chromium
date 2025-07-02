@@ -579,8 +579,7 @@ bool AXPlatformNodeBase::GetFloatAttribute(ax::mojom::FloatAttribute attribute,
   return GetDelegate()->GetFloatAttribute(attribute, value);
 }
 
-const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
-AXPlatformNodeBase::GetIntAttributes() const {
+const AXIntAttributes& AXPlatformNodeBase::GetIntAttributes() const {
   return GetDelegate()->GetIntAttributes();
 }
 
@@ -599,8 +598,7 @@ bool AXPlatformNodeBase::GetIntAttribute(ax::mojom::IntAttribute attribute,
   return GetDelegate()->GetIntAttribute(attribute, value);
 }
 
-const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
-AXPlatformNodeBase::GetStringAttributes() const {
+const AXStringAttributes& AXPlatformNodeBase::GetStringAttributes() const {
   return GetDelegate()->GetStringAttributes();
 }
 
@@ -700,8 +698,7 @@ bool AXPlatformNodeBase::GetInheritedString16Attribute(
   return true;
 }
 
-const std::vector<std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
-AXPlatformNodeBase::GetIntListAttributes() const {
+const AXIntListAttributes& AXPlatformNodeBase::GetIntListAttributes() const {
   return GetDelegate()->GetIntListAttributes();
 }
 
