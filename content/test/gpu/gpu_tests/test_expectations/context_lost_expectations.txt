@@ -194,7 +194,6 @@ crbug.com/329145823 [ win release intel ] GpuCrash_InfoForHardwareGpu [ Failure 
 crbug.com/329145823 [ win release intel ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release nvidia ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
-crbug.com/329145823 [ win release qualcomm ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ graphite-disabled mac release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
@@ -205,8 +204,6 @@ crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan relea
 crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 crbug.com/354748640 [ mac amd no-asan graphite-disabled release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
-# Flaky failure on Mac release NVIDIA - 3 GPU process crashes instead of 4
-crbug.com/355923591 [ mac release nvidia ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 # Flaky failure on Mac Intel ASAN - DevTools Serialization Crash
 crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
@@ -231,9 +228,8 @@ crbug.com/365565140 [ angle-opengl debug graphite-disabled intel-0x3e9b arch-x86
 
 # Renderer Hung Possibly just Slow
 crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
-crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
-crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan ] ContextLost_WebGLContextLostOverlyLargeUniform [ RetryOnFailure ]
-crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan ] GpuNormalTermination_NewWebGLNotBlocked [ RetryOnFailure ]
+crbug.com/338574390 [ angle-metal asan graphite-disabled intel-0x3e9b mac ] ContextLost_WebGLContextLostOverlyLargeUniform [ RetryOnFailure ]
+crbug.com/338574390 [ angle-metal asan graphite-disabled intel-0x3e9b mac ] GpuNormalTermination_NewWebGLNotBlocked [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
