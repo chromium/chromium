@@ -589,9 +589,10 @@ ABSL_ATTRIBUTE_CONST_FUNCTION Duration Seconds(T n) {
     }
     return time_internal::MakePosDoubleDuration(n);
   } else {
-    if (std::isnan(n))
-      return std::signbit(n) ? -InfiniteDuration() : InfiniteDuration();
-    if (n <= (std::numeric_limits<int64_t>::min)()) return -InfiniteDuration();
+    if (std::isnan(n)) return -InfiniteDuration();
+    if (n <= static_cast<T>((std::numeric_limits<int64_t>::min)())) {
+      return -InfiniteDuration();
+    }
     return -time_internal::MakePosDoubleDuration(-n);
   }
 }

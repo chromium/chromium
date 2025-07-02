@@ -2388,7 +2388,7 @@ class raw_hash_set {
   size_t capacity() const {
     const size_t cap = common().capacity();
     // Compiler complains when using functions in ASSUME so use local variable.
-    ABSL_ATTRIBUTE_UNUSED static constexpr size_t kDefaultCapacity =
+    [[maybe_unused]] static constexpr size_t kDefaultCapacity =
         DefaultCapacity();
     ABSL_ASSUME(cap >= kDefaultCapacity);
     return cap;
@@ -3016,13 +3016,14 @@ class raw_hash_set {
       absl::PrefetchToLocalCache(slot_array() + seq.offset());
 #endif
       Group g{ctrl + seq.offset()};
+      // TODO(b/424834054): assert that Match doesn't have too many collisions.
       for (uint32_t i : g.Match(h2)) {
         if (ABSL_PREDICT_TRUE(equal_to(key, slot_array() + seq.offset(i))))
           return iterator_at(seq.offset(i));
       }
       if (ABSL_PREDICT_TRUE(g.MaskEmpty())) return end();
       seq.next();
-      ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
+      AssertOnProbe(seq);
     }
   }
 
@@ -3154,8 +3155,7 @@ class raw_hash_set {
                 std::move(tmp));
   }
 
-  void annotate_for_bug_detection_on_move(
-      ABSL_ATTRIBUTE_UNUSED raw_hash_set& that) {
+  void annotate_for_bug_detection_on_move([[maybe_unused]] raw_hash_set& that) {
     // We only enable moved-from validation when generations are enabled (rather
     // than using NDEBUG) to avoid issues in which NDEBUG is enabled in some
     // translation units but not in others.
@@ -3280,6 +3280,7 @@ class raw_hash_set {
       absl::PrefetchToLocalCache(slot_array() + seq.offset());
 #endif
       Group g{ctrl + seq.offset()};
+      // TODO(b/424834054): assert that Match doesn't have too many collisions.
       for (uint32_t i : g.Match(h2)) {
         if (ABSL_PREDICT_TRUE(equal_to(key, slot_array() + seq.offset(i))))
           return {iterator_at(seq.offset(i)), false};
@@ -3298,14 +3299,14 @@ class raw_hash_set {
         return {iterator_at(index), true};
       }
       seq.next();
-      ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
+      AssertOnProbe(seq);
     }
   }
 
  protected:
   // Asserts for correctness that we run on find/find_or_prepare_insert.
   template <class K>
-  void AssertOnFind(ABSL_ATTRIBUTE_UNUSED const K& key) {
+  void AssertOnFind([[maybe_unused]] const K& key) {
     AssertHashEqConsistent(key);
     AssertNotDebugCapacity();
   }
@@ -3364,7 +3365,7 @@ class raw_hash_set {
       const bool is_key_equal = equal_to(key, to_slot(slot));
       if (!is_key_equal) return;
 
-      ABSL_ATTRIBUTE_UNUSED const bool is_hash_equal =
+      [[maybe_unused]] const bool is_hash_equal =
           hash_of_arg == hash_of(to_slot(slot));
       assert((!is_key_equal || is_hash_equal) &&
              "eq(k1, k2) must imply that hash(k1) == hash(k2). "
@@ -3378,6 +3379,20 @@ class raw_hash_set {
     // We only do validation for small tables so that it's constant time.
     if (capacity() > 16) return;
     IterateOverFullSlots(common(), sizeof(slot_type), assert_consistent);
+  }
+
+  void AssertOnProbe([[maybe_unused]] const probe_seq<Group::kWidth>& seq) {
+    ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
+    // We only assert that the hash function has good quality for non-default
+    // hash functions.
+    if constexpr (std::is_same_v<hasher, hash_default_hash<key_type>>) return;
+    // TODO(b/424834054): investigate and see if we can remove the deleted
+    // elements condition.
+    ABSL_SWISSTABLE_ASSERT(
+        (seq.index() <= 256 || seq.index() <= capacity() / 2 ||
+         !common().growth_info().HasNoDeleted()) &&
+        "The hash function has low entropy and is non-default. Please replace "
+        "it with absl::Hash.");
   }
 
   // Attempts to find `key` in the table; if it isn't found, returns an iterator
@@ -3645,7 +3660,7 @@ struct HashtableFreeFunctionsAccess {
       c->erase_meta_only(it);
       return 1;
     }
-    ABSL_ATTRIBUTE_UNUSED const size_t original_size_for_assert = c->size();
+    [[maybe_unused]] const size_t original_size_for_assert = c->size();
     size_t num_deleted = 0;
     using SlotType = typename Set::slot_type;
     IterateOverFullSlots(
@@ -3713,7 +3728,7 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
 
   static size_t GetNumProbes(const Set& set,
                              const typename Set::key_type& key) {
-    if (set.is_soo()) return 0;
+    if (set.is_small()) return 0;
     size_t num_probes = 0;
     const size_t hash = set.hash_of(key);
     auto seq = probe(set.common(), hash);

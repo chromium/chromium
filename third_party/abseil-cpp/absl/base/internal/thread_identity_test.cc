@@ -31,7 +31,7 @@ namespace base_internal {
 namespace {
 
 ABSL_CONST_INIT static absl::base_internal::SpinLock map_lock(
-    absl::kConstInit, base_internal::SCHEDULE_KERNEL_ONLY);
+    base_internal::SCHEDULE_KERNEL_ONLY);
 ABSL_CONST_INIT static int num_identities_reused ABSL_GUARDED_BY(map_lock);
 
 static const void* const kCheckNoIdentity = reinterpret_cast<void*>(1);

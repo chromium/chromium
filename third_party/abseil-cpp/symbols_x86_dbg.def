@@ -1305,6 +1305,7 @@ EXPORTS
     ??$begin@V?$vector@PAVCommandLineFlag@absl@@V?$allocator@PAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@__Cr@std@@YA?AV?$__wrap_iter@PAPAVCommandLineFlag@absl@@@01@AAV?$vector@PAVCommandLineFlag@absl@@V?$allocator@PAVCommandLineFlag@absl@@@__Cr@std@@@01@@Z
     ??$begin@V?$vector@PBVCommandLineFlag@absl@@V?$allocator@PBVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@__Cr@std@@YA?AV?$__wrap_iter@PAPBVCommandLineFlag@absl@@@01@AAV?$vector@PBVCommandLineFlag@absl@@V?$allocator@PBVCommandLineFlag@absl@@@__Cr@std@@@01@@Z
     ??$bit_cast@U?$FlagValueAndInitBit@_N@flags_internal@absl@@_J@__Cr@std@@YA?AU?$FlagValueAndInitBit@_N@flags_internal@absl@@AB_J@Z
+    ??$byteswap@_K@absl@@YA_K_K@Z
     ??$c_begin@V?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@__Cr@std@@@container_algorithm_internal@absl@@YA?AV?$__wrap_iter@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@__Cr@std@@AAV?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@34@@Z
     ??$c_end@V?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@__Cr@std@@@container_algorithm_internal@absl@@YA?AV?$__wrap_iter@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@__Cr@std@@AAV?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@34@@Z
     ??$call_once@A6AXXZ$$V@absl@@YAXAAVonce_flag@0@A6AXXZ@Z
@@ -2881,6 +2882,7 @@ EXPORTS
     ?AssertIsValidForComparison@container_internal@absl@@YAXPBW4ctrl_t@12@EPBE@Z
     ?AssertNotDebugCapacity@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@IBEXXZ
     ?AssertNotHeld@Mutex@absl@@QBEXXZ
+    ?AssertOnProbe@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@IAEXABV?$probe_seq@$0BA@@23@@Z
     ?AssertReaderHeld@Mutex@absl@@QBEXXZ
     ?AssertSameContainer@container_internal@absl@@YAXPBW4ctrl_t@12@0ABQBX1PBE2@Z
     ?AssertValid@CordRepBtree@cord_internal@absl@@SAPAV123@PAV123@_N@Z
@@ -3855,6 +3857,7 @@ EXPORTS
     ?RegisterMutexProfiler@absl@@YAXP6AX_J@Z@Z
     ?RegisterMutexTracer@absl@@YAXP6AXPBDPBX_J@Z@Z
     ?RegisterSpinLockProfiler@base_internal@absl@@YAXP6AXPBX_J@Z@Z
+    ?RegisterWithTsan@SpinLock@base_internal@absl@@AAEXXZ
     ?Rehash@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@I@Z
     ?RehashProbabilityConstant@container_internal@absl@@YAIXZ
     ?RelaxedCopyFromAtomic@SequenceLock@flags_internal@absl@@CAXPAXPBU?$atomic@_K@__Cr@std@@I@Z

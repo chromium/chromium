@@ -90,7 +90,7 @@ struct VModuleInfo final {
 // To avoid problems with the heap checker which calls into `VLOG`, `mutex` must
 // be a `SpinLock` that prevents fiber scheduling instead of a `Mutex`.
 ABSL_CONST_INIT absl::base_internal::SpinLock mutex(
-    absl::kConstInit, absl::base_internal::SCHEDULE_KERNEL_ONLY);
+    absl::base_internal::SCHEDULE_KERNEL_ONLY);
 
 // `GetUpdateSitesMutex()` serializes updates to all of the sites (i.e. those in
 // `site_list_head`) themselves.

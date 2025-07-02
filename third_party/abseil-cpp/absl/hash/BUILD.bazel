@@ -76,6 +76,7 @@ cc_library(
 
 cc_test(
     name = "hash_test",
+    size = "large",
     srcs = [
         "hash_test.cc",
         "internal/hash_test.h",

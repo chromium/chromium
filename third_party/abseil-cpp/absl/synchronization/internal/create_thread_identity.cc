@@ -35,7 +35,7 @@ namespace synchronization_internal {
 // ThreadIdentity storage is persistent, we maintain a free-list of previously
 // released ThreadIdentity objects.
 ABSL_CONST_INIT static base_internal::SpinLock freelist_lock(
-    absl::kConstInit, base_internal::SCHEDULE_KERNEL_ONLY);
+    base_internal::SCHEDULE_KERNEL_ONLY);
 ABSL_CONST_INIT static base_internal::ThreadIdentity* thread_identity_freelist;
 
 // A per-thread destructor for reclaiming associated ThreadIdentity objects.

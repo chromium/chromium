@@ -2882,6 +2882,7 @@ EXPORTS
     ?AssertIsValidForComparison@container_internal@absl@@YAXPEBW4ctrl_t@12@EPEBE@Z
     ?AssertNotDebugCapacity@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@IEBAXXZ
     ?AssertNotHeld@Mutex@absl@@QEBAXXZ
+    ?AssertOnProbe@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@IEAAXAEBV?$probe_seq@$07@23@@Z
     ?AssertReaderHeld@Mutex@absl@@QEBAXXZ
     ?AssertSameContainer@container_internal@absl@@YAXPEBW4ctrl_t@12@0AEBQEBX1PEBE2@Z
     ?AssertValid@CordRepBtree@cord_internal@absl@@SAPEAV123@PEAV123@_N@Z
@@ -3854,6 +3855,7 @@ EXPORTS
     ?RegisterMutexProfiler@absl@@YAXP6AX_J@Z@Z
     ?RegisterMutexTracer@absl@@YAXP6AXPEBDPEBX_J@Z@Z
     ?RegisterSpinLockProfiler@base_internal@absl@@YAXP6AXPEBX_J@Z@Z
+    ?RegisterWithTsan@SpinLock@base_internal@absl@@AEAAXXZ
     ?Rehash@container_internal@absl@@YAXAEAVCommonFields@12@AEBUPolicyFunctions@12@_K@Z
     ?RehashProbabilityConstant@container_internal@absl@@YA_KXZ
     ?RelaxedCopyFromAtomic@SequenceLock@flags_internal@absl@@CAXPEAXPEBU?$atomic@_K@__Cr@std@@_K@Z

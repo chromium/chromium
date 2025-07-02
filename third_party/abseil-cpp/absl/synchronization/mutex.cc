@@ -226,7 +226,7 @@ static bool AtomicSetBits(std::atomic<intptr_t>* pv, intptr_t bits,
 
 // Data for doing deadlock detection.
 ABSL_CONST_INIT static absl::base_internal::SpinLock deadlock_graph_mu(
-    absl::kConstInit, base_internal::SCHEDULE_KERNEL_ONLY);
+    base_internal::SCHEDULE_KERNEL_ONLY);
 
 // Graph used to detect deadlocks.
 ABSL_CONST_INIT static GraphCycles* deadlock_graph
@@ -292,7 +292,7 @@ static const struct {
 };
 
 ABSL_CONST_INIT static absl::base_internal::SpinLock synch_event_mu(
-    absl::kConstInit, base_internal::SCHEDULE_KERNEL_ONLY);
+    base_internal::SCHEDULE_KERNEL_ONLY);
 
 // Hash table size; should be prime > 2.
 // Can't be too small, as it's used for deadlock detection information.
@@ -509,10 +509,10 @@ struct SynchWaitParams {
   const Condition* cond;   // The condition that this thread is waiting for.
                            // In Mutex, this field is set to zero if a timeout
                            // expires.
-  KernelTimeout timeout;  // timeout expiry---absolute time
-                          // In Mutex, this field is set to zero if a timeout
-                          // expires.
-  Mutex* const cvmu;      // used for transfer from cond var to mutex
+  KernelTimeout timeout;   // timeout expiry---absolute time
+                           // In Mutex, this field is set to zero if a timeout
+                           // expires.
+  Mutex* const cvmu;       // used for transfer from cond var to mutex
   PerThreadSynch* const thread;  // thread that is waiting
 
   // If not null, thread should be enqueued on the CondVar whose state
@@ -1327,8 +1327,7 @@ static char* StackString(void** pcs, int n, char* buf, int maxlen,
   char sym[kSymLen];
   int len = 0;
   for (int i = 0; i != n; i++) {
-    if (len >= maxlen)
-      return buf;
+    if (len >= maxlen) return buf;
     size_t count = static_cast<size_t>(maxlen - len);
     if (symbolize) {
       if (!absl::Symbolize(pcs[i], sym, kSymLen)) {
@@ -2286,7 +2285,7 @@ ABSL_ATTRIBUTE_NOINLINE void Mutex::UnlockSlow(SynchWaitParams* waitp) {
         // set up to walk the list
         PerThreadSynch* w_walk;   // current waiter during list walk
         PerThreadSynch* pw_walk;  // previous waiter during list walk
-        if (old_h != nullptr) {  // we've searched up to old_h before
+        if (old_h != nullptr) {   // we've searched up to old_h before
           pw_walk = old_h;
           w_walk = old_h->next;
         } else {  // no prior search, start at beginning
