@@ -28,12 +28,15 @@
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/service_worker/service_worker_database.h"
-#include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace storage {
 
+class ServiceWorkerDiskCache;
+class ServiceWorkerResourceMetadataWriterImpl;
+class ServiceWorkerResourceReaderImpl;
+class ServiceWorkerResourceWriterImpl;
 class ServiceWorkerStorageControlImplTest;
 
 namespace service_worker_storage_unittest {
