@@ -3025,7 +3025,7 @@
 <translation id="6159908896951210943">よりフォーマルに</translation>
 <translation id="6160391204859821737">広告のプライバシー機能を有効にする</translation>
 <translation id="6162403104168428984">住所を更新しますか？</translation>
-<translation id="6164605812717770913">このサイトへのアクセスは保護者が許可していません。許可してもらうよう依頼できます。</translation>
+<translation id="6164605812717770913">このサイトへのアクセスは保護者が許可していませんが、許可を求めることはできます。</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6167577165590485365">最後に取得を試行した時間:</translation>
 <translation id="617256461084925519">Google Chrome でお支払い情報を入力するため、本人確認を行います。</translation>
@@ -3077,7 +3077,7 @@
 <translation id="6254436959401408446">メモリが不足しているため、このページを開けません</translation>
 <translation id="625463612687472648">許可を取り消す</translation>
 <translation id="6259156558325130047">順序変更のやり直し（&amp;R）</translation>
-<translation id="6259282549512536479"><ph name="BLOCKED_URL" /> は以前にブロックしています</translation>
+<translation id="6259282549512536479">以前に <ph name="BLOCKED_URL" /> をブロックしています</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> のブックマーク</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
 <translation id="6264485186158353794">セキュリティで保護されたページに戻る</translation>
