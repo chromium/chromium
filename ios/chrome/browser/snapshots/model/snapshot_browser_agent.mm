@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_util.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_util.h"
 
 namespace {
 
@@ -24,6 +25,22 @@ const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
 // Converts `snapshot_id` to a SnapshotIDWrapper.
 SnapshotIDWrapper* ToWrapper(SnapshotID snapshot_id) {
   return [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshot_id];
+}
+
+// Returns the snapshot IDs of all the WebStates in `browser`.
+NSArray<SnapshotIDWrapper*>* GetSnapshotIDs(Browser* browser) {
+  WebStateList* web_state_list = browser->GetWebStateList();
+  const int web_state_list_count = web_state_list->count();
+
+  NSMutableArray<SnapshotIDWrapper*>* snapshot_ids =
+      [[NSMutableArray alloc] initWithCapacity:web_state_list_count];
+
+  for (int index = 0; index < web_state_list_count; ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    [snapshot_ids
+        addObject:ToWrapper(SnapshotID(web_state->GetUniqueIdentifier()))];
+  }
+  return snapshot_ids;
 }
 
 }  // anonymous namespace
@@ -133,6 +150,20 @@ void SnapshotBrowserAgent::RemoveAllSnapshots() {
   [snapshot_storage_ removeAllImages];
 }
 
+void SnapshotBrowserAgent::RetrieveSnapshotWithID(
+    SnapshotID snapshot_id,
+    SnapshotKind snapshot_kind,
+    SnapshotRetrievedBlock completion) {
+  SnapshotOperation operation =
+      snapshot_kind == SnapshotKindColor
+          ? SnapshotOperation::kRetrieveColorSnapshot
+          : SnapshotOperation::kRetrieveGreyscaleSnapshot;
+  [snapshot_storage_ retrieveImageWithSnapshotID:ToWrapper(snapshot_id)
+                                    snapshotKind:snapshot_kind
+                                      completion:BlockRecordingElapsedTime(
+                                                     operation, completion)];
+}
+
 void SnapshotBrowserAgent::InsertWebState(web::WebState* web_state) {
   SnapshotTabHelper::FromWebState(web_state)->SetSnapshotStorage(
       snapshot_storage_);
@@ -177,26 +208,11 @@ void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
 
 void SnapshotBrowserAgent::PurgeUnusedSnapshots() {
   DCHECK(snapshot_storage_);
-  NSArray<SnapshotIDWrapper*>* snapshot_ids = GetSnapshotIDs();
+  NSArray<SnapshotIDWrapper*>* snapshot_ids = GetSnapshotIDs(browser_);
   // Keep snapshots that are less than one minute old, to prevent a concurrency
   // issue if they are created while the purge is running.
   const base::Time one_minute_ago = base::Time::Now() - base::Minutes(1);
   [snapshot_storage_
       purgeImagesOlderThanWithThresholdDate:one_minute_ago.ToNSDate()
                             liveSnapshotIDs:snapshot_ids];
-}
-
-NSArray<SnapshotIDWrapper*>* SnapshotBrowserAgent::GetSnapshotIDs() {
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  const int web_state_list_count = web_state_list->count();
-
-  NSMutableArray<SnapshotIDWrapper*>* snapshot_ids =
-      [[NSMutableArray alloc] initWithCapacity:web_state_list_count];
-
-  for (int index = 0; index < web_state_list_count; ++index) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    [snapshot_ids
-        addObject:ToWrapper(SnapshotID(web_state->GetUniqueIdentifier()))];
-  }
-  return snapshot_ids;
 }

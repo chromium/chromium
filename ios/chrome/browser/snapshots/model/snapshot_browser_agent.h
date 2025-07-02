@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import <string>
 #import <vector>
@@ -15,8 +16,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_types.h"
 
-@class SnapshotIDWrapper;
 @protocol SnapshotStorage;
 
 // Associates a SnapshotStorage to a Browser.
@@ -41,6 +42,12 @@ class SnapshotBrowserAgent : public BrowserUserData<SnapshotBrowserAgent>,
   void RemoveAllSnapshots();
 
   id<SnapshotStorage> snapshot_storage() { return snapshot_storage_; }
+
+  // Retrieves snapshot of `snapshot_kind` for `snapshot_id` invoking
+  // `completion` with the image retrieved (or nil in case of failure).
+  void RetrieveSnapshotWithID(SnapshotID snapshot_id,
+                              SnapshotKind snapshot_kind,
+                              SnapshotRetrievedBlock completion);
 
  private:
   friend class BrowserUserData<SnapshotBrowserAgent>;
@@ -71,9 +78,6 @@ class SnapshotBrowserAgent : public BrowserUserData<SnapshotBrowserAgent>,
 
   // Purges the snapshots folder of unused snapshots.
   void PurgeUnusedSnapshots();
-
-  // Returns the snapshot IDs of all the WebStates in the Browser.
-  NSArray<SnapshotIDWrapper*>* GetSnapshotIDs();
 
   __strong id<SnapshotStorage> snapshot_storage_;
 
