@@ -44,10 +44,20 @@ based on some conditions, the following diagram shows the flow in a bigger pictu
 
 <br>
 
-`SafeBrowsingLookupMechanism` is the base class and we have three implementations
-for it, hash_realtime == V5 (send partial hash of the URL to the server through
-a proxy), url_realtime == Protego (send URL to the server), hash_database == V4
-(check against the local blocklist), worth mentioning that `SafeBrowsingLookupMechanismRunner`
+`SafeBrowsingLookupMechanism` is the base class and we have three
+implementations for it:
+
+1. `hash_realtime` == V5. This sends a partial hash of the URL to the server
+   through a proxy.
+2. `url_realtime` == Protego. This sends the URL to the server. **This is
+   not currently supported in Android WebView**.
+3. `hash_database` == V4. This checks against the local blocklist, which is an
+   on-device database of **partial** URL hashes. If there is a match in the
+   local database, then this connects to the server to request all URL hashes
+   which match this prefix, and then it finally determines if there is a true
+   match or not.
+
+It's worth mentioning that `SafeBrowsingLookupMechanismRunner`
 controls LookUpMechanism and  sets a timeout for the mechanism to run within.
 The timeout is defined at the top of the class.
 
@@ -58,6 +68,19 @@ call, the next section talks about WebView specifics.
 
 See the relevant Chromium classes in
 [//components/safe\_browsing/](/components/safe_browsing).
+
+### What's the difference between URL hashes and hash prefixes
+
+* URL: this is the actual URL string (e.g., "https://www.example.com/").
+* Hash: this is a full-length hash of the URL string.
+* Hash prefix: this is the first several bytes of the full-length hash. This is
+  not a complete hash, so it is intentional that many URLs will have the same
+  hash prefix.
+
+Refer to
+https://developers.google.com/safe-browsing/v4/urls-hashing#hash-prefix-computations
+for an explanation of how the hashing computation and hash prefixes work in v4
+of the protocol.
 
 ## WebView Implementation
 
