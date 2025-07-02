@@ -18,6 +18,7 @@
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
+#include "net/disk_cache/sql/exclusive_operation_coordinator.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 
 // This backend is experimental and only available when the build flag is set.
@@ -92,9 +93,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   // Marks an active entry as doomed and initiates its removal from the store.
   // If `callback` is provided, it will be run upon completion.
-  void DoomActiveEntry(
-      SqlEntryImpl& entry,
-      CompletionOnceCallback callback = CompletionOnceCallback());
+  void DoomActiveEntry(SqlEntryImpl& entry, CompletionOnceCallback callback);
 
   // Updates the `last_used` timestamp for an entry.
   void UpdateEntryLastUsed(const CacheEntryKey& key,
@@ -110,41 +109,22 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                                     int64_t header_size_delta,
                                     SqlPersistentStore::ErrorCallback callback);
 
-  // Sends a dummy operation through the operation queue, for unit tests.
+  // Sends a dummy operation through the background task runner via the
+  // operation coordinator, for unit tests.
   int FlushQueueForTest(CompletionOnceCallback callback);
 
   scoped_refptr<base::SequencedTaskRunner> GetBackgroundTaskRunnerForTest() {
     return background_task_runner_;
   }
 
-  // Provides direct access to the underlying SqlPersistentStore.
-  // This is primarily used by SqlEntryImpl to interact with the database.
-  SqlPersistentStore& GetStore();
-
  private:
   class IteratorImpl;
-  class ExclusiveOperationHandle;
 
-  // Represents a pending doom operation. This is used when an entry is doomed
-  // while another operation (like `Open()` or `Create()`) for the same key is
-  // in progress. The doom operation is queued and executed after the initial
-  // operation completes.
-  struct PendingDoomOperation {
-    // Constructor for dooming a specific entry.
-    explicit PendingDoomOperation(CompletionOnceCallback callback);
-    // Constructor for dooming entries within a time range.
-    PendingDoomOperation(base::Time initial_time,
-                         base::Time end_time,
-                         CompletionOnceCallback callback);
-    ~PendingDoomOperation();
-    PendingDoomOperation(PendingDoomOperation&&);
-
-    // The start of the time range for dooming entries. Defaults to Min().
-    base::Time initial_time = base::Time::Min();
-    // The end of the time range for dooming entries. Defaults to Max().
-    base::Time end_time = base::Time::Max();
-    // Callback to be invoked when the doom operation completes.
-    CompletionOnceCallback callback;
+  // Identifies the type of a entry operation.
+  enum class OpenOrCreateEntryOperationType {
+    kCreateEntry,
+    kOpenEntry,
+    kOpenOrCreateEntry,
   };
 
   // Represents an in-flight modification to an entry's metadata (e.g.,
@@ -164,68 +144,100 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
     std::optional<scoped_refptr<net::GrowableIOBuffer>> head;
   };
 
-  // Holds information related to a pending `OpenOrCreateEntry()`,
-  // `OpenEntry()`, or `CreateEntry()` operation. This includes the original
-  // callback and any subsequent doom operations that were requested for the
-  // same key while the initial operation was in flight.
-  struct EntryResultCallbackInfo {
-    explicit EntryResultCallbackInfo(EntryResultCallback callback);
-    ~EntryResultCallbackInfo();
-    EntryResultCallbackInfo(EntryResultCallbackInfo&&);
+  SqlEntryImpl* GetActiveEntry(const CacheEntryKey& key);
 
-    // The callback provided by the caller of `OpenOrCreateEntry()`,
-    // `OpenEntry()`, or `CreateEntry()`.
-    EntryResultCallback callback;
-    // A list of doom operations that were enqueued for this key while the
-    // entry operation was pending.
-    std::vector<PendingDoomOperation> pending_doom_operations;
-  };
+  // Internal helper for Open/Create/OpenOrCreate operations. It uses
+  // `ExclusiveOperationCoordinator` to serialize operations on the same key and
+  // to correctly handle synchronous vs. asynchronous returns.
+  EntryResult OpenOrCreateEntryInternal(OpenOrCreateEntryOperationType type,
+                                        const std::string& key,
+                                        EntryResultCallback callback);
 
-  // Inserts a new EntryResultCallbackInfo into the
-  // `entry_result_callback_info_map_` for the given `key`.
-  void InsertEntryResultCallback(const CacheEntryKey& key,
-                                 EntryResultCallback callback);
+  // Handles the backend logic for Open/Create/OpenOrCreate operations. This
+  // method is scheduled as a normal operation via the
+  // `ExclusiveOperationCoordinator` to ensure proper serialization against
+  // other operations on the same key.
+  void HandleOpenOrCreateEntryOperation(
+      OpenOrCreateEntryOperationType type,
+      const CacheEntryKey& entry_key,
+      EntryResultCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
   // Callback for store operations that return an EntryInfo (`OpenOrCreate()`,
   // `Create()`).
-  void OnEntryOperationFinished(const CacheEntryKey& key,
-                                SqlPersistentStore::EntryInfoOrError result);
-  // Callback for store operations that return an Optional<EntryInfo>
+  void OnEntryOperationFinished(
+      const CacheEntryKey& key,
+      EntryResultCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
+      SqlPersistentStore::EntryInfoOrError result);
+  // Callback for store operations that return an optional<EntryInfo>
   // (`Open()`).
   void OnOptionalEntryOperationFinished(
       const CacheEntryKey& key,
+      EntryResultCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
       SqlPersistentStore::OptionalEntryInfoOrError result);
-  // Callback for store operations related to dooming an entry.
-  void OnDoomEntryFinished(const CacheEntryKey& key,
-                           CompletionOnceCallback callback,
-                           std::unique_ptr<ExclusiveOperationHandle> handle,
-                           SqlPersistentStore::Error result);
 
-  SqlEntryImpl* GetActiveEntry(const CacheEntryKey& key);
-  EntryResultCallbackInfo* GetEntryResultCallbackInfo(const CacheEntryKey& key);
+  // Handles the backend logic for `DoomActiveEntry()`. This method is scheduled
+  // as a normal operation via the `ExclusiveOperationCoordinator`.
+  void HandleDoomActiveEntryOperation(
+      scoped_refptr<SqlEntryImpl> entry,
+      CompletionOnceCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
-  // Runs the next pending exclusive operation if one is not already in flight.
-  void PostOrRunExclusiveOperation(
-      base::OnceCallback<void(std::unique_ptr<ExclusiveOperationHandle>)>
-          operation);
-  void RunNextExclusiveOperation();
+  // Dooms an active entry. This method must be called while holding an
+  // `ExclusiveOperationCoordinator::OperationHandle` to ensure proper
+  // serialization of operations on the entry.
+  void DoomActiveEntryInternal(SqlEntryImpl& entry,
+                               CompletionOnceCallback callback);
 
-  // Internal implementation of `DoomEntry()`. This is scheduled as an exclusive
-  // operation.
-  void DoomEntryInternal(const std::string& key,
-                         net::RequestPriority priority,
-                         CompletionOnceCallback callback,
-                         std::unique_ptr<ExclusiveOperationHandle> handle);
+  // Handles the backend logic for `ReleaseDoomedEntry()`. This method is
+  // scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
+  void HandleDeleteDoomedEntry(
+      const CacheEntryKey& key,
+      const base::UnguessableToken& token,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
-  // Internal implementation of `DoomEntriesBetween()`. This is scheduled as an
-  // exclusive operation.
-  void DoomEntriesBetweenInternal(
+  // Handles the backend logic for `DoomEntry()`. This method is scheduled as a
+  // normal operation via the `ExclusiveOperationCoordinator`.
+  void HandleDoomEntryOperation(
+      const CacheEntryKey& key,
+      net::RequestPriority priority,
+      CompletionOnceCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  // Handles the backend logic for `DoomEntriesBetween()`. This method is
+  // scheduled as an exclusive operation via the
+  // `ExclusiveOperationCoordinator`.
+  void HandleDoomEntriesBetweenOperation(
       base::Time initial_time,
       base::Time end_time,
       CompletionOnceCallback callback,
-      std::unique_ptr<ExclusiveOperationHandle> handle);
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  // Handles the backend logic for `UpdateEntryLastUsed()`. This method is
+  // scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
+  void HandleUpdateEntryLastUsedOperation(
+      const CacheEntryKey& key,
+      const base::UnguessableToken& token,
+      base::Time last_used,
+      SqlPersistentStore::ErrorCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  // Handles the backend logic for `UpdateEntryHeaderAndLastUsed()`. This method
+  // is scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
+  void HandleUpdateEntryHeaderAndLastUsedOperation(
+      const CacheEntryKey& key,
+      const base::UnguessableToken& token,
+      base::Time last_used,
+      scoped_refptr<net::GrowableIOBuffer> buffer,
+      int64_t header_size_delta,
+      SqlPersistentStore::ErrorCallback callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Applies in-flight modifications to an entry's info.
   void ApplyInFlightEntryModifications(
+      const CacheEntryKey& key,
       SqlPersistentStore::EntryInfo& entry_info);
 
   // Wraps an `ErrorCallback` to pop the oldest in-flight entry modification
@@ -233,6 +245,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // ensures that the queue of in-flight modifications is managed correctly.
   SqlPersistentStore::ErrorCallback
   WrapErrorCallbackToPopInFlightEntryModification(
+      const CacheEntryKey& key,
       SqlPersistentStore::ErrorCallback callback);
 
   // Task runner for all background SQLite operations.
@@ -240,12 +253,6 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   // The persistent store that manages the SQLite database.
   std::unique_ptr<SqlPersistentStore> store_;
-
-  // Map of cache keys to EntryResultCallbackInfo. This tracks pending
-  // `OpenOrCreateEntry()`, `OpenEntry()`, and `CreateEntry()` operations.
-  // Entries are added when an operation starts and removed when it completes.
-  std::map<CacheEntryKey, EntryResultCallbackInfo>
-      entry_result_callback_info_map_;
 
   // Map of cache keys to currently active (opened) entries.
   // `raw_ref` is used because the SqlEntryImpl objects are ref-counted and
@@ -257,26 +264,15 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // (i.e., have outstanding references).
   std::set<raw_ref<const SqlEntryImpl>> doomed_entries_;
 
-  // Stores tokens of entries that have been marked for dooming and are
-  // currently being processed by the `SqlPersistentStore`. This prevents
-  // these entries from being re-added to `active_entries_` if reopened.
-  std::set<base::UnguessableToken> pending_doomed_entry_tokens_;
-
-  // A flag to serialize exclusive operations like mass-delete and iteration to
-  // prevent data inconsistencies between in-memory entry states and the
-  // persistent storage.
-  bool exclusive_operation_inflight_ = false;
-
-  // Queue of operations to be run when `exclusive_operation_inflight_` is
-  // false.
-  std::queue<
-      base::OnceCallback<void(std::unique_ptr<ExclusiveOperationHandle>)>>
-      pending_exclusive_operations_;
+  // Coordinates exclusive and normal operations to ensure that exclusive
+  // operations have exclusive access.
+  ExclusiveOperationCoordinator exclusive_operation_coordinator_;
 
   // Queue of in-flight entry modifications that need to be applied.
   // These are typically updates to `last_used` or header data that occur
   // while an entry is not actively open.
-  std::list<InFlightEntryModification> in_flight_entry_modifications_;
+  std::map<CacheEntryKey, std::list<InFlightEntryModification>>
+      in_flight_entry_modifications_;
 
   // Weak pointer factory for this class.
   base::WeakPtrFactory<SqlBackendImpl> weak_factory_{this};

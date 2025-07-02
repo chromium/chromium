@@ -30,9 +30,6 @@ SqlEntryImpl::~SqlEntryImpl() {
     return;
   }
 
-  // TODO(crbug.com/422065015): If `last_used_` was modified, persist it to the
-  // storage.
-
   if (doomed_) {
     backend_->ReleaseDoomedEntry(*this);
   } else {
@@ -58,7 +55,7 @@ void SqlEntryImpl::Doom() {
   if (doomed_ || !backend_) {
     return;
   }
-  backend_->DoomActiveEntry(*this);
+  backend_->DoomActiveEntry(*this, base::DoNothing());
 }
 
 void SqlEntryImpl::Close() {
