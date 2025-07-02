@@ -127,8 +127,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::kDarkenWebsitesCheckboxInThemesSetting,
     &content_settings::features::kTrackingProtection3pcd,
     &content_settings::features::kUserBypassUI,
-    &credential_management::features::
-        kThirdPartyDisableChromeAutofillSettingsScreen,
     &data_controls::kEnableClipboardDataControlsAndroid,
     &data_sharing::features::kDataSharingFeature,
     &data_sharing::features::kDataSharingJoinOnly,
@@ -413,6 +411,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabWindowManagerReportIndicesMismatch,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
+    &kThirdPartyDisableChromeAutofillSettingsScreen,
     &kToolbarPhoneAnimationRefactor,
     &kTopControlsRefactor,
     &kTouchToSearchCallout,
@@ -1369,6 +1368,14 @@ BASE_FEATURE(kTestDefaultDisabled,
 BASE_FEATURE(kTestDefaultEnabled,
              "TestDefaultEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If the user configured Chrome to use 3P autofill and this feature is enabled,
+// Chrome will disable the preferences in the "Payment methods" and "Addresses
+// and more" screen in the Chrome settings that don't apply in third party mode
+// and would confuse the user.
+BASE_FEATURE(kThirdPartyDisableChromeAutofillSettingsScreen,
+             "ThirdPartyDisableChromeAutofillSettingsScreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarPhoneAnimationRefactor,
              "ToolbarPhoneAnimationRefactor",

@@ -13,9 +13,6 @@ namespace credential_management::features {
 COMPONENT_EXPORT(CREDENTIAL_MANAGEMENT)
 BASE_DECLARE_FEATURE(kCredentialManagementThirdPartyWebApiRequestForwarding);
 
-COMPONENT_EXPORT(CREDENTIAL_MANAGEMENT)
-BASE_DECLARE_FEATURE(kThirdPartyDisableChromeAutofillSettingsScreen);
-
 }  // namespace credential_management::features
 
 #endif  // COMPONENTS_CREDENTIAL_MANAGEMENT_ANDROID_FEATURES_H_

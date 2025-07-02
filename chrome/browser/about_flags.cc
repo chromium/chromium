@@ -12147,8 +12147,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::
          kThirdPartyDisableChromeAutofillSettingsScreenDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(credential_management::features::
-                            kThirdPartyDisableChromeAutofillSettingsScreen)},
+     FEATURE_VALUE_TYPE(
+         chrome::android::kThirdPartyDisableChromeAutofillSettingsScreen)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
