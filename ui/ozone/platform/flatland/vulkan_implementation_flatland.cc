@@ -14,7 +14,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
@@ -154,28 +153,10 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
     return nullptr;
   }
 
-  std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
-  if (collection->format() == gfx::BufferFormat::YUV_420_BIPLANAR) {
-    VkSamplerYcbcrModelConversion ycbcr_conversion =
-        (color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709)
-            ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
-            : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
-
-    // Currently sysmem doesn't specify location of chroma samples relative to
-    // luma (see fxbug.dev/13677). Assume they are cosited with luma. Y'CbCr
-    // info here must match the values passed for the same buffer in
-    // FuchsiaVideoDecoder. |format_features| are resolved later in the GPU
-    // process before the ycbcr info is passed to Skia.
-    ycbcr_info = gpu::VulkanYCbCrInfo(
-        vk_image_info.format, /*external_format=*/0, ycbcr_conversion,
-        VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
-        VK_CHROMA_LOCATION_COSITED_EVEN, /*format_features=*/0);
-  }
-
   auto image = gpu::VulkanImage::Create(
       device_queue, vk_image, vk_device_memory, size, vk_image_info.format,
       vk_image_info.tiling, vk_device_size, 0 /* memory_type_index */,
-      ycbcr_info, vk_image_info.usage, vk_image_info.flags);
+      vk_image_info.usage, vk_image_info.flags);
 
   if (image->format() != vk_format) {
     DLOG(ERROR) << "Unexpected format " << vk_format << " vs "

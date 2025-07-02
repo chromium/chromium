@@ -560,19 +560,16 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   VideoPixelFormat pixel_format;
   // The GMB is either kNV12 or kYV12.
   viz::SharedImageFormat si_format;
-  VkFormat vk_format;
   switch (sysmem_pixel_format) {
     case fuchsia::images2::PixelFormat::NV12:
       pixel_format = PIXEL_FORMAT_NV12;
       si_format = viz::MultiPlaneFormat::kNV12;
-      vk_format = VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
       break;
 
     case fuchsia::images2::PixelFormat::I420:
     case fuchsia::images2::PixelFormat::YV12:
       pixel_format = PIXEL_FORMAT_I420;
       si_format = viz::MultiPlaneFormat::kYV12;
-      vk_format = VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
       break;
 
     default:
@@ -641,24 +638,6 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
       aspect_ratio.GetNaturalSize(display_rect), timestamp,
       base::BindOnce(&FuchsiaVideoDecoder::ReleaseOutputPacket,
                      base::Unretained(this), std::move(output_packet)));
-
-  VkSamplerYcbcrModelConversion ycbcr_conversion =
-      (current_config_.color_space_info().matrix ==
-       VideoColorSpace::MatrixID::BT709)
-          ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
-          : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
-
-  // Currently sysmem doesn't specify location of chroma samples relative to
-  // luma (see fxbug.dev/13677). Assume they are cosited with luma. YCbCr info
-  // here must match the values passed for the same buffer in
-  // ui::SysmemBufferCollection::CreateVkImage() (see
-  // ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.cc).
-  // |format_features| are resolved later in the GPU process before this info is
-  // passed to Skia.
-  frame->set_ycbcr_info(gpu::VulkanYCbCrInfo(
-      vk_format, /*external_format=*/0, ycbcr_conversion,
-      VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
-      VK_CHROMA_LOCATION_COSITED_EVEN, /*format_features=*/0));
 
   // Mark the frame as power-efficient since (software decoders are used only in
   // tests).
