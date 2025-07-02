@@ -235,7 +235,7 @@ const char* AtomicCanonicalTextEncodingName(const String& alias) {
   if (!alias.ContainsOnlyASCIIOrEmpty()) {
     return nullptr;
   }
-  return VisitCharacters(
+  return WTF::VisitCharacters(
       alias, [](auto chars) { return AtomicCanonicalTextEncodingName(chars); });
 }
 

@@ -329,12 +329,12 @@ inline StringView::StringView(const blink::AtomicString& string LIFETIME_BOUND)
 // error about being unable to invoke `std::ranges::equal_to()`.
 template <template <typename> typename TQ, template <typename> typename UQ>
 struct std::basic_common_reference<blink::AtomicString, const char*, TQ, UQ> {
-  using type = WTF::String;
+  using type = blink::String;
 };
 
 template <template <typename> typename TQ, template <typename> typename UQ>
 struct std::basic_common_reference<const char*, blink::AtomicString, TQ, UQ> {
-  using type = WTF::String;
+  using type = blink::String;
 };
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::AtomicString)

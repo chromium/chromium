@@ -32,6 +32,7 @@ class scoped_refptr;
 namespace blink {
 
 class AtomicString;
+class String;
 class StringBuilder;
 
 template <typename T>
@@ -50,10 +51,12 @@ class Vector;
 class OrdinalNumber;
 class SegmentedBuffer;
 class SharedBuffer;
-class String;
 class StringImpl;
 class StringView;
 class TextPosition;
+
+// TODO(crbug.com/422768753): Remove this `using` directive;
+using blink::String;
 
 }  // namespace WTF
 
@@ -61,7 +64,6 @@ using WTF::Vector;
 
 using WTF::SegmentedBuffer;
 using WTF::SharedBuffer;
-using WTF::String;
 using WTF::StringImpl;
 using WTF::StringView;
 

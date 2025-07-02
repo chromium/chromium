@@ -54,11 +54,11 @@ struct HashTraits<blink::AtomicString>
   }
 
   static bool IsDeletedValue(const blink::AtomicString& value) {
-    return HashTraits<String>::IsDeletedValue(value.string_);
+    return HashTraits<blink::String>::IsDeletedValue(value.string_);
   }
 
   static void ConstructDeletedValue(blink::AtomicString& slot) {
-    HashTraits<String>::ConstructDeletedValue(slot.string_);
+    HashTraits<blink::String>::ConstructDeletedValue(slot.string_);
   }
 };
 

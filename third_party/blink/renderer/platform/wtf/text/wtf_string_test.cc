@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(StringTest, CreationFromLiteral) {
   String string_from_literal("Explicit construction syntax");
@@ -456,4 +456,4 @@ TEST(StringTest, Issue420990876FuzzerCase) {
   EXPECT_EQ(String(), String::FromUTF8("\364\244\204\244"));
 }
 
-}  // namespace WTF
+}  // namespace blink

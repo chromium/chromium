@@ -446,6 +446,11 @@ WTF_EXPORT std::ostream& operator<<(std::ostream&, const StringView&);
 
 }  // namespace WTF
 
+namespace blink {
+using WTF::EqualStringView;
+using WTF::Utf8ConversionMode;
+}  // namespace blink
+
 using WTF::StringView;
 using WTF::EqualIgnoringASCIICase;
 using WTF::DeprecatedEqualIgnoringCase;

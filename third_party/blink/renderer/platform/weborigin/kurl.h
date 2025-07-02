@@ -301,6 +301,19 @@ PLATFORM_EXPORT bool operator==(const String&, const KURL&);
 PLATFORM_EXPORT bool operator!=(const KURL&, const KURL&);
 PLATFORM_EXPORT bool operator!=(const KURL&, const String&);
 PLATFORM_EXPORT bool operator!=(const String&, const KURL&);
+// Resolve ambiguity when comparing a string literal and a KURL.
+inline bool operator==(const char* literal, const KURL& url) {
+  return String(literal) == url;
+}
+inline bool operator==(const KURL& url, const char* literal) {
+  return String(literal) == url;
+}
+inline bool operator!=(const char* literal, const KURL& url) {
+  return String(literal) != url;
+}
+inline bool operator!=(const KURL& url, const char* literal) {
+  return String(literal) != url;
+}
 
 // Pretty printer for gtest and base/logging.*.  It prepends and appends
 // double-quotes, and escapes characters other than ASCII printables.

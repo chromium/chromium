@@ -79,4 +79,8 @@ class NumberParsingOptions final {
 
 }  // namespace WTF
 
+namespace blink {
+using WTF::NumberParsingOptions;
+}
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_NUMBER_PARSING_OPTIONS_H_

@@ -24,7 +24,7 @@
 
 #include "base/apple/bridging.h"
 
-namespace WTF {
+namespace blink {
 
 String::String(NSString* str) {
   if (!str) {
@@ -55,4 +55,4 @@ String::String(NSString* str) {
   }
 }
 
-}  // namespace WTF
+}  // namespace blink

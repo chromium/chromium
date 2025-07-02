@@ -990,7 +990,7 @@ bool Color::SetFromString(const String& name) {
   // TODO(https://crbug.com/1434423): Implement CSS Color level 4 parsing.
   if (name[0] != '#')
     return SetNamedColor(name);
-  return VisitCharacters(name, [this](auto chars) {
+  return WTF::VisitCharacters(name, [this](auto chars) {
     return ParseHexColorInternal(chars.template subspan<1>(), *this);
   });
 }
