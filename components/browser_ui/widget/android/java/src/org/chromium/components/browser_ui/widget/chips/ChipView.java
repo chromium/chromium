@@ -101,18 +101,17 @@ public class ChipView extends LinearLayout {
                         .obtainStyledAttributes(
                                 attrs, R.styleable.ChipView, defStyleAttr, defStyleRes);
 
-        boolean reduceEndPadding = a.getBoolean(R.styleable.ChipView_reduceEndPadding, false);
-
         @Px
         int chipStartPadding =
                 a.getDimensionPixelSize(
                         R.styleable.ChipView_chipStartPadding,
                         getResources().getDimensionPixelSize(R.dimen.chip_view_start_padding));
+
         @Px
         int chipEndPadding =
-                reduceEndPadding
-                        ? getResources().getDimensionPixelSize(R.dimen.chip_reduced_end_padding)
-                        : getResources().getDimensionPixelSize(R.dimen.chip_end_padding);
+                a.getDimensionPixelSize(
+                        R.styleable.ChipView_chipEndPadding,
+                        getResources().getDimensionPixelSize(R.dimen.chip_view_end_padding));
 
         mEndIconMarginStart =
                 a.getDimensionPixelSize(

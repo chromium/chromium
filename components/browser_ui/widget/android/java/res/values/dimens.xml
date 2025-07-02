@@ -179,10 +179,10 @@ found in the LICENSE file.
     <dimen name="chip_border_width">1dp</dimen>
     <dimen name="chip_corner_radius">8dp</dimen>
     <dimen name="chip_default_height">32dp</dimen>
-    <dimen name="chip_end_padding">16dp</dimen>
-    <dimen name="chip_reduced_end_padding">12dp</dimen>
     <dimen name="chip_view_start_padding">8dp</dimen>
     <dimen name="chip_view_extended_start_padding">16dp</dimen>
+    <dimen name="chip_view_end_padding">16dp</dimen>
+    <dimen name="chip_view_reduced_end_padding">12dp</dimen>
     <dimen name="chip_bg_vertical_inset">8dp</dimen>
     <dimen name="chip_loading_view_size">12dp</dimen>
     <dimen name="chip_end_icon_margin_start">8dp</dimen>

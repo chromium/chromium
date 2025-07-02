@@ -12,10 +12,10 @@ found in the LICENSE file.
              ChipView. -->
         <item name="primaryTextAppearance">@style/TextAppearance.MenuChip.Text.Blue</item>
         <item name="primaryTextStartPadding">@dimen/chip_primary_text_reduced_start_padding</item>
+        <item name="chipEndPadding">@dimen/chip_view_reduced_end_padding</item>
         <item name="chipColor">@color/menu_footer_chip_background_baseline_list</item>
         <item name="solidColorChip">true</item>
         <item name="textAlignStart">true</item>
-        <item name="reduceEndPadding">true</item>
         <item name="iconHeight">@dimen/menu_footer_chip_icon_size</item>
         <item name="iconWidth">@dimen/menu_footer_chip_icon_size</item>
         <item name="verticalInset">@dimen/menu_footer_chip_vertical_inset</item>
