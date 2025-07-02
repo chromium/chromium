@@ -727,7 +727,7 @@
     {
         "name": "mediarouter",
         "group": "androidx.mediarouter",
-        "version": "1.8.0"
+        "version": "1.8.1"
     },
     {
         "name": "multidex",
