@@ -77,6 +77,8 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.SavedTabGroupUndoBarController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -890,7 +892,8 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
-    public void testSelectCloseArchivedTabs_WithSyncedTabGroups() {
+    public void testSelectCloseArchivedTabs_WithSyncedTabGroups_AndUndo() {
+        SnackbarManager snackbarManager = mCtaTestRule.getActivity().getSnackbarManager();
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
         SavedTabGroup savedTabGroup =
                 createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
@@ -931,12 +934,25 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mArchivedTabModel.getCount());
         histogramExpectation.assertExpected();
         assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
+
+        // Undo the closure through the shown snackbar.
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof SavedTabGroupUndoBarController);
+        TabUiTestHelper.verifyUndoBarShowingAndClickUndo();
+        // CriteriaHelper.pollUiThread(() -> 3 == mArchivedTabModel.getCount());
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, true);
+        savedTabGroup.archivalTimeMs = System.currentTimeMillis();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
+        onView(withText("4 inactive items")).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
-    public void testSelectCloseArchivedTabGroup() {
+    public void testSelectCloseArchivedTabGroup_AndUndo() {
+        SnackbarManager snackbarManager = mCtaTestRule.getActivity().getSnackbarManager();
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
         SavedTabGroup savedTabGroup =
                 createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
@@ -972,12 +988,24 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mArchivedTabModel.getCount());
         histogramExpectation.assertExpected();
         assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
+
+        // Undo the closure through the shown snackbar.
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof SavedTabGroupUndoBarController);
+        TabUiTestHelper.verifyUndoBarShowingAndClickUndo();
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, true);
+        savedTabGroup.archivalTimeMs = System.currentTimeMillis();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
+        onView(withText("2 inactive items")).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
-    public void testSelectCloseArchivedTabGroups() {
+    public void testSelectCloseArchivedTabGroups_AndUndo() {
+        SnackbarManager snackbarManager = mCtaTestRule.getActivity().getSnackbarManager();
         when(mTabGroupSyncService.getAllGroupIds())
                 .thenReturn(new String[] {SYNC_GROUP_ID1, SYNC_GROUP_ID2});
         SavedTabGroup savedTabGroup1 =
@@ -1022,6 +1050,22 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mArchivedTabModel.getCount());
         histogramExpectation.assertExpected();
         assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
+
+        // Undo the closure through the shown snackbar.
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof SavedTabGroupUndoBarController);
+        TabUiTestHelper.verifyUndoBarShowingAndClickUndo();
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, true);
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID2, true);
+        savedTabGroup1.archivalTimeMs = System.currentTimeMillis();
+        savedTabGroup2.archivalTimeMs = System.currentTimeMillis();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup1);
+                    notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup2);
+                });
+        onView(withText("3 inactive items")).check(matches(isDisplayed()));
     }
 
     @Test
