@@ -6568,7 +6568,6 @@ crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/cursor-key-order.h
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/database-deletepending-flag.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/deletedatabase-delayed-by-versionchange.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/exceptions.html [ Crash ]
-crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/index-multientry.html [ Failure ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/intversion-gated-on-delete.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/intversion-long-queue.html [ Crash ]
 crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/key-sort-order-across-types.html [ Crash ]

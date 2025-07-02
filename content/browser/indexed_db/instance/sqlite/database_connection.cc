@@ -150,11 +150,12 @@ void InitializeNewDatabase(sql::Database* db,
   // one (and only one) row in the records table with row_id = record_row_id.
   TRANSIENT_CHECK(
       db->Execute("CREATE TABLE index_references "
-                  "(row_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                  " object_store_id INTEGER NOT NULL,"
+                  "(object_store_id INTEGER NOT NULL,"
                   " index_id INTEGER NOT NULL,"
                   " key BLOB NOT NULL,"
-                  " record_row_id INTEGER NOT NULL)"));
+                  " record_row_id INTEGER NOT NULL,"
+                  " PRIMARY KEY (object_store_id, index_id, key, record_row_id)"
+                  ") WITHOUT ROWID"));
 
   // This table stores blob metadata and its actual bytes. A blob should only
   // appear once, regardless of how many records point to it. The columns in
@@ -1311,9 +1312,11 @@ Status DatabaseConnection::PutIndexDataForRecord(
     int64_t index_id,
     const blink::IndexedDBKey& key,
     const BackingStore::RecordIdentifier& record) {
+  // `PutIndexDataForRecord()` can be called more than once with the same `key`
+  // and `record` - in the case of multi-entry indexes, for example.
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE,
-                              "INSERT INTO index_references "
+                              "INSERT OR IGNORE INTO index_references "
                               "(object_store_id, index_id, key, record_row_id) "
                               "VALUES (?, ?, ?, ?)"));
   statement.BindInt64(0, object_store_id);
