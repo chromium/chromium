@@ -54,6 +54,10 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
 // overscroll.
 const CGFloat kFeedContainerExtraHeight = 500;
 
+// The spacing for the quick actions buttons.
+const CGFloat kQuickActionSpacingTop = 6.0;
+const CGFloat kQuickActionSpacingBotttom = 19.0;
+
 // Vertical spacing between modules.
 CGFloat SpaceBetweenModules() {
   return GetDeprecateFeedHeaderParameterValueAsDouble(
@@ -668,6 +672,10 @@ CGFloat SpaceBetweenModules() {
         viewController == self.feedHeaderViewController) {
       heightAboveFeed += SpaceBetweenModules();
     }
+
+    if (viewController == _quickActionsViewController) {
+      heightAboveFeed += kQuickActionSpacingBotttom;
+    }
   }
   return heightAboveFeed;
 }
@@ -1259,7 +1267,9 @@ CGFloat SpaceBetweenModules() {
     self.fakeOmniboxConstraints = @[
       [viewBelowHeader.topAnchor
           constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
-                         constant:SpaceBetweenModules()],
+                         constant:self.quickActionsVisible
+                                      ? kQuickActionSpacingTop
+                                      : SpaceBetweenModules()],
     ];
   }
   [NSLayoutConstraint activateConstraints:self.fakeOmniboxConstraints];
@@ -1509,11 +1519,16 @@ CGFloat SpaceBetweenModules() {
     NSUInteger headerIndex =
         [self.viewControllersAboveFeed indexOfObject:self.headerViewController];
     for (NSUInteger index = startIndex; index > headerIndex + 1; --index) {
+      BOOL isQuickActions = _quickActionsViewController ==
+                            self.viewControllersAboveFeed[index - 1];
       UIView* view = self.viewControllersAboveFeed[index].view;
       UIView* viewAbove = self.viewControllersAboveFeed[index - 1].view;
+
+      CGFloat spacingToUse =
+          isQuickActions ? kQuickActionSpacingBotttom : SpaceBetweenModules();
       [NSLayoutConstraint activateConstraints:@[
         [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
-                                       constant:SpaceBetweenModules()],
+                                       constant:spacingToUse],
       ]];
     }
   }

@@ -73,7 +73,7 @@ const CGFloat kButtonShadowVerticalOffset = 1.0;
 const CGFloat kNewBadgeOffsetFromButtonCenter = 14.0;
 
 // The height of the Fakebox.
-const CGFloat kFakeboxHeight = 65;
+const CGFloat kFakeboxHeight = 64;
 const CGFloat kFakeboxHeightNonDynamic = 45;
 
 // The height of the Fakebox when it is pinned to the top.
