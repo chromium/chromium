@@ -356,6 +356,7 @@ template("write_build_config") {
                                "assets",
                                "bypass_platform_checks",
                                "chromium_code",
+                               "dex_needs_classpath",
                                "direct_deps_only",
                                "disable_asset_compression",
                                "gradle_treat_as_prebuilt",
@@ -1250,9 +1251,9 @@ if (enable_java_templates) {
         # modules' build configs may double-use some jars.
         if (defined(invoker.add_view_trace_events) &&
             invoker.add_view_trace_events) {
-          _args += [ "--feature-jars=@FileArg($_rebased_build_config:modules:${_feature_module.name}:trace_event_rewritten_device_classpath)" ]
+          _args += [ "--feature-jars=@FileArg($_rebased_build_config:modules:${_feature_module.name}:trace_event_rewritten_classpath)" ]
         } else {
-          _args += [ "--feature-jars=@FileArg($_rebased_build_config:modules:${_feature_module.name}:device_classpath)" ]
+          _args += [ "--feature-jars=@FileArg($_rebased_build_config:modules:${_feature_module.name}:processed_classpath)" ]
         }
 
         if (defined(_feature_module.uses_split)) {
@@ -1267,8 +1268,9 @@ if (enable_java_templates) {
         rebase_path(_stamp, root_build_dir),
       ]
     } else {
-      _args +=
-          [ "--input-paths=@FileArg($_rebased_build_config:device_classpath)" ]
+      _args += [
+        "--input-paths=@FileArg($_rebased_build_config:processed_classpath)",
+      ]
 
       # We don't directly set the output arg on the _args variable since it is
       # shared with the expectation target that uses its own stamp file and
@@ -1435,7 +1437,7 @@ if (enable_java_templates) {
         rebase_path(_java_script, root_build_dir),
         "--main-class",
         _main_class,
-        "--classpath=@FileArg($_rebased_build_config:host_classpath)",
+        "--classpath=@FileArg($_rebased_build_config:processed_classpath)",
         "--max-heap-size=$_max_heap_size",
       ]
       data = []
@@ -3090,7 +3092,7 @@ if (enable_java_templates) {
         args += [
           "--processorpath=$_rebased_nullaway_jar",
           "--enable-nullaway",
-          "--processorpath=@FileArg($_rebased_errorprone_buildconfig:host_classpath)",
+          "--processorpath=@FileArg($_rebased_errorprone_buildconfig:processed_classpath)",
         ]
         inputs += [
           _nullaway_jar,
@@ -3808,6 +3810,16 @@ if (enable_java_templates) {
           java_resources_jar = _unprocessed_jar_path
         } else {
           java_resources_jar = _processed_jar_path
+        }
+      }
+      if (_build_device_jar) {
+        if (defined(invoker.min_sdk_version)) {
+          _min_sdk_version = invoker.min_sdk_version
+        } else {
+          _min_sdk_version = default_min_sdk_version
+        }
+        if (_min_sdk_version < default_min_sdk_version || _min_sdk_version < 24) {
+          dex_needs_classpath = true
         }
       }
     }

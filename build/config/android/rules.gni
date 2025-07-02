@@ -1749,7 +1749,8 @@ if (!is_robolectric && enable_java_templates) {
       if (_direct_deps_only) {
         args += [ "--jars=@FileArg($_rebased_build_config:classpath)" ]
       } else {
-        args += [ "--jars=@FileArg($_rebased_build_config:device_classpath)" ]
+        args +=
+            [ "--jars=@FileArg($_rebased_build_config:processed_classpath)" ]
       }
 
       if (defined(invoker.android_manifest)) {
@@ -2780,6 +2781,7 @@ if (!is_robolectric && enable_java_templates) {
                                "javac_args",
                                "library_always_compress",
                                "mergeable_android_manifests",
+                               "min_sdk_version",
                                "native_lib_placeholders",
                                "parent_module_target",
                                "processor_args_javac",
@@ -2923,7 +2925,7 @@ if (!is_robolectric && enable_java_templates) {
             enable_desugar = false
           } else {
             input_classes_filearg =
-                "@FileArg($_rebased_build_config:device_classpath)"
+                "@FileArg($_rebased_build_config:processed_classpath)"
           }
         }
 
@@ -4818,9 +4820,9 @@ if (!is_robolectric && enable_java_templates) {
             "--classpath",
             "@FileArg($_rebased_build_config:sdk_jars)",
             "--input-jars",
-            "@FileArg($_rebased_build_config:device_classpath)",
+            "@FileArg($_rebased_build_config:processed_classpath)",
             "--output-jars",
-            "@FileArg($_rebased_build_config:trace_event_rewritten_device_classpath)",
+            "@FileArg($_rebased_build_config:trace_event_rewritten_classpath)",
           ]
           deps = [
                    _build_config_target,

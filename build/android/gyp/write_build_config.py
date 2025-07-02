@@ -227,17 +227,17 @@ class _TransitiveValuesBuilder:
         all_deps.collect('input_jars_paths', flatten=True))
 
     # Add the target's .jar (except for dist_jar, where it's the output .jar).
-    if params.collects_host_classpath() or params.collects_device_classpath():
+    if params.collects_processed_classpath():
       if not params.is_dist_jar():
         if path := params.get('processed_jar_path'):
           ret.all_processed_jars.add(path)
       ret.all_processed_jars.update(all_deps.collect('processed_jar_path'))
 
-      if params.collects_device_classpath() and params.supports_android():
-        if not params.is_dist_jar():
-          if path := params.get('dex_path'):
-            ret.all_dex_files.add(path)
-        ret.all_dex_files.update(all_deps.collect('dex_path'))
+    if params.collects_dex_paths():
+      if not params.is_dist_jar():
+        if path := params.get('dex_path'):
+          ret.all_dex_files.add(path)
+      ret.all_dex_files.update(all_deps.collect('dex_path'))
 
   def _AddBaseModuleToClasspath(self):
     base_module = self._params.base_module()
@@ -685,19 +685,16 @@ def main():
     config['javac_full_interface_classpath'] = (list(tv.all_interface_jars) +
                                                 list(tv.all_input_jars_paths))
 
-    if params.collects_host_classpath():
-      config['host_classpath'] = list(tv.all_processed_jars)
-
-    if params.collects_device_classpath():
-      config['device_classpath'] = list(tv.all_processed_jars)
-      if params.supports_android():
-        config['all_dex_files'] = list(tv.all_dex_files)
-
+    if params.collects_processed_classpath():
+      config['processed_classpath'] = list(tv.all_processed_jars)
       if trace_events_jar_dir := params.get('trace_events_jar_dir'):
-        config['trace_event_rewritten_device_classpath'] = [
+        config['trace_event_rewritten_classpath'] = [
             _ToTraceEventRewrittenPath(trace_events_jar_dir, p)
             for p in tv.all_processed_jars
         ]
+
+    if params.collects_dex_paths():
+      config['all_dex_files'] = list(tv.all_dex_files)
 
     if target_type in ('dist_aar', 'java_library'):
       config['dependency_rtxt_files'] = (
@@ -758,17 +755,17 @@ def main():
         child_to_ancestors[name].append(module['module_name'])
 
     per_module_fields = [
-        'device_classpath',
-        'trace_event_rewritten_device_classpath',
+        'processed_classpath',
+        'trace_event_rewritten_classpath',
         'all_dex_files',
         'assets',
         'uncompressed_assets',
     ]
     union_fields = {}
     if params.get('trace_events_jar_dir'):
-      union_fields['device_classpath'] = 'device_classpath'
-      union_fields['trace_event_rewritten_device_classpath'] = (
-          'trace_event_rewritten_device_classpath')
+      union_fields['processed_classpath'] = 'processed_classpath'
+      union_fields['trace_event_rewritten_classpath'] = (
+          'trace_event_rewritten_classpath')
     if proguard_enabled:
       union_fields['proguard_classpath_jars'] = 'proguard_classpath_jars'
       union_fields['proguard_all_configs'] = 'proguard_all_configs'

@@ -35,21 +35,6 @@ _COLLECTS_RESOURCES_TYPES = frozenset([
     'robolectric_binary',
 ])
 
-_COLLECTS_DEVICE_CLASSPATH_TYPES = frozenset([
-    'android_apk',
-    'android_app_bundle_module',
-    'android_app_bundle',
-    'dist_aar',
-    'dist_jar',  # dist_dex uses this.
-])
-
-_COLLECTS_HOST_CLASSPATH_TYPES = frozenset([
-    'dist_aar',
-    'dist_jar',
-    'java_binary',
-    'robolectric_binary',
-])
-
 _COLLECTS_NATIVE_LIBRARIES_TYPES = frozenset([
     'android_apk',
     'android_app_bundle_module',
@@ -348,13 +333,26 @@ class ParamsJson(dict):
     """Returns True if the target type collects Android resources."""
     return self.type in _COLLECTS_RESOURCES_TYPES
 
-  def collects_device_classpath(self):
-    """Returns True if the target type collects a device-side classpath."""
-    return self.type in _COLLECTS_DEVICE_CLASSPATH_TYPES
+  def collects_dex_paths(self):
+    """Returns True if the target type collects transitive .dex files."""
+    if self.type in ('dist_aar', 'dist_jar'):
+      return self.supports_android()
+    if self.is_bundle_module():
+      return not self.get('proguard_enabled')
+    return self.is_apk()
 
-  def collects_host_classpath(self):
-    """Returns True if the target type collects a host-side classpath."""
-    return self.type in _COLLECTS_HOST_CLASSPATH_TYPES
+  def collects_processed_classpath(self):
+    """Returns True if the target type collects the processed classpath."""
+    if self.get('dex_needs_classpath'):
+      return True
+    if self.type in ('dist_aar', 'dist_jar', 'java_binary',
+                     'robolectric_binary'):
+      return True
+    if self.is_apk() or self.is_bundle() or self.is_bundle_module():
+      # Required for is_bundle_module only because write_build_config.py uses
+      # them as inputs.
+      return self.get('proguard_enabled', False)
+    return False
 
   def collects_native_libraries(self):
     """Returns True if the target type collects native libraries."""
@@ -391,11 +389,13 @@ class ParamsJson(dict):
 
   def requires_android(self):
     """Returns True if the target requires the Android platform."""
+    if self.type.startswith('android') or self.type == 'dist_aar':
+      return True
     return self.is_resource_type or self.get('requires_android', False)
 
   def supports_android(self):
     """Returns True if the target supports the Android platform."""
-    return self.get('supports_android', True)
+    return self.requires_android() or self.get('supports_android', True)
 
   def _direct_deps(self):
     """Returns only the direct dependencies (from `deps_configs`)."""

@@ -470,7 +470,7 @@ def __android_trace_event_bytecode_rewriter(ctx, cmd):
         trace_event_adder_json = json.decode(
             str(ctx.fs.read(ctx.fs.canonpath("gen/build/android/bytecode/trace_event_adder.build_config.json"))),
         )
-        for path in trace_event_adder_json.get("host_classpath", []):
+        for path in trace_event_adder_json.get("processed_classpath", []):
             inputs.append(ctx.fs.canonpath(path))
 
     ctx.actions.fix(
