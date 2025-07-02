@@ -567,9 +567,16 @@ def DownloadDebianSysroot(platform_name, skip_download=False):
       'arm': 'fe81e7114b97440262bce004caf02c1514732e2fa7f99693b2836932ad1c4626',
       # hash from https://chromium-review.googlesource.com/c/chromium/src/+/5506275/1/build/linux/sysroot_scripts/sysroots.json#21
       'arm64': '308e23faba3174bd01accfe358467b8a40fad4db4c49ef629da30219f65a275f',
+      # hash from https://chromium-review.googlesource.com/c/chromium/src/+/6603953/1/build/linux/sysroot_scripts/sysroots.json#45
+      'riscv64': '6c924a8f88bb4731f3c2334c6ae5b5da47d5ca196ff571a91071f104dbacecad',
   }
 
-  toolchain_name = f'debian_bullseye_{platform_name}_sysroot'
+  releases = {
+      'riscv64': 'trixie',
+  }
+
+  release = releases.get(platform_name, 'bullseye')
+  toolchain_name = f'debian_{release}_{platform_name}_sysroot'
   output = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
   stamp_file = os.path.join(output, 'stamp')
   version = hashes[platform_name]
@@ -814,6 +821,7 @@ def main():
       sysroot_i386 = DownloadDebianSysroot('i386', args.skip_checkout)
       sysroot_arm = DownloadDebianSysroot('arm', args.skip_checkout)
       sysroot_arm64 = DownloadDebianSysroot('arm64', args.skip_checkout)
+      sysroot_riscv64 = DownloadDebianSysroot('riscv64', args.skip_checkout)
 
   if args.skip_build:
     return 0
@@ -1279,6 +1287,17 @@ def main():
     runtimes_triples_args['aarch64-unknown-linux-gnu'] = {
         "args": [
             'CMAKE_SYSROOT=%s' % sysroot_arm64,
+            # Can't run tests on x86 host.
+            'LLVM_INCLUDE_TESTS=OFF',
+        ],
+        "profile":
+        True,
+        "sanitizers":
+        True,
+    }
+    runtimes_triples_args['riscv64-unknown-linux-gnu'] = {
+        "args": [
+            'CMAKE_SYSROOT=%s' % sysroot_riscv64,
             # Can't run tests on x86 host.
             'LLVM_INCLUDE_TESTS=OFF',
         ],
