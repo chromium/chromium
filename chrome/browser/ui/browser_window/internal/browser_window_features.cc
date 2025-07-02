@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
+#include "chrome/browser/ui/views/upgrade_notification_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -334,6 +335,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   profile_menu_coordinator_ = std::make_unique<ProfileMenuCoordinator>(browser);
 
+  upgrade_notification_controller_ =
+      std::make_unique<UpgradeNotificationController>(browser);
+
   incognito_clear_browsing_data_dialog_coordinator_ =
       std::make_unique<IncognitoClearBrowsingDataDialogCoordinator>(browser);
 
@@ -431,6 +435,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
+  upgrade_notification_controller_.reset();
   memory_saver_opt_in_iph_controller_.reset();
   lens_overlay_entry_point_controller_.reset();
   tab_search_toolbar_button_controller_.reset();

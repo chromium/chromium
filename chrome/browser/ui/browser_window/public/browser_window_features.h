@@ -51,6 +51,7 @@ class TabStripServiceRegister;
 class ToastController;
 class ToastService;
 class TranslateBubbleController;
+class UpgradeNotificationController;
 
 #if BUILDFLAG(IS_WIN)
 class WindowsTaskbarIconUpdater;
@@ -340,6 +341,10 @@ class BrowserWindowFeatures {
     return history_clusters_side_panel_coordinator_.get();
   }
 
+  UpgradeNotificationController* upgrade_notification_controller() {
+    return upgrade_notification_controller_.get();
+  }
+
   static UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -477,6 +482,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<HistoryClustersSidePanelCoordinator>
       history_clusters_side_panel_coordinator_;
+
+  std::unique_ptr<UpgradeNotificationController>
+      upgrade_notification_controller_;
 
   // TODO(crbug.com/423956131): Remove this.
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;

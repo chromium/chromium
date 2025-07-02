@@ -6,6 +6,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/critical_notification_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -22,7 +23,7 @@ class OutdatedUpgradeBubbleTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     auto* const upgrade_notification_controller =
-        UpgradeNotificationController::FromBrowser(browser());
+        browser()->GetFeatures().upgrade_notification_controller();
     CHECK(upgrade_notification_controller);
 
     if (name == "Outdated") {
@@ -57,12 +58,12 @@ IN_PROC_BROWSER_TEST_F(OutdatedUpgradeBubbleTest, InvokeUi_Critical) {
 IN_PROC_BROWSER_TEST_F(OutdatedUpgradeBubbleTest,
                        CriticalNotificationBubbleViewAccessibleProperties) {
   auto* const upgrade_notification_controller =
-      UpgradeNotificationController::FromBrowser(browser());
+      browser()->GetFeatures().upgrade_notification_controller();
   auto bubble_view = upgrade_notification_controller
                          ->GetCriticalNotificationBubbleViewForTest();
-  ui::AXNodeData data;
-
   ASSERT_TRUE(bubble_view);
+
+  ui::AXNodeData data;
   bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kAlertDialog);
 }
