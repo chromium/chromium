@@ -33,6 +33,18 @@
 }
 
 /**
+ * Hide everything that should not display when the composebox is open
+ * so they are not tabbable.
+ */
+:host([show-composebox_]) cr-most-visited,
+:host([show-composebox_]) ntp-middle-slot-promo,
+:host([show-composebox_]) ntp-modules,
+:host([show-composebox_]) #backgroundImageAttribution,
+:host([show-composebox_]) ntp-customize-buttons {
+  display: none;
+}
+
+/**
  * Maintain a larger width if the secondary side can be shown and was at any
  * point available to be shown.
  */
