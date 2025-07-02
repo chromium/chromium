@@ -2,7 +2,7 @@
     {
         "name": "activity",
         "group": "androidx.activity",
-        "version": "1.12.0-alpha03"
+        "version": "1.12.0-alpha04"
     },
     {
         "name": "activity-compose",
@@ -322,7 +322,7 @@
     {
         "name": "concurrent-futures",
         "group": "androidx.concurrent",
-        "version": "1.3.0-beta01"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "concurrent-futures-ktx",
@@ -347,7 +347,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.17.0-alpha01"
+        "version": "1.17.0-beta01"
     },
     {
         "name": "core-animation",
@@ -362,7 +362,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.17.0-alpha01"
+        "version": "1.17.0-beta01"
     },
     {
         "name": "core-viewtree",
@@ -717,7 +717,7 @@
     {
         "name": "mediarouter",
         "group": "androidx.mediarouter",
-        "version": "1.8.0"
+        "version": "1.8.1"
     },
     {
         "name": "multidex",
@@ -757,12 +757,12 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha03"
+        "version": "1.0.0-alpha04"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha03"
+        "version": "1.0.0-alpha04"
     },
     {
         "name": "navigationevent-compose",
