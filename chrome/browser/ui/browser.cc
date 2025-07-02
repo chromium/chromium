@@ -272,10 +272,6 @@
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_browser_window_helper.h"
-#endif
-
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "components/printing/browser/print_composite_client.h"
 #endif
@@ -679,13 +675,7 @@ Browser::Browser(const CreateParams& params)
       breadcrumb_manager_browser_agent_(
           breadcrumbs::IsEnabled(g_browser_process->local_state())
               ? std::make_unique<BreadcrumbManagerBrowserAgent>(this)
-              : nullptr)
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      ,
-      extension_browser_window_helper_(
-          std::make_unique<extensions::ExtensionBrowserWindowHelper>(this))
-#endif
-{
+              : nullptr) {
   browser_actions_->InitializeBrowserActions();
 
   if (!profile_->IsOffTheRecord()) {
@@ -768,7 +758,6 @@ Browser::~Browser() {
   // with destruction. Profile destruction will unload extensions and reentrant
   // calls to Browser:: should be avoided while it is being torn down.
   ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
-  extension_browser_window_helper_.reset();
 
   // The tab strip should not have any tabs at this point.
   //

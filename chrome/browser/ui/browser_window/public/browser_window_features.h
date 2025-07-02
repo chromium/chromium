@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 #include "chrome/common/buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
@@ -69,6 +70,9 @@ class OverscrollPrefManager;
 
 namespace extensions {
 class BrowserExtensionWindowController;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class ExtensionBrowserWindowHelper;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionSidePanelManager;
 class Mv2DisabledDialogController;
 }  // namespace extensions
@@ -487,6 +491,11 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<UpgradeNotificationController>
       upgrade_notification_controller_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  std::unique_ptr<extensions::ExtensionBrowserWindowHelper>
+      extension_browser_window_helper_;
+#endif
 
   // TODO(crbug.com/423956131): Remove this.
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;

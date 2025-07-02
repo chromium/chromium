@@ -94,6 +94,10 @@
 #include "components/search/search.h"
 #include "content/public/common/content_constants.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_browser_window_helper.h"
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
 #endif
@@ -234,6 +238,13 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   tab_list_bridge_ = std::make_unique<TabListBridge>(
       *tab_strip_model_, browser->GetUnownedUserDataHost());
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_browser_window_helper_ =
+      std::make_unique<extensions::ExtensionBrowserWindowHelper>(
+          browser->GetBrowserForMigrationOnly()->command_controller(),
+          browser->GetTabStripModel(), browser->GetProfile());
+#endif
 
 #if defined(USE_AURA)
   overscroll_pref_manager_ = std::make_unique<OverscrollPrefManager>(

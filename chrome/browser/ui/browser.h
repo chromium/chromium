@@ -96,10 +96,6 @@ class NavigationHandle;
 class SessionStorageNamespace;
 }  // namespace content
 
-namespace extensions {
-class ExtensionBrowserWindowHelper;
-}  // namespace extensions
-
 namespace gfx {
 class Image;
 }
@@ -1451,11 +1447,6 @@ class Browser : public TabStripModelObserver,
   // when enabled, disables certain functionality that a web browser would
   // never typically disable.
   bool on_task_locked_ = false;
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  std::unique_ptr<extensions::ExtensionBrowserWindowHelper>
-      extension_browser_window_helper_;
 #endif
 
   const base::ElapsedTimer creation_timer_;

@@ -6,15 +6,11 @@
 
 #include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/url_constants.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/unloaded_extension_reason.h"
@@ -28,7 +24,6 @@ namespace {
 // Returns true if the given |web_contents| should be closed when the extension
 // is unloaded.
 bool ShouldCloseTabOnExtensionUnload(const Extension* extension,
-                                     Browser* browser,
                                      content::WebContents* web_contents) {
   // Case 1: A "regular" extension page, e.g. chrome-extension://<id>/page.html.
   // Note: we check the tuple or precursor tuple in order to close any
@@ -74,9 +69,13 @@ void UnmuteIfMutedByExtension(content::WebContents* contents,
 
 }  // namespace
 
-ExtensionBrowserWindowHelper::ExtensionBrowserWindowHelper(Browser* browser)
-    : browser_(browser) {
-  registry_observation_.Observe(ExtensionRegistry::Get(browser_->profile()));
+ExtensionBrowserWindowHelper::ExtensionBrowserWindowHelper(
+    chrome::BrowserCommandController* command_controller,
+    TabStripModel* tab_strip_model,
+    Profile* profile)
+    : command_controller_(command_controller),
+      tab_strip_model_(tab_strip_model) {
+  registry_observation_.Observe(ExtensionRegistry::Get(profile));
 }
 
 ExtensionBrowserWindowHelper::~ExtensionBrowserWindowHelper() = default;
@@ -84,14 +83,14 @@ ExtensionBrowserWindowHelper::~ExtensionBrowserWindowHelper() = default;
 void ExtensionBrowserWindowHelper::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  browser_->command_controller()->ExtensionStateChanged();
+  command_controller_->ExtensionStateChanged();
 }
 
 void ExtensionBrowserWindowHelper::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  browser_->command_controller()->ExtensionStateChanged();
+  command_controller_->ExtensionStateChanged();
 
   // Clean up any tabs from |extension|, unless it was terminated. In the
   // terminated case (as when the extension crashed), we let the sad tabs stay.
@@ -101,14 +100,13 @@ void ExtensionBrowserWindowHelper::OnExtensionUnloaded(
 
 void ExtensionBrowserWindowHelper::CleanUpTabsOnUnload(
     const Extension* extension) {
-  TabStripModel* tab_strip_model = browser_->tab_strip_model();
   // Iterate backwards as we may remove items while iterating.
-  for (int i = tab_strip_model->count() - 1; i >= 0; --i) {
-    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
-    if (ShouldCloseTabOnExtensionUnload(extension, browser_, web_contents)) {
+  for (int i = tab_strip_model_->count() - 1; i >= 0; --i) {
+    content::WebContents* web_contents = tab_strip_model_->GetWebContentsAt(i);
+    if (ShouldCloseTabOnExtensionUnload(extension, web_contents)) {
       // Do not close the last tab if it belongs to the extension. Instead
       // replace it with the default NTP.
-      if (tab_strip_model->count() == 1) {
+      if (tab_strip_model_->count() == 1) {
         const GURL new_tab_url(chrome::kChromeUINewTabURL);
         // Replace the extension page with default NTP. This behavior is similar
         // to how Chrome URL overrides (such as NTP overrides) are handled by
@@ -117,7 +115,7 @@ void ExtensionBrowserWindowHelper::CleanUpTabsOnUnload(
                                               ui::PAGE_TRANSITION_RELOAD,
                                               std::string());
       } else {
-        tab_strip_model->CloseWebContentsAt(i, TabCloseTypes::CLOSE_NONE);
+        tab_strip_model_->CloseWebContentsAt(i, TabCloseTypes::CLOSE_NONE);
       }
     } else {
       UnmuteIfMutedByExtension(web_contents, extension->id());

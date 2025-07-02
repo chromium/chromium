@@ -10,15 +10,23 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
-class Browser;
+class Profile;
+class TabStripModel;
+
+namespace chrome {
+class BrowserCommandController;
+}  // namespace chrome
 
 namespace extensions {
 
 // A helper object for extensions-related management for Browser* objects.
+// It is owned by `BrowserWindowFeatures`.
 class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
  public:
-  // Note: `browser` must outlive this object.
-  explicit ExtensionBrowserWindowHelper(Browser* browser);
+  ExtensionBrowserWindowHelper(
+      chrome::BrowserCommandController* command_controller,
+      TabStripModel* tab_strip_model,
+      Profile* profile);
 
   ExtensionBrowserWindowHelper(const ExtensionBrowserWindowHelper&) = delete;
   ExtensionBrowserWindowHelper& operator=(const ExtensionBrowserWindowHelper&) =
@@ -37,8 +45,10 @@ class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
   // Closes any tabs owned by the extension and unmutes others if necessary.
   void CleanUpTabsOnUnload(const Extension* extension);
 
-  // The associated browser. Must outlive this object.
-  const raw_ptr<Browser> browser_ = nullptr;
+  // These pointers come from the associated Browser object and it will ensure
+  // they outlive this object.
+  const raw_ptr<chrome::BrowserCommandController> command_controller_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

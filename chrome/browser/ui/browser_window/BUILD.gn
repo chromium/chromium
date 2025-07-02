@@ -24,6 +24,7 @@ source_set("browser_window") {
     public_deps += [
       "//base",
       "//chrome/common:buildflags",
+      "//extensions/buildflags",
       "//ui/base:types",
     ]
   }
