@@ -137,6 +137,20 @@ struct LanguagePackComponentConfig {
   const uint8_t public_key_sha[32];
 };
 
+// The return type for `CalculateLanguagePackRequirements`.
+struct LanguagePackRequirements {
+  LanguagePackRequirements();
+  ~LanguagePackRequirements();
+  LanguagePackRequirements(const LanguagePackRequirements&) = delete;
+  LanguagePackRequirements& operator=(const LanguagePackRequirements&) = delete;
+  LanguagePackRequirements(LanguagePackRequirements&&) noexcept;
+  LanguagePackRequirements& operator=(LanguagePackRequirements&&) noexcept;
+
+  std::set<LanguagePackKey> required_packs;
+  std::vector<LanguagePackKey> required_not_installed_packs;
+  std::vector<LanguagePackKey> to_be_registered_packs;
+};
+
 // Converts a LanguagePackKey to a SupportedLanguage which is not English part
 // of the language pair. For example, LanguagePackKey::kEnEs will be converted
 // to SupportedLanguage::kEs.
@@ -550,6 +564,12 @@ const LanguagePackComponentConfig& GetLanguagePackComponentConfig(
 // Calculates the required language packs for a translation from source_lang to
 // target_lang.
 std::set<LanguagePackKey> CalculateRequiredLanguagePacks(
+    const std::string& source_lang,
+    const std::string& target_lang);
+
+// Calculates and updates the passed in values for a translation's required
+// packs, required not installed packs, and to be registered packs.
+LanguagePackRequirements CalculateLanguagePackRequirements(
     const std::string& source_lang,
     const std::string& target_lang);
 

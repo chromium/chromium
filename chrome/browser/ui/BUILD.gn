@@ -3067,7 +3067,6 @@ static_library("ui") {
     deps += [
       "//chrome/app:generated_resources",
       "//chrome/browser/on_device_translation",
-      "//chrome/browser/on_device_translation:language_pack_util",
       "//chrome/browser/profiles",
       "//chrome/browser/shortcuts",
       "//chrome/browser/ui/shortcuts",

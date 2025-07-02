@@ -332,7 +332,7 @@ source_set("impl") {
   }
 
   if (enable_on_device_translation) {
-    deps += [ "//chrome/browser/on_device_translation:prefs" ]
+    deps += [ "//chrome/browser/on_device_translation" ]
   }
 
   if (enterprise_data_controls) {

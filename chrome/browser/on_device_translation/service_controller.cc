@@ -145,16 +145,15 @@ void OnDeviceTranslationServiceController::CreateTranslator(
     base::OnceCallback<
         void(base::expected<mojo::PendingRemote<mojom::Translator>,
                             CreateTranslatorError>)> callback) {
-  std::set<LanguagePackKey> required_packs;
-  std::vector<LanguagePackKey> required_not_installed_packs;
+  LanguagePackRequirements language_pack_requirements;
+
   // If the language packs are set by the command line, we don't need to check
   // the installed language packs.
   if (!ComponentManager::GetInstance().HasLanguagePackInfoFromCommandLine()) {
-    std::vector<LanguagePackKey> to_be_registered_packs;
-    CalculateLanguagePackRequirements(source_lang, target_lang, required_packs,
-                                      required_not_installed_packs,
-                                      to_be_registered_packs);
-
+    language_pack_requirements =
+        CalculateLanguagePackRequirements(source_lang, target_lang);
+    std::vector<LanguagePackKey> to_be_registered_packs =
+        language_pack_requirements.to_be_registered_packs;
     if (!to_be_registered_packs.empty()) {
       for (const auto& language_pack : to_be_registered_packs) {
         RecordLanguagePairUma(
@@ -177,7 +176,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   // not installed, we will wait until they are installed to create the
   // translator.
   if (ComponentManager::GetTranslateKitLibraryPath().empty() ||
-      !required_not_installed_packs.empty()) {
+      !language_pack_requirements.required_not_installed_packs.empty()) {
     // When the size of pending tasks is too large, we will not queue the new
     // task and hadle the request as failure to avoid OOM of the browser
     // process.
@@ -187,7 +186,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
       return;
     }
     pending_tasks_.emplace_back(
-        required_packs,
+        language_pack_requirements.required_packs,
         base::BindOnce(
             &OnDeviceTranslationServiceController::CreateTranslatorImpl,
             base::Unretained(this), source_lang, target_lang,
@@ -288,12 +287,10 @@ CanCreateTranslatorResult
 OnDeviceTranslationServiceController::CanTranslateImpl(
     const std::string& source_lang,
     const std::string& target_lang) {
-  std::set<LanguagePackKey> required_packs;
-  std::vector<LanguagePackKey> required_not_installed_packs;
-  std::vector<LanguagePackKey> to_be_registered_packs;
-  CalculateLanguagePackRequirements(source_lang, target_lang, required_packs,
-                                    required_not_installed_packs,
-                                    to_be_registered_packs);
+  // Get information on the registration and install status of the language
+  // packs required for translation.
+  LanguagePackRequirements language_pack_requirements =
+      CalculateLanguagePackRequirements(source_lang, target_lang);
 
   if (!service_remote_ && !manager_->CanStartNewService()) {
     // If the service can't be started, returns
@@ -301,13 +298,13 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
     return CanCreateTranslatorResult::kNoExceedsServiceCountLimitation;
   }
 
-  if (required_packs.empty()) {
+  if (language_pack_requirements.required_packs.empty()) {
     // Empty `required_packs` means that the transltion for the specified
     // language pair is not supported.
     return CanCreateTranslatorResult::kNoNotSupportedLanguage;
   }
 
-  if (required_not_installed_packs.empty()) {
+  if (language_pack_requirements.required_not_installed_packs.empty()) {
     // All required language packages are installed.
     if (ComponentManager::GetTranslateKitLibraryPath().empty()) {
       // The TranslateKit library is not ready.
@@ -421,25 +418,6 @@ bool OnDeviceTranslationServiceController::MaybeStartService() {
                                      std::move(package_pathes)),
           base::OnTaskRunnerDeleter(task_runner));
   return true;
-}
-
-// static
-void OnDeviceTranslationServiceController::CalculateLanguagePackRequirements(
-    const std::string& source_lang,
-    const std::string& target_lang,
-    std::set<LanguagePackKey>& required_packs,
-    std::vector<LanguagePackKey>& required_not_installed_packs,
-    std::vector<LanguagePackKey>& to_be_registered_packs) {
-  CHECK(required_packs.empty());
-  CHECK(required_not_installed_packs.empty());
-  CHECK(to_be_registered_packs.empty());
-  required_packs = CalculateRequiredLanguagePacks(source_lang, target_lang);
-  const auto installed_packs = ComponentManager::GetInstalledLanguagePacks();
-  std::ranges::set_difference(required_packs, installed_packs,
-                              std::back_inserter(required_not_installed_packs));
-  const auto registered_packs = ComponentManager::GetRegisteredLanguagePacks();
-  std::ranges::set_difference(required_not_installed_packs, registered_packs,
-                              std::back_inserter(to_be_registered_packs));
 }
 
 void OnDeviceTranslationServiceController::OnServiceIdle() {

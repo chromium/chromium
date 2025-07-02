@@ -9,8 +9,17 @@
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/on_device_translation/component_manager.h"
 
 namespace on_device_translation {
+
+LanguagePackRequirements::LanguagePackRequirements() = default;
+LanguagePackRequirements::~LanguagePackRequirements() = default;
+LanguagePackRequirements::LanguagePackRequirements(
+    LanguagePackRequirements&&) noexcept = default;
+LanguagePackRequirements& LanguagePackRequirements::operator=(
+    LanguagePackRequirements&&) noexcept = default;
+
 namespace {
 
 constexpr char kPrefNamePrefix[] =
@@ -167,6 +176,31 @@ std::set<LanguagePackKey> CalculateRequiredLanguagePacks(
   }
   return {LanguagePackKeyFromNonEnglishSupportedLanguage(*source_lang_code),
           LanguagePackKeyFromNonEnglishSupportedLanguage(*target_lang_code)};
+}
+
+LanguagePackRequirements CalculateLanguagePackRequirements(
+    const std::string& source_lang,
+    const std::string& target_lang) {
+  LanguagePackRequirements language_pack_requirements;
+
+  // Calculate required language packs.
+  language_pack_requirements.required_packs =
+      CalculateRequiredLanguagePacks(source_lang, target_lang);
+
+  // Calculate required, not installed language packs.
+  const auto installed_packs = ComponentManager::GetInstalledLanguagePacks();
+  std::ranges::set_difference(
+      language_pack_requirements.required_packs, installed_packs,
+      std::back_inserter(
+          language_pack_requirements.required_not_installed_packs));
+
+  // Calculate to be registered language packs.
+  const auto registered_packs = ComponentManager::GetRegisteredLanguagePacks();
+  std::ranges::set_difference(
+      language_pack_requirements.required_not_installed_packs, registered_packs,
+      std::back_inserter(language_pack_requirements.to_be_registered_packs));
+
+  return language_pack_requirements;
 }
 
 std::string GetPackageInstallDirName(LanguagePackKey language_pack_key) {

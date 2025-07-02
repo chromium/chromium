@@ -119,13 +119,6 @@ class OnDeviceTranslationServiceController
   // Called when the service is idle and the idle timeout is reached.
   void OnServiceIdle();
 
-  static void CalculateLanguagePackRequirements(
-      const std::string& source_lang,
-      const std::string& target_lang,
-      std::set<LanguagePackKey>& required_packs,
-      std::vector<LanguagePackKey>& required_not_installed_packs,
-      std::vector<LanguagePackKey>& to_be_registered_packs);
-
   // The manager that manages the service controller. This `manager_` is owned
   // by the BrowserContext, and `this` is owned by the `TranslationManagerImpl`
   // instances which are DocumentUserData. So `manager_` must outlive `this`.
