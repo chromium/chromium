@@ -140,8 +140,7 @@ class CORE_EXPORT TextDecorationInfo {
   LayoutUnit OffsetFromDecoratingBox() const;
   float ComputeThickness() const;
   float ComputeUnderlineThickness(
-      const TextDecorationThickness& applied_decoration_thickness,
-      const ComputedStyle* decorating_box_style) const;
+      const TextDecorationThickness& applied_decoration_thickness) const;
 
   void UpdateForDecorationIndex();
 

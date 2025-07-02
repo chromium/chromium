@@ -436,18 +436,21 @@ float TextDecorationInfo::ComputeThickness() const {
     return 1.f * decorating_box_style_->EffectiveZoom();
 #endif
   }
-  return ComputeUnderlineThickness(decoration.Thickness(),
-                                   decorating_box_style_);
+  return ComputeUnderlineThickness(decoration.Thickness());
 }
 
 float TextDecorationInfo::ComputeUnderlineThickness(
-    const TextDecorationThickness& applied_decoration_thickness,
-    const ComputedStyle* decorating_box_style) const {
+    const TextDecorationThickness& applied_decoration_thickness) const {
+  const bool use_decorating_box =
+      RuntimeEnabledFeatures::SvgTextCentralBaselineTextDecorationFixEnabled()
+          ? use_decorating_box_
+          : !!decorating_box_style_;
   float thickness = 0;
   if (flipped_underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto ||
       flipped_underline_position_ ==
-          ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont) {
+          ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont ||
+      !use_decorating_box) {
     thickness = ComputeDecorationThickness(applied_decoration_thickness,
                                            computed_font_size_, font_data_);
   } else {
@@ -455,17 +458,9 @@ float TextDecorationInfo::ComputeUnderlineThickness(
     // decorating box.
     // Only for non-Roman for now for the performance implications.
     // https:// drafts.csswg.org/css-text-decor-3/#decorating-box
-    if (RuntimeEnabledFeatures::SvgTextCentralBaselineTextDecorationFixEnabled()
-            ? use_decorating_box_
-            : !!decorating_box_style) {
-      thickness = ComputeDecorationThickness(
-          applied_decoration_thickness,
-          decorating_box_style->ComputedFontSize(),
-          decorating_box_style->GetFont()->PrimaryFont());
-    } else {
-      thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                             computed_font_size_, font_data_);
-    }
+    thickness = ComputeDecorationThickness(
+        applied_decoration_thickness, decorating_box_style_->ComputedFontSize(),
+        decorating_box_style_->GetFont()->PrimaryFont());
   }
   const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
   return std::max(minimum_thickness, thickness);
