@@ -26,6 +26,8 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+namespace extensions {
+
 ChromeExtensionFunctionDetails::ChromeExtensionFunctionDetails(
     ExtensionFunction* function)
     : function_(function) {}
@@ -33,11 +35,11 @@ ChromeExtensionFunctionDetails::ChromeExtensionFunctionDetails(
 ChromeExtensionFunctionDetails::~ChromeExtensionFunctionDetails() = default;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-extensions::WindowController*
-ChromeExtensionFunctionDetails::GetCurrentWindowController() const {
+WindowController* ChromeExtensionFunctionDetails::GetCurrentWindowController()
+    const {
   // If the delegate has an associated window controller, return it.
   if (function_->dispatcher()) {
-    if (extensions::WindowController* window_controller =
+    if (WindowController* window_controller =
             function_->dispatcher()->GetExtensionWindowController()) {
       // Only return the found controller if it's not about to be deleted,
       // otherwise fall through to finding another one.
@@ -78,9 +80,8 @@ gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
   // Try to use WindowControllerList first because WebContents's
   // GetTopLevelNativeWindow() can't return the top level window when the tab
   // is not focused.
-  extensions::WindowController* controller =
-      extensions::WindowControllerList::GetInstance()->CurrentWindowForFunction(
-          function_);
+  WindowController* controller =
+      WindowControllerList::GetInstance()->CurrentWindowForFunction(function_);
   if (controller)
     return controller->window()->GetNativeWindow();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -105,8 +106,8 @@ gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
   // Then, check for any app windows that are open.
   if (function_->extension() &&
       function_->extension()->is_app()) {
-    extensions::AppWindow* window =
-        extensions::AppWindowRegistry::Get(function_->browser_context())
+    AppWindow* window =
+        AppWindowRegistry::Get(function_->browser_context())
             ->GetCurrentAppWindowForApp(function_->extension()->id());
     if (window)
       return window->web_contents()->GetTopLevelNativeWindow();
@@ -127,3 +128,5 @@ gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return gfx::NativeWindow();
 }
+
+}  // namespace extensions

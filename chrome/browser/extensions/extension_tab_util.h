@@ -28,7 +28,6 @@
 #endif
 
 class Browser;
-class ChromeExtensionFunctionDetails;
 class ExtensionFunction;
 class GURL;
 class Profile;
@@ -48,6 +47,7 @@ class TabGroupVisualData;
 }  // namespace tab_groups
 
 namespace extensions {
+class ChromeExtensionFunctionDetails;
 class Extension;
 class WindowController;
 

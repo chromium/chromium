@@ -15,7 +15,6 @@ class ExtensionFunction;
 
 namespace extensions {
 class WindowController;
-}
 
 // Provides Chrome-specific details to ExtensionFunction
 // implementations.
@@ -56,7 +55,7 @@ class ChromeExtensionFunctionDetails {
   // TODO(devlin): This method is incredibly non-deterministic (sometimes just
   // returning "any" browser), and almost never the right thing to use. Instead,
   // use ExtensionFunction::GetSenderWebContents(). We should get rid of this.
-  extensions::WindowController* GetCurrentWindowController() const;
+  WindowController* GetCurrentWindowController() const;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Find a UI surface to display any UI (like a permission prompt) for the
@@ -77,5 +76,7 @@ class ChromeExtensionFunctionDetails {
   // ChromeExtensionFunctionDetails instance.
   raw_ptr<ExtensionFunction> function_;
 };
+
+}  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_FUNCTION_DETAILS_H_
