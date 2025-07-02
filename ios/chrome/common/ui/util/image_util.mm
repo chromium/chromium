@@ -85,8 +85,10 @@ UIImage* ImageFromView(UIView* view,
       [[UIGraphicsImageRenderer alloc] initWithBounds:imageBounds];
   return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
     // Draw background.
-    [backgroundColor set];
-    UIRectFill(imageBounds);
+    if (backgroundColor) {
+      [backgroundColor set];
+      UIRectFill(imageBounds);
+    }
 
     // Draw view.
     [view drawViewHierarchyInRect:contentBounds afterScreenUpdates:YES];
