@@ -18,6 +18,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
@@ -401,7 +402,7 @@ class PlayerMediator implements InteractionHandler {
         }
 
         ReadAloudPrefs.setSpeed(mDelegate.getPrefService(), newSpeed);
-        mPlayback.setRate(newSpeed);
+        mPlayback.setRate(resolveActualPlaybackSpeed(newSpeed));
         if (newSpeed >= 2.0f) {
             mDelegate.setHighlighterMode(Mode.TEXT_HIGHLIGHTING_MODE_PARAGRAPH);
         } else {
@@ -434,6 +435,15 @@ class PlayerMediator implements InteractionHandler {
         if (mPlayback != null || state == ERROR || state == BUFFERING || state == PLAYBACK_CREATION) {
             mCoordinator.restoreMiniPlayer();
         }
+    }
+
+    private float resolveActualPlaybackSpeed(float requestedSpeed) {
+        if (assumeNonNull(assumeNonNull(mPlayback).getMetadata()).playbackMode()
+                != PlaybackMode.OVERVIEW) {
+            return requestedSpeed;
+        }
+        return requestedSpeed
+                + (float) ReadAloudFeatures.getAudioOverviewsSpeedAdditionPercentage() / 100.0f;
     }
 
     private void maybeSeekRelative(long nanos) {

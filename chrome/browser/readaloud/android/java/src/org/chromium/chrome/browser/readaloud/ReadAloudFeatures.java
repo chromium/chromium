@@ -96,6 +96,10 @@ public final class ReadAloudFeatures {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_FEEDBACK);
     }
 
+    public static int getAudioOverviewsSpeedAdditionPercentage() {
+        return ChromeFeatureList.sReadAloudAudioOverviewsSpeedAdditionPercentage.getValue();
+    }
+
     public static @IneligibilityReason int getIneligibilityReason() {
         return sIneligibilityReason;
     }

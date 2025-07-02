@@ -1641,6 +1641,12 @@ public abstract class ChromeFeatureList {
                             "skip_shopping_persisted_tab_data_delayed_initialization",
                             true);
 
+    public static final IntCachedFeatureParam sReadAloudAudioOverviewsSpeedAdditionPercentage =
+            newIntCachedFeatureParam(
+                    READALOUD_AUDIO_OVERVIEWS,
+                    "read_aloud_audio_overviews_speed_addition_percentage",
+                    20);
+
     /** Controls whether Referrer App ID is passed to Search Results Page via client= param. */
     public static final BooleanCachedFeatureParam sSearchinCctApplyReferrerId =
             newBooleanCachedFeatureParam(SEARCH_IN_CCT, "apply_referrer_id", false);
@@ -1772,6 +1778,7 @@ public abstract class ChromeFeatureList {
                     sOmahaMinSdkVersionMinSdkVersion,
                     sOptimizationGuidePushNotificationsMaxCacheSize,
                     sPriceChangeModuleSkipShoppingPersistedTabDataDelayedInit,
+                    sReadAloudAudioOverviewsSpeedAdditionPercentage,
                     sSearchinCctApplyReferrerId,
                     sSearchinCctOmniboxAllowedPackageNames,
                     sStartSurfaceReturnTimeTabletSecs,
