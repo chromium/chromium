@@ -26,3 +26,28 @@ This directory is actively being refactored as of 2025-06. See
 
 Many interfaces in this directory are deprecated and being changed or removed;
 check the comment at the top of the header file before using them.
+
+## Advice For Clients
+
+* Ciphertext, keys, certificates, and other cryptographic material are generally
+  sequences of bytes, not characters, so prefer using byte-oriented types to
+  represent them: `vector<uint8_t>`, `array<uint8_t>`, and `span<uint8_t>`
+  rather than `string` and `string_view`.
+* To serialize private keys, use `keypair::PrivateKey::ToPrivateKeyInfo()`,
+  which returns a [PKCS#8][pkcs8] PrivateKeyInfo structure serialized as a
+  byte vector. To unserialize keys in this format, use
+  `keypair::PrivateKey::FromPrivateKeyInfo()`.
+* To serialize public keys, use `keypair::PublicKey::ToSubjectPublicKeyInfo()`
+  or `keypair::PrivateKey::ToSubjectPublicKeyInfo()`, which return a
+  [X.509][x509] SubjectPublicKeyInfo structure serialized as a byte vector. To
+  unserialize public keys in this format, use
+  `keypair::PublicKey::FromPublicKeyInfo()`.
+* SubjectPublicKeyInfo and PrivateKeyInfo can represent many kinds of keys, so
+  code that expects a specific kind of key must check the kind after
+  deserialization.
+* To serialize symmetric keys (AEAD, HMAC, or symmetric encryption keys), use a
+  raw sequence of bytes for the key material. Represent these keys in memory
+  using `vector<uint8_t>`, `array<uint8_t>`, or `span<uint8_t>` directly.
+
+[pkcs8]: https://datatracker.ietf.org/doc/html/rfc5208
+[x509]: https://datatracker.ietf.org/doc/html/rfc5280
