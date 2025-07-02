@@ -23,6 +23,13 @@ class BwgTabHelper : public web::WebStateObserver,
   // Sets the state of `is_bwg_session_active_`.
   void SetBwgSessionActive(bool active);
 
+  // Creates, or updates, a new BWG session in storage with the current
+  // timestamp for the associated WebState.
+  void CreateOrUpdateBwgSessionInStorage(std::string server_id);
+
+  // Removes the associated WebState's session from storage.
+  void DeleteBwgSessionInStorage();
+
   // Gets the client and server IDs for the BWG session for the associated
   // WebState. server ID is optional because it may not be found or is expired.
   std::string GetClientId();
@@ -40,6 +47,14 @@ class BwgTabHelper : public web::WebStateObserver,
   explicit BwgTabHelper(web::WebState* web_state);
 
   friend class web::WebStateUserData<BwgTabHelper>;
+
+  // Creates a new BWG session in the prefs, or updates an existing one, with
+  // the current timestamp.
+  void CreateOrUpdateSessionInPrefs(std::string client_id,
+                                    std::string server_id);
+
+  // Removes the BWG session from the prefs.
+  void CleanupSessionFromPrefs(std::string session_id);
 
   // WebState this tab helper is attached to.
   raw_ptr<web::WebState> web_state_ = nullptr;

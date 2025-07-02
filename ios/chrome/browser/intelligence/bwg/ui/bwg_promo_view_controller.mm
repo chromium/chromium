@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller.h"
 
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

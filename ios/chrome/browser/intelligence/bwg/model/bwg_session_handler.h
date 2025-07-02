@@ -9,12 +9,12 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
 
-class PrefService;
+class WebStateList;
 
 // Handler for the BWG sessions.
 @interface BWGSessionHandler : NSObject <BWGSessionDelegate>
 
-- (instancetype)initWithPrefService:(PrefService*)prefService
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

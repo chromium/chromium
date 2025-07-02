@@ -14,11 +14,14 @@ source_set("model") {
     "bwg_session_handler.mm",
   ]
   deps = [
+    ":tab_helper",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
   ]
   public_deps = [ "//base" ]
@@ -52,7 +55,7 @@ source_set("tab_helper") {
     "bwg_tab_helper.mm",
   ]
   deps = [
-    ":model",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",

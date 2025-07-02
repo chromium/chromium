@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
@@ -22,8 +25,12 @@ void BwgTabHelper::SetBwgSessionActive(bool active) {
   is_bwg_session_active_ = active;
 }
 
-void BwgTabHelper::SetBwgCommandsHandler(id<BWGCommands> handler) {
-  bwg_commands_handler_ = handler;
+void BwgTabHelper::CreateOrUpdateBwgSessionInStorage(std::string server_id) {
+  CreateOrUpdateSessionInPrefs(GetClientId(), server_id);
+}
+
+void BwgTabHelper::DeleteBwgSessionInStorage() {
+  CleanupSessionFromPrefs(GetClientId());
 }
 
 std::string BwgTabHelper::GetClientId() {
@@ -44,26 +51,28 @@ std::optional<std::string> BwgTabHelper::GetServerId() {
     return std::nullopt;
   }
 
-  // TODO(crbug.com/419070203): Refactor these pref keys into a constants file.
-  std::optional<int> creation_timestamp =
-      current_session_dict->FindInt("last_interaction_timestamp");
-  const std::string* server_id = current_session_dict->FindString("server_id");
+  std::optional<double> creation_timestamp =
+      current_session_dict->FindInt(kLastInteractionTimestampDictKey);
+  const std::string* server_id =
+      current_session_dict->FindString(kServerIDDictKey);
   if (!creation_timestamp || !server_id) {
     return std::nullopt;
   }
 
-  // Return the serverID if it hasn't yet expired, otherwise clean it up.
+  // Return the server ID if it hasn't yet expired, otherwise clean it up.
   // TODO(crbug.com/424264708): Make the expiration time Finchable.
   int64_t latest_valid_timestamp =
       base::Time::Now().InMillisecondsSinceUnixEpoch() -
       base::Minutes(30).InMilliseconds();
   if (*creation_timestamp > latest_valid_timestamp) {
     return *server_id;
-  } else {
-    ScopedDictPrefUpdate update(profile->GetPrefs(), prefs::kBwgSessionMap);
-    update->Remove(unique_identifier_string);
-    return std::nullopt;
   }
+
+  return std::nullopt;
+}
+
+void BwgTabHelper::SetBwgCommandsHandler(id<BWGCommands> handler) {
+  bwg_commands_handler_ = handler;
 }
 
 #pragma mark - WebStateObserver
@@ -82,6 +91,29 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
 
 void BwgTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_observation_.Reset();
+  CleanupSessionFromPrefs(GetClientId());
   web_state_ = nullptr;
-  // TODO(crbug.com/419070203): Cleanup session from prefs.
+}
+
+#pragma mark - Private
+
+void BwgTabHelper::CreateOrUpdateSessionInPrefs(std::string client_id,
+                                                std::string server_id) {
+  base::Value::Dict session_info_dict;
+  session_info_dict.Set(kServerIDDictKey, server_id);
+  session_info_dict.Set(
+      kLastInteractionTimestampDictKey,
+      static_cast<double>(base::Time::Now().InMillisecondsSinceUnixEpoch()));
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  ScopedDictPrefUpdate update(profile->GetPrefs(), prefs::kBwgSessionMap);
+  update->Set(client_id, std::move(session_info_dict));
+}
+
+void BwgTabHelper::CleanupSessionFromPrefs(std::string session_id) {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  ScopedDictPrefUpdate update(profile->GetPrefs(), prefs::kBwgSessionMap);
+  update->Remove(session_id);
 }

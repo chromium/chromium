@@ -44,7 +44,7 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
     bwg_gateway_.linkOpeningHandler = bwg_link_opening_handler_;
 
     bwg_session_handler_ = [[BWGSessionHandler alloc]
-        initWithPrefService:browser_->GetProfile()->GetPrefs()];
+        initWithWebStateList:browser_->GetWebStateList()];
     bwg_gateway_.sessionHandler = bwg_session_handler_;
   }
 }

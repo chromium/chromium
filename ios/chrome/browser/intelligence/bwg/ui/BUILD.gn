@@ -18,13 +18,13 @@ source_set("ui") {
     "bwg_ui_utils.mm",
   ]
   deps = [
-    ":constants",
     "//base",
     "//build:branding_buildflags",
     "//components/feature_engagement/public",
     "//components/feature_engagement/public:feature_constants",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/promos_manager/ui_bundled:promos",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -37,13 +37,6 @@ source_set("ui") {
   ]
   public_deps = [ ":bwg_lottie_resources" ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("constants") {
-  sources = [
-    "bwg_constants.h",
-    "bwg_constants.mm",
-  ]
 }
 
 bundle_data("bwg_lottie_resources") {
