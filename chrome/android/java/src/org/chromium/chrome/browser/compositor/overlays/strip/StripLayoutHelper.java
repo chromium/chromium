@@ -3868,7 +3868,7 @@ public class StripLayoutHelper
 
         for (int i = 0; i < mStripTabs.length; i++) {
             final StripLayoutTab tab = mStripTabs[i];
-            if (tab.isDying() && !ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) continue;
+            if (tab.isDying() && ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) continue;
             if (!tab.isClosed() && !tab.isDraggedOffStrip() && !tab.isCollapsed()) numLiveTabs++;
         }
 
