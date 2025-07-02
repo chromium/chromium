@@ -37,42 +37,28 @@ class CONTENT_EXPORT NavigationControllerAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  jboolean CanGoBack(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
-  jboolean CanGoForward(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
+  jboolean CanGoBack(JNIEnv* env);
+  jboolean CanGoForward(JNIEnv* env);
   jboolean CanGoToOffset(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
                          jint offset);
-  void GoBack(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void GoForward(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void GoBack(JNIEnv* env);
+  void GoForward(JNIEnv* env);
   void GoToOffset(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& obj,
                   jint offset);
-  jboolean IsInitialNavigation(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
-  void LoadIfNecessary(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj);
-  void ContinuePendingReload(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj);
+  jboolean IsInitialNavigation(JNIEnv* env);
+  void LoadIfNecessary(JNIEnv* env);
+  void ContinuePendingReload(JNIEnv* env);
   void Reload(JNIEnv* env,
-              const base::android::JavaParamRef<jobject>& obj,
               jboolean check_for_repost);
   void ReloadBypassingCache(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj,
                             jboolean check_for_repost);
-  jboolean NeedsReload(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj);
-  void SetNeedsReload(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
-  void CancelPendingReload(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj);
+  jboolean NeedsReload(JNIEnv* env);
+  void SetNeedsReload(JNIEnv* env);
+  void CancelPendingReload(JNIEnv* env);
   void GoToNavigationIndex(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
                            jint index);
   base::android::ScopedJavaLocalRef<jobject> LoadUrl(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& url,
       jint load_url_type,
       jint transition_type,
@@ -95,54 +81,34 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       jlong input_start,
       jlong navigation_ui_data_ptr,
       jboolean is_pdf);
-  void ClearSslPreferences(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& /* obj */);
-  bool GetUseDesktopUserAgent(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& /* obj */);
+  void ClearSslPreferences(JNIEnv* env);
+  bool GetUseDesktopUserAgent(JNIEnv* env);
   void SetUseDesktopUserAgent(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& /* obj */,
       jboolean state,
       jboolean reload_on_state_change,
       jint source);
-  base::android::ScopedJavaLocalRef<jobject> GetEntryAtIndex(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      int index);
-  base::android::ScopedJavaLocalRef<jobject> GetVisibleEntry(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& /* obj */);
-  base::android::ScopedJavaLocalRef<jobject> GetPendingEntry(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& /* obj */);
+  base::android::ScopedJavaLocalRef<jobject> GetEntryAtIndex(JNIEnv* env,
+                                                             int index);
+  base::android::ScopedJavaLocalRef<jobject> GetVisibleEntry(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetPendingEntry(JNIEnv* env);
   int GetNavigationHistory(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
                            const base::android::JavaParamRef<jobject>& history);
   void GetDirectedNavigationHistory(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& history,
       jboolean is_forward,
       jint max_entries);
-  void ClearHistory(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
-  int GetLastCommittedEntryIndex(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void ClearHistory(JNIEnv* env);
+  int GetLastCommittedEntryIndex(JNIEnv* env);
   jboolean RemoveEntryAtIndex(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj,
                               jint index);
-  void PruneForwardEntries(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj);
+  void PruneForwardEntries(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetEntryExtraData(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jint index,
       const base::android::JavaParamRef<jstring>& jkey);
   void SetEntryExtraData(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
                          jint index,
                          const base::android::JavaParamRef<jstring>& jkey,
                          const base::android::JavaParamRef<jstring>& jvalue);

@@ -72,7 +72,7 @@ void ReadJsonTraceData(
 
 static jlong JNI_TracingControllerAndroidImpl_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const base::android::JavaParamRef<jobject>& obj) {
   TracingControllerAndroid* profiler = new TracingControllerAndroid(env, obj);
   return reinterpret_cast<intptr_t>(profiler);
 }
@@ -84,14 +84,12 @@ TracingControllerAndroid::TracingControllerAndroid(
 
 TracingControllerAndroid::~TracingControllerAndroid() {}
 
-void TracingControllerAndroid::Destroy(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj) {
+void TracingControllerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
 bool TracingControllerAndroid::StartTracing(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jcategories,
     const JavaParamRef<jstring>& jtraceoptions,
     bool use_protobuf) {
@@ -119,7 +117,6 @@ bool TracingControllerAndroid::StartTracing(
 
 void TracingControllerAndroid::StopTracing(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jfilepath,
     bool compress_file,
     bool use_protobuf,
@@ -192,7 +189,6 @@ void TracingControllerAndroid::OnTracingStopped(
 
 bool TracingControllerAndroid::GetKnownCategoriesAsync(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ScopedJavaGlobalRef<jobject> global_callback(env, callback);
@@ -231,9 +227,7 @@ void TracingControllerAndroid::OnKnownCategoriesReceived(
 }
 
 static ScopedJavaLocalRef<jstring>
-JNI_TracingControllerAndroidImpl_GetDefaultCategories(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+JNI_TracingControllerAndroidImpl_GetDefaultCategories(JNIEnv* env) {
   base::trace_event::TraceConfig trace_config;
   return base::android::ConvertUTF8ToJavaString(
       env, trace_config.ToCategoryFilterString());
@@ -241,7 +235,6 @@ JNI_TracingControllerAndroidImpl_GetDefaultCategories(
 
 bool TracingControllerAndroid::GetTraceBufferUsageAsync(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ScopedJavaGlobalRef<jobject> global_callback(env, callback);

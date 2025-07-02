@@ -62,7 +62,6 @@ void CaptioningController::WebContentsDestroyed() {
 
 void CaptioningController::SetTextTrackSettings(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jboolean textTracksEnabled,
     const JavaParamRef<jstring>& textTrackBackgroundColor,
     const JavaParamRef<jstring>& textTrackFontFamily,

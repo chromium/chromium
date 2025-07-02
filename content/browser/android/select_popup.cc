@@ -138,7 +138,6 @@ void SelectPopup::HideMenu() {
 }
 
 void SelectPopup::SelectMenuItems(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj,
                                   jlong selectPopupDelegate,
                                   const JavaParamRef<jintArray>& indices) {
   blink::mojom::PopupMenuClient* popup_client_raw_ptr =

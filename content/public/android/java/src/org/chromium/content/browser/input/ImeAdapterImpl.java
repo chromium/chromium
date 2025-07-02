@@ -471,7 +471,6 @@ public class ImeAdapterImpl
             ImeAdapterImplJni.get()
                     .requestCursorUpdate(
                             mNativeImeAdapterAndroid,
-                            ImeAdapterImpl.this,
                             false /* not an immediate request */,
                             false /* disable monitoring */);
         }
@@ -998,8 +997,7 @@ public class ImeAdapterImpl
     @Override
     public void advanceFocusForIME(int focusType) {
         if (mNativeImeAdapterAndroid == 0) return;
-        ImeAdapterImplJni.get()
-                .advanceFocusForIME(mNativeImeAdapterAndroid, ImeAdapterImpl.this, focusType);
+        ImeAdapterImplJni.get().advanceFocusForIME(mNativeImeAdapterAndroid, focusType);
     }
 
     public void sendSyntheticKeyPress(int keyCode, int flags) {
@@ -1044,7 +1042,6 @@ public class ImeAdapterImpl
         ImeAdapterImplJni.get()
                 .sendKeyEvent(
                         mNativeImeAdapterAndroid,
-                        ImeAdapterImpl.this,
                         null,
                         EventType.RAW_KEY_DOWN,
                         0,
@@ -1075,7 +1072,6 @@ public class ImeAdapterImpl
         ImeAdapterImplJni.get()
                 .sendKeyEvent(
                         mNativeImeAdapterAndroid,
-                        ImeAdapterImpl.this,
                         null,
                         EventType.KEY_UP,
                         0,
@@ -1089,7 +1085,7 @@ public class ImeAdapterImpl
 
     boolean finishComposingText() {
         if (!isValid()) return false;
-        ImeAdapterImplJni.get().finishComposingText(mNativeImeAdapterAndroid, ImeAdapterImpl.this);
+        ImeAdapterImplJni.get().finishComposingText(mNativeImeAdapterAndroid);
         return true;
     }
 
@@ -1116,7 +1112,6 @@ public class ImeAdapterImpl
         return ImeAdapterImplJni.get()
                 .sendKeyEvent(
                         mNativeImeAdapterAndroid,
-                        ImeAdapterImpl.this,
                         event,
                         type,
                         getModifiers(event.getMetaState()),
@@ -1141,7 +1136,6 @@ public class ImeAdapterImpl
         ImeAdapterImplJni.get()
                 .sendKeyEvent(
                         mNativeImeAdapterAndroid,
-                        ImeAdapterImpl.this,
                         null,
                         EventType.RAW_KEY_DOWN,
                         0,
@@ -1151,12 +1145,10 @@ public class ImeAdapterImpl
                         false,
                         0);
         ImeAdapterImplJni.get()
-                .deleteSurroundingText(
-                        mNativeImeAdapterAndroid, ImeAdapterImpl.this, beforeLength, afterLength);
+                .deleteSurroundingText(mNativeImeAdapterAndroid, beforeLength, afterLength);
         ImeAdapterImplJni.get()
                 .sendKeyEvent(
                         mNativeImeAdapterAndroid,
-                        ImeAdapterImpl.this,
                         null,
                         EventType.KEY_UP,
                         0,
@@ -1182,7 +1174,6 @@ public class ImeAdapterImpl
         ImeAdapterImplJni.get()
                 .sendKeyEvent(
                         mNativeImeAdapterAndroid,
-                        ImeAdapterImpl.this,
                         null,
                         EventType.RAW_KEY_DOWN,
                         0,
@@ -1193,11 +1184,10 @@ public class ImeAdapterImpl
                         0);
         ImeAdapterImplJni.get()
                 .deleteSurroundingTextInCodePoints(
-                        mNativeImeAdapterAndroid, ImeAdapterImpl.this, beforeLength, afterLength);
+                        mNativeImeAdapterAndroid, beforeLength, afterLength);
         ImeAdapterImplJni.get()
                 .sendKeyEvent(
                         mNativeImeAdapterAndroid,
-                        ImeAdapterImpl.this,
                         null,
                         EventType.KEY_UP,
                         0,
@@ -1211,15 +1201,14 @@ public class ImeAdapterImpl
 
     /**
      * Send a request to the native counterpart to set the selection to given range.
+     *
      * @param start Selection start index.
      * @param end Selection end index.
      * @return Whether the native counterpart of ImeAdapter received the call.
      */
     boolean setEditableSelectionOffsets(int start, int end) {
         if (!isValid()) return false;
-        ImeAdapterImplJni.get()
-                .setEditableSelectionOffsets(
-                        mNativeImeAdapterAndroid, ImeAdapterImpl.this, start, end);
+        ImeAdapterImplJni.get().setEditableSelectionOffsets(mNativeImeAdapterAndroid, start, end);
         return true;
     }
 
@@ -1232,11 +1221,9 @@ public class ImeAdapterImpl
     boolean setComposingRegion(int start, int end) {
         if (!isValid()) return false;
         if (start <= end) {
-            ImeAdapterImplJni.get()
-                    .setComposingRegion(mNativeImeAdapterAndroid, ImeAdapterImpl.this, start, end);
+            ImeAdapterImplJni.get().setComposingRegion(mNativeImeAdapterAndroid, start, end);
         } else {
-            ImeAdapterImplJni.get()
-                    .setComposingRegion(mNativeImeAdapterAndroid, ImeAdapterImpl.this, end, start);
+            ImeAdapterImplJni.get().setComposingRegion(mNativeImeAdapterAndroid, end, start);
         }
         return true;
     }
@@ -1332,8 +1319,7 @@ public class ImeAdapterImpl
         if (!isValid()) return false;
         // You won't get state update anyways.
         if (mInputConnection == null) return false;
-        return ImeAdapterImplJni.get()
-                .requestTextInputStateUpdate(mNativeImeAdapterAndroid, ImeAdapterImpl.this);
+        return ImeAdapterImplJni.get().requestTextInputStateUpdate(mNativeImeAdapterAndroid);
     }
 
     /** Notified when IME requested Chrome to change the cursor update mode. */
@@ -1346,10 +1332,7 @@ public class ImeAdapterImpl
         if (isValid()) {
             ImeAdapterImplJni.get()
                     .requestCursorUpdate(
-                            mNativeImeAdapterAndroid,
-                            ImeAdapterImpl.this,
-                            immediateRequest,
-                            monitorRequest);
+                            mNativeImeAdapterAndroid, immediateRequest, monitorRequest);
         }
         return mCursorAnchorInfoController.onRequestCursorUpdates(
                 immediateRequest, monitorRequest, getContainerView());
@@ -1418,10 +1401,7 @@ public class ImeAdapterImpl
                             }
                             ImeAdapterImplJni.get()
                                     .handleStylusWritingGestureAction(
-                                            mNativeImeAdapterAndroid,
-                                            ImeAdapterImpl.this,
-                                            id,
-                                            gestureData.serialize());
+                                            mNativeImeAdapterAndroid, id, gestureData.serialize());
                         }
 
                         @Override
@@ -1638,7 +1618,6 @@ public class ImeAdapterImpl
 
         boolean sendKeyEvent(
                 long nativeImeAdapterAndroid,
-                ImeAdapterImpl caller,
                 @Nullable KeyEvent event,
                 int type,
                 int modifiers,
@@ -1666,47 +1645,37 @@ public class ImeAdapterImpl
 
         void setComposingText(
                 long nativeImeAdapterAndroid,
-                ImeAdapterImpl caller,
+                ImeAdapterImpl self,
                 CharSequence text,
                 String textStr,
                 int newCursorPosition);
 
         void commitText(
                 long nativeImeAdapterAndroid,
-                ImeAdapterImpl caller,
+                ImeAdapterImpl self,
                 CharSequence text,
                 String textStr,
                 int newCursorPosition);
 
-        void finishComposingText(long nativeImeAdapterAndroid, ImeAdapterImpl caller);
+        void finishComposingText(long nativeImeAdapterAndroid);
 
-        void setEditableSelectionOffsets(
-                long nativeImeAdapterAndroid, ImeAdapterImpl caller, int start, int end);
+        void setEditableSelectionOffsets(long nativeImeAdapterAndroid, int start, int end);
 
-        void setComposingRegion(
-                long nativeImeAdapterAndroid, ImeAdapterImpl caller, int start, int end);
+        void setComposingRegion(long nativeImeAdapterAndroid, int start, int end);
 
-        void deleteSurroundingText(
-                long nativeImeAdapterAndroid, ImeAdapterImpl caller, int before, int after);
+        void deleteSurroundingText(long nativeImeAdapterAndroid, int before, int after);
 
-        void deleteSurroundingTextInCodePoints(
-                long nativeImeAdapterAndroid, ImeAdapterImpl caller, int before, int after);
+        void deleteSurroundingTextInCodePoints(long nativeImeAdapterAndroid, int before, int after);
 
-        boolean requestTextInputStateUpdate(long nativeImeAdapterAndroid, ImeAdapterImpl caller);
+        boolean requestTextInputStateUpdate(long nativeImeAdapterAndroid);
 
         void requestCursorUpdate(
-                long nativeImeAdapterAndroid,
-                ImeAdapterImpl caller,
-                boolean immediateRequest,
-                boolean monitorRequest);
+                long nativeImeAdapterAndroid, boolean immediateRequest, boolean monitorRequest);
 
-        void advanceFocusForIME(long nativeImeAdapterAndroid, ImeAdapterImpl caller, int focusType);
+        void advanceFocusForIME(long nativeImeAdapterAndroid, int focusType);
 
         // Stylus Writing
         void handleStylusWritingGestureAction(
-                long nativeImeAdapterAndroid,
-                ImeAdapterImpl caller,
-                int id,
-                ByteBuffer gestureData);
+                long nativeImeAdapterAndroid, int id, ByteBuffer gestureData);
     }
 }

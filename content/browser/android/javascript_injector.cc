@@ -45,7 +45,6 @@ JavascriptInjector::~JavascriptInjector() {
 }
 
 void JavascriptInjector::SetAllowInspection(JNIEnv* env,
-                                            const JavaParamRef<jobject>& obj,
                                             jboolean allow) {
   DCHECK(java_bridge_dispatcher_host_);
   java_bridge_dispatcher_host_->SetAllowObjectContentsInspection(allow);
@@ -53,7 +52,6 @@ void JavascriptInjector::SetAllowInspection(JNIEnv* env,
 
 void JavascriptInjector::AddInterface(
     JNIEnv* env,
-    const JavaParamRef<jobject>& /* obj */,
     const JavaParamRef<jobject>& object,
     const JavaParamRef<jstring>& name,
     const JavaParamRef<jclass>& safe_annotation_clazz,
@@ -78,7 +76,6 @@ void JavascriptInjector::AddInterface(
 }
 
 void JavascriptInjector::RemoveInterface(JNIEnv* env,
-                                         const JavaParamRef<jobject>& /* obj */,
                                          const JavaParamRef<jstring>& name) {
   DCHECK(java_bridge_dispatcher_host_);
 

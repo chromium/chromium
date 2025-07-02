@@ -427,34 +427,25 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool IsMojoRIRDelegateConnectionSetup() override;
 
   // Methods called from Java
-  bool IsReady(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  bool IsReady(JNIEnv* env);
 
-  void DismissTextHandles(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
+  void DismissTextHandles(JNIEnv* env);
 
   // Returns an int equivalent to an Optional<SKColor>, with a value of 0
   // indicating SKTransparent for not set.
-  jint GetBackgroundColor(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
+  jint GetBackgroundColor(JNIEnv* env);
 
-  void ShowContextMenuAtTouchHandle(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jint x,
-      jint y);
+  void ShowContextMenuAtTouchHandle(JNIEnv* env, jint x, jint y);
 
   // Notifies that the Visual Viewport's inset bottom has changed.
-  void OnViewportInsetBottomChanged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void OnViewportInsetBottomChanged(JNIEnv* env);
 
   void WriteContentBitmapToDiskAsync(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jint width,
       jint height,
-      const base::android::JavaParamRef<jstring>& jpath,
-      const base::android::JavaParamRef<jobject>& jcallback);
+      const jni_zero::JavaParamRef<jstring>& jpath,
+      const jni_zero::JavaParamRef<jobject>& jcallback);
 
   // Notifies that the parent activity has moved into the foreground.
   void OnResume(JNIEnv* env);
@@ -587,8 +578,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
 
-  void OnFinishGetContentBitmap(const base::android::JavaRef<jobject>& obj,
-                                const base::android::JavaRef<jobject>& callback,
+  void OnFinishGetContentBitmap(const base::android::JavaRef<jobject>& callback,
                                 const std::string& path,
                                 const SkBitmap& bitmap);
 

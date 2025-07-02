@@ -29,19 +29,12 @@ class SelectionPopupController : public RenderWidgetHostConnector {
                            const base::android::JavaParamRef<jobject>& obj,
                            WebContents* web_contents);
 
-  void SetTextHandlesHiddenForDropdownMenu(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jboolean hidden);
+  void SetTextHandlesHiddenForDropdownMenu(JNIEnv* env, jboolean hidden);
 
-  void SetTextHandlesTemporarilyHidden(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jboolean hidden);
+  void SetTextHandlesTemporarilyHidden(JNIEnv* env, jboolean hidden);
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetTouchHandleRects(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      JNIEnv* env);
 
   // RendetWidgetHostConnector implementation.
   void UpdateRenderProcessConnection(

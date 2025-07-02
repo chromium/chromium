@@ -21,26 +21,22 @@ class TracingControllerAndroid {
   TracingControllerAndroid(const TracingControllerAndroid&) = delete;
   TracingControllerAndroid& operator=(const TracingControllerAndroid&) = delete;
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   bool StartTracing(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
                     const base::android::JavaParamRef<jstring>& categories,
                     const base::android::JavaParamRef<jstring>& trace_options,
                     bool use_protobuf);
   void StopTracing(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
                    const base::android::JavaParamRef<jstring>& jfilepath,
                    bool compress_file,
                    bool use_protobuf,
                    const base::android::JavaParamRef<jobject>& callback);
   bool GetKnownCategoriesAsync(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& callback);
   bool GetTraceBufferUsageAsync(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& callback);
 
   // Locate the appropriate directory to write the trace to and use it to

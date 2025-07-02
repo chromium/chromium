@@ -36,10 +36,7 @@ class DateTimeChooserAndroid {
                                     return;
                                 }
                                 DateTimeChooserAndroidJni.get()
-                                        .replaceDateTime(
-                                                mNativeDateTimeChooserAndroid,
-                                                DateTimeChooserAndroid.this,
-                                                value);
+                                        .replaceDateTime(mNativeDateTimeChooserAndroid, value);
                             }
 
                             @Override
@@ -48,9 +45,7 @@ class DateTimeChooserAndroid {
                                     return;
                                 }
                                 DateTimeChooserAndroidJni.get()
-                                        .cancelDialog(
-                                                mNativeDateTimeChooserAndroid,
-                                                DateTimeChooserAndroid.this);
+                                        .cancelDialog(mNativeDateTimeChooserAndroid);
                             }
                         });
     }
@@ -116,11 +111,8 @@ class DateTimeChooserAndroid {
 
     @NativeMethods
     interface Natives {
-        void replaceDateTime(
-                long nativeDateTimeChooserAndroid,
-                DateTimeChooserAndroid caller,
-                double dialogValue);
+        void replaceDateTime(long nativeDateTimeChooserAndroid, double dialogValue);
 
-        void cancelDialog(long nativeDateTimeChooserAndroid, DateTimeChooserAndroid caller);
+        void cancelDialog(long nativeDateTimeChooserAndroid);
     }
 }

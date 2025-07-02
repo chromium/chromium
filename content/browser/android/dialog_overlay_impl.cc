@@ -110,8 +110,7 @@ DialogOverlayImpl::DialogOverlayImpl(const JavaParamRef<jobject>& obj,
   // returning, we won't send a callback before then.
 }
 
-void DialogOverlayImpl::CompleteInit(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj) {
+void DialogOverlayImpl::CompleteInit(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebContentsDelegate* delegate = web_contents()->GetDelegate();
@@ -120,6 +119,8 @@ void DialogOverlayImpl::CompleteInit(JNIEnv* env,
     Stop();
     return;
   }
+
+  ScopedJavaLocalRef<jobject> obj = obj_.get(env);
 
   // Note: It's ok to call SetOverlayMode() directly here, because there can be
   // at most one overlay alive at the time. This logic needs to be updated if
@@ -156,7 +157,7 @@ void DialogOverlayImpl::Stop() {
   obj_.reset();
 }
 
-void DialogOverlayImpl::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void DialogOverlayImpl::Destroy(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   UnregisterCallbacksIfNeeded();
   // We delete soon since this might be part of an onDismissed callback.
@@ -165,7 +166,6 @@ void DialogOverlayImpl::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
 
 void DialogOverlayImpl::GetCompositorOffset(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& rect) {
   gfx::Point point =
       web_contents()->GetNativeView()->GetLocationOfContainerViewInWindow();

@@ -45,19 +45,19 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate,
 
   // Called when the Android system requests the MediaSession to be suspended.
   // Called by Java through JNI.
-  void OnSuspend(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void OnSuspend(JNIEnv* env);
 
   // Called when the Android system requests the MediaSession to be resumed.
   // Called by Java through JNI.
-  void OnResume(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void OnResume(JNIEnv* env);
 
   // Called when the Android system requests the MediaSession to start ducking.
   // Called by Java through JNI.
-  void OnStartDucking(JNIEnv* env, jobject obj);
+  void OnStartDucking(JNIEnv* env);
 
   // Called when the Android system requests the MediaSession to stop ducking.
   // Called by Java through JNI.
-  void OnStopDucking(JNIEnv* env, jobject obj);
+  void OnStopDucking(JNIEnv* env);
 
   // This is not used by this delegate.
   void MediaSessionInfoChanged(

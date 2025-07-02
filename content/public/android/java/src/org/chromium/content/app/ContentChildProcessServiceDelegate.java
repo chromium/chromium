@@ -118,8 +118,7 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
         // Now that the library is loaded, get the FD map,
         // TODO(jcivelli): can this be done in onBeforeMain? We would have to mode onBeforeMain
         // so it's called before FDs are registered.
-        ContentChildProcessServiceDelegateJni.get()
-                .retrieveFileDescriptorsIdsToKeys(ContentChildProcessServiceDelegate.this);
+        ContentChildProcessServiceDelegateJni.get().retrieveFileDescriptorsIdsToKeys(this);
     }
 
     @Override
@@ -138,8 +137,7 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
 
     @Override
     public void onBeforeMain() {
-        ContentChildProcessServiceDelegateJni.get()
-                .initChildProcess(ContentChildProcessServiceDelegate.this, mCpuCount, mCpuFeatures);
+        ContentChildProcessServiceDelegateJni.get().initChildProcess(this, mCpuCount, mCpuFeatures);
         ThreadUtils.getUiThreadHandler()
                 .post(
                         () -> {
@@ -206,15 +204,14 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
          * @param cpuFeatures The CPU features.
          */
         void initChildProcess(
-                ContentChildProcessServiceDelegate caller, int cpuCount, long cpuFeatures);
+                ContentChildProcessServiceDelegate self, int cpuCount, long cpuFeatures);
 
         /**
-         * Initializes the MemoryPressureListener on the same thread callbacks will be
-         * received on.
+         * Initializes the MemoryPressureListener on the same thread callbacks will be received on.
          */
         void initMemoryPressureListener();
 
         // Retrieves the FD IDs to keys map and set it by calling setFileDescriptorsIdsToKeys().
-        void retrieveFileDescriptorsIdsToKeys(ContentChildProcessServiceDelegate caller);
+        void retrieveFileDescriptorsIdsToKeys(ContentChildProcessServiceDelegate self);
     }
 }

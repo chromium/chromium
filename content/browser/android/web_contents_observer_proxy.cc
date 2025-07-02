@@ -63,8 +63,7 @@ jlong JNI_WebContentsObserverProxy_Init(
   return reinterpret_cast<intptr_t>(native_observer);
 }
 
-void WebContentsObserverProxy::Destroy(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj) {
+void WebContentsObserverProxy::Destroy(JNIEnv* env) {
   delete this;
 }
 

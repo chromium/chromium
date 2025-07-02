@@ -211,11 +211,7 @@ public class SelectPopup
     public void selectMenuItems(int @Nullable [] indices) {
         if (mNativeSelectPopup != 0) {
             SelectPopupJni.get()
-                    .selectMenuItems(
-                            mNativeSelectPopup,
-                            SelectPopup.this,
-                            mNativeSelectPopupSourceFrame,
-                            indices);
+                    .selectMenuItems(mNativeSelectPopup, mNativeSelectPopupSourceFrame, indices);
         }
         mNativeSelectPopupSourceFrame = 0;
         mPopupView = null;
@@ -225,7 +221,6 @@ public class SelectPopup
     interface Natives {
         void selectMenuItems(
                 long nativeSelectPopup,
-                SelectPopup caller,
                 long nativeSelectPopupSourceFrame,
                 int @Nullable [] indices);
     }

@@ -104,9 +104,8 @@ public class DialogOverlayImpl
             return;
         }
 
-        DialogOverlayImplJni.get()
-                .getCompositorOffset(mNativeHandle, DialogOverlayImpl.this, config.rect);
-        DialogOverlayImplJni.get().completeInit(mNativeHandle, DialogOverlayImpl.this);
+        DialogOverlayImplJni.get().getCompositorOffset(mNativeHandle, config.rect);
+        DialogOverlayImplJni.get().completeInit(mNativeHandle);
     }
 
     // AndroidOverlay impl.
@@ -157,7 +156,7 @@ public class DialogOverlayImpl
         if (mDialogCore == null) return;
 
         // |rect| is relative to the compositor surface.  Convert it to be relative to the screen.
-        DialogOverlayImplJni.get().getCompositorOffset(mNativeHandle, DialogOverlayImpl.this, rect);
+        DialogOverlayImplJni.get().getCompositorOffset(mNativeHandle, rect);
         mDialogCore.layoutSurface(rect);
     }
 
@@ -298,7 +297,7 @@ public class DialogOverlayImpl
 
         // Note that we might not be registered for a token.
         if (mNativeHandle != 0) {
-            DialogOverlayImplJni.get().destroy(mNativeHandle, DialogOverlayImpl.this);
+            DialogOverlayImplJni.get().destroy(mNativeHandle);
             mNativeHandle = 0;
         }
 
@@ -367,17 +366,17 @@ public class DialogOverlayImpl
          */
         long init(DialogOverlayImpl caller, long high, long low, boolean isPowerEfficient);
 
-        void completeInit(long nativeDialogOverlayImpl, DialogOverlayImpl caller);
+        void completeInit(long nativeDialogOverlayImpl);
 
         /** Stops native side and deallocates |handle|. */
-        void destroy(long nativeDialogOverlayImpl, DialogOverlayImpl caller);
+        void destroy(long nativeDialogOverlayImpl);
 
         /**
          * Calls back ReceiveCompositorOffset with the screen location (in the
          * View.getLocationOnScreen sense) of the compositor for our WebContents.  Sends |rect|
          * along verbatim.
          */
-        void getCompositorOffset(long nativeDialogOverlayImpl, DialogOverlayImpl caller, Rect rect);
+        void getCompositorOffset(long nativeDialogOverlayImpl, Rect rect);
 
         /**
          * Register a surface and return the surface id for it.

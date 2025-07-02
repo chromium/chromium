@@ -31,7 +31,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
 
   ~WebContentsObserverProxy() override;
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
  private:
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;

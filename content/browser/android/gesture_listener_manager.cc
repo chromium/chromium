@@ -134,25 +134,19 @@ GestureListenerManager::~GestureListenerManager() {
   Java_GestureListenerManagerImpl_onNativeDestroyed(env, j_obj);
 }
 
-void GestureListenerManager::ResetGestureDetection(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void GestureListenerManager::ResetGestureDetection(JNIEnv* env) {
   if (rwhva_)
     rwhva_->ResetGestureDetection();
 }
 
-void GestureListenerManager::SetDoubleTapSupportEnabled(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jboolean enabled) {
+void GestureListenerManager::SetDoubleTapSupportEnabled(JNIEnv* env,
+                                                        jboolean enabled) {
   if (rwhva_)
     rwhva_->SetDoubleTapSupportEnabled(enabled);
 }
 
-void GestureListenerManager::SetMultiTouchZoomSupportEnabled(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jboolean enabled) {
+void GestureListenerManager::SetMultiTouchZoomSupportEnabled(JNIEnv* env,
+                                                             jboolean enabled) {
   if (rwhva_)
     rwhva_->SetMultiTouchZoomSupportEnabled(enabled);
 }

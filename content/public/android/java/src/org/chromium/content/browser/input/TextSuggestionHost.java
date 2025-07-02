@@ -194,8 +194,7 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
     /** Tells Blink to replace the active suggestion range with the specified replacement. */
     public void applySpellCheckSuggestion(String suggestion) {
         TextSuggestionHostJni.get()
-                .applySpellCheckSuggestion(
-                        mNativeTextSuggestionHost, TextSuggestionHost.this, suggestion);
+                .applySpellCheckSuggestion(mNativeTextSuggestionHost, suggestion);
     }
 
     /**
@@ -204,24 +203,17 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
      */
     public void applyTextSuggestion(int markerTag, int suggestionIndex) {
         TextSuggestionHostJni.get()
-                .applyTextSuggestion(
-                        mNativeTextSuggestionHost,
-                        TextSuggestionHost.this,
-                        markerTag,
-                        suggestionIndex);
+                .applyTextSuggestion(mNativeTextSuggestionHost, markerTag, suggestionIndex);
     }
 
     /** Tells Blink to delete the active suggestion range. */
     public void deleteActiveSuggestionRange() {
-        TextSuggestionHostJni.get()
-                .deleteActiveSuggestionRange(mNativeTextSuggestionHost, TextSuggestionHost.this);
+        TextSuggestionHostJni.get().deleteActiveSuggestionRange(mNativeTextSuggestionHost);
     }
 
     /** Tells Blink to remove spelling markers under all instances of the specified word. */
     public void onNewWordAddedToDictionary(@Nullable String word) {
-        TextSuggestionHostJni.get()
-                .onNewWordAddedToDictionary(
-                        mNativeTextSuggestionHost, TextSuggestionHost.this, word);
+        TextSuggestionHostJni.get().onNewWordAddedToDictionary(mNativeTextSuggestionHost, word);
     }
 
     /**
@@ -230,8 +222,7 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
      */
     public void onSuggestionMenuClosed(boolean dismissedByItemTap) {
         if (!dismissedByItemTap) {
-            TextSuggestionHostJni.get()
-                    .onSuggestionMenuClosed(mNativeTextSuggestionHost, TextSuggestionHost.this);
+            TextSuggestionHostJni.get().onSuggestionMenuClosed(mNativeTextSuggestionHost);
         }
         mSpellCheckPopupWindow = null;
         mTextSuggestionsPopupWindow = null;
@@ -259,24 +250,16 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
 
     @NativeMethods
     interface Natives {
-        void applySpellCheckSuggestion(
-                long nativeTextSuggestionHostAndroid, TextSuggestionHost caller, String suggestion);
+        void applySpellCheckSuggestion(long nativeTextSuggestionHostAndroid, String suggestion);
 
         void applyTextSuggestion(
-                long nativeTextSuggestionHostAndroid,
-                TextSuggestionHost caller,
-                int markerTag,
-                int suggestionIndex);
+                long nativeTextSuggestionHostAndroid, int markerTag, int suggestionIndex);
 
-        void deleteActiveSuggestionRange(
-                long nativeTextSuggestionHostAndroid, TextSuggestionHost caller);
+        void deleteActiveSuggestionRange(long nativeTextSuggestionHostAndroid);
 
         void onNewWordAddedToDictionary(
-                long nativeTextSuggestionHostAndroid,
-                TextSuggestionHost caller,
-                @Nullable String word);
+                long nativeTextSuggestionHostAndroid, @Nullable String word);
 
-        void onSuggestionMenuClosed(
-                long nativeTextSuggestionHostAndroid, TextSuggestionHost caller);
+        void onSuggestionMenuClosed(long nativeTextSuggestionHostAndroid);
     }
 }

@@ -123,7 +123,6 @@ ScopedJavaLocalRef<jobject> SelectionPopupController::GetContext() const {
 
 void SelectionPopupController::SetTextHandlesHiddenForDropdownMenu(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jboolean hidden) {
   if (rwhva_) {
     rwhva_->SetTextHandlesHiddenForDropdownMenu(hidden);
@@ -132,15 +131,13 @@ void SelectionPopupController::SetTextHandlesHiddenForDropdownMenu(
 
 void SelectionPopupController::SetTextHandlesTemporarilyHidden(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jboolean hidden) {
   if (rwhva_)
     rwhva_->SetTextHandlesTemporarilyHidden(hidden);
 }
 
 ScopedJavaLocalRef<jobjectArray> SelectionPopupController::GetTouchHandleRects(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    JNIEnv* env) {
   if (!rwhva_ || !rwhva_->touch_selection_controller()) {
     return nullptr;
   }

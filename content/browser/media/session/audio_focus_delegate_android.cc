@@ -86,8 +86,7 @@ const base::UnguessableToken& AudioFocusDelegateAndroid::request_id() const {
   return base::UnguessableToken::Null();
 }
 
-void AudioFocusDelegateAndroid::OnSuspend(JNIEnv*,
-                                          const JavaParamRef<jobject>&) {
+void AudioFocusDelegateAndroid::OnSuspend(JNIEnv*) {
   if (!media_session_->IsActive()) {
     return;
   }
@@ -95,8 +94,7 @@ void AudioFocusDelegateAndroid::OnSuspend(JNIEnv*,
   media_session_->Suspend(MediaSession::SuspendType::kSystem);
 }
 
-void AudioFocusDelegateAndroid::OnResume(JNIEnv*,
-                                         const JavaParamRef<jobject>&) {
+void AudioFocusDelegateAndroid::OnResume(JNIEnv*) {
   if (!media_session_->IsSuspended()) {
     return;
   }
@@ -104,11 +102,11 @@ void AudioFocusDelegateAndroid::OnResume(JNIEnv*,
   media_session_->Resume(MediaSession::SuspendType::kSystem);
 }
 
-void AudioFocusDelegateAndroid::OnStartDucking(JNIEnv*, jobject) {
+void AudioFocusDelegateAndroid::OnStartDucking(JNIEnv*) {
   media_session_->StartDucking();
 }
 
-void AudioFocusDelegateAndroid::OnStopDucking(JNIEnv*, jobject) {
+void AudioFocusDelegateAndroid::OnStopDucking(JNIEnv*) {
   media_session_->StopDucking();
 }
 

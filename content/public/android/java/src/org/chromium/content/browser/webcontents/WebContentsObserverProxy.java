@@ -40,16 +40,15 @@ class WebContentsObserverProxy extends WebContentsObserver {
     private int mObserverCallsCurrentlyHandling;
 
     /**
-     * Constructs a new WebContentsObserverProxy for a given WebContents
-     * instance. A native WebContentsObserver instance will be created, which
-     * will observe the native counterpart to the provided WebContents.
+     * Constructs a new WebContentsObserverProxy for a given WebContents instance. A native
+     * WebContentsObserver instance will be created, which will observe the native counterpart to
+     * the provided WebContents.
      *
      * @param webContents The WebContents instance to observe.
      */
     public WebContentsObserverProxy(WebContentsImpl webContents) {
         ThreadUtils.assertOnUiThread();
-        mNativeWebContentsObserverProxy =
-                WebContentsObserverProxyJni.get().init(WebContentsObserverProxy.this, webContents);
+        mNativeWebContentsObserverProxy = WebContentsObserverProxyJni.get().init(this, webContents);
         mObservers = new ObserverList<WebContentsObserver>();
         mObserverCallsCurrentlyHandling = 0;
     }
@@ -561,16 +560,15 @@ class WebContentsObserverProxy extends WebContentsObserver {
         mObservers.clear();
 
         if (mNativeWebContentsObserverProxy != 0) {
-            WebContentsObserverProxyJni.get()
-                    .destroy(mNativeWebContentsObserverProxy, WebContentsObserverProxy.this);
+            WebContentsObserverProxyJni.get().destroy(mNativeWebContentsObserverProxy);
             mNativeWebContentsObserverProxy = 0;
         }
     }
 
     @NativeMethods
     interface Natives {
-        long init(WebContentsObserverProxy caller, WebContentsImpl webContents);
+        long init(WebContentsObserverProxy self, WebContentsImpl webContents);
 
-        void destroy(long nativeWebContentsObserverProxy, WebContentsObserverProxy caller);
+        void destroy(long nativeWebContentsObserverProxy);
     }
 }

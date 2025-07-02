@@ -35,20 +35,17 @@ class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
   ~JavascriptInjector() override;
 
   void SetAllowInspection(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
                           jboolean allow);
 
   // See GinJavaBridgeDispatcherHost::AddNamedObject more information.
   void AddInterface(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& /* obj */,
       const base::android::JavaParamRef<jobject>& object,
       const base::android::JavaParamRef<jstring>& name,
       const base::android::JavaParamRef<jclass>& safe_annotation_clazz,
       origin_matcher::OriginMatcher matcher);
 
   void RemoveInterface(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& /* obj */,
                        const base::android::JavaParamRef<jstring>& name);
  private:
   friend class content::WebContentsUserData<JavascriptInjector>;

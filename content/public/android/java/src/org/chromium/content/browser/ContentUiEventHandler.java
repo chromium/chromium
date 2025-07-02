@@ -54,8 +54,7 @@ public class ContentUiEventHandler implements UserData {
 
     public ContentUiEventHandler(WebContents webContents) {
         mWebContents = (WebContentsImpl) webContents;
-        mNativeContentUiEventHandler =
-                ContentUiEventHandlerJni.get().init(ContentUiEventHandler.this, webContents);
+        mNativeContentUiEventHandler = ContentUiEventHandlerJni.get().init(this, webContents);
     }
 
     static ContentUiEventHandler createForTesting(
@@ -229,7 +228,7 @@ public class ContentUiEventHandler implements UserData {
 
     @NativeMethods
     interface Natives {
-        long init(ContentUiEventHandler caller, WebContents webContents);
+        long init(ContentUiEventHandler self, WebContents webContents);
 
         void sendMouseWheelEvent(
                 long nativeContentUiEventHandler,

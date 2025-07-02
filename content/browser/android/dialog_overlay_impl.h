@@ -40,16 +40,14 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
   // Called when the java side is ready for token / dismissed callbacks.  May
   // call back before returning.  Must guarantee that a token is eventually sent
   // if we have one.
-  void CompleteInit(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
+  void CompleteInit(JNIEnv* env);
 
   // Clean up and post to delete |this| later.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // Calls ReceiveCompositorOffset() (java) with the compositor screen offset
   // before returning, in physical pixels.  We send |rect| as a convenience.
   void GetCompositorOffset(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
                            const base::android::JavaParamRef<jobject>& rect);
 
   // ui::ViewAndroidObserver

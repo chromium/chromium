@@ -53,21 +53,16 @@ class MediaSessionAndroid final
       const std::optional<media_session::MediaPosition>& position) override;
 
   // MediaSession method wrappers.
-  void Resume(JNIEnv* env, const base::android::JavaParamRef<jobject>& j_obj);
-  void Suspend(JNIEnv* env, const base::android::JavaParamRef<jobject>& j_obj);
-  void Stop(JNIEnv* env, const base::android::JavaParamRef<jobject>& j_obj);
+  void Resume(JNIEnv* env);
+  void Suspend(JNIEnv* env);
+  void Stop(JNIEnv* env);
   void Seek(JNIEnv* env,
-            const base::android::JavaParamRef<jobject>& j_obj,
             const jlong millis);
   void SeekTo(JNIEnv* env,
-              const base::android::JavaParamRef<jobject>& j_obj,
               const jlong millis);
   void DidReceiveAction(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& j_obj,
                         jint action);
-  void RequestSystemAudioFocus(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_obj);
+  void RequestSystemAudioFocus(JNIEnv* env);
 
  private:
   friend class WebContentsObserverProxy;

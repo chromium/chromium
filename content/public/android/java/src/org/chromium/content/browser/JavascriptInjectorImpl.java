@@ -53,9 +53,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     }
 
     public JavascriptInjectorImpl(WebContents webContents) {
-        mNativePtr =
-                JavascriptInjectorImplJni.get()
-                        .init(JavascriptInjectorImpl.this, webContents, mRetainedObjects);
+        mNativePtr = JavascriptInjectorImplJni.get().init(this, webContents, mRetainedObjects);
     }
 
     @CalledByNative
@@ -71,8 +69,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     @Override
     public void setAllowInspection(boolean allow) {
         if (mNativePtr != 0) {
-            JavascriptInjectorImplJni.get()
-                    .setAllowInspection(mNativePtr, JavascriptInjectorImpl.this, allow);
+            JavascriptInjectorImplJni.get().setAllowInspection(mNativePtr, allow);
         }
     }
 
@@ -89,13 +86,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
         mInjectedObjects.put(
                 name, new InjectedInterface(object, requiredAnnotation, matcher.serialize()));
         JavascriptInjectorImplJni.get()
-                .addInterface(
-                        mNativePtr,
-                        JavascriptInjectorImpl.this,
-                        object,
-                        name,
-                        requiredAnnotation,
-                        matcher);
+                .addInterface(mNativePtr, object, name, requiredAnnotation, matcher);
     }
 
     @Override
@@ -118,27 +109,23 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     public void removeInterface(String name) {
         mInjectedObjects.remove(name);
         if (mNativePtr != 0) {
-            JavascriptInjectorImplJni.get()
-                    .removeInterface(mNativePtr, JavascriptInjectorImpl.this, name);
+            JavascriptInjectorImplJni.get().removeInterface(mNativePtr, name);
         }
     }
 
     @NativeMethods
     interface Natives {
-        long init(JavascriptInjectorImpl caller, WebContents webContents, Object retainedObjects);
+        long init(JavascriptInjectorImpl self, WebContents webContents, Object retainedObjects);
 
-        void setAllowInspection(
-                long nativeJavascriptInjector, JavascriptInjectorImpl caller, boolean allow);
+        void setAllowInspection(long nativeJavascriptInjector, boolean allow);
 
         void addInterface(
                 long nativeJavascriptInjector,
-                JavascriptInjectorImpl caller,
                 Object object,
                 String name,
                 @Nullable Class requiredAnnotation,
                 @JniType("origin_matcher::OriginMatcher") OriginMatcher matcher);
 
-        void removeInterface(
-                long nativeJavascriptInjector, JavascriptInjectorImpl caller, String name);
+        void removeInterface(long nativeJavascriptInjector, String name);
     }
 }

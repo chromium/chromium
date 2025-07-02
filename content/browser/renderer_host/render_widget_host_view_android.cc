@@ -1007,21 +1007,15 @@ RenderWidgetHostViewAndroid::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
 }
 
-bool RenderWidgetHostViewAndroid::IsReady(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+bool RenderWidgetHostViewAndroid::IsReady(JNIEnv* env) {
   return HasValidFrame();
 }
 
-void RenderWidgetHostViewAndroid::DismissTextHandles(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void RenderWidgetHostViewAndroid::DismissTextHandles(JNIEnv* env) {
   DismissTextHandles();
 }
 
-jint RenderWidgetHostViewAndroid::GetBackgroundColor(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+jint RenderWidgetHostViewAndroid::GetBackgroundColor(JNIEnv* env) {
   std::optional<SkColor> color =
       RenderWidgetHostViewAndroid::GetCachedBackgroundColor();
   if (!color)
@@ -1031,7 +1025,6 @@ jint RenderWidgetHostViewAndroid::GetBackgroundColor(
 
 void RenderWidgetHostViewAndroid::ShowContextMenuAtTouchHandle(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jint x,
     jint y) {
   if (GetTouchSelectionControllerClientManager()) {
@@ -1040,24 +1033,20 @@ void RenderWidgetHostViewAndroid::ShowContextMenuAtTouchHandle(
   }
 }
 
-void RenderWidgetHostViewAndroid::OnViewportInsetBottomChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void RenderWidgetHostViewAndroid::OnViewportInsetBottomChanged(JNIEnv* env) {
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                               std::nullopt);
 }
 
 void RenderWidgetHostViewAndroid::WriteContentBitmapToDiskAsync(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jint width,
     jint height,
-    const base::android::JavaParamRef<jstring>& jpath,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const jni_zero::JavaParamRef<jstring>& jpath,
+    const jni_zero::JavaParamRef<jobject>& jcallback) {
   base::OnceCallback<void(const SkBitmap&)> result_callback = base::BindOnce(
       &RenderWidgetHostViewAndroid::OnFinishGetContentBitmap,
       weak_ptr_factory_.GetWeakPtr(),
-      base::android::ScopedJavaGlobalRef<jobject>(env, obj),
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback),
       base::android::ConvertJavaStringToUTF8(env, jpath));
 
@@ -2190,7 +2179,6 @@ void RenderWidgetHostViewAndroid::OnDidUpdateVisualPropertiesComplete(
 }
 
 void RenderWidgetHostViewAndroid::OnFinishGetContentBitmap(
-    const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& callback,
     const std::string& path,
     const SkBitmap& bitmap) {

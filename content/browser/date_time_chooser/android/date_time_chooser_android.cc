@@ -108,14 +108,11 @@ void DateTimeChooserAndroid::DismissAndDestroyJavaObject() {
   }
 }
 
-void DateTimeChooserAndroid::ReplaceDateTime(JNIEnv* env,
-                                             const JavaRef<jobject>&,
-                                             jdouble value) {
+void DateTimeChooserAndroid::ReplaceDateTime(JNIEnv* env, jdouble value) {
   std::move(open_date_time_response_callback_).Run(true, value);
 }
 
-void DateTimeChooserAndroid::CancelDialog(JNIEnv* env,
-                                          const JavaRef<jobject>&) {
+void DateTimeChooserAndroid::CancelDialog(JNIEnv* env) {
   std::move(open_date_time_response_callback_).Run(false, 0.0);
 }
 

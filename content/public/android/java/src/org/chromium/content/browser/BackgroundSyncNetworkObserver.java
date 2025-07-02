@@ -117,9 +117,7 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
         mNotifier.updateCurrentNetworkState();
         BackgroundSyncNetworkObserverJni.get()
                 .notifyConnectionTypeChanged(
-                        nativePtr,
-                        BackgroundSyncNetworkObserver.this,
-                        mNotifier.getCurrentNetworkState().getConnectionType());
+                        nativePtr, mNotifier.getCurrentNetworkState().getConnectionType());
     }
 
     @CalledByNative
@@ -142,8 +140,7 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
         mLastBroadcastConnectionType = newConnectionType;
         for (Long nativePtr : mNativePtrs) {
             BackgroundSyncNetworkObserverJni.get()
-                    .notifyConnectionTypeChanged(
-                            nativePtr, BackgroundSyncNetworkObserver.this, newConnectionType);
+                    .notifyConnectionTypeChanged(nativePtr, newConnectionType);
         }
     }
 
@@ -195,7 +192,6 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     @NativeMethods
     interface Natives {
         @NativeClassQualifiedName("BackgroundSyncNetworkObserverAndroid::Observer")
-        void notifyConnectionTypeChanged(
-                long nativePtr, BackgroundSyncNetworkObserver caller, int newConnectionType);
+        void notifyConnectionTypeChanged(long nativePtr, int newConnectionType);
     }
 }

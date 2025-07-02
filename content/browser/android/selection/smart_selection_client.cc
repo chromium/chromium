@@ -76,7 +76,6 @@ SmartSelectionClient::~SmartSelectionClient() {
 
 void SmartSelectionClient::RequestSurroundingText(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     int num_extra_characters,
     int callback_data) {
   RenderFrameHost* focused_frame = web_contents_->GetFocusedFrame();
@@ -91,9 +90,7 @@ void SmartSelectionClient::RequestSurroundingText(
       num_extra_characters);
 }
 
-void SmartSelectionClient::CancelAllRequests(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void SmartSelectionClient::CancelAllRequests(JNIEnv* env) {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

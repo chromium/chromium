@@ -342,14 +342,14 @@ TEST_F(RenderWidgetHostViewAndroidTest, InsetVisualViewport) {
   // known to our ViewAndroid.
   test_view_android_delegate.InsetViewportBottom(100);
   EXPECT_EQ(100, rwhva->GetNativeView()->GetViewportInsetBottom());
-  rwhva->OnViewportInsetBottomChanged(env, nullptr);
+  rwhva->OnViewportInsetBottomChanged(env);
   viz::LocalSurfaceId inset_surface = rwhva->GetLocalSurfaceId();
   EXPECT_TRUE(inset_surface.IsNewerThan(original_local_surface_id));
 
   // Reset the bottom; should go back to the original inset and have a new
   // surface.
   test_view_android_delegate.InsetViewportBottom(0);
-  rwhva->OnViewportInsetBottomChanged(env, nullptr);
+  rwhva->OnViewportInsetBottomChanged(env);
   EXPECT_EQ(0, rwhva->GetNativeView()->GetViewportInsetBottom());
   EXPECT_TRUE(rwhva->GetLocalSurfaceId().IsNewerThan(inset_surface));
 }

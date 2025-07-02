@@ -345,8 +345,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
         if (initializeNative) {
             mNativeSelectionPopupController =
-                    SelectionPopupControllerImplJni.get()
-                            .init(SelectionPopupControllerImpl.this, mWebContents);
+                    SelectionPopupControllerImplJni.get().init(this, mWebContents);
             ImeAdapterImpl imeAdapter = ImeAdapterImpl.fromWebContents(mWebContents);
             if (imeAdapter != null) imeAdapter.addEventObserver(this);
         }
@@ -1476,15 +1475,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private void setTextHandlesHiddenForDropdownMenu(boolean hide) {
         if (mNativeSelectionPopupController == 0) return;
         SelectionPopupControllerImplJni.get()
-                .setTextHandlesHiddenForDropdownMenu(
-                        mNativeSelectionPopupController, SelectionPopupControllerImpl.this, hide);
+                .setTextHandlesHiddenForDropdownMenu(mNativeSelectionPopupController, hide);
     }
 
     private void setTextHandlesTemporarilyHidden(boolean hide) {
         if (mNativeSelectionPopupController == 0) return;
         SelectionPopupControllerImplJni.get()
-                .setTextHandlesTemporarilyHidden(
-                        mNativeSelectionPopupController, SelectionPopupControllerImpl.this, hide);
+                .setTextHandlesTemporarilyHidden(mNativeSelectionPopupController, hide);
     }
 
     @CalledByNative
@@ -1984,27 +1981,20 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     Object @Nullable [] getTouchHandleRects() {
         if (mNativeSelectionPopupController == 0) return null;
         return SelectionPopupControllerImplJni.get()
-                .getTouchHandleRects(
-                        mNativeSelectionPopupController, SelectionPopupControllerImpl.this);
+                .getTouchHandleRects(mNativeSelectionPopupController);
     }
 
     @NativeMethods
     interface Natives {
         boolean isMagnifierWithSurfaceControlSupported();
 
-        long init(SelectionPopupControllerImpl caller, WebContents webContents);
+        long init(SelectionPopupControllerImpl self, WebContents webContents);
 
-        void setTextHandlesTemporarilyHidden(
-                long nativeSelectionPopupController,
-                SelectionPopupControllerImpl caller,
-                boolean hidden);
+        void setTextHandlesTemporarilyHidden(long nativeSelectionPopupController, boolean hidden);
 
         void setTextHandlesHiddenForDropdownMenu(
-                long nativeSelectionPopupController,
-                SelectionPopupControllerImpl caller,
-                boolean hidden);
+                long nativeSelectionPopupController, boolean hidden);
 
-        Object[] getTouchHandleRects(
-                long nativeSelectionPopupController, SelectionPopupControllerImpl caller);
+        Object[] getTouchHandleRects(long nativeSelectionPopupController);
     }
 }

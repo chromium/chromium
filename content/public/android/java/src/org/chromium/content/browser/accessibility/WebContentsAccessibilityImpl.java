@@ -893,10 +893,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
             mNativeObj =
                     WebContentsAccessibilityImplJni.get()
-                            .init(
-                                    WebContentsAccessibilityImpl.this,
-                                    mDelegate.getWebContents(),
-                                    mAccessibilityNodeInfoBuilder);
+                            .init(this, mDelegate.getWebContents(), mAccessibilityNodeInfoBuilder);
             onNativeInit();
         }
 
@@ -913,10 +910,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         mNativeObj =
                 WebContentsAccessibilityImplJni.get()
-                        .initWithAXTree(
-                                WebContentsAccessibilityImpl.this,
-                                nativeAxTree,
-                                mAccessibilityNodeInfoBuilder);
+                        .initWithAXTree(this, nativeAxTree, mAccessibilityNodeInfoBuilder);
         onNativeInit();
     }
 
@@ -1117,10 +1111,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
             mNativeAssistDataObj =
                     WebContentsAccessibilityImplJni.get()
-                            .initForAssistData(
-                                    WebContentsAccessibilityImpl.this,
-                                    webContents,
-                                    new AssistDataBuilder());
+                            .initForAssistData(this, webContents, new AssistDataBuilder());
 
             WebContentsAccessibilityImplJni.get()
                     .requestAccessibilityTreeSnapshot(
@@ -2269,18 +2260,18 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @NativeMethods
     interface Natives {
         long init(
-                WebContentsAccessibilityImpl caller,
+                WebContentsAccessibilityImpl self,
                 WebContents webContents,
                 AccessibilityNodeInfoBuilder builder);
 
         long initWithAXTree(
-                WebContentsAccessibilityImpl caller,
+                WebContentsAccessibilityImpl self,
                 long axTreePtr,
                 AccessibilityNodeInfoBuilder builder);
 
         // These two methods are only used for one-off accessibility tree snapshots.
         long initForAssistData(
-                WebContentsAccessibilityImpl caller,
+                WebContentsAccessibilityImpl self,
                 @Nullable WebContents webContents,
                 AssistDataBuilder builder);
 

@@ -39,23 +39,18 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
   bool IsCapturingAudio() const override;
 
   // Called from Java methods via JNI.
-  void OnAudioStart(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
-  void OnSoundStart(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
-  void OnSoundEnd(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void OnAudioEnd(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void OnAudioStart(JNIEnv* env);
+  void OnSoundStart(JNIEnv* env);
+  void OnSoundEnd(JNIEnv* env);
+  void OnAudioEnd(JNIEnv* env);
   void OnRecognitionResults(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobjectArray>& strings,
       const base::android::JavaParamRef<jfloatArray>& floats,
       jboolean interim);
   void OnRecognitionError(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
                           jint error);
-  void OnRecognitionEnd(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
+  void OnRecognitionEnd(JNIEnv* env);
 
  private:
   enum State {
