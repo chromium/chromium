@@ -76,7 +76,8 @@ void ProductSpecificationsIconView::OnExecuting(
   tab_helper->OnProductSpecificationsIconClicked();
 
   commerce::ShowProductSpecsConfirmationToast(
-      tab_helper->GetComparisonSetName(), browser_);
+      tab_helper->GetComparisonSetName(),
+      browser_->browser_window_features()->toast_controller());
 }
 
 void ProductSpecificationsIconView::ForceVisibleForTesting(bool is_added) {

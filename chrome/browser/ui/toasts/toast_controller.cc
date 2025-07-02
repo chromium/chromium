@@ -58,6 +58,27 @@ ToastController::ToastController(
 
 ToastController::~ToastController() = default;
 
+// static.
+ToastController* ToastController::MaybeGetForWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab_interface) {
+    return nullptr;
+  }
+
+  BrowserWindowInterface* bwi = tab_interface->GetBrowserWindowInterface();
+
+  if (!bwi) {
+    return nullptr;
+  }
+
+  return bwi->GetFeatures().toast_controller();
+}
+
 void ToastController::Init() {
   CHECK(browser_window_interface_);
   CHECK(browser_subscriptions_.empty());

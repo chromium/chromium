@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-class Browser;
 class GURL;
 class TabStripModel;
+class ToastController;
 
 namespace commerce {
 
@@ -21,7 +21,7 @@ void OpenProductSpecsTabForUrls(const std::vector<GURL>& urls,
 
 // Shows the "added to set" confirmation toast if the toast feature is enabled.
 void ShowProductSpecsConfirmationToast(std::u16string set_name,
-                                       Browser* browser);
+                                       ToastController* toast_controller);
 
 }  // namespace commerce
 

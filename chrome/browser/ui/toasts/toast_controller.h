@@ -27,6 +27,7 @@ enum class ToastId;
 
 namespace content {
 class Page;
+class WebContents;
 }
 
 namespace toasts {
@@ -68,6 +69,11 @@ class ToastController : public views::WidgetObserver,
   explicit ToastController(BrowserWindowInterface* browser_window_interface,
                            const ToastRegistry* toast_registry);
   ~ToastController() override;
+
+  // Returns the controller for the browser that owns `web_contents`, or nullptr
+  // if none.
+  static ToastController* MaybeGetForWebContents(
+      content::WebContents* web_contents);
 
   void Init();
   bool IsShowingToast() const;

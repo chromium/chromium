@@ -9,8 +9,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/ui_utils.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -123,13 +126,11 @@ void ExistingComparisonTableSubMenuModel::AddUrlToSet(const UrlInfo& url_info,
     product_specs_service_->SetUrls(set_uuid, std::move(existing_url_infos));
   }
 
-  Browser* browser = chrome::FindBrowserWithProfile(model()->profile());
-  if (!browser) {
-    // Do nothing.
-    return;
+  if (auto* toast_controller = ToastController::MaybeGetForWebContents(
+          model()->GetTabAtIndex(GetContextIndex())->GetContents())) {
+    ShowProductSpecsConfirmationToast(base::UTF8ToUTF16(set->name()),
+                                      toast_controller);
   }
-
-  ShowProductSpecsConfirmationToast(base::UTF8ToUTF16(set->name()), browser);
 }
 
 }  // namespace commerce

@@ -5,8 +5,9 @@
 #include "chrome/browser/ui/commerce/ui_utils.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -31,19 +32,18 @@ void OpenProductSpecsTabForUrls(const std::vector<GURL>& urls,
 }
 
 void ShowProductSpecsConfirmationToast(std::u16string set_name,
-                                       Browser* browser) {
+                                       ToastController* toast_controller) {
+  if (!toast_controller) {
+    return;
+  }
+
   if (!base::FeatureList::IsEnabled(commerce::kCompareConfirmationToast)) {
     return;
   }
 
-  ToastController* const toast_controller =
-      browser->GetFeatures().toast_controller();
-  if (toast_controller) {
-    ToastParams params = ToastParams(ToastId::kAddedToComparisonTable);
-
-    params.body_string_replacement_params = {set_name};
-    toast_controller->MaybeShowToast(ToastParams(std::move(params)));
-  }
+  ToastParams params(ToastId::kAddedToComparisonTable);
+  params.body_string_replacement_params = {set_name};
+  toast_controller->MaybeShowToast(std::move(params));
 }
 
 }  // namespace commerce

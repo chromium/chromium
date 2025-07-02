@@ -217,6 +217,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/commerce:commerce",
+      "//chrome/browser/ui/toasts",
       "//components/commerce/core/product_specifications:product_specifications",
       "//components/tab_groups",
     ]
@@ -585,9 +586,7 @@ if (!is_android) {
 
     if (!is_chromeos) {
       # ChromeOS does not use desktop widgets.
-      sources += [
-        "tab_dialog_manager_desktop_widget_uitest.cc",
-      ]
+      sources += [ "tab_dialog_manager_desktop_widget_uitest.cc" ]
     }
 
     deps = [
