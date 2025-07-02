@@ -85,9 +85,9 @@ class ExtensionTabUtil {
       "Cannot navigate to a chrome-untrusted:// page.";
   static constexpr char kFileUrlsNotAllowedInExtensionNavigations[] =
       "Cannot navigate to a file URL without local file access.";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   static constexpr char kTabsKey[] = "tabs";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   enum ScrubTabBehaviorType {
     kScrubTabFully,
