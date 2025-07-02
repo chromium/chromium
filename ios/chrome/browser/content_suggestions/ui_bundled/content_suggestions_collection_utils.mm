@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 
+#import <algorithm>
+
 #import "base/i18n/rtl.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
@@ -37,6 +39,9 @@ const CGFloat kSearchFieldMinMargin = 8;
 
 const CGFloat kTopSpacingMaterial = 24;
 
+// The special margins used by MIA.
+const CGFloat kMIASearchFieldMinMargin = 24;
+
 // Top margin for the doodle.
 const CGFloat kDoodleTopMarginRegularXRegular = 162;
 const CGFloat kDoodleTopMarginOther = 45;
@@ -46,6 +51,9 @@ const CGFloat kDoodleScaledTopMarginOther = 10;
 
 // Top margin for the search field
 const CGFloat kSearchFieldTopMargin = 22;
+
+// Top margin for the search field for single button MIA variations.
+const CGFloat kMIASearchFieldTopMargin = 29;
 
 // Bottom margin for the search field.
 const CGFloat kNTPShrunkLogoSearchFieldBottomPadding = 20;
@@ -189,20 +197,26 @@ CGFloat HeaderSeparatorHeight() {
 }
 
 CGFloat SearchFieldTopMargin() {
+  if (ShouldEnlargeNTPFakeboxForMIA()) {
+    return kMIASearchFieldTopMargin;
+  }
   return GetDeprecateFeedHeaderParameterValueAsDouble(
       kDeprecateFeedHeaderParameterSearchFieldTopMargin,
       /*default_value=*/kSearchFieldTopMargin);
 }
 
 CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
-  if (!IsCompactWidth(trait_collection) && !IsCompactHeight(trait_collection)) {
+  if (IsRegularXRegularSizeClass(trait_collection)) {
     return kSearchFieldLarge;
   }
 
+  if (ShouldEnlargeNTPFakeboxForMIA() && IsCompactWidth(trait_collection)) {
+    return std::max(width - kMIASearchFieldMinMargin * 2, kSearchFieldSmallMin);
+  }
+
   // Special case for narrow sizes.
-  return std::max(
-      kSearchFieldSmallMin,
-      std::min(kSearchFieldSmall, width - kSearchFieldMinMargin * 2));
+  return std::clamp(width - kSearchFieldMinMargin * 2, kSearchFieldSmallMin,
+                    kSearchFieldSmall);
 }
 
 CGFloat FakeOmniboxHeight() {
