@@ -216,9 +216,6 @@ class Buffer::Texture : public viz::ContextLostObserver {
   // Returns the ClientSharedImage for this texture.
   gpu::ClientSharedImage* shared_image() const { return shared_image_.get(); }
 
-  // Returns the mailbox for this texture.
-  gpu::Mailbox mailbox() const { return shared_image_->mailbox(); }
-
   // Returns sync token to wait before read.
   gpu::SyncToken sync_token() { return sync_token_; }
 
@@ -731,21 +728,15 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
       contents_texture->UpdateSharedImage(std::move(acquire_fence));
       sync_token = contents_texture->sync_token();
     }
-    uint32_t texture_target =
-        contents_texture->shared_image()->GetTextureTarget();
 
-    viz::TransferableResource resource;
-    resource.set_sync_token(sync_token);
-    resource.id = resource_manager->AllocateResourceId();
-    resource.size = GetSize();
-    resource.set_mailbox(contents_texture->mailbox());
-    resource.set_texture_target(texture_target);
-    resource.is_overlay_candidate = is_overlay_candidate_;
-    resource.format = format_;
-    resource.resource_source =
-        viz::TransferableResource::ResourceSource::kExoBuffer;
+    auto resource = viz::TransferableResource::Make(
+        contents_texture_->shared_image(),
+        viz::TransferableResource::ResourceSource::kExoBuffer, sync_token,
+        {
+            .is_overlay_candidate = is_overlay_candidate_,
+        });
+
     resource.synchronization_type = prev_synchronization_type;
-
     if (context_provider->ContextCapabilities().chromium_gpu_fence &&
         request_release_fence) {
       resource.synchronization_type =
@@ -754,6 +745,7 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
 
     // The contents texture will be released when no longer used by the
     // compositor.
+    resource.id = resource_manager->AllocateResourceId();
     resource_manager->SetResourceReleaseCallback(
         resource.id,
         base::BindOnce(&Buffer::Texture::ReleaseSharedImage,
@@ -782,20 +774,16 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
                      release_contents_callback_.callback(), next_commit_id_,
                      /*release_fence=*/gfx::GpuFenceHandle()));
 
-  viz::TransferableResource resource;
+  auto resource = viz::TransferableResource::Make(
+      texture->shared_image(),
+      viz::TransferableResource::ResourceSource::kExoBuffer,
+      texture_->sync_token());
+
   resource.synchronization_type = prev_synchronization_type;
-  resource.id = resource_manager->AllocateResourceId();
-  resource.format = viz::SinglePlaneFormat::kRGBA_8888;
-  resource.size = GetSize();
-  resource.resource_source =
-      viz::TransferableResource::ResourceSource::kExoBuffer;
-  resource.set_mailbox(texture->mailbox());
-  resource.set_sync_token(texture_->sync_token());
-  resource.set_texture_target(GL_TEXTURE_2D);
-  resource.is_overlay_candidate = false;
 
   // The mailbox texture will be released when no longer used by the
   // compositor.
+  resource.id = resource_manager->AllocateResourceId();
   resource_manager->SetResourceReleaseCallback(
       resource.id,
       base::BindOnce(&Buffer::Texture::Release, base::Unretained(texture),
