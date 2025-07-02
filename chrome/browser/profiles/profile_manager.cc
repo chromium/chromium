@@ -241,7 +241,7 @@ void ProfileSizeTask(const base::FilePath& path, int enabled_app_count) {
 
   size = base::ComputeDirectorySize(path);
   size_MB = static_cast<int>(size / kBytesInOneMB);
-  UMA_HISTOGRAM_COUNTS_10000("Profile.TotalSizeRecursive", size_MB);
+  UMA_HISTOGRAM_COUNTS_100000("Profile.TotalSizeRecursive", size_MB);
 
   size = ComputeFilesSize(path, FILE_PATH_LITERAL("History"));
   size_MB = static_cast<int>(size / kBytesInOneMB);
