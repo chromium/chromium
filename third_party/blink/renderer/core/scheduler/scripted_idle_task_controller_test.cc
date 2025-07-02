@@ -162,7 +162,7 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
   ~IdleTaskControllerFrameScheduler() override = default;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override {
-    DCHECK(WTF::IsMainThread());
+    DCHECK(IsMainThread());
     return scripted_idle_scheduler_->TaskRunner();
   }
 

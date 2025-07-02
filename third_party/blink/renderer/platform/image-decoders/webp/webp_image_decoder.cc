@@ -127,7 +127,7 @@ bool IsSimpleLossyWebPImage(const sk_sp<SkData>& blob) {
 // This method parses |blob|'s header and emits a UMA with the file format, as
 // defined by WebP, see WebPFileFormat.
 void UpdateWebPFileFormatUMA(const sk_sp<SkData>& blob) {
-  if (!IsMainThread()) {
+  if (!blink::IsMainThread()) {
     return;
   }
 

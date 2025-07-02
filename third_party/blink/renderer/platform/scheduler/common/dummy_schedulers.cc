@@ -72,7 +72,7 @@ class DummyFrameScheduler : public FrameScheduler {
   DummyFrameScheduler& operator=(const DummyFrameScheduler&) = delete;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override {
-    DCHECK(WTF::IsMainThread());
+    DCHECK(IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
@@ -231,13 +231,13 @@ class SimpleMainThread : public MainThread {
     if (main_thread_task_runner_for_testing_) {
       return main_thread_task_runner_for_testing_;
     }
-    DCHECK(WTF::IsMainThread());
+    DCHECK(IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   ThreadScheduler* Scheduler() override { return scheduler_ptr_; }
 
-  bool IsCurrentThread() const { return WTF::IsMainThread(); }
+  bool IsCurrentThread() const { return IsMainThread(); }
 
   void SetMainThreadTaskRunnerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -291,17 +291,17 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
 
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override {
-    DCHECK(WTF::IsMainThread());
+    DCHECK(IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override {
-    DCHECK(WTF::IsMainThread());
+    DCHECK(IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> CleanupTaskRunner() override {
-    DCHECK(WTF::IsMainThread());
+    DCHECK(IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
@@ -320,7 +320,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
-    DCHECK(WTF::IsMainThread());
+    DCHECK(IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
@@ -371,11 +371,11 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
     return CreateDummyPageScheduler(Isolate());
   }
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
-    DCHECK(WTF::IsMainThread());
+    DCHECK(IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
-    DCHECK(WTF::IsMainThread());
+    DCHECK(IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
   WebThreadScheduler& GetMainThreadScheduler() override {

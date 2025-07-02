@@ -82,7 +82,7 @@ bool FederatedCredential::IsFederatedCredential() const {
 void SetIdpSigninStatus(const blink::LocalFrameToken& local_frame_token,
                         const url::Origin& origin,
                         mojom::blink::IdpSigninStatus status) {
-  CHECK(WTF::IsMainThread());
+  CHECK(IsMainThread());
   LocalFrame* local_frame = LocalFrame::FromFrameToken(local_frame_token);
   // Null checking DomWindow() and GetFrame() for detached frame case. See
   // https://crbug.com/382646175 for details.

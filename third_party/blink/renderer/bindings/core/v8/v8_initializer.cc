@@ -567,7 +567,7 @@ BASE_FEATURE(kWebAssemblyUnlimitedSyncCompilation,
 
 bool WasmModuleOverride(const v8::FunctionCallbackInfo<v8::Value>& args) {
   // Return false if we want the base behavior to proceed.
-  if (!WTF::IsMainThread() || args.Length() < 1 ||
+  if (!IsMainThread() || args.Length() < 1 ||
       base::FeatureList::IsEnabled(kWebAssemblyUnlimitedSyncCompilation)) {
     return false;
   }
@@ -593,7 +593,7 @@ bool WasmModuleOverride(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
 bool WasmInstanceOverride(const v8::FunctionCallbackInfo<v8::Value>& args) {
   // Return false if we want the base behavior to proceed.
-  if (!WTF::IsMainThread() || args.Length() < 1 ||
+  if (!IsMainThread() || args.Length() < 1 ||
       base::FeatureList::IsEnabled(kWebAssemblyUnlimitedSyncCompilation)) {
     return false;
   }

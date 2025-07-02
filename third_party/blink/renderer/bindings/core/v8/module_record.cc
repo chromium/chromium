@@ -153,7 +153,7 @@ Vector<ModuleRequest> ModuleRecord::ModuleRequests(
   Vector<ModuleRequest> requests;
   requests.ReserveInitialCapacity(length);
   bool needs_text_position =
-      !WTF::IsMainThread() ||
+      !IsMainThread() ||
       probe::ToCoreProbeSink(ExecutionContext::From(script_state))
           ->HasDevToolsSessions();
 

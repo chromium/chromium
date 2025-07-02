@@ -21,7 +21,7 @@ struct Environment {
     CHECK(base::i18n::InitializeICU());
     mojo::core::Init();
     WTF::Partitions::Initialize();
-    WTF::Initialize();
+    blink::InitializeWtf();
   }
   // used by ICU integration.
   base::AtExitManager at_exit_manager;

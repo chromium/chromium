@@ -146,7 +146,7 @@ scoped_refptr<StringImpl> AddStaticASCIILiteral(
 }
 
 void StringStatics::Init() {
-  DCHECK(IsMainThread());
+  DCHECK(blink::IsMainThread());
 
   StringImpl::InitStatics();
 

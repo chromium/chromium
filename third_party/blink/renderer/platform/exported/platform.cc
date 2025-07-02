@@ -138,7 +138,7 @@ WebThemeEngine* Platform::ThemeEngine() {
 void Platform::InitializeBlink() {
   DCHECK(!did_initialize_blink_);
   WTF::Partitions::Initialize();
-  WTF::Initialize();
+  InitializeWtf();
   Length::Initialize();
   ProcessHeap::Init();
   ThreadState::AttachMainThread();
@@ -224,13 +224,13 @@ void Platform::CreateMainThreadForTesting() {
 }
 
 void Platform::SetMainThreadTaskRunnerForTesting() {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
   DCHECK(Thread::MainThread()->IsSimpleMainThread());
   scheduler::SetMainThreadTaskRunnerForTesting();
 }
 
 void Platform::UnsetMainThreadTaskRunnerForTesting() {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
   DCHECK(Thread::MainThread()->IsSimpleMainThread());
   scheduler::UnsetMainThreadTaskRunnerForTesting();
 }

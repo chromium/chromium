@@ -100,7 +100,7 @@ ScriptCacheConsumer::State ScriptCacheConsumer::AdvanceState(
 }
 
 void ScriptCacheConsumer::RunTaskOffThread() {
-  DCHECK(!WTF::IsMainThread());
+  DCHECK(!IsMainThread());
 
   TRACE_EVENT_WITH_FLOW1(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
@@ -128,7 +128,7 @@ void ScriptCacheConsumer::RunTaskOffThread() {
 }
 
 void ScriptCacheConsumer::PostFinishCallbackTask() {
-  DCHECK(!WTF::IsMainThread());
+  DCHECK(!IsMainThread());
   CHECK(finish_callback_task_runner_);
   PostCrossThreadTask(
       *finish_callback_task_runner_, FROM_HERE,
@@ -137,7 +137,7 @@ void ScriptCacheConsumer::PostFinishCallbackTask() {
 }
 
 void ScriptCacheConsumer::RunMergeTaskOffThread() {
-  DCHECK(!WTF::IsMainThread());
+  DCHECK(!IsMainThread());
   DCHECK_EQ(state_, State::kFinishedAndReady);
 
   TRACE_EVENT_WITH_FLOW1(
@@ -165,7 +165,7 @@ void ScriptCacheConsumer::NotifyClientWaiting(
     ScriptCacheConsumerClient* client,
     ClassicScript* classic_script,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
 
   CHECK(!finish_callback_client_);
   finish_callback_client_ = client;
@@ -212,7 +212,7 @@ void ScriptCacheConsumer::NotifyClientWaiting(
 }
 
 void ScriptCacheConsumer::CallFinishCallback() {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
 
   ScriptCacheConsumerClient* client = finish_callback_client_.Get();
 

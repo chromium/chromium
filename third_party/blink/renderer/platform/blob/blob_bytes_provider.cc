@@ -246,7 +246,7 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
 
 // This keeps the process alive while blobs are being transferred.
 void BlobBytesProvider::IncreaseChildProcessRefCount() {
-  if (!WTF::IsMainThread()) {
+  if (!IsMainThread()) {
     PostCrossThreadTask(
         *Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()),
         FROM_HERE,
@@ -257,7 +257,7 @@ void BlobBytesProvider::IncreaseChildProcessRefCount() {
 }
 
 void BlobBytesProvider::DecreaseChildProcessRefCount() {
-  if (!WTF::IsMainThread()) {
+  if (!IsMainThread()) {
     PostCrossThreadTask(
         *Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()),
         FROM_HERE,

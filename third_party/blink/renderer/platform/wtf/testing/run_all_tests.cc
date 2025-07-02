@@ -42,6 +42,6 @@ int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   base::test::InitScopedFeatureListForTesting(scoped_feature_list);
   WTF::Partitions::Initialize();
-  WTF::Initialize();
+  blink::InitializeWtf();
   return base::RunUnitTestsUsingBaseTestSuite(argc, argv);
 }

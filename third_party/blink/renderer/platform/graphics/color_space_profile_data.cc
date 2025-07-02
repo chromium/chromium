@@ -88,14 +88,14 @@ static_assert(sizeof(kBt601ColorProfile) == 380u);
 }  // namespace
 
 void Bt709ColorProfileData(Vector<char>& data) {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
   DCHECK(data.empty());
 
   data.AppendSpan(base::as_byte_span(kBt709ColorProfile));
 }
 
 void Bt601ColorProfileData(Vector<char>& data) {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
   DCHECK(data.empty());
 
   data.AppendSpan(base::as_byte_span(kBt601ColorProfile));

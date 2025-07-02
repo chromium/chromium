@@ -104,7 +104,7 @@ TestingPlatformSupport::TestingPlatformSupport()
     : old_platform_(Platform::Current()),
       interface_broker_(base::MakeRefCounted<TestingBrowserInterfaceBroker>()) {
   DCHECK(old_platform_);
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
 }
 
 TestingPlatformSupport::~TestingPlatformSupport() {
@@ -333,7 +333,7 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   Platform::SetCurrentPlatformForTesting(dummy_platform_.get());
 
   WTF::Partitions::Initialize();
-  WTF::Initialize();
+  InitializeWtf();
   Length::Initialize();
 
   // This must be called after WTF::Initialize(), because ThreadSpecific<>

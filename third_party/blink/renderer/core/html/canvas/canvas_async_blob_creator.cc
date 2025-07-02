@@ -310,7 +310,7 @@ void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
   // not implemented, so the idle task can take a long time even when the thread
   // is not busy.
   bool use_idle_encoding =
-      WTF::IsMainThread() && (mime_type_ != kMimeTypeWebp) &&
+      IsMainThread() && (mime_type_ != kMimeTypeWebp) &&
       (enforce_idle_encoding_for_test_ ||
        !RuntimeEnabledFeatures::NoIdleEncodingForWebTestsEnabled());
 

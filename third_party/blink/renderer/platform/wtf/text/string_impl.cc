@@ -235,7 +235,7 @@ const StaticStringsTable& StringImpl::AllStaticStrings() {
 }
 
 void StringImpl::FreezeStaticStrings() {
-  DCHECK(IsMainThread());
+  DCHECK(blink::IsMainThread());
 
 #if DCHECK_IS_ON()
   g_allow_creation_of_static_strings = false;
@@ -292,7 +292,7 @@ StringImpl* StringImpl::CreateStatic(base::span<const char> string) {
   impl->AssertHashIsCorrect();
 #endif
 
-  DCHECK(IsMainThread());
+  DCHECK(blink::IsMainThread());
   highest_static_string_length_ =
       std::max(highest_static_string_length_, narrowed_length);
   StaticStrings().insert(hash, impl);

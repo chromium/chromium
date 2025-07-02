@@ -35,13 +35,13 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 WTF_EXPORT extern base::PlatformThreadId g_main_thread_identifier;
 
 // This function must be called exactly once from the main thread before using
 // anything else in WTF.
-WTF_EXPORT void Initialize();
+WTF_EXPORT void InitializeWtf();
 
 // thread_local variables can't be exported on Windows, so we use an extra
 // function call on component builds. Also, thread_local on Android is emulated
@@ -55,8 +55,6 @@ inline bool IsMainThread() {
 }
 #endif
 
-}  // namespace WTF
-
-using WTF::IsMainThread;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_H_

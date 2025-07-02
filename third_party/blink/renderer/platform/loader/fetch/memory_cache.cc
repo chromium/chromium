@@ -83,7 +83,7 @@ void MemoryCacheEntry::ClearResourceWeak(const LivenessBroker& info) {
 
 // static
 MemoryCache* MemoryCache::Get() {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
   if (!g_memory_cache) {
     g_memory_cache = new Persistent<MemoryCache>(
         MakeGarbageCollected<MemoryCache>(Thread::MainThread()->GetTaskRunner(
@@ -148,7 +148,7 @@ void MemoryCache::Add(Resource* resource) {
 
 void MemoryCache::AddInternal(ResourceMap* resource_map,
                               MemoryCacheEntry* entry) {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
   DCHECK(resource_map);
 
   Resource* resource = entry->GetResource();
@@ -169,7 +169,7 @@ void MemoryCache::AddInternal(ResourceMap* resource_map,
 }
 
 void MemoryCache::Remove(Resource* resource) {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
   DCHECK(resource);
   // Resources can be created with garbage urls in error cases. These Resources
   // should never be added to the cache (AddInternal() DCHECKs that the url is
@@ -197,7 +197,7 @@ void MemoryCache::Remove(Resource* resource) {
 
 void MemoryCache::RemoveInternal(ResourceMap* resource_map,
                                  const ResourceMap::iterator& it) {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
   DCHECK(resource_map);
 
   Resource* resource = it->value->GetResource();
@@ -232,7 +232,7 @@ Resource* MemoryCache::ResourceForURLForTesting(
 
 Resource* MemoryCache::ResourceForURL(const KURL& resource_url,
                                       const String& cache_identifier) const {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
   if (!resource_url.IsValid() || resource_url.IsNull())
     return nullptr;
   DCHECK(!cache_identifier.IsNull());
@@ -253,7 +253,7 @@ Resource* MemoryCache::ResourceForURL(const KURL& resource_url,
 
 HeapVector<Member<Resource>> MemoryCache::ResourcesForURL(
     const KURL& resource_url) const {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
   KURL url = RemoveFragmentIdentifierIfNeeded(resource_url);
   HeapVector<Member<Resource>> results;
   for (const auto& resource_maps_it : resource_maps_) {

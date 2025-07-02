@@ -85,8 +85,9 @@ inline void ThreadSpecific<T>::Destroy(void* ptr) {
   // longer has a graceful shutdown sequence. Be careful to call this function
   // (which can be re-entrant) while the pointer is still set, to avoid lazily
   // allocating Threading after it is destroyed.
-  if (IsMainThread())
+  if (blink::IsMainThread()) {
     return;
+  }
 
   // The memory was allocated via Partitions::FastZeroedMalloc, and then the
   // object was placement-newed. To destroy, we must call the delete expression,
@@ -128,7 +129,7 @@ inline ThreadSpecific<T>::operator T*() {
     // Even if we didn't realize we're on the main thread, we might still be.
     // We need to double-check so that |main_thread_storage_| is populated.
     if (!kMainThreadAlwaysChecksTLS && ptr != &main_thread_storage_ &&
-        IsMainThread()) [[unlikely]] {
+        blink::IsMainThread()) [[unlikely]] {
       main_thread_storage_ = *ptr;
     }
 
