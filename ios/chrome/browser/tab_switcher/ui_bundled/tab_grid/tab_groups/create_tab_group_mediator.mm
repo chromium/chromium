@@ -125,16 +125,16 @@
 - (instancetype)initTabGroupEditionWithConsumer:
                     (id<TabGroupCreationConsumer>)consumer
                                        tabGroup:(const TabGroup*)tabGroup
-                                   webStateList:(WebStateList*)webStateList
+                                        browser:(Browser*)browser
                                   faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super init];
   if (self) {
     CHECK(consumer);
     CHECK(tabGroup);
-    CHECK(webStateList);
+    CHECK(browser);
     _consumer = consumer;
     _tabGroup = tabGroup;
-    _webStateList = webStateList;
+    _webStateList = browser->GetWebStateList();
     // Observe the WebStateList in the case the group disappears.
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);

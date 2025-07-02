@@ -16,7 +16,6 @@ class Browser;
 class FaviconLoader;
 class TabGroup;
 @protocol TabGroupCreationConsumer;
-class WebStateList;
 
 namespace web {
 class WebStateID;
@@ -42,12 +41,12 @@ class WebStateID;
 // Init the tab group creation mediator with:
 // - `consumer` the UI that will receive updates.
 // - `tabGroup` the group to edit.
-// - `webStateList` the web state list containing `tabGroup`.
+// - `browser` the browser containing the `tabGroup`.
 // `faviconLoader`: used to fetch favicons on Google server, can be `nullptr`.
 - (instancetype)initTabGroupEditionWithConsumer:
                     (id<TabGroupCreationConsumer>)consumer
                                        tabGroup:(const TabGroup*)tabGroup
-                                   webStateList:(WebStateList*)webStateList
+                                        browser:(Browser*)browser
                                   faviconLoader:(FaviconLoader*)faviconLoader;
 
 // Disconnects the mediator's dependencies.

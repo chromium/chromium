@@ -118,7 +118,7 @@
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupEditionWithConsumer:_viewController
                                tabGroup:_tabGroup
-                           webStateList:browser->GetWebStateList()
+                                browser:browser
                           faviconLoader:faviconLoader];
     _mediator.delegate = self;
   } else {
