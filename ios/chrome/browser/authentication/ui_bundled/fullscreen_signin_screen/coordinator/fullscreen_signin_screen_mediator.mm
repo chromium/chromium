@@ -79,6 +79,7 @@ enum class SigninScreenState {
   // State of the sign-in screen.
   SigninScreenState _screenState;
   ChangeProfileContinuationProvider _changeProfileContinuationProvider;
+  BOOL _signinInProgress;
 }
 
 - (instancetype)
@@ -173,6 +174,8 @@ enum class SigninScreenState {
 
 - (void)startSignInWithAuthenticationFlow:
     (AuthenticationFlow*)authenticationFlow {
+  CHECK(!_signinInProgress, base::NotFatalUntil::M145);
+  _signinInProgress = YES;
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
 
@@ -180,7 +183,7 @@ enum class SigninScreenState {
   // signed-in.
   CHECK(!_authenticationService->HasPrimaryIdentity(
             signin::ConsentLevel::kSignin),
-        base::NotFatalUntil::M140);
+        base::NotFatalUntil::M145);
   [self.consumer setUIEnabled:NO];
   authenticationFlow.delegate = self;
   [authenticationFlow startSignIn];
@@ -306,6 +309,7 @@ enum class SigninScreenState {
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {
+  _signinInProgress = NO;
   [self.consumer setUIEnabled:YES];
   if (result != SigninCoordinatorResultSuccess) {
     return;
@@ -384,7 +388,7 @@ enum class SigninScreenState {
   return NO;
 }
 
-#pragma mark -  IdentityManagerObserver
+#pragma mark -  IdentityManagerObserverBridgeDelegate
 
 - (void)onAccountsOnDeviceChanged {
   if (![self selectedIdentityIsValid]) {
@@ -397,6 +401,16 @@ enum class SigninScreenState {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   [self handleIdentityUpdated:identity];
+}
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  if (_signinInProgress) {
+    return;
+  }
+  CoreAccountInfo primaryAccount =
+      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  CHECK(primaryAccount.IsEmpty(), base::NotFatalUntil::M145);
 }
 
 @end

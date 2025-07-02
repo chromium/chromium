@@ -536,7 +536,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   // AuthenticationFlow should not switch to the same identity.
   CHECK(![currentIdentity isEqual:_identityToSignIn],
-        base::NotFatalUntil::M140);
+        base::NotFatalUntil::M145);
   if (!currentIdentity) {
     _unsyncedDataTypes = syncer::DataTypeSet();
     [self continueFlow];
