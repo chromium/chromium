@@ -70,7 +70,7 @@
 //     void NotifyBar(int x, int y) {
 //       // Use manual iteration when Notify() is not suitable, e.g.
 //       // if passing different args to different observers is needed.
-//       for (Observer& obs : observers_) {
+//       for (Observer& observer : observers_) {
 //         gfx::Point local_point = GetLocalPoint(obs, x, y);
 //         obs.OnBar(this, local_point.x(), local_point.y());
 //       }
@@ -308,7 +308,7 @@ class ObserverList {
   // Add an observer to this list. An observer should not be added to the same
   // list more than once.
   //
-  // Precondition: obs != nullptr
+  // Precondition: observer != nullptr
   // Precondition: !HasObserver(obs)
   void AddObserver(ObserverType* obs) {
     DCHECK(obs);
@@ -343,15 +343,15 @@ class ObserverList {
   }
 
   // Determine whether a particular observer is in the list.
-  bool HasObserver(const ObserverType* obs) const {
+  bool HasObserver(const ObserverType* observer) const {
     // Client code passing null could be confused by the treatment of observers
     // removed mid-iteration. TODO(crbug.com/40590447): This should
     // probably DCHECK, but some client code currently does pass null.
-    if (obs == nullptr) {
+    if (observer == nullptr) {
       return false;
     }
-    return std::ranges::find_if(observers_, [obs](const auto& o) {
-             return o.IsEqual(obs);
+    return std::ranges::find_if(observers_, [observer](const auto& o) {
+             return o.IsEqual(observer);
            }) != observers_.end();
   }
 
