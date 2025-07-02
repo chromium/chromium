@@ -10,10 +10,11 @@ import {OffscreenCommandType} from '../offscreen_command_type.js';
  */
 class OffscreenAudio {
   private cancelTone_: HTMLAudioElement =
-      new Audio('earcons/null_selection.wav');
+      new Audio('dictation/earcons/null_selection.wav');
   private startTone_: HTMLAudioElement =
-      new Audio('earcons/audio_initiate.wav');
-  private endTone_: HTMLAudioElement = new Audio('earcons/audio_end.wav');
+      new Audio('dictation/earcons/audio_initiate.wav');
+  private endTone_: HTMLAudioElement =
+      new Audio('dictation/earcons/audio_end.wav');
 
   constructor() {
     Messenger.registerHandler(
