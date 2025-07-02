@@ -4514,34 +4514,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExploreSites.CategoryClick" enum="ExploreSitesCategories"
-    expires_after="never">
-<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
-
-  <owner>dewittj@chromium.org</owner>
-  <owner>petewil@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    The number of times the user clicked on a site in a category with the
-    selected type on the Explore Sites page.
-
-    This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
-  </summary>
-</histogram>
-
-<histogram name="ExploreSites.MonthlyHostCount" units="hosts"
-    expires_after="2023-11-12">
-  <owner>dimich@chromium.org</owner>
-  <summary>
-    Number of unique hosts visited by the user during the last 30 days. Reported
-    at most once a week for all users on Android only, with a 5 second delay
-    after startup. This is different from History.MonthlyHostCount which is
-    reported for a percentage of startups, to avoid bias toward more active
-    users.
-  </summary>
-</histogram>
-
 <histogram name="Feedback.ChromeOSApp.CanContactUser"
     enum="FeedbackAppContactUserConsentType" expires_after="2026-07-30">
   <owner>longbowei@google.com</owner>
