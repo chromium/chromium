@@ -450,6 +450,11 @@ bool GlicFreController::IsShowingDialog() const {
   return !!fre_widget_;
 }
 
+bool GlicFreController::IsShowingDialogAndStateInitialized() const {
+  return !!fre_widget_ &&
+         (webui_state_ != mojom::FreWebUiState::kUninitialized);
+}
+
 gfx::Size GlicFreController::GetFreInitialSize() {
   return gfx::Size(features::kGlicFreInitialWidth.Get(),
                    features::kGlicFreInitialHeight.Get());

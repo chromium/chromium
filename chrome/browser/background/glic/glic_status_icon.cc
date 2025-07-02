@@ -55,19 +55,23 @@ gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
 #endif
 }
 
-int GetTooltipMessageId() {
+int GetTooltipMessageId(bool panel_showing) {
   switch (chrome::GetChannel()) {
     case version_info::Channel::CANARY: {
-      return IDS_GLIC_STATUS_ICON_TOOLTIP_CANARY;
+      return panel_showing ? IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_CANARY
+                           : IDS_GLIC_STATUS_ICON_TOOLTIP_CANARY;
     }
     case version_info::Channel::DEV: {
-      return IDS_GLIC_STATUS_ICON_TOOLTIP_DEV;
+      return panel_showing ? IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_DEV
+                           : IDS_GLIC_STATUS_ICON_TOOLTIP_DEV;
     }
     case version_info::Channel::BETA: {
-      return IDS_GLIC_STATUS_ICON_TOOLTIP_BETA;
+      return panel_showing ? IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_BETA
+                           : IDS_GLIC_STATUS_ICON_TOOLTIP_BETA;
     }
     default: {
-      return IDS_GLIC_STATUS_ICON_TOOLTIP;
+      return panel_showing ? IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE
+                           : IDS_GLIC_STATUS_ICON_TOOLTIP;
     }
   }
 }
@@ -82,7 +86,7 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::GLIC_ICON, GetIconForTheme(native_theme),
-      l10n_util::GetStringUTF16(GetTooltipMessageId()));
+      l10n_util::GetStringUTF16(GetTooltipMessageId(controller_->IsShowing())));
 
   // If the StatusIcon cannot be created, don't configure it.
   if (!status_icon_) {
@@ -215,6 +219,8 @@ void GlicStatusIcon::OnLastActiveGlicProfileChanged(Profile* profile) {
 void GlicStatusIcon::PanelStateChanged(const mojom::PanelState& panel_state,
                                        Browser* attached_browser) {
   UpdateVisibilityOfShowAndCloseInContextMenu();
+  status_icon_->SetToolTip(
+      l10n_util::GetStringUTF16(GetTooltipMessageId(controller_->IsShowing())));
 }
 
 void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {

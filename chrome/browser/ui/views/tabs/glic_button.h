@@ -14,6 +14,10 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/fre/glic_fre.mojom.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 class PrefService;
 
 namespace glic {
@@ -83,6 +87,23 @@ class GlicButton : public TabStripNudgeButton,
   PrefService* profile_prefs() {
     return tab_strip_controller_->GetProfile()->GetPrefs();
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  void PanelStateChanged(bool active);
+
+  void OnFreWebUiStateChanged(mojom::FreWebUiState new_state);
+
+  // Used to update the tooltip text when the showing states of the Glic
+  // window/FRE change.
+  void UpdateTooltipText();
+
+  // Callback subscription for listening to changes to the Glic window
+  // activation changes.
+  base::CallbackListSubscription glic_window_activation_subscription_;
+
+  // Callback subscription for listening to changes to the FRE WebUI state.
+  base::CallbackListSubscription fre_subscription_;
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
   // The model adapter for the context menu.
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;

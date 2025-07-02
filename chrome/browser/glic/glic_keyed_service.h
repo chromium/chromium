@@ -117,6 +117,8 @@ class GlicKeyedService : public KeyedService {
   // Virtual for testing.
   virtual bool IsWindowDetached() const;
 
+  bool IsWindowOrFreShowing() const;
+
   // Private API for the glic WebUI.
 
   // CreateTab is used by both the FRE page and the glic web client to open a

@@ -35,8 +35,11 @@
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#endif
+#include "chrome/browser/glic/widget/glic_window_controller.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace glic {
 
@@ -83,10 +86,48 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // Subscribe to changes in state of glic FRE dialog and glic window.
+  glic::GlicKeyedService* service =
+      glic::GlicKeyedService::Get(tab_strip_controller_->GetProfile());
+  glic_window_activation_subscription_ =
+      service->window_controller().AddWindowActivationChangedCallback(
+          base::BindRepeating(&GlicButton::PanelStateChanged,
+                              base::Unretained(this)));
+
+  GlicFreController* fre_controller =
+      service->window_controller().fre_controller();
+  fre_subscription_ =
+      fre_controller->AddWebUiStateChangedCallback(base::BindRepeating(
+          &GlicButton::OnFreWebUiStateChanged, base::Unretained(this)));
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 GlicButton::~GlicButton() = default;
 
+#if BUILDFLAG(ENABLE_GLIC)
+void GlicButton::OnFreWebUiStateChanged(mojom::FreWebUiState new_state) {
+  UpdateTooltipText();
+}
+
+void GlicButton::PanelStateChanged(bool active) {
+  UpdateTooltipText();
+}
+
+void GlicButton::UpdateTooltipText() {
+  GlicKeyedService* service =
+      GlicKeyedService::Get(tab_strip_controller_->GetProfile());
+  // Set tooltip and accessibility text based on whether any glic UI (window or
+  // FRE) is open.
+  std::u16string tooltip_text = l10n_util::GetStringUTF16(
+      service->IsWindowOrFreShowing() ? IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE
+                                      : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
+
+  SetTooltipText(tooltip_text);
+  GetViewAccessibility().SetName(tooltip_text);
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 void GlicButton::SetIsShowingNudge(bool is_showing) {
   if (is_showing) {
