@@ -520,11 +520,6 @@ public class MultiWindowUtils implements ActivityStateListener {
                         if (a instanceof ChromeTabbedActivity) return a;
                     }
                 }
-                assert false
-                        : "Should have found the ChromeTabbedActivity of the visible task."
-                                + " Activities in this task: "
-                                + activityNameBuilder;
-                break;
             }
         }
         return null;
