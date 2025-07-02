@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/variation_selector_mode.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -91,6 +92,8 @@ hb_codepoint_t GetGlyphForCJKVSFromFontWithVS() {
 }
 
 }  // namespace
+
+class HarfBuzzFaceTest : public FontTestBase {};
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestFontWithVS) {
   HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);

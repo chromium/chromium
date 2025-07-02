@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 
+#include "skia/ext/codec_utils.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -18,7 +19,13 @@
 
 namespace blink {
 
-class EditingUtilitiesTest : public EditingTestBase {};
+class EditingUtilitiesTest : public EditingTestBase {
+  void SetUp() override {
+    EditingTestBase::SetUp();
+    // Skia's Fontations backend needs a PNG decoder registered.
+    skia::EnsurePNGDecoderRegistered();
+  }
+};
 
 TEST_F(EditingUtilitiesTest, ComputePositionForNodeRemovalAfterChildren) {
   SetBodyContent("<div id=a><p id=b><img id=c></p></div>");

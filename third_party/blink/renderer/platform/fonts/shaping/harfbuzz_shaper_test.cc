@@ -98,7 +98,10 @@ String CreateStringOf(UChar ch, unsigned length) {
 
 class HarfBuzzShaperTest : public FontTestBase {
  protected:
-  void SetUp() override { font_description.SetComputedSize(12.0); }
+  void SetUp() override {
+    FontTestBase::SetUp();
+    font_description.SetComputedSize(12.0);
+  }
 
   void TearDown() override {}
 

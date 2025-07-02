@@ -24,6 +24,9 @@ SK_API sk_sp<SkData> EncodePngAsSkData(GrDirectContext* context,
                                        int zlib_compression_level);
 SK_API std::string EncodePngAsDataUri(const SkPixmap& src);
 
+// This is not thread safe and should only be called via startup
+SK_API void EnsurePNGDecoderRegistered();
+
 }  // namespace skia
 
 #endif  // SKIA_EXT_CODEC_UTILS_H_
