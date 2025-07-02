@@ -160,6 +160,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 - (void)disconnect {
   _syncObserver.reset();
   _syncService = nullptr;
+  _consumer = nullptr;
   _identityManager = nullptr;
   _identityManagerObserver.reset();
   _authenticationService = nullptr;
