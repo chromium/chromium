@@ -1886,7 +1886,6 @@ virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/
 external/wpt/html/webappapis/animation-frames/spurious-frame-callbacks-optimization.html [ Skip ]
 
 # Clipboardchange is not yet supported on these platforms.
-crbug.com/41442253 [ Android ] external/wpt/clipboard-apis/async-navigator-clipboard-change-event.tentative.https.html [ Skip ]
 crbug.com/41442253 [ Fuchsia ] external/wpt/clipboard-apis/async-navigator-clipboard-change-event.tentative.https.html [ Skip ]
 crbug.com/41442253 [ Mac ] external/wpt/clipboard-apis/async-navigator-clipboard-change-event.tentative.https.html [ Skip ]
 crbug.com/41442253 [ iOS18-simulator ] external/wpt/clipboard-apis/async-navigator-clipboard-change-event.tentative.https.html [ Skip ]

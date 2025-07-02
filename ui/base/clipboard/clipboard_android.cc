@@ -16,6 +16,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -30,6 +31,8 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_change_notifier.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
@@ -37,6 +40,7 @@
 #include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard_jni_headers/Clipboard_jni.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -122,7 +126,7 @@ class ClipboardMap {
   void ClearLastModifiedTime();
   bool HasFormat(const ClipboardFormatType& format);
   void OnPrimaryClipboardChanged();
-  void OnPrimaryClipTimestampInvalidated(int64_t timestamp_ms);
+  void OnPrimaryClipTimestampInvalidated(base::Time timestamp);
   void Set(const ClipboardFormatType& format, std::string_view data);
   const std::vector<ui::FileInfo>& GetFilenames();
   void SetFilenames(std::vector<ui::FileInfo> filenames);
@@ -279,14 +283,10 @@ void ClipboardMap::OnPrimaryClipboardChanged() {
   map_state_ = MapState::kOutOfDate;
 }
 
-void ClipboardMap::OnPrimaryClipTimestampInvalidated(int64_t timestamp_ms) {
-  base::Time timestamp =
-      base::Time::FromMillisecondsSinceUnixEpoch(timestamp_ms);
-  if (GetLastModifiedTime() < timestamp) {
-    sequence_number_ = ClipboardSequenceNumberToken();
-    UpdateLastModifiedTime(timestamp);
-    map_state_ = MapState::kOutOfDate;
-  }
+void ClipboardMap::OnPrimaryClipTimestampInvalidated(base::Time timestamp) {
+  sequence_number_ = ClipboardSequenceNumberToken();
+  UpdateLastModifiedTime(timestamp);
+  map_state_ = MapState::kOutOfDate;
 }
 
 void ClipboardMap::Set(const ClipboardFormatType& format,
@@ -376,8 +376,6 @@ void ClipboardMap::CommitToAndroidClipboard(GURL data_source) {
   map_state_ = MapState::kUpToDate;
   sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(base::Time::Now());
-
-  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
 std::optional<DataTransferEndpoint> ClipboardMap::GetSource() {
@@ -400,8 +398,6 @@ void ClipboardMap::Clear() {
   map_state_ = MapState::kUpToDate;
   sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(base::Time::Now());
-
-  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
 void ClipboardMap::MarkPasswordData() {
@@ -481,7 +477,17 @@ void ClipboardAndroid::OnPrimaryClipTimestampInvalidated(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const jlong j_timestamp_ms) {
-  g_map.Get().OnPrimaryClipTimestampInvalidated(j_timestamp_ms);
+  base::Time timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(j_timestamp_ms);
+  if (GetLastModifiedTime() < timestamp) {
+    // If the timestamp is newer than the last modified time, update the
+    // sequence number, last modified time and notify the ClipboardMonitor if
+    // monitoring external clipboard changes.
+    g_map.Get().OnPrimaryClipTimestampInvalidated(timestamp);
+    if (base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
+      ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+    }
+  }
 }
 
 int64_t ClipboardAndroid::GetLastModifiedTimeToJavaTime(JNIEnv* env) {
@@ -537,6 +543,7 @@ void ClipboardAndroid::Clear(ClipboardBuffer buffer) {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   g_map.Get().Clear();
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
 std::vector<std::u16string> ClipboardAndroid::GetStandardFormats(
@@ -745,6 +752,7 @@ void ClipboardAndroid::WritePortableAndPlatformRepresentations(
   }
 
   g_map.Get().CommitToAndroidClipboard(std::move(data_source));
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
 void ClipboardAndroid::WriteText(std::string_view text) {

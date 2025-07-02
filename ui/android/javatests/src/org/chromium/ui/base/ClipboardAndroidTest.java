@@ -237,4 +237,15 @@ public class ClipboardAndroidTest {
                     Criteria.checkThat(Clipboard.getInstance().getUrl(), Matchers.is(TEXT_URL));
                 });
     }
+
+    @Test
+    @SmallTest
+    public void testNativeWriteToClipboardFiresNativeNotification() throws TimeoutException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "Native write to clipboard should trigger change notifications",
+                            ClipboardAndroidTestSupport.testNativeClipboardNotifications());
+                });
+    }
 }

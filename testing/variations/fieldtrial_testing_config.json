@@ -5814,6 +5814,7 @@
     "ClipboardChangeEvent": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "windows"
