@@ -8581,9 +8581,6 @@ crbug.com/339833760 [ Win ] virtual/viewport-and-meta-enabled/http/tests/preload
 # Gardener 2024-05-29
 crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/click-user-gesture.html [ Failure Pass ]
 
-# Gardener 2024-06-03
-crbug.com/343749102 external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Pass Skip Timeout ]
-
 crbug.com/338299516 fast/forms/color/color-picker-top-left-selection-position-after-reopen.html [ Failure Pass ]
 
 # Flaky test on all builds.
