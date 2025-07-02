@@ -58,7 +58,6 @@ class ExclusiveAccessManager;
 class GURL;
 class ImmersiveModeController;
 class Profile;
-class SessionID;
 class TabStripModel;
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -66,6 +65,7 @@ namespace ui {
 class BaseWindow;
 }  // namespace ui
 
+class SessionID;
 class UnownedUserDataHost;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -101,6 +101,9 @@ class BrowserWindowInterface : public content::PageNavigator {
   // should return the profile of the currently-selected context.
   virtual Profile* GetProfile() = 0;
 
+  // Returns a session-unique ID.
+  virtual const SessionID& GetSessionID() const = 0;
+
   // S T O P
   // Please do not add new features here without consulting desktop leads
   // (erikchen@) and Clank leads (twellington@, dtrainor@). See comment at the
@@ -120,9 +123,6 @@ class BrowserWindowInterface : public content::PageNavigator {
   // around OpenURL from content::PageNavigator.
   virtual void OpenGURL(const GURL& gurl,
                         WindowOpenDisposition disposition) = 0;
-
-  // Returns a session-unique ID.
-  virtual const SessionID& GetSessionID() const = 0;
 
   virtual TabStripModel* GetTabStripModel() = 0;
 
