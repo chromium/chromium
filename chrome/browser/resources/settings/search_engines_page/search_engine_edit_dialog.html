@@ -1,11 +1,7 @@
     <style include="settings-shared">
-      cr-icon {
-        --iron-icon-width: 16px;
-        --iron-icon-height: 16px;
-        margin-inline-end: 10px;
-      }
-
       #policySubtitleContainer {
+        gap: 10px;
+        display: flex;
         margin-bottom: 16px;
       }
     </style>
@@ -14,8 +10,10 @@
       <div slot="body" spellcheck="false">
         <template is="dom-if" if="[[showPolicySubtitle_]]">
           <div id="policySubtitleContainer">
-              <cr-icon icon="cr:domain"></cr-icon>
-              <span>$i18n{searchEnginesDeleteConfirmationSubtitleForPolicy}</span>
+            <cr-icon icon="cr:domain"></cr-icon>
+            <span class="secondary">
+              $i18n{searchEnginesDeleteConfirmationSubtitleForPolicy}
+            </span>
           </div>
         </template>
         <cr-input id="searchEngine"
