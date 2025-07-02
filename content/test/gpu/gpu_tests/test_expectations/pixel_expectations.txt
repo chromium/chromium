@@ -405,8 +405,6 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
 
-crbug.com/417505381 [ android android-pixel-4 ] Pixel_Canvas2DBlitText [ Failure ]
-crbug.com/417505381 [ linux nvidia ] Pixel_Canvas2DBlitText [ Failure ]
 
 
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
@@ -448,8 +446,6 @@ crbug.com/372055518 [ mac amd-0x67ef angle-opengl graphite-disabled ] Pixel_WebG
 # Flaky hang on Mac AMD GL ASAN
 crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
-# Flaky bad image
-crbug.com/393314286 [ amd angle-metal debug graphite-enabled mac ] Pixel_ViewTransitionsCapture [ RetryOnFailure ]
 
 # Win/AMD RX 7600 failures
 crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
@@ -465,8 +461,6 @@ crbug.com/370694819 [ angle-opengl asan graphite-disabled mac ] Pixel_WebGPUDest
 # Flaky on Win10 Intel with bad image
 crbug.com/413062240 [ win10 intel-0x4680 passthrough ] Pixel_WebGPUDestroyed_OnscreenCanvas_CopyExternalImageToTexture [ RetryOnFailure ]
 
-# GTX 1660 Win10 -> Win11 upgrade
-crbug.com/402429382 [ win11 nvidia-0x2184 ] Pixel_ReflectedDiv [ Failure ]
 
 # Flaky D3D11 device creation crash
 crbug.com/419469465 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ RetryOnFailure ]
@@ -478,15 +472,6 @@ crbug.com/420902568 [ win10 nvidia-0x2184 target-cpu-32 ] Pixel_MeetEffectsTruck
 crbug.com/421412516 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 crbug.com/421871867 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
 
-# Corsola/Android Desktop
-crbug.com/421948893 [ android android-corsola ] Pixel_Video_BackdropFilter [ Failure ]
-crbug.com/421948893 [ android android-corsola ] Pixel_Video_MP4 [ Failure ]
-crbug.com/421948893 [ android android-corsola ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
-crbug.com/421948893 [ android android-corsola ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
-crbug.com/421948893 [ android android-corsola ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
-crbug.com/421948893 [ android android-corsola ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
-crbug.com/421948893 [ android android-corsola ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
-crbug.com/422226030 [ android android-corsola ] Pixel_Video_HEVC [ Failure ]
 
 # Flaky on Mac Intel
 crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
