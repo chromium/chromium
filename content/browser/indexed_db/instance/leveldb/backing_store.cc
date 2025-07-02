@@ -1172,7 +1172,7 @@ Status BackingStore::Initialize(bool clean_active_journal) {
     // leftover from a partially-purged previous generation of data.
     if (!in_memory() && !base::DeletePathRecursively(blob_path_)) {
       INTERNAL_WRITE_ERROR(SET_UP_METADATA);
-      return Status::IOError();
+      return Status::IOError("Failed to remove blob directory.");
     }
   } else {
     if (db_schema_version > kLatestKnownSchemaVersion ||
@@ -2694,12 +2694,12 @@ Status BackingStore::CleanUpBlobJournalEntries(
     DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
     if (blob_number == DatabaseMetaDataKey::kAllBlobsNumber) {
       if (!RemoveBlobDirectory(database_id)) {
-        return Status::IOError();
+        return Status::IOError("Failed to remove blob directory.");
       }
     } else {
       DCHECK(DatabaseMetaDataKey::IsValidBlobNumber(blob_number));
       if (!RemoveBlobFile(database_id, blob_number)) {
-        return Status::IOError();
+        return Status::IOError("Failed to remove blob file.");
       }
     }
   }

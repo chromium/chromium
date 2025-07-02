@@ -60,7 +60,7 @@ Status Status::InvalidArgument(std::string_view msg) {
 
 // static
 Status Status::IOError(std::string_view msg) {
-  return Status(Type::kIoError, msg.empty() ? "IO Error" : msg);
+  return Status(Type::kIoError, msg);
 }
 
 bool Status::ok() const {

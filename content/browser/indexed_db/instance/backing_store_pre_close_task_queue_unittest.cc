@@ -376,8 +376,8 @@ TEST_F(BackingStorePreCloseTaskQueueTest, MetadataError) {
   BackingStorePreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime,
-      base::BindOnce(&MetadataFetcher, &metadata_called, Status::IOError(""),
-                     &metadata_));
+      base::BindOnce(&MetadataFetcher, &metadata_called,
+                     Status::IOError("IO Error"), &metadata_));
   queue.Start();
 
   task_environment_.RunUntilIdle();
