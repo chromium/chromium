@@ -1267,6 +1267,8 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
     // the root cause is fixed.
     SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
                               GetKeepAliveOriginName(origin));
+    SCOPED_CRASH_KEY_BOOL("ProfileKeepAlive", "profile_ever_loaded",
+                           ever_loaded_profiles_.contains(profile->GetPath()));
     base::debug::DumpWithoutCrashing();
     return;
   }
