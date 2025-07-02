@@ -18,9 +18,9 @@ namespace net {
 
 class HttpResponseHeaders;
 
-// This command line switch provides a means to disable data URL whitespace
-// kKeepWhitespaceForDataUrls feature flag. This is set part of an enterprise
-// policy and is intended as a kill switch.
+// When enabled, whitespace is removed from non-Base64 data URLs. This was the
+// behavior of older versions of Chrome, and can be set part of an enterprise
+// policy.
 inline constexpr std::string_view kRemoveWhitespaceForDataURLs =
     "remove-keep-whitespace-for-data-urls";
 

@@ -116,18 +116,6 @@ bool DataURL::Parse(const GURL& url,
 
   // The caller may not be interested in receiving the data.
   if (data) {
-    // Preserve spaces if dealing with text or xml input, same as mozilla:
-    //   https://bugzilla.mozilla.org/show_bug.cgi?id=138052
-    // but strip them otherwise:
-    //   https://bugzilla.mozilla.org/show_bug.cgi?id=37200
-    // (Spaces in a data URL should be escaped, which is handled below, so any
-    // spaces now are wrong. People expect to be able to enter them in the URL
-    // bar for text, and it can't hurt, so we allow it.)
-    //
-    // TODO(mmenke): Is removing all spaces reasonable? GURL removes trailing
-    // spaces itself, anyways. Should we just trim leading spaces instead?
-    // Allowing random intermediary spaces seems unnecessary.
-
     std::string_view raw_body = media_type_and_body->second;
 
     // For base64, we may have url-escaped whitespace which is not part
@@ -205,11 +193,10 @@ bool DataURL::Parse(const GURL& url,
       // `temp`'s storage needs to be outside feature check since `raw_body` is
       // a string_view.
       std::string temp;
-      // Strip whitespace for non-text MIME types. This is controlled either by
-      // the feature (finch kill switch) or an enterprise policy which sets the
-      // command line flag.
-      if (!base::FeatureList::IsEnabled(features::kKeepWhitespaceForDataUrls) ||
-          HasRemoveWhitespaceCommandLineFlag()) {
+      // Strip whitespace for non-text MIME types if there's a command line flag
+      // indicating this needs to be done. The flag may be set by an enterprise
+      // policy.
+      if (HasRemoveWhitespaceCommandLineFlag()) {
         if (!(mime_type_value.compare(0, 5, "text/") == 0 ||
               mime_type_value.find("xml") != std::string::npos)) {
           temp = std::string(raw_body);

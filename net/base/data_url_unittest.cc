@@ -29,7 +29,7 @@ struct ParseTestData {
 
 class DataURLTest
     : public testing::Test,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   DataURLTest() {
     using FeatureList = std::vector<base::test::FeatureRef>;
@@ -38,17 +38,14 @@ class DataURLTest
     const auto feature_set = [&](bool flag_on) -> FeatureList& {
       return flag_on ? enabled_features : disabled_features;
     };
-    feature_set(KeepWhitespace())
-        .push_back(features::kKeepWhitespaceForDataUrls);
     feature_set(SimdutfSupport()).push_back(features::kSimdutfBase64Support);
     feature_set(FurtherOptimizeParsing())
         .push_back(features::kFurtherOptimizeParsingDataUrls);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool KeepWhitespace() const { return std::get<0>(GetParam()); }
-  bool SimdutfSupport() const { return std::get<1>(GetParam()); }
-  bool FurtherOptimizeParsing() const { return std::get<2>(GetParam()); }
+  bool SimdutfSupport() const { return std::get<0>(GetParam()); }
+  bool FurtherOptimizeParsing() const { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -57,7 +54,6 @@ class DataURLTest
 INSTANTIATE_TEST_SUITE_P(DataURLTest,
                          DataURLTest,
                          testing::Combine(
-                             /*keep_whitespace=*/testing::Bool(),
                              /*simdutf_support=*/testing::Bool(),
                              /*further_optimize_parsing=*/testing::Bool()));
 
@@ -108,7 +104,7 @@ TEST_P(DataURLTest, Parse) {
 
       // Spaces should NOT be removed from non-base64 encoded data URLs.
       {"data:image/fractal,a b c d e f g", true, "image/fractal", "",
-       KeepWhitespace() ? "a b c d e f g" : "abcdefg"},
+       "a b c d e f g"},
 
       // Spaces should also be removed from anything base-64 encoded
       {"data:;base64,aGVs bG8gd2  9ybGQ=", true, "text/plain", "US-ASCII",
@@ -126,8 +122,7 @@ TEST_P(DataURLTest, Parse) {
        true, "text/javascript", "", "d4 = 'four';"},
 
       // All whitespace should be preserved on non-base64 encoded content.
-      {"data:img/png,A  B  %20  %0A  C", true, "img/png", "",
-       KeepWhitespace() ? "A  B     \n  C" : "AB \nC"},
+      {"data:img/png,A  B  %20  %0A  C", true, "img/png", "", "A  B     \n  C"},
 
       {"data:text/plain;charset=utf-8;base64,SGVsbMO2", true, "text/plain",
        "utf-8", "Hell\xC3\xB6"},
