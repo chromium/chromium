@@ -2326,13 +2326,11 @@ public class ToolbarPhone extends ToolbarLayout
 
         if (mIsNtpWithUnfocusedRealOmnibox) {
             updateLocationBarForNtpImpl(
-                    !ColorUtils.inNightMode(getContext()),
                     /* useDefaultUrlBarAndUrlActionContainerAppearance= */ false);
         } else {
             // Restore the appearance of the real search box when transitioning from NTP to other
             // pages.
             updateLocationBarForNtpImpl(
-                    /* statusIconBackgroundVisibility= */ false,
                     /* useDefaultUrlBarAndUrlActionContainerAppearance= */ true);
         }
     }
@@ -2341,16 +2339,13 @@ public class ToolbarPhone extends ToolbarLayout
      * Update the appearance (logo background, search text's color and style) of the location bar
      * based on the value provided.
      *
-     * @param statusIconBackgroundVisibility The visibility of the status icon background.
      * @param useDefaultUrlBarAndUrlActionContainerAppearance Whether to use the default typeface
      *     and color for the search text in the search box and use the default end margin for the
      *     url action container in the search box. If not we will use specific settings for NTP's
      *     un-focus state.
      */
     private void updateLocationBarForNtpImpl(
-            boolean statusIconBackgroundVisibility,
             boolean useDefaultUrlBarAndUrlActionContainerAppearance) {
-        mLocationBar.setStatusIconBackgroundVisibility(statusIconBackgroundVisibility);
         mLocationBar.updateUrlBarHintTextColor(useDefaultUrlBarAndUrlActionContainerAppearance);
         mLocationBar.updateUrlActionContainerEndMargin(
                 useDefaultUrlBarAndUrlActionContainerAppearance);

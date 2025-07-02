@@ -64,7 +64,6 @@ public class StatusView extends LinearLayout {
     private int mTouchDelegateEndOffset;
 
     private ImageView mIconView;
-    private View mIconBackground;
     private StatusIconView mStatusIconView;
     private TextView mVerboseStatusTextView;
     private View mSeparatorView;
@@ -101,7 +100,6 @@ public class StatusView extends LinearLayout {
         super.onFinishInflate();
 
         mIconView = findViewById(R.id.location_bar_status_icon);
-        mIconBackground = findViewById(R.id.location_bar_status_icon_bg);
         mStatusIconView = findViewById(R.id.location_bar_status_icon_view);
         mVerboseStatusTextView = findViewById(R.id.location_bar_verbose_status);
         mSeparatorView = findViewById(R.id.location_bar_verbose_status_separator);
@@ -443,10 +441,6 @@ public class StatusView extends LinearLayout {
     void setStatusIconAlpha(float alpha) {
         if (mIconView == null) return;
         mIconView.setAlpha(alpha);
-
-        if (mIconBackground != null && mIconBackground.getVisibility() == VISIBLE) {
-            mIconBackground.setAlpha(alpha);
-        }
     }
 
     /** Specify the status icon visibility. */
@@ -475,13 +469,6 @@ public class StatusView extends LinearLayout {
                                     ViewUtils.requestLayout(
                                             this, "StatusView.setStatusIconShown Runnable"));
         }
-    }
-
-    /** Specify the status icon background visibility. */
-    void setStatusIconBackgroundVisibility(boolean showIconBackground) {
-        if (mIconView == null || mIconBackground == null) return;
-
-        mIconBackground.setVisibility(showIconBackground ? VISIBLE : INVISIBLE);
     }
 
     /** Specify accessibility string presented to user upon long click. */

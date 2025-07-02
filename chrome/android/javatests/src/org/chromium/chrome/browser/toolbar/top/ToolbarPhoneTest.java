@@ -506,7 +506,6 @@ public class ToolbarPhoneTest {
     public void testRealSearchBoxAppearanceChange(boolean nightModeEnabled) {
         LocationBarCoordinator locationBarCoordinator =
                 (LocationBarCoordinator) mToolbar.getLocationBar();
-        View iconBackground = mToolbar.findViewById(R.id.location_bar_status_icon_bg);
         int expectedEndMarginForNtp =
                 mToolbar.getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_url_action_offset_ntp);
@@ -515,7 +514,6 @@ public class ToolbarPhoneTest {
                         .getDimensionPixelSize(R.dimen.location_bar_url_action_offset);
 
         assertEquals(false, mToolbar.isLocationBarShownInNtp());
-        assertEquals(View.INVISIBLE, iconBackground.getVisibility());
         assertEquals(
                 expectedEndMargin,
                 locationBarCoordinator.getUrlActionContainerEndMarginForTesting());
@@ -531,18 +529,13 @@ public class ToolbarPhoneTest {
                     mToolbar.updateLocationBarForNtp(
                             VisualState.NEW_TAB_NORMAL, /* hasFocus= */ false);
                 });
-        if (nightModeEnabled) {
-            assertEquals(View.INVISIBLE, iconBackground.getVisibility());
-        } else {
-            assertEquals(View.VISIBLE, iconBackground.getVisibility());
-        }
+
         assertEquals(
                 expectedEndMarginForNtp,
                 locationBarCoordinator.getUrlActionContainerEndMarginForTesting());
 
         // Focus on the Omnibox.
         mOmnibox.requestFocus();
-        assertEquals(View.INVISIBLE, iconBackground.getVisibility());
         assertEquals(
                 expectedEndMargin,
                 locationBarCoordinator.getUrlActionContainerEndMarginForTesting());
