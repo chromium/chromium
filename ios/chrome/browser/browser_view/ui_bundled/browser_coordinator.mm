@@ -114,6 +114,7 @@
 #import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_coordinator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/coordinator/welcome_back_coordinator.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/model/followed_web_site.h"
 #import "ios/chrome/browser/follow/ui_bundled/first_follow_coordinator.h"
@@ -261,6 +262,7 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
+#import "ios/chrome/browser/shared/public/commands/welcome_back_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
@@ -409,6 +411,7 @@ enum class ToolbarKind {
     WebContentCommands,
     WebNavigationNTPDelegate,
     WebUsageEnablerBrowserAgentObserving,
+    WelcomeBackPromoCommands,
     WhatsNewCommands>
 
 // Whether the coordinator is started.
@@ -713,6 +716,9 @@ enum class ToolbarKind {
 
   // The coordinator for the notifications opt-in screen.
   NotificationsOptInCoordinator* _notificationsOptInCoordinator;
+
+  // The coordinator for the Welcome Back promo.
+  WelcomeBackCoordinator* _welcomeBackCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -920,6 +926,7 @@ enum class ToolbarKind {
   [self dismissAutoDeletionActionSheet];
   [self dismissSearchWhatYouSeePromo];
   [self dismissNotificationsOptIn];
+  [self hideWelcomeBackPromo];
 
   [self cancelCollaborationFlows];
   [self.NTPCoordinator clearPresentedState];
@@ -1149,6 +1156,7 @@ enum class ToolbarKind {
     @protocol(CountryCodePickerCommands),
     @protocol(WhatsNewCommands),
     @protocol(GoogleOneCommands),
+    @protocol(WelcomeBackPromoCommands)
   ];
 
   for (Protocol* protocol in protocols) {
@@ -1735,6 +1743,7 @@ enum class ToolbarKind {
   [self stopTrustedVaultReauthentication];
   [self dismissSearchWhatYouSeePromo];
   [self dismissNotificationsOptIn];
+  [self hideWelcomeBackPromo];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -3063,6 +3072,14 @@ enum class ToolbarKind {
       [_BWGCoordinator start];
     }
   }
+}
+
+- (void)showWelcomeBackPromo {
+  _welcomeBackCoordinator = [[WelcomeBackCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+
+  [_welcomeBackCoordinator start];
 }
 
 #pragma mark - PageActionMenuCommands
@@ -4560,6 +4577,13 @@ enum class ToolbarKind {
 - (void)showWhatsNewIPH {
   [HandlerForProtocol(_dispatcher, HelpCommands)
       presentInProductHelpWithType:InProductHelpType::kWhatsNew];
+}
+
+#pragma mark - WelcomeBackPromoCommands
+
+- (void)hideWelcomeBackPromo {
+  [_welcomeBackCoordinator stop];
+  _welcomeBackCoordinator = nil;
 }
 
 #pragma mark - NotificationsOptInCoordinatorDelegate

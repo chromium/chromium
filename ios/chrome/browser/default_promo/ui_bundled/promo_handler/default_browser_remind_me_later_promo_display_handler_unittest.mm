@@ -52,6 +52,9 @@
 - (void)showBWGPromo {
 }
 
+- (void)showWelcomeBackPromo {
+}
+
 @end
 
 class DefaultBrowserRemindMeLaterPromoDisplayHandlerTest : public PlatformTest {

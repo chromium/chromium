@@ -36,6 +36,9 @@
 // Shows BWG promo.
 - (void)showBWGPromo;
 
+// Shows the Welcome Back promo.
+- (void)showWelcomeBackPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PROMOS_MANAGER_COMMANDS_H_

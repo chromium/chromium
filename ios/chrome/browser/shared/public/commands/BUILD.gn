@@ -96,6 +96,7 @@ source_set("commands") {
     "toolbar_commands.h",
     "unit_conversion_commands.h",
     "web_content_commands.h",
+    "welcome_back_promo_commands.h",
     "whats_new_commands.h",
   ]
 
