@@ -4805,6 +4805,12 @@ const char kAndroidTabGroupsColorUpdateGM3Name[] =
 const char kAndroidTabGroupsColorUpdateGM3Description[] =
     "If enabled, allows tab groups to have display the color chosen by the "
     "user.";
+
+const char kAndroidTabHighlightingName[] = "Android tab strip tab highlighting";
+const char kAndroidTabHighlightingDescription[] =
+    "If enabled, allows users to perform bulk actions on tab by using shift "
+    "click or ctrl click to highlight them.";
+
 const char kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchName[] =
     "Android Show Restore Tab Promo On FRE Bypassed Kill Switch";
 const char kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchDescription[] =

@@ -13512,6 +13512,7 @@ from previous Chrome versions.
       label="AutofillEnforceMinRequiredFieldsForHeuristics:enabled"/>
   <int value="-181279574" label="NativeFilesystemAPI:enabled"/>
   <int value="-181093956" label="ScrollAnchoring:enabled"/>
+  <int value="-181002927" label="AndroidTabHighlighting:disabled"/>
   <int value="-180658998" label="ReadLater:disabled"/>
   <int value="-180481252" label="CompositorThreadedScrollbarScrolling:enabled"/>
   <int value="-180292536" label="PerformanceInterventionDemoMode:enabled"/>
@@ -15005,6 +15006,7 @@ from previous Chrome versions.
   <int value="365707981"
       label="SecurePaymentConfirmationNetworkAndIssuerIcons:disabled"/>
   <int value="365737168" label="SingleTouchSelect:disabled"/>
+  <int value="365937304" label="AndroidTabHighlighting:enabled"/>
   <int value="366524741"
       label="ArcTrackpadScrollTouchscreenEmulation:disabled"/>
   <int value="366860338" label="InternalServerSideSpeechRecognition:enabled"/>

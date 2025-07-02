@@ -216,6 +216,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidOpenPdfInlineBackport,
     &kAndroidPdfAssistContent,
     &kAndroidTabGroupsColorUpdateGM3,
+    &kAndroidTabHighlighting,
     &kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch,
     &kAndroidSurfaceColorUpdate,
     &kAndroidTabDeclutterArchiveAllButActiveTab,
@@ -610,6 +611,10 @@ BASE_FEATURE(kAndroidPdfAssistContent,
 
 BASE_FEATURE(kAndroidTabGroupsColorUpdateGM3,
              "AndroidTabGroupsColorUpdateGM3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidTabHighlighting,
+             "AndroidTabHighlighting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitch,

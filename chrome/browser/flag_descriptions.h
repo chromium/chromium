@@ -2784,6 +2784,9 @@ extern const char kAdaptiveButtonInTopToolbarPageSummaryDescription[];
 extern const char kAndroidTabGroupsColorUpdateGM3Name[];
 extern const char kAndroidTabGroupsColorUpdateGM3Description[];
 
+extern const char kAndroidTabHighlightingName[];
+extern const char kAndroidTabHighlightingDescription[];
+
 extern const char kAndroidSurfaceControlName[];
 extern const char kAndroidSurfaceControlDescription[];
 
