@@ -20,15 +20,14 @@ void ExposeChildInterfacesToBrowser(
     const bool in_browser_process,
     mojo::BinderMap* binders) {
   binders->Add<metrics::mojom::ChildHistogramFetcherFactory>(
-      base::BindRepeating(&metrics::ChildHistogramFetcherFactoryImpl::Create),
-      io_task_runner);
+      &metrics::ChildHistogramFetcherFactoryImpl::Create, io_task_runner);
   binders->Add<tracing::mojom::TracedProcess>(
-      base::BindRepeating(&tracing::TracedProcess::OnTracedProcessRequest),
+      &tracing::TracedProcess::OnTracedProcessRequest,
       base::SequencedTaskRunner::GetCurrentDefault());
 
   if (!in_browser_process) {
     binders->Add<mojom::SyntheticTrialConfiguration>(
-        base::BindRepeating(&ChildProcessSyntheticTrialSyncer::Create),
+        &ChildProcessSyntheticTrialSyncer::Create,
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 
