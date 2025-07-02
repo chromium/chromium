@@ -557,6 +557,8 @@ std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
   if (GetParams().round_corners) {
     bubble_border->set_rounded_corners(gfx::RoundedCornersF(GetCornerRadius()));
   }
+
+  bubble_border->SetColor(background_color());
   bubble_border->set_avoid_shadow_overlap(true);
   if (params_.insets.has_value()) {
     bubble_border->set_insets(params_.insets.value());

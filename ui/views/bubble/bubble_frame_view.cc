@@ -878,8 +878,15 @@ void BubbleFrameView::UpdateClientViewBackground() {
         background_color().ResolveToSkColor(GetWidget()->GetColorProvider());
     const bool is_opaque = SkColor4f::FromColor(color).isOpaque();
     client_view->layer()->SetFillsBoundsOpaquely(is_opaque);
-    client_view->SetBackground(is_opaque ? CreateSolidBackground(color)
-                                         : nullptr);
+
+    const bool needs_background = is_opaque;
+    const bool has_background = !!client_view->background();
+    if (needs_background != has_background ||
+        (client_view->background() &&
+         client_view->background()->color() != background_color())) {
+      client_view->SetBackground(needs_background ? CreateSolidBackground(color)
+                                                  : nullptr);
+    }
   }
 }
 
