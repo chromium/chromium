@@ -10454,8 +10454,7 @@
     "ForceOffTextAutosizing": [
         {
             "platforms": [
-                "android",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
