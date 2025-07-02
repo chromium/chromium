@@ -382,6 +382,14 @@ void AutofillField::MaybeAddServerPrediction(
       ToSafeFieldType(prediction.type(), NO_SERVER_DATA);
   prediction.set_type(field_type);
 
+  // LOYALTY_MEMBERSHIP_ID server predictions are only available for clients
+  // with the flag `kAutofillEnableLoyaltyCardsFilling` enabled.
+  if (field_type == LOYALTY_MEMBERSHIP_ID &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableLoyaltyCardsFilling)) {
+    return;
+  }
+
   if (!prediction.has_source()) {
     // TODO(crbug.com/40243028): captured tests store old autofill api
     // response recordings without `source` field. We need to maintain the old
