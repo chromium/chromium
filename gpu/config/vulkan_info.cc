@@ -11,8 +11,7 @@
 
 #include <string_view>
 
-#include "gpu/ipc/common/vulkan_info.mojom.h"
-#include "gpu/ipc/common/vulkan_info_mojom_traits.h"
+#include "base/logging.h"
 
 namespace gpu {
 
@@ -38,10 +37,6 @@ VulkanInfo& VulkanInfo::operator=(const VulkanInfo& other) {
   physical_devices = other.physical_devices;
   SetEnabledInstanceExtensions(other.enabled_instance_extensions);
   return *this;
-}
-
-std::vector<uint8_t> VulkanInfo::Serialize() const {
-  return gpu::mojom::VulkanInfo::Serialize(this);
 }
 
 void VulkanInfo::SetEnabledInstanceExtensions(

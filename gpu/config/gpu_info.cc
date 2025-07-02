@@ -11,6 +11,10 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_util.h"
 
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "gpu/ipc/common/vulkan_info.mojom.h"
+#endif
+
 namespace {
 
 void EnumerateGPUDevice(const gpu::GPUInfo::GPUDevice& device,
@@ -280,6 +284,12 @@ GPUInfo::GPUDevice* GPUInfo::FindGpuByLuid(DWORD low_part, LONG high_part) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_VULKAN)
+std::vector<uint8_t> GPUInfo::SerializeVulkanInfo() const {
+  return gpu::mojom::VulkanInfo::Serialize(&vulkan_info.value());
+}
+#endif
+
 void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   struct GPUInfoKnownFields {
     base::TimeDelta initialization_time;
@@ -414,7 +424,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
 #if BUILDFLAG(ENABLE_VULKAN)
   enumerator->AddBool("hardwareSupportsVulkan", hardware_supports_vulkan);
   if (vulkan_info) {
-    auto blob = vulkan_info->Serialize();
+    auto blob = SerializeVulkanInfo();
     enumerator->AddBinary("vulkanInfo", base::span<const uint8_t>(blob));
   }
 #endif

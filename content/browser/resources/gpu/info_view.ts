@@ -7,7 +7,10 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import type {AngleFeature, BrowserBridge, ClientInfo, FeatureStatus, Problem} from './browser_bridge.js';
 import {getTemplate} from './info_view.html.js';
+
+// <if expr="enable_vulkan">
 import {VulkanInfo} from './vulkan_info.js';
+// </if>
 
 /**
  * Given a blob and a filename, prompts user to
@@ -582,6 +585,7 @@ export class InfoViewElement extends CustomElement {
 
       this.updateSectionTable_(sections.diagnostics, gpuInfo.diagnostics);
 
+      // <if expr="enable_vulkan">
       this.setTable_(
           sections.vulkanInfo,
           gpuInfo.vulkanInfo ? [{
@@ -590,7 +594,7 @@ export class InfoViewElement extends CustomElement {
             'id': 'vulkan-info-value',
           }] :
                                []);
-
+      // </if>
       this.setTable_(sections.devicePerfInfo, gpuInfo.devicePerfInfo);
     } else {
       sections.basicInfo.list.textContent = '... loading ...';

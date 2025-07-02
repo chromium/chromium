@@ -310,7 +310,7 @@ base::Value::Dict GetGpuInfo() {
 
 #if BUILDFLAG(ENABLE_VULKAN)
   if (gpu_info.vulkan_info) {
-    auto blob = gpu_info.vulkan_info->Serialize();
+    auto blob = gpu_info.SerializeVulkanInfo();
     info.Set("vulkanInfo", base::Base64Encode(blob));
   }
 #endif

@@ -46,8 +46,6 @@ class GPU_CONFIG_EXPORT VulkanInfo {
   ~VulkanInfo();
   VulkanInfo& operator=(const VulkanInfo& other);
 
-  std::vector<uint8_t> Serialize() const;
-
   void SetEnabledInstanceExtensions(const std::vector<const char*>& extensions);
   void SetEnabledInstanceExtensions(
       const std::vector<std::string_view>& extensions);

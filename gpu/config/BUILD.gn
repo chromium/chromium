@@ -216,6 +216,10 @@ source_set("config_sources") {
     "//ui/gl/init",
   ]
 
+  if (enable_vulkan) {
+    deps += [ "//gpu/ipc/common:vulkan_interface" ]
+  }
+
   if (use_dawn || skia_use_dawn) {
     public_deps += [ "//third_party/dawn/include/dawn:headers" ]
 

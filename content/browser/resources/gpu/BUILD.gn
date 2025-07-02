@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//gpu/vulkan/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
@@ -9,19 +10,23 @@ build_webui("build") {
 
   static_files = [ "gpu_internals.html" ]
 
+  preprocessor_defines = [ "enable_vulkan=$enable_vulkan" ]
+
   web_component_files = [ "info_view.ts" ]
 
   ts_files = [
     "browser_bridge.ts",
     "gpu_internals.ts",
-    "vulkan_info.ts",
   ]
 
-  mojo_files_deps = [ "//gpu/ipc/common:vulkan_interface_ts__generator" ]
-  mojo_files = [
-    "${root_gen_dir}/gpu/ipc/common/vulkan_info.mojom-webui.ts",
-    "${root_gen_dir}/gpu/ipc/common/vulkan_types.mojom-webui.ts",
-  ]
+  if (enable_vulkan) {
+    ts_files += [ "vulkan_info.ts" ]
+    mojo_files_deps = [ "//gpu/ipc/common:vulkan_interface_ts__generator" ]
+    mojo_files = [
+      "${root_gen_dir}/gpu/ipc/common/vulkan_info.mojom-webui.ts",
+      "${root_gen_dir}/gpu/ipc/common/vulkan_types.mojom-webui.ts",
+    ]
+  }
 
   ts_deps = [
     "//ui/webui/resources/js:build_ts",

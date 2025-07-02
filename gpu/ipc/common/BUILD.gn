@@ -768,54 +768,49 @@ mojom("gpu_preferences_interface") {
   ]
 }
 
-mojom("vulkan_interface") {
-  generate_java = true
-  webui_module_path = "/"
-  generate_legacy_js_bindings = true
+if (enable_vulkan) {
+  mojom("vulkan_interface") {
+    generate_java = true
+    webui_module_path = "/"
+    generate_legacy_js_bindings = true
 
-  # TODO(crbug.com/40122851): This interface code is used by some javascript
-  # targets even when vulkan isn't enabled, but the C++ fuzzer code will fail
-  # to compile if the headers aren't available.
-  if (!enable_vulkan) {
-    enable_mojolpm_fuzzing = false
+    sources = [
+      "vulkan_info.mojom",
+      "vulkan_types.mojom",
+    ]
+
+    public_deps = [ "//mojo/public/mojom/base" ]
+
+    js_generate_struct_deserializers = true
+
+    # This imports the |generated_vulkan_type_mappings| definition used below.
+    import("//gpu/ipc/common/generated_vulkan_type_mappings.gni")
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "gpu.mojom.VulkanPhysicalDeviceInfo"
+            cpp = "::gpu::VulkanPhysicalDeviceInfo"
+          },
+          {
+            mojom = "gpu.mojom.VulkanInfo"
+            cpp = "::gpu::VulkanInfo"
+          },
+        ]
+        traits_headers = [ "vulkan_info_mojom_traits.h" ]
+      },
+      {
+        types = generated_vulkan_type_mappings
+        traits_sources = [ "vulkan_types_mojom_traits.cc" ]
+        traits_headers = [ "vulkan_types_mojom_traits.h" ]
+        traits_public_deps = [ ":vulkan_types" ]
+      },
+    ]
+
+    export_class_attribute = "GPU_EXPORT"
+    export_header = "gpu/gpu_export.h"
+    cpp_configs = [ "//gpu:gpu_implementation" ]
   }
-
-  sources = [
-    "vulkan_info.mojom",
-    "vulkan_types.mojom",
-  ]
-
-  public_deps = [ "//mojo/public/mojom/base" ]
-
-  js_generate_struct_deserializers = true
-
-  # This imports the |generated_vulkan_type_mappings| definition used below.
-  import("//gpu/ipc/common/generated_vulkan_type_mappings.gni")
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "gpu.mojom.VulkanPhysicalDeviceInfo"
-          cpp = "::gpu::VulkanPhysicalDeviceInfo"
-        },
-        {
-          mojom = "gpu.mojom.VulkanInfo"
-          cpp = "::gpu::VulkanInfo"
-        },
-      ]
-      traits_headers = [ "vulkan_info_mojom_traits.h" ]
-    },
-    {
-      types = generated_vulkan_type_mappings
-      traits_sources = [ "vulkan_types_mojom_traits.cc" ]
-      traits_headers = [ "vulkan_types_mojom_traits.h" ]
-      traits_public_deps = [ ":vulkan_types" ]
-    },
-  ]
-
-  export_class_attribute = "GPU_EXPORT"
-  export_header = "gpu/gpu_export.h"
-  cpp_configs = [ "//gpu:gpu_implementation" ]
 }
 
 mojom("test_interfaces") {

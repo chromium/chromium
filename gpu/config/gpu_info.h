@@ -359,6 +359,10 @@ struct GPU_CONFIG_EXPORT GPUInfo {
   GPUDevice* FindGpuByLuid(DWORD low_part, LONG high_part);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_VULKAN)
+  std::vector<uint8_t> SerializeVulkanInfo() const;
+#endif
+
   // The amount of time taken to get from the process starting to the message
   // loop being pumped.
   base::TimeDelta initialization_time;
