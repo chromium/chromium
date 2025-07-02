@@ -2972,9 +2972,9 @@ class BannedTypeCheckTest(unittest.TestCase):
                 'some/java/problematic/accessibilityTypeAnnouncement.java', [
                     'accessibilityEvent.setEventType(AccessibilityEvent.TYPE_ANNOUNCEMENT);'
                 ]),
-            MockFile(
+             MockFile(
                 'content/java/problematic/desktopandroid.java', [
-                    'if (BuildConfig.IS_DESKTOP_ANDROID) {}'
+                    'if (DeviceInfo.isDesktop()) {}'
                 ]),
         ]
 

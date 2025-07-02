@@ -19,13 +19,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
@@ -439,7 +439,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     boolean isRefreshOnOverscrollSupported() {
         // TODO(https://crbug.com/422413654) Remove this after long-term fix
-        if (BuildConfig.IS_DESKTOP_ANDROID) {
+        if (DeviceInfo.isDesktop()) {
             return !DeviceInput.supportsPrecisionPointer();
         } else {
             return true;
