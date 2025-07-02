@@ -13,7 +13,7 @@ import generate
 import logging
 
 UPDATE_TIP = 'To update the generated tests, run:\n' \
-             '$ python third_party/blink/web_tests/external/wpt/bluetooth/bidi/generate.py'
+             '$ python bluetooth/bidi/generate.py'
 
 
 def main():

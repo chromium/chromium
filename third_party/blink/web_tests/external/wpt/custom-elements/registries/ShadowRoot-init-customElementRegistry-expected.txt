@@ -9,5 +9,9 @@ This is a testharness.js-based test.
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] attachShadow() should use the global registry when customElementRegistry is null
   assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] attachShadow() should use the shadow host's registry when customElementRegistry is null
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] attachShadow() should use the null registry when the shadow host uses null registry and customElementRegistry is null
+  Failed to construct 'CustomElementRegistry': Illegal constructor
 Harness: the test ran to completion.
 

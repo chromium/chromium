@@ -49,7 +49,7 @@ promise_test(() => {
 }, 'example test for getPrimaryServices');
 
 Run
-$ python //third_party/blink/web_tests/external/wpt/bluetooth/bidi/generate.py
+$ python //bluetooth/bidi/generate.py
 and commit the generated files.
 """
 
