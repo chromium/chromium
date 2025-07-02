@@ -141,15 +141,7 @@ builder(
             "remoteexec",
             "minimal_symbols",
             "strip_debug_info",
-            "arm",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = [
-            "capture_unittests",
-            "content_browsertests",
-            "content_unittests",
-            "remoting_unittests",
+            "arm64",
         ],
     ),
 )
@@ -186,7 +178,14 @@ builder(
             "arm64",
         ],
     ),
-    targets = targets.bundle(),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "capture_unittests",
+            "content_browsertests",
+            "content_unittests",
+            "remoting_unittests",
+        ],
+    ),
 )
 
 builder(

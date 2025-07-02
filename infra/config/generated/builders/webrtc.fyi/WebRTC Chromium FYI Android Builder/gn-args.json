@@ -9,7 +9,7 @@
     "proprietary_codecs": true,
     "strip_debug_info": true,
     "symbol_level": 1,
-    "target_cpu": "arm",
+    "target_cpu": "arm64",
     "target_os": "android",
     "use_reclient": false,
     "use_remoteexec": true,
