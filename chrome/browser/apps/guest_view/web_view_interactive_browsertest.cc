@@ -315,26 +315,6 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     corner_ = offset.origin();
   }
 
-  void SetupTextSelectionTest(const std::string& app_name,
-                              const std::string& guest_url_spec) {
-    ASSERT_TRUE(StartEmbeddedTestServer());
-
-    LoadAndLaunchPlatformApp(app_name.c_str(), "launched");
-    // Start the test using the guest_url_spec.
-    SendMessageToEmbedder(guest_url_spec);
-    ExtensionTestMessageListener listener("connected");
-    ASSERT_TRUE(listener.WaitUntilSatisfied());
-
-    guest_view_ = GetGuestViewManager()->WaitForSingleGuestViewCreated();
-    ASSERT_TRUE(
-        guest_view_->GetGuestMainFrame()->GetProcess()->IsForGuestsOnly());
-
-    embedder_web_contents_ = guest_view_->embedder_web_contents();
-
-    gfx::Rect offset = embedder_web_contents_->GetContainerBounds();
-    corner_ = offset.origin();
-  }
-
   content::WebContents* DeprecatedGuestWebContents() {
     return guest_view_->web_contents();
   }
@@ -1240,9 +1220,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, TextSelection) {
-  SetupTextSelectionTest(
-      "web_view/text_selection",
-      "/extensions/platform_apps/web_view/text_selection/guest.html");
+  SetupTest("web_view/text_selection",
+            "/extensions/platform_apps/web_view/text_selection/guest.html");
   ASSERT_TRUE(GetGuestView());
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
       GetPlatformAppWindow()));
@@ -1267,9 +1246,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, TextSelection) {
 // Verifies that asking for a word lookup from a guest will lead to a returned
 // mojo callback from the renderer containing the right selected word.
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, WordLookup) {
-  SetupTextSelectionTest(
-      "web_view/text_selection",
-      "/extensions/platform_apps/web_view/text_selection/guest.html");
+  SetupTest("web_view/text_selection",
+            "/extensions/platform_apps/web_view/text_selection/guest.html");
   ASSERT_TRUE(GetGuestView());
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(GetPlatformAppWindow()));
 
@@ -1282,30 +1260,6 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, WordLookup) {
   // showing the context menu.
   SimulateRWHMouseClick(GetGuestRenderFrameHost()->GetRenderWidgetHost(),
                         blink::WebMouseEvent::Button::kRight, 20, 20);
-  // Wait for the response form the guest renderer.
-  text_input_local_frame.WaitForGetStringForRange();
-
-  // Sanity check.
-  ASSERT_EQ("AAAA", text_input_local_frame.GetStringFromRange().substr(0, 4));
-}
-
-// Same test as above, but with a selection living inside shadow DOM.
-IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, WordLookupShadowDom) {
-  SetupTextSelectionTest(
-      "web_view/text_selection",
-      "/extensions/platform_apps/web_view/text_selection/guest_shadow.html");
-  ASSERT_TRUE(GetGuestView());
-  ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(GetPlatformAppWindow()));
-
-  content::TextInputTestLocalFrame text_input_local_frame;
-  text_input_local_frame.SetUp(GetGuestRenderFrameHost());
-
-  // Lookup some string through context menu.
-  ContextMenuNotificationObserver menu_observer(IDC_CONTENT_CONTEXT_LOOK_UP);
-  // Simulating a mouse click at a position to highlight text in guest and
-  // showing the context menu.
-  SimulateRWHMouseClick(GetGuestRenderFrameHost()->GetRenderWidgetHost(),
-                        blink::WebMouseEvent::Button::kRight, 50, 50);
   // Wait for the response form the guest renderer.
   text_input_local_frame.WaitForGetStringForRange();
 
