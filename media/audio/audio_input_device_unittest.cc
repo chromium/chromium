@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/audio/audio_input_device.h"
 
 #include <utility>
@@ -120,7 +115,7 @@ class AudioInputDeviceTest
     shared_memory_ = base::UnsafeSharedMemoryRegion::Create(memory_size);
     shared_memory_mapping_ = shared_memory_.Map();
     ASSERT_TRUE(shared_memory_.IsValid());
-    memset(shared_memory_mapping_.memory(), 0xff, memory_size);
+    std::ranges::fill(shared_memory_mapping_, 0xff);
 
     ASSERT_TRUE(
         CancelableSyncSocket::CreatePair(&browser_socket_, &renderer_socket_));
