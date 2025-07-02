@@ -307,4 +307,21 @@ GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::operator=(
 GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
     ~GetDetailsForUpdateBnplPaymentInstrumentRequestDetails() = default;
 
+UpdateBnplPaymentInstrumentRequestDetails::
+    UpdateBnplPaymentInstrumentRequestDetails() = default;
+UpdateBnplPaymentInstrumentRequestDetails::
+    UpdateBnplPaymentInstrumentRequestDetails(
+        const UpdateBnplPaymentInstrumentRequestDetails&) = default;
+UpdateBnplPaymentInstrumentRequestDetails&
+UpdateBnplPaymentInstrumentRequestDetails::operator=(
+    const UpdateBnplPaymentInstrumentRequestDetails& other) = default;
+UpdateBnplPaymentInstrumentRequestDetails::
+    UpdateBnplPaymentInstrumentRequestDetails(
+        UpdateBnplPaymentInstrumentRequestDetails&&) = default;
+UpdateBnplPaymentInstrumentRequestDetails&
+UpdateBnplPaymentInstrumentRequestDetails::operator=(
+    UpdateBnplPaymentInstrumentRequestDetails&&) = default;
+UpdateBnplPaymentInstrumentRequestDetails::
+    ~UpdateBnplPaymentInstrumentRequestDetails() = default;
+
 }  // namespace autofill::payments

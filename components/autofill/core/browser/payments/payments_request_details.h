@@ -576,6 +576,46 @@ struct GetDetailsForUpdateBnplPaymentInstrumentRequestDetails {
   GetDetailsForUpdateBnplPaymentInstrumentType type;
 };
 
+// A collection of information required to create an update BNPL payment
+// instrument request.
+struct UpdateBnplPaymentInstrumentRequestDetails {
+  UpdateBnplPaymentInstrumentRequestDetails();
+  UpdateBnplPaymentInstrumentRequestDetails(
+      const UpdateBnplPaymentInstrumentRequestDetails& other);
+  UpdateBnplPaymentInstrumentRequestDetails& operator=(
+      const UpdateBnplPaymentInstrumentRequestDetails& other);
+  UpdateBnplPaymentInstrumentRequestDetails(
+      UpdateBnplPaymentInstrumentRequestDetails&&);
+  UpdateBnplPaymentInstrumentRequestDetails& operator=(
+      UpdateBnplPaymentInstrumentRequestDetails&&);
+  ~UpdateBnplPaymentInstrumentRequestDetails();
+
+  enum class UpdateBnplPaymentInstrumentType {
+    // Type unknown.
+    kUnknown = 0,
+
+    // The user has accepted the ToS, prompting this instrument update.
+    kAcceptTos = 1,
+
+    kMaxValue = kAcceptTos
+  };
+
+  // `app_locale` is the Chrome locale.
+  std::string app_locale;
+  // The billing customer number for the account this request is sent to.
+  int64_t billing_customer_number;
+  // The ID of the BNPL partner to be linked. i.e. Affirm
+  std::string issuer_id;
+  // The platform identifier for the instrument being updated.
+  int64_t instrument_id;
+  // An opaque token used to chain consecutive payments requests together.
+  std::string context_token;
+  // Client encoded risk data.
+  std::string risk_data;
+  // The type of the UpdateBnplPaymentInstrument request.
+  UpdateBnplPaymentInstrumentType type;
+};
+
 }  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_DETAILS_H_

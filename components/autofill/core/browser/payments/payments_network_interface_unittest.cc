@@ -238,6 +238,10 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     instrument_id_ = std::move(instrument_id);
   }
 
+  void OnDidUpdateBnplPaymentInstrument(PaymentsRpcResult result) {
+    result_ = result;
+  }
+
   void OnDidGetBnplPaymentInstrumentForFetchingVcn(
       PaymentsAutofillClient::PaymentsRpcResult result,
       const BnplFetchVcnResponseDetails& response_details) {
@@ -1952,6 +1956,56 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
   if (result == PaymentsRpcResult::kSuccess) {
     EXPECT_EQ(instrument_id, instrument_id_);
   }
+}
+
+// Test UpdateBnplPaymentInstrument() with all the different PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       UpdateBnplPaymentInstrument_TestAllFlows) {
+  UpdateBnplPaymentInstrumentRequestDetails request_details;
+  request_details.app_locale = "en-US";
+  request_details.billing_customer_number = 555666777888;
+  request_details.context_token = "context_token";
+  request_details.risk_data = "wjhJLg";
+  request_details.instrument_id = 111222333444;
+  request_details.issuer_id = "Affirm";
+  request_details.type = UpdateBnplPaymentInstrumentRequestDetails::
+      UpdateBnplPaymentInstrumentType::kAcceptTos;
+
+  payments_network_interface_->UpdateBnplPaymentInstrument(
+      request_details,
+      base::BindOnce(
+          &PaymentsNetworkInterfaceTest::OnDidUpdateBnplPaymentInstrument,
+          GetWeakPtr()));
+  IssueOAuthToken();
+
+  // Ensures the PaymentsRpcResult is set correctly.
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"buy_now_pay_later_info\": {} }");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+  EXPECT_EQ(result, result_);
 }
 
 // Test GetBnplPaymentInstrumentForFetchingVcn() with all the different

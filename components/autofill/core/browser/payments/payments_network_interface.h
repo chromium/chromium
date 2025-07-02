@@ -239,6 +239,15 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
                               std::string context_token,
                               LegalMessageLines legal_message)> callback);
 
+  // The user has indicated that they would like to update a BNPL payment
+  // instrument. `request_details` contains all necessary information to build a
+  // `UpdateBnplPaymentInstrumentRequest`. `callback` is the callback function
+  // that is triggered when a response is received from the server.
+  virtual void UpdateBnplPaymentInstrument(
+      const UpdateBnplPaymentInstrumentRequestDetails& request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result)>
+          callback);
+
  private:
   friend class PaymentsNetworkInterfaceTest;
 };

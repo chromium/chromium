@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/select_challenge_option_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/unmask_iban_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/update_bnpl_payment_instrument_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/upload_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/upload_iban_request.h"
@@ -248,6 +249,16 @@ void PaymentsNetworkInterface::GetDetailsForUpdateBnplPaymentInstrument(
           /*full_sync_enabled=*/
           account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
           std::move(callback)));
+}
+
+void PaymentsNetworkInterface::UpdateBnplPaymentInstrument(
+    const UpdateBnplPaymentInstrumentRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsRpcResult)> callback) {
+  IssueRequest(std::make_unique<UpdateBnplPaymentInstrumentRequest>(
+      request_details,
+      /*full_sync_enabled=*/
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
 }
 
 }  // namespace autofill::payments
