@@ -197,9 +197,12 @@ void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
                                                    message:message];
 
   if (error.type() == ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate) {
+    auto split_result_callback = base::SplitOnceCallback(std::move(result));
+
     auto update_action = base::CallbackToBlock(
         base::BindOnce(&IOSCollaborationControllerDelegate::Update,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(split_result_callback.first)));
     [alert_coordinator_
         addItemWithTitle:
             l10n_util::GetNSString(
@@ -209,7 +212,8 @@ void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
 
     auto dismiss_action = base::CallbackToBlock(
         base::BindOnce(&IOSCollaborationControllerDelegate::ErrorAccepted,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(split_result_callback.second)));
     [alert_coordinator_
         addItemWithTitle:
             l10n_util::GetNSString(
