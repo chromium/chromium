@@ -43,7 +43,6 @@ void PagePlaceholderTabHelper::CancelPlaceholderForNextNavigation() {
 
 void PagePlaceholderTabHelper::WasShown(web::WebState* web_state) {
   if (add_placeholder_for_next_navigation_) {
-    add_placeholder_for_next_navigation_ = false;
     AddPlaceholder();
   }
 }
@@ -57,7 +56,6 @@ void PagePlaceholderTabHelper::DidStartNavigation(
     web::NavigationContext* navigation_context) {
   DCHECK_EQ(web_state_, web_state);
   if (add_placeholder_for_next_navigation_ && web_state->IsVisible()) {
-    add_placeholder_for_next_navigation_ = false;
     AddPlaceholder();
   }
 }
@@ -90,6 +88,7 @@ void PagePlaceholderTabHelper::AddPlaceholder() {
     return;
   }
 
+  add_placeholder_for_next_navigation_ = false;
   displaying_placeholder_ = true;
 
   // Lazily create the placeholder view.
