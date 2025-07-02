@@ -29,16 +29,18 @@ class InstanceSwitcherItemViewBinder {
             ImageView faviconView = view.findViewById(R.id.favicon);
             boolean isSelected = model.get(InstanceSwitcherItemProperties.IS_SELECTED);
 
+            view.setSelected(isSelected);
+            view.findViewById(R.id.title).setSelected(isSelected);
+            view.findViewById(R.id.desc).setSelected(isSelected);
+            view.findViewById(R.id.last_accessed).setSelected(isSelected);
+            view.findViewById(R.id.close_button).setSelected(isSelected);
+
             // Show check mark if selected, otherwise fallback to favicon.
-            if (isSelected) {
-                faviconView.setImageDrawable(
-                        ContextCompat.getDrawable(
-                                view.getContext(), R.drawable.checkmark_circle_24dp));
-                view.setSelected(true);
-            } else {
-                faviconView.setImageDrawable(model.get(InstanceSwitcherItemProperties.FAVICON));
-                view.setSelected(false);
-            }
+            faviconView.setImageDrawable(
+                    isSelected
+                            ? ContextCompat.getDrawable(
+                                    view.getContext(), R.drawable.checkmark_circle_24dp)
+                            : model.get(InstanceSwitcherItemProperties.FAVICON));
 
         } else if (InstanceSwitcherItemProperties.TITLE == propertyKey) {
             TextView titleView = view.findViewById(R.id.title);

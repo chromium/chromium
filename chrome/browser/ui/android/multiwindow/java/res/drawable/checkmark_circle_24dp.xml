@@ -18,6 +18,6 @@ found in the LICENSE file.
         android:pathData="M4,4h16v16h-16z"/>
     <path
         android:pathData="M10.483,15.55L7.25,12.333L8.1,11.467L10.483,13.85L15.9,8.45L16.75,9.3L10.483,15.55Z"
-        android:fillColor="@macro/default_icon_color_on_accent1"/>
+        android:fillColor="@macro/default_icon_color_on_accent2"/>
   </group>
 </vector>
