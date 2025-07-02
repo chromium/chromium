@@ -48,6 +48,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -155,6 +156,7 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/429246882")
     public void continueButtonClickShowsHistorySyncPage() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -209,6 +211,7 @@ public class FirstRunActivitySigninAndSyncTest {
     // adding at least one policy via AppRestrictions prevents that.
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisabledTest(message = "crbug.com/429246882")
     public void continueButtonClickShowsHistorySyncPageWithChildAccount() {
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -359,6 +362,7 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/429246882")
     public void refusingHistorySyncEndsFreAndDoesNotEnableHistorySync() {
         HistogramWatcher historySyncHistogramWatcher =
                 HistogramWatcher.newBuilder()
