@@ -71,6 +71,8 @@ class MultiContentsView : public views::View,
   // Returns the currently inactive ContentsWebView.
   ContentsWebView* GetInactiveContentsView();
 
+  ContentsContainerView* GetActiveContentsContainerView();
+
   // Returns true if more than one WebContents is displayed.
   bool IsInSplitView() const;
 

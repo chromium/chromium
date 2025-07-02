@@ -99,7 +99,7 @@ class BrowserViewTest : public InProcessBrowserTest {
   }
 
   ContentsContainerView* contents_container_view() {
-    return browser_view()->contents_container_view();
+    return browser_view()->GetActiveContentsContainerView();
   }
 
   views::WebView* contents_web_view() {

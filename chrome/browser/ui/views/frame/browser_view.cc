@@ -1069,10 +1069,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   lens_overlay_view_ =
       contents_container->AddChildView(std::move(lens_overlay_view));
 
-  contents_scrim_view_ =
-      contents_container->AddChildView(std::make_unique<ScrimView>());
-  contents_scrim_view_->layer()->SetName("ContentsScrimView");
-
 #if BUILDFLAG(ENABLE_GLIC)
   // `IsProfileEligible` returns true if the feature flags are present and the
   // profile can potentially enable the feature. If the feature is disabled the
@@ -1096,12 +1092,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 #if BUILDFLAG(ENABLE_GLIC)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, devtools_scrim_view_, contents_view,
-      lens_overlay_view_, contents_scrim_view_, glic_border_, watermark_view_,
+      lens_overlay_view_, glic_border_, watermark_view_,
       new_tab_footer_web_view_separator_, new_tab_footer_web_view_));
 #else
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, devtools_scrim_view_, contents_view,
-      lens_overlay_view_, contents_scrim_view_, nullptr, watermark_view_,
+      lens_overlay_view_, nullptr, watermark_view_,
       new_tab_footer_web_view_separator_, new_tab_footer_web_view_));
 #endif
 
@@ -1237,7 +1233,6 @@ BrowserView::~BrowserView() {
   lens_overlay_view_ = nullptr;
   devtools_web_view_ = nullptr;
   devtools_scrim_view_ = nullptr;
-  contents_scrim_view_ = nullptr;
   window_scrim_view_ = nullptr;
   watermark_view_ = nullptr;
   glic_border_ = nullptr;
@@ -1341,6 +1336,13 @@ int BrowserView::GetTabStripHeight() const {
 gfx::Size BrowserView::GetWebAppFrameToolbarPreferredSize() const {
   return web_app_frame_toolbar_ ? web_app_frame_toolbar_->GetPreferredSize()
                                 : gfx::Size();
+}
+
+ContentsContainerView* BrowserView::GetActiveContentsContainerView() {
+  if (multi_contents_view_) {
+    return multi_contents_view_->GetActiveContentsContainerView();
+  }
+  return contents_container_view_;
 }
 
 #if BUILDFLAG(IS_MAC)

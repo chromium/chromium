@@ -34,6 +34,10 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
 
   contents_view_ = AddChildView(
       std::make_unique<ContentsWebView>(browser_view->GetProfile()));
+
+  contents_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
+  contents_scrim_view_->layer()->SetName("ContentsScrimView");
+
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     inactive_split_scrim_view_ =
         AddChildView(std::make_unique<ScrimView>(kColorSplitViewScrim));
@@ -51,6 +55,7 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
   if (!is_in_split) {
     SetBorder(nullptr);
     contents_view_->SetBackgroundRadii(gfx::RoundedCornersF{0});
+    contents_scrim_view_->SetRoundedCorners(gfx::RoundedCornersF{0});
     mini_toolbar_->SetVisible(false);
     inactive_split_scrim_view_->SetVisible(false);
     return;
@@ -70,6 +75,10 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
 
   if (contents_view_->GetBackgroundRadii() != kContentCornerRadius) {
     contents_view_->SetBackgroundRadii(kContentCornerRadius);
+  }
+  if (contents_scrim_view_->layer()->rounded_corner_radii() !=
+      kContentCornerRadius) {
+    contents_scrim_view_->SetRoundedCorners(kContentCornerRadius);
   }
   // Mini toolbar should only be visible for the inactive contents
   // container view or both depending on configuration.
@@ -93,6 +102,11 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   gfx::Rect contents_rect = GetContentsBounds();
   layouts.child_layouts.emplace_back(
       contents_view_.get(), contents_view_->GetVisible(), contents_rect);
+
+  CHECK(contents_scrim_view_);
+  layouts.child_layouts.emplace_back(contents_scrim_view_.get(),
+                                     contents_scrim_view_->GetVisible(),
+                                     contents_rect);
 
   // The scrim view should cover and take up the same space as the contents
   // view.

@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
@@ -207,6 +208,8 @@ class BrowserView : public BrowserWindow,
   // Returns an empty size if this browser is not for a web app.
   gfx::Size GetWebAppFrameToolbarPreferredSize() const;
 
+  ContentsContainerView* GetActiveContentsContainerView();
+
   // Container for the tabstrip, toolbar, etc.
   TopContainerView* top_container() { return top_container_; }
 
@@ -242,10 +245,6 @@ class BrowserView : public BrowserWindow,
 
   // Container for the web contents.
   views::View* contents_container() { return contents_container_; }
-
-  ContentsContainerView* contents_container_view() {
-    return contents_container_view_;
-  }
 
   SidePanel* unified_side_panel() { return unified_side_panel_; }
 
@@ -303,7 +302,9 @@ class BrowserView : public BrowserWindow,
   }
   views::WebView* devtools_web_view() { return devtools_web_view_; }
 
-  ScrimView* contents_scrim_view() { return contents_scrim_view_; }
+  ScrimView* contents_scrim_view() {
+    return GetActiveContentsContainerView()->GetContentsScrimView();
+  }
 
   ScrimView* devtools_scrim_view() { return devtools_scrim_view_; }
 

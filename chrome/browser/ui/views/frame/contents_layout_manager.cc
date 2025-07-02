@@ -15,7 +15,6 @@ ContentsLayoutManager::ContentsLayoutManager(
     views::View* devtools_scrim_view,
     views::View* contents_view,
     views::View* lens_overlay_view,
-    views::View* scrim_view,
     views::View* border_view,
     views::View* watermark_view,
     views::View* new_tab_footer_view_separator,
@@ -24,7 +23,6 @@ ContentsLayoutManager::ContentsLayoutManager(
       devtools_scrim_view_(devtools_scrim_view),
       contents_view_(contents_view),
       lens_overlay_view_(lens_overlay_view),
-      scrim_view_(scrim_view),
       border_view_(border_view),
       watermark_view_(watermark_view),
       new_tab_footer_view_separator_(new_tab_footer_view_separator),
@@ -100,12 +98,6 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(contents_view_.get(),
                                      contents_view_->GetVisible(),
                                      contents_rect, optional_size_bound);
-
-  // The scrim view bounds are the same as the contents view.
-  CHECK(scrim_view_);
-  layouts.child_layouts.emplace_back(scrim_view_.get(),
-                                     scrim_view_->GetVisible(), contents_rect,
-                                     optional_size_bound);
 
   // The Lens overlay view bounds are the same as the contents view.
   CHECK(lens_overlay_view_);

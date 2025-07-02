@@ -59,7 +59,7 @@ MultiContentsView::MultiContentsView(
   contents_container_views_[0]
       ->GetContentsView()
       ->set_is_primary_web_contents_for_window(true);
-  contents_container_views_[0]->GetScrimView()->SetProperty(
+  contents_container_views_[0]->GetInactiveSplitScrimView()->SetProperty(
       views::kElementIdentifierKey, kStartContainerViewScrimElementId);
 
   resize_area_ = AddChildView(std::make_unique<MultiContentsResizeArea>(this));
@@ -68,7 +68,7 @@ MultiContentsView::MultiContentsView(
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
   contents_container_views_[1]->SetVisible(false);
-  contents_container_views_[1]->GetScrimView()->SetProperty(
+  contents_container_views_[1]->GetInactiveSplitScrimView()->SetProperty(
       views::kElementIdentifierKey, kEndContainerViewScrimElementId);
 
   for (auto* contents_container_view : contents_container_views_) {
@@ -100,11 +100,15 @@ MultiContentsView::~MultiContentsView() {
 }
 
 ContentsWebView* MultiContentsView::GetActiveContentsView() {
-  return contents_container_views_[active_index_]->GetContentsView();
+  return GetActiveContentsContainerView()->GetContentsView();
 }
 
 ContentsWebView* MultiContentsView::GetInactiveContentsView() {
   return contents_container_views_[GetInactiveIndex()]->GetContentsView();
+}
+
+ContentsContainerView* MultiContentsView::GetActiveContentsContainerView() {
+  return contents_container_views_[active_index_];
 }
 
 bool MultiContentsView::IsInSplitView() const {

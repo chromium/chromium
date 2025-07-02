@@ -26,7 +26,8 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
 
   ContentsWebView* GetContentsView() { return contents_view_; }
   MultiContentsViewMiniToolbar* GetMiniToolbar() { return mini_toolbar_; }
-  ScrimView* GetScrimView() { return inactive_split_scrim_view_; }
+  ScrimView* GetContentsScrimView() { return contents_scrim_view_; }
+  ScrimView* GetInactiveSplitScrimView() { return inactive_split_scrim_view_; }
 
   void UpdateBorderAndOverlay(bool is_in_split,
                               bool is_active,
@@ -38,6 +39,9 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
       const views::SizeBounds& size_bounds) const override;
 
   raw_ptr<ContentsWebView> contents_view_;
+  // The scrim view that covers the content area when a tab-modal dialog is
+  // open.
+  raw_ptr<ScrimView> contents_scrim_view_;
   // Scrim view shown on the inactive side of a split view when the omnibox is
   // focused or site permissions dialogs are showing.
   raw_ptr<ScrimView> inactive_split_scrim_view_ = nullptr;

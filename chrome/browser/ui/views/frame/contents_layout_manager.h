@@ -17,7 +17,6 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
                         views::View* devtools_scrim_view,
                         views::View* contents_view,
                         views::View* lens_overlay_view,
-                        views::View* scrim_view,
                         views::View* border_view = nullptr,
                         views::View* watermark_view = nullptr,
                         views::View* new_tab_footer_view_separator = nullptr,
@@ -42,7 +41,6 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
   const raw_ptr<views::View> devtools_scrim_view_;
   const raw_ptr<views::View> contents_view_;
   const raw_ptr<views::View> lens_overlay_view_;
-  const raw_ptr<views::View> scrim_view_;
   const raw_ptr<views::View> border_view_;
   const raw_ptr<views::View> watermark_view_;
   const raw_ptr<views::View> new_tab_footer_view_separator_;
