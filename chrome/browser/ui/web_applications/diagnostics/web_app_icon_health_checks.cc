@@ -70,11 +70,12 @@ void WebAppIconHealthChecks::RunDiagnostics() {
 void WebAppIconHealthChecks::SaveDiagnosticForApp(
     webapps::AppId app_id,
     std::optional<WebAppIconDiagnosticResult> result) {
-  apps_running_icon_diagnostics_.erase(app_id);
-  if (result) {
-    results_.push_back(*std::move(result));
+  if (apps_running_icon_diagnostics_.erase(app_id) > 0) {
+    if (result) {
+      results_.push_back(*std::move(result));
+    }
+    run_complete_callback_.Run();
   }
-  run_complete_callback_.Run();
 }
 
 void WebAppIconHealthChecks::RecordDiagnosticResults() {
