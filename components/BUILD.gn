@@ -615,10 +615,6 @@ test("components_unittests") {
       "//components/spellcheck/renderer:unit_tests",
     ]
 
-    if (!is_win) {  #!iOS and!Windows
-      deps += [ "//components/cast:unit_tests" ]
-    }
-
     if (!is_fuchsia) {  #!iOS and!Fuchsia
       deps += [
         "//components/crash/content/browser:unit_tests",

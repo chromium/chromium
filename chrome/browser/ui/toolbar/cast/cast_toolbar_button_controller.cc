@@ -7,12 +7,12 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
-#include "base/observer_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -97,9 +97,6 @@ void CastToolbarButtonController::OnRoutesUpdated(
 void CastToolbarButtonController::OnDialogShown() {
   dialog_count_++;
   MaybeToggleIconVisibility();
-  for (Observer& observer : observers_) {
-    observer.ActivateIcon();
-  }
 }
 
 void CastToolbarButtonController::OnDialogHidden() {
@@ -108,9 +105,6 @@ void CastToolbarButtonController::OnDialogHidden() {
     dialog_count_--;
   }
   if (dialog_count_ == 0) {
-    for (Observer& observer : observers_) {
-      observer.DeactivateIcon();
-    }
     // Call MaybeToggleIconVisibility() asynchronously, so that the action icon
     // doesn't get hidden until we have a chance to show a context menu.
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -118,21 +112,6 @@ void CastToolbarButtonController::OnDialogHidden() {
         base::BindOnce(&CastToolbarButtonController::MaybeToggleIconVisibility,
                        weak_factory_.GetWeakPtr()));
   }
-}
-
-void CastToolbarButtonController::OnContextMenuShown() {
-  DCHECK(!context_menu_shown_);
-  context_menu_shown_ = true;
-  // Once the context menu is shown, we no longer need to keep track of the
-  // mouse or touch press.
-  keep_visible_for_right_click_or_hold_ = false;
-  MaybeToggleIconVisibility();
-}
-
-void CastToolbarButtonController::OnContextMenuHidden() {
-  DCHECK(context_menu_shown_);
-  context_menu_shown_ = false;
-  MaybeToggleIconVisibility();
 }
 
 void CastToolbarButtonController::UpdateIcon() {
@@ -150,14 +129,6 @@ void CastToolbarButtonController::KeepIconShownOnPressed() {
 void CastToolbarButtonController::MaybeHideIconOnReleased() {
   keep_visible_for_right_click_or_hold_ = false;
   MaybeToggleIconVisibility();
-}
-
-void CastToolbarButtonController::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void CastToolbarButtonController::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 bool CastToolbarButtonController::ShouldEnableAction() const {
@@ -183,57 +154,46 @@ CastToolbarButtonController::CastToolbarButtonController(
       base::BindRepeating(
           &CastToolbarButtonController::MaybeToggleIconVisibility,
           base::Unretained(this)));
-  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
-    pref_change_registrar_.Add(
-        media_router::prefs::kMediaRouterMediaRemotingEnabled,
-        base::BindRepeating(
-            &CastToolbarButtonController::UpdateToggleMediaRouterRemotingAction,
-            base::Unretained(this)));
-  }
+  pref_change_registrar_.Add(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled,
+      base::BindRepeating(
+          &CastToolbarButtonController::UpdateToggleMediaRouterRemotingAction,
+          base::Unretained(this)));
 }
 
 void CastToolbarButtonController::MaybeToggleIconVisibility() {
-  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
-    // Pin media router if it should be pinned based on enterprise policy.
-    if (IsActionShownByPolicy(profile_)) {
-      PinnedToolbarActionsModel* const actions_model =
-          PinnedToolbarActionsModel::Get(profile_);
-      actions_model->UpdatePinnedState(kActionRouteMedia, true);
-    }
-
-    for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
-      auto* action_item = actions::ActionManager::Get().FindAction(
-          kActionRouteMedia, browser->browser_actions()->root_action_item());
-      // Update the action item's pinnable state based on the enterprise policy.
-      if (IsActionShownByPolicy(profile_)) {
-        action_item->SetProperty(
-            actions::kActionItemPinnableKey,
-            std::underlying_type_t<actions::ActionPinnableState>(
-                actions::ActionPinnableState::kEnterpriseControlled));
-      } else {
-        action_item->SetProperty(
-            actions::kActionItemPinnableKey,
-            std::underlying_type_t<actions::ActionPinnableState>(
-                actions::ActionPinnableState::kPinnable));
-      }
-      // Update the toolbar button's visibility.
-      if (auto* container = BrowserView::GetBrowserViewForBrowser(browser)
-                                ->toolbar()
-                                ->pinned_toolbar_actions_container()) {
-        container->ShowActionEphemerallyInToolbar(kActionRouteMedia,
-                                                  ShouldEnableAction());
-      }
-    }
-    return;
+  bool shown_by_policy = IsActionShownByPolicy(profile_);
+  // Pin media router if it should be pinned based on enterprise policy.
+  if (shown_by_policy) {
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(profile_);
+    actions_model->UpdatePinnedState(kActionRouteMedia, true);
   }
 
-  if (ShouldEnableAction()) {
-    for (Observer& observer : observers_) {
-      observer.ShowIcon();
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->profile() != profile_) {
+      continue;
     }
-  } else {
-    for (Observer& observer : observers_) {
-      observer.HideIcon();
+    auto* action_item = actions::ActionManager::Get().FindAction(
+        kActionRouteMedia, browser->browser_actions()->root_action_item());
+    // Update the action item's pinnable state based on the enterprise policy.
+    if (shown_by_policy) {
+      action_item->SetProperty(
+          actions::kActionItemPinnableKey,
+          static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
+              actions::ActionPinnableState::kEnterpriseControlled));
+    } else {
+      action_item->SetProperty(
+          actions::kActionItemPinnableKey,
+          static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
+              actions::ActionPinnableState::kPinnable));
+    }
+    // Update the toolbar button's visibility.
+    if (auto* container = BrowserView::GetBrowserViewForBrowser(browser)
+                              ->toolbar()
+                              ->pinned_toolbar_actions_container()) {
+      container->ShowActionEphemerallyInToolbar(kActionRouteMedia,
+                                                ShouldEnableAction());
     }
   }
 }

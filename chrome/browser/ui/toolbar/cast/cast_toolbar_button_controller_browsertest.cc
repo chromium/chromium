@@ -174,23 +174,6 @@ IN_PROC_BROWSER_TEST_F(CastToolbarButtonControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CastToolbarButtonControllerBrowserTest,
-                       EphemeralIconForContextMenu) {
-  EXPECT_FALSE(IsIconShown());
-
-  controller()->OnDialogShown();
-  EXPECT_TRUE(IsIconShown());
-  controller()->OnDialogHidden();
-  controller()->OnContextMenuShown();
-  // Hiding the dialog immediately before showing a context menu shouldn't hide
-  // the icon.
-  EXPECT_TRUE(IsIconShown());
-
-  // Hiding the context menu should hide the icon.
-  controller()->OnContextMenuHidden();
-  EXPECT_FALSE(IsIconShown());
-}
-
-IN_PROC_BROWSER_TEST_F(CastToolbarButtonControllerBrowserTest,
                        ObserveAlwaysShowPrefChange) {
   EXPECT_FALSE(IsIconShown());
 

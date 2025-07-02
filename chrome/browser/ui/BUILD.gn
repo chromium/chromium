@@ -4102,8 +4102,6 @@ static_library("ui") {
       "views/media_router/cast_dialog_sink_view.h",
       "views/media_router/cast_dialog_view.cc",
       "views/media_router/cast_dialog_view.h",
-      "views/media_router/cast_toolbar_button.cc",
-      "views/media_router/cast_toolbar_button.h",
       "views/media_router/media_remoting_dialog_view.cc",
       "views/media_router/media_remoting_dialog_view.h",
       "views/media_router/media_router_dialog_controller_views.cc",

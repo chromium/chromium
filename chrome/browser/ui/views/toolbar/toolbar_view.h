@@ -62,10 +62,6 @@ class ToolbarController;
 class OverflowButton;
 class PerformanceInterventionButton;
 
-namespace media_router {
-class CastToolbarButton;
-}
-
 namespace page_actions {
 class PageActionView;
 }  // namespace page_actions
@@ -316,7 +312,6 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
   raw_ptr<PerformanceInterventionButton> performance_intervention_button_ =
       nullptr;
-  raw_ptr<media_router::CastToolbarButton> cast_ = nullptr;
   raw_ptr<PinnedToolbarActionsContainer> pinned_toolbar_actions_container_ =
       nullptr;
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;

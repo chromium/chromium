@@ -695,30 +695,28 @@ void BrowserActions::InitializeBrowserActions() {
               !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
           .Build());
 
-  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
-    actions::ActionItem* media_router_action;
-    root_action_item_->AddChild(
-        StatefulChromeMenuAction(
-            base::BindRepeating(
-                [](Browser* browser, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  // TODO(crbug.com/356468503): Figure out how to capture
-                  // action invocation location.
-                  auto* cast_browser_controller =
-                      browser->browser_window_features()
-                          ->cast_browser_controller();
-                  if (cast_browser_controller) {
-                    cast_browser_controller->ToggleDialog();
-                  }
-                },
-                base::Unretained(browser)),
-            kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
-            IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT, kCastChromeRefreshIcon)
-            .SetEnabled(chrome::CanRouteMedia(browser))
-            .CopyAddressTo(&media_router_action)
-            .Build());
-    CastToolbarButtonUtil::AddCastChildActions(media_router_action, browser);
-  }
+  actions::ActionItem* media_router_action;
+  root_action_item_->AddChild(
+      StatefulChromeMenuAction(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                // TODO(crbug.com/356468503): Figure out how to capture
+                // action invocation location.
+                auto* cast_browser_controller =
+                    browser->browser_window_features()
+                        ->cast_browser_controller();
+                if (cast_browser_controller) {
+                  cast_browser_controller->ToggleDialog();
+                }
+              },
+              base::Unretained(browser)),
+          kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+          IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT, kCastChromeRefreshIcon)
+          .SetEnabled(chrome::CanRouteMedia(browser))
+          .CopyAddressTo(&media_router_action)
+          .Build());
+  CastToolbarButtonUtil::AddCastChildActions(media_router_action, browser);
 
   if (download::IsDownloadBubbleEnabled()) {
     root_action_item_->AddChild(

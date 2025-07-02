@@ -263,8 +263,6 @@ BASE_DECLARE_FEATURE(kThreeButtonPasswordSaveDialog);
 
 bool IsToolbarPinningEnabled();
 
-BASE_DECLARE_FEATURE(kPinnedCastButton);
-
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForAvatar);
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForMenu);
 BASE_DECLARE_FEATURE(kEnterpriseBadgingForNtpFooter);

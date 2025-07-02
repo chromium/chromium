@@ -299,12 +299,6 @@ BASE_FEATURE(kThreeButtonPasswordSaveDialog,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if !defined(ANDROID)
-BASE_FEATURE(kPinnedCastButton,
-             "PinnedCastButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enables enterprise profile badging for managed profiles on the toolbar
 // avatar. On managed profiles, a "Work" or "School" label will be used in the
 // toolbar.

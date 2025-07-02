@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -58,7 +56,6 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
   CastBrowserControllerTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kPinnedCastButton}, {});
     InProcessBrowserTest::SetUp();
   }
 
@@ -120,7 +117,6 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
   gfx::Image warning_chrome_refresh_icon_;
   gfx::Image active_chrome_refresh_icon_;
   gfx::Image paused_icon_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   const std::vector<MediaRoute> local_display_route_list_ = {
       CreateLocalDisplayRoute()};

@@ -63,7 +63,6 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
-#include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
@@ -361,12 +360,6 @@ void ToolbarView::Init() {
 
     toolbar_divider = std::make_unique<views::View>();
   }
-  std::unique_ptr<media_router::CastToolbarButton> cast;
-  if (!base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
-    if (media_router::MediaRouterEnabled(browser_->profile())) {
-      cast = media_router::CastToolbarButton::Create(browser_);
-    }
-  }
 
   std::unique_ptr<MediaToolbarButtonView> media_button;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControls)) {
@@ -445,10 +438,6 @@ void ToolbarView::Init() {
 
   performance_intervention_button_ = container_view_->AddChildView(
       std::make_unique<PerformanceInterventionButton>(browser_view_));
-
-  if (cast) {
-    cast_ = container_view_->AddChildView(std::move(cast));
-  }
 
   if (media_button) {
     media_button_ = container_view_->AddChildView(std::move(media_button));
@@ -703,13 +692,10 @@ ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
 }
 
 ToolbarButton* ToolbarView::GetCastButton() const {
-  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
-    return pinned_toolbar_actions_container()
-               ? pinned_toolbar_actions_container()->GetButtonFor(
-                     kActionRouteMedia)
-               : nullptr;
-  }
-  return cast_;
+  return pinned_toolbar_actions_container()
+             ? pinned_toolbar_actions_container()->GetButtonFor(
+                   kActionRouteMedia)
+             : nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

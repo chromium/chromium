@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
-#include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -211,34 +210,6 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest,
     waiter.Wait();
     EXPECT_FALSE(ToolbarIconExists());
   }
-}
-
-IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest, PinAndUnpinToolbarIcon) {
-  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
-    GTEST_SKIP() << "This test is not relevant for toolbar pinning as pinning "
-                    "will now be handled by PinnedActionToolbarButton.";
-  }
-
-  GetDialogController()->ShowMediaRouterDialog(
-      MediaRouterDialogActivationLocation::PAGE);
-  views::test::WidgetVisibleWaiter(GetDialogWidget()).Wait();
-  EXPECT_TRUE(ToolbarIconExists());
-  // Pin the icon via its context menu.
-  ui::SimpleMenuModel* context_menu = GetIconContextMenu();
-  const size_t command_index =
-      context_menu
-          ->GetIndexOfCommandId(IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION)
-          .value();
-  context_menu->ActivatedAt(command_index);
-
-  views::test::WidgetDestroyedWaiter waiter(GetDialogWidget());
-  GetDialogController()->HideMediaRouterDialog();
-  waiter.Wait();
-  EXPECT_TRUE(ToolbarIconExists());
-
-  // Unpin the icon via its context menu.
-  GetIconContextMenu()->ActivatedAt(command_index);
-  EXPECT_FALSE(ToolbarIconExists());
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest,

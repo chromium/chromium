@@ -10,9 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/toolbar/cast/cast_contextual_menu.h"
 #include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -21,26 +19,8 @@
 // icon. There should be one instance of this class per profile, and it should
 // only be used on the UI thread.
 class CastToolbarButtonController : public media_router::IssuesObserver,
-                                    public media_router::MediaRoutesObserver,
-                                    public CastContextualMenu::Observer {
+                                    public media_router::MediaRoutesObserver {
  public:
-  // TODO(takumif): CastToolbarIcon is the only Observer implementation.
-  // Observer should be renamed to make it clear that it is responsible for
-  // changing icon states when its methods are called.
-  class Observer {
-   public:
-    virtual ~Observer() = default;
-
-    virtual void ShowIcon() {}
-    virtual void HideIcon() {}
-    // TODO(crbug.com/40588598): Use the common code path to show and hide
-    // the icon's inkdrop.
-    // This is called when the icon should enter pressed state.
-    virtual void ActivateIcon() {}
-    // This is called when the icon should enter unpressed state.
-    virtual void DeactivateIcon() {}
-  };
-
   explicit CastToolbarButtonController(Profile* profile);
   // Constructor for injecting dependencies in tests.
   CastToolbarButtonController(Profile* profile,
@@ -73,10 +53,6 @@ class CastToolbarButtonController : public media_router::IssuesObserver,
   virtual void OnDialogShown();
   virtual void OnDialogHidden();
 
-  // CastContextualMenu::Observer:
-  void OnContextMenuShown() override;
-  void OnContextMenuHidden() override;
-
   // Updates the icon for all browsers with the same profile.
   void UpdateIcon();
 
@@ -86,9 +62,6 @@ class CastToolbarButtonController : public media_router::IssuesObserver,
   // still shown at mouse/touch release so that the context menu can be shown.
   void KeepIconShownOnPressed();
   void MaybeHideIconOnReleased();
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // Returns |true| if the Media Router action should be present on the toolbar
   // or the overflow menu.
@@ -133,8 +106,6 @@ class CastToolbarButtonController : public media_router::IssuesObserver,
   bool keep_visible_for_right_click_or_hold_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<CastToolbarButtonController> weak_factory_{this};
 };

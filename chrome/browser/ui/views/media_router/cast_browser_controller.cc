@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/media_router/browser/media_router.h"
@@ -80,47 +79,44 @@ void CastBrowserController::OnFreezeInfoChanged() {
 // TODO(crbug.com/375030079): Move this logic to the profile controller to avoid
 // recalculating the icon for every browser.
 void CastBrowserController::UpdateIcon() {
-  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
-    auto* action_item = static_cast<actions::StatefulImageActionItem*>(
-        actions::ActionManager::Get().FindAction(
-            kActionRouteMedia,
-            browser_->browser_actions()->root_action_item()));
-    const gfx::VectorIcon* new_icon = nullptr;
-    bool active = false;
+  auto* action_item = static_cast<actions::StatefulImageActionItem*>(
+      actions::ActionManager::Get().FindAction(
+          kActionRouteMedia, browser_->browser_actions()->root_action_item()));
+  const gfx::VectorIcon* new_icon = nullptr;
+  bool active = false;
 
-    bool is_frozen = false;
-    for (const auto& route_id : tracked_mirroring_routes_) {
-      MirroringMediaControllerHost* mirroring_controller_host =
-          MediaRouterFactory::GetApiForBrowserContext(browser_->profile())
-              ->GetMirroringMediaControllerHost(route_id);
-      if (mirroring_controller_host) {
-        is_frozen = is_frozen || mirroring_controller_host->IsFrozen();
-      }
+  bool is_frozen = false;
+  for (const auto& route_id : tracked_mirroring_routes_) {
+    MirroringMediaControllerHost* mirroring_controller_host =
+        MediaRouterFactory::GetApiForBrowserContext(browser_->profile())
+            ->GetMirroringMediaControllerHost(route_id);
+    if (mirroring_controller_host) {
+      is_frozen = is_frozen || mirroring_controller_host->IsFrozen();
     }
-
-    if ((!issue_severity_ || issue_severity_ == Severity::NOTIFICATION) &&
-        !has_local_route_) {
-      new_icon = &vector_icons::kMediaRouterIdleChromeRefreshIcon;
-    } else if (issue_severity_ == Severity::WARNING) {
-      new_icon = &vector_icons::kMediaRouterWarningChromeRefreshIcon;
-    } else if (is_frozen) {
-      new_icon = &vector_icons::kMediaRouterPausedIcon;
-    } else {
-      new_icon = &vector_icons::kMediaRouterActiveChromeRefreshIcon;
-      active = true;
-    }
-
-    const auto& stateful_image = action_item->GetStatefulImage();
-    if (stateful_image.IsVectorIcon() &&
-        stateful_image.GetVectorIcon().vector_icon() == new_icon) {
-      return;
-    }
-
-    LogIconChange(new_icon);
-
-    action_item->SetStatefulImage(ui::ImageModel::FromVectorIcon(*new_icon));
-    action_item->SetProperty(kActionItemUnderlineIndicatorKey, active);
   }
+
+  if ((!issue_severity_ || issue_severity_ == Severity::NOTIFICATION) &&
+      !has_local_route_) {
+    new_icon = &vector_icons::kMediaRouterIdleChromeRefreshIcon;
+  } else if (issue_severity_ == Severity::WARNING) {
+    new_icon = &vector_icons::kMediaRouterWarningChromeRefreshIcon;
+  } else if (is_frozen) {
+    new_icon = &vector_icons::kMediaRouterPausedIcon;
+  } else {
+    new_icon = &vector_icons::kMediaRouterActiveChromeRefreshIcon;
+    active = true;
+  }
+
+  const auto& stateful_image = action_item->GetStatefulImage();
+  if (stateful_image.IsVectorIcon() &&
+      stateful_image.GetVectorIcon().vector_icon() == new_icon) {
+    return;
+  }
+
+  LogIconChange(new_icon);
+
+  action_item->SetStatefulImage(ui::ImageModel::FromVectorIcon(*new_icon));
+  action_item->SetProperty(kActionItemUnderlineIndicatorKey, active);
 
   if (ToolbarButton* button = GetToolbarButton()) {
     button->UpdateIcon();
