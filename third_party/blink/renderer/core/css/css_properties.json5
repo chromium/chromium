@@ -332,6 +332,7 @@
         "border-image",
         "border-outline-visited-color",
         "border-radius",
+        "border-shape",
         "border-visual",
         "border-width",
         "clip",
@@ -2598,7 +2599,7 @@
       converter: "ConvertBorderShape",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      invalidate: ["border-visual", "paint", "visual-overflow"],
+      invalidate: ["border-visual", "paint", "visual-overflow", "border-shape"],
     },
     {
       name: "bottom",
@@ -5496,7 +5497,7 @@
       converter: "ConvertStrokeDasharray",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      invalidate: ["paint", "stroke"],
+      invalidate: ["paint", "stroke", "border-shape"],
       affected_by_zoom: true,
     },
     {
@@ -5526,7 +5527,7 @@
       name_for_methods: "CapStyle",
       keywords: ["butt", "round", "square"],
       typedom_types: ["Keyword"],
-      invalidate: ["layout", "paint"],
+      invalidate: ["layout", "paint", "border-shape"],
     },
     {
       name: "stroke-linejoin",
@@ -5540,7 +5541,7 @@
       name_for_methods: "JoinStyle",
       keywords: ["miter", "bevel", "round"],
       typedom_types: ["Keyword"],
-      invalidate: ["layout", "paint"],
+      invalidate: ["layout", "paint", "border-shape"],
     },
     {
       name: "stroke-miterlimit",
@@ -5553,7 +5554,7 @@
       default_value: "4",
       name_for_methods: "StrokeMiterLimit",
       typedom_types: ["Number"],
-      invalidate: ["layout", "paint"],
+      invalidate: ["layout", "paint", "border-shape"],
     },
     {
       name: "stroke-opacity",
@@ -5583,7 +5584,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_highlight: true,
       valid_for_permission_icon: true,
-      invalidate: ["layout", "paint"],
+      invalidate: ["layout", "paint", "border-shape"],
       affected_by_zoom: true,
     },
     {

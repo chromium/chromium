@@ -190,6 +190,8 @@ void UpdateDebugNames(const LayoutObject& object,
   SetDebugName(properties.BackgroundClip(), "BackgroundClip", object);
   SetDebugName(properties.InnerBorderRadiusClip(), "InnerBorderRadiusClip",
                object);
+  SetDebugName(properties.InnerBorderShapeClip(), "InnerBorderShapeClip",
+               object);
   SetDebugName(properties.OverflowClip(), "OverflowClip", object);
   SetDebugName(properties.ClipIsolationNode(), "ClipIsolationNode", object);
 

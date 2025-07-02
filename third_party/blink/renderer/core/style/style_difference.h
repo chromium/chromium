@@ -49,6 +49,7 @@ class StyleDifference {
         compositing_reasons_changed_(false),
         compositable_paint_effect_changed_(false),
         border_radius_changed_(false),
+        border_shape_changed_(false),
         transform_data_changed_(false) {}
 
   void Merge(StyleDifference other) {
@@ -213,6 +214,8 @@ class StyleDifference {
   }
   bool BorderRadiusChanged() const { return border_radius_changed_; }
   void SetBorderRadiusChanged() { border_radius_changed_ = true; }
+  bool BorderShapeChanged() const { return border_shape_changed_; }
+  void SetBorderShapeChanged() { border_shape_changed_ = true; }
   bool TransformDataChanged() const { return transform_data_changed_; }
   void SetTransformDataChanged() { transform_data_changed_ = true; }
 
@@ -236,6 +239,7 @@ class StyleDifference {
   // composited using paint worklet infra.
   unsigned compositable_paint_effect_changed_ : 1;
   unsigned border_radius_changed_ : 1;
+  unsigned border_shape_changed_ : 1;
   unsigned transform_data_changed_ : 1;
 
   // This exists only to get the object up to exactly 32 bits,
@@ -244,7 +248,7 @@ class StyleDifference {
   // data back again with a large read can cause store-to-load forward
   // stalls). Feel free to take bits from here if you need them
   // for something else.
-  unsigned padding_ [[maybe_unused]] : 10;
+  unsigned padding_ [[maybe_unused]] : 9;
 };
 static_assert(sizeof(StyleDifference) == 4, "Remove some padding bits!");
 

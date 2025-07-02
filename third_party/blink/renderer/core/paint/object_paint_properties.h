@@ -163,8 +163,9 @@ class CORE_EXPORT ObjectPaintProperties
     kInnerBorderRadiusClip = 30,
     kOverflowClip = 31,
     kCssClipFixedPosition = 32,
-    kLastClip = kCssClipFixedPosition,
-    kClipAlias = 33,
+    kInnerBorderShapeClip = 33,
+    kLastClip = kInnerBorderShapeClip,
+    kClipAlias = 34,
 
     // Should be updated whenever a higher value NodeType is added.
     kNumFields = kClipAlias + 1,
@@ -367,6 +368,9 @@ class CORE_EXPORT ObjectPaintProperties
   //     +-[ InnerBorderRadiusClip ]
   //       |   Clip created by a rounded border with overflow clip. This clip is
   //       |   not inset by scrollbars.
+  //     +-[ InnerBorderShapeClip ]
+  //       |   Clip created by a border-shape with overflow clip. This clip is
+  //       |   not inset by scrollbars.
   //       +-[ OverflowClip ]
   //             Clip created by overflow clip and is inset by the scrollbar.
   //   [ CssClipFixedPosition ]
@@ -385,6 +389,7 @@ class CORE_EXPORT ObjectPaintProperties
   ADD_CLIP(PixelMovingFilterClipExpander,
            NodeId::kPixelMovingFilterClipExpander)
   ADD_CLIP(InnerBorderRadiusClip, NodeId::kInnerBorderRadiusClip)
+  ADD_CLIP(InnerBorderShapeClip, NodeId::kInnerBorderShapeClip)
   ADD_CLIP(OverflowClip, NodeId::kOverflowClip)
   ADD_CLIP(CssClipFixedPosition, NodeId::kCssClipFixedPosition)
   ADD_ALIAS_NODE(Clip, ClipIsolationNode, NodeId::kClipAlias)

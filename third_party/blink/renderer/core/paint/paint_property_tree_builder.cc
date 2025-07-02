@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
+#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
@@ -76,11 +77,15 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
+#include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/outsets_f.h"
@@ -282,6 +287,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateOverflowControlsClip();
   ALWAYS_INLINE void UpdateBackgroundClip();
   ALWAYS_INLINE void UpdateInnerBorderRadiusClip();
+  ALWAYS_INLINE void UpdateInnerBorderShapeClip();
   ALWAYS_INLINE void UpdateOverflowClip();
   ALWAYS_INLINE void UpdatePerspective();
   ALWAYS_INLINE void UpdateReplacedContentTransform();
@@ -2501,7 +2507,13 @@ static bool NeedsInnerBorderRadiusClip(const LayoutObject& object) {
   //   However, when one of overflow-x or overflow-y computes to clip and the
   //   other computes to visible, the clipping region is not rounded.
   // (https://drafts.csswg.org/css-overflow/#corner-clipping).
-  return object.StyleRef().HasBorderRadius() && object.IsBox() &&
+  return object.StyleRef().HasBorderRadius() &&
+         !object.StyleRef().HasBorderShape() && object.IsBox() &&
+         NeedsOverflowClip(object) && object.ShouldClipOverflowAlongBothAxis();
+}
+
+static bool NeedsInnerBorderShapeClip(const LayoutObject& object) {
+  return object.StyleRef().HasBorderShape() && object.IsBox() &&
          NeedsOverflowClip(object) && object.ShouldClipOverflowAlongBothAxis();
 }
 
@@ -2643,6 +2655,42 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
 
   if (auto* border_radius_clip = properties_->InnerBorderRadiusClip())
     context_.current.clip = border_radius_clip;
+}
+
+void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderShapeClip() {
+  DCHECK(properties_);
+
+  if (NeedsPaintPropertyUpdate()) {
+    if (IsMissingActualFragment()) {
+      // TODO(crbug.com/40257896): Handle clipping correctly when the ancestor
+      // fragment is missing. For now, don't apply any clipping in such
+      // situations, since we risk overclipping.
+      return;
+    }
+    if (NeedsInnerBorderShapeClip(object_)) {
+      const auto& box = To<LayoutBox>(object_);
+      PhysicalRect box_rect(context_.current.paint_offset, box.Size());
+      const Path inner_path =
+          *BorderShapePainter::InnerPath(box_rect, box.StyleRef());
+      gfx::RectF layout_clip_rect(box_rect);
+      PhysicalOffset offset = -OffsetInStitchedFragments(BoxFragment());
+      layout_clip_rect.Offset(gfx::Vector2dF(offset));
+      box_rect.offset += offset;
+      // TODO(nrosenthal): apply overflow-clip-margin
+      ClipPaintPropertyNode::State state(
+          *context_.current.transform, layout_clip_rect,
+          FloatRoundedRect(inner_path.BoundingRect()));
+      state.clip_path = inner_path;
+      OnUpdateClip(properties_->UpdateInnerBorderShapeClip(
+          *context_.current.clip, std::move(state)));
+    } else {
+      OnClearClip(properties_->ClearInnerBorderShapeClip());
+    }
+  }
+
+  if (auto* border_shape_clip = properties_->InnerBorderShapeClip()) {
+    context_.current.clip = border_shape_clip;
+  }
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
@@ -3520,6 +3568,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
 
   if (properties_) {
     UpdateInnerBorderRadiusClip();
+    UpdateInnerBorderShapeClip();
     UpdateOverflowClip();
     UpdatePerspective();
     UpdateReplacedContentTransform();

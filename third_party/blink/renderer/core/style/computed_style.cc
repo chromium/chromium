@@ -821,6 +821,9 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   if (field_diff & kBorderRadius) {
     diff.SetBorderRadiusChanged();
   }
+  if (field_diff & kBorderShape) {
+    diff.SetBorderShapeChanged();
+  }
   if (field_diff & kClip) {
     bool has_clip = HasOutOfFlowPosition() && !HasAutoClip();
     bool other_has_clip = other.HasOutOfFlowPosition() && !other.HasAutoClip();
