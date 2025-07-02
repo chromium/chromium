@@ -62,6 +62,9 @@ class BASE_EXPORT SupportsUserData {
   // needs to provide reset functionality.
   void ClearAllUserData();
 
+  // Returns the number of Data objects attached to this object.
+  size_t UserDataCount() const;
+
  private:
   struct Impl;
   std::unique_ptr<Impl> impl_;

@@ -142,4 +142,9 @@ void SupportsUserData::ClearAllUserData() {
   impl_->user_data_.swap(user_data);
 }
 
+size_t SupportsUserData::UserDataCount() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return impl_->user_data_.size();
+}
+
 }  // namespace base
