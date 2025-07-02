@@ -260,7 +260,7 @@ bool ContentWebState::IsRealized() const {
   return session_storage_ == nil;
 }
 
-WebState* ContentWebState::ForceRealized() {
+WebState* ContentWebState::ForceRealizedWithPolicy(RealizationPolicy policy) {
   if (session_storage_) {
     ExtractContentSessionStorage(this, web_contents_->GetController(),
                                  GetBrowserState(), session_storage_);
