@@ -62,8 +62,16 @@ bool BrowserDelegateImpl::IsClosing() const {
   return browser_->IsBrowserClosing();
 }
 
+bool BrowserDelegateImpl::IsActive() const {
+  return browser_->window()->IsActive();
+}
+
 void BrowserDelegateImpl::Show() {
   browser_->window()->Show();
+}
+
+void BrowserDelegateImpl::Activate() {
+  browser_->window()->Activate();
 }
 
 void BrowserDelegateImpl::Minimize() {

@@ -26,6 +26,8 @@
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
@@ -49,7 +51,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -63,6 +64,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -164,11 +166,6 @@ bool OpenFilesSwa(Profile* const profile,
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
                                params);
   return true;
-}
-
-bool IsGeminiApp(Browser* browser) {
-  return web_app::GetAppIdFromApplicationName(browser->app_name()) ==
-         ash::kGeminiAppId;
 }
 
 }  // namespace
@@ -537,24 +534,20 @@ void ChromeNewWindowClient::OpenFile(const base::FilePath& file_path) {
 }
 
 void ChromeNewWindowClient::ToggleGeminiApp() {
-  Profile* const profile = ProfileManager::GetActiveUserProfile();
-  const auto& browsers = BrowserList::GetInstance()->OrderedByActivation();
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  const AccountId& account_id = ash::BrowserContextHelper::Get()
+                                    ->GetUserByBrowserContext(profile)
+                                    ->GetAccountId();
 
-  auto it = std::find_if(browsers.begin(), browsers.end(),
-                         [profile](Browser* browser) {
-                           return browser->profile() == profile &&
-                                  browser->type() == Browser::Type::TYPE_APP &&
-                                  IsGeminiApp(browser);
-                         });
-
-  Browser* active_browser = (it != browsers.end()) ? *it : nullptr;
-  if (!active_browser) {
+  ash::BrowserDelegate* app_window =
+      ash::BrowserController::GetInstance()->FindWebApp(
+          account_id, ash::kGeminiAppId, ash::BrowserType::kApp);
+  if (!app_window) {
     apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
         ash::kGeminiAppId, ui::EF_NONE, apps::LaunchSource::kFromKeyboard);
     return;
   }
 
-  BrowserWindow* app_window = active_browser->window();
   if (app_window->IsActive()) {
     app_window->Minimize();
   } else {
