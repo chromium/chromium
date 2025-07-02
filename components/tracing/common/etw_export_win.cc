@@ -35,6 +35,7 @@ perfetto::TraceConfig CreateTraceConfigForETWKeyword(uint64_t keyword) {
   data_source_config->mutable_interceptor_config()->set_name("etwexport");
   perfetto::protos::gen::TrackEventConfig track_event_config =
       base::trace_event::ETWKeywordToTrackEventConfig(keyword);
+  track_event_config.set_filter_dynamic_event_names(true);
   data_source_config->set_track_event_config_raw(
       track_event_config.SerializeAsString());
   return config;
