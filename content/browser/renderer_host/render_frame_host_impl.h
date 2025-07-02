@@ -3351,6 +3351,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       const blink::DocumentToken& document_token,
+      const base::UnguessableToken& devtools_navigation_token,
       blink::mojom::PolicyContainerPtr policy_container);
 
   // The Build*Callback functions below are responsible for building the

@@ -378,6 +378,7 @@ interface NavigationClient {
       string? error_page_content,
       blink.mojom.URLLoaderFactoryBundle? subresource_loader_factories,
       blink.mojom.DocumentToken document_token,
+      mojo_base.mojom.UnguessableToken devtools_navigation_token,
       blink.mojom.PolicyContainer policy_container,
       AlternativeErrorPageOverrideInfo? alternative_error_page_info)
       => (DidCommitProvisionalLoadParams params,

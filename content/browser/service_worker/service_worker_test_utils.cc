@@ -131,6 +131,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       const std::optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
       const blink::DocumentToken& document_token,
+      const base::UnguessableToken& devtools_navigation_token,
       blink::mojom::PolicyContainerPtr policy_container,
       mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
       CommitFailedNavigationCallback callback) override {

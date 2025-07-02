@@ -309,7 +309,7 @@ void TestRenderFrame::NavigateWithError(
       /*has_stale_copy_in_cache=*/false, error_code,
       /*extended_error_code=*/0, resolve_error_info, error_page_content,
       std::move(pending_factory_bundle), blink::DocumentToken(),
-      CreateStubPolicyContainer(),
+      base::UnguessableToken::Create(), CreateStubPolicyContainer(),
       /*alternative_error_page_info=*/nullptr,
       base::BindOnce(&MockFrameHost::DidCommitProvisionalLoad,
                      base::Unretained(mock_frame_host_.get())));

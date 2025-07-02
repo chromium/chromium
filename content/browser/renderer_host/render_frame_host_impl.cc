@@ -12662,12 +12662,13 @@ void RenderFrameHostImpl::FailedNavigation(
   blink::mojom::PolicyContainerPtr policy_container =
       navigation_request->CreatePolicyContainerForBlink();
 
-  SendCommitFailedNavigation(navigation_client, navigation_request,
-                             common_params.Clone(), commit_params.Clone(),
-                             has_stale_copy_in_cache, error_code,
-                             extended_error_code, error_page_content,
-                             std::move(subresource_loader_factories),
-                             document_token, std::move(policy_container));
+  SendCommitFailedNavigation(
+      navigation_client, navigation_request, common_params.Clone(),
+      commit_params.Clone(), has_stale_copy_in_cache, error_code,
+      extended_error_code, error_page_content,
+      std::move(subresource_loader_factories), document_token,
+      navigation_request->devtools_navigation_token(),
+      std::move(policy_container));
 
   // TODO(crbug.com/40149432): support UKM source creation for failed
   // navigations too.
@@ -16183,6 +16184,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
+    const base::UnguessableToken& devtools_navigation_token,
     blink::mojom::PolicyContainerPtr policy_container) {
   DCHECK(navigation_client && navigation_request);
   DCHECK_NE(GURL(), common_params->url);
@@ -16209,7 +16211,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
         has_stale_copy_in_cache, error_code, extended_error_code,
         navigation_request->GetResolveErrorInfo(), error_page_content,
         std::move(subresource_loader_factories), document_token,
-        std::move(policy_container),
+        devtools_navigation_token, std::move(policy_container),
         GetContentClient()->browser()->GetAlternativeErrorPageOverrideInfo(
             navigation_request->GetURL(), this, GetBrowserContext(),
             error_code),

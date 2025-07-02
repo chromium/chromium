@@ -298,6 +298,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       const blink::DocumentToken& document_token,
+      const base::UnguessableToken& devtools_navigation_token,
       blink::mojom::PolicyContainerPtr policy_container) override;
   void SendBeforeUnload(bool is_reload,
                         base::WeakPtr<RenderFrameHostImpl> impl,

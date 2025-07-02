@@ -658,6 +658,7 @@ void TestRenderFrameHost::SendCommitFailedNavigation(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
+    const base::UnguessableToken& devtools_navigation_token,
     blink::mojom::PolicyContainerPtr policy_container) {
   CHECK(navigation_client);
   commit_failed_callback_[navigation_request] =

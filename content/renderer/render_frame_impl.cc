@@ -2962,6 +2962,7 @@ void RenderFrameImpl::CommitFailedNavigation(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
+    const base::UnguessableToken& devtools_navigation_token,
     blink::mojom::PolicyContainerPtr policy_container,
     mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
     mojom::NavigationClient::CommitFailedNavigationCallback callback) {
@@ -3025,8 +3026,7 @@ void RenderFrameImpl::CommitFailedNavigation(
   commit_params->content_settings =
       blink::CreateDefaultRendererContentSettings();
   auto navigation_params = std::make_unique<WebNavigationParams>(
-      document_token,
-      /*devtools_navigation_token=*/base::UnguessableToken::Create(),
+      document_token, devtools_navigation_token,
       /*base_auction_nonce=*/base::Uuid::GenerateRandomV4());
   FillNavigationParamsRequest(*common_params, *commit_params,
                               navigation_params.get());
