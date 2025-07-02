@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <set>
 #include <string>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -29,6 +29,11 @@ using google::protobuf::FieldDescriptor;
 using google::protobuf::FileDescriptor;
 using google::protobuf::OneofDescriptor;
 using google::protobuf::compiler::GeneratorContext;
+using google::protobuf::compiler::cpp::ClassName;
+using google::protobuf::compiler::cpp::FieldName;
+using google::protobuf::compiler::cpp::Namespace;
+using google::protobuf::compiler::cpp::NamespaceOpener;
+using google::protobuf::compiler::cpp::QualifiedClassName;
 using google::protobuf::compiler::cpp::UnderscoresToCamelCase;
 using google::protobuf::io::Printer;
 using google::protobuf::io::ZeroCopyOutputStream;
@@ -40,7 +45,18 @@ struct ProtoExtrasGeneratorOptions {
   bool protobuf_full_support = false;
 };
 
-void FieldToMapKeyFunction(const FieldDescriptor& field, Printer* printer) {
+bool GetAllClassNames(const Descriptor& message,
+                      base::flat_set<std::string>& class_names) {
+  class_names.insert(ClassName(&message));
+  for (int i = 0; i < message.nested_type_count(); i++) {
+    if (!GetAllClassNames(*message.nested_type(i), class_names)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void FieldToMapKeyFunction(const FieldDescriptor* field, Printer* printer) {
   using enum FieldDescriptor::Type;
   // From:
   // - https://protobuf.dev/programming-guides/proto3/#maps
@@ -50,7 +66,7 @@ void FieldToMapKeyFunction(const FieldDescriptor& field, Printer* printer) {
   // > messages are valid for `key_type`. The `value_type` can be any type
   // except > another map.
   auto conversion_function = [&]() -> std::string {
-    switch (field.type()) {
+    switch (field->type()) {
       case TYPE_STRING:
         return "static_cast<std::string>";
       case TYPE_INT32:
@@ -78,10 +94,10 @@ void FieldToMapKeyFunction(const FieldDescriptor& field, Printer* printer) {
   printer->Print(conversion_function());
 }
 
-void FieldToValueFunction(const FieldDescriptor& field, Printer* printer) {
+void FieldToValueFunction(const FieldDescriptor* field, Printer* printer) {
   using enum FieldDescriptor::Type;
   auto conversion_function = [&]() -> std::string {
-    switch (field.type()) {
+    switch (field->type()) {
       case TYPE_DOUBLE:
       case TYPE_FLOAT:
         return "static_cast<double>";
@@ -103,17 +119,12 @@ void FieldToValueFunction(const FieldDescriptor& field, Printer* printer) {
       case TYPE_BYTES:
         return "base::Base64Encode";
       case TYPE_ENUM:
-        return base::StrCat(
-            {google::protobuf::compiler::cpp::QualifiedClassName(
-                 field.enum_type()),
-             "_Name"});
+        return base::StrCat({QualifiedClassName(field->enum_type()), "_Name"});
       case TYPE_MESSAGE:
       case TYPE_GROUP:
         // The Serialize function for the message is in the namespace of the
         // nested message itself.
-        return base::StrCat(
-            {google::protobuf::compiler::cpp::Namespace(field.message_type()),
-             "::Serialize"});
+        return base::StrCat({Namespace(field->message_type()), "::Serialize"});
     }
     NOTREACHED();
   };
@@ -125,26 +136,26 @@ void CreateToValueSerializationDefinitions(
     Printer* printer,
     const ProtoExtrasGeneratorOptions& options) {
   printer->Emit(
-      {{"message_type", google::protobuf::compiler::cpp::ClassName(&message)},
+      {{"message_type", ClassName(&message)},
        {"serialize_fields",
         [&]() {
           for (int j = 0; j < message.field_count(); j++) {
-            const FieldDescriptor& field = *message.field(j);
-            std::string field_name(field.lowercase_name());
+            const FieldDescriptor* field = message.field(j);
+            std::string field_name = FieldName(message.field(j));
 
             auto field_to_value = [&]() {
               FieldToValueFunction(field, printer);
             };
-            if (field.is_map()) {
+            if (field->is_map()) {
               const FieldDescriptor* map_value =
-                  field.message_type()->map_value();
-              const FieldDescriptor* map_key = field.message_type()->map_key();
+                  field->message_type()->map_value();
+              const FieldDescriptor* map_key = field->message_type()->map_key();
               printer->Emit(
                   {{"field_name", field_name},
                    {"map_key_to_value",
-                    [&] { FieldToMapKeyFunction(*map_key, printer); }},
+                    [&] { FieldToMapKeyFunction(map_key, printer); }},
                    {"map_value_to_value",
-                    [&] { FieldToValueFunction(*map_value, printer); }}},
+                    [&] { FieldToValueFunction(map_value, printer); }}},
                   R"(
   if (!message.$field_name$().empty()) {
     base::DictValue map_dict;
@@ -154,7 +165,7 @@ void CreateToValueSerializationDefinitions(
     dict.Set("$field_name$", std::move(map_dict));
   }
 )");
-            } else if (field.is_repeated()) {
+            } else if (field->is_repeated()) {
               printer->Emit({{"field_name", field_name},
                              {"field_to_value", field_to_value}},
                             R"(
@@ -166,7 +177,7 @@ void CreateToValueSerializationDefinitions(
     dict.Set("$field_name$", std::move(list));
   }
 )");
-            } else if (field.has_presence()) {
+            } else if (field->has_presence()) {
               printer->Emit({{"field_name", field_name},
                              {"field_to_value", field_to_value}},
                             R"(
@@ -174,8 +185,8 @@ void CreateToValueSerializationDefinitions(
     dict.Set("$field_name$", $field_to_value$(message.$field_name$()));
   }
 )");
-            } else if (field.type() == FieldDescriptor::Type::TYPE_STRING ||
-                       field.type() == FieldDescriptor::Type::TYPE_BYTES) {
+            } else if (field->type() == FieldDescriptor::Type::TYPE_STRING ||
+                       field->type() == FieldDescriptor::Type::TYPE_BYTES) {
               printer->Emit({{"field_name", field_name},
                              {"field_to_value", field_to_value}},
                             R"(
@@ -208,8 +219,7 @@ base::DictValue Serialize(const $message_type$& message) {
 void CreateOstreamDefinition(const Descriptor& message,
                              Printer* printer,
                              const ProtoExtrasGeneratorOptions& options) {
-  std::string message_type =
-      google::protobuf::compiler::cpp::ClassName(&message);
+  std::string message_type = ClassName(&message);
   printer->Emit({{"message_type", message_type}},
                 R"(
 std::ostream& operator<<(std::ostream& out, const $message_type$& message) {
@@ -223,8 +233,7 @@ void CreateEqualityOperatorDefinition(
     const Descriptor& message,
     Printer* printer,
     const ProtoExtrasGeneratorOptions& options) {
-  std::string message_type =
-      google::protobuf::compiler::cpp::ClassName(&message);
+  std::string message_type = ClassName(&message);
   printer->Emit(
       {{"message_type", message_type},
        {"compare_fields",
@@ -253,7 +262,7 @@ void CreateEqualityOperatorDefinition(
                   [&]() {
                     for (int j = 0; j < oneof->field_count(); ++j) {
                       const FieldDescriptor* field = oneof->field(j);
-                      std::string field_name(field->lowercase_name());
+                      std::string field_name = FieldName(field);
                       std::string case_name = UnderscoresToCamelCase(
                           field->lowercase_name(), /*cap_next_letter=*/true);
 
@@ -282,14 +291,14 @@ void CreateEqualityOperatorDefinition(
 
           // Compare non-oneof fields.
           for (int j = 0; j < message.field_count(); j++) {
-            const FieldDescriptor& field = *message.field(j);
+            const FieldDescriptor* field = message.field(j);
             // Skip fields that are part of a oneof, as they are handled above.
-            if (field.containing_oneof()) {
+            if (field->containing_oneof()) {
               continue;
             }
 
-            std::string field_name(field.lowercase_name());
-            if (field.is_map()) {
+            std::string field_name = FieldName(field);
+            if (field->is_map()) {
               printer->Emit({{"field_name", field_name}},
                             R"(
 if (lhs.$field_name$().size() != rhs.$field_name$().size()) return false;
@@ -299,7 +308,7 @@ for (const auto& [key, value] : lhs.$field_name$()) {
   if (value != it->second) return false;
 }
 )");
-            } else if (field.is_repeated()) {
+            } else if (field->is_repeated()) {
               printer->Emit({{"field_name", field_name}},
                             R"(
   if (lhs.$field_name$().size() != rhs.$field_name$().size()) return false;
@@ -307,7 +316,7 @@ for (const auto& [key, value] : lhs.$field_name$()) {
     if (lhs.$field_name$()[i] != rhs.$field_name$()[i]) return false;
   }
 )");
-            } else if (field.has_presence()) {
+            } else if (field->has_presence()) {
               printer->Emit({{"field_name", field_name}},
                             R"(
   if (lhs.has_$field_name$() != rhs.has_$field_name$()) return false;
@@ -397,6 +406,21 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
         base::ToUpperASCII(h_file_path.AsUTF8Unsafe()) + "_";
     CHECK(base::ReplaceChars(include_guard, ".-/\\", "_", &include_guard));
 
+    auto forward_declarations = [&]() {
+      if (generator_options.generate_to_value_serialization) {
+        NamespaceOpener ns("base", &h_printer);
+        h_printer.Print("class DictValue;\n");
+      }
+      NamespaceOpener ns(Namespace(file), &h_printer);
+      base::flat_set<std::string> forward_declarations;
+      for (int i = 0; i < file->message_type_count(); i++) {
+        GetAllClassNames(*file->message_type(i), forward_declarations);
+      }
+      for (const auto& forward_declaration : forward_declarations) {
+        h_printer.Print("class $class$;\n", "class", forward_declaration);
+      }
+    };
+
     h_printer.Emit(
         {
             {"include_guard", include_guard},
@@ -406,16 +430,11 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
                if (generator_options.generate_stream_operator) {
                  h_printer.Print("#include <iosfwd>\n\n");
                }
-               h_printer.Print(
-                   "#include \"$f$\"\n", "f",
-                   proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("pb.h"))
-                       .AsUTF8Unsafe());
              }},
+            {"forward_declarations", forward_declarations},
             {"function_declarations",
              [&] {
-               google::protobuf::compiler::cpp::NamespaceOpener ns(
-                   google::protobuf::compiler::cpp::Namespace(file),
-                   &h_printer);
+               NamespaceOpener ns(Namespace(file), &h_printer);
                for (int i = 0; i < file->message_type_count(); i++) {
                  PrintFunctionDeclarations(*file->message_type(i), &h_printer,
                                            error, generator_options);
@@ -430,9 +449,7 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
 
 $includes$
 
-namespace base {
-class DictValue;
-}  // namespace base
+$forward_declarations$
 
 $function_declarations$
 
@@ -440,27 +457,35 @@ $function_declarations$
 )");
 
     // Determine the #includes for the implementation file.
-    std::set<std::string> impl_system_includes;
-    std::set<std::string> impl_user_includes = {
-        h_file_path.AsUTF8Unsafe(),
+    base::flat_set<std::string> impl_system_includes;
+    base::flat_set<std::string> impl_user_includes = {
         proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("pb.h"))
             .AsUTF8Unsafe(),
     };
     if (generator_options.generate_stream_operator) {
       impl_system_includes.insert("<ostream>");
       impl_user_includes.insert(
-          {proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("to_value.h"))
-               .AsUTF8Unsafe(),
-           "base/values.h"});
+          proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("to_value.h"))
+              .AsUTF8Unsafe());
+      impl_user_includes.insert("base/values.h");
     }
     if (generator_options.generate_to_value_serialization) {
-      impl_user_includes.insert({"base/base64.h", "base/values.h",
-                                 "components/proto_extras/proto_extras_lib.h",
-                                 "base/strings/string_number_conversions.h"});
+      impl_user_includes.insert("base/base64.h");
+      impl_user_includes.insert("base/strings/string_number_conversions.h");
+      impl_user_includes.insert("base/values.h");
+      impl_user_includes.insert("components/proto_extras/proto_extras_lib.h");
     }
     for (int i = 0; i < file->dependency_count(); i++) {
       base::FilePath dependency_proto_file_path =
           base::FilePath::FromASCII(file->dependency(i)->name());
+      bool needs_pb_h = generator_options.generate_to_value_serialization ||
+                        generator_options.generate_equality;
+      if (needs_pb_h) {
+        impl_user_includes.insert(
+            dependency_proto_file_path
+                .ReplaceExtension(FILE_PATH_LITERAL("pb.h"))
+                .AsUTF8Unsafe());
+      }
       if (generator_options.generate_to_value_serialization) {
         impl_user_includes.insert(
             dependency_proto_file_path
@@ -480,20 +505,22 @@ $function_declarations$
     cc_printer.Emit(
         {
             {"proto_file_path", proto_file_path.AsUTF8Unsafe()},
-            {"includes",
+            {"header_file_path", h_file_path.AsUTF8Unsafe()},
+            {"system_includes",
              [&] {
                for (const auto& include : impl_system_includes) {
                  cc_printer.Print("#include $f$\n", "f", include);
                }
+             }},
+            {"user_includes",
+             [&] {
                for (const auto& include : impl_user_includes) {
                  cc_printer.Print("#include \"$f$\"\n", "f", include);
                }
              }},
             {"function_definitions",
              [&] {
-               google::protobuf::compiler::cpp::NamespaceOpener ns(
-                   google::protobuf::compiler::cpp::Namespace(file),
-                   &cc_printer);
+               NamespaceOpener ns(Namespace(file), &cc_printer);
                for (int i = 0; i < file->message_type_count(); i++) {
                  PrintFunctionDefinitions(*file->message_type(i), &cc_printer,
                                           error, generator_options);
@@ -503,7 +530,11 @@ $function_declarations$
         R"(// Generated by the proto_extras plugin. DO NOT EDIT!
 // source: $proto_file_path$
 
-$includes$
+#include "$header_file_path$"
+
+$system_includes$
+
+$user_includes$
 
 $function_definitions$
 )");
@@ -518,8 +549,7 @@ $function_definitions$
     if (IsSyntheticMapEntry(message)) {
       return true;
     }
-    std::string message_type =
-        google::protobuf::compiler::cpp::ClassName(&message);
+    std::string message_type = ClassName(&message);
     if (options.generate_to_value_serialization) {
       printer->Print("base::DictValue Serialize(const $m$& message);\n", "m",
                      message_type);

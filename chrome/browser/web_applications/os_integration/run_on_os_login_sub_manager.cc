@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_run_on_os_login.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.equal.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -122,8 +123,7 @@ void RunOnOsLoginSubManager::Execute(
 
   if (desired_state.has_run_on_os_login() &&
       current_state.has_run_on_os_login() &&
-      (desired_state.run_on_os_login().SerializeAsString() ==
-       current_state.run_on_os_login().SerializeAsString())) {
+      (desired_state.run_on_os_login() == current_state.run_on_os_login())) {
     std::move(execute_done).Run();
     return;
   }

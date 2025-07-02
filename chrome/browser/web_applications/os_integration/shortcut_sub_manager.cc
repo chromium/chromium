@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.equal.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -191,10 +192,8 @@ void ShortcutSubManager::Execute(
                      std::move(callback_for_update)));
 
   // Shortcut update detection.
-  std::string desired, current;
-  desired = desired_state.shortcut().SerializeAsString();
-  current = current_state.shortcut().SerializeAsString();
-  if (desired != current || force_update_shortcuts) {
+  if (force_update_shortcuts ||
+      desired_state.shortcut() != current_state.shortcut()) {
     std::move(do_update).Run();
     return;
   }
@@ -209,13 +208,10 @@ void ShortcutSubManager::Execute(
     return;
   }
   if (desired_state.has_protocols_handled() &&
-      current_state.has_protocols_handled()) {
-    desired = desired_state.protocols_handled().SerializeAsString();
-    current = current_state.protocols_handled().SerializeAsString();
-    if (desired != current) {
-      std::move(do_update).Run();
-      return;
-    }
+      current_state.has_protocols_handled() &&
+      desired_state.protocols_handled() != current_state.protocols_handled()) {
+    std::move(do_update).Run();
+    return;
   }
 #endif
 
@@ -227,13 +223,10 @@ void ShortcutSubManager::Execute(
     std::move(do_update).Run();
     return;
   }
-  if (desired_state.has_file_handling() && current_state.has_file_handling()) {
-    desired = desired_state.file_handling().SerializeAsString();
-    current = current_state.file_handling().SerializeAsString();
-    if (desired != current) {
-      std::move(do_update).Run();
-      return;
-    }
+  if (desired_state.has_file_handling() && current_state.has_file_handling() &&
+      desired_state.file_handling() != current_state.file_handling()) {
+    std::move(do_update).Run();
+    return;
   }
 #endif
 

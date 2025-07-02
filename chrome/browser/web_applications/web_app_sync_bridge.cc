@@ -58,6 +58,7 @@
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/web_app_specifics.equal.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -563,8 +564,7 @@ void WebAppSyncBridge::UpdateSync(
       // after tests are updated to use a Fake version instead of the Mock
       // version of the processor.
       if (!current_state->IsSynced() ||
-          (current_state->sync_proto().SerializeAsString() !=
-           new_state->sync_proto().SerializeAsString())) {
+          (current_state->sync_proto() != new_state->sync_proto())) {
         change_processor()->Put(app_id, CreateSyncEntityData(*new_state),
                                 metadata_change_list);
       }

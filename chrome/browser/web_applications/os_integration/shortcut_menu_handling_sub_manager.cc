@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.equal.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -115,8 +116,7 @@ void ShortcutMenuHandlingSubManager::Execute(
 
   if (HasShortcutsMenuInfo(desired_state) &&
       HasShortcutsMenuInfo(current_state) &&
-      (desired_state.shortcut_menus().SerializeAsString() ==
-       current_state.shortcut_menus().SerializeAsString())) {
+      (desired_state.shortcut_menus() == current_state.shortcut_menus())) {
     std::move(execute_complete).Run();
     return;
   }

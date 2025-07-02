@@ -26,9 +26,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/sync/base/time.h"
 
-namespace web_app {
-
-namespace generated_icon_fix_util {
+namespace web_app::generated_icon_fix_util {
 
 namespace {
 
@@ -58,26 +56,6 @@ bool IsValid(const proto::GeneratedIconFix& generated_icon_fix) {
              proto::GENERATED_ICON_FIX_SOURCE_UNKNOWN &&
          generated_icon_fix.has_window_start_time() &&
          generated_icon_fix.has_attempt_count();
-}
-
-base::Value ToDebugValue(const proto::GeneratedIconFix* generated_icon_fix) {
-  if (!generated_icon_fix) {
-    return base::Value();
-  }
-
-  base::Value::Dict debug_value;
-  debug_value.Set("source", base::ToString(generated_icon_fix->source()));
-  debug_value.Set("window_start_time",
-                  base::ToString(syncer::ProtoTimeToTime(
-                      generated_icon_fix->window_start_time())));
-  debug_value.Set("last_attempt_time",
-                  generated_icon_fix->has_last_attempt_time()
-                      ? base::Value(base::ToString(syncer::ProtoTimeToTime(
-                            generated_icon_fix->last_attempt_time())))
-                      : base::Value());
-  debug_value.Set("attempt_count", base::saturated_cast<int>(
-                                       generated_icon_fix->attempt_count()));
-  return base::Value(std::move(debug_value));
 }
 
 void SetNowForTesting(base::Time now) {
@@ -158,28 +136,4 @@ void RecordFixAttempt(WithAppResources& resources,
   app->SetGeneratedIconFix(std::move(generated_icon_fix));
 }
 
-}  // namespace generated_icon_fix_util
-
-namespace proto {
-
-bool operator==(const proto::GeneratedIconFix& a,
-                const proto::GeneratedIconFix& b) {
-  return a.SerializeAsString() == b.SerializeAsString();
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const proto::GeneratedIconFixSource& source) {
-  switch (source) {
-    case proto::GENERATED_ICON_FIX_SOURCE_UNKNOWN:
-      NOTREACHED();
-    case proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL:
-      return out << "SyncInstall";
-    case proto::GENERATED_ICON_FIX_SOURCE_RETROACTIVE:
-      return out << "Retroactive";
-    case proto::GENERATED_ICON_FIX_SOURCE_MANIFEST_UPDATE:
-      return out << "ManifestUpdate";
-  }
-}
-
-}  // namespace proto
-}  // namespace web_app
+}  // namespace web_app::generated_icon_fix_util

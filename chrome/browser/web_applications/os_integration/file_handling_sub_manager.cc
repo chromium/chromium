@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.equal.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -160,8 +161,7 @@ void FileHandlingSubManager::Execute(
   }
 
   if (HasFileHandling(desired_state) && HasFileHandling(current_state) &&
-      desired_state.file_handling().SerializeAsString() ==
-          current_state.file_handling().SerializeAsString()) {
+      desired_state.file_handling() == current_state.file_handling()) {
     std::move(callback).Run();
     return;
   }

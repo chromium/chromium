@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.equal.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -90,8 +91,8 @@ void UninstallationViaOsSettingsSubManager::Execute(
 
   if (ShouldRegisterOsUninstall(desired_state) &&
       ShouldRegisterOsUninstall(current_state) &&
-      desired_state.uninstall_registration().SerializeAsString() ==
-          current_state.uninstall_registration().SerializeAsString()) {
+      desired_state.uninstall_registration() ==
+          current_state.uninstall_registration()) {
     std::move(callback).Run();
     return;
   }

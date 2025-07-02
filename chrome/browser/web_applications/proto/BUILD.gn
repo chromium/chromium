@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/proto_extras/proto_extras.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
@@ -26,10 +27,53 @@ proto_library("proto") {
   ]
 }
 
-source_set("proto_helpers") {
+# This can be moved to the chromeos/ash/experiences/system_web_apps/ area in the
+# future, and depended upon here.
+proto_extras("system_web_apps_types_proto_extras") {
+  proto_in_dir = "//"
+  sources = [ "//chromeos/ash/experiences/system_web_apps/types/proto/system_web_app_data.proto" ]
+  deps = [ "//chromeos/ash/experiences/system_web_apps/types/proto" ]
+}
+
+# This can be moved to the components/sync/protocol area in the future,
+# and depended upon here.
+proto_extras("web_app_sync_specifics_proto_extras") {
+  proto_in_dir = "//"
+  sources = [ "//components/sync/protocol/web_app_specifics.proto" ]
+  deps = [ "//components/sync/protocol" ]
+}
+
+# This can be moved to the content/browser/background_fetch area in the future,
+# and depended upon here.
+proto_extras("background_fetch_proto_extras") {
+  proto_in_dir = "//"
+  sources = [ "//content/browser/background_fetch/background_fetch.proto" ]
+  deps = [ "//content/browser/background_fetch:background_fetch_proto" ]
+}
+
+proto_extras("proto_extras") {
+  proto_in_dir = "//"
   sources = [
-    "proto_helpers.cc",
-    "proto_helpers.h",
+    "web_app.proto",
+    "web_app_database_metadata.proto",
+    "web_app_install_state.proto",
+    "web_app_isolation_data.proto",
+    "web_app_launch_handler.proto",
+    "web_app_os_integration_state.proto",
+    "web_app_related_applications.proto",
+    "web_app_share_target.proto",
+    "web_app_tab_strip.proto",
+    "web_app_translations.proto",
+    "web_app_url_pattern.proto",
   ]
-  public_deps = [ ":proto" ]
+  deps = [
+    "//chromeos/ash/experiences/system_web_apps/types/proto",
+    "//components/sync/protocol",
+    "//content/browser/background_fetch:background_fetch_proto",
+  ]
+  extras_deps = [
+    ":background_fetch_proto_extras",
+    ":system_web_apps_types_proto_extras",
+    ":web_app_sync_specifics_proto_extras",
+  ]
 }

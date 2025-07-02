@@ -9,6 +9,8 @@
 #include "chrome/browser/web_applications/generated_icon_fix_manager.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app.equal.h"
+#include "chrome/browser/web_applications/proto/web_app.to_value.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -28,7 +30,7 @@ namespace proto {
 // Used by GTEST for pretty printing in EXPECT_EQ.
 static void PrintTo(const GeneratedIconFix& generated_icon_fix,
                     std::ostream* out) {
-  *out << generated_icon_fix_util::ToDebugValue(&generated_icon_fix);
+  *out << Serialize(generated_icon_fix);
 }
 
 }  // namespace proto
