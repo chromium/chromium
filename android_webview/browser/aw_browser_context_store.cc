@@ -82,10 +82,6 @@ AwBrowserContextStore::AwBrowserContextStore(PrefService* pref_service)
   base::UmaHistogramCounts100(
       "Android.WebView.AwBrowserContext.NonDefault.CountAtStartup",
       profiles.size());
-
-  // Ensure default profile entry exists (in both prefs and our data structure)
-  // and initialize it.
-  default_context_ = Get(kDefaultContextName, true);
 }
 
 bool AwBrowserContextStore::Exists(const std::string& name) const {
@@ -108,6 +104,9 @@ AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TRACE_EVENT("android_webview", "AwBrowserContextStore::Get", "name", name,
               "create_if_needed", create_if_needed);
+  // Apps can specify a list of Profiles (BrowserContexts) to be initialized at
+  // startup, meaning this can be called after thread restrictions are applied.
+  base::ScopedAllowBlocking scoped_allow_blocking;
   auto context_it = contexts_.find(name);
   Entry* entry;
   std::optional<base::ScopedUmaHistogramTimer> histogram_timer;
@@ -133,7 +132,6 @@ AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
             "Android.WebView.AwBrowserContext.NonDefault.Duration.Create",
             base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kShortTimes);
       }
-
       entry = CreateNewContext(name);
     } else {
       return nullptr;
@@ -256,7 +254,11 @@ int AwBrowserContextStore::AssignNewProfileNumber() {
   return number;
 }
 
-AwBrowserContext* AwBrowserContextStore::GetDefault() const {
+AwBrowserContext* AwBrowserContextStore::GetDefault() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!default_context_) {
+    default_context_ = Get(kDefaultContextName, true);
+  }
   return default_context_;
 }
 

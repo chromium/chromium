@@ -66,8 +66,9 @@ class AwBrowserContextStore final {
   // CHECK the store is initialized and then get a pointer to it.
   static AwBrowserContextStore* GetInstance();
 
-  // Get the default context. This will never return null.
-  AwBrowserContext* GetDefault() const;
+  // Get the default context. This will never return null. Must be called on the
+  // UI thread.
+  AwBrowserContext* GetDefault();
   // Check if a named context exists (on disk or in memory). The context does
   // not need to be instantiated. The result is given to the callback once
   // determined.

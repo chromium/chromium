@@ -238,6 +238,10 @@ public class AwBrowserContext implements BrowserContextHandle {
         }
     }
 
+    public static String getDefaultContextName() {
+        return AwBrowserContextJni.get().getDefaultContextName();
+    }
+
     public AwCookieManager getCookieManager() {
         return mCookieManager;
     }

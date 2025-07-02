@@ -719,34 +719,29 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                     BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                             WebViewStartUpCallbackBoundaryInterface.class, callbackInvoHandler);
             WebViewChromiumAwInit.WebViewStartUpCallback callback =
-                    new WebViewChromiumAwInit.WebViewStartUpCallback() {
-                        @Override
-                        public void onSuccess(
-                                WebViewChromiumAwInit.WebViewStartUpDiagnostics result) {
-                            SupportLibStartUpResult supportLibResult =
-                                    new SupportLibStartUpResult();
-                            supportLibResult.setTotalTimeInUiThreadMillis(
-                                    result.getTotalTimeUiThreadChromiumInitMillis());
-                            supportLibResult.setMaxTimePerTaskInUiThreadMillis(
-                                    result.getMaxTimePerTaskUiThreadChromiumInitMillis());
-                            Throwable syncChromiumInitLocation =
-                                    result.getSynchronousChromiumInitLocationOrNull();
-                            if (syncChromiumInitLocation != null) {
-                                supportLibResult.addBlockingStartUpLocation(
-                                        syncChromiumInitLocation);
-                            }
-                            Throwable providerInitOnMainLooperLocation =
-                                    result.getProviderInitOnMainLooperLocationOrNull();
-                            if (providerInitOnMainLooperLocation != null) {
-                                supportLibResult.addBlockingStartUpLocation(
-                                        providerInitOnMainLooperLocation);
-                            }
-                            webViewStartUpCallback.onSuccess(
-                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                            supportLibResult));
+                    result -> {
+                        SupportLibStartUpResult supportLibResult = new SupportLibStartUpResult();
+                        supportLibResult.setTotalTimeInUiThreadMillis(
+                                result.getTotalTimeUiThreadChromiumInitMillis());
+                        supportLibResult.setMaxTimePerTaskInUiThreadMillis(
+                                result.getMaxTimePerTaskUiThreadChromiumInitMillis());
+                        Throwable syncChromiumInitLocation =
+                                result.getSynchronousChromiumInitLocationOrNull();
+                        if (syncChromiumInitLocation != null) {
+                            supportLibResult.addBlockingStartUpLocation(syncChromiumInitLocation);
                         }
+                        Throwable providerInitOnMainLooperLocation =
+                                result.getProviderInitOnMainLooperLocationOrNull();
+                        if (providerInitOnMainLooperLocation != null) {
+                            supportLibResult.addBlockingStartUpLocation(
+                                    providerInitOnMainLooperLocation);
+                        }
+                        webViewStartUpCallback.onSuccess(
+                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                        supportLibResult));
                     };
-            mAwInit.startUpWebView(callback, webViewStartUpConfig.shouldRunUiThreadStartUpTasks());
+            mAwInit.startUpWebView(
+                    callback, webViewStartUpConfig.shouldRunUiThreadStartUpTasks(), null);
         }
     }
 }

@@ -39,7 +39,6 @@ class IsolationInfo;
 
 namespace android_webview {
 
-class AwBrowserContext;
 class AwFeatureListCreator;
 
 std::string GetProduct();
@@ -65,9 +64,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
 
   ~AwContentBrowserClient() override;
 
-  // Allows AwBrowserMainParts to initialize a BrowserContext at the right
-  // moment during startup. AwContentBrowserClient owns the result.
-  AwBrowserContext* InitBrowserContext();
+  // Allows AwBrowserMainParts to initialize a BrowserContextStore at the right
+  // moment during startup.
+  void InitBrowserContextStore();
 
   // content::ContentBrowserClient:
   void OnNetworkServiceCreated(

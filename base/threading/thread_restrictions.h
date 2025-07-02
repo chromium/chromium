@@ -163,6 +163,7 @@ bool HasWaylandDisplay(base::Environment* env);
 
 namespace android_webview {
 class AwBrowserContext;
+class AwBrowserContextStore;
 class AwFormDatabaseService;
 class CookieManager;
 class JsSandboxIsolate;
@@ -582,6 +583,8 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class ::StartupTabProviderImpl;
   friend class ::WebEngineBrowserMainParts;
   friend class android_webview::AwBrowserContext;
+  friend class android_webview::AwBrowserContextStore;
+  friend class android_webview::CookieManager;
   friend class android_webview::ScopedAllowInitGLBindings;
   friend class ash::LoginEventRecorder;
   friend class ash::StartupCustomizationDocument;  // http://crosbug.com/11103

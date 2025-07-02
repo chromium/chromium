@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import com.android.webview.chromium.WebViewChromium.ApiCall;
 
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwClassPreloader;
 import org.chromium.android_webview.AwContents;
@@ -79,6 +80,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -232,6 +234,8 @@ public class WebViewChromiumAwInit {
     private boolean mIsStartupTaskExperimentEnabled;
     private RuntimeException mStartupException;
     private Error mStartupError;
+
+    private volatile boolean mShouldInitializeDefaultProfile = true;
 
     // This enum must be kept in sync with WebViewStartup.CallSite in chrome_track_event.proto and
     // WebViewStartupCallSite in enums.xml.
@@ -446,7 +450,9 @@ public class WebViewChromiumAwInit {
                     try (ScopedSysTraceEvent e =
                             ScopedSysTraceEvent.scoped(
                                     "WebViewChromiumAwInit.initThreadUnsafeSingletons")) {
-                        mChromiumStartedGlobals = new ChromiumStartedGlobals(mFactory);
+                        mChromiumStartedGlobals =
+                                new ChromiumStartedGlobals(
+                                        mFactory, mShouldInitializeDefaultProfile);
                     }
 
                     if (BuildInfo.isDebugAndroidOrApp()) {
@@ -838,7 +844,7 @@ public class WebViewChromiumAwInit {
             throw new RuntimeException(
                     "getBrowserContextOnUiThread called on " + Thread.currentThread());
         }
-        return mChromiumStartedGlobals.mDefaultBrowserContext;
+        return mChromiumStartedGlobals.getDefaultBrowserContextOnUiThread();
     }
 
     public SharedStatics getStatics() {
@@ -850,7 +856,7 @@ public class WebViewChromiumAwInit {
 
     public GeolocationPermissions getDefaultGeolocationPermissions() {
         triggerAndWaitForChromiumStarted(true, CallSite.GET_DEFAULT_GEOLOCATION_PERMISSIONS);
-        return mChromiumStartedGlobals.mDefaultGeolocationPermissions;
+        return mChromiumStartedGlobals.getDefaultGeolocationPermissions();
     }
 
     public CookieManager getDefaultCookieManager() {
@@ -865,7 +871,7 @@ public class WebViewChromiumAwInit {
 
     public AwServiceWorkerController getDefaultServiceWorkerController() {
         triggerAndWaitForChromiumStarted(true, CallSite.GET_DEFAULT_SERVICE_WORKER_CONTROLLER);
-        return mChromiumStartedGlobals.mDefaultServiceWorkerController;
+        return mChromiumStartedGlobals.getDefaultServiceWorkerController();
     }
 
     public android.webkit.WebIconDatabase getWebIconDatabase() {
@@ -881,7 +887,7 @@ public class WebViewChromiumAwInit {
 
     public WebStorage getDefaultWebStorage() {
         triggerAndWaitForChromiumStarted(true, CallSite.GET_DEFAULT_WEB_STORAGE);
-        return mChromiumStartedGlobals.mDefaultWebStorage;
+        return mChromiumStartedGlobals.getDefaultWebStorage();
     }
 
     public WebViewDatabase getDefaultWebViewDatabase(final Context context) {
@@ -891,8 +897,7 @@ public class WebViewChromiumAwInit {
                 mDefaultWebViewDatabase =
                         new WebViewDatabaseAdapter(
                                 mFactory,
-                                HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE),
-                                mChromiumStartedGlobals.mDefaultBrowserContext);
+                                HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE));
             }
             return mDefaultWebViewDatabase;
         }
@@ -953,11 +958,22 @@ public class WebViewChromiumAwInit {
     // MUST NOT be called on the UI thread.
     // The callback can either be called synchronously or on the UI thread.
     public void startUpWebView(
-            @NonNull WebViewStartUpCallback callback, boolean shouldRunUiThreadStartUpTasks) {
+            @NonNull WebViewStartUpCallback callback,
+            boolean shouldRunUiThreadStartUpTasks,
+            Set<String> profilesToLoad) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new IllegalStateException(
                     "startUpWebView should not be called on the Android main looper");
         }
+
+        if (profilesToLoad != null) {
+            if (!shouldRunUiThreadStartUpTasks) {
+                throw new IllegalArgumentException(
+                        "Can't specify profiles to load without running UI thread startup tasks");
+            }
+            mShouldInitializeDefaultProfile = false;
+        }
+
         if (!shouldRunUiThreadStartUpTasks) {
             callback.onSuccess(mWebViewStartUpDiagnostics);
             return;
@@ -966,7 +982,14 @@ public class WebViewChromiumAwInit {
         // TODO(crbug.com/389871700): We should also early out if the diagnostics information has
         // been set.
         mWebViewStartUpCallbackRunQueue.addTask(
-                () -> callback.onSuccess(mWebViewStartUpDiagnostics));
+                () -> {
+                    if (profilesToLoad == null) {
+                        mChromiumStartedGlobals.initializeDefaultProfileObjects();
+                    } else {
+                        mChromiumStartedGlobals.initializeProfilesList(profilesToLoad);
+                    }
+                    callback.onSuccess(mWebViewStartUpDiagnostics);
+                });
         triggerChromiumStartupAndReturnTrueIfStartupIsFinished(
                 true, CallSite.ASYNC_WEBVIEW_STARTUP);
     }
@@ -1018,25 +1041,99 @@ public class WebViewChromiumAwInit {
     // These are objects that need to be created on the UI thread and after chromium has started.
     // Thus created during startChromium for ease.
     private static final class ChromiumStartedGlobals {
-        final AwBrowserContext mDefaultBrowserContext;
-        final GeolocationPermissionsAdapter mDefaultGeolocationPermissions;
-        final WebStorageAdapter mDefaultWebStorage;
-        final AwServiceWorkerController mDefaultServiceWorkerController;
         final AwTracingController mAwTracingController;
         final AwProxyController mAwProxyController;
         final SharedStatics mSharedStatics;
+        private AwBrowserContext mDefaultBrowserContext;
+        private GeolocationPermissionsAdapter mDefaultGeolocationPermissions;
+        private WebStorageAdapter mDefaultWebStorage;
+        private AwServiceWorkerController mDefaultServiceWorkerController;
+        private final WebViewChromiumFactoryProvider mFactory;
+        private final CountDownLatch mDefaultProfileIsInitialized = new CountDownLatch(1);
 
-        ChromiumStartedGlobals(WebViewChromiumFactoryProvider factory) {
+        ChromiumStartedGlobals(
+                WebViewChromiumFactoryProvider factory, boolean initializeDefaultProfile) {
+            mFactory = factory;
+            if (initializeDefaultProfile) {
+                initializeDefaultProfileObjects();
+            }
             mSharedStatics = new SharedStatics();
+            mAwProxyController = new AwProxyController();
+            mAwTracingController = new AwTracingController();
+        }
+
+        /**
+         * This must be called on the UI thread. Initializes the Default profile with all of its
+         * related objects.
+         */
+        public void initializeDefaultProfileObjects() {
+            if (mDefaultProfileIsInitialized.getCount() == 0) return;
             mDefaultBrowserContext = AwBrowserContext.getDefault();
             mDefaultGeolocationPermissions =
                     new GeolocationPermissionsAdapter(
-                            factory, mDefaultBrowserContext.getGeolocationPermissions());
+                            mFactory, mDefaultBrowserContext.getGeolocationPermissions());
             mDefaultWebStorage =
-                    new WebStorageAdapter(factory, mDefaultBrowserContext.getQuotaManagerBridge());
-            mAwTracingController = new AwTracingController();
+                    new WebStorageAdapter(mFactory, mDefaultBrowserContext.getQuotaManagerBridge());
             mDefaultServiceWorkerController = mDefaultBrowserContext.getServiceWorkerController();
-            mAwProxyController = new AwProxyController();
+            mDefaultProfileIsInitialized.countDown();
+        }
+
+        public void initializeProfilesList(Set<String> profiles) {
+            String defaultProfileName = AwBrowserContext.getDefaultContextName();
+            for (String context : profiles) {
+                if (context.equals(defaultProfileName)) {
+                    initializeDefaultProfileObjects();
+                } else {
+                    AwBrowserContextStore.getNamedContext(context, true);
+                }
+            }
+        }
+
+        // The UI check is done in the outer method.
+        public AwBrowserContext getDefaultBrowserContextOnUiThread() {
+            if (mDefaultBrowserContext == null) {
+                mDefaultBrowserContext = AwBrowserContext.getDefault();
+            }
+            return mDefaultBrowserContext;
+        }
+
+        /**
+         * Ensures the default profile and its dependencies are initialized on the UI thread.
+         *
+         * <p>The {@code StartupWebView} API allows for initializing a specific list of profiles,
+         * which may not include the default profile. This method acts as a safeguard, ensuring the
+         * default profile is ready the first time a thread-safe framework API is called.
+         */
+        private void ensureDefaultProfileIsInitialized() {
+            if (mDefaultProfileIsInitialized.getCount() == 0) {
+                return;
+            }
+            ThreadUtils.runOnUiThread(this::initializeDefaultProfileObjects);
+            // Wait for the UI to finish.
+            while (true) {
+                try {
+                    mDefaultProfileIsInitialized.await();
+                    break;
+                } catch (InterruptedException e) {
+                    // Keep trying; we can't abort here as WebView APIs do not declare that they
+                    // throw InterruptedException.
+                }
+            }
+        }
+
+        public GeolocationPermissionsAdapter getDefaultGeolocationPermissions() {
+            ensureDefaultProfileIsInitialized();
+            return mDefaultGeolocationPermissions;
+        }
+
+        public WebStorageAdapter getDefaultWebStorage() {
+            ensureDefaultProfileIsInitialized();
+            return mDefaultWebStorage;
+        }
+
+        public AwServiceWorkerController getDefaultServiceWorkerController() {
+            ensureDefaultProfileIsInitialized();
+            return mDefaultServiceWorkerController;
         }
     }
 

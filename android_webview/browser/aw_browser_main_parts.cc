@@ -337,7 +337,7 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
 int AwBrowserMainParts::PreMainMessageLoopRun() {
   TRACE_EVENT0("startup", "AwBrowserMainParts::PreMainMessageLoopRun");
   AwBrowserProcess::GetInstance()->PreMainMessageLoopRun();
-  browser_client_->InitBrowserContext();
+  browser_client_->InitBrowserContextStore();
   content::WebUIControllerFactory::RegisterFactory(
       AwWebUIControllerFactory::GetInstance());
   content::RenderFrameHost::AllowInjectingJavaScript();

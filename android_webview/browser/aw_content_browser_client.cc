@@ -334,8 +334,8 @@ void AwContentBrowserClient::ConfigureNetworkContextParams(
       std::move(cookie_manager_remote));
 }
 
-AwBrowserContext* AwContentBrowserClient::InitBrowserContext() {
-  return AwBrowserContextStore::GetOrCreateInstance()->GetDefault();
+void AwContentBrowserClient::InitBrowserContextStore() {
+  AwBrowserContextStore::GetOrCreateInstance();
 }
 
 std::unique_ptr<content::BrowserMainParts>

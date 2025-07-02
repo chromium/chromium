@@ -210,6 +210,9 @@ CookieManager::CookieManager(AwBrowserContext* const parent_context)
       cookie_store_client_thread_("CookieMonsterClient"),
       cookie_store_backend_thread_("CookieMonsterBackend"),
       setting_new_mojo_cookie_manager_(false) {
+  // Apps can specify a list of Profiles (BrowserContexts) to be initialized at
+  // startup, meaning this can be called after thread restrictions are applied.
+  base::ScopedAllowBlocking scoped_allow_blocking;
   cookie_store_client_thread_.Start();
   cookie_store_backend_thread_.Start();
   cookie_store_task_runner_ = cookie_store_client_thread_.task_runner();
