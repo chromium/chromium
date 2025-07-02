@@ -274,8 +274,6 @@ void ExternalAppResolutionCommand::OnGetWebAppInstallInfoInCommand(
     web_app_info_->title = install_params_->fallback_app_name.value();
   }
 
-  ApplyParamsToWebAppInstallInfo(*install_params_, *web_app_info_);
-
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents_.get(),
       base::BindOnce(
@@ -289,6 +287,7 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
     webapps::InstallableStatusCode error_code) {
   CHECK(install_params_.has_value());
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
+  CHECK(web_app_info_);
 
   if (install_params_->require_manifest && !valid_manifest_for_web_app) {
     LOG(WARNING) << "Did not install " << web_app_info_->manifest_id().spec()
@@ -303,28 +302,22 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
     CHECK(!opt_manifest->icons.empty());
   }
 
-  GetMutableDebugValue().Set("had_manifest", false);
-  if (opt_manifest) {
-    GetMutableDebugValue().Set("had_manifest", true);
-    UpdateWebAppInfoFromManifest(*opt_manifest, web_app_info_.get());
-  }
-
+  GetMutableDebugValue().Set("had_manifest", opt_manifest ? true : false);
   if (install_params_->install_as_diy) {
     *web_app_info_ = CreateInstallInfoForCreateDiy(
         web_contents_->GetLastCommittedURL(), web_contents_->GetTitle(),
         *web_app_info_);
   }
 
-  // TODO(b/300878868): Reject installation if the manifest id provided in the
-  // WebAppInstallForceList does not match the final manifest id.
-  app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id());
-  GetMutableDebugValue().Set("app_id", app_id_);
+  // Follow the path with a valid `opt_manifest`.
+  if (opt_manifest) {
+    RetrieveWebAppInfoFromManifest(std::move(opt_manifest));
+    return;
+  }
 
-  // If the manifest specified icons, don't use the page icons.
-  const bool skip_page_favicons = opt_manifest && !opt_manifest->icons.empty();
-
+  // Follow the path to install using the existing `web_app_info_`, AKA, the
+  // fallback option.
   IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
-
   if (!web_contents_->GetVisibleURL().EqualsIgnoringRef(
           GURL(url::kAboutBlankURL))) {
     // Navigate to about:blank. This ensure that no further
@@ -334,22 +327,57 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
     url_loader_->LoadUrl(
         kAboutBlankURL, web_contents_.get(),
         webapps::WebAppUrlLoader::UrlComparison::kExact,
-        base::BindOnce(
-            &ExternalAppResolutionCommand::OnPreparedForIconRetrieving,
-            weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls),
-            skip_page_favicons));
+        base::BindOnce(&ExternalAppResolutionCommand::
+                           OnPreparedForIconRetrievingForFallbackInfo,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls)));
     return;
   }
-  OnPreparedForIconRetrieving(std::move(icon_urls), skip_page_favicons,
-                              webapps::WebAppUrlLoaderResult::kUrlLoaded);
+  OnPreparedForIconRetrievingForFallbackInfo(
+      std::move(icon_urls), webapps::WebAppUrlLoaderResult::kUrlLoaded);
 }
 
-void ExternalAppResolutionCommand::OnPreparedForIconRetrieving(
+void ExternalAppResolutionCommand::RetrieveWebAppInfoFromManifest(
+    blink::mojom::ManifestPtr opt_manifest) {
+  CHECK(opt_manifest);
+  WebAppInstallInfoConstructOptions construct_options;
+  construct_options.skip_page_favicons = !opt_manifest->icons.empty();
+
+  manifest_to_install_info_job_ =
+      ManifestToWebAppInstallInfoJob::CreateAndStart(
+          *opt_manifest, *data_retriever_.get(),
+          /*background_installation=*/true, install_surface_,
+          web_contents_->GetWeakPtr(), [](IconUrlSizeSet&) {},
+          GetMutableDebugValue(),
+          base::BindOnce(&ExternalAppResolutionCommand::
+                             OnWebAppInstallInfoParsedFromManifest,
+                         weak_ptr_factory_.GetWeakPtr()),
+          construct_options, web_app_info_->Clone());
+}
+
+void ExternalAppResolutionCommand::OnWebAppInstallInfoParsedFromManifest(
+    std::unique_ptr<WebAppInstallInfo> install_info) {
+  CHECK(install_params_.has_value());
+  CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
+
+  web_app_info_ = std::move(install_info);
+  if (install_params_->install_as_diy) {
+    web_app_info_->is_diy_app = true;
+    const GURL document_url = web_contents_->GetLastCommittedURL();
+    web_app_info_->SetManifestIdAndStartUrl(
+        GenerateManifestIdFromStartUrlOnly(document_url), document_url);
+  }
+
+  UpdateInfoWithParamsAndUpgradeLock(web_app_info_->is_generated_icon);
+}
+
+void ExternalAppResolutionCommand::OnPreparedForIconRetrievingForFallbackInfo(
     IconUrlSizeSet icon_urls,
-    bool skip_page_favicons,
     webapps::WebAppUrlLoaderResult result) {
+  // `skip_page_favicons` is false since the icons are no longer being read from
+  // the manifest, as a result of which favicons from the page will need to be
+  // used as the app icon.
   data_retriever_->GetIcons(
-      web_contents_.get(), std::move(icon_urls), skip_page_favicons,
+      web_contents_.get(), std::move(icon_urls), /*skip_page_favicons=*/false,
       /*fail_all_if_any_fail=*/false,
       base::BindOnce(
           &ExternalAppResolutionCommand::OnIconsRetrievedUpgradeLockDescription,
@@ -360,7 +388,7 @@ void ExternalAppResolutionCommand::OnIconsRetrievedUpgradeLockDescription(
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
-  CHECK(install_params_.has_value() && !app_id_.empty());
+  CHECK(install_params_.has_value());
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
 
   PopulateProductIcons(web_app_info_.get(), &icons_map);
@@ -370,14 +398,26 @@ void ExternalAppResolutionCommand::OnIconsRetrievedUpgradeLockDescription(
 
   install_error_log_entry_.LogDownloadedIconsErrors(
       *web_app_info_, result, icons_map, icons_http_results);
+  UpdateInfoWithParamsAndUpgradeLock(result !=
+                                     IconsDownloadedResult::kCompleted);
+}
 
+void ExternalAppResolutionCommand::UpdateInfoWithParamsAndUpgradeLock(
+    bool icon_download_failed) {
+  // TODO(b/300878868): Reject installation if the manifest id provided in the
+  // WebAppInstallForceList does not match the final manifest id.
+  app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id());
+  CHECK(!app_id_.empty());
+  GetMutableDebugValue().Set("app_id", app_id_);
+
+  ApplyParamsToWebAppInstallInfo(*install_params_, *web_app_info_);
+  // Upgrade to app_lock_
   apps_lock_ = std::make_unique<SharedWebContentsWithAppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
       std::move(web_contents_lock_), *apps_lock_, {app_id_},
       base::BindOnce(
           &ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall,
-          weak_ptr_factory_.GetWeakPtr(),
-          result != IconsDownloadedResult::kCompleted));
+          weak_ptr_factory_.GetWeakPtr(), icon_download_failed));
 }
 
 void ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall(
