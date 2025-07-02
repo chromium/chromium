@@ -144,7 +144,12 @@ void VerifyAttachment(std::string_view name,
   const auto* attachment = FindAttachment(name, feedback_data);
   ASSERT_TRUE(attachment);
   EXPECT_EQ(name, attachment->name);
-  EXPECT_EQ(data, attachment->data);
+
+  base::span<const uint8_t> byte_span = base::as_byte_span(data);
+  std::vector<uint8_t> expected_data =
+      std::vector<uint8_t>(byte_span.begin(), byte_span.end());
+
+  EXPECT_EQ(expected_data, attachment->data);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
@@ -85,7 +86,7 @@ void AddFeedbackData(userfeedback::ExtensionSubmit* feedback_data,
 // Adds data as an attachment to feedback_data if the data is non-empty.
 void AddAttachment(userfeedback::ExtensionSubmit* feedback_data,
                    const char* name,
-                   const std::string& data) {
+                   const std::vector<uint8_t>& data) {
   if (data.empty())
     return;
 
@@ -93,7 +94,7 @@ void AddAttachment(userfeedback::ExtensionSubmit* feedback_data,
       feedback_data->add_product_specific_binary_data();
   attachment->set_mime_type(kArbitraryMimeType);
   attachment->set_name(name);
-  attachment->set_data(data);
+  attachment->set_data(data.data(), data.size());
 }
 
 }  // namespace
@@ -103,10 +104,16 @@ void AddAttachment(userfeedback::ExtensionSubmit* feedback_data,
 ////////////////////////////////////////////////////////////////////////////////
 
 FeedbackCommon::AttachedFile::AttachedFile(const std::string& filename,
-                                           std::string data)
+                                           std::vector<uint8_t> data)
     : name(filename), data(std::move(data)) {}
 
 FeedbackCommon::AttachedFile::~AttachedFile() = default;
+
+FeedbackCommon::AttachedFile::AttachedFile(FeedbackCommon::AttachedFile&&) =
+    default;
+
+FeedbackCommon::AttachedFile& FeedbackCommon::AttachedFile::operator=(
+    FeedbackCommon::AttachedFile&&) = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // FeedbackCommon::
@@ -115,6 +122,14 @@ FeedbackCommon::AttachedFile::~AttachedFile() = default;
 FeedbackCommon::FeedbackCommon() : product_id_(-1) {}
 
 void FeedbackCommon::AddFile(const std::string& filename, std::string data) {
+  base::AutoLock lock(attachments_lock_);
+  base::span<const uint8_t> byte_span = base::as_byte_span(data);
+  attachments_.emplace_back(
+      filename, std::vector<uint8_t>(byte_span.begin(), byte_span.end()));
+}
+
+void FeedbackCommon::AddFile(const std::string& filename,
+                             std::vector<uint8_t> data) {
   base::AutoLock lock(attachments_lock_);
   attachments_.emplace_back(filename, std::move(data));
 }

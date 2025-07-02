@@ -33,16 +33,20 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   using SystemLogsMap = std::map<std::string, std::string>;
 
   struct AttachedFile {
-    explicit AttachedFile(const std::string& filename, std::string data);
+    explicit AttachedFile(const std::string& filename,
+                          std::vector<uint8_t> data);
     ~AttachedFile();
+    AttachedFile(AttachedFile&&);
+    AttachedFile& operator=(AttachedFile&&);
 
     std::string name;
-    std::string data;
+    std::vector<uint8_t> data;
   };
 
   FeedbackCommon();
 
   void AddFile(const std::string& filename, std::string data);
+  void AddFile(const std::string& filename, std::vector<uint8_t> data);
 
   void AddLog(std::string name, std::string value);
   void AddLogs(SystemLogsMap logs);
