@@ -12,8 +12,6 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-// TODO(crbug.com/40263579): Remove.
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/mojo/mojom/video_frame_metadata_mojom_traits.h"
@@ -27,6 +25,13 @@
 #include "base/posix/eintr_wrapper.h"
 #include "media/gpu/buffer_validation.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/40263579): Remove.
+#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
+#include "ui/ozone/public/client_native_pixmap_factory_ozone.h"  // nogncheck
+#include "ui/ozone/public/ozone_platform.h"                      // nogncheck
+#endif
 
 namespace mojo {
 
@@ -386,9 +391,11 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       buffer_usage = gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
     }
 
-    gpu::GpuMemoryBufferSupport support;
+    auto client_native_pixmap_factory =
+        ui::CreateClientNativePixmapFactoryOzone();
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-        support.CreateGpuMemoryBufferImplFromHandleForVideoFrame(
+        gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandleForVideoFrame(
+            client_native_pixmap_factory.get(),
             std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
             buffer_usage);
     if (!gpu_memory_buffer) {

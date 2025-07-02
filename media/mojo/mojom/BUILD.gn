@@ -218,6 +218,9 @@ mojom("mojom") {
   if (is_linux || is_chromeos) {
     video_frame_mojom_traits_public_deps += [ "//media/gpu:buffer_validation" ]
   }
+  if (is_chromeos) {
+    video_frame_mojom_traits_public_deps += [ "//ui/ozone" ]
+  }
 
   cpp_typemaps = [
     {

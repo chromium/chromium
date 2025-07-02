@@ -73,21 +73,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
                                        gfx::BufferFormat format,
                                        gfx::BufferUsage usage);
 
-  // Creates a GpuMemoryBufferImpl from the given |handle| for VideoFrames.
-  // |size| and |format| should match what was used to allocate the |handle|.
-  // NOTE: DO NOT ADD ANY USAGES OF THIS METHOD.
-  // TODO(crbug.com/40263579): Remove this method once all usages are
-  // eliminated.
-  std::unique_ptr<GpuMemoryBufferImpl>
-  CreateGpuMemoryBufferImplFromHandleForVideoFrame(
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage) {
-    return CreateGpuMemoryBufferImplFromHandle(std::move(handle), size, format,
-                                               usage, base::NullCallback());
-  }
-
   std::unique_ptr<GpuMemoryBufferImpl>
   CreateGpuMemoryBufferImplFromHandleForTesting(
       gfx::GpuMemoryBufferHandle handle,
