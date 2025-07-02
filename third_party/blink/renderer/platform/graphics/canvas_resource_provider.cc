@@ -1877,11 +1877,11 @@ bool CanvasResourceProvider::IsSoftwareSharedImageGpuChannelLost() const {
 
 void CanvasResourceProvider::NotifyGpuContextLostTask(
     base::WeakPtr<CanvasResourceProvider> provider) {
-  if (provider && provider->resource_host()) {
+  if (provider && provider->resource_host_) {
     // Move `provider` as hint that it shouldn't be reused after this point.
     // The `resource_host` owns the provider and can delete it in
     // `NotifyGpuContextLost()`.
-    std::move(provider)->resource_host()->NotifyGpuContextLost();
+    std::move(provider)->resource_host_->NotifyGpuContextLost();
   }
 }
 

@@ -395,8 +395,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void OnFlushForImage(cc::PaintImage::ContentId content_id);
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
-  CanvasResourceHost* resource_host() { return resource_host_; }
-
  private:
   friend class FlushForImageListener;
 
