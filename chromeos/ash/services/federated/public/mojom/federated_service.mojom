@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(b:381453004): This will be removed soon.
 // Top-level API of the Federated Service: report an example.
 
 // NOTE: This mojom should exist in two places and must be kept in sync:
@@ -19,7 +20,6 @@ import "chromeos/ash/services/federated/public/mojom/tables.mojom";
 // stage and the table id for the example storage of a client. Two clients may
 // share the same example collection by specifying the same
 // `example_storage_table_id`.
-[Stable]
 struct ClientScheduleConfig {
   string client_name@0;
   string launch_stage@1;
