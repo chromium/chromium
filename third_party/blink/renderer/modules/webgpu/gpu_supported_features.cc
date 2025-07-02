@@ -44,6 +44,8 @@ std::optional<V8GPUFeatureName::Enum> GPUSupportedFeatures::ToV8FeatureNameEnum(
       return V8GPUFeatureName::Enum::kDualSourceBlending;
     case wgpu::FeatureName::Subgroups:
       return V8GPUFeatureName::Enum::kSubgroups;
+    case wgpu::FeatureName::TextureComponentSwizzle:
+      return V8GPUFeatureName::Enum::kTextureComponentSwizzle;
     case wgpu::FeatureName::CoreFeaturesAndLimits:
       return V8GPUFeatureName::Enum::kCoreFeaturesAndLimits;
     case wgpu::FeatureName::ClipDistances:

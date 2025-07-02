@@ -19,6 +19,23 @@ class V8GPUTextureDimension;
 class V8GPUTextureFormat;
 class WebGPUMailboxTexture;
 
+struct OwnedTextureViewDescriptor {
+  OwnedTextureViewDescriptor() = default;
+
+  //  This struct should be non-copyable non-movable because it contains
+  //  self-referencing pointers that would be invalidated when moved / copied.
+  OwnedTextureViewDescriptor(const OwnedTextureViewDescriptor& desc) = delete;
+  OwnedTextureViewDescriptor(OwnedTextureViewDescriptor&& desc) = delete;
+  OwnedTextureViewDescriptor& operator=(
+      const OwnedTextureViewDescriptor& desc) = delete;
+  OwnedTextureViewDescriptor& operator=(OwnedTextureViewDescriptor&& desc) =
+      delete;
+
+  wgpu::TextureViewDescriptor dawn_desc = {};
+  std::string label;
+  std::unique_ptr<wgpu::TextureComponentSwizzleDescriptor> swizzle_desc;
+};
+
 class GPUTexture : public DawnObject<wgpu::Texture> {
   DEFINE_WRAPPERTYPEINFO();
 

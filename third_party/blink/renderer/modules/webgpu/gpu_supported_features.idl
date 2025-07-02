@@ -23,6 +23,7 @@ enum GPUFeatureName {
     "clip-distances",
     "dual-source-blending",
     "subgroups",
+    "texture-component-swizzle",
 
     // Non-standard (not currently in the spec).
     "chromium-experimental-timestamp-query-inside-passes",
