@@ -32,6 +32,15 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   void MoveTab(tabs::TabHandle handle, Position target) override;
   mojom::TabCollectionContainerPtr GetTabStripTopology() override;
 
+  // TabStripModelAdapterImpl uses passkeys to access experimental API methods
+  // in TabStripModel or TabCollections.
+  // PassKeyForTesting provides a passkey for testing purposes. Note that by
+  // using PassKeyForTesting, it deeply couples the test class to this class
+  // which breaks the loose coupling benefit of passkeys.
+  static base::PassKey<TabStripModelAdapterImpl> PassKeyForTesting() {
+    return base::PassKey<TabStripModelAdapterImpl>();
+  }
+
  private:
   raw_ptr<TabStripModel> tab_strip_model_;
 };
