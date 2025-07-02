@@ -128,7 +128,7 @@ void TestTabModel::DiscardTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-void TestTabModel::DuplicateTab(int index) {
+void TestTabModel::DuplicateTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
@@ -141,11 +141,11 @@ void TestTabModel::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
 }
 
-void TestTabModel::MoveTab(int from_index, int to_index) {
+void TestTabModel::MoveTab(tabs::TabHandle tab, int index) {
   NOTIMPLEMENTED();
 }
 
-void TestTabModel::CloseTab(int index) {
+void TestTabModel::CloseTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
@@ -327,7 +327,7 @@ void OwningTestTabModel::DiscardTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-void OwningTestTabModel::DuplicateTab(int index) {
+void OwningTestTabModel::DuplicateTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
@@ -340,11 +340,11 @@ void OwningTestTabModel::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
 }
 
-void OwningTestTabModel::MoveTab(int from_index, int to_index) {
+void OwningTestTabModel::MoveTab(tabs::TabHandle tab, int index) {
   NOTIMPLEMENTED();
 }
 
-void OwningTestTabModel::CloseTab(int index) {
+void OwningTestTabModel::CloseTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 

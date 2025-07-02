@@ -34,9 +34,8 @@ class TabListInterface {
   // docs/website/site/chromium-os/chromiumos-design-docs/tab-discarding-and-reloading/index.md
   virtual void DiscardTab(tabs::TabHandle tab) = 0;
 
-  // Duplicates the tab at the given `index` to the next adjacent index. An
-  // out-of-bounds `index` is ignored.
-  virtual void DuplicateTab(int index) = 0;
+  // Duplicates the `tab` to the next adjacent index.
+  virtual void DuplicateTab(tabs::TabHandle tab) = 0;
 
   // Returns the `TabInterface` for the tab at a given `index`. May be `nullptr`
   // if the index is out-of-bounds.
@@ -45,12 +44,11 @@ class TabListInterface {
   // Highlights / selects the `tabs`.
   virtual void HighlightTabs(const std::set<tabs::TabHandle>& tabs) = 0;
 
-  // Moves the tab at `from_index` to `to_index`. The nearest valid index will
-  // be used.
-  virtual void MoveTab(int from_index, int to_index) = 0;
+  // Moves the `tab` to `index`. The nearest valid index will be used.
+  virtual void MoveTab(tabs::TabHandle tab, int index) = 0;
 
-  // Closes the tab at `index`. An out-of-bounds `index` is ignored.
-  virtual void CloseTab(int index) = 0;
+  // Closes the `tab`.
+  virtual void CloseTab(tabs::TabHandle tab) = 0;
 
   // Returns an in-order list of all tabs in the tab strip.
   virtual std::vector<tabs::TabInterface*> GetAllTabs() = 0;

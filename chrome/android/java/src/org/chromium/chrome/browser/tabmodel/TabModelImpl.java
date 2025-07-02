@@ -938,11 +938,9 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void moveTabToIndex(int index, int newIndex) {
-        Tab tab = getTabAt(index);
-        if (tab == null) return;
+    public void moveTabToIndex(Tab tab, int newIndex) {
         TabGroupModelFilter filter = mModelDelegate.getFilter(isIncognitoBranded());
-        MoveTabUtils.moveSingleTab(this, filter, tab, index, newIndex);
+        MoveTabUtils.moveSingleTab(this, filter, tab, newIndex);
     }
 
     @Override

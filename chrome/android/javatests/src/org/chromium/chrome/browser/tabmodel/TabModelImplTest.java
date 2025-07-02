@@ -227,7 +227,7 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     public void testDuplicateTab() {
-        String url = "https://www.chromium.org";
+        String url = "https://www.chromium.org/chromium-projects/";
         WebPageStation page = mPage.loadWebPageProgrammatically(url);
         page.openNewTabFast();
         // 0:Tab0 (tabToDuplicate) | 1:Tab1
@@ -241,7 +241,7 @@ public class TabModelImplTest {
                     assertEquals(gurl, tabToDuplicate.getUrl());
                     assertNull(tabToDuplicate.getTabGroupId());
 
-                    mTabModelJni.duplicateTabForTesting(index);
+                    mTabModelJni.duplicateTabForTesting(tabToDuplicate);
                     // 0:Tab0 (tabToDuplicate) | 1:Tab2 (duplicatedTab) | 2:Tab1
                     assertEquals(3, mTabModelJni.getCount());
 
@@ -270,7 +270,7 @@ public class TabModelImplTest {
                     Tab tabToDuplicate = mTabModelJni.getTabAt(index);
                     assertNotNull(tabToDuplicate.getTabGroupId());
 
-                    mTabModelJni.duplicateTabForTesting(index);
+                    mTabModelJni.duplicateTabForTesting(tabToDuplicate);
                     // 0:Tab0 | Group0: 1:Tab1 (tabToDuplicate), 2:Tab3 (duplicatedTab), 3:Tab2
                     assertEquals(4, mTabModelJni.getCount());
 
@@ -292,7 +292,7 @@ public class TabModelImplTest {
                     Tab tabToDuplicate = mTabModelJni.getTabAt(index);
                     assertNotNull(tabToDuplicate.getTabGroupId());
 
-                    mTabModelJni.duplicateTabForTesting(index);
+                    mTabModelJni.duplicateTabForTesting(tabToDuplicate);
                     // 0:Tab0 | Group0: 1:Tab1, 2:Tab3 , 3:Tab2 (tabToDuplicate) | 4:Tab4
                     assertEquals(6, mTabModelJni.getCount());
                     assertEquals(tabOutsideGroup, mTabModelJni.getTabAt(5));
@@ -897,7 +897,7 @@ public class TabModelImplTest {
         Tab oldIndexTab = mTabModelJni.getTabAt(oldIndex);
         assert movingInsideGroup || oldIndexTab.getTabGroupId() == null
                 : "This is not a single tab movement";
-        mTabModelJni.moveTabToIndex(oldIndex, newIndex);
+        mTabModelJni.moveTabToIndex(oldIndexTab, newIndex);
         assertEquals(oldIndexTab, mTabModelJni.getTabAt(expectedIndex));
     }
 

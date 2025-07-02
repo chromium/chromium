@@ -95,8 +95,8 @@ void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
 
 void TabModelJniBridge::DuplicateTabForTesting(JNIEnv* env,
                                                const JavaParamRef<jobject>& obj,
-                                               int index) {
-  DuplicateTab(index);
+                                               TabAndroid* tab) {
+  DuplicateTab(tab);
 }
 
 int TabModelJniBridge::GetTabCount() const {
@@ -268,38 +268,56 @@ void TabModelJniBridge::DiscardTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
 
-void TabModelJniBridge::DuplicateTab(int index) {
-  WebContents* web_contents = GetWebContentsAt(index);
-  if (web_contents) {
-    std::unique_ptr<WebContents> cloned_web_contents = web_contents->Clone();
-    ScopedJavaLocalRef<jobject> jweb_contents =
-        cloned_web_contents->GetJavaWebContents();
-    JNIEnv* env = AttachCurrentThread();
-    ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+void TabModelJniBridge::DuplicateTab(tabs::TabHandle tab) {
+  TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
+  DuplicateTab(tab_android);
+}
 
-    Java_TabModelJniBridge_duplicateTab(env, jobj, index, jweb_contents);
-    cloned_web_contents.release();
+void TabModelJniBridge::DuplicateTab(TabAndroid* tab) {
+  WebContents* web_contents = tab == nullptr ? nullptr : tab->web_contents();
+  if (!web_contents) {
+    return;
   }
+
+  std::unique_ptr<WebContents> cloned_web_contents = web_contents->Clone();
+  ScopedJavaLocalRef<jobject> jweb_contents =
+      cloned_web_contents->GetJavaWebContents();
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+
+  Java_TabModelJniBridge_duplicateTab(env, jobj, tab, jweb_contents);
+  cloned_web_contents.release();
 }
 
 tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
   return GetTabAt(index);
 }
 
-void TabModelJniBridge::HighlightTabs(
-    const std::set<tabs::TabHandle>& indicies) {
+void TabModelJniBridge::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {
   // TODO(crbug.com/415351293): Implement.
   NOTIMPLEMENTED();
 }
 
-void TabModelJniBridge::MoveTab(int from_index, int to_index) {
+void TabModelJniBridge::MoveTab(tabs::TabHandle tab, int index) {
+  TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
+  if (!tab_android) {
+    return;
+  }
+
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  Java_TabModelJniBridge_moveTabToIndex(env, jobj, from_index, to_index);
+  Java_TabModelJniBridge_moveTabToIndex(env, jobj, tab_android, index);
 }
 
-void TabModelJniBridge::CloseTab(int index) {
-  CloseTabAt(index);
+void TabModelJniBridge::CloseTab(tabs::TabHandle tab) {
+  TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
+  if (!tab_android) {
+    return;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  Java_TabModelJniBridge_closeTab(env, jobj, tab_android);
 }
 
 std::vector<tabs::TabInterface*> TabModelJniBridge::GetAllTabs() {

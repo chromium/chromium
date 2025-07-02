@@ -27,7 +27,7 @@ void TabListBridge::OpenTab(const GURL& url, int index) {}
 
 void TabListBridge::DiscardTab(tabs::TabHandle tab) {}
 
-void TabListBridge::DuplicateTab(int index) {}
+void TabListBridge::DuplicateTab(tabs::TabHandle tab) {}
 
 tabs::TabInterface* TabListBridge::GetTab(int index) {
   return tab_strip_->GetTabAtIndex(index);
@@ -35,9 +35,9 @@ tabs::TabInterface* TabListBridge::GetTab(int index) {
 
 void TabListBridge::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {}
 
-void TabListBridge::MoveTab(int from_index, int to_index) {}
+void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {}
 
-void TabListBridge::CloseTab(int index) {}
+void TabListBridge::CloseTab(tabs::TabHandle tab) {}
 
 std::vector<tabs::TabInterface*> TabListBridge::GetAllTabs() {
   return {};

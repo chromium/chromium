@@ -52,7 +52,7 @@ class TabModelJniBridge : public TabModel {
   // Called by JNI
   void DuplicateTabForTesting(JNIEnv* env,
                               const base::android::JavaParamRef<jobject>& obj,
-                              int index);
+                              TabAndroid* tab);
 
   // TabModel::
   int GetTabCount() const override;
@@ -97,22 +97,24 @@ class TabModelJniBridge : public TabModel {
   void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                       const base::Time& end_time) override;
 
+  void DuplicateTab(TabAndroid* tab);
+
   // TODO(crbug.com/415351293): Implement these.
   // TabListInterface implementation.
   void OpenTab(const GURL& url, int index) override;
   void DiscardTab(tabs::TabHandle tab) override;
-  void DuplicateTab(int index) override;
+  void DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;
   void HighlightTabs(const std::set<tabs::TabHandle>& tabs) override;
-  void MoveTab(int from_index, int to_index) override;
-  void CloseTab(int index) override;
+  void MoveTab(tabs::TabHandle tab, int index) override;
+  void CloseTab(tabs::TabHandle tab) override;
   std::vector<tabs::TabInterface*> GetAllTabs() override;
   void PinTab(tabs::TabHandle tab) override;
   void UnpinTab(tabs::TabHandle tab) override;
   std::optional<tab_groups::TabGroupId> AddTabsToGroup(
       std::optional<tab_groups::TabGroupId> group_id,
-      const std::set<tabs::TabHandle>& indicies) override;
-  void Ungroup(const std::set<tabs::TabHandle>& indices) override;
+      const std::set<tabs::TabHandle>& tabs) override;
+  void Ungroup(const std::set<tabs::TabHandle>& tabs) override;
   void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override;
 
   // Returns a corresponding Java Class object.

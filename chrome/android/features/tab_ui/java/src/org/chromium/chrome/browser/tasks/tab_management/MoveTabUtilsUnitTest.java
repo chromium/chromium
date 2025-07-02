@@ -49,32 +49,25 @@ public class MoveTabUtilsUnitTest {
 
         int curIndex = 0;
         Tab tab = mTabModel.getTabAt(curIndex);
-        MoveTabUtils.moveSingleTab(
-                mTabModel, mTabGroupModelFilter, tab, curIndex, /* requestedIndex= */ 0);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab, /* requestedIndex= */ 0);
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
-        MoveTabUtils.moveSingleTab(
-                mTabModel, mTabGroupModelFilter, tab, curIndex, /* requestedIndex= */ 1);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab, /* requestedIndex= */ 1);
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
-        MoveTabUtils.moveSingleTab(
-                mTabModel, mTabGroupModelFilter, tab, curIndex, /* requestedIndex= */ 2);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab, /* requestedIndex= */ 2);
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
 
         curIndex = 4;
         tab = mTabModel.getTabAt(curIndex);
-        MoveTabUtils.moveSingleTab(
-                mTabModel, mTabGroupModelFilter, tab, curIndex, /* requestedIndex= */ 3);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab, /* requestedIndex= */ 3);
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
-        MoveTabUtils.moveSingleTab(
-                mTabModel, mTabGroupModelFilter, tab, curIndex, /* requestedIndex= */ 2);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab, /* requestedIndex= */ 2);
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
 
         curIndex = 7;
         tab = mTabModel.getTabAt(curIndex);
-        MoveTabUtils.moveSingleTab(
-                mTabModel, mTabGroupModelFilter, tab, curIndex, /* requestedIndex= */ 6);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab, /* requestedIndex= */ 6);
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
-        MoveTabUtils.moveSingleTab(
-                mTabModel, mTabGroupModelFilter, tab, curIndex, /* requestedIndex= */ 8);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab, /* requestedIndex= */ 8);
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
     }
 
@@ -84,7 +77,7 @@ public class MoveTabUtilsUnitTest {
         int index = 2;
         int requestedIndex = 0;
         Tab tab2 = mTabModel.getTabAt(index);
-        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab2, index, requestedIndex);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab2, requestedIndex);
         verify(mTabModel).moveTab(tab2.getId(), requestedIndex);
     }
 
@@ -95,7 +88,7 @@ public class MoveTabUtilsUnitTest {
         int index = 1;
         int requestedIndex = 0;
         Tab tab1 = mTabModel.getTabAt(index);
-        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab1, index, requestedIndex);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab1, requestedIndex);
         verify(mTabModel).moveTab(tab1.getId(), requestedIndex);
     }
 
@@ -107,7 +100,7 @@ public class MoveTabUtilsUnitTest {
         int index = 3;
         int requestedIndex = 0;
         Tab tab3 = mTabModel.getTabAt(index);
-        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab3, index, requestedIndex);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab3, requestedIndex);
         verify(mTabModel).moveTab(tab3.getId(), requestedIndex);
     }
 
@@ -117,7 +110,7 @@ public class MoveTabUtilsUnitTest {
         int index = 2;
         int requestedIndex = 0;
         Tab tab2 = mTabModel.getTabAt(index);
-        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab2, index, requestedIndex);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab2, requestedIndex);
         verify(mTabModel).moveTab(tab2.getId(), requestedIndex);
     }
 
@@ -128,7 +121,7 @@ public class MoveTabUtilsUnitTest {
         int index = 3;
         int requestedIndex = 1;
         Tab tab3 = mTabModel.getTabAt(index);
-        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab3, index, requestedIndex);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab3, requestedIndex);
         verify(mTabModel).moveTab(tab3.getId(), 2); // First index of tab group.
     }
 
@@ -138,7 +131,7 @@ public class MoveTabUtilsUnitTest {
         int index = 0;
         int requestedIndex = 1;
         Tab tab2 = mTabModel.getTabAt(index);
-        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab2, index, requestedIndex);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab2, requestedIndex);
         verify(mTabModel).moveTab(tab2.getId(), requestedIndex);
     }
 
@@ -149,7 +142,7 @@ public class MoveTabUtilsUnitTest {
         int index = 0;
         int requestedIndex = 1;
         Tab tab1 = mTabModel.getTabAt(index);
-        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab1, index, requestedIndex);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab1, requestedIndex);
         verify(mTabModel).moveTab(tab1.getId(), requestedIndex);
     }
 
@@ -162,7 +155,7 @@ public class MoveTabUtilsUnitTest {
         int index = 1;
         int requestedIndex = 4;
         Tab tab0 = mTabModel.getTabAt(index);
-        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab0, index, requestedIndex);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab0, requestedIndex);
         verify(mTabModel).moveTab(tab0.getId(), requestedIndex + 1);
     }
 
@@ -172,7 +165,7 @@ public class MoveTabUtilsUnitTest {
         int index = 1;
         int requestedIndex = 3;
         Tab tab2 = mTabModel.getTabAt(index);
-        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab2, index, requestedIndex);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab2, requestedIndex);
         verify(mTabModel).moveTab(tab2.getId(), requestedIndex);
     }
 
@@ -183,7 +176,7 @@ public class MoveTabUtilsUnitTest {
         int index = 1;
         int requestedIndex = 4;
         Tab tab2 = mTabModel.getTabAt(index);
-        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab2, index, requestedIndex);
+        MoveTabUtils.moveSingleTab(mTabModel, mTabGroupModelFilter, tab2, requestedIndex);
         verify(mTabModel).moveTab(tab2.getId(), 2); // Last index of tab group.
     }
 

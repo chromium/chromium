@@ -40,17 +40,19 @@ public final class MoveTabUtils {
      * @param tabModel The current {@link TabModel}.
      * @param filter The current {@link TabGroupModelFilter}.
      * @param tab The {@link Tab} to move.
-     * @param curIndex The current index of the {@code tab}.
      * @param requestedIndex The requested index to move {@code tab} to.
      */
     public static void moveSingleTab(
-            TabModel tabModel,
-            TabGroupModelFilter filter,
-            Tab tab,
-            int curIndex,
-            int requestedIndex) {
-        // No-op if same index or requested a negative index.
-        if (curIndex == requestedIndex || curIndex < 0) return;
+            TabModel tabModel, TabGroupModelFilter filter, Tab tab, int requestedIndex) {
+        int curIndex = tabModel.indexOf(tab);
+        requestedIndex = Math.max(requestedIndex, TabList.INVALID_TAB_INDEX);
+
+        // No-op if same index or requested an invalid index;
+        if (curIndex == TabList.INVALID_TAB_INDEX
+                || requestedIndex == TabList.INVALID_TAB_INDEX
+                || curIndex == requestedIndex) {
+            return;
+        }
 
         @Nullable Token tabGroupId = tab.getTabGroupId();
         @Nullable Tab destinationTab = tabModel.getTabAt(requestedIndex);
@@ -111,6 +113,7 @@ public final class MoveTabUtils {
     public static void moveTabGroup(
             TabModel tabModel, TabGroupModelFilter filter, Token tabGroupId, int requestedIndex) {
         List<Tab> sourceTabsInGroup = filter.getTabsInGroup(tabGroupId);
+        requestedIndex = Math.max(requestedIndex, TabList.INVALID_TAB_INDEX);
         if (sourceTabsInGroup.isEmpty() || requestedIndex == TabList.INVALID_TAB_INDEX) return;
 
         @Nullable Tab destinationTab = tabModel.getTabAt(requestedIndex);

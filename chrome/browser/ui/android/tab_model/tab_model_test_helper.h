@@ -76,11 +76,11 @@ class TestTabModel : public TabModel {
   // TabListInterface implementation.
   void OpenTab(const GURL& url, int index) override;
   void DiscardTab(tabs::TabHandle tab) override;
-  void DuplicateTab(int index) override;
+  void DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;
   void HighlightTabs(const std::set<tabs::TabHandle>& tabs) override;
-  void MoveTab(int from_index, int to_index) override;
-  void CloseTab(int index) override;
+  void MoveTab(tabs::TabHandle tab, int index) override;
+  void CloseTab(tabs::TabHandle tab) override;
   std::vector<tabs::TabInterface*> GetAllTabs() override;
   void PinTab(tabs::TabHandle tab) override;
   void UnpinTab(tabs::TabHandle tab) override;
@@ -167,14 +167,14 @@ class OwningTestTabModel : public TabModel {
   // TabListInterface implementation.
   void OpenTab(const GURL& url, int index) override;
   void DiscardTab(tabs::TabHandle tab) override;
-  void DuplicateTab(int index) override;
+  void DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;
   void HighlightTabs(const std::set<tabs::TabHandle>& tabs) override;
-  void MoveTab(int from_index, int to_index) override;
-  void CloseTab(int index) override;
+  void MoveTab(tabs::TabHandle tab, int index) override;
+  void CloseTab(tabs::TabHandle tab) override;
   std::vector<tabs::TabInterface*> GetAllTabs() override;
-  void PinTab(tabs::TabHandle index) override;
-  void UnpinTab(tabs::TabHandle index) override;
+  void PinTab(tabs::TabHandle tab) override;
+  void UnpinTab(tabs::TabHandle tab) override;
   std::optional<tab_groups::TabGroupId> AddTabsToGroup(
       std::optional<tab_groups::TabGroupId> group_id,
       const std::set<tabs::TabHandle>& tabs) override;

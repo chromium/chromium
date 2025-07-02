@@ -546,9 +546,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    protected void moveTabToIndex(int index, int newIndex) {
-        Tab tab = getTabAt(index);
-        if (tab == null) return;
+    protected void moveTabToIndex(Tab tab, int newIndex) {
         moveTab(tab.getId(), newIndex);
     }
 
