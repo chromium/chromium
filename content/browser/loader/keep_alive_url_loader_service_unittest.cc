@@ -351,11 +351,11 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
 
     test_web_contents()->NavigateAndCommit(GURL("https://example.com"));
 
-    pending_navigation_ = NavigationSimulator::CreateBrowserInitiated(
+    // Start a navigation but don't commit just yet, since we want to inject the
+    // context created in `BindKeepAliveURLLoaderFactory()`.
+    pending_navigation_ = NavigationSimulatorImpl::CreateBrowserInitiated(
         GURL("https://example.com"), web_contents());
-    pending_navigation_->ReadyToCommit();
-
-    AddConnectSrcCSPToRFH(kTestRedirectRequestUrl);
+    pending_navigation_->Start();
   }
 
   void TearDown() override {
@@ -371,7 +371,7 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
     EXPECT_EQ(mojo_bad_message_, message);
   }
 
-  NavigationHandle* GetNavigationHandle() {
+  NavigationRequest* GetNavigationRequest() {
     return pending_navigation_->GetNavigationHandle();
   }
 
@@ -394,7 +394,19 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->policy_container_host()
             ->Clone());
-    context->OnDidCommitNavigation(GetNavigationHandle());
+
+    // Ensure that the context above is the one used in the NavigationRequest.
+    // This is to make sure the OnDidCommitNavigation call that happens during
+    // navigation commit below will use the the loader & context that is
+    // expected by the test. We no longer call OnDidCommitNavigation manually
+    // since if we change RFHs we might not have a PolicyContainerHost or
+    // RFH origin yet here, causing problems with tests, attribution context
+    // etc.
+    GetNavigationRequest()->SetKeepAliveURLLoaderFactoryContextForTesting(
+        context);
+    pending_navigation_->Commit();
+
+    AddConnectSrcCSPToRFH(kTestRedirectRequestUrl);
   }
 
   network::TestURLLoaderFactory::PendingRequest* GetLastPendingRequest() {
@@ -433,6 +445,8 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
     return static_cast<TestWebContents*>(web_contents());
   }
 
+  std::unique_ptr<NavigationSimulatorImpl> pending_navigation_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -442,7 +456,6 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
   // The test target.
   std::unique_ptr<KeepAliveURLLoaderService> loader_service_ = nullptr;
   std::optional<std::string> mojo_bad_message_;
-  std::unique_ptr<NavigationSimulator> pending_navigation_;
 };
 
 class KeepAliveURLLoaderServiceTest : public KeepAliveURLLoaderServiceTestBase {
@@ -565,13 +578,18 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterUpdateFactory) {
   // to nothing.
   auto unbound_factory =
       std::make_unique<network::WrapperPendingSharedURLLoaderFactory>();
+  scoped_refptr<PolicyContainerHost> policy_container_host =
+      static_cast<RenderFrameHostImpl*>(main_rfh())
+          ->policy_container_host()
+          ->Clone();
   auto context = loader_service().BindFactory(
       renderer_loader_factory.BindNewPipeAndPassReceiver(),
       network::SharedURLLoaderFactory::Create(std::move(unbound_factory)),
-      static_cast<RenderFrameHostImpl*>(main_rfh())
-          ->policy_container_host()
-          ->Clone());
-  context->OnDidCommitNavigation(GetNavigationHandle());
+      policy_container_host);
+  GetNavigationRequest()->SetKeepAliveURLLoaderFactoryContextForTesting(
+      context);
+  pending_navigation_->Commit();
+
   {
     // Load a keepalive request. There should be no network loader created.
     MockReceiverURLLoaderClient renderer_loader_client;
@@ -1305,10 +1323,17 @@ TEST_F(KeepAliveURLLoaderServiceTest,
 class FetchLaterKeepAliveURLLoaderServiceTest
     : public KeepAliveURLLoaderServiceTestBase {
  protected:
+  static constexpr base::TimeDelta kDisconnectedLoaderTimeoutForTesting =
+      base::Seconds(15);
+
   void SetUp() override {
-    feature_list().InitWithFeatures(
-        {blink::features::kFetchLaterAPI,
-         blink::features::kAttributionReportingInBrowserMigration},
+    feature_list().InitWithFeaturesAndParameters(
+        {{blink::features::kFetchLaterAPI, {}},
+         {blink::features::kAttributionReportingInBrowserMigration, {}},
+         {blink::features::kKeepAliveInBrowserMigration,
+          {{"disconnected_loader_timeout_seconds",
+            base::NumberToString(
+                kDisconnectedLoaderTimeoutForTesting.InSeconds())}}}},
         {});
     KeepAliveURLLoaderServiceTestBase::SetUp();
   }
@@ -1333,7 +1358,11 @@ class FetchLaterKeepAliveURLLoaderServiceTest
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->policy_container_host()
             ->Clone());
-    context->OnDidCommitNavigation(GetNavigationHandle());
+
+    GetNavigationRequest()->SetFetchLaterLoaderFactoryContextForTesting(
+        context);
+    pending_navigation_->Commit();
+    AddConnectSrcCSPToRFH(kTestRedirectRequestUrl);
   }
 };
 
@@ -1438,8 +1467,8 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
   // KeepAliveURLLoader.
   renderer_loader_factory.reset_remote_fetch_later_loader();
   base::RunLoop().RunUntilIdle();
-  // Fast forwards `kDefaultDisconnectedKeepAliveURLLoaderTimeout` (30s).
-  task_environment()->FastForwardBy(base::Seconds(30));
+  // Fast forwards to the keepalive disconnect timeout.
+  task_environment()->FastForwardBy(kDisconnectedLoaderTimeoutForTesting);
 
   // Disconnected KeepAliveURLLoader should be killed.
   EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 0u);

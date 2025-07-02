@@ -1247,11 +1247,7 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   void set_keep_alive_url_loader_factory_context(
-      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
-          factory_context) {
-    DCHECK(!keep_alive_url_loader_factory_context_);
-    keep_alive_url_loader_factory_context_ = factory_context;
-  }
+      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context);
 
   base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
   fetch_later_loader_factory_context() {
@@ -1259,11 +1255,12 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   void set_fetch_later_loader_factory_context(
-      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
-          factory_context) {
-    DCHECK(!fetch_later_loader_factory_context_);
-    fetch_later_loader_factory_context_ = factory_context;
-  }
+      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context);
+
+  void SetKeepAliveURLLoaderFactoryContextForTesting(
+      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context);
+  void SetFetchLaterLoaderFactoryContextForTesting(
+      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context);
 
   // Helper for logging crash keys related to a NavigationRequest (e.g.
   // "navigation_request_url", "navigation_request_initiator", and
@@ -3174,6 +3171,11 @@ class CONTENT_EXPORT NavigationRequest
   // See also `keep_alive_url_loader_factory_context_` for the timing to update.
   base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
       fetch_later_loader_factory_context_;
+
+  // Set to true when the loaders above are set by unittests that want to avoid
+  // setting a real connection to the renderer.
+  bool did_set_keep_alive_url_loader_factory_context_for_testing_ = false;
+  bool did_set_fetch_later_url_loader_factory_context_for_testing_ = false;
 
   scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
 

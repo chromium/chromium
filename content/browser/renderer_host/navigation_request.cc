@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -8474,6 +8475,50 @@ NavigationRequest::TakeWebFeaturesToLog() {
   std::vector<blink::mojom::WebFeature> result;
   result.swap(web_features_to_log_);
   return result;
+}
+
+void NavigationRequest::set_keep_alive_url_loader_factory_context(
+    base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context) {
+  if (did_set_keep_alive_url_loader_factory_context_for_testing_) {
+    // A unit test set a fake context already. Use that instead of the passed in
+    // context.
+    CHECK_IS_TEST();
+    CHECK(keep_alive_url_loader_factory_context_);
+    CHECK_NE(keep_alive_url_loader_factory_context_.get(),
+             factory_context.get());
+    return;
+  }
+  CHECK(!keep_alive_url_loader_factory_context_);
+  keep_alive_url_loader_factory_context_ = factory_context;
+}
+
+void NavigationRequest::set_fetch_later_loader_factory_context(
+    base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context) {
+  if (did_set_fetch_later_url_loader_factory_context_for_testing_) {
+    // A unit test set a fake context already. Use that instead of the passed in
+    // context.
+    CHECK_IS_TEST();
+    CHECK(fetch_later_loader_factory_context_);
+    CHECK_NE(fetch_later_loader_factory_context_.get(), factory_context.get());
+    return;
+  }
+  fetch_later_loader_factory_context_ = factory_context;
+}
+
+void NavigationRequest::SetKeepAliveURLLoaderFactoryContextForTesting(
+    base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context) {
+  CHECK(!keep_alive_url_loader_factory_context_);
+  did_set_keep_alive_url_loader_factory_context_for_testing_ = true;
+  keep_alive_url_loader_factory_context_ = factory_context;
+  CHECK(keep_alive_url_loader_factory_context_);
+}
+
+void NavigationRequest::SetFetchLaterLoaderFactoryContextForTesting(
+    base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context) {
+  CHECK(!fetch_later_loader_factory_context_);
+  did_set_fetch_later_url_loader_factory_context_for_testing_ = true;
+  fetch_later_loader_factory_context_ = factory_context;
+  CHECK(fetch_later_loader_factory_context_);
 }
 
 void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
