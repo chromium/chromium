@@ -16,7 +16,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
@@ -1748,11 +1747,9 @@ void PdfViewWebPlugin::HandleGetNamedDestinationMessage(
     std::ostringstream view_stream;
     view_stream << named_destination->view;
     if (named_destination->xyz_params.empty()) {
-      UNSAFE_TODO({
-        for (unsigned long i = 0; i < named_destination->num_params; ++i) {
-          view_stream << "," << named_destination->params[i];
-        }
-      });
+      for (unsigned long i = 0; i < named_destination->num_params; ++i) {
+        view_stream << "," << named_destination->params[i];
+      }
     } else {
       view_stream << "," << named_destination->xyz_params;
     }
