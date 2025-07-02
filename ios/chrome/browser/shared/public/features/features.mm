@@ -1292,10 +1292,7 @@ bool IsFeedbackIncludeGWSVariationsEnabled() {
   return base::FeatureList::IsEnabled(kFeedbackIncludeGWSVariations);
 }
 
-BASE_FEATURE(kDefaultBrowserPromoPropensityModel,
-             "DefaultBrowserPromoPropensityModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsDefaultBrowserPromoPropensityModelEnabled() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserPromoPropensityModel);
+  return base::FeatureList::IsEnabled(
+      segmentation_platform::features::kDefaultBrowserPromoPropensityModel);
 }

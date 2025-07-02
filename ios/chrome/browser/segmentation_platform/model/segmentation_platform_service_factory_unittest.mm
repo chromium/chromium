@@ -501,4 +501,14 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       /*expected_labels=*/result);
 }
 
+// Verify that kIosDefaultBrowserPromoKey fails execution since it should never
+// be executed by the client.
+TEST_F(SegmentationPlatformServiceFactoryTest, TestDefaultBrowserModel) {
+  PredictionOptions prediction_options;
+
+  ExpectGetClassificationResult(
+      kIosDefaultBrowserPromoKey, prediction_options, nullptr,
+      /*expected_status=*/PredictionStatus::kFailed, std::nullopt);
+}
+
 }  // namespace segmentation_platform

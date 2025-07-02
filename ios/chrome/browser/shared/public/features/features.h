@@ -1080,10 +1080,6 @@ BASE_DECLARE_FEATURE(kFeedbackIncludeGWSVariations);
 // Whether the feature to include GWS variations in feedback is enabled.
 bool IsFeedbackIncludeGWSVariationsEnabled();
 
-// Feature flag enabling checking a propensity model before showing a default
-// browser promo.
-BASE_DECLARE_FEATURE(kDefaultBrowserPromoPropensityModel);
-
 // Whether the `kDefaultBrowserPromoPropensityModel` feature is enabled.
 bool IsDefaultBrowserPromoPropensityModelEnabled();
 

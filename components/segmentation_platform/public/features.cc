@@ -283,4 +283,8 @@ BASE_FEATURE(kSegmentationPlatformFedCmUser,
              "SegmentationPlatformFedCmUser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDefaultBrowserPromoPropensityModel,
+             "DefaultBrowserPromoPropensityModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace segmentation_platform::features
