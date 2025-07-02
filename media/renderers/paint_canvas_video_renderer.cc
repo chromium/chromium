@@ -830,16 +830,36 @@ class VideoTextureBacking : public cc::TextureBacking {
   }
 
   explicit VideoTextureBacking(
-      scoped_refptr<gpu::ClientSharedImage> shared_image,
-      scoped_refptr<viz::RasterContextProvider> raster_context_provider)
-      : sk_image_info_(
-            SkImageInfo::Make(gfx::SizeToSkISize(shared_image->size()),
-                              kRGBA_8888_SkColorType,
-                              kPremul_SkAlphaType,
-                              shared_image->color_space().ToSkColorSpace())),
-        shared_image_(std::move(shared_image)) {
-    CHECK(shared_image_);
+      scoped_refptr<viz::RasterContextProvider> raster_context_provider,
+      const gfx::Size& coded_size,
+      const gfx::ColorSpace& color_space)
+      : sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(coded_size),
+                                         kRGBA_8888_SkColorType,
+                                         kPremul_SkAlphaType,
+                                         color_space.ToSkColorSpace())) {
     raster_context_provider_ = std::move(raster_context_provider);
+    auto* sii = raster_context_provider_->SharedImageInterface();
+
+    // This SI is used to cache the VideoFrame. We will eventually read out
+    // its contents into a destination GL texture via the GLES2 interface.
+    gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+    // We copy the contents of the source VideoFrame *into* the
+    // cached SI over the raster interface - the usage bits depend on
+    // whether OOP-Raster is enabled.
+    flags |= gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+    if (raster_context_provider_->ContextCapabilities().gpu_rasterization) {
+      flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+    } else {
+      flags |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+    }
+
+    shared_image_ =
+        sii->CreateSharedImage({SHARED_IMAGE_FORMAT, coded_size, color_space,
+                                flags, "PaintCanvasVideoRenderer"},
+                               gpu::kNullSurfaceHandle);
+    CHECK(shared_image_);
+    raster_context_provider_->RasterInterface()->WaitSyncTokenCHROMIUM(
+        sii->GenUnverifiedSyncToken().GetConstData());
   }
 
   ~VideoTextureBacking() override {
@@ -1798,7 +1818,6 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     auto* ri = raster_context_provider->RasterInterface();
     DCHECK(ri);
     const auto video_frame_si = video_frame->shared_image();
-    scoped_refptr<gpu::ClientSharedImage> client_shared_image;
 
     // Create or reuse a texture backing for the cached copy.
     if (cache_ && cache_->texture_backing &&
@@ -1807,7 +1826,6 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         cache_->coded_size == video_frame->coded_size() && cache_->Recycle()) {
       // We can reuse the shared image from the previous cache.
       cache_->frame_id = video_frame->unique_id();
-      client_shared_image = cache_->texture_backing->GetSharedImage();
 
       // NOTE: It is necessary to let go of read access to the cached copy
       // here because the below copy operation takes readwrite access to that
@@ -1816,31 +1834,12 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
       cache_->texture_backing->clear_access();
     } else {
       cache_.emplace(video_frame->unique_id());
-      auto* sii = raster_context_provider->SharedImageInterface();
-
-      // This SI is used to cache the VideoFrame. We will eventually read out
-      // its contents into a destination GL texture via the GLES2 interface.
-      gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-      // We copy the contents of the source VideoFrame *into* the
-      // cached SI over the raster interface - the usage bits depend on
-      // whether OOP-Raster is enabled.
-      flags |= gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-      if (gpu_rasterization) {
-        flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-      } else {
-        flags |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
-      }
-      client_shared_image = sii->CreateSharedImage(
-          {SHARED_IMAGE_FORMAT, video_frame->coded_size(),
-           video_frame->CompatRGBColorSpace(), flags,
-           "PaintCanvasVideoRenderer"},
-          gpu::kNullSurfaceHandle);
-      CHECK(client_shared_image);
-      ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-
       cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
-          client_shared_image, raster_context_provider);
+          raster_context_provider, video_frame->coded_size(),
+          video_frame->CompatRGBColorSpace());
     }
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image =
+        cache_->texture_backing->GetSharedImage();
 
     // Copy into the shared image backing of the cached copy.
     std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
