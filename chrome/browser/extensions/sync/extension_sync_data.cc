@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_sync_data.h"
+#include "chrome/browser/extensions/sync/extension_sync_data.h"
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
@@ -28,10 +28,8 @@ std::string GetExtensionSpecificsLogMessage(
     const sync_pb::ExtensionSpecifics& specifics) {
   return base::StringPrintf(
       "id: %s\nversion: %s\nupdate_url: %s\nenabled: %i\ndisable_reasons: %i",
-      specifics.id().c_str(),
-      specifics.version().c_str(),
-      specifics.update_url().c_str(),
-      specifics.enabled(),
+      specifics.id().c_str(), specifics.version().c_str(),
+      specifics.update_url().c_str(), specifics.enabled(),
       specifics.disable_reasons());
 }
 
@@ -121,8 +119,9 @@ ExtensionSyncData::~ExtensionSyncData() = default;
 std::unique_ptr<ExtensionSyncData> ExtensionSyncData::CreateFromSyncData(
     const syncer::SyncData& sync_data) {
   std::unique_ptr<ExtensionSyncData> data(new ExtensionSyncData);
-  if (data->PopulateFromSyncData(sync_data))
+  if (data->PopulateFromSyncData(sync_data)) {
     return data;
+  }
   return nullptr;
 }
 
@@ -131,20 +130,23 @@ std::unique_ptr<ExtensionSyncData> ExtensionSyncData::CreateFromSyncChange(
     const syncer::SyncChange& sync_change) {
   std::unique_ptr<ExtensionSyncData> data(
       CreateFromSyncData(sync_change.sync_data()));
-  if (!data.get())
+  if (!data.get()) {
     return nullptr;
+  }
 
-  if (sync_change.change_type() == syncer::SyncChange::ACTION_DELETE)
+  if (sync_change.change_type() == syncer::SyncChange::ACTION_DELETE) {
     data->uninstalled_ = true;
+  }
   return data;
 }
 
 syncer::SyncData ExtensionSyncData::GetSyncData() const {
   sync_pb::EntitySpecifics specifics;
-  if (is_app_)
+  if (is_app_) {
     ToAppSpecifics(specifics.mutable_app());
-  else
+  } else {
     ToExtensionSpecifics(specifics.mutable_extension());
+  }
 
   return syncer::SyncData::CreateLocalData(id_, name_, specifics);
 }
@@ -180,10 +182,12 @@ void ExtensionSyncData::ToExtensionSpecifics(
 void ExtensionSyncData::ToAppSpecifics(sync_pb::AppSpecifics* specifics) const {
   DCHECK(specifics);
   // Only sync the ordinal values and launch type if they are valid.
-  if (app_launch_ordinal_.IsValid())
+  if (app_launch_ordinal_.IsValid()) {
     specifics->set_app_launch_ordinal(app_launch_ordinal_.ToInternalValue());
-  if (page_ordinal_.IsValid())
+  }
+  if (page_ordinal_.IsValid()) {
     specifics->set_page_ordinal(page_ordinal_.ToInternalValue());
+  }
 
   sync_pb::AppSpecifics::LaunchType sync_launch_type =
       static_cast<sync_pb::AppSpecifics::LaunchType>(launch_type_);
@@ -261,8 +265,9 @@ bool ExtensionSyncData::PopulateFromExtensionSpecifics(
 
 bool ExtensionSyncData::PopulateFromAppSpecifics(
     const sync_pb::AppSpecifics& specifics) {
-  if (!PopulateFromExtensionSpecifics(specifics.extension()))
+  if (!PopulateFromExtensionSpecifics(specifics.extension())) {
     return false;
+  }
 
   is_app_ = true;
 
@@ -295,11 +300,13 @@ bool ExtensionSyncData::PopulateFromSyncData(
     const syncer::SyncData& sync_data) {
   const sync_pb::EntitySpecifics& entity_specifics = sync_data.GetSpecifics();
 
-  if (entity_specifics.has_app())
+  if (entity_specifics.has_app()) {
     return PopulateFromAppSpecifics(entity_specifics.app());
+  }
 
-  if (entity_specifics.has_extension())
+  if (entity_specifics.has_extension()) {
     return PopulateFromExtensionSpecifics(entity_specifics.extension());
+  }
 
   LOG(ERROR) << "Attempt to sync bad EntitySpecifics: no extension data.";
   RecordBadSyncData(BadSyncDataReason::kNoExtensionSpecifics);

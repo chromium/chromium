@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/account_extension_tracker.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
-#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/sync/extension_sync_service.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"

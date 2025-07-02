@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_sync_service_factory.h"
+#include "chrome/browser/extensions/sync/extension_sync_service_factory.h"
 
-#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
+#include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_prefs_factory.h"

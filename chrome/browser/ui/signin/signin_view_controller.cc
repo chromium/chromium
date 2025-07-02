@@ -80,8 +80,8 @@
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/account_extension_tracker.h"
-#include "chrome/browser/extensions/extension_sync_util.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "extensions/common/extension.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

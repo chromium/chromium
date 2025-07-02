@@ -27,7 +27,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_sync_util.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

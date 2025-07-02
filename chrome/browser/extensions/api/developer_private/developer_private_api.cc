@@ -19,7 +19,7 @@
 #include "ui/base/clipboard/file_info.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/account_extension_tracker.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

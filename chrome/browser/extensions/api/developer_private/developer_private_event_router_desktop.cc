@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router_desktop.h"
 
-#include "chrome/browser/extensions/extension_sync_util.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/signin/public/base/signin_switches.h"

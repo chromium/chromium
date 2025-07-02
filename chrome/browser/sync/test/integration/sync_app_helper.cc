@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"

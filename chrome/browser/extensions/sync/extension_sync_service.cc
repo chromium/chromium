@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/extensions/sync/extension_sync_service.h"
 
 #include <utility>
 
@@ -14,15 +14,15 @@
 #include "base/one_shot_event.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_sync_data.h"
-#include "chrome/browser/extensions/extension_sync_service_factory.h"
-#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
+#include "chrome/browser/extensions/sync/extension_sync_data.h"
+#include "chrome/browser/extensions/sync/extension_sync_service_factory.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -88,8 +88,9 @@ bool IsAccountExtension(Profile* profile, const extensions::ExtensionId& id) {
 std::map<std::string, syncer::SyncData> ToSyncerSyncDataMap(
     const std::vector<ExtensionSyncData>& data) {
   std::map<std::string, syncer::SyncData> result;
-  for (const ExtensionSyncData& item : data)
+  for (const ExtensionSyncData& item : data) {
     result[item.id()] = item.GetSyncData();
+  }
   return result;
 }
 
@@ -97,8 +98,9 @@ syncer::SyncDataList ToSyncerSyncDataList(
     const std::vector<ExtensionSyncData>& data) {
   syncer::SyncDataList result;
   result.reserve(data.size());
-  for (const ExtensionSyncData& item : data)
+  for (const ExtensionSyncData& item : data) {
     result.push_back(item.GetSyncData());
+  }
   return result;
 }
 
@@ -143,8 +145,8 @@ struct ExtensionSyncService::PendingUpdate {
   PendingUpdate() : grant_permissions_and_reenable(false) {}
   PendingUpdate(const base::Version& version,
                 bool grant_permissions_and_reenable)
-    : version(version),
-      grant_permissions_and_reenable(grant_permissions_and_reenable) {}
+      : version(version),
+        grant_permissions_and_reenable(grant_permissions_and_reenable) {}
 
   base::Version version;
   bool grant_permissions_and_reenable;
@@ -182,8 +184,9 @@ void ExtensionSyncService::SyncExtensionChangeIfNeeded(
     DCHECK(!ExtensionPrefs::Get(profile_)->NeedsSync(extension.id()));
   } else {
     ExtensionPrefs::Get(profile_)->SetNeedsSync(extension.id(), true);
-    if (system_->is_ready() && !flare_.is_null())
+    if (system_->is_ready() && !flare_.is_null()) {
       flare_.Run(type);  // Tell sync to start ASAP.
+    }
   }
 }
 
@@ -237,11 +240,13 @@ ExtensionSyncService::MergeDataAndStartSyncing(
   std::vector<ExtensionSyncData> data_list = GetLocalSyncDataList(type);
   bundle->PushSyncDataMap(ToSyncerSyncDataMap(data_list));
 
-  for (const ExtensionSyncData& data : data_list)
+  for (const ExtensionSyncData& data : data_list) {
     ExtensionPrefs::Get(profile_)->SetNeedsSync(data.id(), false);
+  }
 
-  if (type == syncer::APPS)
+  if (type == syncer::APPS) {
     system_->app_sorting()->FixNTPOrdinalCollisions();
+  }
 
   return std::nullopt;
 }
@@ -253,16 +258,16 @@ void ExtensionSyncService::StopSyncing(syncer::DataType type) {
 syncer::SyncDataList ExtensionSyncService::GetAllSyncDataForTesting(
     syncer::DataType type) const {
   const SyncBundle* bundle = GetSyncBundle(type);
-  if (!bundle->IsSyncing())
+  if (!bundle->IsSyncing()) {
     return syncer::SyncDataList();
+  }
 
   std::vector<ExtensionSyncData> sync_data_list = GetLocalSyncDataList(type);
 
   // Add pending data (where the local extension is not installed yet).
   std::vector<ExtensionSyncData> pending_extensions =
       bundle->GetPendingExtensionData();
-  sync_data_list.insert(sync_data_list.begin(),
-                        pending_extensions.begin(),
+  sync_data_list.insert(sync_data_list.begin(), pending_extensions.begin(),
                         pending_extensions.end());
 
   return ToSyncerSyncDataList(sync_data_list);
@@ -274,8 +279,9 @@ std::optional<syncer::ModelError> ExtensionSyncService::ProcessSyncChanges(
   for (const syncer::SyncChange& sync_change : change_list) {
     std::unique_ptr<ExtensionSyncData> extension_sync_data(
         ExtensionSyncData::CreateFromSyncChange(sync_change));
-    if (extension_sync_data)
+    if (extension_sync_data) {
       ApplySyncData(*extension_sync_data);
+    }
   }
 
   system_->app_sorting()->FixNTPOrdinalCollisions();
@@ -339,8 +345,9 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
     result.set_version(version);
     // If we'll re-enable the extension once it's updated, also send that back
     // to sync.
-    if (it->second.grant_permissions_and_reenable)
+    if (it->second.grant_permissions_and_reenable) {
       result.set_enabled(true);
+    }
   }
   return result;
 }
@@ -430,9 +437,15 @@ void ExtensionSyncService::ApplySyncData(
   } state = NOT_INSTALLED;
   if (extension) {
     switch (extension->version().CompareTo(extension_sync_data.version())) {
-      case -1: state = INSTALLED_OUTDATED; break;
-      case 0: state = INSTALLED_MATCHING; break;
-      case 1: state = INSTALLED_NEWER; break;
+      case -1:
+        state = INSTALLED_OUTDATED;
+        break;
+      case 0:
+        state = INSTALLED_MATCHING;
+        break;
+      case 1:
+        state = INSTALLED_NEWER;
+        break;
       default:
         NOTREACHED();
     }
@@ -510,10 +523,11 @@ void ExtensionSyncService::ApplySyncData(
               *extension_prefs->GetGrantedPermissions(id),
               extension->permissions_data()->active_permissions(),
               extension->GetType());
-      if (has_all_permissions)
+      if (has_all_permissions) {
         extension_registrar->EnableExtension(id);
-      else if (extension_sync_data.supports_disable_reasons())
+      } else if (extension_sync_data.supports_disable_reasons()) {
         reenable_after_update = true;
+      }
     } else {
       // The extension is not installed yet. Set it to enabled; we'll check for
       // permission increase (more accurately, for a version change) when it's
@@ -543,8 +557,8 @@ void ExtensionSyncService::ApplySyncData(
     // population is in ExtensionSyncData::ToAppSpecifics.
     if (extension_sync_data.launch_type() >= extensions::LAUNCH_TYPE_FIRST &&
         extension_sync_data.launch_type() < extensions::NUM_LAUNCH_TYPES) {
-      extensions::SetLaunchType(
-          profile_, id, extension_sync_data.launch_type());
+      extensions::SetLaunchType(profile_, id,
+                                extension_sync_data.launch_type());
     }
 
     if (extension_sync_data.app_launch_ordinal().IsValid() &&
@@ -591,8 +605,9 @@ void ExtensionSyncService::ApplySyncData(
     check_for_updates = true;
   }
 
-  if (check_for_updates)
+  if (check_for_updates) {
     system_->extension_service()->CheckForUpdatesSoon();
+  }
 }
 
 void ExtensionSyncService::SetSyncStartFlareForTesting(
@@ -602,8 +617,8 @@ void ExtensionSyncService::SetSyncStartFlareForTesting(
 
 void ExtensionSyncService::DeleteThemeDoNotUse(const Extension& theme) {
   DCHECK(theme.is_theme());
-  GetSyncBundle(syncer::EXTENSIONS)->PushSyncDeletion(
-      theme.id(), CreateSyncData(theme).GetSyncData());
+  GetSyncBundle(syncer::EXTENSIONS)
+      ->PushSyncDeletion(theme.id(), CreateSyncData(theme).GetSyncData());
 }
 
 void ExtensionSyncService::OnExtensionInstalled(
@@ -623,8 +638,9 @@ void ExtensionSyncService::OnExtensionInstalled(
       extensions::ExtensionRegistrar::Get(profile_)
           ->GrantPermissionsAndEnableExtension(*extension);
     }
-    if (compare_result >= 0)
+    if (compare_result >= 0) {
       pending_updates_.erase(it);
+    }
   }
 
   if (!is_update) {
@@ -679,8 +695,9 @@ void ExtensionSyncService::OnExtensionDisableReasonsChanged(
   // We can get pref change notifications for extensions that aren't installed
   // (yet). In that case, we'll pick up the change later via ExtensionRegistry
   // observation (in OnExtensionInstalled).
-  if (extension)
+  if (extension) {
     SyncExtensionChangeIfNeeded(*extension);
+  }
 }
 
 void ExtensionSyncService::OnExtensionPrefsWillBeDestroyed(

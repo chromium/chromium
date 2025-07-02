@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/extensions/sync/extension_sync_service.h"
 
 #include <stddef.h>
 
@@ -19,15 +19,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
-#include "chrome/browser/extensions/extension_sync_data.h"
-#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/signin_test_util.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
+#include "chrome/browser/extensions/sync/extension_sync_data.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -973,8 +973,9 @@ TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettingsOnExtensionMoved) {
     std::array<syncer::StringOrdinal, kAppCount> app_launch_ordinals;
     for (size_t i = 0; i < kAppCount; ++i) {
       for (size_t j = 0; j < kAppCount; ++j) {
-        if (apps[i]->id() == data[j]->id())
+        if (apps[i]->id() == data[j]->id()) {
           app_launch_ordinals[i] = data[j]->app_launch_ordinal();
+        }
       }
     }
 
@@ -1160,7 +1161,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNewExtension) {
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
 
   struct TestCase {
-    const char* name;  // For failure output only.
+    const char* name;   // For failure output only.
     bool sync_enabled;  // The "enabled" flag coming in from Sync.
     // The disable reason(s) coming in from Sync, or -1 for "not set".
     int sync_disable_reasons;
@@ -1210,8 +1211,9 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNewExtension) {
     ext_specifics->set_id(kGoodCrx);
     ext_specifics->set_version(base::Version("1").GetString());
     ext_specifics->set_enabled(test_case.sync_enabled);
-    if (test_case.sync_disable_reasons != -1)
+    if (test_case.sync_disable_reasons != -1) {
       ext_specifics->set_disable_reasons(test_case.sync_disable_reasons);
+    }
 
     SyncChangeList list =
         MakeSyncChangeList(kGoodCrx, specifics, SyncChange::ACTION_UPDATE);
@@ -1229,10 +1231,11 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNewExtension) {
         prefs->GetGrantedPermissions(kGoodCrx);
     EXPECT_EQ(test_case.expect_permissions_granted, !permissions->IsEmpty());
     ASSERT_FALSE(pending_extension_manager->IsIdPending(kGoodCrx));
-    if (test_case.sync_enabled)
+    if (test_case.sync_enabled) {
       EXPECT_TRUE(registry()->enabled_extensions().GetByID(kGoodCrx));
-    else
+    } else {
       EXPECT_TRUE(registry()->disabled_extensions().GetByID(kGoodCrx));
+    }
 
     // Remove the extension again, so we can install it again for the next case.
     UninstallExtension(kGoodCrx);
@@ -1576,8 +1579,9 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
     ext_specifics->set_id(id);
     ext_specifics->set_enabled(test_case.sync_enable);
     ext_specifics->set_version(version);
-    if (test_case.sync_disable_reasons != -1)
+    if (test_case.sync_disable_reasons != -1) {
       ext_specifics->set_disable_reasons(test_case.sync_disable_reasons);
+    }
 
     SyncChangeList list =
         MakeSyncChangeList(kGoodCrx, specifics, SyncChange::ACTION_UPDATE);
@@ -1839,8 +1843,9 @@ TEST_F(ExtensionSyncServiceCustomGalleryTest,
     ext_specifics->set_id(id);
     ext_specifics->set_enabled(true);
     ext_specifics->set_version(*test_case.sync_version);
-    if (test_case.sync_disable_reasons != -1)
+    if (test_case.sync_disable_reasons != -1) {
       ext_specifics->set_disable_reasons(test_case.sync_disable_reasons);
+    }
 
     SyncChangeList list =
         MakeSyncChangeList(kGoodCrx, specifics, SyncChange::ACTION_UPDATE);

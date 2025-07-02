@@ -57,7 +57,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
 

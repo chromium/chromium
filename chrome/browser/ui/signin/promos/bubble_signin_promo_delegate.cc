@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/extensions/account_extension_tracker.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"

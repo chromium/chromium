@@ -8,7 +8,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/extension_registry.h"

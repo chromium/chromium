@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_SYNC_SERVICE_H_
-#define CHROME_BROWSER_EXTENSIONS_EXTENSION_SYNC_SERVICE_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_SYNC_EXTENSION_SYNC_SERVICE_H_
+#define CHROME_BROWSER_EXTENSIONS_SYNC_EXTENSION_SYNC_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/version.h"
-#include "chrome/browser/extensions/sync_bundle.h"
+#include "chrome/browser/extensions/sync/sync_bundle.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/syncable_service.h"
@@ -190,4 +190,4 @@ class ExtensionSyncService : public syncer::SyncableService,
   base::WeakPtrFactory<ExtensionSyncService> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_SYNC_SERVICE_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_SYNC_EXTENSION_SYNC_SERVICE_H_

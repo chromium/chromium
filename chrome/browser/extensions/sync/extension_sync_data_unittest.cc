@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_sync_data.h"
+#include "chrome/browser/extensions/sync/extension_sync_data.h"
 
 #include <memory>
 
@@ -82,8 +82,7 @@ void SyncDataToProtobufEqual(const ExtensionSyncData& input) {
 
 }  // namespace
 
-class ExtensionSyncDataTest : public testing::Test {
-};
+class ExtensionSyncDataTest : public testing::Test {};
 
 // Tests the conversion process from a protobuf to an ExtensionSyncData and vice
 // versa.

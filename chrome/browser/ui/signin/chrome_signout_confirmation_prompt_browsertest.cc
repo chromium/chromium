@@ -22,9 +22,9 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/path_service.h"
-#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/signin_test_util.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"

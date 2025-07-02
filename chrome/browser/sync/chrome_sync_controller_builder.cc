@@ -36,7 +36,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/storage/settings_sync_util.h"  // nogncheck
-#include "chrome/browser/extensions/extension_sync_service.h"  // nogncheck
+#include "chrome/browser/extensions/sync/extension_sync_service.h"  // nogncheck
 #include "chrome/browser/sync/glue/extension_data_type_controller.h"
 #include "chrome/browser/sync/glue/extension_setting_data_type_controller.h"
 #endif
