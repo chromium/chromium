@@ -14,70 +14,75 @@ namespace {
 
 enum class SystemAec { kNotSupported, kSupported };
 
+int GetPlatformEffects(SystemAec aec_mode) {
+  if (aec_mode == SystemAec::kSupported) {
+    return media::AudioParameters::ECHO_CANCELLER;
+  }
+  return 0;
+}
+
 // Creates an audio source from a device with AEC support specified by
 // |aec_mode| and requested AEC effect specified by |enable_system_aec|.
 std::unique_ptr<LocalMediaStreamAudioSource> CreateLocalMediaStreamAudioSource(
-    SystemAec aec_mode,
+    int platform_effects,
     bool enable_system_aec) {
   MediaStreamDevice device{};
   device.input =
       media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                              media::ChannelLayoutConfig::Stereo(), 48000, 512);
-  if (aec_mode == SystemAec::kSupported) {
-    device.input.set_effects(media::AudioParameters::ECHO_CANCELLER);
-  }
+  device.input.set_effects(platform_effects);
   return std::make_unique<LocalMediaStreamAudioSource>(
       /*consumer_frame*/ nullptr, device,
       /*requested_local_buffer_size*/ nullptr,
-      /*disable_local_echo*/ false, enable_system_aec,
+      /*disable_local_echo*/ false,
+      MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSourceForTests(
+          enable_system_aec, device.input.effects()),
       LocalMediaStreamAudioSource::ConstraintsRepeatingCallback(),
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
 }
 
 TEST(LocalMediaStreamAudioSourceAecTest, SupportsUnsupportedSystemAec) {
   test::TaskEnvironment task_environment;
+  int platform_effects = GetPlatformEffects(SystemAec::kNotSupported);
   std::unique_ptr<LocalMediaStreamAudioSource> source =
-      CreateLocalMediaStreamAudioSource(SystemAec::kNotSupported,
-                                        /*enable_system_aec*/ false);
+      CreateLocalMediaStreamAudioSource(platform_effects,
+                                        /*enable_system_aec=*/false);
   std::optional<AudioProcessingProperties> properties =
       source->GetAudioProcessingProperties();
   ASSERT_TRUE(properties.has_value());
 
-  EXPECT_EQ(properties->echo_cancellation_type,
-            AudioProcessingProperties::EchoCancellationType::
-                kEchoCancellationDisabled);
+  EXPECT_FALSE(EchoCanceller::From(*properties, platform_effects).IsEnabled());
   EXPECT_FALSE(source->GetAudioParameters().effects() &
                media::AudioParameters::ECHO_CANCELLER);
 }
 
 TEST(LocalMediaStreamAudioSourceAecTest, CanDisableSystemAec) {
   test::TaskEnvironment task_environment;
+  int platform_effects = GetPlatformEffects(SystemAec::kSupported);
   std::unique_ptr<LocalMediaStreamAudioSource> source =
-      CreateLocalMediaStreamAudioSource(SystemAec::kSupported,
-                                        /*enable_system_aec*/ false);
+      CreateLocalMediaStreamAudioSource(platform_effects,
+                                        /*enable_system_aec=*/false);
   std::optional<AudioProcessingProperties> properties =
       source->GetAudioProcessingProperties();
   ASSERT_TRUE(properties.has_value());
 
-  EXPECT_EQ(properties->echo_cancellation_type,
-            AudioProcessingProperties::EchoCancellationType::
-                kEchoCancellationDisabled);
+  EXPECT_FALSE(EchoCanceller::From(*properties, platform_effects).IsEnabled());
   EXPECT_FALSE(source->GetAudioParameters().effects() &
                media::AudioParameters::ECHO_CANCELLER);
 }
 
 TEST(LocalMediaStreamAudioSourceAecTest, CanEnableSystemAec) {
   test::TaskEnvironment task_environment;
+  int platform_effects = GetPlatformEffects(SystemAec::kSupported);
   std::unique_ptr<LocalMediaStreamAudioSource> source =
-      CreateLocalMediaStreamAudioSource(SystemAec::kSupported,
-                                        /*enable_system_aec*/ true);
+      CreateLocalMediaStreamAudioSource(platform_effects,
+                                        /*enable_system_aec=*/true);
   std::optional<AudioProcessingProperties> properties =
       source->GetAudioProcessingProperties();
   ASSERT_TRUE(properties.has_value());
 
-  EXPECT_EQ(
-      properties->echo_cancellation_type,
-      AudioProcessingProperties::EchoCancellationType::kEchoCancellationSystem);
+  EXPECT_TRUE(
+      EchoCanceller::From(*properties, platform_effects).IsPlatformProvided());
   EXPECT_TRUE(source->GetAudioParameters().effects() &
               media::AudioParameters::ECHO_CANCELLER);
 }

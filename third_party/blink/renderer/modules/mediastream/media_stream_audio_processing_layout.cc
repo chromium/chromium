@@ -11,6 +11,14 @@
 namespace blink {
 
 namespace {
+
+static constexpr media::AudioProcessingSettings kDummyWebrtcSettings{
+    .echo_cancellation = false,
+    .noise_suppression = false,
+    .automatic_gain_control = false,
+    .multi_channel_capture_processing = false,
+    .use_loopback_aec_reference = false};
+
 // Returns whether system noise suppression is allowed to be used regardless of
 // whether the noise suppression constraint is set, or whether a browser-based
 // AEC is active. This is currently the default on at least MacOS but is not
@@ -193,6 +201,50 @@ MediaStreamAudioProcessingLayout::MakeForDisplayCapture(
       /*available_platform_effects=*/0, channels);
 }
 
+// static
+// Keep only echo cancellation info and apply only it to platform effects.
+// TODO(http://crbug.com/428837201)
+// This is how the code works historically. Needs to be reconsidered.
+MediaStreamAudioProcessingLayout
+MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSource(
+    const AudioProcessingProperties& properties,
+    int platform_effects) {
+  AudioProcessingProperties properties_aec_only(
+      AudioProcessingProperties::Disabled());
+  properties_aec_only.echo_cancellation_type =
+      properties.echo_cancellation_type;
+
+  EchoCanceller echo_canceller =
+      EchoCanceller::From(properties_aec_only, platform_effects);
+
+  CHECK(!echo_canceller.IsChromeProvided());
+
+  if (echo_canceller.IsPlatformProvided()) {
+    CHECK(platform_effects & media::AudioParameters::ECHO_CANCELLER);
+  } else {
+    platform_effects &= ~media::AudioParameters::ECHO_CANCELLER;
+  }
+
+  return MediaStreamAudioProcessingLayout(properties_aec_only, echo_canceller,
+                                          platform_effects,
+                                          kDummyWebrtcSettings);
+}
+
+// static
+MediaStreamAudioProcessingLayout
+MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSourceForTests(
+    bool platform_aec,
+    int available_platform_effects) {
+  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
+  if (platform_aec) {
+    CHECK(available_platform_effects & media::AudioParameters::ECHO_CANCELLER);
+    properties.echo_cancellation_type = AudioProcessingProperties::
+        EchoCancellationType::kEchoCancellationSystem;
+  }
+
+  return MakeForUnprocessedLocalSource(properties, available_platform_effects);
+}
+
 MediaStreamAudioProcessingLayout::MediaStreamAudioProcessingLayout(
     const AudioProcessingProperties& properties,
     int available_platform_effects,
@@ -218,6 +270,16 @@ MediaStreamAudioProcessingLayout::MediaStreamAudioProcessingLayout(
                                           properties_,
                                           platform_effects_,
                                           channels > 1)) {}
+
+MediaStreamAudioProcessingLayout::MediaStreamAudioProcessingLayout(
+    const AudioProcessingProperties& properties,
+    const EchoCanceller& echo_canceller,
+    int platform_effects,
+    const media::AudioProcessingSettings& webrtc_processing_settings)
+    : properties_(properties),
+      echo_canceller_(echo_canceller),
+      platform_effects_(platform_effects),
+      webrtc_processing_settings_(webrtc_processing_settings) {}
 
 bool MediaStreamAudioProcessingLayout::NeedApmInAudioService() const {
   return echo_canceller_.GetApmLocation() ==

@@ -156,7 +156,8 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     return std::make_unique<blink::LocalMediaStreamAudioSource>(
         /*blink::WebLocalFrame=*/nullptr, device, requested_buffer_size,
         /*disable_local_echo=*/disable_local_echo,
-        /*enable_system_echo_canceller=*/enable_system_echo_canceller,
+        MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSourceForTests(
+            enable_system_echo_canceller, effects),
         blink::WebPlatformMediaStreamSource::ConstraintsRepeatingCallback(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }

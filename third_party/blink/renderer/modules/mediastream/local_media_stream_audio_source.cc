@@ -23,61 +23,44 @@ LocalMediaStreamAudioSource::LocalMediaStreamAudioSource(
     const MediaStreamDevice& device,
     const int* requested_buffer_size,
     bool disable_local_echo,
-    bool enable_system_echo_cancellation,
+    const MediaStreamAudioProcessingLayout& processing_layout,
     ConstraintsRepeatingCallback started_callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : MediaStreamAudioSource(std::move(task_runner),
                              true /* is_local_source */,
                              disable_local_echo),
+      processing_layout_(processing_layout),
       consumer_frame_(consumer_frame),
       started_callback_(std::move(started_callback)) {
+  CHECK(!processing_layout_.NeedWebrtcAudioProcessing());
+
   DVLOG(1) << "LocalMediaStreamAudioSource::LocalMediaStreamAudioSource("
               "device.input="
            << device.input.AsHumanReadableString()
            << " requested_buffer_size=" << requested_buffer_size
            << " enable_system_echo_cancellation="
-           << base::ToString(enable_system_echo_cancellation) << ")"
+           << base::ToString(processing_layout_.AecIsPlatformProvided()) << ")"
            << " system AEC available: "
            << (!!(device.input.effects() &
                   media::AudioParameters::ECHO_CANCELLER)
                    ? "YES"
                    : "NO");
   MediaStreamDevice device_to_request(device);
-  if (enable_system_echo_cancellation) {
-    // System echo cancellation may only be requested if supported by the
-    // device, otherwise a different MediaStreamSource implementation should be
-    // used.
-    DCHECK_NE(device_to_request.input.effects() &
-                  media::AudioParameters::ECHO_CANCELLER,
-              0);
-  } else {
-    // No need for system echo cancellation, clearing the bit if it's set.
-    device_to_request.input.set_effects(
-        device_to_request.input.effects() &
-        ~media::AudioParameters::ECHO_CANCELLER);
-  }
+  device_to_request.input.set_effects(processing_layout_.platform_effects());
   SetDevice(device_to_request);
 
-  int frames_per_buffer = device.input.frames_per_buffer();
-  if (requested_buffer_size)
+  media::AudioParameters params = device_to_request.input;
+  int frames_per_buffer = params.frames_per_buffer();
+  if (requested_buffer_size) {
     frames_per_buffer = *requested_buffer_size;
-
+  }
   // If the device buffer size was not provided, use a default.
   if (frames_per_buffer <= 0) {
-    frames_per_buffer =
-        (device.input.sample_rate() * kFallbackAudioLatencyMs) / 1000;
+    frames_per_buffer = (params.sample_rate() * kFallbackAudioLatencyMs) / 1000;
   }
+  params.set_format(media::AudioParameters::AUDIO_PCM_LOW_LATENCY);
+  params.set_frames_per_buffer(frames_per_buffer);
 
-  // Set audio format and take into account the special case where a discrete
-  // channel layout is reported since it will result in an invalid channel
-  // count (=0) if only default constructions is used.
-  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                device.input.channel_layout_config(),
-                                device.input.sample_rate(), frames_per_buffer);
-  if (device.input.channel_layout() == media::CHANNEL_LAYOUT_DISCRETE) {
-    DCHECK_LE(device.input.channels(), 2);
-  }
-  params.set_effects(device_to_request.input.effects());
   SetFormat(params);
 }
 
@@ -176,14 +159,7 @@ using EchoCancellationType =
 
 std::optional<blink::AudioProcessingProperties>
 LocalMediaStreamAudioSource::GetAudioProcessingProperties() const {
-  AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
-
-  if (device().input.effects() & media::AudioParameters::ECHO_CANCELLER) {
-    properties.echo_cancellation_type =
-        EchoCancellationType::kEchoCancellationSystem;
-  }
-
-  return properties;
+  return processing_layout_.properties();
 }
 
 }  // namespace blink

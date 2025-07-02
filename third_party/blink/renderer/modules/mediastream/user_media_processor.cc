@@ -69,8 +69,6 @@ namespace blink {
 
 using blink::mojom::MediaStreamRequestResult;
 using blink::mojom::MediaStreamType;
-using EchoCancellationType =
-    blink::AudioProcessingProperties::EchoCancellationType;
 using AudioSourceErrorCode = media::AudioCapturerSource::ErrorCode;
 
 namespace {
@@ -211,14 +209,20 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
 
     source->SetAudioProcessingProperties(
         properties->echo_cancellation_type !=
-            EchoCancellationType::kEchoCancellationDisabled,
+            AudioProcessingProperties::EchoCancellationType::
+                kEchoCancellationDisabled,
         properties->auto_gain_control, properties->noise_suppression,
         properties->voice_isolation ==
             AudioProcessingProperties::VoiceIsolationType::
                 kVoiceIsolationEnabled);
   } else {
-    // If the source is not a processed source, it could still support system
-    // echo cancellation or voice. Surface that if it does.
+    // TODO(http://crbug.com/428837201): this logic is broken:
+    // LocalMediaStreamAudioSource does not take into account anything but echo
+    // cancellation while configuring device effects. And here we look at echo
+    // cancellation which was configured, and voice isolation - which was left
+    // unchanged, and we ignore possible gain control/noise suppression. If the
+    // source is not a processed source, it could still support system echo
+    // cancellation or voice. Surface that if it does.
     media::AudioParameters params = source_impl->GetAudioParameters();
     source->SetAudioProcessingProperties(
         params.IsValid() &&
@@ -1877,15 +1881,27 @@ UserMediaProcessor::CreateAudioSource(
         *processing_layout, std::move(source_ready), task_runner_);
   }
 
+  // TODO(http://crbug.com/428837201)
+  // At this point besides echo cancellation, `processing_layout` may have other
+  // processing enableds/disabled in AudioProcessingProperties; also its
+  // `platform_effects()` are configured to reflect the requested processing.
+  // However, for historical reasons, the current implementation ignores them,
+  // and only takes care of echo cancellation - which is a bug for microhpone
+  // capture.
+  MediaStreamAudioProcessingLayout local_source_processing_layout =
+      MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSource(
+          current_request_info_->audio_capture_settings()
+              .audio_processing_properties(),
+          device.input.effects());
+  CHECK(!local_source_processing_layout.NeedWebrtcAudioProcessing());
+
   SendLogMessage(
       base::StringPrintf("%s => (no audiprocessing is used)", __func__));
   return std::make_unique<blink::LocalMediaStreamAudioSource>(
       frame_, device,
       base::OptionalToPtr(current_request_info_->audio_capture_settings()
                               .requested_buffer_size()),
-      stream_controls->disable_local_echo,
-      /*enable_system_echo_cancellation=*/processing_layout &&
-          processing_layout->AecIsPlatformProvided(),
+      stream_controls->disable_local_echo, local_source_processing_layout,
       std::move(source_ready), task_runner_);
 }
 

@@ -10,6 +10,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_capturer_source.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processing_layout.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 
@@ -38,7 +39,7 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
       const MediaStreamDevice& device,
       const int* requested_buffer_size,
       bool disable_local_echo,
-      bool enable_system_echo_cancellation,
+      const MediaStreamAudioProcessingLayout& processing_layout,
       ConstraintsRepeatingCallback started_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -68,6 +69,9 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
   void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
                       const std::string& message) final;
   void OnCaptureMuted(bool is_muted) final;
+
+  // Audio processing configuration.
+  const MediaStreamAudioProcessingLayout processing_layout_;
 
   // The LocalFrame that will consume the audio data. Used when creating
   // AudioInputDevices via the AudioDeviceFactory (indirectly through
