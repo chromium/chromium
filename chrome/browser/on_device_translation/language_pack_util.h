@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_LANGUAGE_PACK_UTIL_H_
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_LANGUAGE_PACK_UTIL_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <set>
 #include <string>

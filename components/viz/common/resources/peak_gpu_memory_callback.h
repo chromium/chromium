@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_COMMON_RESOURCES_PEAK_GPU_MEMORY_CALLBACK_H_
 #define COMPONENTS_VIZ_COMMON_RESOURCES_PEAK_GPU_MEMORY_CALLBACK_H_
 
+#include <stdint.h>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "components/viz/common/resources/peak_gpu_memory_tracker.h"
