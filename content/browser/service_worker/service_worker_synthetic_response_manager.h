@@ -81,6 +81,14 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   // passed to the client side.
   void Write(MojoResult result, const mojo::HandleSignalsState& state);
 
+  // Check whether the response headers are consistent between the locally
+  // stored header and the header from the network.
+  bool CheckHeaderConsistency(scoped_refptr<net::HttpResponseHeaders> headers);
+
+  // Notify the browser to reload the page by passing the <meta> tag to the
+  // response body stream.
+  void NotifyReloading();
+
   SyntheticResponseStatus status_ = SyntheticResponseStatus::kNotReady;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   mojo::PendingRemote<network::mojom::URLLoader> url_loader_;

@@ -726,6 +726,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // handler.
   blink::mojom::ControllerServiceWorkerMode GetControllerMode() const;
 
+  void ResetResponseHeadForSyntheticResponse() {
+    synthetic_response_head_.reset();
+  }
+
   void SetResponseHeadForSyntheticResponse(
       const network::mojom::URLResponseHead& response_head) {
     synthetic_response_head_ = response_head.Clone();

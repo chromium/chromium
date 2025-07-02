@@ -4,6 +4,8 @@
 
 #include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 
+#include <cstddef>
+
 #include "base/trace_event/trace_event.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
@@ -203,20 +205,32 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::OnReceiveResponse");
-  MaybeSetResponseHead(response_head.Clone());
   switch (status_) {
     case SyntheticResponseStatus::kReady:
       CHECK(write_buffer_manager_.has_value());
-      read_buffer_manager_.emplace(std::move(body));
-      read_buffer_manager_->Watch(
-          base::BindRepeating(&ServiceWorkerSyntheticResponseManager::Read,
-                              weak_factory_.GetWeakPtr()));
-      write_buffer_manager_->Watch(
-          base::BindRepeating(&ServiceWorkerSyntheticResponseManager::Write,
-                              weak_factory_.GetWeakPtr()));
-      read_buffer_manager_->ArmOrNotify();
+      if (CheckHeaderConsistency(response_head->headers)) {
+        read_buffer_manager_.emplace(std::move(body));
+        read_buffer_manager_->Watch(
+            base::BindRepeating(&ServiceWorkerSyntheticResponseManager::Read,
+                                weak_factory_.GetWeakPtr()));
+        write_buffer_manager_->Watch(
+            base::BindRepeating(&ServiceWorkerSyntheticResponseManager::Write,
+                                weak_factory_.GetWeakPtr()));
+        read_buffer_manager_->ArmOrNotify();
+      } else {
+        // Clear the stored header when it's inconsistent with the header from
+        // the network so that the next navigation won't get the header mismatch
+        // and reloading consistently.
+        //
+        // TODO(crbug.com/352578800): Consider setting the response header here
+        // rather than resetting it in order to improve the synthetic response
+        // coverage. Revisit this after collecting coverage data.
+        version_->ResetResponseHeadForSyntheticResponse();
+        NotifyReloading();
+      }
       break;
     case SyntheticResponseStatus::kNotReady:
+      MaybeSetResponseHead(response_head.Clone());
       std::move(response_callback_)
           .Run(std::move(response_head), std::move(body));
       break;
@@ -297,5 +311,42 @@ void ServiceWorkerSyntheticResponseManager::Write(
         return;
     }
   }
+}
+
+bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  CHECK(version_->GetResponseHeadForSyntheticResponse());
+  // TODO(crbug.com/352578800): Handle other necessary headers e.g. encoding.
+  const base::flat_set<std::string_view> ignored_headers = {"date"};
+  auto collect_significant_headers =
+      [&](const net::HttpResponseHeaders& headers) {
+        base::flat_map<std::string, std::multiset<std::string>> collected;
+        size_t iter = 0;
+        std::string name;
+        std::string value;
+        while (headers.EnumerateHeaderLines(&iter, &name, &value)) {
+          if (!ignored_headers.contains(base::ToLowerASCII(name))) {
+            collected[name].insert(value);
+          }
+        }
+        return collected;
+      };
+  auto incoming_headers = collect_significant_headers(*headers);
+  auto stored_headers = collect_significant_headers(
+      *version_->GetResponseHeadForSyntheticResponse()->headers);
+
+  return incoming_headers == stored_headers;
+}
+
+void ServiceWorkerSyntheticResponseManager::NotifyReloading() {
+  auto body_for_reload = base::span_from_cstring<const char>(
+      "<meta http-equiv=\"refresh\" content=\"0;\" />");
+  auto [result, size] = write_buffer_manager_->WriteData(body_for_reload);
+  if (result != MOJO_RESULT_OK) {
+    return;
+  }
+  write_buffer_manager_->ResetProducer();
+  CHECK(stream_callback_);
+  stream_callback_->OnCompleted();
 }
 }  // namespace content
