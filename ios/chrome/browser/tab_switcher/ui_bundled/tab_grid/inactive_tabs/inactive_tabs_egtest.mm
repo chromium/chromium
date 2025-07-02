@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -579,8 +580,9 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
         performAction:grey_tap()];
   } else {
     // Tap Cancel.
-    [[EarlGrey selectElementWithMatcher:CancelButton()]
-        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::AlertItemWithAccessibilityLabelId(
+                       IDS_CANCEL)] performAction:grey_tap()];
   }
 
   // There should still be three inactive tabs.

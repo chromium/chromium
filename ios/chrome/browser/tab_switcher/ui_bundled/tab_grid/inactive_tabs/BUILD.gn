@@ -137,6 +137,7 @@ source_set("eg2_tests") {
   deps = [
     ":inactive_tabs_constants",
     "//base",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/reading_list/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/tabs:tabs_constants",
