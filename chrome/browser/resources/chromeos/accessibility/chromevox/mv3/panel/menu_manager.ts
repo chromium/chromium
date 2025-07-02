@@ -35,12 +35,12 @@ interface TouchMenuData {
 }
 
 export class MenuManager {
-  private activeMenu_: PanelMenu | null = null;
-  private lastMenu_ = '';
-  private menus_: PanelMenu[] = [];
-  private nodeMenuDictionary_:
+  protected activeMenu_: PanelMenu|null = null;
+  protected lastMenu_ = '';
+  protected menus_: PanelMenu[] = [];
+  protected nodeMenuDictionary_:
       Partial<Record<PanelNodeMenuId, PanelNodeMenu>> = {};
-  private searchMenu_: PanelSearchMenu | null = null;
+  protected searchMenu_: PanelSearchMenu|null = null;
 
   static disableMissingMsgsErrorsForTesting = false;
 

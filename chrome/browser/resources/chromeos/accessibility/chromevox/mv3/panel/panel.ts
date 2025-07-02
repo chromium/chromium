@@ -21,6 +21,7 @@ import {SettingsManager} from '../common/settings_manager.js';
 
 import {ISearchUI} from './i_search_ui.js';
 import {MenuManager} from './menu_manager.js';
+import {MenuManagerWithTestEndpoints} from './menu_manager_with_test_endpoints.js';
 import {PanelCaptions} from './panel_captions.js';
 import {PanelInterface} from './panel_interface.js';
 import {PanelMode, PanelModeInfo} from './panel_mode.js';
@@ -131,6 +132,10 @@ export class Panel implements PanelInterface {
         BridgeConstants.PanelTest.TARGET,
         BridgeConstants.PanelTest.Action.GET_ACTIVE_SEARCH_MENU_DATA,
         () => this.getActiveSearchMenuDataForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.REPLACE_MENU_MANAGER,
+        () => this.replaceMenuManager_());
   }
 
   /** Initialize the panel. */
@@ -230,6 +235,11 @@ export class Panel implements PanelInterface {
     }
     return {};
   }
+
+  private replaceMenuManager_() {
+    this.menuManager_ = new MenuManagerWithTestEndpoints();
+  }
+
 
   /**
    * Execute a command to update the panel.

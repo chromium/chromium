@@ -6,6 +6,7 @@
  * @fileoverview A collection of functions and behaviors helpful for message
  * passing between renderers.
  */
+import {TestImportManager} from './testing/test_import_manager.js';
 
 type MessageSender = chrome.runtime.MessageSender;
 type TargetHandlers = Record<string, Function>;
@@ -84,3 +85,5 @@ chrome.runtime.onMessage.addListener(
       Promise.resolve(handler(...message.args)).then(respond);
       return true; /** Wait for asynchronous response. */
     });
+
+TestImportManager.exportForTesting(BridgeHelper);

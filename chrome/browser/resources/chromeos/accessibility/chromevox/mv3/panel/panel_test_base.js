@@ -16,4 +16,25 @@ ChromeVoxPanelTestBase = class extends ChromeVoxE2ETest {
     await this.waitForPendingMethods();
     await PanelBridge.disableMessagesForTest();
   }
+
+
+  async isMenuTitleMessage(menuTitleMessage) {
+    const response = await PanelBridge.getActiveMenuDataForTest()
+
+    return menuTitleMessage === response.menuMsg;
+  }
+
+  async waitForMenu(menuTitleMessage) {
+    // TODO(crbug.com/424764877): Replace polling.
+    let pollForMenu = async (resolve) => {
+      if (await this.isMenuTitleMessage(menuTitleMessage)) {
+        resolve();
+      } else {
+        setTimeout(() => pollForMenu(resolve), 500)
+      }
+    };
+    return new Promise(resolve => {
+      pollForMenu(resolve);
+    });
+  }
 };

@@ -166,6 +166,7 @@ ts_modules = [
   "offscreen/liblouis_worker.ts",
   "panel/i_search_ui.ts",
   "panel/menu_manager.ts",
+  "panel/menu_manager_with_test_endpoints.ts",
   "panel/panel.ts",
   "panel/panel_captions.ts",
   "panel/panel_interface.ts",
