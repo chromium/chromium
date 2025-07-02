@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -174,12 +175,17 @@ void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
     case CommandId::kCloseSpecifiedTab:
       CloseTabAtIndex(split_tab_index_.value());
       break;
-    case CommandId::kCloseStartTab:
-      CloseTabAtIndex(tab_strip_model_->GetIndexOfTab(tabs_in_split[0]));
+    case CommandId::kCloseStartTab: {
+      int startIndex = base::i18n::IsRTL() ? 1 : 0;
+      CloseTabAtIndex(
+          tab_strip_model_->GetIndexOfTab(tabs_in_split[startIndex]));
       break;
-    case CommandId::kCloseEndTab:
-      CloseTabAtIndex(tab_strip_model_->GetIndexOfTab(tabs_in_split[1]));
+    }
+    case CommandId::kCloseEndTab: {
+      int endIndex = base::i18n::IsRTL() ? 0 : 1;
+      CloseTabAtIndex(tab_strip_model_->GetIndexOfTab(tabs_in_split[endIndex]));
       break;
+    }
     case CommandId::kExitSplit:
       tab_strip_model_->RemoveSplit(split_id);
       break;
