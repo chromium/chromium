@@ -69,6 +69,11 @@ ParseStatus::Or<ResolvedSourceString> RawStr::Parse(ResolvedSourceString str) {
 }
 
 // static
+ParseStatus::Or<DecimalInteger> RawInt::Parse(ResolvedSourceString str) {
+  return ParseDecimalInteger(str);
+}
+
+// static
 ParseStatus::Or<bool> YesOrNo::Parse(ResolvedSourceString str) {
   return str.Str() == "YES";
 }

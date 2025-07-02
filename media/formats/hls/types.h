@@ -107,6 +107,10 @@ struct MEDIA_EXPORT RawStr : SubstitutingParser<RawStr, ResolvedSourceString> {
   static ParseStatus::Or<ResolvedSourceString> Parse(ResolvedSourceString str);
 };
 
+struct MEDIA_EXPORT RawInt : SubstitutingParser<RawInt, DecimalInteger> {
+  static ParseStatus::Or<DecimalInteger> Parse(ResolvedSourceString str);
+};
+
 struct MEDIA_EXPORT YesOrNo : SubstitutingParser<YesOrNo, bool> {
   static ParseStatus::Or<bool> Parse(ResolvedSourceString str);
 };

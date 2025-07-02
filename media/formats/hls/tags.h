@@ -445,6 +445,30 @@ struct MEDIA_EXPORT XProgramDateTimeTag {
   base::Time time;
 };
 
+enum class XPreloadHintType {
+  kPart,
+  kMap,
+};
+
+// The EXT-X-PRELOAD-HINT tag allows a Client loading media from a live stream
+// to reduce the time to obtain a resource from the Server by issuing its
+// request before the resource is available to be delivered. The server will
+// hold onto the request ("block") until it can respond.
+//
+// A Playlist containing an EXT-X-ENDLIST tag MUST NOT contain an
+// EXT-X-PRELOAD-HINT tag.
+struct MEDIA_EXPORT XPreloadHintTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXPreloadHint;
+  static ParseStatus::Or<XPreloadHintTag> Parse(
+      TagItem,
+      const VariableDictionary&,
+      VariableDictionary::SubstitutionBuffer&);
+  XPreloadHintType type;
+  ResolvedSourceString uri;
+  std::optional<types::DecimalInteger> byterange_start;
+  std::optional<types::DecimalInteger> byterange_length;
+};
+
 enum class XKeyTagMethod {
   kNone,
 

@@ -1747,7 +1747,34 @@ TEST(HlsTagsTest, ParseXPreloadHintTag) {
   RunTagIdentificationTest(ToTagName(MediaPlaylistTagName::kXPreloadHint),
                            "#EXT-X-PRELOAD-HINT:TYPE=PART,URI=\"foo.ts\"\n",
                            "TYPE=PART,URI=\"foo.ts\"");
-  // TODO(crbug.com/40057824): Implement the EXT-X-PRELOAD-HINT tag.
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+  ErrorTest<XPreloadHintTag>(std::nullopt, dict, subs,
+                             ParseStatusCode::kMalformedTag);
+  ErrorTest<XPreloadHintTag>("URI", dict, subs, ParseStatusCode::kMalformedTag);
+  ErrorTest<XPreloadHintTag>("URI=", dict, subs,
+                             ParseStatusCode::kMalformedTag);
+  ErrorTest<XPreloadHintTag>("URI=\"", dict, subs,
+                             ParseStatusCode::kMalformedTag);
+  ErrorTest<XPreloadHintTag>("URI=\"foo\"", dict, subs,
+                             ParseStatusCode::kMalformedTag);
+  ErrorTest<XPreloadHintTag>("URI=\"foo\",TYPE=PAR", dict, subs,
+                             ParseStatusCode::kMalformedTag);
+
+  auto result = OkTest<XPreloadHintTag>("URI=\"foo\",TYPE=PART", dict, subs);
+  EXPECT_EQ(result.tag.type, XPreloadHintType::kPart);
+  EXPECT_EQ(result.tag.uri.Str(), "foo");
+  EXPECT_EQ(result.tag.byterange_start, std::nullopt);
+  EXPECT_EQ(result.tag.byterange_length, std::nullopt);
+
+  result = OkTest<XPreloadHintTag>(
+      "URI=\"foo\",TYPE=PART,BYTERANGE-LENGTH=1,BYTERANGE-START=2", dict, subs);
+  EXPECT_EQ(result.tag.type, XPreloadHintType::kPart);
+  EXPECT_EQ(result.tag.uri.Str(), "foo");
+  ASSERT_NE(result.tag.byterange_start, std::nullopt);
+  ASSERT_NE(result.tag.byterange_length, std::nullopt);
+  EXPECT_EQ(result.tag.byterange_start.value(), 2u);
+  EXPECT_EQ(result.tag.byterange_length.value(), 1u);
 }
 
 TEST(HlsTagsTest, ParseXProgramDateTimeTag) {

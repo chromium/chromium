@@ -335,6 +335,29 @@ constexpr std::string_view GetAttributeName(XKeyTagAttribute attribute) {
   NOTREACHED();
 }
 
+enum class XPreloadHintTagAttribute {
+  kByterangeLength,
+  kByterangeStart,
+  kType,
+  kUri,
+  kMaxValue = kUri,
+};
+
+constexpr std::string_view GetAttributeName(
+    XPreloadHintTagAttribute attribute) {
+  switch (attribute) {
+    case XPreloadHintTagAttribute::kByterangeLength:
+      return "BYTERANGE-LENGTH";
+    case XPreloadHintTagAttribute::kByterangeStart:
+      return "BYTERANGE-START";
+    case XPreloadHintTagAttribute::kType:
+      return "TYPE";
+    case XPreloadHintTagAttribute::kUri:
+      return "URI";
+  };
+  NOTREACHED();
+}
+
 template <typename T, size_t kLast>
 constexpr bool IsAttributeEnumSorted(std::index_sequence<kLast>) {
   return true;
@@ -1693,6 +1716,56 @@ ParseStatus::Or<XSessionKeyTag> XSessionKeyTag::Parse(
     VariableDictionary::SubstitutionBuffer& subs) {
   DCHECK(tag.GetName() == ToTagName(XSessionKeyTag::kName));
   return ParseKeyTag<XSessionKeyTag>(tag, vars, subs);
+}
+
+ParseStatus::Or<XPreloadHintType> RecognizePreloadHintType(
+    SourceString content) {
+  if (content.Str() == "PART") {
+    return XPreloadHintType::kPart;
+  } else if (content.Str() == "MAP") {
+    return XPreloadHintType::kMap;
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+}
+
+// static
+ParseStatus::Or<XPreloadHintTag> XPreloadHintTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XPreloadHintTag::kName));
+
+  return RequireNonEmptyMap<XPreloadHintTagAttribute>(tag.GetContent())
+      .MapValue([&vars, &subs](auto map) -> ParseStatus::Or<XPreloadHintTag> {
+        auto uri = ParseField<ResolvedSourceString>(
+            XPreloadHintTagAttribute::kUri, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(uri);
+
+        auto type = ParseField<XPreloadHintType>(
+            XPreloadHintTagAttribute::kType, map, &RecognizePreloadHintType);
+        RETURN_IF_ERROR(type);
+
+        auto byterange_start = ParseField<std::optional<types::DecimalInteger>>(
+            XPreloadHintTagAttribute::kByterangeStart, map,
+            &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(byterange_start);
+
+        auto byterange_length =
+            ParseField<std::optional<types::DecimalInteger>>(
+                XPreloadHintTagAttribute::kByterangeLength, map,
+                &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(byterange_length);
+
+        return XPreloadHintTag{
+            .type = std::move(type).value(),
+            .uri = std::move(uri).value(),
+            .byterange_start = std::move(byterange_start).value(),
+            .byterange_length = std::move(byterange_length).value()};
+      });
 }
 
 #undef RETURN_IF_ERROR
