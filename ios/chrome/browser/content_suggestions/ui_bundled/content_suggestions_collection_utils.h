@@ -74,7 +74,7 @@ void ConfigureLensButtonWithNewBadgeAlpha(UIButton* lens_button,
                                           CGFloat new_badge_alpha);
 
 // Configure the `mia_button` appearance.
-void ConfigureInlineMIAButton(UIButton* mia_button, BOOL use_color_icon);
+void ConfigureMIAButton(UIButton* mia_button, BOOL use_color_icon);
 
 // Returns the nearest ancestor of `view` that is kind of `of_class`.
 UIView* NearestAncestor(UIView* view, Class of_class);
