@@ -72,9 +72,6 @@ using ::testing::Mock;
 
 namespace blink {
 
-using EchoCancellationType =
-    blink::AudioProcessingProperties::EchoCancellationType;
-
 namespace {
 enum class SourceCreationStatus { kOk, kFailed, kFailedSystemPermissionError };
 
@@ -1145,8 +1142,8 @@ TEST_F(UserMediaClientTest, DefaultConstraintsPropagate) {
 
   const blink::AudioProcessingProperties& properties =
       audio_capture_settings.audio_processing_properties();
-  EXPECT_EQ(EchoCancellationType::kEchoCancellationAec3,
-            properties.echo_cancellation_type);
+  EXPECT_TRUE(EchoCanceller::From(properties, /*available_platform_effects=*/0)
+                  .IsChromeProvided());
   EXPECT_TRUE(properties.auto_gain_control);
   EXPECT_TRUE(properties.noise_suppression);
 
@@ -1196,8 +1193,8 @@ TEST_F(UserMediaClientTest, DefaultTabCapturePropagate) {
 
   const blink::AudioProcessingProperties& properties =
       audio_capture_settings.audio_processing_properties();
-  EXPECT_EQ(EchoCancellationType::kEchoCancellationDisabled,
-            properties.echo_cancellation_type);
+  EXPECT_FALSE(EchoCanceller::From(properties, /*available_platform_effects=*/0)
+                   .IsEnabled());
   EXPECT_FALSE(properties.auto_gain_control);
   EXPECT_FALSE(properties.noise_suppression);
 
@@ -1245,8 +1242,8 @@ TEST_F(UserMediaClientTest, DefaultDesktopCapturePropagate) {
 
   const blink::AudioProcessingProperties& properties =
       audio_capture_settings.audio_processing_properties();
-  EXPECT_EQ(EchoCancellationType::kEchoCancellationDisabled,
-            properties.echo_cancellation_type);
+  EXPECT_FALSE(EchoCanceller::From(properties, /*available_platform_effects=*/0)
+                   .IsEnabled());
   EXPECT_FALSE(properties.auto_gain_control);
   EXPECT_FALSE(properties.noise_suppression);
 
@@ -1307,8 +1304,8 @@ TEST_F(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {
 
   const blink::AudioProcessingProperties& properties =
       audio_capture_settings.audio_processing_properties();
-  EXPECT_EQ(EchoCancellationType::kEchoCancellationDisabled,
-            properties.echo_cancellation_type);
+  EXPECT_FALSE(EchoCanceller::From(properties, /*available_platform_effects=*/0)
+                   .IsEnabled());
   EXPECT_FALSE(properties.auto_gain_control);
   EXPECT_FALSE(properties.noise_suppression);
 }
