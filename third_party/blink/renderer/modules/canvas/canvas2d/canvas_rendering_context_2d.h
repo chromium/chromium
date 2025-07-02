@@ -78,6 +78,7 @@ class PaintCanvas;
 
 namespace blink {
 
+class Canvas2DDrawElementOption;
 class CanvasImageSource;
 class ComputedStyle;
 class Element;
@@ -203,12 +204,14 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void drawElement(Element* element,
                    double x,
                    double y,
+                   Canvas2DDrawElementOption* options,
                    ExceptionState& exception_state);
   void drawElement(Element* element,
                    double x,
                    double y,
                    double dwidth,
                    double dheight,
+                   Canvas2DDrawElementOption* options,
                    ExceptionState& exception_state);
   void setHitTestRegions(VectorOf<CanvasElementHitTestRegion> hit_test_regions,
                          ExceptionState& exception_state);
@@ -283,6 +286,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                            double y,
                            std::optional<double> dwidth,
                            std::optional<double> dheight,
+                           Canvas2DDrawElementOption* options,
                            ExceptionState& exception_state);
 
   void PruneLocalFontCache(size_t target_size);

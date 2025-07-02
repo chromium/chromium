@@ -1,0 +1,10 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Used by method `drawElement` as defined in canvas_rendering_context_2d.idl
+dictionary Canvas2DDrawElementOption {
+  // The element should be drawn in a way that allows readback in
+  // `getImageData`.
+  boolean allowReadback = false;
+};

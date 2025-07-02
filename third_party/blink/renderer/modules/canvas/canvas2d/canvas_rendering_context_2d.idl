@@ -55,11 +55,15 @@ interface CanvasRenderingContext2D {
     void drawFocusIfNeeded(Path2D path, Element element);
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    void drawElement(Element element, unrestricted double x, unrestricted double y);
+    void drawElement(Element element,
+                     unrestricted double x, unrestricted double y,
+                     optional Canvas2DDrawElementOption options = {});
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    void drawElement(Element element, unrestricted double x, unrestricted double y,
-                     unrestricted double dwidth, unrestricted double dheight);
+    void drawElement(Element element,
+                     unrestricted double x, unrestricted double y,
+                     unrestricted double dwidth, unrestricted double dheight,
+                     optional Canvas2DDrawElementOption options = {});
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
     void setHitTestRegions(sequence<CanvasElementHitTestRegion> hitTestRegions);
