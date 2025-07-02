@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_video_webrtc_sink.h"
 
+#include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"

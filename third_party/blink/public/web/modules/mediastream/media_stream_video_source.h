@@ -18,7 +18,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/token.h"
 #include "build/build_config.h"
-#include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-shared.h"

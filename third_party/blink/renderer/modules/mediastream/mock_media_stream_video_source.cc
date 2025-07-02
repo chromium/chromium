@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "media/base/video_frame.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"

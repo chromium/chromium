@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
+#include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"

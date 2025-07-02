@@ -13,6 +13,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

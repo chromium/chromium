@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/modules/imagecapture/image_capture.h"
 
 #include "base/time/time.h"
+#include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
