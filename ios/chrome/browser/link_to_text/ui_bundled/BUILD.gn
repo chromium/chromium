@@ -4,13 +4,13 @@
 
 source_set("ui_bundled") {
   sources = [
-    "link_to_text_delegate.h",
     "link_to_text_mediator.h",
     "link_to_text_mediator.mm",
   ]
   deps = [
     "//components/shared_highlighting/core/common",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_container/model",
     "//ios/chrome/browser/browser_container/ui_bundled:edit_menu_alert_delegate",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/shared/model/web_state_list",

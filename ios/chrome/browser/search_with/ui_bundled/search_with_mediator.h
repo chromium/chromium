@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/search_with/ui_bundled/search_with_delegate.h"
+#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
 
 @protocol ApplicationCommands;
 class TemplateURLService;
@@ -15,7 +15,7 @@ class WebStateList;
 
 // Mediator that mediates between the browser container views and the
 // search with tab helpers.
-@interface SearchWithMediator : NSObject <SearchWithDelegate>
+@interface SearchWithMediator : NSObject <EditMenuBuilder>
 
 // Initializer for a mediator. `webStateList` is the WebStateList for the
 // BrowserContainer that owns this mediator.

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/partial_translate/ui_bundled/partial_translate_delegate.h"
+#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
 
 @protocol BrowserCoordinatorCommands;
 @protocol EditMenuAlertDelegate;
@@ -17,7 +17,7 @@ class WebStateList;
 
 // Mediator that mediates between the browser container views and the
 // partial translate tab helpers.
-@interface PartialTranslateMediator : NSObject <PartialTranslateDelegate>
+@interface PartialTranslateMediator : NSObject <EditMenuBuilder>
 
 // Initializer for a mediator. `webStateList` is the WebStateList for the
 // Browser whose content is shown within the BrowserContainerConsumer. It must

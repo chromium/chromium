@@ -4,7 +4,6 @@
 
 source_set("ui_bundled") {
   sources = [
-    "search_with_delegate.h",
     "search_with_mediator.h",
     "search_with_mediator.mm",
   ]
@@ -12,6 +11,7 @@ source_set("ui_bundled") {
     "//components/search_engines",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_container/model",
     "//ios/chrome/browser/browser_container/ui_bundled:edit_menu_utils",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",

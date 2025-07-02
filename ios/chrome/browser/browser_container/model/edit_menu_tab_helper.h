@@ -26,6 +26,9 @@ class EditMenuTabHelper : public web::WebStateUserData<EditMenuTabHelper> {
   // Attaches the builder for the edit menu.
   void SetEditMenuBuilder(id<EditMenuBuilder> builder);
 
+  // Get the current builder.
+  id<EditMenuBuilder> GetEditMenuBuilder();
+
   // Build the edit menu using `edit_menu_builder_`.
   void BuildEditMenu(id<UIMenuBuilder> builder) const;
 
@@ -34,6 +37,7 @@ class EditMenuTabHelper : public web::WebStateUserData<EditMenuTabHelper> {
   friend class web::WebStateUserData<EditMenuTabHelper>;
 
   __weak id<EditMenuBuilder> edit_menu_builder_;
+  raw_ptr<web::WebState> web_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_CONTAINER_MODEL_EDIT_MENU_TAB_HELPER_H_

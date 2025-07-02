@@ -308,13 +308,15 @@ void AddLinkToText(NSMutableArray* menu) {
 // A test View controller that forwards the edit menu handling.
 @interface TestViewController : UIViewController
 @property(nonatomic, weak) BrowserEditMenuHandler* handler;
+
+@property(nonatomic, assign) web::WebState* webState;
 @end
 
 @implementation TestViewController
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
   [super buildMenuWithBuilder:builder];
-  [self.handler buildEditMenuWithBuilder:builder];
+  [self.handler buildEditMenuWithBuilder:builder inWebState:self.webState];
 }
 
 @end
@@ -378,10 +380,12 @@ class BrowserEditMenuHandlerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     base_view_controller_ = [[TestViewController alloc] init];
+    base_view_controller_.webState = web_state_.get();
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
   }
 
   void TearDown() override {
+    base_view_controller_.webState = nullptr;
     // Reset the partial translate factory
     ios::provider::test::SetPartialTranslateControllerFactory(nil);
     PlatformTest::TearDown();
@@ -458,7 +462,6 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
   handler.linkToTextDelegate = link_to_text_mediator;
   BrowserContainerViewController* container_vc =
       [[BrowserContainerViewController alloc] init];
-  container_vc.browserEditMenuHandler = handler;
   [container_vc willMoveToParentViewController:base_view_controller_];
   [base_view_controller_ addChildViewController:container_vc];
   [base_view_controller_.view addSubview:container_vc.view];

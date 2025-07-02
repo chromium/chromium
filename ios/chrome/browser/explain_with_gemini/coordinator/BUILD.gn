@@ -4,7 +4,6 @@
 
 source_set("coordinator") {
   sources = [
-    "explain_with_gemini_delegate.h",
     "explain_with_gemini_mediator.h",
     "explain_with_gemini_mediator.mm",
   ]
@@ -13,6 +12,7 @@ source_set("coordinator") {
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_container/model",
     "//ios/chrome/browser/browser_container/ui_bundled:edit_menu_utils",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/web_state_list",

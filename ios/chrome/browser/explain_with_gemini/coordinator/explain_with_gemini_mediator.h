@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_delegate.h"
+#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
 @protocol ApplicationCommands;
@@ -17,7 +17,7 @@ class WebStateList;
 
 // Mediator that mediates between the browser container views and Explain
 // Gemini.
-@interface ExplainWithGeminiMediator : NSObject <ExplainWithGeminiDelegate>
+@interface ExplainWithGeminiMediator : NSObject <EditMenuBuilder>
 
 // The handler for ApplicationCommands commands.
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandHandler;

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_delegate.h"
+#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
 
 @protocol ActivityServiceCommands;
 @protocol EditMenuAlertDelegate;
@@ -15,7 +15,7 @@ class WebStateList;
 
 // Mediator that mediates between the browser container views and the
 // link_to_text tab helpers.
-@interface LinkToTextMediator : NSObject <LinkToTextDelegate>
+@interface LinkToTextMediator : NSObject <EditMenuBuilder>
 
 // Initializer for a mediator. `webStateList` is the WebStateList for the
 // Browser whose content is shown within the BrowserContainerConsumer. It must

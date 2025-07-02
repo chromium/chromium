@@ -4,7 +4,6 @@
 
 source_set("ui_bundled") {
   sources = [
-    "partial_translate_delegate.h",
     "partial_translate_mediator.h",
     "partial_translate_mediator.mm",
   ]
@@ -13,6 +12,7 @@ source_set("ui_bundled") {
     "//components/strings",
     "//components/translate/core/browser:translate_pref_names",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_container/model",
     "//ios/chrome/browser/browser_container/ui_bundled:edit_menu_alert_delegate",
     "//ios/chrome/browser/browser_container/ui_bundled:edit_menu_utils",
     "//ios/chrome/browser/fullscreen/ui_bundled",

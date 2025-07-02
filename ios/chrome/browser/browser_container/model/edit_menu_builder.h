@@ -7,11 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+namespace web {
+class WebState;
+}
+
 // A protocol to customize the edit menu.
 @protocol EditMenuBuilder <NSObject>
 
 // Customizes the edit menu.
-- (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder;
+- (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder
+                      inWebState:(web::WebState*)webState;
 
 @end
 

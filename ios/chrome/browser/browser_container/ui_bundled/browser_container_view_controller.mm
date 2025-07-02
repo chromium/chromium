@@ -7,8 +7,8 @@
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller_delegate.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_handler.h"
-#import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -74,8 +74,8 @@
 
   if (base::FeatureList::IsEnabled(
           web::features::kRestoreWKWebViewEditMenuHandler)) {
-    DCHECK(self.browserEditMenuHandler);
-    [self.browserEditMenuHandler buildEditMenuWithBuilder:builder];
+    [self.delegate browserContainerViewController:self
+                    didTriggerEditMenuWithBuilder:builder];
   }
 }
 
