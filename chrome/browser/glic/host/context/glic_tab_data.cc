@@ -13,10 +13,12 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -122,13 +124,18 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
   SkBitmap favicon;
   auto* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(web_contents);
+  std::optional<GURL> favicon_url;
   if (favicon_driver && favicon_driver->FaviconIsValid()) {
     // Attempt to get a 32x32 favicon by default (16x16 DIP at 2x scale).
     favicon = favicon_driver->GetFavicon()
                   .ToImageSkia()
                   ->GetRepresentation(2.0f)
                   .GetBitmap();
+    if (base::FeatureList::IsEnabled(features::kGlicFaviconDataUrls)) {
+      favicon_url = GURL(skia::EncodePngAsDataUri(favicon.pixmap()));
+    }
   }
+
   // TODO(b/426644734): investigate triggering updates due to changes to
   // observability for focused tab data.
   bool is_audible = web_contents->IsCurrentlyAudible();
@@ -138,7 +145,7 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
       GetTabId(web_contents),
       sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id(),
       GetTabUrl(web_contents), base::UTF16ToUTF8(web_contents->GetTitle()),
-      favicon, web_contents->GetContentsMimeType(), is_observable);
+      favicon, favicon_url, web_contents->GetContentsMimeType(), is_observable);
 }
 
 // CreateFocusedTabData Implementation:

@@ -578,6 +578,20 @@ export declare interface GlicBrowserHost {
   getPinnedTabs?(): ObservableValue<TabData[]>;
 
   /**
+   * Returns an observable that emits a ranked list of pin tab candidates per
+   * the given options. The list is currently only returned once. The results
+   * are sorted by string match and then last active time.
+   *
+   * If a query is provided, it currently returns all top sorted results, even
+   * if entries don't match the query.
+   *
+   * @todo Actually implement dynamic updates based on tab changes.
+   * crbug.com/429022523
+   */
+  getPinCandidates?
+      (options: GetPinCandidatesOptions): ObservableValue<PinCandidate[]>;
+
+  /**
    * Returns an observable unique to the supplied options that emits zero state
    * suggestions for the currently shared context. The observer will continue
    * to emit subsequent zero state suggestions until it has no more
@@ -923,6 +937,16 @@ export declare interface TabContextResult {
   annotatedPageData?: AnnotatedPageData;
 }
 
+/**
+ * Used for customizing the list of pin candidates.
+ */
+export declare interface GetPinCandidatesOptions {
+  /** The maximum number of candidates to consider. Can return fewer. */
+  maxCandidates: number;
+  /** A query string. */
+  query?: string;
+}
+
 /** Information about a web page being rendered in a tab. */
 export declare interface WebPageData {
   mainDocument: DocumentData;
@@ -1020,6 +1044,13 @@ export declare interface TabData {
    */
   favicon?(): Promise<Blob|undefined>;
   /**
+   * The favicon URL. Only available if the page is loaded enough and it
+   * specifies a favicon.
+   *
+   * @todo Investigate render performance of data urls. crbug.com/429237829
+   */
+  faviconUrl?: string;
+  /**
    * MIME type of the main document. Returned only if the page is loaded enough
    * for it to be available.
    */
@@ -1031,6 +1062,12 @@ export declare interface TabData {
    * be visible.
    */
   isObservable?: boolean;
+}
+
+/** A candidate for pinning. */
+export declare interface PinCandidate {
+  /** The tab that is a candidate for pinning. */
+  tabData: TabData;
 }
 
 /**

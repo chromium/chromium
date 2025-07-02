@@ -22,7 +22,7 @@ GlicSharingManagerImpl::GlicSharingManagerImpl(
     Host* host,
     GlicMetrics* metrics)
     : focused_tab_manager_(window_controller, this),
-      pinned_tab_manager_(this),
+      pinned_tab_manager_(profile, this),
       profile_(profile),
       window_controller_(*window_controller),
       // We allow allow blank pages to avoid flicker during transitions.
@@ -54,13 +54,13 @@ GlicSharingManagerImpl::AddTabPinningStatusChangedCallback(
 
 bool GlicSharingManagerImpl::PinTabs(
     base::span<const tabs::TabHandle> tab_handles) {
-  CHECK(base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab));
+  CHECK(base::FeatureList::IsEnabled(mojom::features::kGlicMultiTab));
   return pinned_tab_manager_.PinTabs(tab_handles);
 }
 
 bool GlicSharingManagerImpl::UnpinTabs(
     base::span<const tabs::TabHandle> tab_handles) {
-  CHECK(base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab));
+  CHECK(base::FeatureList::IsEnabled(mojom::features::kGlicMultiTab));
   return pinned_tab_manager_.UnpinTabs(tab_handles);
 }
 
@@ -107,7 +107,7 @@ int32_t GlicSharingManagerImpl::SetMaxPinnedTabs(uint32_t max_pinned_tabs) {
 void GlicSharingManagerImpl::GetContextFromTab(
     tabs::TabHandle tab_handle,
     const mojom::GetTabContextOptions& options,
-    base::OnceCallback<void(glic::mojom::GetContextResultPtr)> callback) {
+    base::OnceCallback<void(mojom::GetContextResultPtr)> callback) {
   if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled) ||
       !window_controller_->IsShowing()) {
     std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
@@ -169,6 +169,12 @@ bool GlicSharingManagerImpl::IsValidCandidateForSharing(
 std::vector<content::WebContents*> GlicSharingManagerImpl::GetPinnedTabs()
     const {
   return pinned_tab_manager_.GetPinnedTabs();
+}
+
+void GlicSharingManagerImpl::GetPinCandidates(
+    const mojom::GetPinCandidatesOptions& options,
+    base::OnceCallback<void(std::vector<mojom::TabDataPtr>)> callback) {
+  pinned_tab_manager_.GetPinCandidates(options, std::move(callback));
 }
 
 }  // namespace glic

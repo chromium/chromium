@@ -1110,6 +1110,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
+  void GetPinCandidates(glic::mojom::GetPinCandidatesOptionsPtr options,
+                        GetPinCandidatesCallback callback) override {
+    if (ShouldDoApiActivationGating()) {
+      std::vector<glic::mojom::TabDataPtr> no_results;
+      std::move(callback).Run(std::move(no_results));
+      return;
+    }
+    glic_sharing_manager_->GetPinCandidates(*options, std::move(callback));
+  }
+
   void GetZeroStateSuggestionsForFocusedTab(
       std::optional<bool> is_fre,
       GetZeroStateSuggestionsForFocusedTabCallback callback) override {

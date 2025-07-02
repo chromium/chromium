@@ -106,6 +106,8 @@ source_set("impl") {
     "host/auth_controller.cc",
     "host/context/glic_focused_tab_manager.cc",
     "host/context/glic_page_context_fetcher.cc",
+    "host/context/glic_pin_candidate_comparator.cc",
+    "host/context/glic_pin_candidate_comparator.h",
     "host/context/glic_pinned_tab_manager.cc",
     "host/context/glic_pinned_tab_manager.h",
     "host/context/glic_screenshot_capturer.cc",
@@ -226,6 +228,7 @@ source_set("unit_tests") {
   sources = [
     "glic_enabling_unittest.cc",
     "glic_metrics_unittest.cc",
+    "host/context/glic_pin_candidate_comparator_unittest.cc",
     "host/context/glic_screenshot_capturer_unittest.cc",
     "host/context/glic_tab_data_unittest.cc",
     "host/glic_cookie_synchronizer_unittest.cc",

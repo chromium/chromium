@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
@@ -306,6 +306,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableMultiTab) {
       this.getContextFromTab = undefined;
       this.getPinnedTabs = undefined;
+      this.getPinCandidates = undefined;
       this.pinTabs = undefined;
       this.setMaximumNumberOfPinnedTabs = undefined;
       this.unpinTabs = undefined;
@@ -611,6 +612,19 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   unpinAllTabs?(): void {
     this.sender.requestNoResponse('glicBrowserUnpinAllTabs', undefined);
+  }
+
+  getPinCandidates?
+      (options: GetPinCandidatesOptions): ObservableValue<PinCandidate[]> {
+    const observable =
+        ObservableValueImpl.withNoValue<PinCandidate[]>(async () => {
+          const candidates = (await this.sender.requestWithResponse(
+                                  'glicBrowserGetPinCandidates', {options}))
+                                 .candidates;
+          observable.assignAndSignal(
+              candidates.map((x) => ({tabData: convertTabDataFromPrivate(x)})));
+        });
+    return observable;
   }
 
   async getZeroStateSuggestionsForFocusedTab?

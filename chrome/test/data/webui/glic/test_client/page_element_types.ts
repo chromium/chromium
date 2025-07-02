@@ -126,6 +126,8 @@ export interface PageElementTypes {
   pinnedTabs: HTMLElement;
   pinFocusedTab: HTMLButtonElement;
   fetchPinned: HTMLButtonElement;
+  shareCandidateQuery: HTMLInputElement;
+  shareCandidates: HTMLElement;
   unpin: HTMLButtonElement;
 }
 

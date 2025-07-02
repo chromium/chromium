@@ -62,7 +62,7 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   // events (where the container does not change), as well as container changed
   // events.
   using FocusedTabDataChangedCallback =
-      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
+      base::RepeatingCallback<void(const mojom::TabData*)>;
   base::CallbackListSubscription AddFocusedTabDataChangedCallback(
       FocusedTabDataChangedCallback callback);
 
@@ -76,7 +76,7 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   // Registers a callback to be invoked when the TabData for a pinned tab
   // changes.
   using PinnedTabDataChangedCallback =
-      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
+      base::RepeatingCallback<void(const mojom::TabData*)>;
   base::CallbackListSubscription AddPinnedTabDataChangedCallback(
       PinnedTabDataChangedCallback callback);
 
@@ -88,7 +88,7 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   void GetContextFromTab(
       tabs::TabHandle tab_handle,
       const mojom::GetTabContextOptions& options,
-      base::OnceCallback<void(glic::mojom::GetContextResultPtr)> callback);
+      base::OnceCallback<void(mojom::GetContextResultPtr)> callback);
 
   // True if the immutable attributes of `browser` are valid for Glic focus.
   // or pinning. Invalid browsers are never observed.
@@ -100,6 +100,11 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   // Fetches the current list of pinned tabs.
   std::vector<content::WebContents*> GetPinnedTabs() const;
+
+  // Fetches pinning candidates based on the given options.
+  void GetPinCandidates(
+      const mojom::GetPinCandidatesOptions& options,
+      base::OnceCallback<void(std::vector<mojom::TabDataPtr>)> callback);
 
  private:
   GlicFocusedTabManager focused_tab_manager_;

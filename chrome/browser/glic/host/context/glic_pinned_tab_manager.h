@@ -14,6 +14,8 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "components/tabs/public/tab_interface.h"
 
+class Profile;
+
 namespace glic {
 
 class GlicSharingManagerImpl;
@@ -21,7 +23,8 @@ class GlicSharingManagerImpl;
 // Manages a collection of tabs that have been selected to be shared.
 class GlicPinnedTabManager {
  public:
-  explicit GlicPinnedTabManager(GlicSharingManagerImpl* sharing_manager);
+  GlicPinnedTabManager(Profile* profile,
+                       GlicSharingManagerImpl* sharing_manager);
   ~GlicPinnedTabManager();
 
   // Registers a callback to be invoked when the collection of pinned tabs
@@ -40,7 +43,7 @@ class GlicPinnedTabManager {
   // Registers a callback to be invoked when the TabData for a pinned tab is
   // changed.
   using PinnedTabDataChangedCallback =
-      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
+      base::RepeatingCallback<void(const mojom::TabData*)>;
   base::CallbackListSubscription AddPinnedTabDataChangedCallback(
       PinnedTabDataChangedCallback callback);
 
@@ -78,6 +81,11 @@ class GlicPinnedTabManager {
   // Fetches the current list of pinned tabs.
   std::vector<content::WebContents*> GetPinnedTabs() const;
 
+  // Fetches pinning candidates based on the given options.
+  void GetPinCandidates(
+      const mojom::GetPinCandidatesOptions& options,
+      base::OnceCallback<void(std::vector<mojom::TabDataPtr>)> callback);
+
  private:
   class PinnedTabObserver;
   struct PinnedTabEntry {
@@ -105,7 +113,7 @@ class GlicPinnedTabManager {
   void OnTabWillClose(tabs::TabHandle tab_handles);
 
   // Called by the PinnedTabObserver.
-  void OnTabDataChanged(tabs::TabHandle tab_handle, glic::mojom::TabDataPtr);
+  void OnTabDataChanged(tabs::TabHandle tab_handle, mojom::TabDataPtr);
 
   // List of callbacks to invoke when the collection of pinned tabs changes
   // (including changes to metadata).
@@ -113,13 +121,16 @@ class GlicPinnedTabManager {
       pinned_tabs_changed_callback_list_;
 
   // List of callbacks to invoke when the tab data for a pinned tab changes.
-  base::RepeatingCallbackList<void(const glic::mojom::TabData*)>
+  base::RepeatingCallbackList<void(const mojom::TabData*)>
       pinned_tab_data_changed_callback_list_;
 
   // List of callbacks to invoke when the pinning status for a particular tab
   // changes.
   base::RepeatingCallbackList<void(tabs::TabInterface*, bool)>
       pinning_status_changed_callback_list_;
+
+  // Enables searching for pin_candidates.
+  raw_ptr<Profile> profile_;
 
   // Enables access to information about other sharing modes and common sharing
   // functionality.

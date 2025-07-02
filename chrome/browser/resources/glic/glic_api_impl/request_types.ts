@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, Journal, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, Journal, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -289,6 +289,14 @@ export declare interface HostRequestTypes {
     },
   };
   glicBrowserUnpinAllTabs: {};
+  glicBrowserGetPinCandidates: {
+    request: {
+      options: GetPinCandidatesOptions,
+    },
+    response: {
+      candidates: TabDataPrivate[],
+    },
+  };
   glicBrowserGetZeroStateSuggestionsForFocusedTab: {
     request: {
       isFirstRun?: boolean,
@@ -461,6 +469,7 @@ type HostRequestEnumNamesType = {
     PinTabs: 0,
     UnpinTabs: 0,
     UnpinAllTabs: 0,
+    GetPinCandidates: 0,
     GetZeroStateSuggestionsForFocusedTab: 0,
     GetZeroStateSuggestionsAndSubscribe: 0,
     SetClosedCaptioningSetting: 0,
