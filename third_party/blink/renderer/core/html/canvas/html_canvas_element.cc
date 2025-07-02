@@ -755,6 +755,11 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   return context_.Get();
 }
 
+bool HTMLCanvasElement::IsContextLost() const {
+  CanvasRenderingContext* context = RenderingContext();
+  return !context || context->isContextLost();
+}
+
 void HTMLCanvasElement::configureHighDynamicRange(
     const CanvasHighDynamicRangeOptions* options,
     ExceptionState& exception_state) {

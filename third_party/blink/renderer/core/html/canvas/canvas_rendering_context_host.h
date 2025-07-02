@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -46,8 +45,7 @@ class CORE_EXPORT CanvasRenderingContextHost
     : public GarbageCollectedMixin,
       public CanvasResourceProvider::Delegate,
       public CanvasImageSource,
-      public ImageBitmapSource,
-      public CanvasHibernationHandler::Delegate {
+      public ImageBitmapSource {
  public:
   enum class HostType {
     kNone,
@@ -136,6 +134,10 @@ class CORE_EXPORT CanvasRenderingContextHost
   // Actual RasterMode used for rendering 2d primitives.
   RasterMode GetRasterModeForCanvas2D() const;
 
+  virtual bool IsPageVisible() const = 0;
+  virtual void SetNeedsCompositingUpdate() = 0;
+  virtual void ClearCanvas2DLayerTexture() {}
+
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;
   bool IsAccelerated() const override;
@@ -154,9 +156,7 @@ class CORE_EXPORT CanvasRenderingContextHost
   // resource provider did not exist at all, it may be created.
   virtual bool EnableAccelerationForCanvas2D() = 0;
 
-  bool IsContextLost() const override;
-
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() const {
     CHECK(IsRenderingContext2D());
     return resource_provider_for_canvas2d_.get();
   }
@@ -169,9 +169,6 @@ class CORE_EXPORT CanvasRenderingContextHost
 
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>);
-  void ResetResourceProviderForCanvas2D() override {
-    ReplaceResourceProviderForCanvas2D(nullptr);
-  }
 
   virtual void DiscardResources();
 

@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -93,7 +94,8 @@ class CORE_EXPORT HTMLCanvasElement final
       public CanvasRenderingContextHost,
       public cc::TextureLayerClient,
       public WebSurfaceLayerBridgeObserver,
-      public OffscreenCanvasPlaceholder {
+      public OffscreenCanvasPlaceholder,
+      public CanvasHibernationHandler::Delegate {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(HTMLCanvasElement, Dispose);
 
@@ -243,10 +245,18 @@ class CORE_EXPORT HTMLCanvasElement final
   void RegisterContentsLayer(cc::Layer*) override;
   void UnregisterContentsLayer(cc::Layer*) override;
 
-  // CanvasResourceHost implementation
+  // CanvasHibernationHandler::Delegate implementation
+  bool IsContextLost() const override;
   bool IsPageVisible() const override;
-  void NotifyGpuContextLost() override;
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
+    return CanvasRenderingContextHost::GetResourceProviderForCanvas2D();
+  }
+  void ResetResourceProviderForCanvas2D() override {
+    ReplaceResourceProviderForCanvas2D(nullptr);
+  }
   void SetNeedsCompositingUpdate() override;
+
+  void NotifyGpuContextLost() override;
   void UpdateMemoryUsage() override;
   size_t GetMemoryUsage() const override;
   bool ShouldAccelerate2dContext() const override;

@@ -258,11 +258,6 @@ bool CanvasRenderingContextHost::ContextHasOpenLayers(
          context->LayerCount() != 0;
 }
 
-bool CanvasRenderingContextHost::IsContextLost() const {
-  CanvasRenderingContext* context = RenderingContext();
-  return !context || context->isContextLost();
-}
-
 void CanvasRenderingContextHost::SetPreferred2DRasterMode(RasterModeHint hint) {
   // TODO(junov): move code that switches between CPU and GPU rasterization
   // to here.
