@@ -439,6 +439,9 @@ public class StripLayoutHelper
     // Reorder State
     private boolean mMovingGroup;
 
+    // Close State
+    private boolean mPendingMouseTabClosure;
+
     // Tab switch efficiency
     private @Nullable Long mTabScrollStartTime;
     private @Nullable Long mMostRecentTabScroll;
@@ -1532,6 +1535,9 @@ public class StripLayoutHelper
 
         // 2. Rebuild the strip.
         rebuildStripTabs(!closingLastTab, false);
+
+        // 3. Clear pending mouse tab closure state, as we've finished processing a tab closure.
+        mPendingMouseTabClosure = false;
     }
 
     /**
@@ -2461,6 +2467,14 @@ public class StripLayoutHelper
         // Clear tab strip button (NTB and MSB) hover state.
         clearCompositorButtonHoverStateIfNotClicked();
 
+        // Trigger a resize, as the pointer has left the strip, and we no longer need to suppress.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
+                && !inTabStrip) {
+            mPendingMouseTabClosure = false;
+            computeAndUpdateTabWidth(
+                    /* animate= */ true, /* deferAnimations= */ false, /* closedTab= */ null);
+        }
+
         mUpdateHost.requestUpdate();
     }
 
@@ -2973,6 +2987,11 @@ public class StripLayoutHelper
         int tabId = tab.getTabId();
         Tab realTab = assumeNonNull(getTabById(tabId));
         int rootId = realTab.getRootId();
+
+        // Set mouse tab closure state.
+        mPendingMouseTabClosure = MotionEventUtils.isPrimaryButton(motionEventButtonState);
+
+        // Prepare close params.
         StripTabModelActionListener listener =
                 new StripTabModelActionListener(
                         rootId,
@@ -3872,6 +3891,12 @@ public class StripLayoutHelper
             return null;
         }
 
+        // Suppress resizes from tab closures from mouse.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
+                && mPendingMouseTabClosure) {
+            return null;
+        }
+
         // Remove any queued resize messages.
         mStripTabEventHandler.removeMessages(MESSAGE_RESIZE);
 
@@ -4764,6 +4789,14 @@ public class StripLayoutHelper
 
     boolean getIsStripScrollInProgressForTesting() {
         return mIsStripScrollInProgress;
+    }
+
+    void setPendingMouseTabClosureForTesting(boolean pendingMouseTabClosure) {
+        mPendingMouseTabClosure = pendingMouseTabClosure;
+    }
+
+    boolean getPendingMouseTabClosureForTesting() {
+        return mPendingMouseTabClosure;
     }
 
     private void setAccessibilityDescription(@Nullable StripLayoutTab stripTab, @Nullable Tab tab) {

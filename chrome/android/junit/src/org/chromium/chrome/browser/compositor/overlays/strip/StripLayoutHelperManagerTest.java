@@ -121,6 +121,7 @@ import java.util.List;
     ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION,
     ChromeFeatureList.DATA_SHARING,
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY
 })
 public class StripLayoutHelperManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

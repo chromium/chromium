@@ -173,7 +173,10 @@ import java.util.stream.IntStream;
         qualifiers = "sw600dp",
         shadows = {ShadowAppCompatResources.class})
 @LooperMode(Mode.LEGACY)
-@DisableFeatures(ChromeFeatureList.DATA_SHARING)
+@DisableFeatures({
+    ChromeFeatureList.DATA_SHARING,
+    ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY
+})
 public class StripLayoutHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -3757,6 +3760,97 @@ public class StripLayoutHelperTest {
         runningAnimator.end();
 
         verify(mTabHoverCardView).hide();
+    }
+
+    private void verifyPendingMouseTabClosure(boolean expectedPendingMouseTabClosure) {
+        assertEquals(
+                "Unexpected pending mouse tab closure state.",
+                expectedPendingMouseTabClosure,
+                mStripLayoutHelper.getPendingMouseTabClosureForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
+    public void testPendingMouseTabClosure_SetOnClose() {
+        // Initialize.
+        initializeTest(/* tabIndex= */ 0);
+
+        // Fake a closure from mouse click.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.handleCloseButtonClick(tabs[0], MotionEvent.BUTTON_PRIMARY);
+
+        // Verify state is set.
+        verifyPendingMouseTabClosure(/* expectedPendingMouseTabClosure= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
+    public void testPendingMouseTabClosure_ClearOnTabClosure() {
+        // Initialize and mark a pending a mouse tab closure.
+        initializeTest(/* tabIndex= */ 0);
+        mStripLayoutHelper.setPendingMouseTabClosureForTesting(true);
+
+        // Fake a tab closure.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.tabClosed(TIMESTAMP, tabs[0].getTabId());
+
+        // Verify state is cleared.
+        verifyPendingMouseTabClosure(/* expectedPendingMouseTabClosure= */ false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
+    public void testPendingMouseTabClosure_SuppressResize() {
+        // Initialize and mark a pending a mouse tab closure.
+        initializeTest(/* tabIndex= */ 0);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, 0, 0, 0);
+        mStripLayoutHelper.setPendingMouseTabClosureForTesting(true);
+
+        // Attempt a resize.
+        mStripLayoutHelper.resizeTabStrip(
+                /* animate= */ true, /* tabToAnimate= */ null, /* tabAddedAnimation= */ false);
+
+        // Verify resize was suppressed.
+        verifyPendingMouseTabClosure(/* expectedPendingMouseTabClosure= */ true);
+        assertNull(
+                "Resize animation should not be running.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
+    public void testPendingMouseTabClosure_ResizeOnHoverExit_InTabStrip() {
+        // Initialize and mark a pending a mouse tab closure.
+        initializeTest(/* tabIndex= */ 0);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, 0, 0, 0);
+        mStripLayoutHelper.setPendingMouseTabClosureForTesting(true);
+
+        // Notify a hover exit event occurred in the tab strip.
+        mStripLayoutHelper.onHoverExit(/* inTabStrip= */ true);
+
+        // Verify suppressed resize state was not cleared.
+        verifyPendingMouseTabClosure(/* expectedPendingMouseTabClosure= */ true);
+        assertNull(
+                "Resize animation should not be running.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY)
+    public void testPendingMouseTabClosure_ResizeOnHoverExit_NotInTabStrip() {
+        // Initialize and mark a pending a mouse tab closure.
+        initializeTest(/* tabIndex= */ 0);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, 0, 0, 0);
+        mStripLayoutHelper.setPendingMouseTabClosureForTesting(true);
+
+        // Notify a hover exit event occurred outside the tab strip.
+        mStripLayoutHelper.onHoverExit(/* inTabStrip= */ false);
+
+        // Verify suppressed resize state was cleared.
+        verifyPendingMouseTabClosure(/* expectedPendingMouseTabClosure= */ false);
+        assertNotNull(
+                "Resize animation should be running.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
     }
 
     @Test
