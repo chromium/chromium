@@ -441,16 +441,14 @@ float TextDecorationInfo::ComputeThickness() const {
 
 float TextDecorationInfo::ComputeUnderlineThickness(
     const TextDecorationThickness& applied_decoration_thickness) const {
-  const bool use_decorating_box =
-      RuntimeEnabledFeatures::SvgTextCentralBaselineTextDecorationFixEnabled()
-          ? use_decorating_box_
-          : !!decorating_box_style_;
   float thickness = 0;
-  if (flipped_underline_position_ ==
+  if (RuntimeEnabledFeatures::
+          SvgTextCentralBaselineTextDecorationFixEnabled() ||
+      flipped_underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto ||
       flipped_underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont ||
-      !use_decorating_box) {
+      !decorating_box_style_) {
     thickness = ComputeDecorationThickness(applied_decoration_thickness,
                                            computed_font_size_, font_data_);
   } else {
