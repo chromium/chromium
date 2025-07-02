@@ -173,7 +173,7 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
   return base::ToVector(entity.type().strike_keys(), value_for_strike_key);
 }
 
-bool IsFormEligibleForFilling(const FormStructure& form) {
+bool IsFormRelevantForAutofillAi(const FormStructure& form) {
   return std::ranges::any_of(
       form.fields(), [](const std::unique_ptr<AutofillField>& field) {
         return field->GetAutofillAiServerTypePredictions().has_value();
@@ -205,7 +205,7 @@ void AutofillAiManager::OnSuggestionsShown(const FormStructure& form,
 }
 
 void AutofillAiManager::OnFormSeen(const FormStructure& form) {
-  bool is_eligible = IsFormEligibleForFilling(form);
+  bool is_eligible = IsFormRelevantForAutofillAi(form);
   logger_.OnFormEligibilityAvailable(form.global_id(), is_eligible);
   if (!is_eligible) {
     return;
@@ -249,10 +249,7 @@ void AutofillAiManager::OnEditedAutofilledField(const FormStructure& form,
 
 bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
                                         ukm::SourceId ukm_source_id) {
-  if (std::ranges::any_of(
-          form.fields(), [](const std::unique_ptr<AutofillField>& field) {
-            return field->GetAutofillAiServerTypePredictions() != std::nullopt;
-          })) {
+  if (IsFormRelevantForAutofillAi(form)) {
     logger_.RecordFormMetrics(form, ukm_source_id, /*submission_state=*/true,
                               GetAutofillAiOptInStatus(*client_));
   }
