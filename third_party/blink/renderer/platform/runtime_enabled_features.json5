@@ -2452,6 +2452,10 @@
       status: "stable",
     },
     {
+      name: "HandleShadowDOMInSubstringUtil",
+      status: "stable",
+    },
+    {
       name: "HandwritingRecognition",
       status: {
         "ChromeOS": "stable",

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/mac/color_mac.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -217,12 +219,26 @@ SubstringUtil::AttributedSubstringInRange(LocalFrame* frame,
                                           gfx::Point& baseline_point) {
   frame->View()->UpdateStyleAndLayout();
 
-  Element* editable = frame->Selection().RootEditableElementOrDocumentElement();
-  if (!editable) {
+  ContainerNode* container_node = nullptr;
+  if (RuntimeEnabledFeatures::HandleShadowDOMInSubstringUtilEnabled()) {
+    Position start =
+        frame->Selection().ComputeVisibleSelectionInDOMTree().Start();
+    if (IsEditablePosition(start)) {
+      container_node = RootEditableElementOf(start);
+    } else if (start.AnchorNode() && start.AnchorNode()->IsInShadowTree()) {
+      container_node = start.AnchorNode()->ContainingShadowRoot();
+    } else {
+      container_node = frame->GetDocument()->documentElement();
+    }
+  } else {
+    container_node = frame->Selection().RootEditableElementOrDocumentElement();
+  }
+  if (!container_node) {
     return base::apple::ScopedCFTypeRef<CFAttributedStringRef>();
   }
+
   const EphemeralRange ephemeral_range(
-      PlainTextRange(location, location + length).CreateRange(*editable));
+      PlainTextRange(location, location + length).CreateRange(*container_node));
   if (ephemeral_range.IsNull()) {
     return base::apple::ScopedCFTypeRef<CFAttributedStringRef>();
   }
