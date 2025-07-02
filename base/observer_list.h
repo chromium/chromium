@@ -96,8 +96,8 @@ enum class ObserverListPolicy {
   EXISTING_ONLY,
 };
 
-// When check_empty is true, assert that the list is empty on destruction.
-// When allow_reentrancy is false, iterating throught the list while already in
+// When `check_empty` is true, assert that the list is empty on destruction.
+// When `allow_reentrancy` is false, iterating through the list while already in
 // the iteration loop will result in DCHECK failure.
 // TODO(oshima): Change the default to non reentrant. https://crbug.com/812109
 template <class ObserverType,
