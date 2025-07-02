@@ -30,16 +30,29 @@ struct FitTextScale;
 struct LogicalLineItem;
 struct TextFragmentPaintInfo;
 
+// Purpose of `SvgFragmentData::length_adjust_scale`.
+//   kLengthAdjust: The SvgFragmentData is for SVG text.
+//   kFitText: The SvgFragmentData is for `scale` or `font-size` method
+//   kFitTextInline: The SvgFragmentData is for `scale-inline` method.
+enum class TextScaleType : uint8_t { kLengthAdjust, kFitText, kFitTextInline };
+
 // Data for SVG text in addition to FragmentItem.
+// Each text items for SVG <text> has this instance.
+//
+// For a non-SVG text item, it has this instance if text-grow or text-shrunk
+// is applied.
+// TODO(crbug.com/417306102): We should rename it.
 struct SvgFragmentData : public GarbageCollected<SvgFragmentData> {
  public:
   void Trace(Visitor*) const {}
+  bool IsSvg() const { return scale_type == TextScaleType::kLengthAdjust; }
 
   gfx::RectF rect;
   float length_adjust_scale;
   float angle;
   float baseline_shift;
   bool in_text_path;
+  TextScaleType scale_type;
 };
 
 // This class represents a text run or a box in an inline formatting context.
@@ -70,8 +83,12 @@ class CORE_EXPORT FragmentItem final {
     DISALLOW_NEW();
 
    public:
-    void Trace(Visitor* visitor) const { visitor->Trace(shape_result); }
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(shape_result);
+      visitor->Trace(extra_data);
+    }
     Member<const ShapeResultView> shape_result;
+    Member<const SvgFragmentData> extra_data;
     String text;
   };
   // A start marker of a line box.
@@ -135,7 +152,9 @@ class CORE_EXPORT FragmentItem final {
   bool IsHiddenForPaint() const { return is_hidden_for_paint_; }
   bool IsListMarker() const;
 
-  bool IsSvgText() const { return Type() == kText && text_.svg_data; }
+  bool IsSvgText() const {
+    return Type() == kText && text_.svg_data && text_.svg_data->IsSvg();
+  }
 
   void SetSvgFragmentData(const SvgFragmentData* data,
                           const PhysicalRect& unscaled_rect,
@@ -493,7 +512,11 @@ class CORE_EXPORT FragmentItem final {
   const FragmentItem* operator->() const { return this; }
 
   const SvgFragmentData* GetSvgFragmentData() const {
-    return Type() == kText ? text_.svg_data.Get() : nullptr;
+    if (Type() != kText) {
+      return nullptr;
+    }
+    const auto* svg_data = text_.svg_data.Get();
+    return svg_data->IsSvg() ? svg_data : nullptr;
   }
   // Returns true if BuildSvgTransformForPaint() returns non-identity transform.
   bool HasSvgTransformForPaint() const;
@@ -521,6 +544,9 @@ class CORE_EXPORT FragmentItem final {
   // This returns Style().GetFont() for an FragmentItem not for
   // LayoutSVGInlineText.
   const Font& ScaledFont() const;
+
+  // Returns a FitTextScale for text-grow / text-shrink.
+  FitTextScale GetFitTextScale() const;
 
   // Get a description of |this| for the debug purposes.
   String ToString() const;
