@@ -654,7 +654,7 @@ This collects each top-level device metric type. For example,
 
 <histogram name="Cras.InputGainChangedSource" enum="AudioSettingsChangeSource"
     expires_after="2025-08-20">
-  <owner>gavinwill@chromium.org</owner>
+  <owner>gavinwill@google.com</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>Records the source of a change to the input gain.</summary>
@@ -662,7 +662,7 @@ This collects each top-level device metric type. For example,
 
 <histogram name="Cras.InputGainMutedSource" enum="AudioSettingsChangeSource"
     expires_after="2025-08-20">
-  <owner>gavinwill@chromium.org</owner>
+  <owner>gavinwill@google.com</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>Records the source of muting/unmuting the input gain.</summary>
@@ -790,7 +790,7 @@ This collects each top-level device metric type. For example,
 
 <histogram name="Cras.NoiseCancellationEnabledSource"
     enum="AudioSettingsChangeSource" expires_after="2026-01-05">
-  <owner>gavinwill@chromium.org</owner>
+  <owner>gavinwill@google.com</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -800,7 +800,7 @@ This collects each top-level device metric type. For example,
 
 <histogram name="Cras.OutputVolumeChangedSource"
     enum="AudioSettingsChangeSource" expires_after="2025-09-01">
-  <owner>gavinwill@chromium.org</owner>
+  <owner>gavinwill@google.com</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>Records the source of a change to the output volume.</summary>
@@ -808,7 +808,7 @@ This collects each top-level device metric type. For example,
 
 <histogram name="Cras.OutputVolumeMutedSource" enum="AudioSettingsChangeSource"
     expires_after="2026-06-10">
-  <owner>gavinwill@chromium.org</owner>
+  <owner>gavinwill@google.com</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>Records the source of muting/unmuting the output volume.</summary>

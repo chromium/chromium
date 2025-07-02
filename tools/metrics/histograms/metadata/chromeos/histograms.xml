@@ -3034,7 +3034,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.PrintManagement.PrinterSettingsLaunchSource"
     enum="PrintManagementLaunchSourceType" expires_after="2024-01-23">
   <owner>ashleydp@google.com</owner>
-  <owner>gavinwill@chromium.org</owner>
+  <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@chromium.org</owner>
   <summary>
     Tracks the source element that triggers navigation to Printer settings from
