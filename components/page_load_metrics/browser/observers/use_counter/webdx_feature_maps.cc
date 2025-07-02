@@ -419,6 +419,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kSelectElementAppearanceBaseSelect,
            WebDXFeature::kCustomizableSelect},
           {WebFeature::kCSSSelectorPseudoNot, WebDXFeature::kNot},
+          {WebFeature::kScriptingMediaFeature, WebDXFeature::kScripting},
           // Add new features above this line.
       }};
 
