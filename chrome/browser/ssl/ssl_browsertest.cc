@@ -3384,9 +3384,10 @@ IN_PROC_BROWSER_TEST_P(
 // This test checks that all mixed content requests from a dedicated worker are
 // blocked regardless of the settings in WebPreferences when
 // block-all-mixed-content CSP is set with allow_running_insecure_content=true.
+// TODO(crbug.com/429204994): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(
     SSLUIWorkerFetchTest,
-    MixedContentSettingsWithBlockingCSP_AllowRunningInsecureContent) {
+    DISABLED_MixedContentSettingsWithBlockingCSP_AllowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
   content::ScopedContentBrowserClientSetting setting(&browser_client);
 
