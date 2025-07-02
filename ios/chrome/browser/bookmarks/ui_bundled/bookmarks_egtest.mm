@@ -8,12 +8,15 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -1262,6 +1265,34 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBookmarkEditViewContainerIdentifier)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests to open a bookmark from the account storage and then signs out.
+// Related to crbug.com/421139931.
+- (void)testOpenBookmarkFromAccountStorageAndSignout {
+  // Adds and signs in with `fakeIdentity`.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Add one account bookmark.
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:BookmarkStorageType::kAccount];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+  // Open a bookmark in current tab in a normal session.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
+      performAction:grey_tap()];
+
+  // Verify "First URL" appears in the omnibox.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
+                                          GetFirstUrl().GetContent())]
+      assertWithMatcher:grey_notNil()];
+
+  [SigninEarlGreyUI signOut];
+  [SigninEarlGrey verifySignedOut];
 }
 
 // TODO(crbug.com/40508042): Add egtests for:

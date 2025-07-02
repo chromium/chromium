@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -65,11 +66,6 @@
 using bookmarks::BookmarkNode;
 
 namespace {
-
-// Kill switch to disable restoration of call to bookmarkBrowserDismissed.
-BASE_FEATURE(kIOSRestoreBookmarkBrowserDismissedKillSwitch,
-             "IOSRestoreBookmarkBrowserDismissedKillSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Tracks the type of UI that is currently being presented.
 enum class PresentedState {
@@ -358,53 +354,35 @@ enum class PresentedState {
         feature_engagement::TrackerFactory::GetForProfile(
             _currentBrowserState.get()));
   }
-  // If trying to open urls with tab mode changed, we need to postpone openUrls
-  // until the dismissal of Bookmarks is done.  This is to prevent the race
-  // condition between the dismissal of bookmarks and switch of BVC.
-  const BOOL openUrlsAfterDismissal =
-      !urlsToOpen.empty() &&
-      ((!!inIncognito) != _currentBrowserState->IsOffTheRecord());
 
-  // A copy of the urls vector for the completion block.
-  std::vector<GURL> urlsToOpenAfterDismissal;
-  if (openUrlsAfterDismissal) {
-    // open urls in the completion block after dismissal.
-    urlsToOpenAfterDismissal = urlsToOpen;
-  } else if (!urlsToOpen.empty()) {
-    // open urls now.
-    [self openUrls:urlsToOpen inIncognito:inIncognito newTab:newTab];
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock completion = ^{
-    // If the kill switch is enabled, skip restoring the call to
-    // -bookmarkBrowserDismissed
-    if (!base::FeatureList::IsEnabled(
-            kIOSRestoreBookmarkBrowserDismissedKillSwitch)) {
-      [weakSelf bookmarkBrowserDismissed];
-    }
-    if (!openUrlsAfterDismissal) {
-      return;
-    }
-    [weakSelf openUrls:urlsToOpenAfterDismissal
-           inIncognito:inIncognito
-                newTab:newTab];
-  };
+  // First the bookmark view should be dismissed to have the animation, and
+  // the URLs should be opened.
+  // Otherwise, opening directly the URLs would automatically dismiss the
+  // bookmark view without animation.
+  ProceduralBlock dismissCompletion = base::CallbackToBlock(base::BindOnce(
+      [](__weak __typeof(self) weakSelf, std::vector<GURL> urls_to_open,
+         BOOL in_incognito, BOOL new_tab) {
+        [weakSelf openUrls:urls_to_open
+               inIncognito:in_incognito
+                    newTab:new_tab];
+      },
+      self, urlsToOpen, inIncognito, newTab));
 
   if (self.baseViewController.presentedViewController) {
     [self.baseViewController dismissViewControllerAnimated:animated
-                                                completion:completion];
+                                                completion:dismissCompletion];
   } else {
-    completion();
+    // TODO(crbug.com/428694164): This should probably not be possible.
+    // This case should probably be changed in to:
+    // CHECK(self.baseViewController.presentedViewController);
+    dismissCompletion();
   }
+  [self bookmarkBrowserDismissed];
 }
 
 - (void)bookmarkBrowserDismissed {
-  // TODO(crbug.com/421139931): This is incorrectly called twice. As a short
-  // term workaround return early when called a second time.
-  if (self.currentPresentedState != PresentedState::BOOKMARK_BROWSER) {
-    return;
-  }
+  CHECK_EQ(PresentedState::BOOKMARK_BROWSER, self.currentPresentedState,
+           base::NotFatalUntil::M144);
   DCHECK(self.bookmarkNavigationController) << [self description];
   for (UIViewController* controller in self.bookmarkNavigationController
            .viewControllers) {
