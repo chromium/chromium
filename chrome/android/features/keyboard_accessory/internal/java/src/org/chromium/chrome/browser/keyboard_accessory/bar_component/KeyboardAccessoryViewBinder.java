@@ -378,8 +378,7 @@ class KeyboardAccessoryViewBinder {
                         iphFeature,
                         chipView.getStartIconViewRect(),
                         chipView.getContext(),
-                        rootViewForIph,
-                        null);
+                        rootViewForIph);
             } else {
                 return showHelpBubble(
                         featureEngagementTracker, iphFeature, chipView, rootViewForIph, null);

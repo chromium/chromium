@@ -132,33 +132,6 @@ class KeyboardAccessoryIphUtils {
      *
      * @param tracker The {@link Tracker} associated with the current session.
      * @param feature A String identifying the IPH feature and its appropriate help text.
-     * @param rectProvider The {@link RectProvider} providing bounds to which the bubble will point.
-     * @param context Context to draw resources from.
-     * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
-     * @param helpText String that should be displayed within the IPH bubble.
-     * @return The boolean value indicating whether the IPH has been shown.
-     */
-    static boolean showHelpBubble(
-            Tracker tracker,
-            String feature,
-            RectProvider rectProvider,
-            Context context,
-            View rootView,
-            @Nullable String helpText) {
-        TextBubble helpBubble =
-                createBubble(tracker, feature, rectProvider, context, rootView, helpText);
-        if (helpBubble != null) helpBubble.show();
-        return helpBubble != null;
-    }
-
-    /**
-     * Shows a help bubble pointing to the given view. It contains an appropriate text for the given
-     * feature. The help bubble will not be shown if the {@link Tracker} doesn't allow it anymore.
-     * This may happen for example: if it was shown too often, too many IPH were triggered this
-     * session or other config restrictions apply.
-     *
-     * @param tracker The {@link Tracker} associated with the current session.
-     * @param feature A String identifying the IPH feature and its appropriate help text.
      * @param view The {@link View} providing context and the Rect to which the bubble will point.
      * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
      * @param helpText String that should be displayed within the IPH bubble.
