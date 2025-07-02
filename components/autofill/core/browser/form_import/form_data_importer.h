@@ -149,8 +149,6 @@ class FormDataImporter : public AddressDataManager::Observer,
     AutofillProfile profile{i18n_model_definition::kLegacyHierarchyCountryCode};
     // The URL the profile was extracted from.
     GURL url;
-    // Indicates if all import requirements have been fulfilled.
-    bool all_requirements_fulfilled;
     // Metadata about the import, used for metric collection in
     // ProfileImportProcess after the user's decision.
     ProfileImportMetadata import_metadata;

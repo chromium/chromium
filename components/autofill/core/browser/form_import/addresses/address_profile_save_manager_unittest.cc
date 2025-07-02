@@ -532,8 +532,6 @@ void AddressProfileSaveManagerTest::VerifyUkmForAddressImport(
       test_scenario.expected_import_type !=
           AutofillProfileImportType::kSuppressedConfirmableMerge &&
       test_scenario.expected_import_type !=
-          AutofillProfileImportType::kUnusableIncompleteProfile &&
-      test_scenario.expected_import_type !=
           AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate;
 
   auto entries =
@@ -1185,35 +1183,11 @@ TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateProfile_SaveNewProfile) {
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
       .user_decision = UserDecision::kUserNotAsked,
-      .expected_import_type =
-          AutofillProfileImportType::kUnusableIncompleteProfile,
+      .expected_import_type = AutofillProfileImportType::kSuppressedNewProfile,
       .is_profile_change_expected = false,
       .expected_final_profiles = {},
       .allow_only_silent_updates = true};
 
-  TestImportScenario(test_scenario);
-}
-
-// Test that the observation of quasi identical profile that has a different
-// structure in the name will result in a silent update when only silent updates
-// are allowed.
-TEST_P(AddressProfileSaveManagerTest,
-       SilentlyUpdateProfile_WithIncompleteProfile) {
-  AutofillProfile observed_profile = test::StandardProfile();
-  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
-  AutofillProfile final_profile = observed_profile;
-  test::CopyGUID(updateable_profile, &final_profile);
-
-  ImportScenarioTestCase test_scenario{
-      .existing_profiles = {updateable_profile},
-      .observed_profile = observed_profile,
-      .is_prompt_expected = false,
-      .user_decision = UserDecision::kUserNotAsked,
-      .expected_import_type =
-          AutofillProfileImportType::kSilentUpdateForIncompleteProfile,
-      .is_profile_change_expected = true,
-      .expected_final_profiles = {final_profile},
-      .allow_only_silent_updates = true};
   TestImportScenario(test_scenario);
 }
 
@@ -1260,62 +1234,7 @@ TEST_P(AddressProfileSaveManagerTest,
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
       .user_decision = UserDecision::kUserNotAsked,
-      .expected_import_type =
-          AutofillProfileImportType::kSilentUpdateForIncompleteProfile,
-      .is_profile_change_expected = true,
-      .expected_final_profiles = {final_profile},
-      .allow_only_silent_updates = true};
-  TestImportScenario(test_scenario);
-}
-
-// Tests that the profile's structured name information is silently updated when
-// an updated profile with no address data is observed with no settings visible
-// difference.
-// Silent Update is enabled for the test.
-TEST_P(AddressProfileSaveManagerTest,
-       SilentlyUpdateProfile_UpdateStructuredNameWithIncompleteProfile) {
-  AutofillProfile updateable_profile(AddressCountryCode("US"));
-  test::SetProfileTestValues(
-      &updateable_profile,
-      {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
-       {NAME_FIRST, "AAA", VerificationStatus::kParsed},
-       {NAME_MIDDLE, "BBB", VerificationStatus::kParsed},
-       {NAME_LAST, "CCC", VerificationStatus::kParsed},
-       {ADDRESS_HOME_STREET_ADDRESS, "119 Some Avenue",
-        VerificationStatus::kObserved},
-       {ADDRESS_HOME_STATE, "CA", VerificationStatus::kObserved},
-       {ADDRESS_HOME_ZIP, "99666", VerificationStatus::kObserved},
-       {ADDRESS_HOME_CITY, "Los Angeles", VerificationStatus::kObserved}});
-
-  AutofillProfile observed_profile(AddressCountryCode("US"));
-  test::SetProfileTestValues(
-      &observed_profile,
-      {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
-       {NAME_FIRST, "AAA", VerificationStatus::kParsed},
-       {NAME_MIDDLE, "", VerificationStatus::kParsed},
-       {NAME_LAST, "BBB CCC", VerificationStatus::kParsed}});
-
-  AutofillProfile final_profile(AddressCountryCode("US"));
-  test::SetProfileTestValues(
-      &final_profile,
-      {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
-       {NAME_FIRST, "AAA", VerificationStatus::kParsed},
-       {NAME_MIDDLE, "", VerificationStatus::kParsed},
-       {NAME_LAST, "BBB CCC", VerificationStatus::kParsed},
-       {ADDRESS_HOME_STREET_ADDRESS, "119 Some Avenue",
-        VerificationStatus::kObserved},
-       {ADDRESS_HOME_STATE, "CA", VerificationStatus::kObserved},
-       {ADDRESS_HOME_ZIP, "99666", VerificationStatus::kObserved},
-       {ADDRESS_HOME_CITY, "Los Angeles", VerificationStatus::kObserved}});
-  test::CopyGUID(updateable_profile, &final_profile);
-
-  ImportScenarioTestCase test_scenario{
-      .existing_profiles = {updateable_profile},
-      .observed_profile = observed_profile,
-      .is_prompt_expected = false,
-      .user_decision = UserDecision::kUserNotAsked,
-      .expected_import_type =
-          AutofillProfileImportType::kSilentUpdateForIncompleteProfile,
+      .expected_import_type = AutofillProfileImportType::kSilentUpdate,
       .is_profile_change_expected = true,
       .expected_final_profiles = {final_profile},
       .allow_only_silent_updates = true};
@@ -1336,8 +1255,7 @@ TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateProfile_OnBlockedDomain) {
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
       .user_decision = UserDecision::kUserNotAsked,
-      .expected_import_type =
-          AutofillProfileImportType::kSilentUpdateForIncompleteProfile,
+      .expected_import_type = AutofillProfileImportType::kSilentUpdate,
       .is_profile_change_expected = true,
       .expected_final_profiles = {final_profile},
       .new_profiles_suppresssed_for_domain = true,
@@ -1368,7 +1286,7 @@ TEST_P(AddressProfileSaveManagerTest,
       .is_prompt_expected = false,
       .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type =
-          AutofillProfileImportType::kSilentUpdateForIncompleteProfile,
+          AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate,
       .is_profile_change_expected = true,
       .expected_final_profiles = {existing_duplicate, mergeable_profile,
                                   updated_profile},
@@ -1390,7 +1308,7 @@ TEST_P(AddressProfileSaveManagerTest,
       .is_prompt_expected = false,
       .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type =
-          AutofillProfileImportType::kUnusableIncompleteProfile,
+          AutofillProfileImportType::kSuppressedConfirmableMerge,
       .is_profile_change_expected = true,
       .expected_final_profiles = {mergeable_profile},
       .allow_only_silent_updates = true};

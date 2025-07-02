@@ -437,7 +437,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {
                                    /*allow_only_silent_updates=*/true);
 
   EXPECT_EQ(import_data.import_type(),
-            AutofillProfileImportType::kSilentUpdateForIncompleteProfile);
+            AutofillProfileImportType::kSilentUpdate);
   import_data.AcceptWithoutPrompt();
   EXPECT_TRUE(import_data.ProfilesChanged());
   // Expect that the existing profiles was updated to the standard profile,
@@ -830,53 +830,6 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {
               testing::UnorderedElementsAre(mergeable_profile));
 }
 
-// Tests the scenario in which the observed profile results in a silent update
-// of the only already existing profile. The import process only supports
-// silent updates.
-TEST_F(AutofillProfileImportProcessTest,
-       SilentlyUpdateProfile_WithIncompleteProfile) {
-  AutofillProfile observed_profile = test::StandardProfile();
-  // The profile should be updateable with the observed profile.
-  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
-
-  // Set a modification date and subsequently advance the test clock.
-  updateable_profile.usage_history().set_modification_date(base::Time::Now());
-  AdvanceClock(base::Days(1));
-
-  address_data_manager().AddProfile(updateable_profile);
-
-  // Create the import process for the scenario that there is an existing
-  // profile that is updateable with the observed profile.
-  auto import_data = CreateProfileImportProcess(
-      observed_profile, /*allow_only_silent_updates=*/true);
-
-  // Test that the type of import was determined correctly.
-  EXPECT_EQ(import_data.import_type(),
-            AutofillProfileImportType::kSilentUpdateForIncompleteProfile);
-  // There should be no merge candidate since this is only a silent update.
-  EXPECT_FALSE(import_data.merge_candidate().has_value());
-  // But there should be one updated profiles.
-  EXPECT_EQ(import_data.silently_updated_profiles().size(), 1u);
-
-  // In this scenario, the user should not be prompted.
-  import_data.AcceptWithoutPrompt();
-
-  // The operation should result in a change of the profiles
-  EXPECT_TRUE(import_data.ProfilesChanged());
-
-  // Test that the existing profile was correctly updated.
-  AutofillProfile updated_profile = test::StandardProfile();
-  updated_profile.set_guid(updateable_profile.guid());
-
-  std::vector<AutofillProfile> resulting_profiles =
-      ApplyImportAndGetProfiles(import_data);
-  ASSERT_EQ(resulting_profiles.size(), 1U);
-  EXPECT_THAT(resulting_profiles,
-              testing::UnorderedElementsAre(updated_profile));
-  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
-            base::Time::Now());
-}
-
 // Tests the scenario in which the observed profile is not imported since the
 // import process only silent updates.
 TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile_WithNewProfile) {
@@ -889,7 +842,7 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile_WithNewProfile) {
 
   // Test that the type of import was determined correctly.
   EXPECT_EQ(import_data.import_type(),
-            AutofillProfileImportType::kUnusableIncompleteProfile);
+            AutofillProfileImportType::kSuppressedNewProfile);
   // There should be no merge candidate since this is only a silent update.
   EXPECT_FALSE(import_data.merge_candidate().has_value());
   // But there should be one updated profiles.
@@ -921,8 +874,9 @@ TEST_F(AutofillProfileImportProcessTest,
       observed_profile, /*allow_only_silent_updates=*/true);
 
   // Test that the type of import was determined correctly.
-  EXPECT_EQ(import_data.import_type(),
-            AutofillProfileImportType::kSilentUpdateForIncompleteProfile);
+  EXPECT_EQ(
+      import_data.import_type(),
+      AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate);
   // There should be no merge candidate because the only potential candidate is
   // blocked but there should be a silent update.
   EXPECT_FALSE(import_data.merge_candidate().has_value());

@@ -263,9 +263,7 @@ void FormDataImporter::ImportAndProcessFormData(
   // to the credit card import logic.
   std::vector<AutofillProfile> preliminary_imported_address_profiles;
   for (const auto& candidate : extracted_data.extracted_address_profiles) {
-    if (candidate.all_requirements_fulfilled) {
-      preliminary_imported_address_profiles.push_back(candidate.profile);
-    }
+    preliminary_imported_address_profiles.push_back(candidate.profile);
   }
   credit_card_save_manager_->SetPreliminarilyImportedAutofillProfile(
       preliminary_imported_address_profiles);
@@ -772,12 +770,9 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   ExtractedAddressProfile extracted_address_profile;
   extracted_address_profile.profile = candidate_profile;
   extracted_address_profile.url = source_url;
-  extracted_address_profile.all_requirements_fulfilled = all_fulfilled;
   extracted_address_profile.import_metadata = import_metadata;
   extracted_address_profiles->push_back(std::move(extracted_address_profile));
-
-  // Return true if a complete importable profile was found.
-  return all_fulfilled;
+  return true;
 }
 
 bool FormDataImporter::ProcessExtractedAddressProfiles(
@@ -786,41 +781,21 @@ bool FormDataImporter::ProcessExtractedAddressProfiles(
     bool allow_prompt,
     ukm::SourceId ukm_source_id) {
   int imported_profiles = 0;
-
   // `allow_prompt` is true if no credit card or IBAN prompt was shown. If it is
   // true, we know there is no UI currently displaying, so we can display UI to
   // import addresses. If it is false, we should not display UI to import
   // addresses due to a possible dialog or bubble conflict.
-  if (allow_prompt) {
-    for (const auto& candidate : extracted_address_profiles) {
-      // First try to import a single complete profile.
-      if (!candidate.all_requirements_fulfilled) {
-        continue;
-      }
-      address_profile_save_manager_->ImportProfileFromForm(
-          candidate.profile, client_->GetAppLocale(), candidate.url,
-          ukm_source_id, /*allow_only_silent_updates=*/false,
-          candidate.import_metadata);
-      // Limit the number of importable profiles to 2.
-      if (++imported_profiles >= 2) {
-        return true;
-      }
-    }
-  }
-  // If a profile was already imported, do not try to use partial profiles for
-  // silent updates.
-  if (imported_profiles > 0) {
-    return true;
-  }
-  // Otherwise try again but restrict the import to silent updates.
-  for (const auto& candidate : extracted_address_profiles) {
-    // First try to import a single complete profile.
+  bool allow_only_silent_updates = !allow_prompt;
+  for (const ExtractedAddressProfile& candidate : extracted_address_profiles) {
     address_profile_save_manager_->ImportProfileFromForm(
         candidate.profile, client_->GetAppLocale(), candidate.url,
-        ukm_source_id, /*allow_only_silent_updates=*/true,
-        candidate.import_metadata);
+        ukm_source_id, allow_only_silent_updates, candidate.import_metadata);
+    // Limit the number of importable profiles to 2.
+    if (!allow_only_silent_updates && ++imported_profiles >= 2) {
+      return true;
+    }
   }
-  return false;
+  return imported_profiles > 0;
 }
 
 bool FormDataImporter::ProcessExtractedCreditCard(

@@ -155,15 +155,9 @@ void ProfileImportProcess::DetermineProfileImportType() {
     // confirmation.
     if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
             *existing_profile, merged_profile, app_locale_)) {
-      if (allow_only_silent_updates_) {
-        ++number_of_unchanged_profiles;
-        continue;
-      }
-
       // Determine if the existing profile is blocked for updates.
-      // If the address data manager is not available the profile is considered
-      // as not blocked. Also, updates can be disabled by a feature flag.
       bool is_blocked_for_update =
+          allow_only_silent_updates_ ||
           address_data_manager_->IsProfileUpdateBlocked(
               existing_profile->guid()) ||
           base::FeatureList::IsEnabled(
@@ -205,18 +199,15 @@ void ProfileImportProcess::DetermineProfileImportType() {
   // If the profile is not mergeable with an existing profile, the import
   // corresponds to a new profile.
   if (!is_mergeable_with_existing_profile) {
-    if (!allow_only_silent_updates_) {
-      // There should be no import candidate yet.
-      DCHECK(!import_candidate_.has_value());
-      if (address_data_manager_->IsNewProfileImportBlockedForDomain(
-              form_source_url_)) {
-        import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
-      } else {
-        import_type_ = AutofillProfileImportType::kNewProfile;
-        import_candidate_ = observed_profile();
-      }
+    // There should be no import candidate yet.
+    DCHECK(!import_candidate_.has_value());
+    if (allow_only_silent_updates_ ||
+        address_data_manager_->IsNewProfileImportBlockedForDomain(
+            form_source_url_)) {
+      import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
     } else {
-      import_type_ = AutofillProfileImportType::kUnusableIncompleteProfile;
+      import_type_ = AutofillProfileImportType::kNewProfile;
+      import_candidate_ = observed_profile();
     }
   } else {
     bool silent_updates_present = !silently_updated_profiles_.empty();
@@ -232,11 +223,6 @@ void ProfileImportProcess::DetermineProfileImportType() {
               ? AutofillProfileImportType::
                     kSuppressedConfirmableMergeAndSilentUpdate
               : AutofillProfileImportType::kSuppressedConfirmableMerge;
-    } else if (allow_only_silent_updates_) {
-      import_type_ =
-          silent_updates_present
-              ? AutofillProfileImportType::kSilentUpdateForIncompleteProfile
-              : AutofillProfileImportType::kUnusableIncompleteProfile;
     } else if (!migration_candidate) {
       import_type_ = silent_updates_present
                          ? AutofillProfileImportType::kSilentUpdate
@@ -447,9 +433,7 @@ void ProfileImportProcess::CollectMetrics(
   if (allow_only_silent_updates_) {
     // Record the import type for the silent updates.
     autofill_metrics::LogSilentUpdatesProfileImportType(import_type_);
-    if (import_type_ == AutofillProfileImportType::kSilentUpdate ||
-        import_type_ ==
-            AutofillProfileImportType::kSilentUpdateForIncompleteProfile) {
+    if (import_type_ == AutofillProfileImportType::kSilentUpdate) {
       LogUkmMetrics();
     }
     return;

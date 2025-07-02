@@ -69,11 +69,9 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt(
     // process without initiating a user prompt
     case AutofillProfileImportType::kDuplicateImport:
     case AutofillProfileImportType::kSilentUpdate:
-    case AutofillProfileImportType::kSilentUpdateForIncompleteProfile:
     case AutofillProfileImportType::kSuppressedNewProfile:
     case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
     case AutofillProfileImportType::kSuppressedConfirmableMerge:
-    case AutofillProfileImportType::kUnusableIncompleteProfile:
       import_process->AcceptWithoutPrompt();
       FinalizeProfileImport(std::move(import_process));
       return;

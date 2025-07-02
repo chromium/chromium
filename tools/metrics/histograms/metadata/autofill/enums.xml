@@ -2496,8 +2496,8 @@ Called by update_autofill_enums.py.-->
   <int value="6" label="ConfirmableMergeAndSilentUpdate"/>
   <int value="7" label="SuppressedConfirmableMerge"/>
   <int value="8" label="SuppressedConfirmableMergeAndSilentUpdate"/>
-  <int value="9" label="SilentUpdateForIncompleteProfile"/>
-  <int value="10" label="UnusableIncompleteProfile"/>
+  <int value="9" label="SilentUpdateForIncompleteProfile (deprecated)"/>
+  <int value="10" label="UnusableIncompleteProfile (deprecated)"/>
   <int value="11" label="ProfileMigration"/>
   <int value="12" label="ProfileMigrationAndSilentUpdate"/>
   <int value="13" label="HomeAndWorkSuperset"/>

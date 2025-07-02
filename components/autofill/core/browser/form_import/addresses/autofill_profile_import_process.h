@@ -19,51 +19,49 @@ namespace autofill {
 class AddressDataManager;
 
 // Specifies the type of a profile form import.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AutofillProfileImportType {
   // Type is unspecified.
-  kImportTypeUnspecified,
+  kImportTypeUnspecified = 0,
   // The observed profile corresponds to a new profile because there are no
   // mergeable or updatable profiles.
-  kNewProfile,
+  kNewProfile = 1,
   // The imported profile is a subset of an already existing profile.
-  kDuplicateImport,
+  kDuplicateImport = 2,
   // The imported profile can be integrated into an already existing profile
   // without any changes to settings-visible values.
-  kSilentUpdate,
+  kSilentUpdate = 3,
   // The imported profile changes settings-visible values which is only imported
   // after explicit user confirmation.
-  kConfirmableMerge,
-  // The observed profile corresponds to a new profile because there are no
-  // mergeable or updatable profiles but imports are suppressed for this
-  // domain.
-  kSuppressedNewProfile,
+  kConfirmableMerge = 4,
+  // The observed profile corresponds to a new profile, but either imports are
+  // suppressed for this domain or only silent updates are allowed.
+  kSuppressedNewProfile = 5,
   // The observed profile resulted both in a confirmable merge and in a silent
   // update.
-  kConfirmableMergeAndSilentUpdate,
+  kConfirmableMergeAndSilentUpdate = 6,
   // The observed profile resulted in one or more confirmable merges that are
   // all suppressed with no additional silent updates.
-  kSuppressedConfirmableMerge,
+  kSuppressedConfirmableMerge = 7,
   // The observed profile resulted in one or more suppressed confirmable merges
   // but with additional silent updates.
-  kSuppressedConfirmableMergeAndSilentUpdate,
-  // Indicates that a silent update was the result of importing an incomplete
-  // profile.
-  kSilentUpdateForIncompleteProfile,
-  // Indicates that even though the incomplete profile contained structured
-  // information, it could not be used for a silent update.
-  kUnusableIncompleteProfile,
+  kSuppressedConfirmableMergeAndSilentUpdate = 8,
+  // Only updates on complete profiles are performed.
+  // kSilentUpdateForIncompleteProfile = 9,
+  // kUnusableIncompleteProfile = 10,
   // The observed profile corresponds to an existing kLocalOrSyncable profile,
   // which can be migrated to the account profile storage.
-  kProfileMigration,
+  kProfileMigration = 11,
   // Like `kProfileMigration`, but additionally the migration candidate and
   // other stored profiles can be silently updated. These silent updates happen
   // even if the user declines the migration.
-  kProfileMigrationAndSilentUpdate,
+  kProfileMigrationAndSilentUpdate = 12,
   // A superset of a Home and Work address was submitted and no other non-Home
   // and Work profile qualified for an update. Since Home and Work is read only,
   // no update prompt can be shown. Instead, this is treated as a special kind
   // of new profile prompt. It is separate from kNewProfile for metrics.
-  kHomeAndWorkSuperset,
+  kHomeAndWorkSuperset = 13,
   kMaxValue = kHomeAndWorkSuperset
 };
 
