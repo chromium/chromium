@@ -78,7 +78,7 @@ FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
     : ContentAnalysisDelegate(web_contents,
                               std::move(data),
                               std::move(callback),
-                              safe_browsing::DeepScanAccessPoint::UPLOAD),
+                              DeepScanAccessPoint::UPLOAD),
       delete_closure_(delete_closure),
       status_callback_(status_callback),
       dm_token_(std::move(dm_token)) {}

@@ -37,7 +37,7 @@ class EventRouter;
 
 class GURL;
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 enum class DeepScanAccessPoint;
 }
 
@@ -152,7 +152,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& scan_id,
       const std::string& content_transfer_method,
       const std::string& source_email,
-      safe_browsing::DeepScanAccessPoint access_point,
+      enterprise_connectors::DeepScanAccessPoint access_point,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
       const safe_browsing::ReferrerChain& referrer_chain,
@@ -170,27 +170,28 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& trigger,
       const std::string& scan_id,
       const std::string& content_transfer_method,
-      safe_browsing::DeepScanAccessPoint access_point,
+      enterprise_connectors::DeepScanAccessPoint access_point,
       const safe_browsing::ReferrerChain& referrer_chain,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
       std::optional<std::u16string> user_justification);
 
   // Notifies listeners that deep scanning failed, for the given |reason|.
-  void OnUnscannedFileEvent(const GURL& url,
-                            const GURL& tab_url,
-                            const std::string& source,
-                            const std::string& destination,
-                            const std::string& file_name,
-                            const std::string& download_digest_sha256,
-                            const std::string& mime_type,
-                            const std::string& trigger,
-                            safe_browsing::DeepScanAccessPoint access_point,
-                            const std::string& reason,
-                            const std::string& content_transfer_method,
-                            const int64_t content_size,
-                            const safe_browsing::ReferrerChain& referrer_chain,
-                            enterprise_connectors::EventResult event_result);
+  void OnUnscannedFileEvent(
+      const GURL& url,
+      const GURL& tab_url,
+      const std::string& source,
+      const std::string& destination,
+      const std::string& file_name,
+      const std::string& download_digest_sha256,
+      const std::string& mime_type,
+      const std::string& trigger,
+      enterprise_connectors::DeepScanAccessPoint access_point,
+      const std::string& reason,
+      const std::string& content_transfer_method,
+      const int64_t content_size,
+      const safe_browsing::ReferrerChain& referrer_chain,
+      enterprise_connectors::EventResult event_result);
 
   // Notifies listeners that the user saw a download warning.
   // - |url| is the download URL

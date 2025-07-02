@@ -583,7 +583,7 @@ void DeepScanningRequest::OnScanComplete(
     enterprise_connectors::ContentAnalysisResponse response) {
   RecordDeepScanMetrics(
       analysis_settings_.cloud_or_local_settings.is_cloud_analysis(),
-      /*access_point=*/DeepScanAccessPoint::DOWNLOAD,
+      /*access_point=*/enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
       /*duration=*/base::TimeTicks::Now() - upload_start_times_[current_path],
       /*total_bytes=*/metadata_->GetTotalBytes(), /*result=*/result,
       /*response=*/response);
@@ -672,8 +672,8 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
         file_metadata.filename, file_metadata.sha256, file_metadata.mime_type,
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         /*content_transfer_method=*/"", GetContentAreaAccountEmail(),
-        DeepScanAccessPoint::DOWNLOAD, file_metadata.size, referrers, result,
-        file_metadata.scan_response));
+        enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+        file_metadata.size, referrers, result, file_metadata.scan_response));
 
     metadata_->AddScanResultMetadata(file_metadata);
   }

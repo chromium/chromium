@@ -121,7 +121,7 @@ class HandleDropScanData : public content::WebContentsObserver {
         web_contents(), std::move(analysis_data_),
         base::BindOnce(&CompletionCallback, std::move(drop_data_),
                        std::move(files_scan_data), std::move(callback_)),
-        safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP);
+        enterprise_connectors::DeepScanAccessPoint::DRAG_AND_DROP);
 
     delete this;
   }

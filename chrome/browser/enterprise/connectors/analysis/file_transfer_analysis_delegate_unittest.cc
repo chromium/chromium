@@ -772,8 +772,8 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
     // The access point is only used for metrics, so its value doesn't affect
     // the tests in this file and can always be the same.
     file_transfer_analysis_delegate_ = FileTransferAnalysisDelegate::Create(
-        safe_browsing::DeepScanAccessPoint::FILE_TRANSFER, source_url,
-        destination_url, profile_, file_system_context_.get(), GetSettings());
+        DeepScanAccessPoint::FILE_TRANSFER, source_url, destination_url,
+        profile_, file_system_context_.get(), GetSettings());
 
     base::test::TestFuture<void> future;
     file_transfer_analysis_delegate_->UploadData(future.GetCallback());

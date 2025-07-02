@@ -107,7 +107,7 @@ void HandleFileData(
             std::move(callback).Run(std::move(clipboard_paste_data));
           },
           std::move(callback)),
-      safe_browsing::DeepScanAccessPoint::PASTE);
+      enterprise_connectors::DeepScanAccessPoint::PASTE);
 }
 
 void HandleStringData(
@@ -142,7 +142,7 @@ void HandleStringData(
             std::move(callback).Run(std::move(clipboard_paste_data));
           },
           std::move(clipboard_paste_data), std::move(callback)),
-      safe_browsing::DeepScanAccessPoint::PASTE);
+      enterprise_connectors::DeepScanAccessPoint::PASTE);
 }
 
 void PasteIfAllowedByContentAnalysis(

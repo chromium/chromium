@@ -58,7 +58,7 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
       ContentAnalysisDelegateBase* delegate,
       content::WebContents::Getter web_contents_getter,
       bool is_cloud,
-      safe_browsing::DeepScanAccessPoint access_point,
+      DeepScanAccessPoint access_point,
       int files_count,
       FinalContentAnalysisResult final_result);
   ~ContentAnalysisDialogDelegate() override;
@@ -195,7 +195,7 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
 
   // The access point that caused this dialog to open. This changes what text
   // and top image are shown to the user.
-  safe_browsing::DeepScanAccessPoint access_point_;
+  DeepScanAccessPoint access_point_;
 
   // Indicates whether the scan being done is for files (files_count_>0) or for
   // text (files_count_==0). This changes what text and top image are shown to

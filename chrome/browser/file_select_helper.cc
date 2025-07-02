@@ -332,7 +332,7 @@ void FileSelectHelper::PerformContentAnalysisIfNeeded(
           web_contents_, std::move(data),
           base::BindOnce(&FileSelectHelper::ContentAnalysisCompletionCallback,
                          this, std::move(list)),
-          safe_browsing::DeepScanAccessPoint::UPLOAD);
+          enterprise_connectors::DeepScanAccessPoint::UPLOAD);
     }
   } else {
     NotifyListenerAndEnd(std::move(list));

@@ -166,9 +166,9 @@ class BaseTest : public testing::Test {
     // The access point is only used for metrics and choosing the dialog text if
     // one is shown, so its value doesn't affect the tests in this file and can
     // always be the same.
-    ContentAnalysisDelegate::CreateForWebContents(
-        web_contents, std::move(data), std::move(callback),
-        safe_browsing::DeepScanAccessPoint::UPLOAD);
+    ContentAnalysisDelegate::CreateForWebContents(web_contents, std::move(data),
+                                                  std::move(callback),
+                                                  DeepScanAccessPoint::UPLOAD);
   }
 
   void CreateFilesForTest(
@@ -769,7 +769,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, PagePrintAllowed) {
             *called = true;
           },
           &called),
-      safe_browsing::DeepScanAccessPoint::PRINT);
+      DeepScanAccessPoint::PRINT);
   RunUntilDone();
   EXPECT_EQ(1,
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
@@ -803,7 +803,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, PagePrintBlocked) {
             *called = true;
           },
           &called),
-      safe_browsing::DeepScanAccessPoint::PRINT);
+      DeepScanAccessPoint::PRINT);
   RunUntilDone();
   EXPECT_EQ(1,
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());

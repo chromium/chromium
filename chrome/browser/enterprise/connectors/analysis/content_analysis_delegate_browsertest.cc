@@ -260,7 +260,7 @@ class MinimalFakeContentAnalysisDelegate : public ContentAnalysisDelegate {
       : ContentAnalysisDelegate(web_contents,
                                 std::move(data),
                                 std::move(callback),
-                                safe_browsing::DeepScanAccessPoint::UPLOAD),
+                                DeepScanAccessPoint::UPLOAD),
         quit_closure_(quit_closure) {}
 
   ~MinimalFakeContentAnalysisDelegate() override { quit_closure_.Run(); }
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Unauthorized) {
             called = true;
             quit_closure.Run();
           }),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      DeepScanAccessPoint::UPLOAD);
 
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
             ASSERT_FALSE(result.paths_results[1]);
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      DeepScanAccessPoint::UPLOAD);
 
   run_loop.Run();
 
@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, ForFiles) {
 
         called = true;
       }),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      DeepScanAccessPoint::UPLOAD);
 
   run_loop.Run();
   EXPECT_TRUE(called);
@@ -811,7 +811,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
             ASSERT_FALSE(result.text_results[1]);
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::PASTE);
+      DeepScanAccessPoint::PASTE);
 
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
@@ -913,7 +913,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
             ASSERT_FALSE(result.text_results[1]);
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::PASTE);
+      DeepScanAccessPoint::PASTE);
 
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, AllowTextAndImage) {
             ASSERT_TRUE(result.image_result);
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::PASTE);
+      DeepScanAccessPoint::PASTE);
 
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
@@ -1094,7 +1094,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
             ASSERT_FALSE(result.text_results[0]);
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::PASTE);
+      DeepScanAccessPoint::PASTE);
 
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
@@ -1200,7 +1200,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
             ASSERT_FALSE(result.text_results[0]);
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::PASTE);
+      DeepScanAccessPoint::PASTE);
 
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
@@ -1296,7 +1296,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
             }
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      DeepScanAccessPoint::UPLOAD);
 
   run_loop.Run();
 
@@ -1431,7 +1431,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
             ASSERT_EQ(result.paths_results[0], expected_result());
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP);
+      DeepScanAccessPoint::DRAG_AND_DROP);
 
   run_loop.Run();
   EXPECT_TRUE(called);
@@ -1538,7 +1538,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      DeepScanAccessPoint::UPLOAD);
 
   run_loop.Run();
   EXPECT_TRUE(called);
@@ -1636,7 +1636,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::PRINT);
+      DeepScanAccessPoint::PRINT);
 
   // If the block setting is on, the large page content won't be sent for deep
   // scanning, so no authorization is needed.
@@ -1763,7 +1763,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP);
+      DeepScanAccessPoint::DRAG_AND_DROP);
 
   run_loop.Run();
   EXPECT_TRUE(called);
@@ -1879,7 +1879,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
             ASSERT_EQ(result.text_results[0], expected_result());
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::PASTE);
+      DeepScanAccessPoint::PASTE);
 
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
   run_loop.Run();
@@ -1984,7 +1984,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateDefaultActionSettingBrowserTest,
             ASSERT_EQ(result.text_results[0], expected_result());
             called = true;
           }),
-      safe_browsing::DeepScanAccessPoint::PASTE);
+      DeepScanAccessPoint::PASTE);
 
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
@@ -2110,7 +2110,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
             called = true;
             quit_closure.Run();
           }),
-      safe_browsing::DeepScanAccessPoint::PASTE);
+      DeepScanAccessPoint::PASTE);
 
   // Make sure auth retry fails.
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
@@ -2174,7 +2174,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
               quit_closure.value().Run();
             }
           }),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      DeepScanAccessPoint::UPLOAD);
 
   run_loop.Run();
   EXPECT_TRUE(called);

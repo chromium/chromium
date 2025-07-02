@@ -437,7 +437,7 @@ class ContentAnalysisDialogAppearanceBrowserTest
     : public test::DeepScanningBrowserTestBase,
       public ContentAnalysisDialogController::TestObserver,
       public testing::WithParamInterface<
-          std::tuple<bool, bool, safe_browsing::DeepScanAccessPoint, bool>> {
+          std::tuple<bool, bool, DeepScanAccessPoint, bool>> {
  public:
   ContentAnalysisDialogAppearanceBrowserTest() {
     ContentAnalysisDialogController::SetObserverForTesting(this);
@@ -449,7 +449,7 @@ class ContentAnalysisDialogAppearanceBrowserTest
     // point and scan type.
     std::u16string pending_message = dialog->GetMessageForTesting()->GetText();
     std::u16string expected_message;
-    if (access_point() == safe_browsing::DeepScanAccessPoint::PRINT) {
+    if (access_point() == DeepScanAccessPoint::PRINT) {
       expected_message = l10n_util::GetStringUTF16(
           IDS_DEEP_SCANNING_DIALOG_PRINT_PENDING_MESSAGE);
     } else {
@@ -502,7 +502,7 @@ class ContentAnalysisDialogAppearanceBrowserTest
   }
 
   virtual std::u16string GetExpectedMessage() {
-    if (access_point() == safe_browsing::DeepScanAccessPoint::PRINT) {
+    if (access_point() == DeepScanAccessPoint::PRINT) {
       return success() ? l10n_util::GetStringUTF16(
                              IDS_DEEP_SCANNING_DIALOG_PRINT_SUCCESS_MESSAGE)
                        : l10n_util::GetStringUTF16(
@@ -526,9 +526,7 @@ class ContentAnalysisDialogAppearanceBrowserTest
 
   bool success() const { return std::get<1>(GetParam()); }
 
-  safe_browsing::DeepScanAccessPoint access_point() const {
-    return std::get<2>(GetParam());
-  }
+  DeepScanAccessPoint access_point() const { return std::get<2>(GetParam()); }
 
   bool has_custom_rule_message() { return std::get<3>(GetParam()); }
 
@@ -579,7 +577,7 @@ class ContentAnalysisDialogCustomMessageBrowserTest
     }
   }
   std::u16string GetExpectedMessage() override {
-    if (access_point() == safe_browsing::DeepScanAccessPoint::PRINT) {
+    if (access_point() == DeepScanAccessPoint::PRINT) {
       return success() ? l10n_util::GetStringUTF16(
                              IDS_DEEP_SCANNING_DIALOG_PRINT_SUCCESS_MESSAGE)
                        : l10n_util::GetStringFUTF16(
@@ -632,7 +630,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest, Test) {
           [](bool* called, const ContentAnalysisDelegate::Data& data,
              ContentAnalysisDelegate::Result& result) { *called = true; },
           &called),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      DeepScanAccessPoint::UPLOAD);
   run_loop.Run();
   EXPECT_TRUE(called);
 }
@@ -670,7 +668,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogBehaviorBrowserTest,
             std::move(quit_closure).Run();
           },
           run_loop.QuitClosure()),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      DeepScanAccessPoint::UPLOAD);
   run_loop.Run();
 }
 
@@ -738,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
             *called = true;
           },
           &called),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      DeepScanAccessPoint::UPLOAD);
   run_loop.Run();
   EXPECT_TRUE(called);
 
@@ -793,7 +791,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogWarningBrowserTest, Test) {
             *called = true;
           },
           &called, user_bypasses_warning()),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      DeepScanAccessPoint::UPLOAD);
   run_loop.Run();
   EXPECT_TRUE(called);
 }
@@ -849,18 +847,17 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogAppearanceBrowserTest, Test) {
   EXPECT_TRUE(called);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ContentAnalysisDialogAppearanceBrowserTest,
-    testing::Combine(
-        /*file_scan=*/testing::Bool(),
-        /*success=*/testing::Bool(),
-        /*access_point=*/
-        testing::Values(safe_browsing::DeepScanAccessPoint::UPLOAD,
-                        safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP,
-                        safe_browsing::DeepScanAccessPoint::PASTE,
-                        safe_browsing::DeepScanAccessPoint::PRINT),
-        /*has_custom_rule_message=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(,
+                         ContentAnalysisDialogAppearanceBrowserTest,
+                         testing::Combine(
+                             /*file_scan=*/testing::Bool(),
+                             /*success=*/testing::Bool(),
+                             /*access_point=*/
+                             testing::Values(DeepScanAccessPoint::UPLOAD,
+                                             DeepScanAccessPoint::DRAG_AND_DROP,
+                                             DeepScanAccessPoint::PASTE,
+                                             DeepScanAccessPoint::PRINT),
+                             /*has_custom_rule_message=*/testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageBrowserTest, Test) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -911,18 +908,17 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageBrowserTest, Test) {
   EXPECT_TRUE(called);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ContentAnalysisDialogCustomMessageBrowserTest,
-    testing::Combine(
-        /*file_scan=*/testing::Bool(),
-        /*success=*/testing::Bool(),
-        /*access_point=*/
-        testing::Values(safe_browsing::DeepScanAccessPoint::UPLOAD,
-                        safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP,
-                        safe_browsing::DeepScanAccessPoint::PASTE,
-                        safe_browsing::DeepScanAccessPoint::PRINT),
-        /*has_custom_rule_message=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(,
+                         ContentAnalysisDialogCustomMessageBrowserTest,
+                         testing::Combine(
+                             /*file_scan=*/testing::Bool(),
+                             /*success=*/testing::Bool(),
+                             /*access_point=*/
+                             testing::Values(DeepScanAccessPoint::UPLOAD,
+                                             DeepScanAccessPoint::DRAG_AND_DROP,
+                                             DeepScanAccessPoint::PASTE,
+                                             DeepScanAccessPoint::PRINT),
+                             /*has_custom_rule_message=*/testing::Bool()));
 
 class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
  public:
@@ -1027,7 +1023,7 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
     return new ContentAnalysisDialogController(
         std::move(delegate), true,
         browser()->tab_strip_model()->GetActiveWebContents(),
-        safe_browsing::DeepScanAccessPoint::DOWNLOAD, 0, result);
+        DeepScanAccessPoint::DOWNLOAD, 0, result);
   }
 
   int times_open_called_ = 0;
@@ -1336,8 +1332,7 @@ class ContentAnalysisDialogUiTest
     new ContentAnalysisDialogController(
         std::move(delegate), true,
         browser()->tab_strip_model()->GetActiveWebContents(),
-        safe_browsing::DeepScanAccessPoint::DOWNLOAD, 1,
-        FinalContentAnalysisResult::WARNING);
+        DeepScanAccessPoint::DOWNLOAD, 1, FinalContentAnalysisResult::WARNING);
   }
 };
 
@@ -1375,8 +1370,7 @@ class ContentAnalysisDialogCustomRuleMessageUiTest
     new ContentAnalysisDialogController(
         std::move(delegate), true,
         browser()->tab_strip_model()->GetActiveWebContents(),
-        safe_browsing::DeepScanAccessPoint::DOWNLOAD, 1,
-        FinalContentAnalysisResult::WARNING);
+        DeepScanAccessPoint::DOWNLOAD, 1, FinalContentAnalysisResult::WARNING);
   }
 
  private:
@@ -1436,7 +1430,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogDownloadObserverTest,
           /* discard_callback */ base::DoNothing(), &mock_download_item,
           ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage()),
       true, browser()->tab_strip_model()->GetActiveWebContents(),
-      safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
+      DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
       FinalContentAnalysisResult::WARNING, &mock_download_item);
 
   show_run_loop.Run();
@@ -1463,7 +1457,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogDownloadObserverTest,
           /* discard_callback */ base::DoNothing(), &mock_download_item,
           ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage()),
       true, browser()->tab_strip_model()->GetActiveWebContents(),
-      safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
+      DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
       FinalContentAnalysisResult::WARNING, &mock_download_item);
 
   show_run_loop.Run();
@@ -1499,7 +1493,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogDownloadObserverTest,
           /* discard_callback */ base::DoNothing(), mock_download_item.get(),
           ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage()),
       true, browser()->tab_strip_model()->GetActiveWebContents(),
-      safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
+      DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
       FinalContentAnalysisResult::WARNING, mock_download_item.get());
 
   show_run_loop.Run();

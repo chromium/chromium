@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 <!-- These values are persisted to logs. Entries should not be renumbered and
      numeric values should never be reused. Keep this in sync with
      safe_browsing::DeepScanAccessPoint in
-     chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h
+     components/enterprise/connectors/core/common.h
     -->
 
   <int value="0" label="File Downloaded"/>
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="File Transfer"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h:DeepScanAccessPoint) -->
+<!-- LINT.ThenChange(//components/enterprise/connectors/core/common.h:DeepScanAccessPoint) -->
 
 <!-- LINT.IfChange(DisplayPosition) -->
 

@@ -528,8 +528,8 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
             metadata.sha256, metadata.mime_type,
             extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
             metadata.scan_response.request_token(), "",
-            DeepScanAccessPoint::DOWNLOAD, referrer_chain, result,
-            metadata.size,
+            enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+            referrer_chain, result, metadata.size,
             /*user_justification=*/std::nullopt);
 
         // There won't be multiple DLP verdicts in the same response, so no need

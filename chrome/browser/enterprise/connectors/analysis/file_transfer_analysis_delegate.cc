@@ -227,7 +227,7 @@ bool FileTransferAnalysisDelegate::FileTransferAnalysisResult::IsUnknown()
 // static
 std::unique_ptr<FileTransferAnalysisDelegate>
 FileTransferAnalysisDelegate::Create(
-    safe_browsing::DeepScanAccessPoint access_point,
+    DeepScanAccessPoint access_point,
     storage::FileSystemURL source_url,
     storage::FileSystemURL destination_url,
     Profile* profile,
@@ -347,7 +347,7 @@ void FileTransferAnalysisDelegate::UploadData(
 }
 
 FileTransferAnalysisDelegate::FileTransferAnalysisDelegate(
-    safe_browsing::DeepScanAccessPoint access_point,
+    DeepScanAccessPoint access_point,
     storage::FileSystemURL source_url,
     storage::FileSystemURL destination_url,
     Profile* profile,

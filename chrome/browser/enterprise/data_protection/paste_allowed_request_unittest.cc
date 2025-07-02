@@ -73,7 +73,7 @@ class TestClipboardRequestHandler
       Profile* profile,
       GURL url,
       Type type,
-      safe_browsing::DeepScanAccessPoint access_point,
+      enterprise_connectors::DeepScanAccessPoint access_point,
       enterprise_connectors::ContentMetaData::CopiedTextSource clipboard_source,
       std::string source_content_area_email,
       std::string content_transfer_method,

@@ -56,7 +56,7 @@ ContentAnalysisDialogController::ContentAnalysisDialogController(
     std::unique_ptr<ContentAnalysisDelegateBase> delegate,
     bool is_cloud,
     content::WebContents* contents,
-    safe_browsing::DeepScanAccessPoint access_point,
+    DeepScanAccessPoint access_point,
     int files_count,
     FinalContentAnalysisResult final_result,
     download::DownloadItem* download_item)

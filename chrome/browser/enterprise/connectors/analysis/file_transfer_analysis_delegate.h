@@ -49,7 +49,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
  public:
   using FileTransferAnalysisDelegateFactory = base::RepeatingCallback<
       std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>(
-          safe_browsing::DeepScanAccessPoint access_point,
+          DeepScanAccessPoint access_point,
           storage::FileSystemURL source_url,
           storage::FileSystemURL destination_url,
           Profile* profile,
@@ -116,7 +116,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
   // copied file/directory and not its parent. If it points to the parent, all
   // files within the destination directory are scanned.
   static std::unique_ptr<FileTransferAnalysisDelegate> Create(
-      safe_browsing::DeepScanAccessPoint access_point,
+      DeepScanAccessPoint access_point,
       storage::FileSystemURL source_url,
       storage::FileSystemURL destination_url,
       Profile* profile,
@@ -185,7 +185,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
   // For `block_until_verdict == 0`, the `destination_url` has to point to the
   // copied file/directory and not its parent. If it points to the parent, all
   // files within the destination directory are scanned.
-  FileTransferAnalysisDelegate(safe_browsing::DeepScanAccessPoint access_point,
+  FileTransferAnalysisDelegate(DeepScanAccessPoint access_point,
                                storage::FileSystemURL source_url,
                                storage::FileSystemURL destination_url,
                                Profile* profile,
@@ -199,7 +199,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
 
   AnalysisSettings settings_;
   raw_ptr<Profile> profile_;
-  safe_browsing::DeepScanAccessPoint access_point_;
+  DeepScanAccessPoint access_point_;
   std::vector<storage::FileSystemURL> scanning_urls_;
   storage::FileSystemURL source_url_;
   storage::FileSystemURL destination_url_;

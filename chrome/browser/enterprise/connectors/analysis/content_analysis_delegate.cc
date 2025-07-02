@@ -120,7 +120,7 @@ void OnContentAnalysisComplete(
 
 void OnPathsExpanded(
     base::WeakPtr<content::WebContents> web_contents,
-    safe_browsing::DeepScanAccessPoint access_point,
+    DeepScanAccessPoint access_point,
     ContentAnalysisDelegate::Data data,
     std::unique_ptr<FilesScanData> files_scan_data,
     ContentAnalysisDelegate::ForFilesCompletionCallback callback) {
@@ -258,7 +258,7 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
   // Don't report this upload as cancelled if the user didn't bypass the
   // warning.
   if (!warning) {
-    RecordDeepScanMetrics(
+    safe_browsing::RecordDeepScanMetrics(
         data_.settings.cloud_or_local_settings.is_cloud_analysis(),
         access_point_, base::TimeTicks::Now() - upload_start_time_, 0,
         "CancelledByUser", false);
@@ -335,18 +335,18 @@ bool ContentAnalysisDelegate::BypassRequiresJustification() const {
 std::u16string ContentAnalysisDelegate::GetBypassJustificationLabel() const {
   int id;
   switch (access_point_) {
-    case safe_browsing::DeepScanAccessPoint::UPLOAD:
-    case safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP:
-    case safe_browsing::DeepScanAccessPoint::FILE_TRANSFER:
+    case DeepScanAccessPoint::UPLOAD:
+    case DeepScanAccessPoint::DRAG_AND_DROP:
+    case DeepScanAccessPoint::FILE_TRANSFER:
       id = IDS_DEEP_SCANNING_DIALOG_UPLOAD_BYPASS_JUSTIFICATION_LABEL;
       break;
-    case safe_browsing::DeepScanAccessPoint::DOWNLOAD:
+    case DeepScanAccessPoint::DOWNLOAD:
       id = IDS_DEEP_SCANNING_DIALOG_DOWNLOAD_BYPASS_JUSTIFICATION_LABEL;
       break;
-    case safe_browsing::DeepScanAccessPoint::PASTE:
+    case DeepScanAccessPoint::PASTE:
       id = IDS_DEEP_SCANNING_DIALOG_PASTE_BYPASS_JUSTIFICATION_LABEL;
       break;
-    case safe_browsing::DeepScanAccessPoint::PRINT:
+    case DeepScanAccessPoint::PRINT:
       id = IDS_DEEP_SCANNING_DIALOG_PRINT_BYPASS_JUSTIFICATION_LABEL;
       break;
   }
@@ -389,7 +389,7 @@ void ContentAnalysisDelegate::CreateForWebContents(
     content::WebContents* web_contents,
     Data data,
     CompletionCallback callback,
-    safe_browsing::DeepScanAccessPoint access_point) {
+    DeepScanAccessPoint access_point) {
   Factory* testing_factory = GetFactoryStorage();
   bool wait_for_verdict =
       data.settings.block_until_verdict == BlockUntilVerdict::kBlock;
@@ -484,7 +484,7 @@ void ContentAnalysisDelegate::CreateForFilesInWebContents(
     content::WebContents* web_contents,
     Data data,
     ForFilesCompletionCallback callback,
-    safe_browsing::DeepScanAccessPoint access_point) {
+    DeepScanAccessPoint access_point) {
   DCHECK(data.text.empty());
   DCHECK(data.image.empty());
   DCHECK(!data.page.IsValid());
@@ -533,7 +533,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
     content::WebContents* web_contents,
     Data data,
     CompletionCallback callback,
-    safe_browsing::DeepScanAccessPoint access_point)
+    DeepScanAccessPoint access_point)
     : data_(std::move(data)),
       tab_id_(sessions::SessionTabHelper::IdForTab(web_contents)),
       callback_(std::move(callback)),
@@ -546,8 +546,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
     base::UmaHistogramCustomCounts(
         base::JoinString(
             {"Enterprise.IframeDlpRulesSupport",
-             safe_browsing::DeepScanAccessPointToString(access_point_),
-             "UrlChainSize"},
+             DeepScanAccessPointToString(access_point_), "UrlChainSize"},
             "."),
         frame_url_chain_.size(), 1, kMaxFrameUrls, 10);
   }

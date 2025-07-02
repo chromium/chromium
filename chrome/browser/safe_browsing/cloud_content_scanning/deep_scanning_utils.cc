@@ -156,7 +156,7 @@ void MaybeReportDeepScanningVerdict(
     const std::string& trigger,
     const std::string& content_transfer_method,
     const std::string& source_email,
-    DeepScanAccessPoint access_point,
+    enterprise_connectors::DeepScanAccessPoint access_point,
     const int64_t content_size,
     const safe_browsing::ReferrerChain& referrer_chain,
     BinaryUploadService::Result result,
@@ -213,7 +213,7 @@ void ReportAnalysisConnectorWarningBypass(
     const std::string& mime_type,
     const std::string& trigger,
     const std::string& content_transfer_method,
-    DeepScanAccessPoint access_point,
+    enterprise_connectors::DeepScanAccessPoint access_point,
     const int64_t content_size,
     const safe_browsing::ReferrerChain& referrer_chain,
     const enterprise_connectors::ContentAnalysisResponse& response,
@@ -236,27 +236,9 @@ void ReportAnalysisConnectorWarningBypass(
   }
 }
 
-std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
-  switch (access_point) {
-    case DeepScanAccessPoint::DOWNLOAD:
-      return "Download";
-    case DeepScanAccessPoint::UPLOAD:
-      return "Upload";
-    case DeepScanAccessPoint::DRAG_AND_DROP:
-      return "DragAndDrop";
-    case DeepScanAccessPoint::PASTE:
-      return "Paste";
-    case DeepScanAccessPoint::PRINT:
-      return "Print";
-    case DeepScanAccessPoint::FILE_TRANSFER:
-      return "FileTransfer";
-  }
-  NOTREACHED();
-}
-
 void RecordDeepScanMetrics(
     bool is_cloud,
-    DeepScanAccessPoint access_point,
+    enterprise_connectors::DeepScanAccessPoint access_point,
     base::TimeDelta duration,
     int64_t total_bytes,
     const BinaryUploadService::Result& result,
@@ -289,12 +271,13 @@ void RecordDeepScanMetrics(
                         result_value, success);
 }
 
-void RecordDeepScanMetrics(bool is_cloud,
-                           DeepScanAccessPoint access_point,
-                           base::TimeDelta duration,
-                           int64_t total_bytes,
-                           const std::string& result,
-                           bool success) {
+void RecordDeepScanMetrics(
+    bool is_cloud,
+    enterprise_connectors::DeepScanAccessPoint access_point,
+    base::TimeDelta duration,
+    int64_t total_bytes,
+    const std::string& result,
+    bool success) {
   // Don't record metrics if the duration is unusable.
   if (duration.InMilliseconds() == 0)
     return;

@@ -41,7 +41,7 @@ ContentAnalysisDialogDelegate::ContentAnalysisDialogDelegate(
     ContentAnalysisDelegateBase* delegate,
     content::WebContents::Getter web_contents_getter,
     bool is_cloud,
-    safe_browsing::DeepScanAccessPoint access_point,
+    DeepScanAccessPoint access_point,
     int files_count,
     FinalContentAnalysisResult final_result)
     : final_result_(final_result),
@@ -457,7 +457,7 @@ std::u16string ContentAnalysisDialogDelegate::GetCustomMessage() const {
 }
 
 bool ContentAnalysisDialogDelegate::is_print_scan() const {
-  return access_point_ == safe_browsing::DeepScanAccessPoint::PRINT;
+  return access_point_ == DeepScanAccessPoint::PRINT;
 }
 
 bool ContentAnalysisDialogDelegate::has_custom_message() const {

@@ -15,7 +15,7 @@ RequestHandlerBase::RequestHandlerBase(
     safe_browsing::BinaryUploadService* upload_service,
     Profile* profile,
     GURL url,
-    safe_browsing::DeepScanAccessPoint access_point)
+    DeepScanAccessPoint access_point)
     : content_analysis_info_(content_analysis_info),
       upload_service_(upload_service ? upload_service->AsWeakPtr() : nullptr),
       profile_(profile),

@@ -139,7 +139,7 @@ void PrintIfAllowedByPolicy(
 
   enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
       web_contents, std::move(scanning_data), std::move(on_scan_result),
-      safe_browsing::DeepScanAccessPoint::PRINT);
+      enterprise_connectors::DeepScanAccessPoint::PRINT);
 }
 
 std::optional<enterprise_connectors::ContentAnalysisDelegate::Data>

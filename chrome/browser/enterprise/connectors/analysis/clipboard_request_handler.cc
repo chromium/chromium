@@ -8,6 +8,7 @@
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/common.h"
 
 namespace enterprise_connectors {
 
@@ -27,7 +28,7 @@ std::unique_ptr<ClipboardRequestHandler> ClipboardRequestHandler::Create(
     Profile* profile,
     GURL url,
     Type type,
-    safe_browsing::DeepScanAccessPoint access_point,
+    DeepScanAccessPoint access_point,
     ContentMetaData::CopiedTextSource clipboard_source,
     std::string source_content_area_email,
     std::string content_transfer_method,
@@ -66,7 +67,7 @@ ClipboardRequestHandler::ClipboardRequestHandler(
     Profile* profile,
     GURL url,
     Type type,
-    safe_browsing::DeepScanAccessPoint access_point,
+    DeepScanAccessPoint access_point,
     ContentMetaData::CopiedTextSource clipboard_source,
     std::string source_content_area_email,
     std::string content_transfer_method,

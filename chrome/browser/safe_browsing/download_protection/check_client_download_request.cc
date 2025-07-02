@@ -133,7 +133,7 @@ void CheckClientDownloadRequest::OnDownloadUpdated(
     if (settings.has_value()) {
       RecordDeepScanMetrics(
           settings->cloud_or_local_settings.is_cloud_analysis(),
-          /*access_point=*/DeepScanAccessPoint::DOWNLOAD,
+          /*access_point=*/enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
           /*duration=*/base::TimeTicks::Now() - upload_start_time_,
           /*total_size=*/item_->GetTotalBytes(),
           /*result=*/"BypassedByUser",

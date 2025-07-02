@@ -362,7 +362,7 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
               .value_or(ContentAnalysisResponse::Result::TriggeredRule::
                             CustomRuleMessage())),
       true,  // Downloads are always cloud-based for now.
-      web_contents, safe_browsing::DeepScanAccessPoint::DOWNLOAD,
+      web_contents, DeepScanAccessPoint::DOWNLOAD,
       /* file_count */ 1, state, download_item);
 }
 

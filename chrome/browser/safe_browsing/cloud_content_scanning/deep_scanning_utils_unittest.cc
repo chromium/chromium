@@ -53,13 +53,17 @@ constexpr base::TimeDelta kInvalidDuration = base::Seconds(0);
 
 class DeepScanningUtilsUMATest
     : public testing::TestWithParam<
-          std::tuple<bool, DeepScanAccessPoint, BinaryUploadService::Result>> {
+          std::tuple<bool,
+                     enterprise_connectors::DeepScanAccessPoint,
+                     BinaryUploadService::Result>> {
  public:
   DeepScanningUtilsUMATest() = default;
 
   bool is_cloud() const { return std::get<0>(GetParam()); }
 
-  DeepScanAccessPoint access_point() const { return std::get<1>(GetParam()); }
+  enterprise_connectors::DeepScanAccessPoint access_point() const {
+    return std::get<1>(GetParam());
+  }
 
   std::string access_point_string() const {
     return DeepScanAccessPointToString(access_point());
@@ -89,14 +93,16 @@ class DeepScanningUtilsUMATest
 INSTANTIATE_TEST_SUITE_P(
     Tests,
     DeepScanningUtilsUMATest,
-    testing::Combine(testing::Bool(),
-                     testing::Values(DeepScanAccessPoint::DOWNLOAD,
-                                     DeepScanAccessPoint::UPLOAD,
-                                     DeepScanAccessPoint::DRAG_AND_DROP,
-                                     DeepScanAccessPoint::PASTE,
-                                     DeepScanAccessPoint::PRINT,
-                                     DeepScanAccessPoint::FILE_TRANSFER),
-                     testing::ValuesIn(kAllBinaryUploadServiceResults)));
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(
+            enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+            enterprise_connectors::DeepScanAccessPoint::UPLOAD,
+            enterprise_connectors::DeepScanAccessPoint::DRAG_AND_DROP,
+            enterprise_connectors::DeepScanAccessPoint::PASTE,
+            enterprise_connectors::DeepScanAccessPoint::PRINT,
+            enterprise_connectors::DeepScanAccessPoint::FILE_TRANSFER),
+        testing::ValuesIn(kAllBinaryUploadServiceResults)));
 
 TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
   // Record metrics for the 5 successful scan possibilities:

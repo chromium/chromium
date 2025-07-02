@@ -71,8 +71,8 @@ void DoReportOnlyScanning(
   std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>
       file_transfer_analysis_delegate =
           enterprise_connectors::FileTransferAnalysisDelegate::Create(
-              safe_browsing::DeepScanAccessPoint::FILE_TRANSFER, sources[idx],
-              outputs[idx], profile, file_system_context.get(),
+              enterprise_connectors::DeepScanAccessPoint::FILE_TRANSFER,
+              sources[idx], outputs[idx], profile, file_system_context.get(),
               std::move(settings[idx].value()));
 
   // Manage lifetime of the file_transfer_analysis_delegate by binding it to the
@@ -374,7 +374,7 @@ void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
 
   file_transfer_analysis_delegates_[idx] =
       enterprise_connectors::FileTransferAnalysisDelegate::Create(
-          safe_browsing::DeepScanAccessPoint::FILE_TRANSFER,
+          enterprise_connectors::DeepScanAccessPoint::FILE_TRANSFER,
           progress_->sources[idx].url, progress_->GetDestinationFolder(),
           profile_, file_system_context_.get(),
           std::move(settings_[idx].value()));

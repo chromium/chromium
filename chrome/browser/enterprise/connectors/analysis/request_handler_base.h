@@ -36,7 +36,7 @@ class RequestHandlerBase {
                      safe_browsing::BinaryUploadService* upload_service,
                      Profile* profile,
                      GURL url,
-                     safe_browsing::DeepScanAccessPoint access_point);
+                     DeepScanAccessPoint access_point);
 
   virtual ~RequestHandlerBase();
 
@@ -78,7 +78,7 @@ class RequestHandlerBase {
   base::WeakPtr<safe_browsing::BinaryUploadService> upload_service_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
   GURL url_;
-  safe_browsing::DeepScanAccessPoint access_point_;
+  DeepScanAccessPoint access_point_;
 
   // A mapping of request tokens (corresponding to one user action) to their Ack
   // final action.

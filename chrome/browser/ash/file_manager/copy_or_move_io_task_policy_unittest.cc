@@ -215,7 +215,7 @@ class CopyOrMoveIOTaskWithScansTest
                    enterprise_connectors::MockFileTransferAnalysisDelegate*,
                    const storage::FileSystemURL& source_url)>
                    mock_setup_callback,
-               safe_browsing::DeepScanAccessPoint access_point,
+               enterprise_connectors::DeepScanAccessPoint access_point,
                storage::FileSystemURL source_url,
                storage::FileSystemURL destination_url, Profile* profile,
                storage::FileSystemContext* file_system_context,

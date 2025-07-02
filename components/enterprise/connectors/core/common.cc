@@ -437,4 +437,22 @@ std::string GetFailedUploadDurationUmaMetricName(
              : base::StrCat({kUnknownUmaMetricName, "UploadFailure.Duration"});
 }
 
+std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
+  switch (access_point) {
+    case DeepScanAccessPoint::DOWNLOAD:
+      return "Download";
+    case DeepScanAccessPoint::UPLOAD:
+      return "Upload";
+    case DeepScanAccessPoint::DRAG_AND_DROP:
+      return "DragAndDrop";
+    case DeepScanAccessPoint::PASTE:
+      return "Paste";
+    case DeepScanAccessPoint::PRINT:
+      return "Print";
+    case DeepScanAccessPoint::FILE_TRANSFER:
+      return "FileTransfer";
+  }
+  NOTREACHED();
+}
+
 }  // namespace enterprise_connectors

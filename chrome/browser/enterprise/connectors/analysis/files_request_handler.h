@@ -63,7 +63,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       const std::string& source,
       const std::string& destination,
       const std::string& content_transfer_method,
-      safe_browsing::DeepScanAccessPoint access_point,
+      DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback)>;
 
@@ -80,7 +80,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       const std::string& source,
       const std::string& destination,
       const std::string& content_transfer_method,
-      safe_browsing::DeepScanAccessPoint access_point,
+      DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback);
 
@@ -101,7 +101,7 @@ class FilesRequestHandler : public RequestHandlerBase {
                       const std::string& source,
                       const std::string& destination,
                       const std::string& content_transfer_method,
-                      safe_browsing::DeepScanAccessPoint access_point,
+                      DeepScanAccessPoint access_point,
                       const std::vector<base::FilePath>& paths,
                       CompletionCallback callback);
 

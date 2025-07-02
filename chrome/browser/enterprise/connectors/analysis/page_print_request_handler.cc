@@ -91,7 +91,7 @@ PagePrintRequestHandler::PagePrintRequestHandler(
                          upload_service,
                          profile,
                          url,
-                         safe_browsing::DeepScanAccessPoint::PRINT),
+                         DeepScanAccessPoint::PRINT),
       page_region_(std::move(page_region)),
       printer_name_(printer_name),
       page_content_type_(page_content_type),
@@ -106,7 +106,7 @@ void PagePrintRequestHandler::ReportWarningBypass(
       /*sha256*/ std::string(),
       /*mime_type*/ std::string(),
       extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
-      /*content_tranfer_method*/ "", safe_browsing::DeepScanAccessPoint::PRINT,
+      /*content_tranfer_method*/ "", DeepScanAccessPoint::PRINT,
       /*content_size*/ -1, content_analysis_info_->referrer_chain(), response_,
       user_justification);
 }
@@ -167,7 +167,7 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
 
   RecordDeepScanMetrics(content_analysis_info_->settings()
                             .cloud_or_local_settings.is_cloud_analysis(),
-                        safe_browsing::DeepScanAccessPoint::PRINT,
+                        DeepScanAccessPoint::PRINT,
                         base::TimeTicks::Now() - upload_start_time_,
                         page_size_bytes_, result, response_);
 
@@ -187,7 +187,7 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
       extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
       /*content_tranfer_method*/ "",
       content_analysis_info_->GetContentAreaAccountEmail(),
-      safe_browsing::DeepScanAccessPoint::PRINT,
+      DeepScanAccessPoint::PRINT,
       /*content_size*/ -1, content_analysis_info_->referrer_chain(), result,
       response_,
       CalculateEventResult(content_analysis_info_->settings(),

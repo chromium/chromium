@@ -278,8 +278,8 @@ class FilesRequestHandlerTest : public BaseTest {
                 settings->cloud_or_local_settings.is_cloud_analysis()),
             /*content_analysis_info=*/&info,
             /*upload_service=*/nullptr, profile_, GURL(kTestUrl), "", "",
-            kContentTransferMethod, safe_browsing::DeepScanAccessPoint::UPLOAD,
-            paths, future.GetCallback());
+            kContentTransferMethod, DeepScanAccessPoint::UPLOAD, paths,
+            future.GetCallback());
 
     fake_files_request_handler_->UploadData();
 

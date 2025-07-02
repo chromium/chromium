@@ -153,8 +153,9 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
           profile, download->GetURL(), download->GetTabUrl(), "", "",
           metadata.filename, metadata.sha256, metadata.mime_type,
           extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
-          DeepScanAccessPoint::DOWNLOAD, metadata.size, referrer_chain,
-          metadata.scan_response, stored_result->user_justification);
+          enterprise_connectors::DeepScanAccessPoint::DOWNLOAD, metadata.size,
+          referrer_chain, metadata.scan_response,
+          stored_result->user_justification);
     }
   } else {
     ReportAnalysisConnectorWarningBypass(
@@ -162,8 +163,9 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
         download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(download->GetHash()), download->GetMimeType(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
-        DeepScanAccessPoint::DOWNLOAD, download->GetTotalBytes(),
-        referrer_chain, enterprise_connectors::ContentAnalysisResponse(),
+        enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+        download->GetTotalBytes(), referrer_chain,
+        enterprise_connectors::ContentAnalysisResponse(),
         /*user_justification=*/std::nullopt);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

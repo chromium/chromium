@@ -91,7 +91,7 @@ class ContentAnalysisDialogController
       std::unique_ptr<ContentAnalysisDelegateBase> delegate,
       bool is_cloud,
       content::WebContents* web_contents,
-      safe_browsing::DeepScanAccessPoint access_point,
+      DeepScanAccessPoint access_point,
       int files_count,
       FinalContentAnalysisResult final_result =
           FinalContentAnalysisResult::SUCCESS,

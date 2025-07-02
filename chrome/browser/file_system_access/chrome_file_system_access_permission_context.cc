@@ -1816,7 +1816,7 @@ void ChromeFileSystemAccessPermissionContext::CheckPathsAgainstEnterprisePolicy(
       base::BindOnce(
           &ChromeFileSystemAccessPermissionContext::OnContentAnalysisComplete,
           weak_factory_.GetWeakPtr(), std::move(entries), std::move(callback)),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
+      enterprise_connectors::DeepScanAccessPoint::UPLOAD);
 #else
   std::move(callback).Run(std::move(entries));
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

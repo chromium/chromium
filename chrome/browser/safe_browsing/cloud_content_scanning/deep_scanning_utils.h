@@ -24,40 +24,6 @@ class ContentAnalysisResponse;
 
 namespace safe_browsing {
 
-// Access points used to record UMA metrics and specify which code location is
-// initiating a deep scan. Any new caller of
-// ContentAnalysisDelegate::CreateForWebContents should add an access point
-// here instead of re-using an existing value. histograms.xml should also be
-// updated by adding histograms with names
-//   "SafeBrowsing.DeepScan.<access-point>.BytesPerSeconds"
-//   "SafeBrowsing.DeepScan.<access-point>.Duration"
-//   "SafeBrowsing.DeepScan.<access-point>.<result>.Duration"
-// for the new access point and every possible result.
-// LINT.IfChange(DeepScanAccessPoint)
-enum class DeepScanAccessPoint {
-  // A deep scan was initiated from downloading 1+ file(s).
-  DOWNLOAD,
-
-  // A deep scan was initiated from uploading 1+ file(s) via a system dialog.
-  UPLOAD,
-
-  // A deep scan was initiated from drag-and-dropping text or 1+ file(s).
-  DRAG_AND_DROP,
-
-  // A deep scan was initiated from pasting text.
-  PASTE,
-
-  // A deep scan was initiated from printing a page.
-  PRINT,
-
-  // A deep scan was initiated from transferring 1+ file(s) within ChromeOS.
-  FILE_TRANSFER,
-
-  kMaxValue = FILE_TRANSFER,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:DeepScanAccessPoint)
-std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
-
 // Helper function to examine a ContentAnalysisResponse and report the
 // appropriate events to the enterprise admin. |download_digest_sha256| must be
 // encoded using base::HexEncode.  |event_result| indicates whether the user was
@@ -74,7 +40,7 @@ void MaybeReportDeepScanningVerdict(
     const std::string& trigger,
     const std::string& content_transfer_method,
     const std::string& source_email,
-    DeepScanAccessPoint access_point,
+    enterprise_connectors::DeepScanAccessPoint access_point,
     const int64_t content_size,
     const safe_browsing::ReferrerChain& referrer_chain,
     BinaryUploadService::Result result,
@@ -96,7 +62,7 @@ void ReportAnalysisConnectorWarningBypass(
     const std::string& mime_type,
     const std::string& trigger,
     const std::string& content_transfer_method,
-    DeepScanAccessPoint access_point,
+    enterprise_connectors::DeepScanAccessPoint access_point,
     const int64_t content_size,
     const safe_browsing::ReferrerChain& referrer_chain,
     const enterprise_connectors::ContentAnalysisResponse& response,
@@ -106,17 +72,18 @@ void ReportAnalysisConnectorWarningBypass(
 // request split by its result and bytes/sec for successful requests.
 void RecordDeepScanMetrics(
     bool is_cloud,
-    DeepScanAccessPoint access_point,
+    enterprise_connectors::DeepScanAccessPoint access_point,
     base::TimeDelta duration,
     int64_t total_bytes,
     const BinaryUploadService::Result& result,
     const enterprise_connectors::ContentAnalysisResponse& response);
-void RecordDeepScanMetrics(bool is_cloud,
-                           DeepScanAccessPoint access_point,
-                           base::TimeDelta duration,
-                           int64_t total_bytes,
-                           const std::string& result,
-                           bool success);
+void RecordDeepScanMetrics(
+    bool is_cloud,
+    enterprise_connectors::DeepScanAccessPoint access_point,
+    base::TimeDelta duration,
+    int64_t total_bytes,
+    const std::string& result,
+    bool success);
 
 // Helper function to make ContentAnalysisResponses for tests.
 enterprise_connectors::ContentAnalysisResponse

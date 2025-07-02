@@ -322,6 +322,40 @@ std::string GetSuccessfulUploadDurationUmaMetricName(
 std::string GetFailedUploadDurationUmaMetricName(
     EnterpriseReportingEventType event_type);
 
+// Access points used to record UMA metrics and specify which code location is
+// initiating a deep scan. Any new caller of
+// ContentAnalysisDelegate::CreateForWebContents should add an access point
+// here instead of reusing an existing value. histograms.xml should also be
+// updated by adding histograms with names
+//   "SafeBrowsing.DeepScan.<access-point>.BytesPerSeconds"
+//   "SafeBrowsing.DeepScan.<access-point>.Duration"
+//   "SafeBrowsing.DeepScan.<access-point>.<result>.Duration"
+// for the new access point and every possible result.
+// LINT.IfChange(DeepScanAccessPoint)
+enum class DeepScanAccessPoint {
+  // A deep scan was initiated from downloading 1+ file(s).
+  DOWNLOAD,
+
+  // A deep scan was initiated from uploading 1+ file(s) via a system dialog.
+  UPLOAD,
+
+  // A deep scan was initiated from drag-and-dropping text or 1+ file(s).
+  DRAG_AND_DROP,
+
+  // A deep scan was initiated from pasting text.
+  PASTE,
+
+  // A deep scan was initiated from printing a page.
+  PRINT,
+
+  // A deep scan was initiated from transferring 1+ file(s) within ChromeOS.
+  FILE_TRANSFER,
+
+  kMaxValue = FILE_TRANSFER,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:DeepScanAccessPoint)
+std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_COMMON_H_

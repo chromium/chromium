@@ -17,7 +17,7 @@ FakeFilesRequestHandler::FakeFilesRequestHandler(
     const std::string& source,
     const std::string& destination,
     const std::string& content_transfer_method,
-    safe_browsing::DeepScanAccessPoint access_point,
+    DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
     CompletionCallback callback)
     : FilesRequestHandler(content_analysis_info,
@@ -44,7 +44,7 @@ std::unique_ptr<FilesRequestHandler> FakeFilesRequestHandler::Create(
     const std::string& source,
     const std::string& destination,
     const std::string& content_transfer_method,
-    safe_browsing::DeepScanAccessPoint access_point,
+    DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
     FilesRequestHandler::CompletionCallback callback) {
   return std::make_unique<FakeFilesRequestHandler>(

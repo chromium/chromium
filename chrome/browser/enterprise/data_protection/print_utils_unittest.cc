@@ -123,7 +123,7 @@ class PrintTestContentAnalysisDelegate : public ContentAnalysisDelegate {
       ContentAnalysisDelegate::CompletionCallback callback) {
     auto delegate = base::WrapUnique(new PrintTestContentAnalysisDelegate(
         contents, std::move(data), std::move(callback),
-        safe_browsing::DeepScanAccessPoint::PRINT));
+        enterprise_connectors::DeepScanAccessPoint::PRINT));
     test_delegate_ = delegate.get();
     return delegate;
   }
