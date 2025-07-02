@@ -18,6 +18,8 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {getSearchManager} from '../search_settings.js';
+import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
 import type {DownloadsBrowserProxy} from './downloads_browser_proxy.js';
 import {DownloadsBrowserProxyImpl} from './downloads_browser_proxy.js';
@@ -27,7 +29,7 @@ const SettingsDownloadsPageElementBase =
     WebUiListenerMixin(PrefsMixin(PolymerElement));
 
 export class SettingsDownloadsPageElement extends
-    SettingsDownloadsPageElementBase {
+    SettingsDownloadsPageElementBase implements SettingsPlugin {
   static get is() {
     return 'settings-downloads-page';
   }
@@ -112,6 +114,12 @@ export class SettingsDownloadsPageElement extends
 
   private onClearAutoOpenFileTypesClick_() {
     this.browserProxy_.resetAutoOpenFileTypes();
+  }
+
+  // SettingsPlugin implementation
+  async searchContents(query: string) {
+    const searchRequest = await getSearchManager().search(query, this);
+    return searchRequest.getSearchResult();
   }
 }
 

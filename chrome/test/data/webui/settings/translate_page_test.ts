@@ -266,7 +266,8 @@ suite('TranslatePage', function() {
         dialogClosedResolver = new PromiseResolver();
         dialogClosedObserver = new MutationObserver(onMutation);
         dialogClosedObserver.observe(
-            translatePage.shadowRoot!, {childList: true});
+            translatePage.shadowRoot!.querySelector('settings-section')!,
+            {childList: true});
 
         flush();
       });
@@ -336,7 +337,8 @@ suite('TranslatePage', function() {
         dialogClosedResolver = new PromiseResolver();
         dialogClosedObserver = new MutationObserver(onMutation);
         dialogClosedObserver.observe(
-            translatePage.shadowRoot!, {childList: true});
+            translatePage.shadowRoot!.querySelector('settings-section')!,
+            {childList: true});
 
         flush();
       });

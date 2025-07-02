@@ -1,22 +1,25 @@
-    <style include="cr-shared-style settings-shared">
-      :host {
-        display: flex;
-        flex-direction: column;
-      }
+  <style include="cr-shared-style settings-shared">
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
 
-      #newWord {
-        width: 100%;
-        --cr-input-width: var(--cr-default-input-max-width);
-      }
+    #newWord {
+      width: 100%;
+      --cr-input-width: var(--cr-default-input-max-width);
+    }
 
-      #newWord::part(row-container) {
-        justify-content: normal;
-      }
+    #newWord::part(row-container) {
+      justify-content: normal;
+    }
 
-      iron-list .word {
-        flex: 1;
-      }
-    </style>
+    iron-list .word {
+      flex: 1;
+    }
+  </style>
+  <settings-subpage
+      page-title="$i18n{editDictionaryPageTitle}"
+      no-search$="[[!prefs.browser.enable_spellchecking.value]]">
     <div class="cr-row first" on-keydown="onKeysPress_">
       <cr-input id="newWord" value="{{newWordValue_}}"
           placeholder="$i18n{addDictionaryWordLabel}"
@@ -52,3 +55,4 @@
         $i18n{noCustomDictionaryWordsFound}
       </div>
     </div>
+  </settings-subpage>

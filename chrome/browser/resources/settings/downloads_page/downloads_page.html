@@ -1,8 +1,10 @@
-    <style include="cr-shared-style settings-shared">
-      #defaultDownloadPath {
-        word-break: break-word;
-      }
-    </style>
+  <style include="cr-shared-style settings-shared">
+    #defaultDownloadPath {
+      word-break: break-word;
+    }
+  </style>
+  <settings-section page-title="$i18n{downloadsPageTitle}"
+      class="cr-centered-card-container">
     <div class="cr-row first">
       <div class="flex cr-padded-text">
         <div id="locationLabel" aria-hidden="true">
@@ -48,3 +50,4 @@
           label="$i18n{showDownloadsWhenFinished}">
       </settings-toggle-button>
     </template>
+  </settings-section>

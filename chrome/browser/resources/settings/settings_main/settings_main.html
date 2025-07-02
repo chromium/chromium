@@ -42,15 +42,70 @@
   <managed-footnote></managed-footnote>
 </template>
 
+<if expr="not chromeos_ash">
+  <template is="dom-if" if="[[showPage_(pageVisibility_.languages)]]">
+    <settings-languages languages="{{languages_}}" prefs="{{prefs}}">
+    </settings-languages>
+  </template>
+</if>
+
 <cr-view-manager id="switcher"
     show-all$="[[shouldShowAll_(inSearchMode_, lastRoute_)]]">
-  <div id="old" slot="view">
+  <div slot="view" id="old">
     <template is="dom-if" if="[[renderBasicPage_(lastRoute_)]]">
       <settings-basic-page class="cr-centered-card-container"
-          prefs="{{prefs}}" in-search-mode="[[inSearchMode_]]">
+          prefs="{{prefs}}" languages="[[languages_]]"
+          in-search-mode="[[inSearchMode_]]">
       </settings-basic-page>
     </template>
   </div>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.languages)]]">
+    <div slot="view" id="languages">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.LANGUAGES, lastRoute_, inSearchMode_)]]">
+<if expr="chromeos_ash">
+        <settings-languages-page-index></settings-languages-page-index>
+</if>
+<if expr="not chromeos_ash">
+        <settings-languages-page-index prefs="{{prefs}}"
+            languages="[[languages_]]" in-search-mode="[[inSearchMode_]]">
+        </settings-languages-page-index>
+</if>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.downloads)]]">
+    <div slot="view" id="downloads">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.DOWNLOADS, lastRoute_, inSearchMode_)]]">
+        <settings-downloads-page prefs="{{prefs}}"></settings-downloads-page>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.a11y)]]">
+    <div slot="view" id="a11y">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.ACCESSIBILITY, lastRoute_, inSearchMode_)]]">
+        <settings-a11y-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-a11y-page-index>
+      </template>
+    </div>
+  </template>
+
+<if expr="not chromeos_ash">
+  <template is="dom-if" if="[[showPage_(pageVisibility_.system)]]">
+    <div slot="view" id="system">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.SYSTEM, lastRoute_, inSearchMode_)]]">
+        <settings-system-page prefs="{{prefs}}"></settings-system-page>
+      </template>
+    </div>
+  </template>
+</if>
 
   <template is="dom-if" if="[[showPage_(pageVisibility_.reset)]]">
     <div slot="view" id="reset">

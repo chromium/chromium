@@ -1,6 +1,5 @@
     <style include="settings-shared"></style>
-    <settings-animated-pages id="pages" section="a11y"
-        focus-config="[[focusConfig_]]">
+    <settings-section page-title="$i18n{a11yPageTitle}">
       <div route-path="default">
 <if expr="is_chromeos">
         <cr-link-row
@@ -106,13 +105,4 @@
             external>
         </cr-link-row>
       </div>
-<if expr="is_linux">
-      <template is="dom-if" route-path="/captions">
-        <settings-subpage
-            associated-control="[[$$('#captions')]]"
-            page-title="$i18n{captionsTitle}">
-          <settings-captions prefs="{{prefs}}"></settings-captions>
-        </settings-subpage>
-      </template>
-</if>
-    </settings-animated-pages>
+    </settings-section>

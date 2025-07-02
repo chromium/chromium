@@ -54,8 +54,7 @@
     border-bottom: var(--cr-separator-line);
   }
 </style>
-<settings-animated-pages id="pages" section="spellCheck"
-    focus-config="[[focusConfig_]]">
+<settings-section page-title="$i18n{spellCheckTitle}">
   <div route-path="default">
     <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
         label="$i18n{offerToEnableSpellCheck}"
@@ -152,14 +151,4 @@
     </cr-collapse>
 </if> <!-- _google_chrome or not is_macosx -->
   </div>
-<if expr="not is_macosx">
-  <template is="dom-if" route-path="/editDictionary">
-    <settings-subpage
-        associated-control="[[$$('#spellCheckSubpageTrigger')]]"
-        page-title="$i18n{editDictionaryPageTitle}"
-        no-search$="[[!prefs.browser.enable_spellchecking.value]]">
-      <settings-edit-dictionary-page></settings-edit-dictionary-page>
-    </settings-subpage>
-  </template>
-</if> <!-- not is_macosx -->
-</settings-animated-pages>
+</settings-section>

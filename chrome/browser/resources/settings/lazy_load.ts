@@ -66,21 +66,18 @@ import './people_page/signout_dialog.js';
 import './people_page/sync_controls.js';
 import './people_page/sync_page.js';
 // Sections
-import './a11y_page/a11y_page.js';
+import './a11y_page/a11y_page_index.js';
 import './downloads_page/downloads_page.js';
+// <if expr="chromeos_ash">
+import './languages_page/languages_page_index_cros.js';
+// </if>
 // <if expr="not chromeos_ash">
 import './languages_page/languages.js';
-import './languages_page/languages_page.js';
-import './languages_page/spell_check_page.js';
-import './languages_page/translate_page.js';
+import './languages_page/languages_page_index.js';
 // </if>
 import './reset_page/reset_page.js';
 // <if expr="not chromeos_ash">
 import './system_page/system_page.js';
-// </if>
-
-// <if expr="not chromeos_ash and not is_macosx">
-import './languages_page/edit_dictionary_page.js';
 
 // </if>
 
@@ -105,7 +102,7 @@ export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 export {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl} from './a11y_page/a11y_browser_proxy.js';
-export {SettingsA11yPageElement} from './a11y_page/a11y_page.js';
+export {SettingsA11yPageElement, ToastAlertLevel} from './a11y_page/a11y_page.js';
 // <if expr="is_win or is_linux or is_macosx">
 export {SettingsAxAnnotationsSectionElement} from './a11y_page/ax_annotations_section.js';
 // </if>

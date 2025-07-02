@@ -14,6 +14,7 @@ import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
 import '../relaunch_confirmation_dialog.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -24,6 +25,8 @@ import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 // </if>
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
+import {getSearchManager} from '../search_settings.js';
+import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
 import {getTemplate} from './system_page.html.js';
 import {SystemPageBrowserProxyImpl} from './system_page_browser_proxy.js';
@@ -38,7 +41,8 @@ export interface SettingsSystemPageElement {
 
 const SettingsSystemPageElementBase = RelaunchMixin(PolymerElement);
 
-export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
+export class SettingsSystemPageElement extends SettingsSystemPageElementBase
+    implements SettingsPlugin {
   static get is() {
     return 'settings-system-page';
   }
@@ -128,6 +132,12 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
         enabled);
   }
   // </if>
+
+  // SettingsPlugin implementation
+  async searchContents(query: string) {
+    const searchRequest = await getSearchManager().search(query, this);
+    return searchRequest.getSearchResult();
+  }
 }
 
 declare global {

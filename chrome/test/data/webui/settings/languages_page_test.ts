@@ -136,7 +136,8 @@ suite('LanguagesPage', function() {
         dialogClosedResolver = new PromiseResolver();
         dialogClosedObserver = new MutationObserver(onMutation);
         dialogClosedObserver.observe(
-            languagesPage.shadowRoot!, {childList: true});
+            languagesPage.shadowRoot!.querySelector('settings-section')!,
+            {childList: true});
 
         actionButton = dialog.shadowRoot!.querySelector<CrButtonElement>(
             '.action-button')!;

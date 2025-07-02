@@ -24,14 +24,8 @@ import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
-import '../settings_page/settings_animated_pages.js';
-import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
-// <if expr="not is_macosx">
-import './edit_dictionary_page.js';
-
-// </if>
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -42,9 +36,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BaseMixin} from '../base_mixin.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import type {FocusConfig} from '../focus_config.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getLanguageHelperInstance} from './languages.js';
 import type {LanguageSettingsMetricsProxy} from './languages_settings_metrics_proxy.js';
@@ -53,7 +47,7 @@ import type {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageSt
 import {getTemplate} from './spell_check_page.html.js';
 
 const SettingsSpellCheckPageElementBase =
-    I18nMixin(PrefsMixin(BaseMixin(PolymerElement)));
+    SettingsViewMixin(I18nMixin(PrefsMixin(BaseMixin(PolymerElement))));
 
 export class SettingsSpellCheckPageElement extends
     SettingsSpellCheckPageElementBase {
@@ -86,19 +80,6 @@ export class SettingsSpellCheckPageElement extends
         type: Boolean,
         value: false,
       },
-
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          // <if expr="not is_macosx">
-          if (routes.EDIT_DICTIONARY) {
-            map.set(routes.EDIT_DICTIONARY.path, '#spellCheckSubpageTrigger');
-          }
-          // </if>
-          return map;
-        },
-      },
     };
   }
 
@@ -118,7 +99,6 @@ export class SettingsSpellCheckPageElement extends
       Array<LanguageState|SpellCheckLanguageState>;
   // </if>
   declare private hideSpellCheckLanguages_: boolean;
-  declare private focusConfig_: FocusConfig;
   private languageHelper_: LanguageHelper;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
@@ -332,6 +312,26 @@ export class SettingsSpellCheckPageElement extends
     assert(expandButton);
     expandButton.expanded = !expandButton.expanded;
     focusWithoutInk(expandButton);
+  }
+
+  // <if expr="not is_macosx">
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    const map = new Map();
+    if (routes.EDIT_DICTIONARY) {
+      map.set(routes.EDIT_DICTIONARY.path, '#spellCheckSubpageTrigger');
+    }
+    return map;
+  }
+  // </if>
+
+  // SettingsViewMixin implementation.
+  override getAssociatedControlFor(childViewId: string): HTMLElement {
+    assert(childViewId === 'editDictionary');
+    const control = this.shadowRoot!.querySelector<HTMLElement>(
+        '#spellCheckSubpageTrigger');
+    assert(control);
+    return control;
   }
 }
 

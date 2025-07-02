@@ -19,6 +19,9 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {beforeNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+// <if expr="not chromeos_ash">
+import type {LanguagesModel} from '../languages_page/languages_types.js';
+// </if>
 import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
@@ -107,6 +110,10 @@ export class SettingsMainElement extends SettingsMainElementBase {
         value: false,
         notify: true,
       },
+
+      // <if expr="not chromeos_ash">
+      languages_: Object,
+      // </if>
     };
   }
 
@@ -117,6 +124,10 @@ export class SettingsMainElement extends SettingsMainElementBase {
   declare private inSearchMode_: boolean;
   declare private showNoResultsFound_: boolean;
   declare toolbarSpinnerActive: boolean;
+
+  // <if expr="not chromeos_ash">
+  declare private languages_?: LanguagesModel;
+  // </if>
 
   private beforeNextRenderPromise_(): Promise<void> {
     return new Promise(res => {

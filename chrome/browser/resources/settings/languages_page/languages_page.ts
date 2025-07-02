@@ -169,7 +169,10 @@ export class SettingsLanguagesPageElement extends
    */
   private canEnableSomeSupportedLanguage_(languages?: LanguagesModel): boolean {
     return languages !== undefined && languages.supported.some(language => {
-      return this.languageHelper_.canEnableLanguage(language);
+      // Need to call getLanguageHelperInstance() instead of
+      // this.languageHelper_ here, because Polymer observers fire before
+      // connectedCallback sometimes.
+      return getLanguageHelperInstance().canEnableLanguage(language);
     });
   }
 

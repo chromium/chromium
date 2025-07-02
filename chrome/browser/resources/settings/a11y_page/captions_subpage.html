@@ -21,6 +21,7 @@
     text-align: center;
   }
 </style>
+<settings-subpage page-title="$i18n{captionsTitle}">
 <template is="dom-if" if="[[enableLiveCaption_]]">
   <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
 </template>
@@ -119,3 +120,4 @@
     </settings-dropdown-menu>
   </div>
 </div>
+</settings-subpage>

@@ -10,13 +10,9 @@
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_page/settings_animated_pages.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 // clang-format off
-// <if expr="is_linux">
-import './captions_subpage.js';
-import '../settings_page/settings_subpage.js';
-// </if>
 
 // <if expr="is_win or is_linux or is_macosx">
 import './ax_annotations_section.js';
@@ -29,14 +25,15 @@ import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_brow
 // clang-format on
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {AccessibilityBrowserProxy} from './a11y_browser_proxy.js';
 import {AccessibilityBrowserProxyImpl} from './a11y_browser_proxy.js';
@@ -54,8 +51,8 @@ export enum ToastAlertLevel {
   COUNT = 1,
 }
 
-const SettingsA11yPageElementBase =
-    PrefsMixin(WebUiListenerMixin(BaseMixin(PolymerElement)));
+const SettingsA11yPageElementBase = SettingsViewMixin(
+    PrefsMixin(WebUiListenerMixin(BaseMixin(PolymerElement))));
 
 export interface SettingsA11yPageElement {
   $: {
@@ -112,17 +109,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
       },
       // </if>
 
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.CAPTIONS) {
-            map.set(routes.CAPTIONS.path, '#captions');
-          }
-          return map;
-        },
-      },
-
       // <if expr="not is_chromeos">
 
       /** Valid toast alert level option. */
@@ -148,7 +134,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   declare private numericUncheckedToastAlertValues_: ToastAlertLevel[];
   // </if>
 
-  declare private focusConfig_: FocusConfig;
   declare private hasScreenReader_: boolean;
   declare private showAxTreeFixingSection_: boolean;
   // <if expr="is_win or is_linux or is_macosx">
@@ -249,6 +234,25 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
         ToastAlertLevel.COUNT);
   }
   // </if>
+
+  // <if expr="is_linux">
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    const map = new Map();
+    if (routes.CAPTIONS) {
+      map.set(routes.CAPTIONS.path, '#captions');
+    }
+    return map;
+  }
+  // </if>
+
+  // SettingsViewMixin implementation.
+  override getAssociatedControlFor(childViewId: string): HTMLElement {
+    assert(childViewId === 'captions');
+    const control = this.shadowRoot!.querySelector<HTMLElement>('#captions');
+    assert(control);
+    return control;
+  }
 }
 
 declare global {

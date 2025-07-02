@@ -35,11 +35,11 @@ suite('SettingsMain', function() {
   });
 
   test('UpdatesActiveViewWhenRouteChanges', async function() {
-    function assertActive(pluginTag: string) {
+    function assertActive(pluginTag: string, path: string) {
       assertTrue(
           !!settingsMain.shadowRoot!.querySelector(
               `.active[slot=view] > ${pluginTag}`),
-          `Didn't find ${pluginTag}`);
+          `Element '${pluginTag}' was not active for route '${path}'`);
       assertFalse(!!settingsMain.shadowRoot!.querySelector(
           `.active[slot=view] > :not(${pluginTag}, dom-if)`));
     }
@@ -54,25 +54,27 @@ suite('SettingsMain', function() {
       routes.APPEARANCE,
       routes.SEARCH,
       routes.ON_STARTUP,
-      routes.LANGUAGES,
-      routes.DOWNLOADS,
-      routes.ACCESSIBILITY,
 
       // <if expr="not is_chromeos">
       routes.DEFAULT_BROWSER,
-      routes.SYSTEM,
       // </if>
     ];
 
     for (const route of nonMigratedRoutes) {
       Router.getInstance().navigateTo(route);
-      assertActive('settings-basic-page');
+      assertActive('settings-basic-page', route.path);
     }
 
     // Check routes that have been promoted to individual "plugins".
     const migratedRoutes: Array<{route: Route, pluginTag: string}> = [
       // TODO(crbug.com/424223101): Update this list as more routes are
       // migrated.
+      {route: routes.LANGUAGES, pluginTag: 'settings-languages-page-index'},
+      {route: routes.DOWNLOADS, pluginTag: 'settings-downloads-page'},
+      {route: routes.ACCESSIBILITY, pluginTag: 'settings-a11y-page-index'},
+      // <if expr="not is_chromeos">
+      {route: routes.SYSTEM, pluginTag: 'settings-system-page'},
+      // </if>
       {route: routes.RESET, pluginTag: 'settings-reset-page'},
       {route: routes.ABOUT, pluginTag: 'settings-about-page'},
     ];
@@ -80,7 +82,7 @@ suite('SettingsMain', function() {
     for (const {route, pluginTag} of migratedRoutes) {
       Router.getInstance().navigateTo(route);
       await flushTasks();
-      assertActive(pluginTag);
+      assertActive(pluginTag, route.path);
     }
   });
 

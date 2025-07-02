@@ -162,73 +162,11 @@
     </template>
     <template is="dom-if"
         if="[[showAdvancedSettings_(pageVisibility_.advancedSettings)]]">
+      <!-- TODO(crbug.com/424223101): Remove settings-idle-load and move the
+          lazy-loading logic in settings-main. -->
       <settings-idle-load id="advancedPageTemplate">
         <template>
-          <div id="advancedPage">
-            <template is="dom-if" if="[[showPage_(pageVisibility_.languages)]]"
-                restamp>
-<if expr="not chromeos_ash">
-              <settings-languages languages="{{languages}}" prefs="{{prefs}}">
-              </settings-languages>
-</if>
-              <settings-section
-<if expr="not chromeos_ash">
-                  page-title="$i18n{languagesCardTitle}"
-</if>
-<if expr="chromeos_ash">
-                  page-title="$i18n{languagesPageTitle}"
-</if>
-                  section="languages">
-<if expr="chromeos_ash">
-                <cr-link-row id="openChromeOSLanguagesSettings"
-                    on-click="onOpenChromeOsLanguagesSettingsClick_"
-                    label="$i18n{openChromeOSLanguagesSettingsLabel}" external>
-                </cr-link-row>
-</if>
-<if expr="not chromeos_ash">
-                <settings-languages-page prefs="{{prefs}}"
-                    languages="[[languages]]">
-                </settings-languages-page>
-</if>
-              </settings-section>
-<if expr="not chromeos_ash">
-              <settings-section page-title="$i18n{spellCheckTitle}"
-                  section="spellCheck" nest-under-section="languages"
-                  id="spellCheckSettingsSection">
-                <settings-spell-check-page prefs="{{prefs}}"
-                    languages="{{languages}}">
-                </settings-spell-check-page>
-              </settings-section>
-              <settings-section page-title="$i18n{translatePageTitle}"
-                  section="translate" nest-under-section="languages">
-                <settings-translate-page prefs="{{prefs}}"
-                    languages="[[languages]]">
-                </settings-translate-page>
-              </settings-section>
-</if>
-            </template>
-            <template is="dom-if" if="[[showPage_(pageVisibility_.downloads)]]"
-                restamp>
-              <settings-section page-title="$i18n{downloadsPageTitle}"
-                  section="downloads">
-                <settings-downloads-page prefs="{{prefs}}">
-                </settings-downloads-page>
-              </settings-section>
-            </template>
-            <template is="dom-if" if="[[showPage_(pageVisibility_.a11y)]]"
-                restamp>
-              <settings-section page-title="$i18n{a11yPageTitle}"
-                  section="a11y">
-                <settings-a11y-page prefs="{{prefs}}"></settings-a11y-page>
-              </settings-section>
-            </template>
-<if expr="not chromeos_ash">
-            <settings-section page-title="$i18n{systemPageTitle}"
-                section="system">
-              <settings-system-page prefs="{{prefs}}"></settings-system-page>
-            </settings-section>
-</if>
-          </div>
+          <div id="advancedPage"></div>
         </template>
       </settings-idle-load>
     </template>

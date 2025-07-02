@@ -7,7 +7,6 @@ import("../build_webui_tests.gni")
 build_webui_tests("build") {
   files = [
     "about_page_test.ts",
-    "advanced_page_test.ts",
     "ai_compare_subpage_test.ts",
     "ai_history_search_subpage_test.ts",
     "ai_info_card_test.ts",
@@ -121,7 +120,6 @@ build_webui_tests("build") {
     "settings_main_plugins_test.ts",
     "settings_menu_interactive_ui_test.ts",
     "settings_menu_test.ts",
-    "settings_page_test_util.ts",
     "settings_performance_menu_test.ts",
     "settings_pref_util_test.ts",
     "settings_prefs_test.ts",

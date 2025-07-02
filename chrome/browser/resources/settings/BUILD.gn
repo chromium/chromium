@@ -55,6 +55,7 @@ build_webui("build") {
   # -----------------web_component_files start ---------------------------------
   web_component_files = [
     "a11y_page/a11y_page.ts",
+    "a11y_page/a11y_page_index.ts",
     "about_page/about_page.ts",
     "ai_page/ai_compare_subpage.ts",
     "ai_page/ai_info_card.ts",
@@ -221,6 +222,7 @@ build_webui("build") {
       "clear_browsing_data_dialog/clear_browsing_data_account_indicator.ts",
       "default_browser_page/default_browser_page.ts",
       "languages_page/add_languages_dialog.ts",
+      "languages_page/languages_page_index.ts",
       "languages_page/languages_page.ts",
       "languages_page/spell_check_page.ts",
       "languages_page/translate_page.ts",
@@ -230,6 +232,8 @@ build_webui("build") {
       "relaunch_confirmation_dialog.ts",
       "system_page/system_page.ts",
     ]
+  } else {
+    web_component_files += [ "languages_page/languages_page_index_cros.ts" ]
   }
 
   if (!is_chromeos && !is_mac) {
