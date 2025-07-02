@@ -85,7 +85,6 @@ class PageToolRequest : public TabToolRequest {
   const Target& GetTarget() const;
 
  private:
-  std::optional<std::string> document_identifier_;
   Target target_;
 };
 
