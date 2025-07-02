@@ -23,6 +23,15 @@
 
 namespace actor::ui {
 namespace {
+template <typename T>
+struct is_variant_t : std::false_type {};
+
+template <typename... Args>
+struct is_variant_t<std::variant<Args...>> : std::true_type {};
+
+template <typename T>
+inline constexpr bool is_variant = is_variant_t<T>::value;
+
 // TODO(crbug.com/425784083): evaluate sharing these types between ToolRequests
 // and the UI code.
 PageTarget ConvertTarget(const PageToolRequest::Target& t) {
@@ -91,10 +100,19 @@ constexpr Visitor PostToolEventsFn{
     NoUiEvents<ScrollToolRequest>,         NoUiEvents<SelectToolRequest>,
     NoUiEvents<TypeToolRequest>,           NoUiEvents<WaitToolRequest>};
 
-template <Visitor V>
-struct VisitorTraits {
-  static constexpr const char* name = "";
+constexpr Visitor FirstActEventsFn{
+    [](const UiEventDispatcher::FirstActInfo& info) {
+      auto events = std::deque<UiEvent>{StartTask(info.task_id)};
+      if (info.tab_handle.has_value()) {
+        events.emplace_back(
+            StartingToActOnTab(info.tab_handle.value(), info.task_id));
+      }
+      return events;
+    },
 };
+
+template <Visitor V>
+struct VisitorTraits {};
 
 template <>
 struct VisitorTraits<PreToolEventsFn> {
@@ -106,11 +124,39 @@ struct VisitorTraits<PostToolEventsFn> {
   static constexpr const char* phase_name = "PostTool";
 };
 
-ToolRequestVariant ConvertToolRequestToVariant(const ToolRequest& tr) {
-  ConvertToVariantFn fn;
-  tr.Apply(fn);
-  return fn.GetVariant().value();
-}
+template <>
+struct VisitorTraits<FirstActEventsFn> {
+  static constexpr const char* phase_name = "FirstAct";
+};
+
+template <typename T>
+struct InputTraits {};
+
+template <>
+struct InputTraits<ToolRequest> {
+  static constexpr const char* name = "ToolRequest";
+  static constexpr auto convert_fn =
+      [](const ToolRequest& tr) -> ToolRequestVariant {
+    ConvertToVariantFn fn;
+    tr.Apply(fn);
+    return fn.GetVariant().value();
+  };
+  static constexpr auto debug_info = [](const ToolRequest& tr) {
+    return tr.JournalEvent();
+  };
+};
+
+template <>
+struct InputTraits<UiEventDispatcher::FirstActInfo> {
+  static constexpr const char* name = "FirstActInfo";
+  static constexpr auto convert_fn = std::identity();
+  static constexpr auto debug_info =
+      [](const UiEventDispatcher::FirstActInfo& info) {
+        return absl::StrFormat("task_id=%d tab? %s",
+                               info.task_id.GetUnsafeValue(),
+                               info.tab_handle.has_value() ? "yes" : "no");
+      };
+};
 
 std::variant<mojom::ActionResultPtr, ActorUiStateManagerInterface*>
 GetUiStateManager(Profile* profile) {
@@ -148,7 +194,11 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     On<PostToolEventsFn>(profile, tr, std::move(callback));
   }
 
-  // TODO(crbug.com/425784083): Add hooks to send StartTask events.
+  void OnPreFirstAct(Profile* profile,
+                     const FirstActInfo& first_act_info,
+                     UiCompleteCallback callback) override {
+    On<FirstActEventsFn>(profile, first_act_info, std::move(callback));
+  }
 
  private:
   std::deque<UiEvent> events_;
@@ -163,10 +213,18 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     std::move(overall_callback_).Run(std::move(result));
   }
 
-  template <Visitor V>
-  void On(Profile* profile,
-          const ToolRequest& tr,
-          UiCompleteCallback callback) {
+  template <Visitor V, typename InputT>
+  void On(Profile* profile, const InputT& in, UiCompleteCallback callback) {
+    VLOG(4) << VisitorTraits<V>::phase_name << "(" << InputTraits<InputT>::name
+            << "): " << InputTraits<InputT>::debug_info(in);
+    GenerateAndSend<V>(profile, InputTraits<InputT>::convert_fn(in),
+                       std::move(callback));
+  }
+
+  template <Visitor V, typename ConvertedInputT>
+  void GenerateAndSend(Profile* profile,
+                       const ConvertedInputT& converted,
+                       UiCompleteCallback callback) {
     CHECK(events_.empty()) << "Unexpected: unprocessed UiEvents remaining";
     auto result = GetUiStateManager(profile);
     if (std::holds_alternative<mojom::ActionResultPtr>(result)) {
@@ -178,10 +236,12 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     }
     ui_state_manager_ = std::get<ActorUiStateManagerInterface*>(result);
 
-    VLOG(4) << VisitorTraits<V>::phase_name
-            << "(ToolRequest): " << tr.JournalEvent();
-    auto tool_request = ConvertToolRequestToVariant(tr);
-    events_ = std::visit(V, tool_request);
+    // Visit converted type to generate UiEvent sequence.
+    if constexpr (is_variant<ConvertedInputT>) {
+      events_ = std::visit(V, converted);
+    } else {
+      events_ = V(converted);
+    }
     overall_callback_ = std::move(callback);
     MaybeSendNextEvent<V>(MakeOkResult());
   }
