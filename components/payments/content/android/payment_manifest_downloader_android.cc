@@ -86,7 +86,6 @@ PaymentManifestDownloaderAndroid::~PaymentManifestDownloaderAndroid() = default;
 
 void PaymentManifestDownloaderAndroid::DownloadPaymentMethodManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& jmerchant_origin,
     const base::android::JavaParamRef<jobject>& jurl,
     const base::android::JavaParamRef<jobject>& jcallback) {
@@ -99,7 +98,6 @@ void PaymentManifestDownloaderAndroid::DownloadPaymentMethodManifest(
 
 void PaymentManifestDownloaderAndroid::DownloadWebAppManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& jpayment_method_manifest_origin,
     const base::android::JavaParamRef<jobject>& jurl,
     const base::android::JavaParamRef<jobject>& jcallback) {
@@ -110,9 +108,7 @@ void PaymentManifestDownloaderAndroid::DownloadWebAppManifest(
                      std::make_unique<DownloadCallback>(jcallback)));
 }
 
-void PaymentManifestDownloaderAndroid::Destroy(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void PaymentManifestDownloaderAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 

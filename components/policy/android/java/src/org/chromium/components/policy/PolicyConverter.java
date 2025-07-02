@@ -47,27 +47,20 @@ public class PolicyConverter {
         assert mNativePolicyConverter != 0;
 
         if (value instanceof Boolean) {
-            PolicyConverterJni.get()
-                    .setPolicyBoolean(
-                            mNativePolicyConverter, PolicyConverter.this, key, (Boolean) value);
+            PolicyConverterJni.get().setPolicyBoolean(mNativePolicyConverter, key, (Boolean) value);
             return;
         }
         if (value instanceof String) {
-            PolicyConverterJni.get()
-                    .setPolicyString(
-                            mNativePolicyConverter, PolicyConverter.this, key, (String) value);
+            PolicyConverterJni.get().setPolicyString(mNativePolicyConverter, key, (String) value);
             return;
         }
         if (value instanceof Integer) {
-            PolicyConverterJni.get()
-                    .setPolicyInteger(
-                            mNativePolicyConverter, PolicyConverter.this, key, (Integer) value);
+            PolicyConverterJni.get().setPolicyInteger(mNativePolicyConverter, key, (Integer) value);
             return;
         }
         if (value instanceof String[]) {
             PolicyConverterJni.get()
-                    .setPolicyStringArray(
-                            mNativePolicyConverter, PolicyConverter.this, key, (String[]) value);
+                    .setPolicyStringArray(mNativePolicyConverter, key, (String[]) value);
             return;
         }
         // App restrictions can only contain bundles and bundle arrays on Android M, but
@@ -80,7 +73,6 @@ public class PolicyConverter {
                 PolicyConverterJni.get()
                         .setPolicyString(
                                 mNativePolicyConverter,
-                                PolicyConverter.this,
                                 key,
                                 convertBundleToJson(bundle).toString());
             } catch (JSONException e) {
@@ -103,7 +95,6 @@ public class PolicyConverter {
                 PolicyConverterJni.get()
                         .setPolicyString(
                                 mNativePolicyConverter,
-                                PolicyConverter.this,
                                 key,
                                 convertBundleArrayToJson(bundleArray).toString());
             } catch (JSONException e) {
@@ -154,22 +145,12 @@ public class PolicyConverter {
 
     @NativeMethods
     interface Natives {
-        void setPolicyBoolean(
-                long nativePolicyConverter,
-                PolicyConverter caller,
-                String policyKey,
-                boolean value);
+        void setPolicyBoolean(long nativePolicyConverter, String policyKey, boolean value);
 
-        void setPolicyInteger(
-                long nativePolicyConverter, PolicyConverter caller, String policyKey, int value);
+        void setPolicyInteger(long nativePolicyConverter, String policyKey, int value);
 
-        void setPolicyString(
-                long nativePolicyConverter, PolicyConverter caller, String policyKey, String value);
+        void setPolicyString(long nativePolicyConverter, String policyKey, String value);
 
-        void setPolicyStringArray(
-                long nativePolicyConverter,
-                PolicyConverter caller,
-                String policyKey,
-                String[] value);
+        void setPolicyStringArray(long nativePolicyConverter, String policyKey, String[] value);
     }
 }

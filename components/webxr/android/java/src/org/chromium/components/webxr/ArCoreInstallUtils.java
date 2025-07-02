@@ -179,7 +179,7 @@ public class ArCoreInstallUtils {
                 // Install flow will resume in onArCoreRequestInstallReturned, mark that
                 // there is active request. Native code notification will be deferred until
                 // our activity gets resumed.
-                sInstallRequest = new InstallRequest(ArCoreInstallUtils.this, activity);
+                sInstallRequest = new InstallRequest(this, activity);
             } else if (installStatus == ArCoreShim.InstallStatus.INSTALLED) {
                 // No need to install - notify native code.
                 maybeNotifyNativeOnRequestInstallSupportedArCoreResult(true);

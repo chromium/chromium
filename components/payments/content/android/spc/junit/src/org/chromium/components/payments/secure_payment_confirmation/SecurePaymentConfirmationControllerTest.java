@@ -153,10 +153,7 @@ public class SecurePaymentConfirmationControllerTest {
         CurrencyFormatterJni.setInstanceForTesting(currencyFormatter);
         doReturn("$1.50")
                 .when(currencyFormatter)
-                .format(
-                        /* nativeCurrencyFormatterAndroid= */ anyLong(),
-                        any(CurrencyFormatter.class),
-                        eq("1.50"));
+                .format(/* nativeCurrencyFormatterAndroid= */ anyLong(), eq("1.50"));
 
         mPaymentEntityLogos =
                 Arrays.asList(

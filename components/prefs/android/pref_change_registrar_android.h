@@ -21,18 +21,14 @@ class PrefChangeRegistrarAndroid {
   PrefChangeRegistrarAndroid(JNIEnv* env,
                              const JavaParamRef<jobject>& obj,
                              PrefService* prefs);
-  void Destroy(JNIEnv*, const JavaParamRef<jobject>&);
+  void Destroy(JNIEnv*);
 
   PrefChangeRegistrarAndroid(const PrefChangeRegistrarAndroid&) = delete;
   PrefChangeRegistrarAndroid& operator=(const PrefChangeRegistrarAndroid&) =
       delete;
 
-  void Add(JNIEnv* env,
-           const JavaParamRef<jobject>& obj,
-           const JavaParamRef<jstring>& j_preference);
-  void Remove(JNIEnv* env,
-              const JavaParamRef<jobject>& obj,
-              const JavaParamRef<jstring>& j_preference);
+  void Add(JNIEnv* env, const JavaParamRef<jstring>& j_preference);
+  void Remove(JNIEnv* env, const JavaParamRef<jstring>& j_preference);
 
  private:
   ~PrefChangeRegistrarAndroid();

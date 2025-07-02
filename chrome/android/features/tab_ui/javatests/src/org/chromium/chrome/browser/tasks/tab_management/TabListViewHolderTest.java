@@ -367,8 +367,7 @@ public class TabListViewHolderTest {
         CurrencyFormatterJni.setInstanceForTesting(mCurrencyFormatterJniMock);
         doReturn(1L)
                 .when(mCurrencyFormatterJniMock)
-                .initCurrencyFormatterAndroid(
-                        any(CurrencyFormatter.class), anyString(), anyString());
+                .initCurrencyFormatterAndroid(anyString(), anyString());
         doNothing().when(mCurrencyFormatterJniMock).setMaxFractionalDigits(anyLong(), anyInt());
         OptimizationGuideBridgeFactoryJni.setInstanceForTesting(
                 mOptimizationGuideBridgeFactoryJniMock);

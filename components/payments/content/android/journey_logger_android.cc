@@ -25,14 +25,12 @@ JourneyLoggerAndroid::JourneyLoggerAndroid(ukm::SourceId source_id)
 
 JourneyLoggerAndroid::~JourneyLoggerAndroid() = default;
 
-void JourneyLoggerAndroid::Destroy(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jcaller) {
+void JourneyLoggerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void JourneyLoggerAndroid::SetNumberOfSuggestionsShown(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
     jint jsection,
     jint jnumber,
     jboolean jhas_complete_suggestion) {
@@ -43,40 +41,28 @@ void JourneyLoggerAndroid::SetNumberOfSuggestionsShown(
       jhas_complete_suggestion);
 }
 
-void JourneyLoggerAndroid::SetOptOutOffered(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void JourneyLoggerAndroid::SetOptOutOffered(JNIEnv* env) {
   journey_logger_.SetOptOutOffered();
 }
 
-void JourneyLoggerAndroid::SetActivationlessShow(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void JourneyLoggerAndroid::SetActivationlessShow(JNIEnv* env) {
   journey_logger_.SetActivationlessShow();
 }
 
-void JourneyLoggerAndroid::SetSkippedShow(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void JourneyLoggerAndroid::SetSkippedShow(JNIEnv* env) {
   journey_logger_.SetSkippedShow();
 }
 
-void JourneyLoggerAndroid::SetShown(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void JourneyLoggerAndroid::SetShown(JNIEnv* env) {
   journey_logger_.SetShown();
 }
 
-void JourneyLoggerAndroid::SetPayClicked(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void JourneyLoggerAndroid::SetPayClicked(JNIEnv* env) {
   journey_logger_.SetPayClicked();
 }
 
-void JourneyLoggerAndroid::SetSelectedMethod(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint jPaymentMethodCategory) {
+void JourneyLoggerAndroid::SetSelectedMethod(JNIEnv* env,
+                                             jint jPaymentMethodCategory) {
   DCHECK_GE(jPaymentMethodCategory, 0);
   DCHECK_LE(static_cast<unsigned int>(jPaymentMethodCategory),
             static_cast<unsigned int>(
@@ -86,20 +72,17 @@ void JourneyLoggerAndroid::SetSelectedMethod(
           jPaymentMethodCategory));
 }
 
-void JourneyLoggerAndroid::SetRequestedInformation(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jboolean requested_shipping,
-    jboolean requested_email,
-    jboolean requested_phone,
-    jboolean requested_name) {
+void JourneyLoggerAndroid::SetRequestedInformation(JNIEnv* env,
+                                                   jboolean requested_shipping,
+                                                   jboolean requested_email,
+                                                   jboolean requested_phone,
+                                                   jboolean requested_name) {
   journey_logger_.SetRequestedInformation(requested_shipping, requested_email,
                                           requested_phone, requested_name);
 }
 
 void JourneyLoggerAndroid::SetRequestedPaymentMethods(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jintArray>& jmethods) {
   std::vector<int> int_methods;
   base::android::JavaIntArrayToIntVector(env, jmethods, &int_methods);
@@ -111,51 +94,36 @@ void JourneyLoggerAndroid::SetRequestedPaymentMethods(
   journey_logger_.SetRequestedPaymentMethods(method_categories);
 }
 
-void JourneyLoggerAndroid::SetCompleted(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void JourneyLoggerAndroid::SetCompleted(JNIEnv* env) {
   journey_logger_.SetCompleted();
 }
 
-void JourneyLoggerAndroid::SetAborted(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint jreason) {
+void JourneyLoggerAndroid::SetAborted(JNIEnv* env, jint jreason) {
   DCHECK_GE(jreason, 0);
   DCHECK_LT(jreason, JourneyLogger::AbortReason::ABORT_REASON_MAX);
   journey_logger_.SetAborted(static_cast<JourneyLogger::AbortReason>(jreason));
 }
 
-void JourneyLoggerAndroid::SetNotShown(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void JourneyLoggerAndroid::SetNotShown(JNIEnv* env) {
   journey_logger_.SetNotShown();
 }
 
-void JourneyLoggerAndroid::SetNoMatchingCredentialsShown(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void JourneyLoggerAndroid::SetNoMatchingCredentialsShown(JNIEnv* env) {
   journey_logger_.SetNoMatchingCredentialsShown();
 }
 
-void JourneyLoggerAndroid::RecordCheckoutStep(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint jstep) {
+void JourneyLoggerAndroid::RecordCheckoutStep(JNIEnv* env, jint jstep) {
   journey_logger_.RecordCheckoutStep(
       static_cast<JourneyLogger::CheckoutFunnelStep>(jstep));
 }
 
-void JourneyLoggerAndroid::SetPaymentAppUkmSourceId(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    ukm::SourceId source_id) {
+void JourneyLoggerAndroid::SetPaymentAppUkmSourceId(JNIEnv* env,
+                                                    ukm::SourceId source_id) {
   journey_logger_.SetPaymentAppUkmSourceId(source_id);
 }
 
 static jlong JNI_JourneyLogger_InitJourneyLoggerAndroid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);

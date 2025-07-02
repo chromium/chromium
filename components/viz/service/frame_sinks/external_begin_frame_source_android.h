@@ -36,7 +36,6 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
   ~ExternalBeginFrameSourceAndroid() override;
 
   void OnVSync(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& obj,
                jlong time_micros,
                jlong period_micros);
   void UpdateRefreshRate(float refresh_rate) override;

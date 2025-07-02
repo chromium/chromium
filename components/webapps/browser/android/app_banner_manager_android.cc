@@ -120,9 +120,7 @@ AppBannerManagerAndroid::GetJavaBannerManager() const {
   return base::android::ScopedJavaLocalRef<jobject>(java_banner_manager_);
 }
 
-bool AppBannerManagerAndroid::IsRunningForTesting(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+bool AppBannerManagerAndroid::IsRunningForTesting(JNIEnv* env) {
   return IsRunning();
 }
 
@@ -139,7 +137,6 @@ int AppBannerManagerAndroid::GetBadgeStatusForTesting(JNIEnv* env) {
 
 void AppBannerManagerAndroid::OnAppDetailsRetrieved(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     int request_id,
     const JavaParamRef<jobject>& japp_data,
     const JavaParamRef<jstring>& japp_title,

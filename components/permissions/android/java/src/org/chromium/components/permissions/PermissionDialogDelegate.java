@@ -136,37 +136,32 @@ public class PermissionDialogDelegate {
 
     public void onAccept() {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get().accept(mNativeDelegatePtr, PermissionDialogDelegate.this);
+        PermissionDialogDelegateJni.get().accept(mNativeDelegatePtr);
     }
 
     public void onAcceptThisTime() {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get()
-                .acceptThisTime(mNativeDelegatePtr, PermissionDialogDelegate.this);
+        PermissionDialogDelegateJni.get().acceptThisTime(mNativeDelegatePtr);
     }
 
     public void onDeny() {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get().deny(mNativeDelegatePtr, PermissionDialogDelegate.this);
+        PermissionDialogDelegateJni.get().deny(mNativeDelegatePtr);
     }
 
     public void onDismiss(@DismissalType int dismissalType) {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get()
-                .dismissed(mNativeDelegatePtr, PermissionDialogDelegate.this, dismissalType);
+        PermissionDialogDelegateJni.get().dismissed(mNativeDelegatePtr, dismissalType);
     }
 
     public void onAcknowledge() {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get()
-                .acknowledge(mNativeDelegatePtr, PermissionDialogDelegate.this);
+        PermissionDialogDelegateJni.get().acknowledge(mNativeDelegatePtr);
     }
 
     public void onSystemPermissionResolved(boolean accepted) {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get()
-                .systemPermissionResolved(
-                        mNativeDelegatePtr, PermissionDialogDelegate.this, accepted);
+        PermissionDialogDelegateJni.get().systemPermissionResolved(mNativeDelegatePtr, accepted);
     }
 
     public void onRadioButtonSelectionChanged(Integer selectedIndex) {
@@ -175,21 +170,18 @@ public class PermissionDialogDelegate {
 
     public void destroy() {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get()
-                .destroy(mNativeDelegatePtr, PermissionDialogDelegate.this);
+        PermissionDialogDelegateJni.get().destroy(mNativeDelegatePtr);
         mNativeDelegatePtr = 0;
     }
 
     public void onSystemSettingsShown() {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get()
-                .systemSettingsShown(mNativeDelegatePtr, PermissionDialogDelegate.this);
+        PermissionDialogDelegateJni.get().systemSettingsShown(mNativeDelegatePtr);
     }
 
     public void onResume() {
         assert mNativeDelegatePtr != 0;
-        PermissionDialogDelegateJni.get()
-                .resumed(mNativeDelegatePtr, PermissionDialogDelegate.this);
+        PermissionDialogDelegateJni.get().resumed(mNativeDelegatePtr);
     }
 
     public void setDialogController(PermissionDialogController controller) {
@@ -335,30 +327,23 @@ public class PermissionDialogDelegate {
 
     @NativeMethods
     interface Natives {
-        void accept(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+        void accept(long nativePermissionDialogDelegate);
 
-        void acceptThisTime(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+        void acceptThisTime(long nativePermissionDialogDelegate);
 
-        void acknowledge(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+        void acknowledge(long nativePermissionDialogDelegate);
 
-        void deny(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+        void deny(long nativePermissionDialogDelegate);
 
-        void dismissed(
-                long nativePermissionDialogDelegate,
-                PermissionDialogDelegate caller,
-                @DismissalType int dismissalType);
+        void dismissed(long nativePermissionDialogDelegate, @DismissalType int dismissalType);
 
-        void resumed(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+        void resumed(long nativePermissionDialogDelegate);
 
-        void destroy(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+        void destroy(long nativePermissionDialogDelegate);
 
-        void systemPermissionResolved(
-                long nativePermissionDialogDelegate,
-                PermissionDialogDelegate caller,
-                boolean accept);
+        void systemPermissionResolved(long nativePermissionDialogDelegate, boolean accept);
 
-        void systemSettingsShown(
-                long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+        void systemSettingsShown(long nativePermissionDialogDelegate);
 
         int getRequestTypeEnumSize();
     }

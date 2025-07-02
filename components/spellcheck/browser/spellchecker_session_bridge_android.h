@@ -38,7 +38,6 @@ class SpellCheckerSessionBridge {
   // of text, processes these and sends them to the renderer.
   void ProcessSpellCheckResults(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jintArray>& offset_array,
       const base::android::JavaParamRef<jintArray>& length_array,
       const base::android::JavaParamRef<jobjectArray>& suggestions_array);

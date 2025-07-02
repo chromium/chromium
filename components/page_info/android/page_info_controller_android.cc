@@ -84,22 +84,16 @@ PageInfoControllerAndroid::PageInfoControllerAndroid(
 
 PageInfoControllerAndroid::~PageInfoControllerAndroid() = default;
 
-void PageInfoControllerAndroid::Destroy(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj) {
+void PageInfoControllerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void PageInfoControllerAndroid::RecordPageInfoAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jint action) {
+void PageInfoControllerAndroid::RecordPageInfoAction(JNIEnv* env, jint action) {
   presenter_->RecordPageInfoAction(
       static_cast<page_info::PageInfoAction>(action));
 }
 
-void PageInfoControllerAndroid::UpdatePermissions(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void PageInfoControllerAndroid::UpdatePermissions(JNIEnv* env) {
   presenter_->UpdatePermissions();
 }
 

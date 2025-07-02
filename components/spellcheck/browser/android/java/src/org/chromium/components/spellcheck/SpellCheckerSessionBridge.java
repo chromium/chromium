@@ -140,7 +140,6 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
         SpellCheckerSessionBridgeJni.get()
                 .processSpellCheckResults(
                         mNativeSpellCheckerSessionBridge,
-                        SpellCheckerSessionBridge.this,
                         convertListToArray(offsets),
                         convertListToArray(lengths),
                         suggestions.toArray(new String[suggestions.size()][]));
@@ -166,7 +165,6 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
     interface Natives {
         void processSpellCheckResults(
                 long nativeSpellCheckerSessionBridge,
-                SpellCheckerSessionBridge caller,
                 int[] offsets,
                 int[] lengths,
                 String[][] suggestions);

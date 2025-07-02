@@ -132,7 +132,6 @@ OfflineContentAggregatorBridge::~OfflineContentAggregatorBridge() {
 
 void OfflineContentAggregatorBridge::OpenItem(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     jint launch_location,
     jboolean j_open_in_incognito,
     const JavaParamRef<jstring>& j_namespace,
@@ -146,7 +145,6 @@ void OfflineContentAggregatorBridge::OpenItem(
 
 void OfflineContentAggregatorBridge::RemoveItem(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& j_namespace,
     const JavaParamRef<jstring>& j_id) {
   provider_->RemoveItem(JNI_OfflineContentAggregatorBridge_CreateContentId(
@@ -155,7 +153,6 @@ void OfflineContentAggregatorBridge::RemoveItem(
 
 void OfflineContentAggregatorBridge::CancelDownload(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& j_namespace,
     const JavaParamRef<jstring>& j_id) {
   provider_->CancelDownload(JNI_OfflineContentAggregatorBridge_CreateContentId(
@@ -164,7 +161,6 @@ void OfflineContentAggregatorBridge::CancelDownload(
 
 void OfflineContentAggregatorBridge::PauseDownload(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& j_namespace,
     const JavaParamRef<jstring>& j_guid) {
   provider_->PauseDownload(JNI_OfflineContentAggregatorBridge_CreateContentId(
@@ -173,7 +169,6 @@ void OfflineContentAggregatorBridge::PauseDownload(
 
 void OfflineContentAggregatorBridge::ResumeDownload(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& j_namespace,
     const JavaParamRef<jstring>& j_id) {
   provider_->ResumeDownload(JNI_OfflineContentAggregatorBridge_CreateContentId(
@@ -182,7 +177,6 @@ void OfflineContentAggregatorBridge::ResumeDownload(
 
 void OfflineContentAggregatorBridge::ValidateDangerousDownload(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& j_namespace,
     const JavaParamRef<jstring>& j_id) {
   provider_->ValidateDangerousDownload(
@@ -192,7 +186,6 @@ void OfflineContentAggregatorBridge::ValidateDangerousDownload(
 
 void OfflineContentAggregatorBridge::GetItemById(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& j_namespace,
     const JavaParamRef<jstring>& j_id,
     const JavaParamRef<jobject>& jcallback) {
@@ -206,7 +199,6 @@ void OfflineContentAggregatorBridge::GetItemById(
 
 void OfflineContentAggregatorBridge::GetAllItems(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jcallback) {
   OfflineContentProvider::MultipleItemCallback callback =
       base::BindOnce(&RunGetAllItemsCallback,
@@ -217,7 +209,6 @@ void OfflineContentAggregatorBridge::GetAllItems(
 
 void OfflineContentAggregatorBridge::GetVisualsForItem(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& j_namespace,
     const JavaParamRef<jstring>& j_id,
     const JavaParamRef<jobject>& j_callback) {
@@ -231,7 +222,6 @@ void OfflineContentAggregatorBridge::GetVisualsForItem(
 
 void OfflineContentAggregatorBridge::GetShareInfoForItem(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& j_namespace,
     const JavaParamRef<jstring>& j_id,
     const JavaParamRef<jobject>& j_callback) {
@@ -244,7 +234,6 @@ void OfflineContentAggregatorBridge::GetShareInfoForItem(
 
 void OfflineContentAggregatorBridge::RenameItem(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& j_namespace,
     const JavaParamRef<jstring>& j_id,
     const JavaParamRef<jstring>& j_name,

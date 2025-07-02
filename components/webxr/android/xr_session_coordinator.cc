@@ -130,7 +130,6 @@ void XrSessionCoordinator::EndSession(
 
 void XrSessionCoordinator::OnDrawingSurfaceReady(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& surface,
     const base::android::JavaParamRef<jobject>& java_root_window,
     int rotation,
@@ -152,31 +151,25 @@ void XrSessionCoordinator::OnDrawingSurfaceReady(
                               root_window, display_rotation, {width, height});
 }
 
-void XrSessionCoordinator::OnDrawingSurfaceTouch(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    bool primary,
-    bool touching,
-    int32_t pointer_id,
-    float x,
-    float y) {
+void XrSessionCoordinator::OnDrawingSurfaceTouch(JNIEnv* env,
+                                                 bool primary,
+                                                 bool touching,
+                                                 int32_t pointer_id,
+                                                 float x,
+                                                 float y) {
   DVLOG(3) << __func__ << ": pointer_id=" << pointer_id
            << " primary=" << primary << " touching=" << touching;
   surface_touch_callback_.Run(primary, touching, pointer_id, {x, y});
 }
 
-void XrSessionCoordinator::OnJavaShutdown(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void XrSessionCoordinator::OnJavaShutdown(JNIEnv* env) {
   DVLOG(1) << __func__ << ":::";
   if (java_shutdown_callback_) {
     std::move(java_shutdown_callback_).Run();
   }
 }
 
-void XrSessionCoordinator::OnXrSessionButtonTouched(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void XrSessionCoordinator::OnXrSessionButtonTouched(JNIEnv* env) {
   DVLOG(1) << __func__ << ":::";
   if (xr_button_touched_callback_) {
     std::move(xr_button_touched_callback_).Run();
@@ -185,7 +178,6 @@ void XrSessionCoordinator::OnXrSessionButtonTouched(
 
 void XrSessionCoordinator::OnXrHostActivityReady(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& activity) {
   DVLOG(1) << __func__;
   if (activity_ready_callback_) {

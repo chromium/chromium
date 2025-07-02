@@ -90,11 +90,10 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, SetPlayAPISearchEngine) {
             keyword);
 
   template_url_service_android().SetPlayAPISearchEngine(
-      env(), base::android::JavaParamRef<jobject>(nullptr),
-      ToParamRef(short_name), ToParamRef(jkeyword), ToParamRef(search_url),
-      ToParamRef(suggest_url), ToParamRef(favicon_url), ToParamRef(new_tab_url),
-      ToParamRef(image_url), ToParamRef(image_url_post_params),
-      ToParamRef(image_translate_url),
+      env(), ToParamRef(short_name), ToParamRef(jkeyword),
+      ToParamRef(search_url), ToParamRef(suggest_url), ToParamRef(favicon_url),
+      ToParamRef(new_tab_url), ToParamRef(image_url),
+      ToParamRef(image_url_post_params), ToParamRef(image_translate_url),
       ToParamRef(image_translate_source_language_param_key),
       ToParamRef(image_translate_target_language_param_key));
 

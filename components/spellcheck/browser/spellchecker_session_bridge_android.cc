@@ -75,7 +75,6 @@ void SpellCheckerSessionBridge::RequestTextCheck(
 
 void SpellCheckerSessionBridge::ProcessSpellCheckResults(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jintArray>& offset_array,
     const JavaParamRef<jintArray>& length_array,
     const JavaParamRef<jobjectArray>& suggestions_array) {

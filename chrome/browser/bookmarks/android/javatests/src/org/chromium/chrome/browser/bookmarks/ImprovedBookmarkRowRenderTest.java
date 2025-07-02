@@ -113,10 +113,10 @@ public class ImprovedBookmarkRowRenderTest {
         CurrencyFormatterJni.setInstanceForTesting(mCurrencyFormatterJniMock);
         doAnswer(
                         (invocation) -> {
-                            return "$" + invocation.getArgument(2);
+                            return "$" + invocation.getArgument(1);
                         })
                 .when(mCurrencyFormatterJniMock)
-                .format(anyLong(), any(), any());
+                .format(anyLong(), any());
 
         int bitmapSize =
                 mActivityTestRule

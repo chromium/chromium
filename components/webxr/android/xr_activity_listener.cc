@@ -56,9 +56,7 @@ void XrActivityListener::SetResumedHandler(
   on_activity_resumed_handler_ = std::move(resumed_handler);
 }
 
-void XrActivityListener::OnActivityResumed(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void XrActivityListener::OnActivityResumed(JNIEnv* env) {
   DVLOG(1) << __func__ << ": has handler?=" << !!on_activity_resumed_handler_;
   if (on_activity_resumed_handler_) {
     on_activity_resumed_handler_.Run();

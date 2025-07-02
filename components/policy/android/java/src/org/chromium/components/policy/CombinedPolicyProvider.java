@@ -133,7 +133,7 @@ public class CombinedPolicyProvider {
             }
         }
         Log.i(TAG, "#flushPolicies()");
-        CombinedPolicyProviderJni.get().flushPolicies(mNativeCombinedPolicyProvider, get());
+        CombinedPolicyProviderJni.get().flushPolicies(mNativeCombinedPolicyProvider);
     }
 
     void terminateIncognitoSession() {
@@ -191,6 +191,6 @@ public class CombinedPolicyProvider {
 
     @NativeMethods
     interface Natives {
-        void flushPolicies(long nativeAndroidCombinedPolicyProvider, CombinedPolicyProvider caller);
+        void flushPolicies(long nativeAndroidCombinedPolicyProvider);
     }
 }

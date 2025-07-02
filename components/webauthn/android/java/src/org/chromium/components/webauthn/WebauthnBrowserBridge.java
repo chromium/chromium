@@ -59,7 +59,6 @@ public class WebauthnBrowserBridge {
         WebauthnBrowserBridgeJni.get()
                 .onCredentialsDetailsListReceived(
                         mNativeWebauthnBrowserBridge,
-                        WebauthnBrowserBridge.this,
                         credentialArray,
                         frameHost,
                         isConditionalRequest,
@@ -172,19 +171,17 @@ public class WebauthnBrowserBridge {
     private void prepareNativeBrowserBridgeIfRequired() {
         if (mNativeWebauthnBrowserBridge == 0) {
             mNativeWebauthnBrowserBridge =
-                    WebauthnBrowserBridgeJni.get()
-                            .createNativeWebauthnBrowserBridge(WebauthnBrowserBridge.this);
+                    WebauthnBrowserBridgeJni.get().createNativeWebauthnBrowserBridge(this);
         }
     }
 
     @NativeMethods
     interface Natives {
         // Native methods are implemented in webauthn_browser_bridge.cc.
-        long createNativeWebauthnBrowserBridge(WebauthnBrowserBridge caller);
+        long createNativeWebauthnBrowserBridge(WebauthnBrowserBridge self);
 
         void onCredentialsDetailsListReceived(
                 long nativeWebauthnBrowserBridge,
-                WebauthnBrowserBridge caller,
                 WebauthnCredentialDetails[] credentialList,
                 @Nullable RenderFrameHost frameHost,
                 boolean isConditionalRequest,

@@ -79,7 +79,6 @@ base::android::ScopedJavaLocalRef<jobject> PolicyConverter::GetJavaObject() {
 }
 
 void PolicyConverter::SetPolicyBoolean(JNIEnv* env,
-                                       const JavaRef<jobject>& obj,
                                        const JavaRef<jstring>& policyKey,
                                        jboolean value) {
   SetPolicyValue(ConvertJavaStringToUTF8(env, policyKey),
@@ -87,7 +86,6 @@ void PolicyConverter::SetPolicyBoolean(JNIEnv* env,
 }
 
 void PolicyConverter::SetPolicyInteger(JNIEnv* env,
-                                       const JavaRef<jobject>& obj,
                                        const JavaRef<jstring>& policyKey,
                                        jint value) {
   SetPolicyValue(ConvertJavaStringToUTF8(env, policyKey),
@@ -95,7 +93,6 @@ void PolicyConverter::SetPolicyInteger(JNIEnv* env,
 }
 
 void PolicyConverter::SetPolicyString(JNIEnv* env,
-                                      const JavaRef<jobject>& obj,
                                       const JavaRef<jstring>& policyKey,
                                       const JavaRef<jstring>& value) {
   SetPolicyValue(ConvertJavaStringToUTF8(env, policyKey),
@@ -103,7 +100,6 @@ void PolicyConverter::SetPolicyString(JNIEnv* env,
 }
 
 void PolicyConverter::SetPolicyStringArray(JNIEnv* env,
-                                           const JavaRef<jobject>& obj,
                                            const JavaRef<jstring>& policyKey,
                                            const JavaRef<jobjectArray>& array) {
   SetPolicyValue(ConvertJavaStringToUTF8(env, policyKey),

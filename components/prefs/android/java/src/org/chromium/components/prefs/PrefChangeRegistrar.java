@@ -35,7 +35,7 @@ public class PrefChangeRegistrar {
 
     /** Initialize native PrefChangeRegistrar. */
     public PrefChangeRegistrar(PrefService prefs) {
-        mNativeRegistrar = PrefChangeRegistrarJni.get().init(PrefChangeRegistrar.this, prefs);
+        mNativeRegistrar = PrefChangeRegistrarJni.get().init(this, prefs);
     }
 
     /**
@@ -48,7 +48,7 @@ public class PrefChangeRegistrar {
         assert mObservers.get(preference) == null
                 : "Only one observer should be added to each preference.";
         mObservers.put(preference, observer);
-        PrefChangeRegistrarJni.get().add(mNativeRegistrar, PrefChangeRegistrar.this, preference);
+        PrefChangeRegistrarJni.get().add(mNativeRegistrar, preference);
     }
 
     /**
@@ -60,13 +60,13 @@ public class PrefChangeRegistrar {
         PrefObserver observer = mObservers.get(preference);
         if (observer == null) return;
         mObservers.remove(preference);
-        PrefChangeRegistrarJni.get().remove(mNativeRegistrar, PrefChangeRegistrar.this, preference);
+        PrefChangeRegistrarJni.get().remove(mNativeRegistrar, preference);
     }
 
     /** Destroy native PrefChangeRegistrar. */
     public void destroy() {
         if (mNativeRegistrar != 0) {
-            PrefChangeRegistrarJni.get().destroy(mNativeRegistrar, PrefChangeRegistrar.this);
+            PrefChangeRegistrarJni.get().destroy(mNativeRegistrar);
         }
         mNativeRegistrar = 0;
     }
@@ -80,18 +80,12 @@ public class PrefChangeRegistrar {
 
     @NativeMethods
     public interface Natives {
-        long init(PrefChangeRegistrar caller, @JniType("PrefService*") PrefService prefService);
+        long init(PrefChangeRegistrar self, @JniType("PrefService*") PrefService prefService);
 
-        void add(
-                long nativePrefChangeRegistrarAndroid,
-                PrefChangeRegistrar caller,
-                String preference);
+        void add(long nativePrefChangeRegistrarAndroid, String preference);
 
-        void remove(
-                long nativePrefChangeRegistrarAndroid,
-                PrefChangeRegistrar caller,
-                String preference);
+        void remove(long nativePrefChangeRegistrarAndroid, String preference);
 
-        void destroy(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller);
+        void destroy(long nativePrefChangeRegistrarAndroid);
     }
 }

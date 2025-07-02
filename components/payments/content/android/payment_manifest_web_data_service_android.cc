@@ -114,9 +114,7 @@ void PaymentManifestWebDataServiceAndroid::OnPaymentMethodManifestRequestDone(
   web_data_service_requests_.erase(h);
 }
 
-void PaymentManifestWebDataServiceAndroid::Destroy(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj) {
+void PaymentManifestWebDataServiceAndroid::Destroy(JNIEnv* env) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
       GetPaymentManifestWebDataService();
   if (web_data_service) {
@@ -131,7 +129,6 @@ void PaymentManifestWebDataServiceAndroid::Destroy(
 
 void PaymentManifestWebDataServiceAndroid::AddPaymentMethodManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jstring>& jmethod_name,
     const base::android::JavaParamRef<jobjectArray>& japps_package_names) {
   std::vector<std::string> apps_package_names;
@@ -151,7 +148,6 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentMethodManifest(
 
 void PaymentManifestWebDataServiceAndroid::AddPaymentWebAppManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jobjectArray>& jmanifest_sections) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
       GetPaymentManifestWebDataService();
@@ -187,7 +183,6 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentWebAppManifest(
 
 bool PaymentManifestWebDataServiceAndroid::GetPaymentMethodManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jstring>& jmethod_name,
     const base::android::JavaParamRef<jobject>& jcallback) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
@@ -207,7 +202,6 @@ bool PaymentManifestWebDataServiceAndroid::GetPaymentMethodManifest(
 
 bool PaymentManifestWebDataServiceAndroid::GetPaymentWebAppManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jstring>& japp_package_name,
     const base::android::JavaParamRef<jobject>& jcallback) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =

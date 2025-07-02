@@ -65,27 +65,21 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
   // Methods called from the Java side.
   void OnDrawingSurfaceReady(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& surface,
       const base::android::JavaParamRef<jobject>& root_window,
       int rotation,
       int width,
       int height);
   void OnDrawingSurfaceTouch(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj,
                              bool primary,
                              bool touching,
                              int32_t pointer_id,
                              float x,
                              float y);
-  void OnJavaShutdown(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
-  void OnXrSessionButtonTouched(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void OnJavaShutdown(JNIEnv* env);
+  void OnXrSessionButtonTouched(JNIEnv* env);
   void OnXrHostActivityReady(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& activity);
 
  private:

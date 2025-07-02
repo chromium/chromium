@@ -68,8 +68,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         addView(mCompositorView.getView(), layoutParams);
 
         mNativeThinWebViewImpl =
-                ThinWebViewImplJni.get()
-                        .init(ThinWebViewImpl.this, mCompositorView, mWindowAndroid);
+                ThinWebViewImplJni.get().init(this, mCompositorView, mWindowAndroid);
     }
 
     @Override
@@ -86,9 +85,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         // Native code holds only a weak reference to this object.
         mWebContentsDelegate = delegate;
         setContentView(contentView);
-        ThinWebViewImplJni.get()
-                .setWebContents(
-                        mNativeThinWebViewImpl, ThinWebViewImpl.this, webContents, delegate);
+        ThinWebViewImplJni.get().setWebContents(mNativeThinWebViewImpl, webContents, delegate);
         webContents.updateWebContentsVisibility(Visibility.VISIBLE);
     }
 
@@ -100,7 +97,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
             mContentView = null;
         }
         mCompositorView.destroy();
-        ThinWebViewImplJni.get().destroy(mNativeThinWebViewImpl, ThinWebViewImpl.this);
+        ThinWebViewImplJni.get().destroy(mNativeThinWebViewImpl);
         mNativeThinWebViewImpl = 0;
         mWindowAndroid.destroy();
     }
@@ -114,8 +111,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         if (mNativeThinWebViewImpl == 0) return;
         if (w != oldw || h != oldh) {
-            ThinWebViewImplJni.get()
-                    .sizeChanged(mNativeThinWebViewImpl, ThinWebViewImpl.this, w, h);
+            ThinWebViewImplJni.get().sizeChanged(mNativeThinWebViewImpl, w, h);
         }
     }
 
@@ -133,17 +129,15 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
 
     @NativeMethods
     interface Natives {
-        long init(
-                ThinWebViewImpl caller, CompositorView compositorView, WindowAndroid windowAndroid);
+        long init(ThinWebViewImpl self, CompositorView compositorView, WindowAndroid windowAndroid);
 
-        void destroy(long nativeThinWebView, ThinWebViewImpl caller);
+        void destroy(long nativeThinWebView);
 
         void setWebContents(
                 long nativeThinWebView,
-                ThinWebViewImpl caller,
                 WebContents webContents,
                 @Nullable WebContentsDelegateAndroid delegate);
 
-        void sizeChanged(long nativeThinWebView, ThinWebViewImpl caller, int width, int height);
+        void sizeChanged(long nativeThinWebView, int width, int height);
     }
 }

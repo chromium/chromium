@@ -119,10 +119,7 @@ public class SecurePaymentConfirmationAuthnTest {
         CurrencyFormatterJni.setInstanceForTesting(currencyFormatterJniMock);
         Mockito.doReturn("$1.00")
                 .when(currencyFormatterJniMock)
-                .format(
-                        Mockito.anyLong(),
-                        Mockito.any(CurrencyFormatter.class),
-                        Mockito.anyString());
+                .format(Mockito.anyLong(), Mockito.anyString());
 
         mPayeeName = "My Store";
         mPayeeOrigin = Origin.create(new GURL("https://store.example:443"));

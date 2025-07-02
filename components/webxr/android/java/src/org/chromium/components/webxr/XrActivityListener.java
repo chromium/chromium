@@ -78,7 +78,7 @@ public class XrActivityListener implements ActivityLifecycleCallbacks {
     public void onActivityResumed(Activity activity) {
         if (mWeakActivity.get() != activity || mNativeXrActivityListener == 0) return;
 
-        XrActivityListenerJni.get().onActivityResumed(mNativeXrActivityListener, this);
+        XrActivityListenerJni.get().onActivityResumed(mNativeXrActivityListener);
     }
 
     // Unfortunately, ActivityLifecycleCallbacks force us to implement all of the methods, but
@@ -103,6 +103,6 @@ public class XrActivityListener implements ActivityLifecycleCallbacks {
 
     @NativeMethods
     interface Natives {
-        void onActivityResumed(long nativeXrActivityListener, XrActivityListener caller);
+        void onActivityResumed(long nativeXrActivityListener);
     }
 }

@@ -39,14 +39,13 @@ public class CurrencyFormatter {
         // ensure that the native object is destroyed.
         mCurrencyFormatterAndroid =
                 CurrencyFormatterJni.get()
-                        .initCurrencyFormatterAndroid(
-                                CurrencyFormatter.this, currencyCode, userLocale.toString());
+                        .initCurrencyFormatterAndroid(currencyCode, userLocale.toString());
     }
 
     /** Will destroy the native object. This class shouldn't be used afterwards. */
     public void destroy() {
         if (mCurrencyFormatterAndroid != 0) {
-            CurrencyFormatterJni.get().destroy(mCurrencyFormatterAndroid, CurrencyFormatter.this);
+            CurrencyFormatterJni.get().destroy(mCurrencyFormatterAndroid);
             mCurrencyFormatterAndroid = 0;
         }
     }
@@ -60,10 +59,11 @@ public class CurrencyFormatter {
                 .setMaxFractionalDigits(mCurrencyFormatterAndroid, maxFractionalDigits);
     }
 
-    /** @return The currency code formatted for display. */
+    /**
+     * @return The currency code formatted for display.
+     */
     public String getFormattedCurrencyCode() {
-        return CurrencyFormatterJni.get()
-                .getFormattedCurrencyCode(mCurrencyFormatterAndroid, CurrencyFormatter.this);
+        return CurrencyFormatterJni.get().getFormattedCurrencyCode(mCurrencyFormatterAndroid);
     }
 
     /**
@@ -79,24 +79,20 @@ public class CurrencyFormatter {
     public String format(String amountValue) {
         assert amountValue != null : "amountValue should not be null";
 
-        return CurrencyFormatterJni.get()
-                .format(mCurrencyFormatterAndroid, CurrencyFormatter.this, amountValue);
+        return CurrencyFormatterJni.get().format(mCurrencyFormatterAndroid, amountValue);
     }
 
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long initCurrencyFormatterAndroid(
-                CurrencyFormatter caller, String currencyCode, String localeName);
+        long initCurrencyFormatterAndroid(String currencyCode, String localeName);
 
-        void destroy(long nativeCurrencyFormatterAndroid, CurrencyFormatter caller);
+        void destroy(long nativeCurrencyFormatterAndroid);
 
-        String format(
-                long nativeCurrencyFormatterAndroid, CurrencyFormatter caller, String amountValue);
+        String format(long nativeCurrencyFormatterAndroid, String amountValue);
 
         void setMaxFractionalDigits(long nativeCurrencyFormatterAndroid, int maxFractionalDigits);
 
-        String getFormattedCurrencyCode(
-                long nativeCurrencyFormatterAndroid, CurrencyFormatter caller);
+        String getFormattedCurrencyCode(long nativeCurrencyFormatterAndroid);
     }
 }

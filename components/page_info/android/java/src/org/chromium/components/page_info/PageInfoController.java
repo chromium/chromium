@@ -445,7 +445,7 @@ public class PageInfoController
 
         destroy();
 
-        PageInfoControllerJni.get().destroy(mNativePageInfoController, PageInfoController.this);
+        PageInfoControllerJni.get().destroy(mNativePageInfoController);
         mNativePageInfoController = 0;
         if (mPendingRunAfterDismissTask != null) {
             mPendingRunAfterDismissTask.run();
@@ -456,9 +456,7 @@ public class PageInfoController
     public void recordAction(@PageInfoAction int action) {
         assert mNativePageInfoController != 0;
         if (mNativePageInfoController != 0) {
-            PageInfoControllerJni.get()
-                    .recordPageInfoAction(
-                            mNativePageInfoController, PageInfoController.this, action);
+            PageInfoControllerJni.get().recordPageInfoAction(mNativePageInfoController, action);
         }
     }
 
@@ -466,8 +464,7 @@ public class PageInfoController
     public void refreshPermissions() {
         mPermissionParamsListBuilder.clearPermissionEntries();
         if (mNativePageInfoController != 0) {
-            PageInfoControllerJni.get()
-                    .updatePermissions(mNativePageInfoController, PageInfoController.this);
+            PageInfoControllerJni.get().updatePermissions(mNativePageInfoController);
         }
     }
 
@@ -558,12 +555,11 @@ public class PageInfoController
     interface Natives {
         long init(PageInfoController controller, WebContents webContents);
 
-        void destroy(long nativePageInfoControllerAndroid, PageInfoController caller);
+        void destroy(long nativePageInfoControllerAndroid);
 
-        void recordPageInfoAction(
-                long nativePageInfoControllerAndroid, PageInfoController caller, int action);
+        void recordPageInfoAction(long nativePageInfoControllerAndroid, int action);
 
-        void updatePermissions(long nativePageInfoControllerAndroid, PageInfoController caller);
+        void updatePermissions(long nativePageInfoControllerAndroid);
     }
 
     @Override

@@ -22,14 +22,12 @@ PolicyMapAndroid::~PolicyMapAndroid() = default;
 
 jboolean PolicyMapAndroid::HasValue(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller,
     const base::android::JavaRef<jstring>& policy) const {
   return GetValue(env, policy) != nullptr;
 }
 
 jint PolicyMapAndroid::GetIntValue(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller,
     const base::android::JavaRef<jstring>& policy) const {
   const base::Value* value = GetValue(env, policy);
   DCHECK(value && value->is_int())
@@ -39,7 +37,6 @@ jint PolicyMapAndroid::GetIntValue(
 
 jboolean PolicyMapAndroid::GetBooleanValue(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller,
     const base::android::JavaRef<jstring>& policy) const {
   const base::Value* value = GetValue(env, policy);
   DCHECK(value && value->is_bool())
@@ -49,7 +46,6 @@ jboolean PolicyMapAndroid::GetBooleanValue(
 
 base::android::ScopedJavaLocalRef<jstring> PolicyMapAndroid::GetStringValue(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller,
     const base::android::JavaRef<jstring>& policy) const {
   const base::Value* value = GetValue(env, policy);
   if (!value)
@@ -60,22 +56,17 @@ base::android::ScopedJavaLocalRef<jstring> PolicyMapAndroid::GetStringValue(
 
 base::android::ScopedJavaLocalRef<jstring> PolicyMapAndroid::GetListValue(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller,
     const base::android::JavaRef<jstring>& policy) const {
   return GetListOrDictValue(env, policy, /* is_dict */ false);
 }
 
 base::android::ScopedJavaLocalRef<jstring> PolicyMapAndroid::GetDictValue(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller,
     const base::android::JavaRef<jstring>& policy) const {
   return GetListOrDictValue(env, policy, /* is_dict */ true);
 }
 
-jboolean PolicyMapAndroid::Equals(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& caller,
-    jlong other) const {
+jboolean PolicyMapAndroid::Equals(JNIEnv* env, jlong other) const {
   return policy_map_->Equals(
       *reinterpret_cast<PolicyMapAndroid*>(other)->policy_map_);
 }

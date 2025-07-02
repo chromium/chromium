@@ -94,12 +94,7 @@ public class PaymentManifestDownloader {
         assert mNativeObject != 0;
         assert merchantOrigin != null;
         PaymentManifestDownloaderJni.get()
-                .downloadPaymentMethodManifest(
-                        mNativeObject,
-                        PaymentManifestDownloader.this,
-                        merchantOrigin,
-                        methodName,
-                        callback);
+                .downloadPaymentMethodManifest(mNativeObject, merchantOrigin, methodName, callback);
     }
 
     /**
@@ -119,18 +114,14 @@ public class PaymentManifestDownloader {
         assert paymentMethodManifestOrigin != null;
         PaymentManifestDownloaderJni.get()
                 .downloadWebAppManifest(
-                        mNativeObject,
-                        PaymentManifestDownloader.this,
-                        paymentMethodManifestOrigin,
-                        webAppManifestUrl,
-                        callback);
+                        mNativeObject, paymentMethodManifestOrigin, webAppManifestUrl, callback);
     }
 
     /** Destroys the native downloader. */
     public void destroy() {
         ThreadUtils.assertOnUiThread();
         assert mNativeObject != 0;
-        PaymentManifestDownloaderJni.get().destroy(mNativeObject, PaymentManifestDownloader.this);
+        PaymentManifestDownloaderJni.get().destroy(mNativeObject);
         mNativeObject = 0;
         if (mCSPCheckerBridge != null) mCSPCheckerBridge.destroy();
     }
@@ -146,19 +137,17 @@ public class PaymentManifestDownloader {
 
         void downloadPaymentMethodManifest(
                 long nativePaymentManifestDownloaderAndroid,
-                PaymentManifestDownloader caller,
                 Origin merchantOrigin,
                 GURL methodName,
                 ManifestDownloadCallback callback);
 
         void downloadWebAppManifest(
                 long nativePaymentManifestDownloaderAndroid,
-                PaymentManifestDownloader caller,
                 Origin paymentMethodManifestOrigin,
                 GURL webAppManifestUri,
                 ManifestDownloadCallback callback);
 
-        void destroy(long nativePaymentManifestDownloaderAndroid, PaymentManifestDownloader caller);
+        void destroy(long nativePaymentManifestDownloaderAndroid);
 
         Origin createOpaqueOriginForTest();
     }

@@ -49,9 +49,7 @@ void AndroidCombinedPolicyProvider::RefreshPolicies(PolicyFetchReason reason) {
                                               java_combined_policy_provider_);
 }
 
-void AndroidCombinedPolicyProvider::FlushPolicies(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void AndroidCombinedPolicyProvider::FlushPolicies(JNIEnv* env) {
   initialized_ = true;
   UpdatePolicy(policy_converter_->GetPolicyBundle());
 }

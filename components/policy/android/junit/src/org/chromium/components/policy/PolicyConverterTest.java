@@ -41,15 +41,14 @@ public class PolicyConverterTest {
         PolicyConverter policyConverter = PolicyConverter.create(1234);
 
         policyConverter.setPolicy("p1", true);
-        verify(mPolicyConverterJniMock).setPolicyBoolean(1234, policyConverter, "p1", true);
+        verify(mPolicyConverterJniMock).setPolicyBoolean(1234, "p1", true);
         policyConverter.setPolicy("p1", 5678);
-        verify(mPolicyConverterJniMock).setPolicyInteger(1234, policyConverter, "p1", 5678);
+        verify(mPolicyConverterJniMock).setPolicyInteger(1234, "p1", 5678);
         policyConverter.setPolicy("p1", "hello");
-        verify(mPolicyConverterJniMock).setPolicyString(1234, policyConverter, "p1", "hello");
+        verify(mPolicyConverterJniMock).setPolicyString(1234, "p1", "hello");
         policyConverter.setPolicy("p1", new String[] {"hello", "goodbye"});
         verify(mPolicyConverterJniMock)
-                .setPolicyStringArray(
-                        1234, policyConverter, "p1", new String[] {"hello", "goodbye"});
+                .setPolicyStringArray(1234, "p1", new String[] {"hello", "goodbye"});
         Bundle b1 = new Bundle();
         b1.putInt("i1", 23);
         b1.putString("s1", "a string");
@@ -62,16 +61,11 @@ public class PolicyConverterTest {
         verify(mPolicyConverterJniMock)
                 .setPolicyString(
                         1234,
-                        policyConverter,
                         "p1",
                         "{\"i1\":23,\"s1\":\"a string\","
                                 + "\"b1b\":[{\"ba1b\":true,\"ba1s\":\"another string\"}]}");
         policyConverter.setPolicy("p1", ba);
         verify(mPolicyConverterJniMock)
-                .setPolicyString(
-                        1234,
-                        policyConverter,
-                        "p1",
-                        "[{\"ba1b\":true,\"ba1s\":\"another string\"}]");
+                .setPolicyString(1234, "p1", "[{\"ba1b\":true,\"ba1s\":\"another string\"}]");
     }
 }

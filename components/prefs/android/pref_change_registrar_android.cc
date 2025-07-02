@@ -26,14 +26,12 @@ PrefChangeRegistrarAndroid::PrefChangeRegistrarAndroid(
 
 PrefChangeRegistrarAndroid::~PrefChangeRegistrarAndroid() = default;
 
-void PrefChangeRegistrarAndroid::Destroy(JNIEnv*,
-                                         const JavaParamRef<jobject>&) {
+void PrefChangeRegistrarAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void PrefChangeRegistrarAndroid::Add(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_preference) {
   std::string preference =
       base::android::ConvertJavaStringToUTF8(env, j_preference);
@@ -45,7 +43,6 @@ void PrefChangeRegistrarAndroid::Add(
 
 void PrefChangeRegistrarAndroid::Remove(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_preference) {
   pref_change_registrar_.Remove(
       base::android::ConvertJavaStringToUTF8(env, j_preference));

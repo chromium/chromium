@@ -81,22 +81,20 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   PermissionDialogDelegate& operator=(const PermissionDialogDelegate&) = delete;
 
   // JNI methods.
-  void Accept(JNIEnv* env, const JavaParamRef<jobject>& obj);
-  void AcceptThisTime(JNIEnv* env, const JavaParamRef<jobject>& obj);
-  void Acknowledge(JNIEnv* env, const JavaParamRef<jobject>& obj);
-  void Deny(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void Accept(JNIEnv* env);
+  void AcceptThisTime(JNIEnv* env);
+  void Acknowledge(JNIEnv* env);
+  void Deny(JNIEnv* env);
   void Dismissed(JNIEnv* env,
-                 const JavaParamRef<jobject>& obj,
                  int dismissalType);
-  void Resumed(JNIEnv* env, const JavaParamRef<jobject>& obj);
-  void SystemSettingsShown(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void Resumed(JNIEnv* env);
+  void SystemSettingsShown(JNIEnv* env);
   void SystemPermissionResolved(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
                                 bool accepted);
 
   // Reset the java JNI object object. Called from Java once the permission
   // dialog has been responded to.
-  void Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
   bool IsJavaDelegateDestroyed() const { return !java_delegate_; }
 
   // Notify Java side to update content view of the dialog associated with this

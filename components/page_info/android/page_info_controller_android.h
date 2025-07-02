@@ -30,12 +30,10 @@ class PageInfoControllerAndroid : public PageInfoUI {
       delete;
 
   ~PageInfoControllerAndroid() override;
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
   void RecordPageInfoAction(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj,
                             jint action);
-  void UpdatePermissions(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
+  void UpdatePermissions(JNIEnv* env);
 
   // PageInfoUI implementations.
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,

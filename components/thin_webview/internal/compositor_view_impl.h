@@ -42,16 +42,12 @@ class CompositorViewImpl : public CompositorView,
 
   ~CompositorViewImpl() override;
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& object);
+  void Destroy(JNIEnv* env);
 
-  void SetNeedsComposite(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& object);
-  void SurfaceCreated(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& object);
-  void SurfaceDestroyed(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& object);
+  void SetNeedsComposite(JNIEnv* env);
+  void SurfaceCreated(JNIEnv* env);
+  void SurfaceDestroyed(JNIEnv* env);
   void SurfaceChanged(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& object,
                       jint format,
                       jint width,
                       jint height,

@@ -23,7 +23,6 @@ class WebauthnBrowserBridge {
 
   void OnCredentialsDetailsListReceived(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&,
       const base::android::JavaParamRef<jobjectArray>& credentials,
       const base::android::JavaParamRef<jobject>& jframe_host,
       jboolean is_conditional_request,

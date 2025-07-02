@@ -27,34 +27,27 @@ class POLICY_EXPORT PolicyMapAndroid {
   ~PolicyMapAndroid();
 
   jboolean HasValue(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& caller,
                     const base::android::JavaRef<jstring>& policy) const;
 
   jint GetIntValue(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& caller,
                    const base::android::JavaRef<jstring>& policy) const;
 
   jboolean GetBooleanValue(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& caller,
                            const base::android::JavaRef<jstring>& policy) const;
 
   base::android::ScopedJavaLocalRef<jstring> GetStringValue(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaRef<jstring>& policy) const;
 
   base::android::ScopedJavaLocalRef<jstring> GetListValue(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaRef<jstring>& policy) const;
 
   base::android::ScopedJavaLocalRef<jstring> GetDictValue(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaRef<jstring>& policy) const;
 
   jboolean Equals(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& caller,
                   jlong other) const;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

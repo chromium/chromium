@@ -101,7 +101,6 @@ SegmentationPlatformServiceAndroid::~SegmentationPlatformServiceAndroid() {
 
 void SegmentationPlatformServiceAndroid::GetSelectedSegment(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& j_segmentation_key,
     const JavaParamRef<jobject>& jcallback) {
   segmentation_platform_service_->GetSelectedSegment(
@@ -112,7 +111,6 @@ void SegmentationPlatformServiceAndroid::GetSelectedSegment(
 
 void SegmentationPlatformServiceAndroid::GetClassificationResult(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
     const JavaParamRef<jstring>& j_segmentation_key,
     const JavaParamRef<jobject>& j_prediction_options,
     const JavaParamRef<jobject>& j_input_context,
@@ -133,7 +131,6 @@ void SegmentationPlatformServiceAndroid::GetClassificationResult(
 ScopedJavaLocalRef<jobject>
 SegmentationPlatformServiceAndroid::GetCachedSegmentResult(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& j_segmentation_key) {
   return SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
       env, segmentation_platform_service_->GetCachedSegmentResult(

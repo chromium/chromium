@@ -68,14 +68,12 @@ ConnectionInfoViewAndroid::ConnectionInfoViewAndroid(
 
 ConnectionInfoViewAndroid::~ConnectionInfoViewAndroid() = default;
 
-void ConnectionInfoViewAndroid::Destroy(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj) {
+void ConnectionInfoViewAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void ConnectionInfoViewAndroid::ResetCertDecisions(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& java_web_contents) {
   presenter_->OnRevokeSSLErrorBypassButtonPressed();
 }

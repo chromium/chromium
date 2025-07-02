@@ -43,54 +43,43 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
 
   // Methods called from Java via JNI.
   void OpenItem(JNIEnv* env,
-                const base::android::JavaParamRef<jobject>& jobj,
                 jint launch_location,
                 jboolean j_open_in_incognito,
                 const base::android::JavaParamRef<jstring>& j_namespace,
                 const base::android::JavaParamRef<jstring>& j_id);
   void RemoveItem(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& jobj,
                   const base::android::JavaParamRef<jstring>& j_namespace,
                   const base::android::JavaParamRef<jstring>& j_id);
   void CancelDownload(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& jobj,
                       const base::android::JavaParamRef<jstring>& j_namespace,
                       const base::android::JavaParamRef<jstring>& j_id);
   void PauseDownload(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& jobj,
                      const base::android::JavaParamRef<jstring>& j_namespace,
                      const base::android::JavaParamRef<jstring>& j_id);
   void ResumeDownload(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& jobj,
                       const base::android::JavaParamRef<jstring>& j_namespace,
                       const base::android::JavaParamRef<jstring>& j_id);
   void ValidateDangerousDownload(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& j_namespace,
       const base::android::JavaParamRef<jstring>& j_id);
   void GetItemById(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& jobj,
                    const base::android::JavaParamRef<jstring>& j_namespace,
                    const base::android::JavaParamRef<jstring>& j_id,
                    const base::android::JavaParamRef<jobject>& jcallback);
   void GetAllItems(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& jobj,
                    const base::android::JavaParamRef<jobject>& jcallback);
   void GetVisualsForItem(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& j_namespace,
       const base::android::JavaParamRef<jstring>& j_id,
       const base::android::JavaParamRef<jobject>& j_callback);
   void GetShareInfoForItem(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& j_namespace,
       const base::android::JavaParamRef<jstring>& j_id,
       const base::android::JavaParamRef<jobject>& j_callback);
   void RenameItem(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& jobj,
                   const base::android::JavaParamRef<jstring>& j_namespace,
                   const base::android::JavaParamRef<jstring>& j_id,
                   const base::android::JavaParamRef<jstring>& j_name,

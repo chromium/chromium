@@ -48,7 +48,6 @@ SiteEngagementServiceAndroid::~SiteEngagementServiceAndroid() {
 
 double SiteEngagementServiceAndroid::GetScore(
     JNIEnv* env,
-    const JavaParamRef<jobject>& caller,
     const JavaParamRef<jstring>& jurl) const {
   if (!jurl)
     return 0;
@@ -59,7 +58,6 @@ double SiteEngagementServiceAndroid::GetScore(
 
 void SiteEngagementServiceAndroid::ResetBaseScoreForURL(
     JNIEnv* env,
-    const JavaParamRef<jobject>& caller,
     const JavaParamRef<jstring>& jurl,
     double score) {
   if (jurl) {

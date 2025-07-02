@@ -266,11 +266,9 @@ ExternalBeginFrameSourceAndroid::~ExternalBeginFrameSourceAndroid() {
   SetEnabled(false);
 }
 
-void ExternalBeginFrameSourceAndroid::OnVSync(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    jlong time_micros,
-    jlong period_micros) {
+void ExternalBeginFrameSourceAndroid::OnVSync(JNIEnv* env,
+                                              jlong time_micros,
+                                              jlong period_micros) {
   OnVSyncImpl(time_micros * 1000, base::Microseconds(period_micros),
               /*possible_deadlines=*/std::nullopt);
 }

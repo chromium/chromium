@@ -29,13 +29,11 @@ class SegmentationPlatformServiceAndroid : public base::SupportsUserData::Data {
   ~SegmentationPlatformServiceAndroid() override;
 
   void GetSelectedSegment(JNIEnv* env,
-                          const JavaParamRef<jobject>& j_caller,
                           const JavaParamRef<jstring>& j_segmentation_key,
                           const JavaParamRef<jobject>& j_callback);
 
   void GetClassificationResult(
       JNIEnv* env,
-      const JavaParamRef<jobject>& j_caller,
       const JavaParamRef<jstring>& j_segmentation_key,
       const JavaParamRef<jobject>& j_prediction_options,
       const JavaParamRef<jobject>& j_input_context,
@@ -43,7 +41,6 @@ class SegmentationPlatformServiceAndroid : public base::SupportsUserData::Data {
 
   ScopedJavaLocalRef<jobject> GetCachedSegmentResult(
       JNIEnv* env,
-      const JavaParamRef<jobject>& jcaller,
       const JavaParamRef<jstring>& j_segmentation_key);
 
   void GetInputKeysForModel(JNIEnv* env,

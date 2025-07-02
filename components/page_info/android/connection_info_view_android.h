@@ -34,13 +34,12 @@ class ConnectionInfoViewAndroid : public PageInfoUI {
       delete;
 
   ~ConnectionInfoViewAndroid() override;
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // Revokes any current user exceptions for bypassing SSL error interstitials
   // on this page.
   void ResetCertDecisions(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& java_web_contents);
 
   // PageInfoUI implementations.

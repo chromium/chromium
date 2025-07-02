@@ -46,7 +46,7 @@ ThinWebView::ThinWebView(JNIEnv* env,
 
 ThinWebView::~ThinWebView() = default;
 
-void ThinWebView::Destroy(JNIEnv* env, const JavaParamRef<jobject>& object) {
+void ThinWebView::Destroy(JNIEnv* env) {
   delete this;
 }
 
@@ -59,7 +59,6 @@ void ThinWebView::PrimaryPageChanged(content::Page& page) {
 
 void ThinWebView::SetWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,
     const JavaParamRef<jobject>& jweb_contents_delegate) {
   content::WebContents* web_contents =
@@ -91,7 +90,6 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
 }
 
 void ThinWebView::SizeChanged(JNIEnv* env,
-                              const JavaParamRef<jobject>& object,
                               jint width,
                               jint height) {
   view_size_ = gfx::Size(width, height);

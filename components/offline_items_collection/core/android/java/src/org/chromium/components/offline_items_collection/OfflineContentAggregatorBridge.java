@@ -44,7 +44,6 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
         OfflineContentAggregatorBridgeJni.get()
                 .openItem(
                         mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
                         openParams.location,
                         openParams.openInIncognito,
                         id.namespace,
@@ -55,44 +54,28 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
     public void removeItem(ContentId id) {
         if (mNativeOfflineContentAggregatorBridge == 0) return;
         OfflineContentAggregatorBridgeJni.get()
-                .removeItem(
-                        mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
-                        id.namespace,
-                        id.id);
+                .removeItem(mNativeOfflineContentAggregatorBridge, id.namespace, id.id);
     }
 
     @Override
     public void cancelDownload(ContentId id) {
         if (mNativeOfflineContentAggregatorBridge == 0) return;
         OfflineContentAggregatorBridgeJni.get()
-                .cancelDownload(
-                        mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
-                        id.namespace,
-                        id.id);
+                .cancelDownload(mNativeOfflineContentAggregatorBridge, id.namespace, id.id);
     }
 
     @Override
     public void pauseDownload(ContentId id) {
         if (mNativeOfflineContentAggregatorBridge == 0) return;
         OfflineContentAggregatorBridgeJni.get()
-                .pauseDownload(
-                        mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
-                        id.namespace,
-                        id.id);
+                .pauseDownload(mNativeOfflineContentAggregatorBridge, id.namespace, id.id);
     }
 
     @Override
     public void resumeDownload(ContentId id) {
         if (mNativeOfflineContentAggregatorBridge == 0) return;
         OfflineContentAggregatorBridgeJni.get()
-                .resumeDownload(
-                        mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
-                        id.namespace,
-                        id.id);
+                .resumeDownload(mNativeOfflineContentAggregatorBridge, id.namespace, id.id);
     }
 
     @Override
@@ -100,66 +83,42 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
         if (mNativeOfflineContentAggregatorBridge == 0) return;
         OfflineContentAggregatorBridgeJni.get()
                 .validateDangerousDownload(
-                        mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
-                        id.namespace,
-                        id.id);
+                        mNativeOfflineContentAggregatorBridge, id.namespace, id.id);
     }
 
     @Override
     public void getItemById(ContentId id, Callback<OfflineItem> callback) {
         if (mNativeOfflineContentAggregatorBridge == 0) return;
         OfflineContentAggregatorBridgeJni.get()
-                .getItemById(
-                        mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
-                        id.namespace,
-                        id.id,
-                        callback);
+                .getItemById(mNativeOfflineContentAggregatorBridge, id.namespace, id.id, callback);
     }
 
     @Override
     public void getAllItems(Callback<ArrayList<OfflineItem>> callback) {
         if (mNativeOfflineContentAggregatorBridge == 0) return;
         OfflineContentAggregatorBridgeJni.get()
-                .getAllItems(
-                        mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
-                        callback);
+                .getAllItems(mNativeOfflineContentAggregatorBridge, callback);
     }
 
     @Override
     public void getVisualsForItem(ContentId id, VisualsCallback callback) {
         OfflineContentAggregatorBridgeJni.get()
                 .getVisualsForItem(
-                        mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
-                        id.namespace,
-                        id.id,
-                        callback);
+                        mNativeOfflineContentAggregatorBridge, id.namespace, id.id, callback);
     }
 
     @Override
     public void getShareInfoForItem(ContentId id, ShareCallback callback) {
         OfflineContentAggregatorBridgeJni.get()
                 .getShareInfoForItem(
-                        mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
-                        id.namespace,
-                        id.id,
-                        callback);
+                        mNativeOfflineContentAggregatorBridge, id.namespace, id.id, callback);
     }
 
     @Override
     public void renameItem(ContentId id, String name, Callback</*RenameResult*/ Integer> callback) {
         OfflineContentAggregatorBridgeJni.get()
                 .renameItem(
-                        mNativeOfflineContentAggregatorBridge,
-                        OfflineContentAggregatorBridge.this,
-                        id.namespace,
-                        id.id,
-                        name,
-                        callback);
+                        mNativeOfflineContentAggregatorBridge, id.namespace, id.id, name, callback);
     }
 
     @Override
@@ -236,7 +195,6 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
     interface Natives {
         void openItem(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 @LaunchLocation int location,
                 boolean openInIncognito,
                 @Nullable String nameSpace,
@@ -244,63 +202,53 @@ public class OfflineContentAggregatorBridge implements OfflineContentProvider {
 
         void removeItem(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 @Nullable String nameSpace,
                 @Nullable String id);
 
         void cancelDownload(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 @Nullable String nameSpace,
                 @Nullable String id);
 
         void pauseDownload(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 @Nullable String nameSpace,
                 @Nullable String id);
 
         void resumeDownload(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 @Nullable String nameSpace,
                 @Nullable String id);
 
         void validateDangerousDownload(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 @Nullable String nameSpace,
                 @Nullable String id);
 
         void getItemById(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 @Nullable String nameSpace,
                 @Nullable String id,
                 Callback<OfflineItem> callback);
 
         void getAllItems(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 Callback<ArrayList<OfflineItem>> callback);
 
         void getVisualsForItem(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 @Nullable String nameSpace,
                 @Nullable String id,
                 VisualsCallback callback);
 
         void getShareInfoForItem(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 @Nullable String nameSpace,
                 @Nullable String id,
                 ShareCallback callback);
 
         void renameItem(
                 long nativeOfflineContentAggregatorBridge,
-                OfflineContentAggregatorBridge caller,
                 @Nullable String nameSpace,
                 @Nullable String id,
                 String name,

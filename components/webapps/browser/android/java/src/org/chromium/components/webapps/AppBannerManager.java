@@ -148,7 +148,6 @@ public class AppBannerManager {
                 AppBannerManagerJni.get()
                         .onAppDetailsRetrieved(
                                 mNativePointer,
-                                AppBannerManager.this,
                                 requestId,
                                 data,
                                 data.title(),
@@ -178,7 +177,7 @@ public class AppBannerManager {
 
     /** Returns whether the native AppBannerManager is working. */
     public boolean isRunningForTesting() {
-        return AppBannerManagerJni.get().isRunningForTesting(mNativePointer, AppBannerManager.this);
+        return AppBannerManagerJni.get().isRunningForTesting(mNativePointer);
     }
 
     /** Returns the state of the current pipeline. */
@@ -224,7 +223,6 @@ public class AppBannerManager {
 
         void onAppDetailsRetrieved(
                 long nativeAppBannerManagerAndroid,
-                AppBannerManager caller,
                 int requestId,
                 AppData data,
                 @Nullable String title,
@@ -234,7 +232,7 @@ public class AppBannerManager {
         // Testing methods.
         void ignoreChromeChannelForTesting();
 
-        boolean isRunningForTesting(long nativeAppBannerManagerAndroid, AppBannerManager caller);
+        boolean isRunningForTesting(long nativeAppBannerManagerAndroid);
 
         int getPipelineStatusForTesting(long nativeAppBannerManagerAndroid);
 

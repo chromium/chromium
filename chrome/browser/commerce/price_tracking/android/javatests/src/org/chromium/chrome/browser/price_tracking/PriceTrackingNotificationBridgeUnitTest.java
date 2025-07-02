@@ -72,10 +72,7 @@ public class PriceTrackingNotificationBridgeUnitTest {
         CurrencyFormatterJni.setInstanceForTesting(currencyFormatterJniMock);
         Mockito.doReturn("$1.00")
                 .when(currencyFormatterJniMock)
-                .format(
-                        Mockito.anyLong(),
-                        Mockito.any(CurrencyFormatter.class),
-                        Mockito.anyString());
+                .format(Mockito.anyLong(), Mockito.anyString());
         mPriceTrackingNotificationBridge =
                 new PriceTrackingNotificationBridge(0, mNotifier, mPriceDropNotificationManager);
         setCanPostNotification(true);

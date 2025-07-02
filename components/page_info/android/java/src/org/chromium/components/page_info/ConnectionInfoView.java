@@ -188,9 +188,7 @@ public class ConnectionInfoView implements OnClickListener {
     @Override
     public void onClick(View v) {
         if (mResetCertDecisionsButton == v) {
-            ConnectionInfoViewJni.get()
-                    .resetCertDecisions(
-                            mNativeConnectionInfoView, ConnectionInfoView.this, mWebContents);
+            ConnectionInfoViewJni.get().resetCertDecisions(mNativeConnectionInfoView, mWebContents);
             mDelegate.dismiss(DialogDismissalCause.ACTION_ON_CONTENT);
         } else if (mCertificateViewerTextView == v) {
             byte[][] certChain = CertificateChainHelper.getCertificateChain(mWebContents);
@@ -214,7 +212,7 @@ public class ConnectionInfoView implements OnClickListener {
     public void onDismiss() {
         assert mNativeConnectionInfoView != 0;
         org.chromium.components.page_info.ConnectionInfoViewJni.get()
-                .destroy(mNativeConnectionInfoView, ConnectionInfoView.this);
+                .destroy(mNativeConnectionInfoView);
     }
 
     private void showConnectionSecurityInfo() {
@@ -319,11 +317,8 @@ public class ConnectionInfoView implements OnClickListener {
     interface Natives {
         long init(ConnectionInfoView popup, WebContents webContents);
 
-        void destroy(long nativeConnectionInfoViewAndroid, ConnectionInfoView caller);
+        void destroy(long nativeConnectionInfoViewAndroid);
 
-        void resetCertDecisions(
-                long nativeConnectionInfoViewAndroid,
-                ConnectionInfoView caller,
-                WebContents webContents);
+        void resetCertDecisions(long nativeConnectionInfoViewAndroid, WebContents webContents);
     }
 }
