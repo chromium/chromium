@@ -2732,6 +2732,47 @@ TEST_P(PDFiumEngineInkDrawTest, RotatedPdf) {
 // covering one of these is sufficient for checking how data is written out.
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkDrawTest, testing::Values(false));
 
+using PDFiumEngineInkPrintTest = PDFiumTestBase;
+
+TEST_P(PDFiumEngineInkPrintTest, InkStrokes) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Draw a stroke.
+  static constexpr auto kInputs = std::to_array<PdfInkInputData>({
+      {{5.0f, 5.0f}, base::Seconds(0.0f)},
+      {{50.0f, 5.0f}, base::Seconds(0.1f)},
+  });
+  std::optional<ink::StrokeInputBatch> batch = CreateInkInputBatch(kInputs);
+  ASSERT_TRUE(batch.has_value());
+  auto brush = std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
+                                             SK_ColorRED, /*size=*/4.0f);
+  ink::Stroke stroke(brush->ink_brush(), batch.value());
+  static constexpr std::array<int, 1> kPagesToPrint = {0};
+  static constexpr InkStrokeId kStrokeId(0);
+  engine->ApplyStroke(kPagesToPrint[0], kStrokeId, stroke);
+
+  blink::WebPrintParams print_params = GetDefaultPrintParams();
+  print_params.printable_area_in_css_pixels = kPrintableAreaRect;
+  print_params.print_scaling_option =
+      printing::mojom::PrintScalingOption::kFitToPaper;
+
+  engine->PrintBegin();
+  std::vector<uint8_t> pdf_data =
+      engine->PrintPages(kPagesToPrint, print_params);
+  engine->PrintEnd();
+
+  base::FilePath expected_output = GetInkTestDataFilePath(
+      FILE_PATH_LITERAL("applied_stroke_printed_fit_to_page.png"));
+  CheckPdfRendering(pdf_data, kPagesToPrint[0], {612, 792}, expected_output);
+}
+
+// Don't be concerned about any slight rendering differences in AGG vs. Skia,
+// covering one of these is sufficient for checking how data is written out.
+INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkPrintTest, testing::Values(false));
+
 class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
  public:
   PDFiumEngineCaretTest() = default;
