@@ -1049,6 +1049,9 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
                                  ReplacedSizeMode::kIgnoreBlockLengths)
           .block_size;
     }
+    if (natural_size) {
+      return natural_size->block_size;
+    }
     return kIndefiniteSize;
   };
 
