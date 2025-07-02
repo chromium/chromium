@@ -289,13 +289,13 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(ANY, 0);
     config.session_rate_impact.type = SessionRateImpact::Type::NONE;
-    // Show intervention dialog at most once per day and no more than 5 times
-    // per week.
+    // Show intervention dialog at most 3 times per day and no more than 21
+    // times per week.
     config.trigger = EventConfig("performance_intervention_dialog_trigger",
-                                 Comparator(EQUAL, 0), 1, 360);
+                                 Comparator(LESS_THAN, 3), 1, 360);
     config.event_configs.insert(
         EventConfig("performance_intervention_dialog_trigger",
-                    Comparator(LESS_THAN, 5), 7, 360));
+                    Comparator(LESS_THAN, 21), 7, 360));
     return config;
   }
 
