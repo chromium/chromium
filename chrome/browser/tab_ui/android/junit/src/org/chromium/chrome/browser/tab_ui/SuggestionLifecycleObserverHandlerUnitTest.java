@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -41,13 +42,14 @@ public class SuggestionLifecycleObserverHandlerUnitTest {
 
     @Before
     public void setUp() {
-        mSuggestionLifecycleObserverHandler =
-                new SuggestionLifecycleObserverHandler(
-                        SUGGESTION_ID, mUserResponseCallback, mSuggestionLifecycleObserver);
+        mSuggestionLifecycleObserverHandler = new SuggestionLifecycleObserverHandler();
+        mSuggestionLifecycleObserverHandler.initialize(mSuggestionLifecycleObserver);
     }
 
     @Test
     public void testOnSuggestionAccepted() {
+        mSuggestionLifecycleObserverHandler.updateSuggestionDetails(
+                SUGGESTION_ID, mUserResponseCallback);
         mSuggestionLifecycleObserverHandler.onSuggestionAccepted();
 
         verify(mSuggestionLifecycleObserver).onSuggestionAccepted();
@@ -63,6 +65,8 @@ public class SuggestionLifecycleObserverHandlerUnitTest {
 
     @Test
     public void testOnSuggestionDismissed() {
+        mSuggestionLifecycleObserverHandler.updateSuggestionDetails(
+                SUGGESTION_ID, mUserResponseCallback);
         mSuggestionLifecycleObserverHandler.onSuggestionDismissed();
 
         verify(mSuggestionLifecycleObserver).onSuggestionDismissed();
@@ -78,6 +82,8 @@ public class SuggestionLifecycleObserverHandlerUnitTest {
 
     @Test
     public void testOnSuggestionIgnored() {
+        mSuggestionLifecycleObserverHandler.updateSuggestionDetails(
+                SUGGESTION_ID, mUserResponseCallback);
         mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
 
         verify(mSuggestionLifecycleObserver).onSuggestionIgnored();
@@ -102,18 +108,64 @@ public class SuggestionLifecycleObserverHandlerUnitTest {
 
     @Test
     public void testOnlyFirstUserResponseListenerIsProcessed() {
+        mSuggestionLifecycleObserverHandler.updateSuggestionDetails(
+                SUGGESTION_ID, mUserResponseCallback);
         mSuggestionLifecycleObserverHandler.onSuggestionAccepted();
 
-        verify(mSuggestionLifecycleObserver, times(1)).onSuggestionAccepted();
-        verify(mSuggestionLifecycleObserver, times(1)).onAnySuggestionResponse();
-        verify(mUserResponseCallback, times(1)).onResult(any(UserResponseMetadata.class));
+        verify(mSuggestionLifecycleObserver).onSuggestionAccepted();
+        verify(mSuggestionLifecycleObserver).onAnySuggestionResponse();
+        verify(mUserResponseCallback).onResult(any());
 
         mSuggestionLifecycleObserverHandler.onSuggestionDismissed();
         mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
 
         verify(mSuggestionLifecycleObserver, never()).onSuggestionDismissed();
         verify(mSuggestionLifecycleObserver, never()).onSuggestionIgnored();
-        verify(mSuggestionLifecycleObserver, times(1)).onAnySuggestionResponse();
-        verify(mUserResponseCallback, times(1)).onResult(any(UserResponseMetadata.class));
+        verify(mSuggestionLifecycleObserver).onAnySuggestionResponse();
+        verify(mUserResponseCallback).onResult(any());
+    }
+
+    @Test
+    public void testNoResponseBeforeUpdateDetails() {
+        mSuggestionLifecycleObserverHandler.onSuggestionAccepted();
+        mSuggestionLifecycleObserverHandler.onSuggestionDismissed();
+        mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
+
+        verify(mSuggestionLifecycleObserver, never()).onSuggestionAccepted();
+        verify(mSuggestionLifecycleObserver, never()).onSuggestionDismissed();
+        verify(mSuggestionLifecycleObserver, never()).onSuggestionIgnored();
+        verify(mSuggestionLifecycleObserver, never()).onAnySuggestionResponse();
+        verify(mUserResponseCallback, never()).onResult(any());
+    }
+
+    @Test
+    public void testReset_disablesResponses() {
+        mSuggestionLifecycleObserverHandler.updateSuggestionDetails(
+                SUGGESTION_ID, mUserResponseCallback);
+        mSuggestionLifecycleObserverHandler.onSuggestionAccepted();
+        verify(mUserResponseCallback).onResult(any());
+
+        mSuggestionLifecycleObserverHandler.onSuggestionDismissed();
+
+        verify(mSuggestionLifecycleObserver, never()).onSuggestionDismissed();
+        verify(mUserResponseCallback).onResult(any());
+    }
+
+    @Test
+    public void testReset_newSuggestion() {
+        mSuggestionLifecycleObserverHandler.updateSuggestionDetails(
+                SUGGESTION_ID, mUserResponseCallback);
+        mSuggestionLifecycleObserverHandler.onSuggestionAccepted();
+        verify(mUserResponseCallback).onResult(any());
+
+        reset(mUserResponseCallback);
+        mSuggestionLifecycleObserverHandler.updateSuggestionDetails(
+                SUGGESTION_ID, mUserResponseCallback);
+        mSuggestionLifecycleObserverHandler.onSuggestionDismissed();
+
+        verify(mUserResponseCallback).onResult(any());
+        verify(mUserResponseCallback).onResult(any());
+        verify(mSuggestionLifecycleObserver).onSuggestionDismissed();
+        verify(mSuggestionLifecycleObserver, times(2)).onAnySuggestionResponse();
     }
 }

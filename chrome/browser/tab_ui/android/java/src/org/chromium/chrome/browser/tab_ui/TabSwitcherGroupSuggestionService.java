@@ -142,27 +142,26 @@ public class TabSwitcherGroupSuggestionService {
             };
     private final @WindowId int mWindowId;
     private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
-    private final SuggestionLifecycleObserver mSuggestionLifecycleObserver;
+    private final SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
     private final GroupSuggestionsService mGroupSuggestionsService;
     private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
-    private @Nullable SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
 
     /**
      * @param windowId The ID of the current window.
      * @param currentTabGroupModelFilterSupplier The supplier for the current {@link
      *     TabGroupModelFilter}.
      * @param profile The profile used for tab group suggestions.
-     * @param suggestionLifecycleObserver Listens for user responses to a group suggestion.
+     * @param suggestionLifecycleObserverHandler Listens for user responses to a group suggestion.
      */
     public TabSwitcherGroupSuggestionService(
             @WindowId int windowId,
             ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             Profile profile,
-            SuggestionLifecycleObserver suggestionLifecycleObserver) {
+            SuggestionLifecycleObserverHandler suggestionLifecycleObserverHandler) {
         mWindowId = windowId;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
-        mSuggestionLifecycleObserver = suggestionLifecycleObserver;
+        mSuggestionLifecycleObserverHandler = suggestionLifecycleObserverHandler;
 
         mGroupSuggestionsService = GroupSuggestionsServiceFactory.getForProfile(profile);
 
@@ -221,10 +220,7 @@ public class TabSwitcherGroupSuggestionService {
 
     /** Clears tab group suggestions if present. */
     public void clearSuggestions() {
-        if (mSuggestionLifecycleObserverHandler != null) {
-            mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
-            mSuggestionLifecycleObserverHandler = null;
-        }
+        mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
     }
 
     /** Forces a tab group suggestion for testing purposes. */
@@ -274,9 +270,8 @@ public class TabSwitcherGroupSuggestionService {
             suggestionTabIds.add(tabId);
         }
 
-        mSuggestionLifecycleObserverHandler =
-                new SuggestionLifecycleObserverHandler(
-                        suggestion.suggestionId, callback, mSuggestionLifecycleObserver);
+        mSuggestionLifecycleObserverHandler.updateSuggestionDetails(
+                suggestion.suggestionId, callback);
         mSuggestionLifecycleObserverHandler.onShowSuggestion(new ArrayList<>(suggestionTabIds));
     }
 }
