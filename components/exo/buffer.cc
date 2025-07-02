@@ -271,8 +271,7 @@ Buffer::Texture::Texture(
                               color_space, usage, gpu::kExoTextureLabelPrefix},
                              gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
-  DCHECK(!shared_image_->mailbox().IsZero());
-  sync_token_ = sii->GenUnverifiedSyncToken();
+  sync_token_ = shared_image_->creation_sync_token();
 
   // Provides a notification when |context_provider_| is lost.
   context_provider_->AddObserver(this);
@@ -313,10 +312,8 @@ Buffer::Texture::Texture(
       {format, size_, color_space, usage, gpu::kExoTextureLabelPrefix},
       gpu_memory_buffer_handle_->Clone());
   CHECK(shared_image_);
-  DCHECK(!shared_image_->mailbox().IsZero());
-  gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-  sync_token_ = sii->GenUnverifiedSyncToken();
-  ri->GenQueriesEXT(1, &query_id_);
+  sync_token_ = shared_image_->creation_sync_token();
+  context_provider_->RasterInterface()->GenQueriesEXT(1, &query_id_);
 
   // Provides a notification when |context_provider_| is lost.
   context_provider_->AddObserver(this);
@@ -442,8 +439,8 @@ void Buffer::Texture::DestroyResources() {
       ri->DeleteQueriesEXT(1, &query_id_);
       query_id_ = 0;
     }
-    gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-    sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image_));
+
+    shared_image_->UpdateDestructionSyncToken(sync_token_);
   }
 }
 
