@@ -6,7 +6,7 @@
 // This test verifies we can successfully create a MediaRecorder and
 // get data from a MediaStream with it.
 
-var checkStreamTracks = function(stream, has_video, has_audio) {
+function checkStreamTracks(stream, has_video, has_audio) {
   if (has_video) {
     assert_equals(stream.getVideoTracks().length, 1);
     assert_equals(stream.getVideoTracks()[0].readyState, 'live');
@@ -22,66 +22,68 @@ var checkStreamTracks = function(stream, has_video, has_audio) {
   }
 };
 
-const makeEmptyDataTest = function(value, expected) {
-  async_test(function(test) {
-    const recorderOnDataAvailable = test.step_func_done(function(event) {
-      assert_equals(event.data.size, 0, 'Recorded data size should be == 0');
-      assert_not_equals(event.timecode, NaN, 'timecode');
-    });
+function makeEmptyDataTest(value, expected) {
+  promise_test(
+      test => {
+        var recorder;
+        return navigator.mediaDevices.getUserMedia(value)
+            .catch(test.unreached_func('Error creating MediaStream.'))
+            .then(stream => {
+              checkStreamTracks(stream, value['video'], value['audio']);
+              recorder = new MediaRecorder(stream);
+              recorder.onstop = test.unreached_func('Recording stopped.');
+              recorder.onerror = test.unreached_func('Recording error.');
 
-    const recorderOnStop =
-        test.step_func(function() { assert_unreached('Recording stopped.'); });
+              // Don't wait for `onstart` before calling requestData().
+              recorder.start();
 
-    const recorderOnError =
-        test.step_func(function() { assert_unreached('Recording error.'); });
-
-    const gotStream = test.step_func(function(stream) {
-      checkStreamTracks(stream, value['video'], value['audio']);
-
-      var recorder = new MediaRecorder(stream);
-
-      assert_throws_dom("InvalidStateError",
-                        function() { recorder.requestData(); },
-                        "recorder throws InvalidStateError if requestData() " +
-                        "while state is not 'recording'");
-
-      recorder.ondataavailable = recorderOnDataAvailable;
-      recorder.onstop = recorderOnStop;
-      recorder.onerror = recorderOnError;
-      recorder.start();
-
-      assert_equals(recorder.state, "recording");
-      recorder.requestData();
-    });
-
-    const onError = test.unreached_func('Error creating MediaStream.');
-    navigator.webkitGetUserMedia(value, gotStream, onError);
-  }, "MediaRecorder requestData causes blobs without contained data to " +
-     `trigger ondataavailable after start (${JSON.stringify(value)})`);
+              const ondataavailablePromise = new Promise(resolve => {
+                recorder.ondataavailable = test.step_func(event => {
+                  assert_equals(
+                      event.data.size, 0, 'Recorded data size should be == 0');
+                  assert_not_equals(event.timecode, NaN, 'timecode');
+                  resolve();
+                });
+              });
+              recorder.requestData();
+              return ondataavailablePromise;
+            });
+      },
+      'MediaRecorder requestData causes blobs without contained data to ' +
+          `trigger ondataavailable after start (${JSON.stringify(value)})`);
 }
 
-const makeNonEmptyDataTest = function(value, expected) {
-  promise_test(async function(test) {
-    const recorderOnDataAvailable = test.step_func_done(function(event) {
-      assert_greater_than(event.data.size, 0,
-          'Recorded data size should be > 0');
-      assert_equals(event.data.type, value['mimeType']);
-    });
+function makeNonEmptyDataTest(value, expected) {
+  promise_test(
+      test => {
+        var recorder;
+        return navigator.mediaDevices.getUserMedia(value)
+            .catch(test.unreached_func('Error creating MediaStream.'))
+            .then(stream => {
+              checkStreamTracks(stream, value['video'], value['audio']);
+              recorder = new MediaRecorder(stream);
+              recorder.onstop = test.unreached_func('Recording stopped.');
+              recorder.onerror = test.unreached_func('Recording error.');
 
-    const gotStream = test.step_func(async function(stream) {
-      checkStreamTracks(stream, value['video'], value['audio']);
-      var recorder = new MediaRecorder(stream);
-      recorder.ondataavailable = recorderOnDataAvailable;
-      const onstartPromise = new Promise(r => recorder.onstart = r);
-      recorder.start();
-      await onstartPromise;
-      recorder.requestData();
-    });
-
-    const onError = test.unreached_func('Error creating MediaStream.');
-    navigator.webkitGetUserMedia(value, gotStream, onError);
-  }, "MediaRecorder requestData causes blobs with contained " +
-  `trigger ondataavailable after onstart (${JSON.stringify(value)})`);
+              const onstartPromise = new Promise(r => recorder.onstart = r);
+              recorder.start();
+              return onstartPromise
+            })
+            .then(() => {
+              const ondataavailablePromise = new Promise(resolve => {
+                recorder.ondataavailable = test.step_func(event => {
+                  assert_greater_than(
+                      event.data.size, 0, 'Recorded data size should be > 0');
+                  assert_equals(event.data.type, value['mimeType']);
+                  resolve();
+                });
+              });
+              recorder.requestData();
+              return ondataavailablePromise;
+            });
+      },
+      'MediaRecorder requestData causes blobs with contained ' +
+          `trigger ondataavailable after onstart (${JSON.stringify(value)})`);
 }
 
 generate_tests(makeEmptyDataTest,
