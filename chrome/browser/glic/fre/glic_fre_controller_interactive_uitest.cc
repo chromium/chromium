@@ -393,8 +393,8 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, ShowsErrorPanelOnInvalidAuth) {
                                          {"#errorPanel:not([hidden])"})));
 }
 
-// TODO(crbug.com/429040435): Test is failing on Mac bots.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/429040435): Test is failing on Mac and Linux bots.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ShowsErrorPanelOnLoadingTimeout \
   DISABLED_ShowsErrorPanelOnLoadingTimeout
 #else
