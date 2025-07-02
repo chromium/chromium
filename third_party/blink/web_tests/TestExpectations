@@ -6182,7 +6182,6 @@ crbug.com/1312164 webaudio/internals/audioworkletnode-gc.https.html [ Failure Sk
 
 # Sheriff 2022-03-23: More flaky tests.
 crbug.com/1309483 [ Win ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
-crbug.com/1309633 [ Debug Mac13-arm64 ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
 
 # Sheriff 2022-03-24
 crbug.com/1309756 [ Mac13-arm64 ] http/tests/images/force-reload.html [ Crash Failure Pass Timeout ]
