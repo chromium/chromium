@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
+#include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
 #include "components/autofill/core/browser/ml_model/logging/ml_log_router.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
@@ -136,6 +137,9 @@ class FieldClassificationModelHandler
   base::LRUCache<ModelInputHash, std::vector<FieldType>> predictions_cache_;
 
   raw_ptr<autofill::MLLogRouter> log_router_ = nullptr;
+
+  autofill_ml_internals::mojom::MLPredictionLogPtr CreateMLPredictionLog(
+      const FormStructure& form_structure) const;
 
   base::WeakPtrFactory<FieldClassificationModelHandler> weak_ptr_factory_{this};
 };

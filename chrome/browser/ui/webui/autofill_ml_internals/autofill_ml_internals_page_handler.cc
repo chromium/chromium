@@ -20,14 +20,6 @@ AutofillMlInternalsPageHandlerImpl::AutofillMlInternalsPageHandlerImpl(
 void AutofillMlInternalsPageHandlerImpl::SetPage(
     mojo::PendingRemote<autofill_ml_internals::mojom::Page> page) {
   page_.Bind(std::move(page));
-
-  // TODO: For demonstration, a dummy log is sent
-  // when the page connects. This should be replaced with a proper observer
-  // pattern to receive real logs.
-  auto log = autofill_ml_internals::mojom::MLPredictionLog::New();
-  log->form_signature = "1234567890";
-  log->field_signatures = {"1111", "2222", "3333"};
-  page_->OnLogAdded(std::move(log));
 }
 
 void AutofillMlInternalsPageHandlerImpl::ProcessLog(

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 
 #include <algorithm>
+#include <iterator>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -12,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
@@ -22,6 +24,7 @@
 #include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
@@ -157,6 +160,94 @@ void FieldClassificationModelHandler::ApplySmallFormRules(
   }
 }
 
+autofill_ml_internals::mojom::MLPredictionLogPtr
+FieldClassificationModelHandler::CreateMLPredictionLog(
+    const FormStructure& form_structure) const {
+  autofill_ml_internals::mojom::MLPredictionLogPtr prediction_log =
+      autofill_ml_internals::mojom::MLPredictionLog::New();
+
+  switch (optimization_target_) {
+    case optimization_guide::proto::OptimizationTarget::
+        OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION:
+      prediction_log->optimization_target =
+          autofill_ml_internals::mojom::OptimizationTarget::kAutofill;
+      break;
+    case optimization_guide::proto::OptimizationTarget::
+        OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION:
+      prediction_log->optimization_target =
+          autofill_ml_internals::mojom::OptimizationTarget::kPassword;
+      break;
+    default:
+      prediction_log->optimization_target =
+          autofill_ml_internals::mojom::OptimizationTarget::kUnknown;
+      break;
+  }
+
+  prediction_log->form_signature = form_structure.FormSignatureAsStr();
+  prediction_log->form_url = form_structure.source_url();
+
+  std::vector<std::string> model_types;
+  for (int field_type_as_int : state_->metadata.output_type()) {
+    FieldType field_type =
+        ToSafeFieldType(FieldType(field_type_as_int), NO_SERVER_DATA);
+    std::string field_type_name = (field_type != NO_SERVER_DATA)
+                                      ? FieldTypeToString(field_type)
+                                      : "[INVALID]";
+    model_types.emplace_back(std::move(field_type_name));
+  }
+  prediction_log->model_output_types.assign(model_types.begin(),
+                                            model_types.end());
+
+  std::vector<autofill_ml_internals::mojom::MLFieldPredictionLogPtr>
+      field_predictions;
+  for (const auto& field : form_structure.fields()) {
+    autofill_ml_internals::mojom::MLFieldPredictionLogPtr field_prediction =
+        autofill_ml_internals::mojom::MLFieldPredictionLog::New();
+    field_prediction->label = base::UTF16ToUTF8(field->label());
+    field_prediction->placeholder = base::UTF16ToUTF8(field->placeholder());
+    field_prediction->autocomplete = field->autocomplete_attribute();
+    field_prediction->name = base::UTF16ToUTF8(field->name_attribute());
+    field_prediction->id = base::UTF16ToUTF8(field->id_attribute());
+    field_prediction->form_control_type =
+        FormControlTypeToString(field->form_control_type());
+
+    std::vector<autofill_ml_internals::mojom::SelectOptionPtr> select_options;
+    for (const auto& option : field->options()) {
+      autofill_ml_internals::mojom::SelectOptionPtr logged_option =
+          autofill_ml_internals::mojom::SelectOption::New();
+      logged_option->value = base::UTF16ToUTF8(option.value);
+      logged_option->text = base::UTF16ToUTF8(option.text);
+    }
+    field_prediction->select_options.assign(
+        std::make_move_iterator(select_options.begin()),
+        std::make_move_iterator(select_options.end()));
+
+    field_predictions.emplace_back(std::move(field_prediction));
+  }
+  prediction_log->field_predictions.assign(
+      std::make_move_iterator(field_predictions.begin()),
+      std::make_move_iterator(field_predictions.end()));
+
+  prediction_log->start_time = base::Time::Now();
+  return prediction_log;
+}
+
+void PopulateMLPredictionLogAfterInference(
+    autofill_ml_internals::mojom::MLPredictionLog& prediction_log,
+    const FieldClassificationModelEncoder::ModelOutput& model_output) {
+  prediction_log.end_time = base::Time::Now();
+  prediction_log.duration = prediction_log.end_time - prediction_log.start_time;
+
+  // Cannot zip this: `model_output` has a fixed length (e.g. 30), which can be
+  // both shorter and longer than the number of fields.
+  for (size_t i = 0;
+       i < model_output.size() && i < prediction_log.field_predictions.size();
+       ++i) {
+    prediction_log.field_predictions[i]->probabilities = std::vector(
+        model_output[i].begin(), model_output[i].end());
+  }
+}
+
 void FieldClassificationModelHandler::GetModelPredictionsForForm(
     std::unique_ptr<FormStructure> form_structure,
     base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback) {
@@ -166,14 +257,13 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
     return;
   }
 
-  // Placeholder logging logic, just to establish that the piping works.
+  std::optional<autofill_ml_internals::mojom::MLPredictionLogPtr>
+      prediction_log = std::nullopt;
   if (log_router_ && log_router_->HasReceivers()) {
-    autofill_ml_internals::mojom::MLPredictionLogPtr log =
-        autofill_ml_internals::mojom::MLPredictionLog::New();
-    log->form_signature = form_structure->FormSignatureAsStr();
-    log_router_->ProcessLog(std::move(log));
+    prediction_log = CreateMLPredictionLog(*form_structure);
   }
 
+  // TODO(crbug.com/428686605) Set tokenized representation in `prediction_log`.
   FieldClassificationModelEncoder::ModelInput encoded_input =
       state_->encoder.EncodeForm(*form_structure);
 
@@ -201,6 +291,8 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
   ExecuteModelWithInput(
       base::BindOnce(
           [](base::WeakPtr<FieldClassificationModelHandler> self,
+             std::optional<autofill_ml_internals::mojom::MLPredictionLogPtr>
+                 prediction_log,
              std::unique_ptr<FormStructure> form_structure,
              std::optional<ModelInputHash> model_input_hash,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
@@ -220,10 +312,16 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
                                              predicted_types);
               }
             }
+            if (self && output && prediction_log && self->log_router_) {
+              PopulateMLPredictionLogAfterInference(*(prediction_log.value()),
+                                                    output.value());
+              self->log_router_->ProcessLog(std::move(*prediction_log));
+            }
             std::move(callback).Run(std::move(form_structure));
           },
-          weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
-          std::move(input_hash), std::move(callback)),
+          weak_ptr_factory_.GetWeakPtr(), std::move(prediction_log),
+          std::move(form_structure), std::move(input_hash),
+          std::move(callback)),
       std::move(encoded_input));
 }
 

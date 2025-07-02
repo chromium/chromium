@@ -4,10 +4,43 @@
 
 module autofill_ml_internals.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+enum OptimizationTarget {
+  kUnknown,
+  kAutofill,
+  kPassword,
+};
+
+struct SelectOption {
+  string value;
+  string text;
+};
+
+// Prediction for a single field.
+struct MLFieldPredictionLog {
+  string label;
+  string placeholder;
+  string name;
+  string id;
+  string autocomplete;
+  string form_control_type;
+  array<SelectOption> select_options;
+
+  array<float>? probabilities;
+};
+
 // Represents a single ML prediction log entry.
 struct MLPredictionLog {
   string form_signature;
-  array<string> field_signatures;
+  url.mojom.Url form_url;
+  array<string> model_output_types;
+  array<MLFieldPredictionLog> field_predictions;
+  mojo_base.mojom.Time start_time;
+  mojo_base.mojom.Time end_time;
+  mojo_base.mojom.TimeDelta duration;
+  OptimizationTarget optimization_target;
 };
 
 // The frontend implements this interface to receive log updates from the

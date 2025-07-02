@@ -25,9 +25,6 @@ AutofillMlInternalsUI::AutofillMlInternalsUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, kAutofillMlInternalsResources,
       IDR_AUTOFILL_ML_INTERNALS_AUTOFILL_ML_INTERNALS_HTML);
-
-  // Pass the message string to the frontend. This generates strings.m.js.
-  source->AddString("message", "Hello from the C++ backend!");
 }
 
 void AutofillMlInternalsUI::BindInterface(
