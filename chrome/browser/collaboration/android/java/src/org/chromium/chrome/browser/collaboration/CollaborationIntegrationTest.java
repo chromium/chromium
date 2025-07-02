@@ -48,6 +48,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -595,6 +596,7 @@ public class CollaborationIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/429200485 - window focus is lost for the keep action.")
     public void testDataSharingKeepLastTabInGroup() {
         mCollaborationTestUtils.setUpSyncAndSignIn();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
