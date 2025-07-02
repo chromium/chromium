@@ -122,9 +122,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
              @"The warning alert did not show up");
 
   // Tap on 'Cancel' to dismiss the warning alert.
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
 
   // Verify SFSafariViewController is not presented.
   [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"SFSafariView")]
@@ -169,9 +169,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
              @"The warning alert did not show up");
 
   // Tap on 'Cancel' to dismiss the warning alert.
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
 
   // Verify SFSafariViewController is not presented.
   [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"SFSafariView")]
@@ -215,9 +215,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
              @"The warning alert did not show up");
 
   // Tap on 'Cancel' to dismiss the warning alert.
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
 
   // Verify SFSafariViewController is not presented.
   [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"SFSafariView")]
