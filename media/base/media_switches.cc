@@ -317,7 +317,7 @@ BASE_FEATURE(kPictureInPictureOcclusionTracking,
 // Enables the animation of the Picture-in-Picture window creation.
 BASE_FEATURE(kPictureInPictureShowWindowAnimation,
              "PictureInPictureShowWindowAnimation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables user control over muting tab audio from the tab strip.
