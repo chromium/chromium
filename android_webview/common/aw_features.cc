@@ -200,11 +200,11 @@ BASE_FEATURE(kWebViewPreloadClasses,
 // Prefetches the native WebView code to memory during startup.
 BASE_FEATURE(kWebViewPrefetchNativeLibrary,
              "WebViewPrefetchNativeLibrary",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A parameter to trigger the prefetch from the renderer instead of the browser.
 const base::FeatureParam<bool> kWebViewPrefetchFromRenderer{
-    &kWebViewPrefetchNativeLibrary, "WebViewPrefetchFromRenderer", false};
+    &kWebViewPrefetchNativeLibrary, "WebViewPrefetchFromRenderer", true};
 
 // Include system bars in safe-area-inset CSS environment values for WebViews
 // that take up the entire screen
