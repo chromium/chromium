@@ -43,11 +43,17 @@ HRESULT ForegroundHelper::ForegroundHotKey(HWND window) {
   MSG msg = {0};
   PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE);
 
-  // Send the Hotkey.
-  INPUT hotkey = {0};
-  hotkey.type = INPUT_KEYBOARD;
-  hotkey.ki.wVk =  VK_F22;
-  if (1 != SendInput(1, &hotkey, sizeof(hotkey))) {
+  // Send both key down and up events.
+  INPUT inputs[2] = {};
+
+  inputs[0].type = INPUT_KEYBOARD;
+  inputs[0].ki.wVk = VK_F22;
+
+  inputs[1].type = INPUT_KEYBOARD;
+  inputs[1].ki.wVk = VK_F22;
+  inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+
+  if (2 != SendInput(2, inputs, sizeof(*inputs))) {
     LOG(WARNING) << "Failed to send input; GetLastError(): " << GetLastError();
     return E_FAIL;
   }
