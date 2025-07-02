@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -15,15 +16,22 @@
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +39,10 @@
 namespace ash {
 
 namespace {
+
+constexpr auto kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@test",
+                                            GaiaId::Literal("123456789"));
 
 class TestingConsumerStatusReportingService
     : public ChildStatusReportingService {
@@ -99,26 +111,34 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   ~EventBasedStatusReportingServiceTest() override = default;
 
   void SetUp() override {
-    // UserManager is created in ArcAppTest.
-    session_manager_.OnUserManagerCreated(user_manager::UserManager::Get());
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState(),
+        /*cros_settings=*/nullptr));
+    session_manager_->OnUserManagerCreated(user_manager::UserManager::Get());
+
+    ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
+                    .AddRegularUser(kAccountId));
 
     chromeos::PowerManagerClient::InitializeFake();
     SystemClockClient::InitializeFake();
 
-    session_manager_.SetSessionState(
+    session_manager_->SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 
+    // Simulate log-in.
+    session_manager_->CreateSession(
+        kAccountId, user_manager::TestHelper::GetFakeUsernameHash(kAccountId),
+        /*new_user=*/false,
+        /*has_active_session=*/false);
+
     profile_ = std::make_unique<TestingProfile>();
+    ash::AnnotatedAccountId::Set(profile_.get(), kAccountId);
     profile_->SetIsSupervisedProfile();
     // TODO(hidehiko): we should set up kChild account from the beginning,
     // but ArcAppTest does not support such a case. Fix the test helper.
     arc_test_.SetUp(profile());
-
-    session_manager_.CreateSession(
-        account_id(),
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id()),
-        /*new_user=*/false,
-        /*has_active_session=*/false);
 
     ChildStatusReportingServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
@@ -145,6 +165,10 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     profile_.reset();
     SystemClockClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
+
+    // This is following the production teardown order.
+    session_manager_.reset();
+    user_manager_.Reset();
   }
 
   void SetConnectionType(network::mojom::ConnectionType type) {
@@ -168,25 +192,22 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     return test_screen_time_controller_;
   }
 
-  session_manager::SessionManager* session_manager() {
-    return &session_manager_;
-  }
-
-  AccountId account_id() {
-    return ProfileHelper::Get()->GetUserByProfile(profile())->GetAccountId();
+  session_manager::SessionManager& session_manager() {
+    return CHECK_DEREF(session_manager_.get());
   }
 
   base::HistogramTester histogram_tester_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ArcAppTest arc_test_;
+  user_manager::ScopedUserManager user_manager_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<TestingConsumerStatusReportingService, DanglingUntriaged>
       test_consumer_status_reporting_service_;
   raw_ptr<TestingScreenTimeController, DanglingUntriaged>
       test_screen_time_controller_;
-  session_manager::SessionManager session_manager_;
   std::unique_ptr<EventBasedStatusReportingService> service_;
 };
 
@@ -221,7 +242,7 @@ TEST_F(EventBasedStatusReportingServiceTest, ReportWhenAppUpdate) {
 TEST_F(EventBasedStatusReportingServiceTest, DoNotReportWhenUserJustSignIn) {
   ASSERT_EQ(
       0, test_consumer_status_reporting_service()->performed_status_reports());
-  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
+  session_manager().SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(
       0, test_consumer_status_reporting_service()->performed_status_reports());
 
@@ -232,10 +253,10 @@ TEST_F(EventBasedStatusReportingServiceTest, DoNotReportWhenUserJustSignIn) {
 TEST_F(EventBasedStatusReportingServiceTest, ReportWhenSessionIsLocked) {
   ASSERT_EQ(
       0, test_consumer_status_reporting_service()->performed_status_reports());
-  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
+  session_manager().SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(
       0, test_consumer_status_reporting_service()->performed_status_reports());
-  session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
+  session_manager().SetSessionState(session_manager::SessionState::LOCKED);
   EXPECT_EQ(
       1, test_consumer_status_reporting_service()->performed_status_reports());
 
@@ -249,13 +270,13 @@ TEST_F(EventBasedStatusReportingServiceTest, ReportWhenSessionIsLocked) {
 TEST_F(EventBasedStatusReportingServiceTest, ReportWhenSessionIsActive) {
   ASSERT_EQ(
       0, test_consumer_status_reporting_service()->performed_status_reports());
-  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
+  session_manager().SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(
       0, test_consumer_status_reporting_service()->performed_status_reports());
-  session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
+  session_manager().SetSessionState(session_manager::SessionState::LOCKED);
   EXPECT_EQ(
       1, test_consumer_status_reporting_service()->performed_status_reports());
-  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
+  session_manager().SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(
       2, test_consumer_status_reporting_service()->performed_status_reports());
 
@@ -320,13 +341,13 @@ TEST_F(EventBasedStatusReportingServiceTest, ReportForMultipleEvents) {
 
   ASSERT_EQ(
       0, test_consumer_status_reporting_service()->performed_status_reports());
-  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
+  session_manager().SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(
       0, test_consumer_status_reporting_service()->performed_status_reports());
-  session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
+  session_manager().SetSessionState(session_manager::SessionState::LOCKED);
   EXPECT_EQ(
       1, test_consumer_status_reporting_service()->performed_status_reports());
-  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
+  session_manager().SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(
       2, test_consumer_status_reporting_service()->performed_status_reports());
   SetConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);

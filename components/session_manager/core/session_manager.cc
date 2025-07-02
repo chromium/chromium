@@ -219,11 +219,13 @@ void SessionManager::CreateSessionInternal(const AccountId& user_account_id,
                     user_account_id);
   sessions_.push_back(std::make_unique<Session>(next_id_++, user_account_id));
   user_manager_->UserLoggedIn(user_account_id, username_hash);
-
-  // TODO(hidehiko): Add the check below.
-  // CHECK_EQ(sessions_.size(), user_manager_->GetLoggedInUsers().size());
-  // Currently, several tests are written incorrectly, so will fail.
-
+  // The created sessions and logged-in users in UserManager should be the
+  // same list.
+  const auto& logged_in_users = user_manager_->GetLoggedInUsers();
+  CHECK_EQ(sessions_.size(), logged_in_users.size());
+  for (size_t i = 0; i < sessions_.size(); ++i) {
+    CHECK_EQ(sessions_[i]->account_id(), logged_in_users[i]->GetAccountId());
+  }
   OnSessionCreated(browser_restart);
   observers_.Notify(&SessionManagerObserver::OnSessionCreated, user_account_id);
 }
