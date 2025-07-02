@@ -1866,10 +1866,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)leaveSharedGroupConfirmationButton {
-  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
-                        IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP)
-                        stringByAppendingString:@"AlertAction"]),
-                    grey_interactable(), nil);
+  return
+      [ChromeMatchersAppInterface actionSheetItemWithAccessibilityLabelID:
+                                      IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP];
 }
 
 + (id<GREYMatcher>)deleteSharedGroupButton {
@@ -1879,10 +1878,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)deleteSharedConfirmationButton {
-  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
-                        IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP)
-                        stringByAppendingString:@"AlertAction"]),
-                    grey_interactable(), nil);
+  return [ChromeMatchersAppInterface
+      actionSheetItemWithAccessibilityLabelID:
+          IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP];
 }
 
 + (id<GREYMatcher>)keepSharedConfirmationButton {
