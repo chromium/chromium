@@ -63,9 +63,7 @@ class LayerContextImplUpdateDisplayTilingTest : public LayerContextImplTest {
     tile->column_index = index.i;
     tile->row_index = index.j;
     auto resource_contents = mojom::TileResource::New();
-    resource_contents->resource = TransferableResource::MakeGpu(
-        gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(),
-        resource_size, SinglePlaneFormat::kRGBA_8888, false);
+    resource_contents->resource = MakeFakeResource(resource_size);
     resource_contents->resource.id = resource_id;
     tile->contents =
         mojom::TileContents::NewResource(std::move(resource_contents));
@@ -131,9 +129,8 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   tile2_resource->column_index = kTileIndex2.i;
   tile2_resource->row_index = kTileIndex2.j;
   auto resource_contents = mojom::TileResource::New();
-  resource_contents->resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), kTileSize,
-      SinglePlaneFormat::kRGBA_8888, false);
+  resource_contents->resource = MakeFakeResource(kTileSize);
+  ;
   resource_contents->resource.id = kResourceId1;
   tile2_resource->contents =
       mojom::TileContents::NewResource(std::move(resource_contents));
@@ -302,9 +299,7 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, InvalidTilingUpdate) {
   tile_invalid_resource_tile->column_index = 0;
   tile_invalid_resource_tile->row_index = 0;
   auto resource_contents = mojom::TileResource::New();
-  resource_contents->resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), kValidTileSize,
-      SinglePlaneFormat::kRGBA_8888, false);
+  resource_contents->resource = MakeFakeResource(kValidTileSize);
   resource_contents->resource.id = kInvalidResourceId;
   tile_invalid_resource_tile->contents =
       mojom::TileContents::NewResource(std::move(resource_contents));

@@ -27,10 +27,9 @@ namespace gpu {
 class ClientSharedImage;
 }
 
-namespace content {
-class PPB_Graphics3D_Impl;
-class PepperGraphics2DHost;
-}  // namespace content
+namespace ash {
+class UiResourceManager;
+}  // namespace ash
 
 namespace viz {
 
@@ -96,16 +95,6 @@ struct VIZ_COMMON_EXPORT TransferableResource {
       ResourceSource source,
       const gpu::SyncToken& sync_token,
       const MetadataOverride& override = {});
-
-  // This function is deprecated. Please use the one above.
-  static TransferableResource MakeGpu(
-      const gpu::Mailbox& mailbox,
-      uint32_t texture_target,
-      const gpu::SyncToken& sync_token,
-      const gfx::Size& size,
-      SharedImageFormat format,
-      bool is_overlay_candidate,
-      ResourceSource source = ResourceSource::kUnknown);
 
   static std::vector<ReturnedResource> ReturnResources(
       const std::vector<TransferableResource>& input);
@@ -236,18 +225,11 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   ResourceSource resource_source = ResourceSource::kUnknown;
 
  private:
-  // TODO(crbug.com/423939347): Following functions are deprecated and only used
-  // by pepper implementation. Remove one pepper is no longer alive.
-  friend class content::PepperGraphics2DHost;
-  friend class content::PPB_Graphics3D_Impl;
-  static TransferableResource MakeSoftwareSharedImage(
-      const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
-      const gpu::SyncToken& sync_token,
-      const gfx::Size& size,
-      SharedImageFormat format,
-      ResourceSource source = ResourceSource::kUnknown);
+  // TODO(crbug.com/423939347): Following function is deprecated and only used
+  // by Ash implementation. Remove once that is converted.
+  friend ash::UiResourceManager;
   static TransferableResource MakeGpu(
-      const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
+      const gpu::Mailbox& mailbox,
       uint32_t texture_target,
       const gpu::SyncToken& sync_token,
       const gfx::Size& size,

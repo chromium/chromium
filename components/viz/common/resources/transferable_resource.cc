@@ -12,25 +12,6 @@
 namespace viz {
 
 // static
-TransferableResource TransferableResource::MakeSoftwareSharedImage(
-    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
-    const gpu::SyncToken& sync_token,
-    const gfx::Size& size,
-    SharedImageFormat format,
-    ResourceSource source) {
-  // Passed in format must be either single or multiplane and not default set.
-  CHECK(format.is_single_plane() || format.is_multi_plane());
-  TransferableResource r;
-  r.is_software = true;
-  r.memory_buffer_id_ = client_shared_image->mailbox();
-  r.sync_token_ = sync_token;
-  r.size = size;
-  r.format = format;
-  r.resource_source = source;
-  return r;
-}
-
-// static
 TransferableResource TransferableResource::MakeGpu(
     const gpu::Mailbox& mailbox,
     uint32_t texture_target,
@@ -51,19 +32,6 @@ TransferableResource TransferableResource::MakeGpu(
   r.is_overlay_candidate = is_overlay_candidate;
   r.resource_source = source;
   return r;
-}
-
-TransferableResource TransferableResource::MakeGpu(
-    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
-    uint32_t texture_target,
-    const gpu::SyncToken& sync_token,
-    const gfx::Size& size,
-    SharedImageFormat format,
-    bool is_overlay_candidate,
-    ResourceSource source) {
-  CHECK(client_shared_image);
-  return MakeGpu(client_shared_image->mailbox(), texture_target, sync_token,
-                 size, format, is_overlay_candidate, source);
 }
 
 TransferableResource TransferableResource::Make(

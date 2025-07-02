@@ -27,11 +27,9 @@ void CopyCopyOutputResultToLayer(
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       copy_result->GetSharedImage();
   viz::TransferableResource transferable_resource =
-      viz::TransferableResource::MakeGpu(
-          shared_image->mailbox(), GL_TEXTURE_2D, gpu::SyncToken(),
-          copy_result->size(), viz::SinglePlaneFormat::kRGBA_8888,
-          /*is_overlay_candidate=*/false,
-          viz::TransferableResource::ResourceSource::kUI);
+      viz::TransferableResource::Make(
+          shared_image, viz::TransferableResource::ResourceSource::kUI,
+          gpu::SyncToken(), /*override=*/{.color_space = gfx::ColorSpace()});
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       copy_result->TakeSharedImageOwnership();
 

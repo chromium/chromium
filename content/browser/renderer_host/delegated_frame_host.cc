@@ -488,11 +488,10 @@ void DelegatedFrameHost::DidCopyStaleContent(
   ContinueDelegatedFrameEviction(
       frame_evictor_->CollectSurfaceIdsForEviction());
 
-  auto transfer_resource = viz::TransferableResource::MakeGpu(
-      result->GetSharedImage()->mailbox(), GL_TEXTURE_2D, gpu::SyncToken(),
-      result->size(), viz::SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */,
-      viz::TransferableResource::ResourceSource::kStaleContent);
+  auto transfer_resource = viz::TransferableResource::Make(
+      result->GetSharedImage(),
+      viz::TransferableResource::ResourceSource::kStaleContent,
+      gpu::SyncToken(), /*override=*/{.color_space = gfx::ColorSpace()});
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeSharedImageOwnership();
   CHECK_EQ(1u, release_callbacks.size());

@@ -408,6 +408,7 @@ ClientSharedImage::ClientSharedImage(const Mailbox& mailbox,
                                      const SharedImageInfo& info)
     : mailbox_(mailbox), metadata_(info.meta), debug_label_(info.debug_label) {
   CHECK(!mailbox.IsZero());
+  texture_target_ = GL_TEXTURE_2D;
 }
 
 ClientSharedImage::~ClientSharedImage() {
