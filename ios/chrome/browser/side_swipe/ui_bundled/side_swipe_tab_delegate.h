@@ -18,10 +18,6 @@
 // index due to a swipe.
 - (void)tabSwitchWithSwipeToTabIndex:(int)newTabIndex;
 
-// Notifies the delegate that a tab switcg with a swipe is cancelled and the
-// navigation should revert to the initial tab index.
-- (void)cancelTabSwitchWithSwipeAndRevertToInitialTabIndex:(int)initialTabIndex;
-
 // Notifies the delegate that a tab switch with a swipe is completed.
 - (void)didCompleteTabSwitchWithSwipe;
 

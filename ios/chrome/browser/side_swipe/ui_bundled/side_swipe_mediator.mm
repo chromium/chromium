@@ -208,14 +208,6 @@ constexpr base::TimeDelta kUpdateSnapshotTimeout = base::Milliseconds(100);
   _webStateList->ActivateWebStateAt(newTabIndex);
 }
 
-- (void)cancelTabSwitchWithSwipeAndRevertToInitialTabIndex:
-    (int)initialTabIndex {
-  web::WebState* webState = _webStateList->GetWebStateAt(initialTabIndex);
-  PagePlaceholderTabHelper::FromWebState(webState)
-      ->CancelPlaceholderForNextNavigation();
-  _webStateList->ActivateWebStateAt(initialTabIndex);
-}
-
 - (void)didCompleteTabSwitchWithSwipe {
   PagePlaceholderTabHelper::FromWebState(self.activeWebState)
       ->CancelPlaceholderForNextNavigation();
