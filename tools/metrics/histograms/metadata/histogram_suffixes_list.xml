@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="AutofillStoredCardHasNickname" separator=".">
   <owner>sujiezhu@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <suffix name="WithNickname" label="Card with a valid nickname"/>
   <affected-histogram name="Autofill.StoredCreditCardCount.Local"/>
   <affected-histogram name="Autofill.StoredCreditCardCount.Server"/>

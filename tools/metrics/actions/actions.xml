@@ -4817,7 +4817,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillAddressesViewed">
   <owner>battre@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user visits chrome://settings/autofill page.
   </description>
@@ -4825,7 +4825,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardDeleted">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user deletes a card via chrome://settings/payments page.
   </description>
@@ -4833,7 +4833,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardDeletedAndHadCvc">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user deletes card via chrome://settings/payments page and CVC
     was not empty.
@@ -4842,7 +4842,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardDeletedAndHadNickname">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user deletes card via chrome://settings/payments page and
     nickname was not empty.
@@ -4851,7 +4851,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsAdded">
   <owner>battre@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user adds card via chrome://settings/payments page.
   </description>
@@ -4859,7 +4859,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsAddedWithCvc">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user adds a card with CVC via settings page.
   </description>
@@ -4867,7 +4867,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsAddedWithNickname">
   <owner>sujiezhu@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user adds card with a nickname via settings page.
   </description>
@@ -4875,7 +4875,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsEdited">
   <owner>sujiezhu@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user edits card via chrome://settings/payments page.
   </description>
@@ -4883,7 +4883,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsEditedAndCvcWasAdded">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user edits card via chrome://settings/payments page and CVC
     was added.
@@ -4892,7 +4892,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsEditedAndCvcWasLeftBlank">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user edits card via chrome://settings/payments page and CVC
     was left blank.
@@ -4901,7 +4901,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsEditedAndCvcWasRemoved">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user edits card via chrome://settings/payments page and CVC
     was removed.
@@ -4910,7 +4910,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsEditedAndCvcWasUnchanged">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user edits card via chrome://settings/payments page and CVC
     was unchanged.
@@ -4919,7 +4919,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsEditedAndCvcWasUpdated">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user edits card via chrome://settings/payments page and CVC
     was updated.
@@ -4928,7 +4928,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsEditedWithNickname">
   <owner>sujiezhu@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user edits card with a new nickname via
     chrome://settings/payments page.
@@ -4937,7 +4937,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillCreditCardsViewed">
   <owner>battre@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user visits chrome://settings/payments page.
   </description>
@@ -4945,7 +4945,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillIbanAdded">
   <owner>qihuizhao@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user adds IBAN via chrome://settings/payments page.
   </description>
@@ -4953,7 +4953,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillIbanAddedWithNickname">
   <owner>qihuizhao@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user adds IBAN with a nickname via chrome://settings/payments
     page.
@@ -4962,7 +4962,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillIbanDeleted">
   <owner>qihuizhao@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user deletes IBAN via chrome://settings/payments page.
   </description>
@@ -4970,7 +4970,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillIbanEdited">
   <owner>qihuizhao@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user edits IBAN via chrome://settings/payments page.
   </description>
@@ -4978,7 +4978,7 @@ should be able to be added at any place in this file.
 
 <action name="AutofillIbanEditedWithNickname">
   <owner>qihuizhao@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user edits IBAN with a new nickname via
     chrome://settings/payments page.
@@ -6443,7 +6443,7 @@ should be able to be added at any place in this file.
 
 <action name="BulkCvcDeletionConfirmationDialogAccepted">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user clicks on &quot;Delete&quot; on the bulk delete dialog
     box.
@@ -6452,7 +6452,7 @@ should be able to be added at any place in this file.
 
 <action name="BulkCvcDeletionConfirmationDialogCancelled">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user clicks on &quot;Cancel&quot; on the bulk delete dialog
     box.
@@ -6461,7 +6461,7 @@ should be able to be added at any place in this file.
 
 <action name="BulkCvcDeletionHyperlinkClicked">
   <owner>koulvipul@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when user clicks on the bulk delete hyperlink on the settings page.
   </description>
@@ -6508,7 +6508,7 @@ should be able to be added at any place in this file.
 
 <action name="CardBenefits_LearnMoreLinkClicked">
   <owner>viplavkadam@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when the user clicks on the card benefits learn more hyperlink on
     the card benefits settings page.
@@ -6518,7 +6518,7 @@ should be able to be added at any place in this file.
 <action name="CardBenefits_TermsLinkClicked">
   <owner>viplavkadam@google.com</owner>
   <owner>yishuil@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when the user clicks on the card benefits terms hyperlink on the
     payment methods settings page.
@@ -6527,7 +6527,7 @@ should be able to be added at any place in this file.
 
 <action name="CardBenefits_ToggledOff">
   <owner>viplavkadam@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when the user clicks on the card benefits toggle on the card
     benefits settings page, switching it from the on state to the off state.
@@ -6536,7 +6536,7 @@ should be able to be added at any place in this file.
 
 <action name="CardBenefits_ToggledOn">
   <owner>viplavkadam@google.com</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <description>
     Recorded when the user clicks on the card benefits toggle on the card
     benefits settings page, switching it from the off state to the on state.
@@ -39993,7 +39993,7 @@ should be able to be added at any place in this file.
 <action name="Signin_Impression_FromManageCardsBubble"
     not_user_triggered="true">
   <obsolete>Removed in M103.</obsolete>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the manage cards bubble.
@@ -40101,7 +40101,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Impression_FromSaveCardBubble" not_user_triggered="true">
   <obsolete>Removed in M103.</obsolete>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the save card bubble.
@@ -40225,7 +40225,7 @@ should be able to be added at any place in this file.
 <action name="Signin_ImpressionWithAccount_FromManageCardsBubble"
     not_user_triggered="true">
   <obsolete>Removed in M103.</obsolete>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
@@ -40279,7 +40279,7 @@ should be able to be added at any place in this file.
 <action name="Signin_ImpressionWithAccount_FromSaveCardBubble"
     not_user_triggered="true">
   <obsolete>Removed in M103.</obsolete>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
@@ -40352,7 +40352,7 @@ should be able to be added at any place in this file.
 <action name="Signin_ImpressionWithNoAccount_FromManageCardsBubble"
     not_user_triggered="true">
   <obsolete>Removed in M103.</obsolete>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
@@ -40408,7 +40408,7 @@ should be able to be added at any place in this file.
 <action name="Signin_ImpressionWithNoAccount_FromSaveCardBubble"
     not_user_triggered="true">
   <obsolete>Removed in M103.</obsolete>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
@@ -40827,7 +40827,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Signin_FromManageCardsBubble">
   <obsolete>Removed in M103.</obsolete>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -41017,7 +41017,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Signin_FromSaveCardBubble">
   <obsolete>Removed in M103.</obsolete>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -41269,7 +41269,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccount_FromSaveCardBubble">
   <obsolete>Deprecated 08/2018</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41350,7 +41350,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccountExistingAccount_FromManageCardsBubble">
   <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -41408,7 +41408,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccountExistingAccount_FromSaveCardBubble">
   <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -41491,7 +41491,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccountNoExistingAccount_FromManageCardsBubble">
   <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -41552,7 +41552,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccountNoExistingAccount_FromSaveCardBubble">
   <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -41635,7 +41635,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccountPreDice_FromManageCardsBubble">
   <obsolete>Removed M80</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41682,7 +41682,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccountPreDice_FromSaveCardBubble">
   <obsolete>Removed M80</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>sebsg@chromium.org</owner>
   <description>
@@ -41763,7 +41763,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_SigninNotDefault_FromManageCardsBubble">
   <obsolete>Removed in M103.</obsolete>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -41821,7 +41821,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNotDefault_FromSaveCardBubble">
   <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -41909,7 +41909,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_SigninWithDefault_FromManageCardsBubble">
   <obsolete>Removed in M103.</obsolete>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -41964,7 +41964,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninWithDefault_FromSaveCardBubble">
   <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
+  <owner>osaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <description>

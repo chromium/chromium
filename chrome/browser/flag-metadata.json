@@ -657,7 +657,7 @@
   },
   {
     "name": "autofill-drop-names-with-invalid-characters-for-card-upload",
-    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
+    "owners": [ "osaul@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 145
   },
   {
@@ -775,7 +775,7 @@
   },
   {
     "name": "autofill-enable-log-form-events-to-all-parsed-form-types",
-    "owners": [ "jsaul@google.com",  "vinnypersky@google.com", "payments-autofill-team@google.com" ],
+    "owners": [ "osaul@google.com",  "vinnypersky@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 136
   },
   {
@@ -793,7 +793,7 @@
   },
   {
     "name": "autofill-enable-new-fop-display-desktop",
-    "owners": [ "qihuizhao@google.com", "jsaul@google.com"],
+    "owners": [ "qihuizhao@google.com", "osaul@google.com"],
     "expiry_milestone": 145
   },
   {
@@ -902,7 +902,7 @@
   },
   {
     "name": "autofill-require-cvc-for-possible-card-update",
-    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com"],
+    "owners": [ "osaul@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
   },
   {
@@ -2182,7 +2182,7 @@
   },
   {
     "name": "disable-autofill-strike-system",
-    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
+    "owners": [ "osaul@google.com", "payments-autofill-team@google.com" ],
     // This flag does not expire because it allows users to test or debug issues
     // by disabling the strike system, which is not desirable in production.
     "expiry_milestone": -1
@@ -2767,7 +2767,7 @@
   },
   {
     "name": "enable-autofill-credit-card-upload",
-    "owners": [ "jsaul@google.com" ],
+    "owners": [ "osaul@google.com" ],
     // This flag is heavily used by the testing team that can't easily use the
     // commandline, especially in India.
     "expiry_milestone": -1
@@ -10030,7 +10030,7 @@
   },
   {
     "name": "wallet-service-use-sandbox",
-    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
+    "owners": [ "osaul@google.com", "payments-autofill-team@google.com" ],
     // This flag is used by testing teams to run Google Payments calls against
     // the development server environment.
     "expiry_milestone": -1
