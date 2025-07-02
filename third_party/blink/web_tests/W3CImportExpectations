@@ -131,7 +131,6 @@ external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-re
 
 # CSS Text Level 3
 # There are no active plans to implement these features at this point.
-external/wpt/css/css-text/hanging-punctuation [ Skip ]
 external/wpt/css/css-text/text-align/text-align-justifyall-001.html [ Skip ]
 external/wpt/css/css-text/text-align/text-align-justifyall-002.html [ Skip ]
 external/wpt/css/css-text/text-align/text-align-justifyall-003.html [ Skip ]
