@@ -5,6 +5,7 @@
 import {ComposeboxPageHandlerRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
 import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -248,6 +249,29 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert.
     await fileUploadClickEventPromise;
+  });
+
+  test('file upload buttons disabled when max files uploaded', async () => {
+    loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
+    createComposeboxElement();
+
+    // File upload buttons are not disabled when there are no files.
+    assertFalse(composeboxElement.$.fileUploadButton.disabled);
+    assertFalse(composeboxElement.$.imageUploadButton.disabled);
+
+    // Arrange.
+    const dataTransfer = new DataTransfer();
+    const file = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
+    dataTransfer.items.add(file);
+    composeboxElement.$.fileInput.files = dataTransfer.files;
+    composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
+
+    await handler.whenCalled('addFile');
+    await microtasksFinished();
+
+    // Assert.
+    assertTrue(composeboxElement.$.fileUploadButton.disabled);
+    assertTrue(composeboxElement.$.imageUploadButton.disabled);
   });
 
   test('session abandoned on esc click', async () => {

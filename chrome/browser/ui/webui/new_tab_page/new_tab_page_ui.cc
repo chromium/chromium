@@ -496,6 +496,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddString("composeboxImageFileTypes", "image/*");
   source->AddString("composeboxAttachmentFileTypes", ".pdf,application/pdf");
   source->AddInteger("composeboxFileMaxSize", 1000000);
+  source->AddInteger("composeboxFileMaxCount", 1);
 
   source->AddBoolean(
       "searchboxShowComposeEntrypoint",

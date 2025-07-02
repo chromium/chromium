@@ -25,6 +25,7 @@ export function getHtml(this: ComposeboxElement) {
             id="imageUploadButton"
             iron-icon="composebox:imageUpload"
             title="$i18n{composeboxImageUploadButtonTitle}"
+            .disabled="${this.inputsDisabled_}"
             @click="${this.openImageUpload_}">
         </cr-icon-button>
         <cr-icon-button
@@ -32,6 +33,7 @@ export function getHtml(this: ComposeboxElement) {
             id="fileUploadButton"
             iron-icon="composebox:fileUpload"
             title="$i18n{composeboxFileUploadButtonTitle}"
+            .disabled="${this.inputsDisabled_}"
             @click="${this.openFileUpload_}">
         </cr-icon-button>
       </div>
