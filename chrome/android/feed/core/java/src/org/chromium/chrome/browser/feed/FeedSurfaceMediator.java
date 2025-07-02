@@ -1355,6 +1355,13 @@ public class FeedSurfaceMediator
     public boolean isChildVisibleAtPosition(int position) {
         if (!isScrollViewInitialized()) return false;
 
+        // When feed is disabled on tablet, the existing implementation of ListLayoutHelper for
+        // staggered layout doesn't return the first and last visible item positions correctly. To
+        // work around this, we check for the header explicitly.
+        if (!mFeedEnabled && position == 0) {
+            return mHeaderCount > 0;
+        }
+
         ListLayoutHelper layoutHelper = mCoordinator.getHybridListRenderer().getListLayoutHelper();
         if (layoutHelper == null) {
             return false;
