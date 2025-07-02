@@ -247,7 +247,8 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
   // On Aura, filenames are available before drop.
   for (const auto& file_info : drop_data.filenames) {
     if (!file_info.path.empty()) {
-      metadata.push_back(DropData::Metadata::CreateForFilePath(file_info.path));
+      metadata.push_back(DropData::Metadata::CreateForFilePath(
+          file_info.path, file_info.display_name));
     }
   }
 

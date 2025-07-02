@@ -251,6 +251,7 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
       blink::mojom::DataTransferFilePtr item =
           blink::mojom::DataTransferFile::New();
       item->path = meta_data_item.filename;
+      item->display_name = meta_data_item.display_name;
       items.push_back(blink::mojom::DragItem::NewFile(std::move(item)));
       continue;
     }
