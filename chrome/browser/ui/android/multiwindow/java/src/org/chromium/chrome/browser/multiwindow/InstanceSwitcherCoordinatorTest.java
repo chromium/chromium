@@ -433,10 +433,15 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Verify that we show a info message that users can have up to 5 windows when there are
         // already maximum number of windows.
+        String text =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.max_number_of_windows, MAX_INSTANCE_COUNT);
         onData(anything())
                 .inRoot(isDialog())
                 .atPosition(5)
-                .onChildView(withText(R.string.max_number_of_windows))
+                .onChildView(withText(text))
                 .check(matches(isDisplayed()));
     }
 
@@ -471,10 +476,15 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Verify that we show info message that users can have up to 5 windows when there are more
         // than maximum number of windows.
+        String text =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.max_number_of_windows, MAX_INSTANCE_COUNT);
         onData(anything())
                 .inRoot(isDialog())
                 .atPosition(6)
-                .onChildView(withText(R.string.max_number_of_windows))
+                .onChildView(withText(text))
                 .check(matches(isDisplayed()));
 
         // Close an instance.
@@ -485,7 +495,7 @@ public class InstanceSwitcherCoordinatorTest {
         onData(anything())
                 .inRoot(isDialog())
                 .atPosition(5)
-                .onChildView(withText(R.string.max_number_of_windows))
+                .onChildView(withText(text))
                 .check(matches(isDisplayed()));
 
         // Close another instance.

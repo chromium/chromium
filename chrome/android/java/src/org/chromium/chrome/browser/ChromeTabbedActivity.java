@@ -3185,7 +3185,12 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
         if (mWindowId == INVALID_WINDOW_ID) {
             Log.i(TAG, "Window ID not allocated. Finishing the activity");
-            Toast.makeText(this, R.string.max_number_of_windows, Toast.LENGTH_LONG).show();
+            String text =
+                    getResources()
+                            .getString(
+                                    R.string.max_number_of_windows,
+                                    MultiWindowUtils.getMaxInstances());
+            Toast.makeText(this, text, Toast.LENGTH_LONG).show();
             recordMaxWindowLimitExceededHistogram(/* limitExceeded= */ true);
             return false;
         } else {

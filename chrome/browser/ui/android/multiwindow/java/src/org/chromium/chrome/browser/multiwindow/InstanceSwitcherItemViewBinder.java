@@ -80,6 +80,10 @@ class InstanceSwitcherItemViewBinder {
                 maxInfo.setVisibility(enabled ? View.GONE : View.VISIBLE);
             }
 
+        } else if (InstanceSwitcherItemProperties.MAX_INFO_TEXT == propertyKey) {
+            TextView maxInfo = view.findViewById(R.id.max_info);
+            maxInfo.setText(model.get(InstanceSwitcherItemProperties.MAX_INFO_TEXT));
+
         } else if (InstanceSwitcherItemProperties.LAST_ACCESSED == propertyKey) {
             TextView lastAccessedView = view.findViewById(R.id.last_accessed);
             String text = model.get(InstanceSwitcherItemProperties.LAST_ACCESSED);

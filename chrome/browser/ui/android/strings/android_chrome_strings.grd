@@ -5345,7 +5345,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Unsupported number of Chrome instances.
       </message>
       <message name="IDS_MAX_NUMBER_OF_WINDOWS" desc="Toast message for when the user has tried to start more than 5 instances of Chrome window.">
-        You can have up to 5 windows.
+        You can have up to <ph name="MAX_WINDOW_COUNT">%1$d</ph> windows.
       </message>
       <message name="IDS_MAX_NUMBER_OF_WINDOWS_INSTANCE_SWITCHER_V2_ACTIVE_TAB" desc="Message to notify the user that a new window cannot be created because the total number of persisted instances exceeds the window limit.">
         You can have up to <ph name="MAX_WINDOW_COUNT">%1$d</ph> total windows. To open a new window, reduce the total number of windows across active and inactive to <ph name="MAX_WINDOW_COUNT_MINUS_ONE">%2$d</ph> or fewer.

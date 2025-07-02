@@ -371,6 +371,10 @@ public class InstanceSwitcherCoordinator {
         if (enabled) {
             mNewWindowModel.set(
                     InstanceSwitcherItemProperties.CLICK_LISTENER, this::newWindowAction);
+        } else {
+            mNewWindowModel.set(
+                    InstanceSwitcherItemProperties.MAX_INFO_TEXT,
+                    mContext.getString(R.string.max_number_of_windows, mMaxInstanceCount));
         }
         mNewWindowEnabled = enabled;
     }
