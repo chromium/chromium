@@ -12,7 +12,7 @@ ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    globalThis.tts = new PrimaryTts();
+    globalThis.tts = new PrimaryTts(/*skipOnVoicesHandlerForTesting=*/ true);
   }
 
   expectUtteranceQueueIsLike(expectedObjects) {
