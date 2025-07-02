@@ -86,6 +86,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdminClient : public FlossDBusClient {
       ResponseCallback<std::vector<device::BluetoothUUID>> callback);
   virtual void GetDevicePolicyEffect(ResponseCallback<PolicyEffect> callback,
                                      FlossDeviceId device);
+  virtual void SetSimpleSecurePairingEnabled(ResponseCallback<Void> callback,
+                                             const bool enable);
 
  protected:
   // Handle callback |OnDevicePolicyEffectChanged| on exported object path.

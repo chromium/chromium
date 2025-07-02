@@ -210,6 +210,30 @@ class FlossAdminClientTest : public testing::Test,
         base::BindLambdaForTesting([](DBusResult<Void> ret) {}), kTestUuidStr);
   }
 
+  void TestSetSimpleSecurePairingEnabled() {
+    // Expected call to SetSimpleSecurePairingEnabled
+    EXPECT_CALL(*object_proxy_.get(),
+                DoCallMethodWithErrorResponse(
+                    HasMemberOf(admin::kSetSimpleSecurePairingEnabled), _, _))
+        .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                     ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+          dbus::MessageReader reader(method_call);
+          bool enable;
+
+          EXPECT_TRUE(reader.PopBool(&enable));
+          EXPECT_TRUE(enable);
+
+          // Create a fake response with uint32_t return value.
+          auto response = ::dbus::Response::CreateEmpty();
+          dbus::MessageWriter writer(response.get());
+          writer.AppendUint32(kTestCallbackId);
+          std::move(*cb).Run(response.get(), /*err=*/nullptr);
+        });
+
+    client_->SetSimpleSecurePairingEnabled(
+        base::BindLambdaForTesting([](DBusResult<Void> ret) {}), true);
+  }
+
   int adapter_index_ = 5;
   dbus::ObjectPath admin_path_;
   dbus::ObjectPath callback_path_;
@@ -239,5 +263,22 @@ TEST_F(FlossAdminClientTest, TestSetServiceAllowlistBeforeInit) {
 TEST_F(FlossAdminClientTest, TestSetServiceAllowlistAfterInit) {
   TestInit();
   TestSetServiceAllowlist();
+}
+
+TEST_F(FlossAdminClientTest, TestSetSimpleSecurePairingEnabledAfterInit) {
+  TestInit();
+  TestSetSimpleSecurePairingEnabled();
+}
+
+TEST_F(FlossAdminClientTest, TestSetMultiplePolicyAfterInit) {
+  TestInit();
+  TestSetServiceAllowlist();
+  TestSetSimpleSecurePairingEnabled();
+}
+
+TEST_F(FlossAdminClientTest, TestSetMultiplePolicyBeforeInit) {
+  TestSetServiceAllowlist();
+  TestSetSimpleSecurePairingEnabled();
+  TestInit();
 }
 }  // namespace floss

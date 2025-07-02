@@ -157,9 +157,6 @@ void FlossAdminClient::SetAllowedServices(
     const std::vector<device::BluetoothUUID>& UUIDs) {
   // Delay this function until we're initialized.
   if (!IsClientRegistered()) {
-    // This shouldn't happen unless we have multiple policies to set.
-    DCHECK(initialized_callbacks_.empty());
-
     initialized_callbacks_.push(BindOnce(&FlossAdminClient::SetAllowedServices,
                                          weak_ptr_factory_.GetWeakPtr(),
                                          std::move(callback), UUIDs));
@@ -188,6 +185,21 @@ void FlossAdminClient::GetDevicePolicyEffect(
     FlossDeviceId device) {
   CallAdminMethod<PolicyEffect>(std::move(callback),
                                 admin::kGetDevicePolicyEffect, device);
+}
+
+void FlossAdminClient::SetSimpleSecurePairingEnabled(
+    ResponseCallback<Void> callback,
+    const bool enable) {
+  // Delay this function until we're initialized.
+  if (!IsClientRegistered()) {
+    initialized_callbacks_.push(
+        BindOnce(&FlossAdminClient::SetSimpleSecurePairingEnabled,
+                 weak_ptr_factory_.GetWeakPtr(), std::move(callback), enable));
+    return;
+  }
+
+  CallAdminMethod<Void>(std::move(callback),
+                        admin::kSetSimpleSecurePairingEnabled, enable);
 }
 
 void FlossAdminClient::OnServiceAllowlistChanged(
