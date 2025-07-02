@@ -1504,6 +1504,7 @@ ci.builder(
     executable = "recipe:chrome_codeql_database_builder",
     # Run once daily at 5am Pacific/1 PM UTC
     schedule = "0 13 * * *",
+    triggered_by = [],
     cores = 32,
     ssd = True,
     gardener_rotations = args.ignore_default(None),
