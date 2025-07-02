@@ -8,6 +8,7 @@
 #import <set>
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/uuid.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -37,6 +38,9 @@ class InstantMessagingService
   void HideInstantaneousMessage(
       const std::set<base::Uuid>& message_ids) override;
 
+  // Displays the out-of-date infobar if required.
+  void DisplayOutOfDateMessageIfNeeded(bool should_display);
+
  private:
   // Shows a collaboration group infobar for the given `instant_message`.
   // Returns `true` if the infobar has been displayed.
@@ -44,6 +48,8 @@ class InstantMessagingService
       collaboration::messaging::InstantMessage instant_message);
 
   raw_ptr<ProfileIOS> profile_ = nullptr;
+
+  base::WeakPtrFactory<InstantMessagingService> weak_factory_{this};
 };
 
 }  // namespace collaboration::messaging

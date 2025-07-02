@@ -6,6 +6,8 @@ source_set("infobar") {
   sources = [
     "collaboration_group_infobar_delegate.h",
     "collaboration_group_infobar_delegate.mm",
+    "collaboration_out_of_date_infobar_delegate.h",
+    "collaboration_out_of_date_infobar_delegate.mm",
   ]
 
   deps = [
@@ -19,6 +21,7 @@ source_set("infobar") {
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/share_kit/model",
     "//ios/chrome/browser/share_kit/model:factory",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
