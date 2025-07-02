@@ -5,6 +5,8 @@
 #ifndef UI_ANDROID_FAKE_MODAL_DIALOG_MANAGER_BRIDGE_H_
 #define UI_ANDROID_FAKE_MODAL_DIALOG_MANAGER_BRIDGE_H_
 
+#include <vector>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/android/modal_dialog_manager_bridge.h"

@@ -9,6 +9,7 @@
 
 #include <jni.h>
 
+#include <cstdint>
 #include <iterator>
 #include <string_view>
 

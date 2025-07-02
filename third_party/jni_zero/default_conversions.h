@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <type_traits>
+#include <tuple>
 #include <vector>
 
 #include "third_party/jni_zero/common_apis.h"

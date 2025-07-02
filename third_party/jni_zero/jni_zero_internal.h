@@ -6,6 +6,7 @@
 #define JNI_ZERO_JNI_ZERO_INTERNAL_H
 
 #include <jni.h>
+#include <cstdint>
 
 #include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_export.h"

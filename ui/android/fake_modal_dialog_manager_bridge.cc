@@ -4,6 +4,8 @@
 
 #include "ui/android/fake_modal_dialog_manager_bridge.h"
 
+#include <vector>
+
 #include "base/android/jni_android.h"
 #include "ui/android/window_android.h"
 

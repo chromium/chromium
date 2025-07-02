@@ -6,6 +6,7 @@
 #define NET_PROXY_RESOLUTION_PROXY_CONFIG_SERVICE_ANDROID_H_
 
 #include <string>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/compiler_specific.h"

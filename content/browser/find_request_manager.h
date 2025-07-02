@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FIND_REQUEST_MANAGER_H_
 #define CONTENT_BROWSER_FIND_REQUEST_MANAGER_H_
 
+#include <cfloat>
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>

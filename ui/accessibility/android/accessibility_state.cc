@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/android/accessibility_state.h"
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/no_destructor.h"

@@ -5,6 +5,7 @@
 #ifndef TOOLS_ANDROID_DEVIL_UTIL_CRC32_HASHER_H_
 #define TOOLS_ANDROID_DEVIL_UTIL_CRC32_HASHER_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>

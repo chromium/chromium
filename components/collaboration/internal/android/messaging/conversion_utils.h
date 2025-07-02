@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_ANDROID_MESSAGING_CONVERSION_UTILS_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_ANDROID_MESSAGING_CONVERSION_UTILS_H_
 
+#include <set>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/collaboration/public/messaging/activity_log.h"

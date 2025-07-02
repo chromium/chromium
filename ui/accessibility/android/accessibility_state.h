@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_ANDROID_ACCESSIBILITY_STATE_H_
 #define UI_ACCESSIBILITY_ANDROID_ACCESSIBILITY_STATE_H_
 
+#include <string>
 #include <vector>
 
 namespace ui {
