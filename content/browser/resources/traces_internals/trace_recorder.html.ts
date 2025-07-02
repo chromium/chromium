@@ -9,13 +9,19 @@ export function getHtml(this: TraceRecorderElement) {
   // clang-format off
   return html`
     <h1>Record Trace</h1>
-    <div id="config-container">
-      Your current config proto: ${this.traceConfig}
-    </div>
     <div id="control-container">
       <div id="status-container" class="${this.statusClass}">
-          <div class="status-circle"></div>
-          <h3>Status: ${this.tracingState}</h3>
+        <div class="status-circle"></div>
+        <h3>Status: ${this.tracingState}</h3>
+      </div>
+      <div id="progress-container"
+          ?hidden="${!this.isRecording}">
+        <label for="buffer-progress">Buffer Usage:
+            ${Math.round(this.bufferUsage * 100)}%
+        </label>
+        <progress id="buffer-progress" max="100"
+            .value="${this.bufferUsage * 100}">
+        </progress>
       </div>
       <div id="action-panel">
         <cr-button
@@ -25,12 +31,12 @@ export function getHtml(this: TraceRecorderElement) {
         </cr-button>
         <cr-button
             @click="${this.stopTracing_}"
-            ?disabled="${!this.isStopTracingEnabled}">
+            ?disabled="${!this.isRecording}">
           Stop Tracing
         </cr-button>
         <cr-button
             @click="${this.cloneTraceSession_}"
-            ?disabled="${!this.isCloneTraceEnabled}">
+            ?disabled="${!this.isRecording}">
           Snapshot Trace
         </cr-button>
       </div>
@@ -52,10 +58,10 @@ export function getHtml(this: TraceRecorderElement) {
           </div>
           ${this.traceCategories.map(category => html`
             <div class="category-row">
-                <input
-                  disabled
-                  type="checkbox"
-                  .checked="${this.isEnabled(category.name)}">
+              <input
+                disabled
+                type="checkbox"
+                .checked="${this.isEnabled(category.name)}">
               <div>${category.name}</div>
               <div>${category.tags.join(', ')}</div>
               <div>${category.description}</div>

@@ -14,19 +14,25 @@
 namespace tracing {
 
 double GetTraceBufferUsage(const perfetto::protos::gen::TraceStats& stats) {
-  double maximumUsage = 0;
+  uint64_t total_bytes_written = 0;
+  uint64_t total_buffer_size = 0;
+
+  // Sum the stats from all available buffers.
   for (const auto& buf_stats : stats.buffer_stats()) {
-    size_t bytes_in_buffer =
-        buf_stats.bytes_written() - buf_stats.bytes_read() -
-        buf_stats.bytes_overwritten() + buf_stats.padding_bytes_written() -
-        buf_stats.padding_bytes_cleared();
-    if (buf_stats.buffer_size() > 0) {
-      maximumUsage = std::max(
-          maximumUsage,
-          bytes_in_buffer / static_cast<double>(buf_stats.buffer_size()));
-    }
+    total_bytes_written += buf_stats.bytes_written() - buf_stats.bytes_read() -
+                           buf_stats.bytes_overwritten() +
+                           buf_stats.padding_bytes_written() -
+                           buf_stats.padding_bytes_cleared();
+    total_buffer_size += buf_stats.buffer_size();
   }
-  return maximumUsage;
+
+  // Prevent division by zero if no buffers are configured.
+  if (total_buffer_size == 0) {
+    return 0.0;
+  }
+
+  // Return the calculated usage percentage.
+  return static_cast<double>(total_bytes_written) / total_buffer_size;
 }
 
 bool HasLostData(const perfetto::protos::gen::TraceStats& stats) {

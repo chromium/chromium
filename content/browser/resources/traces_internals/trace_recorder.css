@@ -36,6 +36,18 @@
   color: var(--google-grey-700);
 }
 
+#progress-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 0 18px;
+}
+
+#buffer-progress {
+  width: 100%;
+  height: 22px;
+}
+
 #action-panel {
   display: flex;
   justify-content: flex-end;
