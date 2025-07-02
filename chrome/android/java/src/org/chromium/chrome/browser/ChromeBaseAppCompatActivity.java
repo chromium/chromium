@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeFieldTrialImpl;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
@@ -360,7 +361,16 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @VisibleForTesting
     public EdgeToEdgeLayoutCoordinator ensureEdgeToEdgeLayoutCoordinator() {
         if (mEdgeToEdgeLayoutCoordinator == null) {
-            mEdgeToEdgeLayoutCoordinator = new EdgeToEdgeLayoutCoordinator(this, mInsetObserver);
+            mEdgeToEdgeLayoutCoordinator =
+                    new EdgeToEdgeLayoutCoordinator(
+                            this,
+                            mInsetObserver,
+                            EdgeToEdgeUtils.isUseBackupNavbarInsetsEnabled(),
+                            EdgeToEdgeFieldTrialImpl.getBackupNavbarInsetsOverrides(),
+                            ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsUseTappable
+                                    .getValue(),
+                            ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsUseTappable
+                                    .getValue());
             mEdgeToEdgeLayoutCoordinator.setIsDebugging(
                     EdgeToEdgeUtils.isEdgeToEdgeEverywhereDebugging());
         }

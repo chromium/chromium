@@ -127,7 +127,7 @@ public class EdgeToEdgeUtils {
     }
 
     /** Whether it is allowed to use other insets as a backup for missing navigation bar insets. */
-    static boolean isUseBackupNavbarInsetsEnabled() {
+    public static boolean isUseBackupNavbarInsetsEnabled() {
         return ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsets.isEnabled();
     }
 

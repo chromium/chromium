@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.edge_to_edge.layout;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.annotation.SuppressLint;
@@ -32,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeFieldTrial;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
@@ -51,6 +53,10 @@ public class EdgeToEdgeLayoutUnitTest {
     private static final int CAPTION_BAR = WindowInsetsCompat.Type.captionBar();
     private static final int SYSTEM_BARS = WindowInsetsCompat.Type.systemBars();
     private static final int DISPLAY_CUTOUT = WindowInsetsCompat.Type.displayCutout();
+    private static final int TAPPABLE_ELEMENT = WindowInsetsCompat.Type.tappableElement();
+    private static final int MANDATORY_SYSTEM_GESTURES =
+            WindowInsetsCompat.Type.mandatorySystemGestures();
+    private static final int SYSTEM_GESTURES = WindowInsetsCompat.Type.systemGestures();
     private static final int IME = WindowInsetsCompat.Type.ime();
     private static final int ALL_SUPPORTED_INSETS = SYSTEM_BARS + DISPLAY_CUTOUT + IME;
 
@@ -61,6 +67,7 @@ public class EdgeToEdgeLayoutUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock InsetObserver mInsetObserver;
+    @Mock EdgeToEdgeFieldTrial mUseBackupNavbarFieldTrial;
 
     private View mOriginalContentView;
     private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
@@ -71,17 +78,19 @@ public class EdgeToEdgeLayoutUnitTest {
     public void setup() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mOriginalContentView = new FrameLayout(mActivity);
+        doReturn(true).when(mInsetObserver).hasSeenNonZeroNavigationBarInsets();
+        doReturn(true).when(mUseBackupNavbarFieldTrial).isEnabledForManufacturerVersion();
     }
 
     @Test
     public void testInitialize() {
-        initialize(null);
+        initialize(null, /* useBackupNavbarInsets= */ true);
         assertEquals(mEdgeToEdgeLayout, mOriginalContentView.getParent());
     }
 
     @Test
     public void testInitialize_withInsetObserver() {
-        initialize(mInsetObserver);
+        initialize(mInsetObserver, /* useBackupNavbarInsets= */ true);
         assertEquals(mEdgeToEdgeLayout, mOriginalContentView.getParent());
         verify(mInsetObserver)
                 .addInsetsConsumer(any(), eq(InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR));
@@ -218,7 +227,7 @@ public class EdgeToEdgeLayoutUnitTest {
     @Test
     @Config(qualifiers = "w400dp-h600dp")
     public void testPortrait_Ime() {
-        initialize(null);
+        initialize(null, /* useBackupNavbarInsets= */ true);
         measureAndLayoutRootView(400, 600);
 
         WindowInsetsCompat withImeInset =
@@ -236,6 +245,205 @@ public class EdgeToEdgeLayoutUnitTest {
         // The padding should take the higher value of IME / nav bar.
         assertPaddings(/* left= */ 0, /* top= */ 0, /* right= */ 0, /* bottom= */ IME_SIZE);
         // Nav bar exists, so its size should still be counted.
+        // Nav bar is with Rect(0, WINDOW_SIZE - NAV_BAR_SIZE, WINDOW_WIDTH, WINDOW_SIZE)
+        assertEquals(
+                "Nav bar is at the bottom of the screen.",
+                new Rect(0, 450, 400, 600),
+                mEdgeToEdgeLayout.getNavigationBarRectForTesting());
+        // Rect(0, WINDOW_SIZE - NAV_BAR_SIZE, WINDOW_WIDTH, WINDOW_SIZE)
+        assertEquals(
+                "Nav bar divider is the top 1px height for the nav bar.",
+                new Rect(0, 450, 400, 451),
+                mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
+    }
+
+    // ┌───────┐
+    // ├───────┤
+    // │       │
+    // │       │
+    // ├-------┤
+    // │missing│
+    // └───────┘
+    @Test
+    @Config(qualifiers = "w400dp-h600dp")
+    public void testPortrait_backupInsetsDisabled() {
+        initializePortraitLayout(/* useBackupNavbarInsets= */ false);
+
+        WindowInsetsCompat missingNavbarInset =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(STATUS_BARS, Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsets(TAPPABLE_ELEMENT, Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(
+                                MANDATORY_SYSTEM_GESTURES,
+                                Insets.of(0, STATUS_BAR_SIZE, 0, NAV_BAR_SIZE))
+                        .build();
+        WindowInsetsCompat newInsets =
+                mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                        mEdgeToEdgeLayout, missingNavbarInset);
+        assertInsetsConsumed(
+                newInsets,
+                STATUS_BARS + NAVIGATION_BARS + TAPPABLE_ELEMENT + MANDATORY_SYSTEM_GESTURES);
+
+        measureAndLayoutRootView(400, 600);
+        assertPaddings(/* left= */ 0, /* top= */ STATUS_BAR_SIZE, /* right= */ 0, /* bottom= */ 0);
+
+        // status bar is with Rect(0,0, WINDOW_WIDTH, STATUS_BAR_SIZE)
+        assertEquals(
+                "Status bar is at the top of the window.",
+                new Rect(0, 0, 400, 100),
+                mEdgeToEdgeLayout.getStatusBarRectForTesting());
+        assertEquals(
+                "Navbar insets are missing, and backup navbar insets are disabled.",
+                new Rect(),
+                mEdgeToEdgeLayout.getNavigationBarRectForTesting());
+        assertEquals(
+                "Navbar insets are missing, and backup navbar insets are disabled.",
+                new Rect(),
+                mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
+    }
+
+    // ┌───────┐
+    // ├───────┤
+    // │       │
+    // │       │
+    // ├-------┤
+    // │missing│
+    // └───────┘
+    @Test
+    @Config(qualifiers = "w400dp-h600dp")
+    public void testPortrait_useTappableElementForBackupInsets() {
+        initializePortraitLayout(/* useBackupNavbarInsets= */ true);
+
+        WindowInsetsCompat missingNavbarInset =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(STATUS_BARS, Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsets(TAPPABLE_ELEMENT, Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(
+                                MANDATORY_SYSTEM_GESTURES,
+                                Insets.of(0, STATUS_BAR_SIZE, 0, NAV_BAR_SIZE))
+                        .build();
+        WindowInsetsCompat newInsets =
+                mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                        mEdgeToEdgeLayout, missingNavbarInset);
+        assertInsetsConsumed(
+                newInsets,
+                STATUS_BARS + NAVIGATION_BARS + TAPPABLE_ELEMENT + MANDATORY_SYSTEM_GESTURES);
+
+        measureAndLayoutRootView(400, 600);
+        assertPaddings(
+                /* left= */ 0,
+                /* top= */ STATUS_BAR_SIZE,
+                /* right= */ 0,
+                /* bottom= */ NAV_BAR_SIZE);
+
+        // status bar is with Rect(0,0, WINDOW_WIDTH, STATUS_BAR_SIZE)
+        assertEquals(
+                "Status bar is at the top of the window.",
+                new Rect(0, 0, 400, 100),
+                mEdgeToEdgeLayout.getStatusBarRectForTesting());
+        // Nav bar is with Rect(0, WINDOW_SIZE - NAV_BAR_SIZE, WINDOW_WIDTH, WINDOW_SIZE)
+        assertEquals(
+                "Nav bar is at the bottom of the screen.",
+                new Rect(0, 450, 400, 600),
+                mEdgeToEdgeLayout.getNavigationBarRectForTesting());
+        // Rect(0, WINDOW_SIZE - NAV_BAR_SIZE, WINDOW_WIDTH, WINDOW_SIZE)
+        assertEquals(
+                "Nav bar divider is the top 1px height for the nav bar.",
+                new Rect(0, 450, 400, 451),
+                mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
+    }
+
+    // ┌───────┐
+    // ├───────┤
+    // │       │
+    // │       │
+    // ├-------┤
+    // │missing│
+    // └───────┘
+    @Test
+    @Config(qualifiers = "w400dp-h600dp")
+    public void testPortrait_hasSeenNonZeroNavBar_doNotUseBackupInsets() {
+        initializePortraitLayout(/* useBackupNavbarInsets= */ true);
+
+        WindowInsetsCompat missingNavbarInset =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(STATUS_BARS, Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsets(TAPPABLE_ELEMENT, Insets.of(0, 0, 0, 0))
+                        .setInsets(
+                                MANDATORY_SYSTEM_GESTURES,
+                                Insets.of(0, STATUS_BAR_SIZE, 0, NAV_BAR_SIZE))
+                        .build();
+        WindowInsetsCompat newInsets =
+                mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                        mEdgeToEdgeLayout, missingNavbarInset);
+        assertInsetsConsumed(
+                newInsets,
+                STATUS_BARS + NAVIGATION_BARS + TAPPABLE_ELEMENT + MANDATORY_SYSTEM_GESTURES);
+
+        measureAndLayoutRootView(400, 600);
+        assertPaddings(/* left= */ 0, /* top= */ STATUS_BAR_SIZE, /* right= */ 0, /* bottom= */ 0);
+
+        // status bar is with Rect(0,0, WINDOW_WIDTH, STATUS_BAR_SIZE)
+        assertEquals(
+                "Status bar is at the top of the window.",
+                new Rect(0, 0, 400, 100),
+                mEdgeToEdgeLayout.getStatusBarRectForTesting());
+        assertEquals(
+                "Navbar insets are missing, and weaker signals for backup navbar insets should not"
+                        + " be used as non-zero navbar insets have been seen.",
+                new Rect(),
+                mEdgeToEdgeLayout.getNavigationBarRectForTesting());
+        assertEquals(
+                "Navbar insets are missing, and weaker signals for backup navbar insets should not"
+                        + " be used as non-zero navbar insets have been seen.",
+                new Rect(),
+                mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
+    }
+
+    // ┌───────┐
+    // ├───────┤
+    // │       │
+    // │       │
+    // ├-------┤
+    // │missing│
+    // └───────┘
+    @Test
+    @Config(qualifiers = "w400dp-h600dp")
+    public void testPortrait_useMandatoryGesturesForBackupInsets() {
+        doReturn(false).when(mInsetObserver).hasSeenNonZeroNavigationBarInsets();
+        initializePortraitLayout(/* useBackupNavbarInsets= */ true);
+
+        WindowInsetsCompat missingNavbarInset =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(STATUS_BARS, Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsets(TAPPABLE_ELEMENT, Insets.of(0, 0, 0, 0))
+                        .setInsets(
+                                MANDATORY_SYSTEM_GESTURES,
+                                Insets.of(0, STATUS_BAR_SIZE, 0, NAV_BAR_SIZE))
+                        .build();
+        WindowInsetsCompat newInsets =
+                mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                        mEdgeToEdgeLayout, missingNavbarInset);
+        assertInsetsConsumed(
+                newInsets,
+                STATUS_BARS + NAVIGATION_BARS + TAPPABLE_ELEMENT + MANDATORY_SYSTEM_GESTURES);
+
+        measureAndLayoutRootView(400, 600);
+        assertPaddings(
+                /* left= */ 0,
+                /* top= */ STATUS_BAR_SIZE,
+                /* right= */ 0,
+                /* bottom= */ NAV_BAR_SIZE);
+
+        // status bar is with Rect(0,0, WINDOW_WIDTH, STATUS_BAR_SIZE)
+        assertEquals(
+                "Status bar is at the top of the window.",
+                new Rect(0, 0, 400, 100),
+                mEdgeToEdgeLayout.getStatusBarRectForTesting());
         // Nav bar is with Rect(0, WINDOW_SIZE - NAV_BAR_SIZE, WINDOW_WIDTH, WINDOW_SIZE)
         assertEquals(
                 "Nav bar is at the bottom of the screen.",
@@ -808,8 +1016,15 @@ public class EdgeToEdgeLayoutUnitTest {
                 mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
     }
 
-    private void initialize(InsetObserver insetObserver) {
-        mEdgeToEdgeLayoutCoordinator = new EdgeToEdgeLayoutCoordinator(mActivity, insetObserver);
+    private void initialize(InsetObserver insetObserver, boolean useBackupNavbarInsets) {
+        mEdgeToEdgeLayoutCoordinator =
+                new EdgeToEdgeLayoutCoordinator(
+                        mActivity,
+                        insetObserver,
+                        /* useBackupNavbarInsetsEnabled= */ useBackupNavbarInsets,
+                        /* useBackupNavbarInsetsFieldTrial= */ mUseBackupNavbarFieldTrial,
+                        /* canUseTappableElementInsets= */ true,
+                        /* canUseMandatoryGesturesInsets= */ true);
         mEdgeToEdgeLayout =
                 (EdgeToEdgeBaseLayout)
                         mEdgeToEdgeLayoutCoordinator.wrapContentView(mOriginalContentView);
@@ -817,13 +1032,19 @@ public class EdgeToEdgeLayoutUnitTest {
     }
 
     private void initializePortraitLayout() {
-        initialize(null);
+        initialize(mInsetObserver, true);
+        measureAndLayoutRootView(400, 600);
+        assertPaddings(/* left= */ 0, /* top= */ 0, /* right= */ 0, /* bottom= */ 0);
+    }
+
+    private void initializePortraitLayout(boolean useBackupNavbarInsets) {
+        initialize(mInsetObserver, /* useBackupNavbarInsets= */ useBackupNavbarInsets);
         measureAndLayoutRootView(400, 600);
         assertPaddings(/* left= */ 0, /* top= */ 0, /* right= */ 0, /* bottom= */ 0);
     }
 
     private void initializeLandscapeLayout() {
-        initialize(null);
+        initialize(null, true);
         measureAndLayoutRootView(600, 400);
         assertPaddings(/* left= */ 0, /* top= */ 0, /* right= */ 0, /* bottom= */ 0);
     }

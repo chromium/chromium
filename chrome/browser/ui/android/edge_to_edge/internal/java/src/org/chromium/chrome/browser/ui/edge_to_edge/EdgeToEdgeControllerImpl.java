@@ -663,10 +663,21 @@ public class EdgeToEdgeControllerImpl
             builder.setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE);
             builder.setInsets(WindowInsetsCompat.Type.captionBar(), Insets.NONE);
         }
+        Insets mandatorySystemGestures =
+                windowInsets.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
         if (mAppliedContentViewPadding.bottom == 0) {
             builder.setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE);
+            builder.setInsets(WindowInsetsCompat.Type.tappableElement(), Insets.NONE);
             builder.setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE);
+            mandatorySystemGestures =
+                    Insets.of(
+                            mandatorySystemGestures.left,
+                            mandatorySystemGestures.top,
+                            mandatorySystemGestures.right,
+                            0);
         }
+        builder.setInsets(
+                WindowInsetsCompat.Type.mandatorySystemGestures(), mandatorySystemGestures);
         return builder.build();
     }
 

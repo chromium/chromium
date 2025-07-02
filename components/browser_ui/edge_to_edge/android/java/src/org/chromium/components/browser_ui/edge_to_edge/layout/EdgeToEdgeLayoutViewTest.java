@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.edge_to_edge.layout;
 
+import static org.mockito.Mockito.doReturn;
+
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 
 import android.app.Activity;
@@ -21,6 +23,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -28,6 +33,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeFieldTrial;
 import org.chromium.components.browser_ui.edge_to_edge.R;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -45,6 +51,8 @@ public class EdgeToEdgeLayoutViewTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -64,6 +72,8 @@ public class EdgeToEdgeLayoutViewTest {
     private static final int NAV_BAR_DIVIDER_COLOR = Color.BLUE;
     private static final int BG_COLOR = Color.GRAY;
 
+    @Mock private EdgeToEdgeFieldTrial mUseBackupNavbarInsetsFieldTrial;
+
     private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
     private FrameLayout mContentView;
     private View mEdgeToEdgeLayout;
@@ -77,7 +87,18 @@ public class EdgeToEdgeLayoutViewTest {
     public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mEdgeToEdgeLayoutCoordinator = new EdgeToEdgeLayoutCoordinator(sActivity, null);
+                    doReturn(true)
+                            .when(mUseBackupNavbarInsetsFieldTrial)
+                            .isEnabledForManufacturerVersion();
+
+                    mEdgeToEdgeLayoutCoordinator =
+                            new EdgeToEdgeLayoutCoordinator(
+                                    sActivity,
+                                    null,
+                                    /* useBackupNavbarInsetsEnabled= */ true,
+                                    /* useBackupNavbarInsetsFieldTrial= */ mUseBackupNavbarInsetsFieldTrial,
+                                    /* canUseTappableElementInsets= */ true,
+                                    /* canUseMandatoryGesturesInsets= */ true);
 
                     mContentView = new FrameLayout(sActivity, null);
                     sActivity.setContentView(

@@ -27,6 +27,9 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.edge_to_edge.BaseSystemBarColorHelper;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeFieldTrial;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager.BackupNavbarInsetsCallSite;
 import org.chromium.components.browser_ui.edge_to_edge.R;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
@@ -47,6 +50,11 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     private @Nullable EdgeToEdgeBaseLayout mView;
     private boolean mIsDebugging;
 
+    private final boolean mUseBackupNavbarInsetsEnabled;
+    private final @Nullable EdgeToEdgeFieldTrial mUseBackupNavbarInsetsFieldTrial;
+    private final boolean mCanUseTappableElementInsets;
+    private final boolean mCanUseMandatoryGesturesInsets;
+
     /**
      * Construct the coordinator used to handle padding and color for the Edge to edge layout. If an
      * {@link InsetObserver} is not passed, the coordinator will assume no inset coordination is
@@ -54,10 +62,48 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
      *
      * @param context The Activity context.
      * @param insetObserver The inset observer of current window, if exists.
+     * @param useBackupNavbarInsetsEnabled Whether backup insets can be used if the navbar insets
+     *     seem to be missing.
+     * @param useBackupNavbarInsetsFieldTrial The EdgeToEdgeFieldTrial to use to verify if backup
+     *     insets are allowed on devices by the current manufacturer.
+     * @param canUseTappableElementInsets Whether tappable element insets can be used as backup
+     *     navbar insets.
+     * @param canUseMandatoryGesturesInsets Whether mandatory system gesture insets can be used as
+     *     backup navbar insets.
      */
-    public EdgeToEdgeLayoutCoordinator(Context context, @Nullable InsetObserver insetObserver) {
+    public EdgeToEdgeLayoutCoordinator(
+            Context context,
+            @Nullable InsetObserver insetObserver,
+            boolean useBackupNavbarInsetsEnabled,
+            @Nullable EdgeToEdgeFieldTrial useBackupNavbarInsetsFieldTrial,
+            boolean canUseTappableElementInsets,
+            boolean canUseMandatoryGesturesInsets) {
         mContext = context;
         mInsetObserver = insetObserver;
+        mUseBackupNavbarInsetsEnabled = useBackupNavbarInsetsEnabled;
+        mUseBackupNavbarInsetsFieldTrial = useBackupNavbarInsetsFieldTrial;
+        mCanUseTappableElementInsets = canUseTappableElementInsets;
+        mCanUseMandatoryGesturesInsets = canUseMandatoryGesturesInsets;
+    }
+
+    /**
+     * Construct the coordinator used to handle padding and color for the Edge to edge layout. If an
+     * {@link InsetObserver} is not passed, the coordinator will assume no inset coordination is
+     * needed, and start observing insets over the e2e layout directly.
+     *
+     * <p>Note: with this constructor, the backup navbar insets feature will be fully disabled.
+     *
+     * @param context The Activity context.
+     * @param insetObserver The inset observer of current window, if exists.
+     */
+    public EdgeToEdgeLayoutCoordinator(Context context, @Nullable InsetObserver insetObserver) {
+        this(
+                context,
+                insetObserver,
+                /* useBackupNavbarInsetsEnabled= */ false,
+                /* useBackupNavbarInsetsFieldTrial= */ null,
+                /* canUseTappableElementInsets= */ false,
+                /* canUseMandatoryGesturesInsets= */ false);
     }
 
     /** Whether enable the debug layer for edge to edge layout. */
@@ -124,7 +170,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         Insets statusBarInsets = windowInsets.getInsets(Type.statusBars());
         mView.setStatusBarInsets(statusBarInsets);
 
-        Insets navBarInsets = windowInsets.getInsets(Type.navigationBars());
+        Insets navBarInsets = getNavigationBarInsets(windowInsets);
         mView.setNavigationBarInsets(navBarInsets);
 
         Insets cutout = windowInsets.getInsets(Type.displayCutout());
@@ -144,6 +190,8 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         }
 
         Insets overallInsets = windowInsets.getInsets(paddingInsetTypes);
+        // Ensure backup navigation insets are also included.
+        overallInsets = Insets.max(overallInsets, navBarInsets);
         mView.setPadding(
                 overallInsets.left, overallInsets.top, overallInsets.right, overallInsets.bottom);
 
@@ -153,8 +201,39 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
                 .setInsets(Type.navigationBars(), Insets.NONE)
                 .setInsets(Type.captionBar(), Insets.NONE)
                 .setInsets(Type.displayCutout(), Insets.NONE)
+                .setInsets(Type.tappableElement(), Insets.NONE)
+                .setInsets(Type.mandatorySystemGestures(), Insets.NONE)
                 .setInsets(Type.ime(), Insets.NONE)
                 .build();
+    }
+
+    private Insets getNavigationBarInsets(WindowInsetsCompat windowInsets) {
+        Insets navBarInsets = windowInsets.getInsets(Type.navigationBars());
+
+        if (!mUseBackupNavbarInsetsEnabled) return navBarInsets;
+        if (mInsetObserver == null || mUseBackupNavbarInsetsFieldTrial == null) return navBarInsets;
+
+        if (navBarInsets.left == 0 && navBarInsets.right == 0 && navBarInsets.bottom == 0) {
+            @Nullable Insets backupNavbarInsets =
+                    EdgeToEdgeManager.getBackupNavbarInsets(
+                            mInsetObserver.hasSeenNonZeroNavigationBarInsets(),
+                            windowInsets,
+                            BackupNavbarInsetsCallSite.EDGE_TO_EDGE_LAYOUT,
+                            mUseBackupNavbarInsetsFieldTrial,
+                            mCanUseTappableElementInsets,
+                            mCanUseMandatoryGesturesInsets);
+            // If applicable, apply backup navbar insets to the left, right, and bottom (not the
+            // top, as that's always the status bar).
+            if (backupNavbarInsets != null) {
+                navBarInsets =
+                        Insets.of(
+                                backupNavbarInsets.left,
+                                navBarInsets.top,
+                                backupNavbarInsets.right,
+                                backupNavbarInsets.bottom);
+            }
+        }
+        return navBarInsets;
     }
 
     /** Returns the edge-to-edge layout view. */
