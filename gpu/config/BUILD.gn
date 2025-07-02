@@ -202,7 +202,7 @@ source_set("config_sources") {
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//components/miracle_parameter/common",
-    "//gpu/command_buffer/common:common_sources",
+    "//gpu/command_buffer/common",
     "//gpu/ipc/common:gpu_preferences_interface",
     "//gpu/vulkan:buildflags",
     "//services/webnn/public/mojom:features",
