@@ -250,6 +250,10 @@ def main():
     _compile(output_dir, ['build.ninja'])
 
   # Query ninja for all __build_config_crbug_908819 targets.
+  # TODO(agrieve): java_group, android_assets, and android_resources do not
+  # write .build_config.json files, and so will not show up by this query.
+  # If we ever need them to, use "gn gen" into a temp dir, and set an extra
+  # gn arg that causes all write_build_config() template to print all targets.
   targets = _query_for_build_config_targets(output_dir)
   entries = [_TargetEntry(t) for t in targets]
 
@@ -263,6 +267,9 @@ def main():
              quiet=args.quiet)
 
   if args.type:
+    if set(args.type) & {'android_resources', 'android_assets', 'group'}:
+      logging.warning('Cannot filter by this type. See TODO.')
+      sys.exit(1)
     entries = [e for e in entries if e.get_type() in args.type]
 
   if args.proguard_enabled:

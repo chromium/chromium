@@ -128,10 +128,9 @@ template("write_build_config") {
   _inputs = [ _params_file ]
   _outputs = [ invoker.build_config ]
   _deps = []
+  _type = invoker.type
 
   if (current_toolchain == default_toolchain) {
-    _type = invoker.type
-
     # Ensure targets match naming patterns so that __assetres, __header, __host,
     # and __validate targets work properly.
     if (filter_exclude([ _type ], _java_resource_types) == []) {
@@ -532,28 +531,39 @@ template("write_build_config") {
   }
   write_file(_params_file, _params, "json")
 
-  action_with_pydeps(target_name) {
-    forward_variables_from(invoker, [ "testonly" ])
-    script = "//build/android/gyp/write_build_config.py"
-    depfile = "$target_gen_dir/$target_name.d"
-    inputs = _inputs
-    outputs = _outputs
+  # These build steps require no computed values.
+  if (_type == "android_assets" || _type == "android_resources" ||
+      _type == "group") {
+    not_needed([
+                 "_deps",
+                 "_inputs",
+                 "_outputs",
+                 "target_name",
+               ])
+  } else {
+    action_with_pydeps(target_name) {
+      forward_variables_from(invoker, [ "testonly" ])
+      script = "//build/android/gyp/write_build_config.py"
+      depfile = "$target_gen_dir/$target_name.d"
+      inputs = _inputs
+      outputs = _outputs
 
-    args = [
-      "--output",
-      rebase_path(invoker.build_config, root_build_dir),
-      "--depfile",
-      rebase_path(depfile, root_build_dir),
-    ]
+      args = [
+        "--output",
+        rebase_path(invoker.build_config, root_build_dir),
+        "--depfile",
+        rebase_path(depfile, root_build_dir),
+      ]
 
-    deps = []
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
+      deps = []
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+      if (defined(invoker.android_manifest_dep)) {
+        deps += [ invoker.android_manifest_dep ]
+      }
+      deps += _deps
     }
-    if (defined(invoker.android_manifest_dep)) {
-      deps += [ invoker.android_manifest_dep ]
-    }
-    deps += _deps
   }
 }
 

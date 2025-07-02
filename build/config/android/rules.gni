@@ -535,7 +535,9 @@ if (!is_robolectric && enable_java_templates) {
     forward_variables_from(invoker, [ "testonly" ])
     _build_config = "$target_gen_dir/${target_name}.build_config.json"
     _rtxt_out_path = "$target_gen_dir/${target_name}.R.txt"
-    write_build_config("$target_name$build_config_target_suffix") {
+
+    # Writes a .params.json via write_file(), but does not define a target.
+    write_build_config("unused") {
       forward_variables_from(invoker, [ "resource_overlay" ])
 
       build_config = _build_config
@@ -548,10 +550,7 @@ if (!is_robolectric && enable_java_templates) {
     }
     action_with_pydeps(target_name) {
       forward_variables_from(invoker, [ "visibility" ])
-      public_deps = [
-        ":$target_name$build_config_target_suffix",
-        invoker.generating_target,
-      ]
+      public_deps = [ invoker.generating_target ]
       inputs = [ invoker.generated_resources_zip ]
       outputs = [ _rtxt_out_path ]
       script = "//build/android/gyp/create_r_txt.py"
@@ -748,7 +747,6 @@ if (!is_robolectric && enable_java_templates) {
     _resources_zip = "$target_out_dir/$target_name.resources.zip"
     _rtxt_out_path = _base_path + "_R.txt"
     _build_config = _base_path + ".build_config.json"
-    _build_config_target_name = "$target_name$build_config_target_suffix"
 
     _deps = []
     if (defined(invoker.deps)) {
@@ -779,7 +777,8 @@ if (!is_robolectric && enable_java_templates) {
                          [ "*\bthird_party\b*" ]) != []
     }
 
-    write_build_config(_build_config_target_name) {
+    # Writes a .params.json via write_file(), but does not define a target.
+    write_build_config("unused") {
       type = "android_resources"
       build_config = _build_config
       resources_zip = _resources_zip
@@ -888,7 +887,6 @@ if (!is_robolectric && enable_java_templates) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _build_config = "$target_gen_dir/$target_name.build_config.json"
-    _build_config_target_name = "$target_name$build_config_target_suffix"
 
     _sources = []
     if (defined(invoker.sources)) {
@@ -913,7 +911,8 @@ if (!is_robolectric && enable_java_templates) {
           "android_assets() renaming_sources.length != renaming_destinations.length")
     }
 
-    write_build_config(_build_config_target_name) {
+    # Writes a .params.json via write_file(), but does not define a target.
+    write_build_config("unused") {
       type = "android_assets"
       build_config = _build_config
 
@@ -936,15 +935,11 @@ if (!is_robolectric && enable_java_templates) {
 
     # Use an action in order to mark sources as "inputs" to a GN target so that
     # GN will fail if the appropriate deps do not exist, and so that "gn refs"
-    # will know about the sources. We do not add these inputs & deps to the
-    # __build_config target because we want building .build_config.json files
-    # to be fast (and because write_build_config.py does not need the files to
-    # exist).
+    # will know about the sources.
     _all_sources = _sources + _renaming_sources
     if (_all_sources != []) {
       action(target_name) {
         forward_variables_from(invoker, [ "deps" ])
-        public_deps = [ ":$_build_config_target_name" ]
 
         script = "//build/android/gyp/validate_inputs.py"
         inputs = _all_sources
@@ -957,7 +952,6 @@ if (!is_robolectric && enable_java_templates) {
     } else {
       group(target_name) {
         forward_variables_from(invoker, [ "deps" ])
-        public_deps = [ ":$_build_config_target_name" ]
       }
     }
   }
@@ -986,7 +980,9 @@ if (!is_robolectric && enable_java_templates) {
     if (defined(invoker.public_deps)) {
       _invoker_deps += invoker.public_deps
     }
-    write_build_config("$target_name$build_config_target_suffix") {
+
+    # Writes a .params.json via write_file(), but does not define a target.
+    write_build_config("unused") {
       forward_variables_from(invoker, _build_config_vars)
       type = "group"
       build_config = "$target_gen_dir/${invoker.target_name}.build_config.json"
@@ -1029,10 +1025,6 @@ if (!is_robolectric && enable_java_templates) {
       forward_variables_from(invoker,
                              "*",
                              _build_config_vars + TESTONLY_AND_VISIBILITY)
-      if (!defined(deps)) {
-        deps = []
-      }
-      deps += [ ":$target_name$build_config_target_suffix" ]
       if (is_cronet_for_aosp_build) {
         metadata = {
           java_library_deps = []
