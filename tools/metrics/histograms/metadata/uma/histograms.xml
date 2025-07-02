@@ -123,6 +123,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.CheckForClonedInstallDuration" units="microseconds"
+    expires_after="2026-02-28">
+  <owner>dgn@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the total duration of the CheckForClonedInstall() call that happens
+    during startup when trying to determine whether the current client is
+    running on a cloned install. This call is asynchronous, runs as a
+    best-effort task, and could potentially take a while.
+
+    The metric is reported for only clients with high-resolution clocks (a
+    subset of Windows clients won't report it, see the
+    Windows.HasHighResolutionTimeTicks histogram).
+  </summary>
+</histogram>
+
 <histogram name="UMA.ChildProcess.Ping.{Source}" enum="UmaChildPingStatus"
     expires_after="2026-02-28">
   <owner>lucnguyen@google.com</owner>
@@ -347,6 +364,22 @@ chromium-metrics-reviews@google.com.
     <variant name="PlatformExperienceHelperMetrics"/>
     <variant name="SetupMetrics"/>
   </token>
+</histogram>
+
+<histogram name="UMA.GetMachineIdDuration" units="microseconds"
+    expires_after="2026-02-28">
+  <owner>dgn@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the duration of the GetMachineId() call that happens during startup
+    when trying to determine whether the current client is running on a cloned
+    install.
+
+    The metric is reported for only clients with high-resolution clocks (a
+    subset of Windows clients won't report it, see the
+    Windows.HasHighResolutionTimeTicks histogram).
+  </summary>
 </histogram>
 
 <histogram name="UMA.InitialStabilityRecordBeacon" enum="Boolean"

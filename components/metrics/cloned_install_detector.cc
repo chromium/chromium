@@ -37,6 +37,7 @@ bool HasMachineId() {
 }
 
 std::string GetMachineId() {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("UMA.GetMachineIdDuration");
   if (g_machine_id_provider_for_testing) {
     CHECK_IS_TEST();
     return g_machine_id_provider_for_testing->GetMachineId();
@@ -65,6 +66,12 @@ enum MachineIdState {
 // Logs the state of generating a machine id and comparing it to a stored value.
 void LogMachineIdState(MachineIdState state) {
   UMA_HISTOGRAM_ENUMERATION("UMA.MachineIdState", state, ID_ENUM_SIZE);
+}
+
+void LogCheckForClonedInstallDuration(base::TimeDelta duration) {
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("UMA.CheckForClonedInstallDuration",
+                                          duration, base::Microseconds(1),
+                                          base::Seconds(10), 50);
 }
 
 }  // namespace
@@ -121,6 +128,8 @@ void ClonedInstallDetector::SaveMachineId(PrefService* local_state,
   LogMachineIdState(id_state);
 
   local_state->SetInteger(prefs::kMetricsMachineId, hashed_id);
+  LogCheckForClonedInstallDuration(base::Time::Now() -
+                                   check_initiated_timestamp);
 }
 
 bool ClonedInstallDetector::ShouldResetClientIds(PrefService* local_state) {
