@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
 
 namespace new_tab_footer {
@@ -90,7 +91,10 @@ void NewTabFooterController::TearDown() {
 
 void NewTabFooterController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  UpdateFooterVisibility(/*log_on_load_metric=*/true);
+  if (navigation_handle->HasCommitted() &&
+      navigation_handle->IsInPrimaryMainFrame()) {
+    UpdateFooterVisibility(/*log_on_load_metric=*/true);
+  }
 }
 
 void NewTabFooterController::UpdateFooterVisibility(bool log_on_load_metric) {
