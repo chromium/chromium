@@ -22013,21 +22013,6 @@
             ]
         }
     ],
-    "Scanner": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScannerUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScannerDogfood": [
         {
             "platforms": [
@@ -23957,6 +23942,13 @@
                 "chromeos"
             ],
             "experiments": [
+                {
+                    "name": "Launch",
+                    "enable_features": [
+                        "ScannerUpdate",
+                        "SunfishFeature"
+                    ]
+                },
                 {
                     "name": "Enabled_Dogfood",
                     "enable_features": [
