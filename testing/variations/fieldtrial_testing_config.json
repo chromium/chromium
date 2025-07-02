@@ -13145,6 +13145,22 @@
             ]
         }
     ],
+    "IOSYoutubeIncogntoBlingIncognitoExperience": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeStartupParametersAsync",
+                        "YoutubeIncognito"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSiPadGhostCards": [
         {
             "platforms": [

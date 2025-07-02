@@ -2265,7 +2265,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kYoutubeIncognitoDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kYoutubeIncognito,
                                     kYoutubeIncognitoVariations,
-                                    "IOSYoutubeIncognito")},
+                                    "YoutubeIncognito")},
     {"lens-overlay-enable-location-bar-entrypoint",
      flag_descriptions::kLensOverlayEnableLocationBarEntrypointName,
      flag_descriptions::kLensOverlayEnableLocationBarEntrypointDescription,
