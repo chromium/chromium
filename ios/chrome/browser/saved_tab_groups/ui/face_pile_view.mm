@@ -139,8 +139,6 @@ const CGFloat kShareSymbolPointSize = 12.5;
 
 - (void)setAvatarSize:(CGFloat)avatarSize {
   _avatarSize = avatarSize;
-  CGFloat containerSize = _avatarSize + kContainerSubstractredStroke * 2;
-  self.layer.cornerRadius = containerSize / 2.0;
 }
 
 #pragma mark - Private
@@ -308,6 +306,7 @@ const CGFloat kShareSymbolPointSize = 12.5;
 
   CGFloat containerSize = _avatarSize + kContainerSubstractredStroke * 2;
   NSInteger avatarsCount = static_cast<NSUInteger>(_avatars.count);
+  self.layer.cornerRadius = containerSize / 2.0;
 
   for (NSInteger index = 0; index < avatarsCount; index++) {
     id<ShareKitAvatarPrimitive> avatar = _avatars[index];
