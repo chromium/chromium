@@ -8,7 +8,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/focus/widget_focus_manager.h"
+#include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -26,7 +26,7 @@ class NativeFocusObserver : public base::CheckedObserver {
 
 // Watches for native focus changes across all windows and widgets. Calls
 // registered `NativeFocusObserver`s on focus changes.
-class NativeFocusWatcher : public views::WidgetFocusChangeListener,
+class NativeFocusWatcher : public views::NativeViewFocusChangeListener,
                            public views::FocusChangeListener,
                            public views::WidgetObserver {
  public:
@@ -53,7 +53,7 @@ class NativeFocusWatcher : public views::WidgetFocusChangeListener,
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
-  // views::WidgetFocusChangeListener:
+  // views::NativeViewFocusChangeListener:
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
 
   // views::FocusChangeListener:

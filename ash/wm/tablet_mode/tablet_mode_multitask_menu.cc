@@ -221,11 +221,11 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
   // Showing the widget can change native focus (which would result in an
   // immediate closing of the menu). Only start observing after shown.
-  views::WidgetFocusManager::GetInstance()->AddFocusChangeListener(this);
+  views::NativeViewFocusManager::GetInstance()->AddFocusChangeListener(this);
 }
 
 TabletModeMultitaskMenu::~TabletModeMultitaskMenu() {
-  views::WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(this);
+  views::NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(this);
 }
 
 void TabletModeMultitaskMenu::Animate(bool show) {

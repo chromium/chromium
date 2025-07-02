@@ -42,7 +42,7 @@ void FocusManagerTest::TearDown() {
     GetFocusManager()->RemoveFocusChangeListener(focus_change_listener_);
   }
   if (widget_focus_change_listener_) {
-    WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(
+    NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(
         widget_focus_change_listener_);
   }
   GetWidget()->Close();
@@ -90,18 +90,18 @@ void FocusManagerTest::RemoveFocusChangeListener(
   focus_change_listener_ = nullptr;
 }
 
-void FocusManagerTest::AddWidgetFocusChangeListener(
-    WidgetFocusChangeListener* listener) {
+void FocusManagerTest::AddNativeViewFocusChangeListener(
+    NativeViewFocusChangeListener* listener) {
   ASSERT_FALSE(widget_focus_change_listener_);
   widget_focus_change_listener_ = listener;
-  WidgetFocusManager::GetInstance()->AddFocusChangeListener(listener);
+  NativeViewFocusManager::GetInstance()->AddFocusChangeListener(listener);
 }
 
-void FocusManagerTest::RemoveWidgetFocusChangeListener(
-    WidgetFocusChangeListener* listener) {
+void FocusManagerTest::RemoveNativeViewFocusChangeListener(
+    NativeViewFocusChangeListener* listener) {
   ASSERT_TRUE(widget_focus_change_listener_);
   ASSERT_EQ(widget_focus_change_listener_, listener);
-  WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(listener);
+  NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(listener);
   widget_focus_change_listener_ = nullptr;
 }
 
@@ -129,17 +129,17 @@ void TestFocusChangeListener::ClearFocusChanges() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// TestWidgetFocusChangeListener
+// TestNativeViewFocusChangeListener
 
-TestWidgetFocusChangeListener::TestWidgetFocusChangeListener() = default;
+TestNativeViewFocusChangeListener::TestNativeViewFocusChangeListener() = default;
 
-TestWidgetFocusChangeListener::~TestWidgetFocusChangeListener() = default;
+TestNativeViewFocusChangeListener::~TestNativeViewFocusChangeListener() = default;
 
-void TestWidgetFocusChangeListener::ClearFocusChanges() {
+void TestNativeViewFocusChangeListener::ClearFocusChanges() {
   focus_changes_.clear();
 }
 
-void TestWidgetFocusChangeListener::OnNativeFocusChanged(
+void TestNativeViewFocusChangeListener::OnNativeFocusChanged(
     gfx::NativeView focused_now) {
   focus_changes_.push_back(focused_now);
 }

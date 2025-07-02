@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash {

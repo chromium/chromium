@@ -20,13 +20,14 @@ void NativeFocusWatcher::SetEnabled(bool enabled) {
   }
   enabled_ = enabled;
   if (enabled_) {
-    views::WidgetFocusManager::GetInstance()->AddFocusChangeListener(this);
+    views::NativeViewFocusManager::GetInstance()->AddFocusChangeListener(this);
     aura::Window* active_window = window_util::GetActiveWindow();
     if (active_window) {
       SetWidget(views::Widget::GetWidgetForNativeWindow(active_window));
     }
   } else {
-    views::WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(this);
+    views::NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(
+        this);
     SetWidget(nullptr);
   }
 }

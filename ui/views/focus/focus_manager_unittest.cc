@@ -31,7 +31,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/focus/focus_manager_delegate.h"
 #include "ui/views/focus/focus_manager_factory.h"
-#include "ui/views/focus/widget_focus_manager.h"
+#include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/test/focus_manager_test.h"
 #include "ui/views/test/native_widget_factory.h"
@@ -174,13 +174,13 @@ TEST_F(FocusManagerTest, FocusChangeListener) {
   RemoveFocusChangeListener(&listener);
 }
 
-TEST_F(FocusManagerTest, WidgetFocusChangeListener) {
+TEST_F(FocusManagerTest, NativeViewFocusChangeListener) {
   // First, ensure the simulator is aware of the Widget created in SetUp() being
   // currently active.
   test::WidgetTest::SimulateNativeActivate(GetWidget());
 
-  TestWidgetFocusChangeListener widget_listener;
-  AddWidgetFocusChangeListener(&widget_listener);
+  TestNativeViewFocusChangeListener widget_listener;
+  AddNativeViewFocusChangeListener(&widget_listener);
 
   Widget::InitParams params1 = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
@@ -212,7 +212,7 @@ TEST_F(FocusManagerTest, WidgetFocusChangeListener) {
   EXPECT_EQ(gfx::NativeView(), widget_listener.focus_changes()[0]);
   EXPECT_EQ(native_view2, widget_listener.focus_changes()[1]);
 
-  RemoveWidgetFocusChangeListener(&widget_listener);
+  RemoveNativeViewFocusChangeListener(&widget_listener);
 }
 
 TEST_F(FocusManagerTest, CallsNormalAcceleratorTarget) {
@@ -1148,13 +1148,13 @@ TEST_F(FocusManagerTest, FocusRing) {
 // DesktopNativeWidgetAura and the bubble is a NativeWidgetAura. When focus
 // moves back from the bubble to the parent widget, ensure that the DNWA's aura
 // window is focused.
-class DesktopWidgetFocusManagerTest : public FocusManagerTest {
+class DesktopNativeViewFocusManagerTest : public FocusManagerTest {
  public:
-  DesktopWidgetFocusManagerTest() = default;
-  DesktopWidgetFocusManagerTest(const DesktopWidgetFocusManagerTest&) = delete;
-  DesktopWidgetFocusManagerTest& operator=(
-      const DesktopWidgetFocusManagerTest&) = delete;
-  ~DesktopWidgetFocusManagerTest() override = default;
+  DesktopNativeViewFocusManagerTest() = default;
+  DesktopNativeViewFocusManagerTest(const DesktopNativeViewFocusManagerTest&) = delete;
+  DesktopNativeViewFocusManagerTest& operator=(
+      const DesktopNativeViewFocusManagerTest&) = delete;
+  ~DesktopNativeViewFocusManagerTest() override = default;
 
   // FocusManagerTest:
   void SetUp() override {
@@ -1163,7 +1163,7 @@ class DesktopWidgetFocusManagerTest : public FocusManagerTest {
   }
 };
 
-TEST_F(DesktopWidgetFocusManagerTest, AnchoredDialogInDesktopNativeWidgetAura) {
+TEST_F(DesktopNativeViewFocusManagerTest, AnchoredDialogInDesktopNativeWidgetAura) {
   auto widget = std::make_unique<Widget>();
   Widget::InitParams params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);

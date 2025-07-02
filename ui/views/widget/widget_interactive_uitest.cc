@@ -1085,8 +1085,8 @@ TEST_F(WidgetTestInteractive, FullscreenMaximizedWindowBounds) {
 // Tests whether the focused window is set correctly when a modal window is
 // created and destroyed. When it is destroyed it should focus the owner window.
 TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
-  TestWidgetFocusChangeListener focus_listener;
-  WidgetFocusManager::GetInstance()->AddFocusChangeListener(&focus_listener);
+  TestNativeViewFocusChangeListener focus_listener;
+  NativeViewFocusManager::GetInstance()->AddFocusChangeListener(&focus_listener);
   const std::vector<gfx::NativeView>& focus_changes =
       focus_listener.focus_changes();
 
@@ -1140,7 +1140,7 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
   EXPECT_EQ(top_level_native_view, focus_changes[4]);
 
   top_level_widget->Close();
-  WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(&focus_listener);
+  NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(&focus_listener);
 }
 #endif
 
@@ -2111,8 +2111,8 @@ TEST_F(WidgetCaptureTest, GrabUngrab) {
 
 // Test that when opening a system-modal window, capture is released.
 TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
-  TestWidgetFocusChangeListener focus_listener;
-  WidgetFocusManager::GetInstance()->AddFocusChangeListener(&focus_listener);
+  TestNativeViewFocusChangeListener focus_listener;
+  NativeViewFocusManager::GetInstance()->AddFocusChangeListener(&focus_listener);
 
   // Create a top level widget.
   auto top_level_widget = std::make_unique<Widget>();
@@ -2144,7 +2144,7 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
   ShowSync(modal_dialog_widget);
 
   EXPECT_FALSE(top_level_widget->HasCapture());
-  WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(&focus_listener);
+  NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(&focus_listener);
 }
 
 // Regression test for http://crbug.com/382421 (Linux-Aura issue).

@@ -24,7 +24,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/native_window_tracker/native_window_tracker.h"
-#include "ui/views/focus/widget_focus_manager.h"
+#include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/widget_focus_observer.h"
@@ -42,10 +42,10 @@ namespace {
 // Basic observer for low-level activation changes. Relays when a widget
 // receives focus.
 class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier,
-                                      public WidgetFocusChangeListener {
+                                      public NativeViewFocusChangeListener {
  public:
   NativeViewWidgetFocusSupplier() {
-    observation_.Observe(WidgetFocusManager::GetInstance());
+    observation_.Observe(NativeViewFocusManager::GetInstance());
   }
   ~NativeViewWidgetFocusSupplier() override = default;
 
@@ -85,7 +85,7 @@ class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier,
   }
 
  private:
-  base::ScopedObservation<WidgetFocusManager, WidgetFocusChangeListener>
+  base::ScopedObservation<NativeViewFocusManager, NativeViewFocusChangeListener>
       observation_{this};
 };
 

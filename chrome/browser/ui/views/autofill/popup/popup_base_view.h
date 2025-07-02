@@ -20,7 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
-#include "ui/views/focus/widget_focus_manager.h"
+#include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -33,7 +33,7 @@ namespace autofill {
 // class should only be instantiated by sub-classes.
 class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
                       public views::WidgetDelegateView,
-                      public views::WidgetFocusChangeListener,
+                      public views::NativeViewFocusChangeListener,
                       public views::WidgetObserver {
   METADATA_HEADER(PopupBaseView, views::WidgetDelegateView)
 
@@ -108,7 +108,7 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
 
   class Widget;
 
-  // views::WidgetFocusChangeListener implementation.
+  // views::NativeViewFocusChangeListener implementation.
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
 
   // views::WidgetObserver implementation.
@@ -127,8 +127,8 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   content::WebContents* GetWebContents() const;
 
   // Scoped observation for focus events.
-  base::ScopedObservation<views::WidgetFocusManager,
-                          views::WidgetFocusChangeListener>
+  base::ScopedObservation<views::NativeViewFocusManager,
+                          views::NativeViewFocusChangeListener>
       focus_observation_{this};
 
   // Controller for this popup. Weak reference.

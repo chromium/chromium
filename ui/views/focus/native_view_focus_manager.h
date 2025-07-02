@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_FOCUS_WIDGET_FOCUS_MANAGER_H_
-#define UI_VIEWS_FOCUS_WIDGET_FOCUS_MANAGER_H_
+#ifndef UI_VIEWS_FOCUS_NATIVE_VIEW_FOCUS_MANAGER_H_
+#define UI_VIEWS_FOCUS_NATIVE_VIEW_FOCUS_MANAGER_H_
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -18,27 +18,27 @@ namespace views {
 // will be invoked for all native focus changes across the entire Chrome
 // application.  FocusChangeListeners are only called for changes within the
 // children of a single top-level native-view.
-class WidgetFocusChangeListener {
+class NativeViewFocusChangeListener {
  public:
   virtual void OnNativeFocusChanged(gfx::NativeView focused_now) = 0;
 
  protected:
-  virtual ~WidgetFocusChangeListener() = default;
+  virtual ~NativeViewFocusChangeListener() = default;
 };
 
-class VIEWS_EXPORT WidgetFocusManager {
+class VIEWS_EXPORT NativeViewFocusManager {
  public:
   // Returns the singleton instance.
-  static WidgetFocusManager* GetInstance();
+  static NativeViewFocusManager* GetInstance();
 
-  WidgetFocusManager(const WidgetFocusManager&) = delete;
-  WidgetFocusManager& operator=(const WidgetFocusManager&) = delete;
-  ~WidgetFocusManager();
+  NativeViewFocusManager(const NativeViewFocusManager&) = delete;
+  NativeViewFocusManager& operator=(const NativeViewFocusManager&) = delete;
+  ~NativeViewFocusManager();
 
-  // Adds/removes a WidgetFocusChangeListener |listener| to the set of
+  // Adds/removes a NativeViewFocusChangeListener |listener| to the set of
   // active listeners.
-  void AddFocusChangeListener(WidgetFocusChangeListener* listener);
-  void RemoveFocusChangeListener(WidgetFocusChangeListener* listener);
+  void AddFocusChangeListener(NativeViewFocusChangeListener* listener);
+  void RemoveFocusChangeListener(NativeViewFocusChangeListener* listener);
 
   // Called when native-focus shifts within, or off, a widget. |focused_now| is
   // null when focus is lost.
@@ -52,11 +52,11 @@ class VIEWS_EXPORT WidgetFocusManager {
 
  private:
   class Owner;
-  friend class base::NoDestructor<WidgetFocusManager>;
+  friend class base::NoDestructor<NativeViewFocusManager>;
 
-  WidgetFocusManager();
+  NativeViewFocusManager();
 
-  base::ObserverList<WidgetFocusChangeListener>::Unchecked
+  base::ObserverList<NativeViewFocusChangeListener>::Unchecked
       focus_change_listeners_;
 
   bool enabled_ = true;
@@ -81,19 +81,19 @@ namespace base {
 
 // Specialization for use with base::ScopedObservation:
 template <>
-struct ScopedObservationTraits<views::WidgetFocusManager,
-                               views::WidgetFocusChangeListener> {
+struct ScopedObservationTraits<views::NativeViewFocusManager,
+                               views::NativeViewFocusChangeListener> {
  public:
-  static void AddObserver(views::WidgetFocusManager* source,
-                          views::WidgetFocusChangeListener* observer) {
+  static void AddObserver(views::NativeViewFocusManager* source,
+                          views::NativeViewFocusChangeListener* observer) {
     source->AddFocusChangeListener(observer);
   }
-  static void RemoveObserver(views::WidgetFocusManager* source,
-                             views::WidgetFocusChangeListener* observer) {
+  static void RemoveObserver(views::NativeViewFocusManager* source,
+                             views::NativeViewFocusChangeListener* observer) {
     source->RemoveFocusChangeListener(observer);
   }
 };
 
 }  // namespace base
 
-#endif  // UI_VIEWS_FOCUS_WIDGET_FOCUS_MANAGER_H_
+#endif  // UI_VIEWS_FOCUS_NATIVE_VIEW_FOCUS_MANAGER_H_

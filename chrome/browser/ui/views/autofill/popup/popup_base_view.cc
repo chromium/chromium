@@ -299,7 +299,7 @@ bool PopupBaseView::DoShow() {
   // immediate hiding of the popup). Only start observing after shown.
   if (initialize_widget) {
     CHECK(!focus_observation_.IsObserving());
-    focus_observation_.Observe(views::WidgetFocusManager::GetInstance());
+    focus_observation_.Observe(views::NativeViewFocusManager::GetInstance());
   }
 
   return true;

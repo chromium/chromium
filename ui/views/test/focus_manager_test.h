@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/focus/widget_focus_manager.h"
+#include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -51,8 +51,8 @@ class FocusManagerTest : public ViewsTestBase, public WidgetDelegate {
 
   void AddFocusChangeListener(FocusChangeListener* listener);
   void RemoveFocusChangeListener(FocusChangeListener* listener);
-  void AddWidgetFocusChangeListener(WidgetFocusChangeListener* listener);
-  void RemoveWidgetFocusChangeListener(WidgetFocusChangeListener* listener);
+  void AddNativeViewFocusChangeListener(NativeViewFocusChangeListener* listener);
+  void RemoveNativeViewFocusChangeListener(NativeViewFocusChangeListener* listener);
 
   // For testing FocusManager::RotatePaneFocus().
   void SetAccessiblePanes(
@@ -62,7 +62,7 @@ class FocusManagerTest : public ViewsTestBase, public WidgetDelegate {
   std::unique_ptr<Widget> widget_;
   raw_ptr<View> contents_view_ = nullptr;
   raw_ptr<FocusChangeListener> focus_change_listener_ = nullptr;
-  raw_ptr<WidgetFocusChangeListener> widget_focus_change_listener_ = nullptr;
+  raw_ptr<NativeViewFocusChangeListener> widget_focus_change_listener_ = nullptr;
   std::vector<raw_ptr<View, VectorExperimental>> accessible_panes_;
 };
 
@@ -91,22 +91,22 @@ class TestFocusChangeListener : public FocusChangeListener {
 };
 
 // Use to record widget focus change notifications.
-class TestWidgetFocusChangeListener : public WidgetFocusChangeListener {
+class TestNativeViewFocusChangeListener : public NativeViewFocusChangeListener {
  public:
-  TestWidgetFocusChangeListener();
+  TestNativeViewFocusChangeListener();
 
-  TestWidgetFocusChangeListener(const TestWidgetFocusChangeListener&) = delete;
-  TestWidgetFocusChangeListener& operator=(
-      const TestWidgetFocusChangeListener&) = delete;
+  TestNativeViewFocusChangeListener(const TestNativeViewFocusChangeListener&) = delete;
+  TestNativeViewFocusChangeListener& operator=(
+      const TestNativeViewFocusChangeListener&) = delete;
 
-  ~TestWidgetFocusChangeListener() override;
+  ~TestNativeViewFocusChangeListener() override;
 
   const std::vector<gfx::NativeView>& focus_changes() const {
     return focus_changes_;
   }
   void ClearFocusChanges();
 
-  // Overridden from WidgetFocusChangeListener:
+  // Overridden from NativeViewFocusChangeListener:
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
 
  private:

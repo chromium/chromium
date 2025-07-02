@@ -19,7 +19,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
-#include "ui/views/focus/widget_focus_manager.h"  // nogncheck
+#include "ui/views/focus/native_view_focus_manager.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -41,7 +41,7 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
 #if BUILDFLAG(IS_MAC)
                            public KeyWindowNotifier::Observer,
 #elif defined(TOOLKIT_VIEWS)
-                           public views::WidgetFocusChangeListener,
+                           public views::NativeViewFocusChangeListener,
 #endif
                            public WindowControllerListObserver {
  public:

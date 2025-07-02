@@ -21,7 +21,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/focus/focus_manager_delegate.h"
 #include "ui/views/focus/focus_search.h"
-#include "ui/views/focus/widget_focus_manager.h"
+#include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
@@ -402,8 +402,8 @@ void FocusManager::StoreFocusedView(bool clear_native_focus) {
   if (clear_native_focus) {
     // Temporarily disable notification.  ClearFocus() will set the focus to the
     // main browser window.  This extra focus bounce which happens during
-    // deactivation can confuse registered WidgetFocusListeners, as the focus
-    // is not changing due to a user-initiated event.
+    // deactivation can confuse registered NativeViewFocusListeners, as the
+    // focus is not changing due to a user-initiated event.
     AutoNativeNotificationDisabler local_notification_disabler;
     // ClearFocus() also stores the focused view.
     ClearFocus();
