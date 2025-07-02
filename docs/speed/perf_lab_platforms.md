@@ -76,7 +76,9 @@
 ### Fuchsia
 
  * [fuchsia-perf-nsn](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-nsn).
+ * [fuchsia-perf-nsn-pgo](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-nsn-pgo).
  * [fuchsia-perf-shk](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-shk).
+ * [fuchsia-perf-shk-pgo](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-shk-pgo).
 
 ### Linux
 

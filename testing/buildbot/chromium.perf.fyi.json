@@ -135,6 +135,54 @@
       }
     ]
   },
+  "fuchsia-perf-nsn-pgo": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "-v",
+          "--browser=web-engine-shell",
+          "--upload-results",
+          "--test-shard-map-filename=fuchsia-perf-nsn-pgo_map.json",
+          "--ignore-benchmark-exit-code",
+          "--output-format=histograms",
+          "--experimental-tbmv3-metrics",
+          "-d",
+          "--os-check=ignore"
+        ],
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_web_engine_test_suite",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "cpu": null,
+            "device_type": "Nelson",
+            "os": "Fuchsia",
+            "pool": "chrome.tests"
+          },
+          "expiration": 7200,
+          "hard_timeout": 14400,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 1
+        },
+        "test": "performance_web_engine_test_suite",
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
   "fuchsia-perf-shk": {
     "isolated_scripts": [
       {
@@ -144,6 +192,54 @@
           "--browser=web-engine-shell",
           "--upload-results",
           "--test-shard-map-filename=fuchsia-perf-shk_map.json",
+          "--ignore-benchmark-exit-code",
+          "--output-format=histograms",
+          "--experimental-tbmv3-metrics",
+          "-d",
+          "--os-check=ignore"
+        ],
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_web_engine_test_suite",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "cpu": null,
+            "device_type": "Sherlock",
+            "os": "Fuchsia",
+            "pool": "chrome.tests"
+          },
+          "expiration": 7200,
+          "hard_timeout": 14400,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 1
+        },
+        "test": "performance_web_engine_test_suite",
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
+  "fuchsia-perf-shk-pgo": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "-v",
+          "--browser=web-engine-shell",
+          "--upload-results",
+          "--test-shard-map-filename=fuchsia-perf-shk-pgo_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
           "--experimental-tbmv3-metrics",
