@@ -9042,7 +9042,7 @@ crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/network/preview-searchab
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Failure Pass Timeout ]
 
 # Gardener 2025-01-21
-crbug.com/427585592 external/wpt/media-source/waiting-for-audio.html [ Timeout ]
+crbug.com/427585592 external/wpt/media-source/waiting-for-audio.html [ Failure Pass Timeout ]
 crbug.com/390565845 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/waiting-for-audio.html [ Crash Failure Pass Timeout ]
 
 # Gardener 2025-02-04
