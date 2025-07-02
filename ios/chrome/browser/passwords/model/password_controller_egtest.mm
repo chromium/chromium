@@ -247,7 +247,8 @@ void LoginOnUff() {
     config.relaunch_policy = ForceRelaunchByKilling;
   }
 
-  if ([self isRunningTest:@selector(testPasswordBreachEventReported)]) {
+  if ([self
+          isRunningTest:@selector(DISABLED_testPasswordBreachEventReported)]) {
     config.features_enabled.push_back(
         password_manager::features::kMarkAllCredentialsAsLeaked);
   }
@@ -290,7 +291,8 @@ void LoginOnUff() {
 - (std::optional<std::string_view>)enterpriseReportingEventForTest {
   if ([self isRunningTest:@selector(FLAKY_testLoginEventReported)]) {
     return "loginEvent";
-  } else if ([self isRunningTest:@selector(testPasswordBreachEventReported)]) {
+  } else if ([self isRunningTest:@selector
+                   (DISABLED_testPasswordBreachEventReported)]) {
     return "passwordBreachEvent";
   }
   return std::nullopt;
@@ -836,7 +838,8 @@ void LoginOnUff() {
 }
 
 // Tests that a password breach event is reported to an enterprise connector.
-- (void)testPasswordBreachEventReported {
+// TODO(crbug.com/429140546): flaky on chromium/ci/ios-simulator-noncq.
+- (void)DISABLED_testPasswordBreachEventReported {
   [self loadLoginPage];
 
   // Simulate login.
