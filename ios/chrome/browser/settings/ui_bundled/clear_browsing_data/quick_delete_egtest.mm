@@ -573,6 +573,12 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE))]
       performAction:grey_tap()];
 
+  // TODO(crbug.com/428928323): Investigate why the keyboard appears and remove
+  // this workaround when it's not needed anymore.
+  // On iOS 26, the keyboard appears when the 'Time Range' button is tapped and
+  // it hides the elements behind. Close the keyboard by typing a return key.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
+
   // Tap on the last 15 minutes option on the popup menu.
   [[EarlGrey
       selectElementWithMatcher:
