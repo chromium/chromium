@@ -549,15 +549,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="GVM_INVALID_ATTACH"/>
 </enum>
 
-<enum name="BadMessageReasonNaCl">
-<!-- Generated from components/nacl/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="0" label="NFH_OPEN_EXECUTABLE_BAD_ROUTING_ID"/>
-  <int value="1" label="NHMF_LAUNCH_CONTINUATION_BAD_ROUTING_ID"/>
-  <int value="2" label="NHMF_GET_NEXE_FD_BAD_URL"/>
-</enum>
-
 <enum name="BadMessageReasonPasswordManager">
 <!-- Generated from components/password_manager/content/browser/bad_message.h.
 Called by update_bad_message_reasons.py.-->

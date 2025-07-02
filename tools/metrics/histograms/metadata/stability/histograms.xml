@@ -294,21 +294,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.BadMessageTerminated.NaCl"
-    enum="BadMessageReasonNaCl" expires_after="never">
-<!-- expires-never: Monitoring renderer kills triggered by NaCl. -->
-
-  <owner>creis@chromium.org</owner>
-  <owner>jamescook@chromium.org</owner>
-  <summary>
-    Count of processes killed because they sent a NaCl IPC that couldn't be
-    properly handled. Categories are the reasons (code locations) for the kills.
-
-    Warning: this histogram was expired from 2020-11-01 to 2021-12-07; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Stability.BadMessageTerminated.PasswordManager"
     enum="BadMessageReasonPasswordManager" expires_after="never">
 <!-- expires-never: Monitoring renderer kills triggered by password manager. -->
