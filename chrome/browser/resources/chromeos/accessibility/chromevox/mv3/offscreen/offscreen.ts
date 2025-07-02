@@ -18,6 +18,31 @@ const TARGET = BridgeConstants.Offscreen.TARGET;
 const Action = BridgeConstants.Offscreen.Action;
 
 /**
+ * Tracks the state of ChromeVox initialization.
+ */
+class OffscreenChromeVoxState {
+  static instance?: OffscreenChromeVoxState;
+  ready: boolean = false;
+
+  constructor() {
+    BridgeHelper.registerHandler(
+        TARGET, Action.CHROMEVOX_READY, () => {this.ready = true});
+  }
+
+  static init(): void {
+    if (OffscreenChromeVoxState.instance) {
+      throw 'Error: trying to create two instances of singleton ' +
+          'OffscreenChromeVoxState.';
+    }
+    OffscreenChromeVoxState.instance = new OffscreenChromeVoxState();
+  }
+
+  static isReady(): boolean {
+    return this.instance?.ready || false;
+  };
+}
+
+/**
  * Handles keydown and keyup events on the document and sends serialized key
  * event data to be processed in the service worker's BackgroundKeyboardHandler.
  */
@@ -201,8 +226,10 @@ class OffscreenSpeechSynthesis {
   constructor() {
     if (window.speechSynthesis) {
       window.speechSynthesis.onvoiceschanged = () => {
-        BackgroundBridge.LocaleOutputHelper.onVoicesChanged();
-        BackgroundBridge.PrimaryTts.onVoicesChanged();
+        if (OffscreenChromeVoxState.isReady()) {
+          BackgroundBridge.LocaleOutputHelper.onVoicesChanged();
+          BackgroundBridge.PrimaryTts.onVoicesChanged();
+        }
       };
     }
 
@@ -302,6 +329,11 @@ class OffscreenMathHandler {
     return SRE.walk(mathml);
   }
 }
+
+
+// OffscreenChromeVoxState.init() must be called before ChromeVox
+// finishes initialization.
+OffscreenChromeVoxState.init();
 
 OffscreenBackgroundKeyboardHandler.init();
 OffscreenLearnModeKeyboardHandler.init();

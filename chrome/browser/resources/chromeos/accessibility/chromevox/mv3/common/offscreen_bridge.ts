@@ -21,6 +21,11 @@ const OffscreenTestTarget = BridgeConstants.OffscreenTest.TARGET;
 const OffscreenTestAction = BridgeConstants.OffscreenTest.Action;
 
 export class OffscreenBridge {
+  static chromeVoxReady(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        OffscreenTarget, OffscreenAction.CHROMEVOX_READY);
+  }
+
   static earconCancelProgress(): Promise<void> {
     return BridgeHelper.sendMessage(
         OffscreenTarget, OffscreenAction.EARCON_CANCEL_PROGRESS);
