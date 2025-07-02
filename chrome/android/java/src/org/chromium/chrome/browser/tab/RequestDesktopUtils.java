@@ -17,11 +17,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -210,7 +210,7 @@ public class RequestDesktopUtils {
      */
     static boolean shouldDefaultEnableGlobalSetting(double displaySizeInInches, Context context) {
         // Desktop Android always requests desktop sites.
-        if (DeviceInfo.isDesktop()) {
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
             return true;
         }
 
@@ -289,7 +289,7 @@ public class RequestDesktopUtils {
         boolean isOnExternalDisplay = isOnExternalDisplay(activity);
         if (isOnExternalDisplay
                 || smallestScreenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
-                || DeviceInfo.isDesktop()) {
+                || BuildConfig.IS_DESKTOP_ANDROID) {
             return;
         }
         PrefService prefService = UserPrefs.get(profile);
@@ -312,7 +312,7 @@ public class RequestDesktopUtils {
 
         // Desktop devices always request desktop sites so there's no need to show a message to
         // the user.
-        if (DeviceInfo.isDesktop()) {
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
             return false;
         }
 

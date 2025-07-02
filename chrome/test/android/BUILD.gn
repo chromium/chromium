@@ -524,7 +524,7 @@ android_library("chrome_java_test_support_common") {
     "javatests/src/org/chromium/chrome/browser/tab/MockTab.java",
     "javatests/src/org/chromium/chrome/browser/tab/MockTabAttributes.java",
     "javatests/src/org/chromium/chrome/browser/tab/TabTestUtils.java",
-    "javatests/src/org/chromium/chrome/test/OverrideContextWrapperTestRule.java",
+    "javatests/src/org/chromium/chrome/test/AutomotiveContextWrapperTestRule.java",
     "javatests/src/org/chromium/chrome/test/ChromeJUnit4ClassRunner.java",
     "javatests/src/org/chromium/chrome/test/ChromeJUnit4RunnerDelegate.java",
     "javatests/src/org/chromium/chrome/test/partnercustomizations/TestPartnerBrowserCustomizationsDelayedProvider.java",

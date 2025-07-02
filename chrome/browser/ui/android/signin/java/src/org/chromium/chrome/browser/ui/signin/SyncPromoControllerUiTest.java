@@ -53,7 +53,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
-import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -71,8 +71,8 @@ import org.chromium.ui.test.util.RenderTestRule;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SyncPromoControllerUiTest {
     @Rule
-    public OverrideContextWrapperTestRule mAutomotiveContextWrapperTestRule =
-            new OverrideContextWrapperTestRule();
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
             new AccountPickerBottomSheetStrings.Builder(

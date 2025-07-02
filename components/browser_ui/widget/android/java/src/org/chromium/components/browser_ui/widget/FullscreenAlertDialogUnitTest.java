@@ -23,7 +23,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeBaseLayout;
 
 /** Unit test for {@link FullscreenAlertDialog}. */
@@ -37,8 +37,8 @@ public class FullscreenAlertDialogUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public OverrideContextWrapperTestRule mAutomotiveRule =
-            new OverrideContextWrapperTestRule();
+    public AutomotiveContextWrapperTestRule mAutomotiveRule =
+            new AutomotiveContextWrapperTestRule();
 
     private Activity mActivity;
 

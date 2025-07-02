@@ -30,8 +30,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.hats.TestSurveyUtils;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
@@ -59,7 +59,8 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
-    public OverrideContextWrapperTestRule mAutomotiveRule = new OverrideContextWrapperTestRule();
+    public AutomotiveContextWrapperTestRule mAutomotiveRule =
+            new AutomotiveContextWrapperTestRule();
 
     @Rule
     public TestSurveyUtils.TestSurveyComponentRule mTestSurveyComponentRule =

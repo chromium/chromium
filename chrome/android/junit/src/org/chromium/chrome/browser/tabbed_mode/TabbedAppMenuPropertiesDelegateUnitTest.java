@@ -35,7 +35,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.DeviceInfo;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -59,6 +58,7 @@ import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ai.AiAssistantService;
@@ -131,7 +131,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
-import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
@@ -184,10 +183,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public PausedExecutorTestRule mExecutorRule = new PausedExecutorTestRule();
-
-    @Rule
-    public OverrideContextWrapperTestRule mOverrideContextWrapperTestRule =
-            new OverrideContextWrapperTestRule();
 
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mTab;
@@ -620,7 +615,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_translate);
         expectedItems.add(R.id.universal_install);
         expectedTitles.add(R.string.menu_add_to_homescreen);
-        if (!DeviceInfo.isDesktop()) {
+        if (!BuildConfig.IS_DESKTOP_ANDROID) {
             expectedItems.add(R.id.request_desktop_site_id);
             expectedTitles.add(R.string.menu_request_desktop_site);
         }
@@ -695,7 +690,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_translate);
         expectedItems.add(R.id.universal_install);
         expectedTitles.add(R.string.menu_add_to_homescreen);
-        if (!DeviceInfo.isDesktop()) {
+        if (!BuildConfig.IS_DESKTOP_ANDROID) {
             expectedItems.add(R.id.request_desktop_site_id);
             expectedTitles.add(R.string.menu_request_desktop_site);
         }
@@ -723,7 +718,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw320dp")
     public void testPageMenuItems_DesktopAndroid() {
-        mOverrideContextWrapperTestRule.setIsDesktop(true);
+        BuildConfig.IS_DESKTOP_ANDROID = true;
         setUpMocksForPageMenu();
         setMenuOptions(
                 new MenuOptions()
@@ -984,7 +979,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.divider_line_id,
                                 R.id.preferences_id,
                                 R.id.help_id));
-        if (!DeviceInfo.isDesktop()) {
+        if (!BuildConfig.IS_DESKTOP_ANDROID) {
             expectedItems.add(R.id.request_desktop_site_id);
         }
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
@@ -1061,7 +1056,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.managed_by_divider_line_id,
                                 R.id.managed_by_menu_id));
 
-        if (!DeviceInfo.isDesktop()) {
+        if (!BuildConfig.IS_DESKTOP_ANDROID) {
             expectedItems.add(R.id.request_desktop_site_id);
         }
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
@@ -1111,7 +1106,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.menu_item_content_filter_divider_line_id,
                                 R.id.menu_item_content_filter_help_center_id));
 
-        if (!DeviceInfo.isDesktop()) {
+        if (!BuildConfig.IS_DESKTOP_ANDROID) {
             expectedItems.add(R.id.request_desktop_site_id);
         }
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {

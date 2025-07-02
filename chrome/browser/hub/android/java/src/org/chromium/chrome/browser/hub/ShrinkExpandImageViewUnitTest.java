@@ -40,7 +40,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 
 /** Tests for {@link RunOnNextLayoutDelegate}. */
 // TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
@@ -50,8 +50,8 @@ public class ShrinkExpandImageViewUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public OverrideContextWrapperTestRule mAutomotiveContextWrapperTestRule =
-            new OverrideContextWrapperTestRule();
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;

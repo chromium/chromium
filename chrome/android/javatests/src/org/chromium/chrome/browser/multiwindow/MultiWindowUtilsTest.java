@@ -38,8 +38,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -56,8 +56,8 @@ public class MultiWindowUtilsTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
-    public OverrideContextWrapperTestRule mAutomotiveContextWrapperTestRule =
-            new OverrideContextWrapperTestRule();
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     @Mock private MultiWindowUtils mMultiWindowUtils;
     private WebPageStation mPage;

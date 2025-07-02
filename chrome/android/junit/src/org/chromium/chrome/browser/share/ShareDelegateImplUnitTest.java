@@ -60,7 +60,7 @@ import org.chromium.chrome.browser.share.android_share_sheet.TabGroupSharingCont
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -88,8 +88,8 @@ public class ShareDelegateImplUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public OverrideContextWrapperTestRule mAutomotiveContextWrapperTestRule =
-            new OverrideContextWrapperTestRule();
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     @Mock private Context mContext;
     @Mock private RenderFrameHost mRenderFrameHost;

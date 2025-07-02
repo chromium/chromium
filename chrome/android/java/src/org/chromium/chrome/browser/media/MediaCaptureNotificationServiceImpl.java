@@ -18,10 +18,10 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -188,7 +188,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                     }
                 }
             }
-            if (DeviceInfo.isDesktop()) {
+            if (BuildConfig.IS_DESKTOP_ANDROID) {
                 if (mNotifications.size() > 1 && mNotifications.firstKey() == notificationId) {
                     // For large screen device, we use the previous notification to update
                     // foreground
@@ -203,7 +203,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
             }
             mNotificationManager.cancel(NOTIFICATION_NAMESPACE, notificationId);
             mNotificationsType.delete(notificationId);
-            if (DeviceInfo.isDesktop()) {
+            if (BuildConfig.IS_DESKTOP_ANDROID) {
                 mNotifications.remove(notificationId);
             }
             updateSharedPreferencesEntry(notificationId, true);
@@ -248,7 +248,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                         appContext.getString(R.string.app_name),
                         contentIntent,
                         stopIntent);
-        if (DeviceInfo.isDesktop()) {
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
             // For large screen device, we use the latest notification to start or update
             // the foreground service.
             startOrUpdateForegroundService(notificationId, notification, mediaType);
@@ -256,7 +256,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
             mNotificationManager.notify(notification);
         }
         mNotificationsType.put(notificationId, mediaType);
-        if (DeviceInfo.isDesktop()) {
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
             mNotifications.put(notificationId, notification);
         }
         updateSharedPreferencesEntry(notificationId, false);

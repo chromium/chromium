@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -282,7 +282,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     private void maybeAddCollaborateFirstPartyOption() {
-        if (DeviceInfo.isDesktop()) {
+        if (BuildConfig.IS_DESKTOP_ANDROID) {
             return;
         }
         FirstPartyOption option = createCollaborateFirstPartyOption();
@@ -317,7 +317,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
 
     private void maybeAddPrintFirstPartyOption() {
         // For the desktop case, the Print action will be showed in the main menu.
-        if (!DeviceInfo.isDesktop()
+        if (!BuildConfig.IS_DESKTOP_ANDROID
                 && mTabProvider.hasValue()
                 && UserPrefs.get(mProfile).getBoolean(Pref.PRINTING_ENABLED)) {
             mOrderedFirstPartyOptions.add(createPrintingFirstPartyOption());
