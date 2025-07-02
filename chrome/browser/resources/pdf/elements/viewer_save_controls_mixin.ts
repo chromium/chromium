@@ -29,10 +29,6 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
         hasInk2Edits: {type: Boolean},
         // </if>
         isFormFieldFocused: {type: Boolean},
-        menuOpen_: {
-          type: Boolean,
-          reflect: true,
-        },
       };
     }
 
@@ -42,7 +38,6 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     accessor hasInk2Edits: boolean = false;
     // </if>
     accessor isFormFieldFocused: boolean = false;
-    private accessor menuOpen_: boolean = false;
     private waitForFormFocusChange_: PromiseResolver<boolean>|null = null;
 
 
@@ -73,14 +68,6 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
       return this.waitForFormFocusChange_.promise;
     }
 
-    isMenuOpen(): boolean {
-      return this.menuOpen_;
-    }
-
-    closeMenu() {
-      this.getMenu().close();
-    }
-
     /**
      * Client code should override this method to return the appropriate
      * CrActionMenuElement.
@@ -95,10 +82,6 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
      */
     getSaveButton(): CrIconButtonElement {
       assertNotReached();
-    }
-
-    onOpenChanged(e: CustomEvent<{value: boolean}>) {
-      this.menuOpen_ = e.detail.value;
     }
 
     onSaveClick() {
@@ -172,7 +155,6 @@ export interface ViewerSaveControlsMixinInterface {
   isFormFieldFocused: boolean;
   getMenu(): CrActionMenuElement;
   getSaveButton(): CrIconButtonElement;
-  onOpenChanged(e: CustomEvent<{value: boolean}>): void;
   onSaveClick(): void;
   onSaveEditedClick(): void;
   onSaveOriginalClick(): void;

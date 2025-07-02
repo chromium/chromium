@@ -12,7 +12,7 @@ export function getHtml(this: ViewerDownloadControlsElement) {
     @click="${this.onSaveClick}" aria-label="$i18n{tooltipDownload}"
     aria-haspopup="${this.saveButtonHasPopup()}"
     title="$i18n{tooltipDownload}"></cr-icon-button>
-<cr-action-menu id="menu" @open-changed="${this.onOpenChanged}">
+<cr-action-menu id="menu">
   <button id="save-edited" class="dropdown-item"
       @click="${this.onSaveEditedClick}">
     $i18n{downloadEdited}
