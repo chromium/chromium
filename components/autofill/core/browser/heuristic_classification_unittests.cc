@@ -636,6 +636,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillEnableExpirationDateImprovements,
       features::kAutofillSupportLastNamePrefix,
       features::kAutofillEnableLoyaltyCardsFilling,
+      features::kAutofillEnableEmailOrLoyaltyCardsFilling,
       // Other improvements.
       features::kAutofillEnableCacheForRegexMatching,
       features::kAutofillEnableSupportForParsingWithSharedLabels,
