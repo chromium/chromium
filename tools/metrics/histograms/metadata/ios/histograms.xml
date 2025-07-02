@@ -5720,9 +5720,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpent" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2026-07-02">
   <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
+  <owner>lpromero@google.com</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
     The time the Tab switcher is displayed to the user. This histogram will
@@ -5732,9 +5732,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpentOpeningExistingTab" units="ms"
-    expires_after="2026-11-17">
+    expires_after="2026-07-02">
   <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
+  <owner>lpromero@google.com</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
     The time it takes for a user to open an existing tab. If the user opens a
@@ -5743,8 +5743,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpentScrolling" units="ms"
-    expires_after="2025-07-27">
-  <owner>lpromero@chromium.org</owner>
+    expires_after="2026-07-02">
+  <owner>lpromero@google.com</owner>
   <owner>alionadangla@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
