@@ -69,7 +69,7 @@ SkBitmap LoadImageFromTestFile(
   base::FilePath image_path =
       chrome_src_dir.Append(FILE_PATH_LITERAL("chrome/test/data"))
           .Append(relative_path_from_chrome_data);
-  EXPECT_TRUE(base::PathExists(image_path));
+  EXPECT_TRUE(base::PathExists(image_path)) << image_path;
 
   std::optional<std::vector<uint8_t>> image_data =
       base::ReadFileToBytes(image_path);
@@ -764,6 +764,16 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
     }
   }
 
+  // Verify that OCR is not considered busy as there is only one connected
+  // client.
+  {
+    base::test::TestFuture<bool> future;
+
+    ocr()->IsOCRBusy(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_FALSE(future.Get<bool>());
+  }
+
   for (auto& future : futures) {
     ASSERT_TRUE(future.Wait());
     auto& results = future.Get<mojom::VisualAnnotationPtr>();
@@ -858,6 +868,93 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   if (base::TimeTicks::Now() - start_time > kResourceMeasurementInterval * 2) {
     histograms.ExpectTotalCount("Accessibility.OCR.Service.MaxMemoryLoad", 1);
   }
+
+  // Expect no OCR mode change.
+  histograms.ExpectUniqueSample("Accessibility.ScreenAI.OCR.ModeSwitch", 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
+                       PerformOCRMultipleClientsLightMode) {
+  base::HistogramTester histograms;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Create two OCR clients.
+  scoped_refptr<OpticalCharacterRecognizer> ocr_clients[2];
+  {
+    base::test::TestFuture<bool> futures[2];
+
+    ocr_clients[0] = OpticalCharacterRecognizer::CreateWithStatusCallback(
+        browser()->profile(), mojom::OcrClientType::kTest,
+        futures[0].GetCallback());
+    ocr_clients[1] = OpticalCharacterRecognizer::CreateWithStatusCallback(
+        browser()->profile(), mojom::OcrClientType::kTest,
+        futures[1].GetCallback());
+
+    ASSERT_TRUE(futures[0].Wait());
+    ASSERT_TRUE(futures[1].Wait());
+    ASSERT_TRUE(futures[0].Get<bool>());
+    ASSERT_TRUE(futures[1].Get<bool>());
+  }
+
+  // Load files.
+  SkBitmap chinese_bitmap = LoadImageFromTestFile(
+      base::FilePath(FILE_PATH_LITERAL("ocr")).AppendASCII("chinese.png"));
+  SkBitmap english_bitmap =
+      LoadImageFromTestFile(base::FilePath(FILE_PATH_LITERAL("ocr"))
+                                .AppendASCII("simple_text_only_sample.png"));
+
+  // Set Light mode on the second client.
+  ocr_clients[1]->SetOCRLightMode(true);
+
+  // Send both bitmaps from both clients and wait for completion.
+  {
+    base::test::TestFuture<mojom::VisualAnnotationPtr> result_futures[4];
+
+    ocr_clients[0]->PerformOCR(english_bitmap, result_futures[0].GetCallback());
+    ocr_clients[1]->PerformOCR(english_bitmap, result_futures[1].GetCallback());
+    ocr_clients[0]->PerformOCR(chinese_bitmap, result_futures[2].GetCallback());
+    ocr_clients[1]->PerformOCR(chinese_bitmap, result_futures[3].GetCallback());
+    EXPECT_TRUE(result_futures[3].Wait());
+
+    // TODO(crbug.com/412553116): After library is updated to 140.0, verify that
+    // Chinese on OCR client 1 is not recognized, and add test scenario where
+    // one client switches between light and normal.
+  }
+
+  // Verify that the both clients consider OCR busy as there is another
+  // connected client.
+  {
+    base::test::TestFuture<bool> features[2];
+
+    ocr_clients[0]->IsOCRBusy(features[0].GetCallback());
+    ocr_clients[1]->IsOCRBusy(features[1].GetCallback());
+
+    EXPECT_TRUE(features[0].Wait());
+    EXPECT_TRUE(features[1].Wait());
+    EXPECT_TRUE(features[0].Get<bool>());
+    EXPECT_TRUE(features[1].Get<bool>());
+  }
+
+  // Disconnect clients and wait for the service to shutdown and store metrics.
+  ocr_clients[0].reset();
+  ocr_clients[1].reset();
+  screen_ai::ScreenAIServiceRouter* router =
+      ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile());
+  base::test::TestFuture<void> future;
+  WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/3);
+  ASSERT_TRUE(future.Wait());
+  ASSERT_FALSE(router->IsProcessRunningForTesting(
+      screen_ai::ScreenAIServiceRouter::Service::kOCR));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // Verify there has been three switches between light and normal mode. The
+  // actual number may differ based on mojo queue handling, but at least one
+  // should be recorded.
+  histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.ModeSwitch", 0, 0);
+  EXPECT_GT(
+      histograms.GetAllSamples("Accessibility.ScreenAI.OCR.ModeSwitch").size(),
+      0);
 }
 
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !

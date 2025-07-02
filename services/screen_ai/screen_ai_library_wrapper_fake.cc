@@ -32,6 +32,8 @@ bool ScreenAILibraryWrapperFake::InitOCR() {
   return true;
 }
 
+void ScreenAILibraryWrapperFake::SetOCRLightMode(bool enabled) {}
+
 bool ScreenAILibraryWrapperFake::InitMainContentExtraction() {
   return true;
 }

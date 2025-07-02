@@ -3294,6 +3294,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.OCR.ModeSwitch" units="count"
+    expires_after="2026-06-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of times that OCR mode was switched between light and
+    normal during lifetime of the service. It's recorded only when service is
+    shutting down due to being idle.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF"
     enum="LocaleCodeBCP47" expires_after="2026-06-01">
   <owner>rhalavati@chromium.org</owner>

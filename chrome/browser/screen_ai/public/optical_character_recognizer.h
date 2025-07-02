@@ -91,6 +91,12 @@ class OpticalCharacterRecognizer
       base::OnceCallback<void(const ui::AXTreeUpdate& tree_update)> callback);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  // Sets the OCR to light or normal mode.
+  void SetOCRLightMode(bool enabled);
+
+  // Tells if OCR is busy (has another connected client) or not.
+  void IsOCRBusy(mojom::ScreenAIAnnotator::IsOCRBusyCallback callback);
+
   // Ensures all posted tasks are completed in tests.
   virtual void FlushForTesting() {}
 

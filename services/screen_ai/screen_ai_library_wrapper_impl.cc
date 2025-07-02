@@ -96,6 +96,10 @@ bool ScreenAILibraryWrapperImpl::Load(const base::FilePath& library_path) {
     return false;
   }
 
+  // TODO(crbug.com/412553116): Move to the the above block and make it
+  // mandatory after updating library min version.
+  LoadFunction(set_ocr_light_mode_, "SetOCRLightMode");
+
   // Main Content Extraction functions.
   if (!LoadFunction(init_main_content_extraction_,
                     "InitMainContentExtractionUsingCallback") ||
@@ -149,6 +153,16 @@ bool ScreenAILibraryWrapperImpl::InitOCR() {
       "Accessibility.ScreenAI.OCR.InitializationLatency");
   CHECK(init_ocr_);
   return init_ocr_();
+}
+
+NO_SANITIZE("cfi-icall")
+void ScreenAILibraryWrapperImpl::SetOCRLightMode(bool enabled) {
+  // TODO(crbug.com/412553116): Change to CHECK after updating library min
+  // version.
+  if (!set_ocr_light_mode_) {
+    return;
+  }
+  set_ocr_light_mode_(enabled);
 }
 
 NO_SANITIZE("cfi-icall")

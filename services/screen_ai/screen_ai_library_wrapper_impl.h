@@ -48,6 +48,7 @@ class ScreenAILibraryWrapperImpl : public ScreenAILibraryWrapper {
       const std::string& serialized_view_hierarchy) override;
 
   bool InitOCR() override;
+  void SetOCRLightMode(bool enabled) override;
   uint32_t GetMaxImageDimension() override;
   std::optional<chrome_screen_ai::VisualAnnotation> PerformOcr(
       const SkBitmap& image) override;
@@ -107,6 +108,11 @@ class ScreenAILibraryWrapperImpl : public ScreenAILibraryWrapper {
   // Initializes the pipeline for OCR.
   typedef bool (*InitOCRFn)();
   InitOCRFn init_ocr_ = nullptr;
+
+  // Turns the light model on or off. If it changes the previous model and the
+  // pipeline is already initialized, it will get uninitialized.
+  typedef void (*SetOCRLightModeFn)(bool /*enabled*/);
+  SetOCRLightModeFn set_ocr_light_mode_ = nullptr;
 
   // Returns the maximum image dimension that is not downsampled before OCR.
   // The result of this function is expected to stay constant after each

@@ -440,6 +440,14 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
   base::UmaHistogramEnumeration("Accessibility.ScreenAI.OCR.ClientType",
                                 client_type);
 
+  bool light_client = base::Contains(light_ocr_clients_,
+                                     screen_ai_annotators_.current_receiver());
+  if (light_client != last_ocr_light_) {
+    library_->SetOCRLightMode(light_client);
+    last_ocr_light_ = light_client;
+    ocr_mode_switch_count_++;
+  }
+
   base::TimeTicks start_time = base::TimeTicks::Now();
   base::SequenceBound<HangTimer> hang_timer(background_task_runner_,
                                             /*is_ocr=*/true);
@@ -535,6 +543,19 @@ void ScreenAIService::GetMaxImageDimension(
     GetMaxImageDimensionCallback callback) {
   CHECK(max_ocr_dimension_);
   std::move(callback).Run(max_ocr_dimension_);
+}
+
+void ScreenAIService::SetOCRLightMode(bool enabled) {
+  const auto client = screen_ai_annotators_.current_receiver();
+  if (enabled) {
+    light_ocr_clients_.insert(client);
+  } else {
+    light_ocr_clients_.erase(client);
+  }
+}
+
+void ScreenAIService::IsOCRBusy(IsOCRBusyCallback callback) {
+  std::move(callback).Run(screen_ai_annotators_.size() > 1);
 }
 
 void ScreenAIService::PerformOcrAndReturnAnnotation(
@@ -710,6 +731,13 @@ void ScreenAIService::ShutDownOnIdle() {
   if (ocr_last_used_ < kIdlenessThreshold &&
       mce_last_used_ < kIdlenessThreshold) {
     screen_ai_shutdown_handler_->ShuttingDownOnIdle();
+
+    // If OCR was used, record the number of times it's mode was switched.
+    if (ocr_last_used_ != base::TimeTicks()) {
+      base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.ModeSwitch",
+                                  ocr_mode_switch_count_);
+    }
+
     base::Process::TerminateCurrentProcessImmediately(0);
   }
 }

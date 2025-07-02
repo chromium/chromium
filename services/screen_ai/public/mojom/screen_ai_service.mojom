@@ -142,6 +142,15 @@ interface ScreenAIAnnotator {
   // downsampling. This value is not expected to change after initialization of
   // the service and is expected to be non-zero.
   GetMaxImageDimension() => (uint32 max_dimension);
+
+  // Turns the light model on or off for current client. Switching between light
+  // and normal mode has some light overhead to reinitialize the pipeline.
+  SetOCRLightMode(bool enabled);
+
+  // Tells if OCR service has another client or not. This function can be used
+  // by batch jobs to consider postponing their tasks to when OCR has no other
+  // client.
+  IsOCRBusy() => (bool busy);
 };
 
 // Main interface a client uses for Main Content Extraction function of Screen

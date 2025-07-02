@@ -69,6 +69,8 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       PerformOcrAndReturnAnnotationCallback callback) override;
   void SetClientType(mojom::OcrClientType client) override;
   void GetMaxImageDimension(GetMaxImageDimensionCallback callback) override;
+  void SetOCRLightMode(bool enabled) override;
+  void IsOCRBusy(IsOCRBusyCallback callback) override;
 
   // mojom::Screen2xMainContentExtractor:
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
@@ -151,6 +153,15 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   // Client type for each OCR receiver.
   std::map<mojo::ReceiverId, mojom::OcrClientType> ocr_client_types_;
+
+  // Light Mode OCR clients.
+  std::set<mojo::ReceiverId> light_ocr_clients_;
+
+  // OCR last mode across all client.
+  bool last_ocr_light_ = false;
+
+  // The number of times OCR mode was changed before shutting down the service.
+  uint32_t ocr_mode_switch_count_ = 0;
 
   // Client type for each MCE receiver.
   std::map<mojo::ReceiverId, mojom::MceClientType> mce_client_types_;

@@ -223,6 +223,28 @@ void OpticalCharacterRecognizer::PerformOCR(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+void OpticalCharacterRecognizer::SetOCRLightMode(bool enabled) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!is_ready()) {
+    return;
+  }
+
+  MaybeConnectToOcrService();
+  (*screen_ai_annotator_)->SetOCRLightMode(enabled);
+}
+
+void OpticalCharacterRecognizer::IsOCRBusy(
+    mojom::ScreenAIAnnotator::IsOCRBusyCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!is_ready()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  MaybeConnectToOcrService();
+  (*screen_ai_annotator_)->IsOCRBusy(std::move(callback));
+}
+
 void OpticalCharacterRecognizer::DisconnectAnnotator() {
   if (!screen_ai_annotator_) {
     return;

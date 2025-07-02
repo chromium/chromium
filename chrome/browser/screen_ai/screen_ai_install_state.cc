@@ -19,7 +19,8 @@
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
-// From 138.0, the library has the new `GetMaxImageDimension` API function.
+// From 140.0, the library has the new `SetOCRLightMode` API function.
+// TODO(crbug.com/412553116): Change to 140.0 after 140.0 is distributed.
 const char kMinExpectedVersion[] = "138.0";
 const int kScreenAICleanUpDelayInDays = 30;
 
