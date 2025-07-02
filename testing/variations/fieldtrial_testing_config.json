@@ -9244,6 +9244,7 @@
                     "name": "Enabled",
                     "params": {
                         "io_thread_log_level": "2",
+                        "renderer_process_io_thread_log_level": "2",
                         "ui_thread_log_level": "2",
                         "utility_process_main_thread_log_level": "2"
                     },
