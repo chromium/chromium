@@ -15738,6 +15738,28 @@
             ]
         }
     ],
+    "NtpComposeboxDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ConfigParam": "CgIIAw=="
+                    },
+                    "enable_features": [
+                        "NtpComposebox"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpMicrosoftFilesCard": [
         {
             "platforms": [

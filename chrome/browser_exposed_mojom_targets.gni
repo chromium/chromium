@@ -42,6 +42,7 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/new_tab_footer:mojo_bindings",
   "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
   "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
+  "//chrome/browser/ui/webui/new_tab_page/composebox:mojo_bindings",
   "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings",
   "//chrome/browser/ui/webui/omnibox:mojo_bindings",
   "//chrome/browser/ui/webui/on_device_internals:mojom",

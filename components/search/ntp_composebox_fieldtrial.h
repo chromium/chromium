@@ -31,7 +31,6 @@ extern const base::FeatureParam<size_t> kDownscaleMaxImageHeightParam;
 extern const base::FeatureParam<size_t> ImageCompressionQualityParam;
 
 struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
-  FeatureConfig();
   // Whether the feature is enabled.
   bool enabled = false;
   // The configuration proto for the feature.
@@ -44,6 +43,11 @@ struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
   int downscale_max_image_height = 0;
   // Composition quality to use when encoding images.
   int image_compression_quality = 0;
+
+ private:
+  friend class omnibox_feature_configs::Config<FeatureConfig>;
+  friend class omnibox_feature_configs::ScopedConfigForTesting<FeatureConfig>;
+  FeatureConfig();
 };
 
 using ScopedFeatureConfigForTesting =

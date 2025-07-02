@@ -708,7 +708,7 @@ void PopulateChromeWebUIFrameBinders(
         file_suggestion::mojom::MicrosoftFilesPageHandler, NewTabPageUI>(map);
   }
 
-  if (ntp_composebox_fieldtrial::FeatureConfig().Get().enabled) {
+  if (ntp_composebox_fieldtrial::FeatureConfig::Get().enabled) {
     RegisterWebUIControllerInterfaceBinder<
         composebox::mojom::ComposeboxPageHandler, NewTabPageUI>(map);
   }

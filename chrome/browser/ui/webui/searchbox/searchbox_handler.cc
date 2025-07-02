@@ -506,8 +506,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("searchboxShowComposeAnimation",
                      profile->GetPrefs()->GetInteger(
                          prefs::kNtpComposeButtonShownCountPrefName) <
-                         ntp_composebox_fieldtrial::FeatureConfig()
-                             .Get()
+                         ntp_composebox_fieldtrial::FeatureConfig::Get()
                              .config.entry_point()
                              .num_page_load_animations());
 }
