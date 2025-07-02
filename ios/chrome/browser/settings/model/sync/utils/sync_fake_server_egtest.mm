@@ -452,7 +452,7 @@ void ClearRelevantData() {
 
   // Confirm "Sign Out" when alert dialog that data will be cleared is shown.
   [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
                      IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
@@ -552,7 +552,7 @@ void ClearRelevantData() {
 
   // Confirm "Sign Out" when alert dialog that data will be cleared is shown.
   [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
                      IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
