@@ -479,6 +479,12 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationProductSpecifications,
+                   &kPageActionsMigration,
+                   "product_specifications",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationManagePasswords,
                    &kPageActionsMigration,
                    "manage_passwords",
