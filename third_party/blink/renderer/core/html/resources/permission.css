@@ -31,6 +31,8 @@ permission:granted {
 }
 
 permission::-internal-permission-text {
+  text-emphasis: initial !important;
+  text-shadow: initial !important;
   align-items: center;
   display: flex;
   font-family: Arial, Helvetica, sans-serif;
