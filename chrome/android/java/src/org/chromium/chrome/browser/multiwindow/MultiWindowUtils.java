@@ -107,6 +107,18 @@ public class MultiWindowUtils implements ActivityStateListener {
     private WeakReference<ChromeTabbedActivity> mLastResumedTabbedActivity;
     private boolean mIsInMultiWindowModeForTesting;
 
+    @IntDef({
+        PersistedInstanceType.ANY,
+        PersistedInstanceType.ACTIVE,
+        PersistedInstanceType.INACTIVE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PersistedInstanceType {
+        int ANY = 0;
+        int ACTIVE = 1;
+        int INACTIVE = 2;
+    }
+
     // Note: these values must match the AndroidMultiWindowActivityType enum in enums.xml.
     @IntDef({MultiWindowActivityType.ENTER, MultiWindowActivityType.EXIT})
     @Retention(RetentionPolicy.SOURCE)
@@ -440,7 +452,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static int getInstanceCount() {
         if (sInstanceCountForTesting != null) return sInstanceCountForTesting;
         int count = 0;
-        Set<Integer> ids = MultiInstanceManagerApi31.getPersistedInstanceIds();
+        Set<Integer> ids = MultiInstanceManagerApi31.getAllPersistedInstanceIds();
         for (Integer id : ids) {
             if (isRestorableInstance(id)) {
                 count++;
@@ -850,7 +862,7 @@ public class MultiWindowUtils implements ActivityStateListener {
 
         SparseIntArray windowIdsOfRunningTabbedActivities =
                 MultiInstanceManagerApi31.getWindowIdsOfRunningTabbedActivities();
-        for (int i : MultiInstanceManagerApi31.getPersistedInstanceIds()) {
+        for (int i : MultiInstanceManagerApi31.getAllPersistedInstanceIds()) {
             // Exclude instance IDs of non-running activities.
             if (windowIdsOfRunningTabbedActivities.indexOfValue(i) < 0) continue;
             if (MultiWindowUtils.readLastAccessedTime(i)

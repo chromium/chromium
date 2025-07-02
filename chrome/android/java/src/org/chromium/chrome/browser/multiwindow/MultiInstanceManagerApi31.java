@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PersistedInstanceType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -418,7 +419,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         List<InstanceInfo> result = new ArrayList<>();
         SparseBooleanArray visibleTasks = MultiWindowUtils.getVisibleTasks();
         int currentItemPos = -1;
-        for (int i : getPersistedInstanceIds()) {
+        for (int i : getAllPersistedInstanceIds()) {
             @InstanceInfo.Type int type = InstanceInfo.Type.OTHER;
             Activity a = getActivityById(i);
             if (a != null) {
@@ -561,8 +562,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             return;
         }
 
-        Set<Integer> instanceIds = getPersistedInstanceIds();
-        int numTasksToFinish = instanceIds.size() - MultiWindowUtils.getMaxInstances();
+        Set<Integer> activeInstanceIds = getPersistedInstanceIds(PersistedInstanceType.ACTIVE);
+        // This method is called before instanceId allocation for the currently starting activity.
+        // getPersistedInstanceIds() does not account for this activity since it does not have an
+        // associated task mapping yet. Increment |numTasksToFinish| by 1 to account for this
+        // activity in the total active instance count.
+        int numTasksToFinish = activeInstanceIds.size() - MultiWindowUtils.getMaxInstances() + 1;
         if (numTasksToFinish <= 0) return;
 
         prefs.writeBoolean(
@@ -570,7 +575,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
         // Get the instance ids of up to |numTasksToFinish| least recently used instances.
         TreeMap<Long, Integer> lruInstanceIds = new TreeMap<>();
-        for (int i : instanceIds) {
+        for (int i : activeInstanceIds) {
             if (getTaskFromMap(i) == INVALID_TASK_ID) continue;
             long lastAccessedTime = readLastAccessedTime(i);
             lruInstanceIds.put(lastAccessedTime, i);
@@ -731,7 +736,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         ChromeSharedPreferences.getInstance().writeInt(taskMapKey(instanceId), taskId);
     }
 
-    static Set<Integer> getPersistedInstanceIds() {
+    static Set<Integer> getPersistedInstanceIds(@PersistedInstanceType int type) {
         Set<Integer> ids = new HashSet<>();
         Map<String, Long> lastAccessedTimeMap =
                 ChromeSharedPreferences.getInstance()
@@ -743,9 +748,23 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             boolean matchFound = matcher.find();
             assert matchFound : "Key should be suffixed with the instance id.";
             assumeNonNull(matcher.group(1));
-            ids.add(Integer.parseInt(matcher.group(1)));
+            int id = Integer.parseInt(matcher.group(1));
+            int taskIdFromMap = getTaskFromMap(id);
+            boolean includeId =
+                    type == PersistedInstanceType.ANY
+                            || (type == PersistedInstanceType.ACTIVE
+                                    && taskIdFromMap != INVALID_TASK_ID)
+                            || (type == PersistedInstanceType.INACTIVE
+                                    && taskIdFromMap == INVALID_TASK_ID);
+            if (includeId) {
+                ids.add(id);
+            }
         }
         return ids;
+    }
+
+    static Set<Integer> getAllPersistedInstanceIds() {
+        return getPersistedInstanceIds(PersistedInstanceType.ANY);
     }
 
     private void removeInvalidInstanceData(boolean cleanupApplicationStatus) {
@@ -783,7 +802,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
         List<Integer> instancesRemoved = new ArrayList<>();
         // Remove persistent data for unrecoverable instances.
-        for (int i : getPersistedInstanceIds()) {
+        for (int i : getAllPersistedInstanceIds()) {
             if (!MultiWindowUtils.isRestorableInstance(i)) {
                 instancesRemoved.add(i);
                 removeInstanceInfo(i);
@@ -850,7 +869,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     private int getInstanceByTask(int taskId) {
-        for (int i : getPersistedInstanceIds()) {
+        for (int i : getAllPersistedInstanceIds()) {
             if (taskId == getTaskFromMap(i)) return i;
         }
         return INVALID_WINDOW_ID;
@@ -1342,7 +1361,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     InstanceInfo getInstanceInfoFor(Activity activity) {
         // Loop thru all instances to determine if the destination activity is present.
         int destinationWindowTaskId = INVALID_TASK_ID;
-        for (int i : getPersistedInstanceIds()) {
+        for (int i : getAllPersistedInstanceIds()) {
             Activity activityById = getActivityById(i);
             if (activityById != null) {
                 // The task for the activity must match the one found in our mapping.
