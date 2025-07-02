@@ -12305,11 +12305,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidSurfaceColorUpdateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidSurfaceColorUpdate)},
 #endif  // BUILDFLAG(IS_ANDROID)
-    {"zero-copy-rbp-partial-raster-with-gpu-compositor",
-     flag_descriptions::kZeroCopyRBPPartialRasterWithGpuCompositorName,
-     flag_descriptions::kZeroCopyRBPPartialRasterWithGpuCompositorDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kZeroCopyRBPPartialRasterWithGpuCompositor)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"input-on-viz", flag_descriptions::kInputOnVizName,

@@ -182,13 +182,8 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  bool resource_has_previous_content = false;
-  if (is_software_ ||
-      base::FeatureList::IsEnabled(
-          features::kZeroCopyRBPPartialRasterWithGpuCompositor)) {
-    resource_has_previous_content =
-        resource_content_id && resource_content_id == previous_content_id;
-  }
+  bool resource_has_previous_content =
+      resource_content_id && resource_content_id == previous_content_id;
 
   return std::make_unique<ZeroCopyRasterBufferImpl>(
       resource, shared_image_interface_, resource_has_previous_content,
@@ -199,9 +194,7 @@ void ZeroCopyRasterBufferProvider::Flush() {}
 
 bool ZeroCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource()
     const {
-  return is_software_ ||
-         base::FeatureList::IsEnabled(
-             features::kZeroCopyRBPPartialRasterWithGpuCompositor);
+  return true;
 }
 
 bool ZeroCopyRasterBufferProvider::IsResourceReadyToDraw(

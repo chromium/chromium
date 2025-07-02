@@ -17,10 +17,6 @@ namespace features {
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAlignSurfaceLayerImplToPixelGrid);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSynchronizedScrolling);
 
-// Enables partial raster in ZeroCopyRasterBufferProvider when used with the GPU
-// compositor.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kZeroCopyRBPPartialRasterWithGpuCompositor);
-
 // Sets raster tree priority to NEW_CONTENT_TAKES_PRIORITY when performing a
 // unified scroll with main-thread repaint reasons.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
