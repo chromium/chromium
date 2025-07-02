@@ -24678,11 +24678,6 @@ be describing additional metrics about the same event.
       The version code of android-browser-helper used by the TWA wrapper
       associated with the origin.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.form_factor"/>
-      </history>
-    </aggregation>
   </metric>
   <metric name="TimeToFirstCommitNavigation2.Cold">
     <summary>
