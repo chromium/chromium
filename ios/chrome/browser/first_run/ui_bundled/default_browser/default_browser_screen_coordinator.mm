@@ -25,16 +25,13 @@
 #import "ios/chrome/browser/first_run/ui_bundled/uma/uma_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/instruction_view/instructions_half_sheet_coordinator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface DefaultBrowserScreenCoordinator () <TOSCommands,
-                                               TOSCoordinatorDelegate,
+@interface DefaultBrowserScreenCoordinator () <TOSCoordinatorDelegate,
                                                UMACoordinatorDelegate>
 @end
 
@@ -72,9 +69,6 @@
 - (void)start {
   [super start];
 
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(TOSCommands)];
   _profile = self.profile->GetOriginalProfile();
   base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kDefaultBrowserScreenStart);
@@ -89,8 +83,6 @@
 }
 
 - (void)stop {
-  [self.browser->GetCommandDispatcher()
-      stopDispatchingForProtocol:@protocol(TOSCommands)];
   _animatedViewController = nil;
   _staticViewController.delegate = nil;
   _staticViewController = nil;
@@ -166,19 +158,6 @@
   }
 }
 
-#pragma mark - TOSCommands
-
-- (void)showTOSPage {
-  DCHECK(!_TOSCoordinator);
-  CHECK(_staticViewController);
-  _mediator.TOSLinkWasTapped = YES;
-  _TOSCoordinator =
-      [[TOSCoordinator alloc] initWithBaseViewController:_staticViewController
-                                                 browser:self.browser];
-  _TOSCoordinator.delegate = self;
-  [_TOSCoordinator start];
-}
-
 #pragma mark - TOSCoordinatorDelegate
 
 - (void)TOSCoordinatorWantsToBeStopped:(TOSCoordinator*)coordinator {
@@ -203,6 +182,17 @@
   [_TOSCoordinator stop];
   _TOSCoordinator.delegate = nil;
   _TOSCoordinator = nil;
+}
+
+- (void)showTOSPage {
+  DCHECK(!_TOSCoordinator);
+  CHECK(_staticViewController);
+  _mediator.TOSLinkWasTapped = YES;
+  _TOSCoordinator =
+      [[TOSCoordinator alloc] initWithBaseViewController:_staticViewController
+                                                 browser:self.browser];
+  _TOSCoordinator.delegate = self;
+  [_TOSCoordinator start];
 }
 
 - (void)displayStaticPromo {

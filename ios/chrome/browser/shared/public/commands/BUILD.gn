@@ -94,7 +94,6 @@ source_set("commands") {
     "tabs_animation_commands.h",
     "text_zoom_commands.h",
     "toolbar_commands.h",
-    "tos_commands.h",
     "unit_conversion_commands.h",
     "web_content_commands.h",
     "whats_new_commands.h",

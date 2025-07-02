@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -39,7 +38,6 @@
     FullscreenSigninScreenMediatorDelegate,
     FullscreenSigninScreenViewControllerDelegate,
     IdentityChooserCoordinatorDelegate,
-    TOSCommands,
     UIAdaptivePresentationControllerDelegate,
     TOSCoordinatorDelegate,
     UMACoordinatorDelegate>
@@ -106,9 +104,6 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(TOSCommands)];
   self.viewController = [[FullscreenSigninScreenViewController alloc]
       initWithContextStyle:_contextStyle];
   self.viewController.delegate = self;
@@ -151,8 +146,6 @@
 }
 
 - (void)stop {
-  [self.browser->GetCommandDispatcher()
-      stopDispatchingForProtocol:@protocol(TOSCommands)];
   [self stopAddAccountCoordinator];
   [self stopIdentityChooserCoordinator];
   self.delegate = nil;
@@ -258,6 +251,16 @@
   [self.UMACoordinator start];
 }
 
+- (void)showTOSPage {
+  DCHECK(!self.TOSCoordinator);
+  self.mediator.TOSLinkWasTapped = YES;
+  self.TOSCoordinator =
+      [[TOSCoordinator alloc] initWithBaseViewController:self.viewController
+                                                 browser:self.browser];
+  self.TOSCoordinator.delegate = self;
+  [self.TOSCoordinator start];
+}
+
 #pragma mark - FullscreenSigninScreenMediatorDelegate
 
 - (void)fullscreenSigninScreenMediatorDidFinishSignin:
@@ -339,18 +342,6 @@
   [self.identityChooserCoordinator start];
   self.identityChooserCoordinator.selectedIdentity =
       self.mediator.selectedIdentity;
-}
-
-#pragma mark - TOSCommands
-
-- (void)showTOSPage {
-  DCHECK(!self.TOSCoordinator);
-  self.mediator.TOSLinkWasTapped = YES;
-  self.TOSCoordinator =
-      [[TOSCoordinator alloc] initWithBaseViewController:self.viewController
-                                                 browser:self.browser];
-  self.TOSCoordinator.delegate = self;
-  [self.TOSCoordinator start];
 }
 
 #pragma mark - TOSCoordinatorDelegate
