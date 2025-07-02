@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_action_prefs_listener.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -866,17 +867,8 @@ void BrowserActions::InitializeBrowserActions() {
           base::BindRepeating(
               [](Browser* browser, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                auto* side_panel_controller =
-                    browser->GetActiveTabInterface()
-                        ->GetTabFeatures()
-                        ->customize_chrome_side_panel_controller();
-                CHECK(side_panel_controller);
-
-                if (side_panel_controller->IsCustomizeChromeEntryAvailable()) {
-                  side_panel_controller->OpenSidePanel(
-                      SidePanelOpenTrigger::kAppMenu,
-                      CustomizeChromeSection::kFooter);
-                }
+                browser->command_controller()->ShowCustomizeChromeSidePanel(
+                    CustomizeChromeSection::kFooter);
               },
               base::Unretained(browser)))
           .SetActionId(kActionSidePanelShowCustomizeChromeFooter)

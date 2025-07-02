@@ -451,6 +451,25 @@ void BrowserCommandController::WebContentsFocusChanged() {
   UpdateCommandsForWebContentsFocus();
 }
 
+void BrowserCommandController::ShowCustomizeChromeSidePanel(
+    std::optional<CustomizeChromeSection> section) {
+  tabs::TabInterface* tab = browser_->tab_strip_model()->GetActiveTab();
+  if (!tab || !tab->GetTabFeatures() ||
+      !tab->GetTabFeatures()->customize_chrome_side_panel_controller()) {
+    return;
+  }
+
+  customize_chrome::SidePanelController* side_panel_controller =
+      tab->GetTabFeatures()->customize_chrome_side_panel_controller();
+
+  if (!side_panel_controller ||
+      !side_panel_controller->IsCustomizeChromeEntryAvailable()) {
+    return;
+  }
+
+  side_panel_controller->OpenSidePanel(SidePanelOpenTrigger::kAppMenu, section);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserCommandController, CommandUpdater implementation:
 
@@ -2222,25 +2241,6 @@ BrowserWindow* BrowserCommandController::window() {
 
 Profile* BrowserCommandController::profile() {
   return browser_->profile();
-}
-
-void BrowserCommandController::ShowCustomizeChromeSidePanel(
-    std::optional<CustomizeChromeSection> section) {
-  tabs::TabInterface* tab = browser_->tab_strip_model()->GetActiveTab();
-  if (!tab || !tab->GetTabFeatures() ||
-      !tab->GetTabFeatures()->customize_chrome_side_panel_controller()) {
-    return;
-  }
-
-  customize_chrome::SidePanelController* side_panel_controller =
-      tab->GetTabFeatures()->customize_chrome_side_panel_controller();
-
-  if (!side_panel_controller ||
-      !side_panel_controller->IsCustomizeChromeEntryAvailable()) {
-    return;
-  }
-
-  side_panel_controller->OpenSidePanel(SidePanelOpenTrigger::kAppMenu, section);
 }
 
 }  // namespace chrome

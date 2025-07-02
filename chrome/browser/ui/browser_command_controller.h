@@ -75,6 +75,11 @@ class BrowserCommandController : public CommandUpdater,
   void TabKeyboardFocusChangedTo(std::optional<int> index);
   void WebContentsFocusChanged();
 
+  // Helper method to show the customize chrome sidepanel and optionally scroll
+  // to a specific section.
+  void ShowCustomizeChromeSidePanel(
+      std::optional<CustomizeChromeSection> section = std::nullopt);
+
   // Overriden from CommandUpdater:
   bool SupportsCommand(int id) const override;
   bool IsCommandEnabled(int id) const override;
@@ -225,11 +230,6 @@ class BrowserCommandController : public CommandUpdater,
   void UpdateCommandAndActionEnabled(int command_id,
                                      actions::ActionId action_id,
                                      bool enabled);
-
-  // Helper method to show the customize chrome sidepanel and optionally scroll
-  // to a specific section.
-  void ShowCustomizeChromeSidePanel(
-      std::optional<CustomizeChromeSection> section = std::nullopt);
 
   inline BrowserWindow* window();
   inline Profile* profile();
