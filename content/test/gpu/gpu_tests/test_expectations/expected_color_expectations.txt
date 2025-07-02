@@ -112,12 +112,7 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Longstanding flaking test - page reported failure
-crbug.com/40877266 [ android android-shield-android-tv ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
-# Flakes on M1 machines when upgrading to MacOS 15.4.
-crbug.com/416712848 [ sequoia apple-angle-metal-renderer:-apple-m1 ] ExpectedColor_MediaRecorderFrom2DCanvas [ RetryOnFailure ]
-crbug.com/416712848 [ sequoia apple-angle-metal-renderer:-apple-m1 ] ExpectedColor_maps [ RetryOnFailure ]
 
 # Flakes on Intel Mac with a larger shifted image
 crbug.com/425653491 [ mac intel-0x3e9b angle-metal graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
