@@ -1,7 +1,7 @@
 caption: Set the default policy value for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s covered generative AI features
 
 desc: |-
-  This policy defines the default setting for all covered generative AI features. For example, if this policy is set to value 1, then 1 will be the default setting for all covered generative AI features. It will not impact any manually set policy values. This setting will define the defaults for <ph name="GEMINI_SETTINGS_POLICY_NAME">GeminiSettings</ph> and covered Chrome generative AI features. See https://support.google.com/chrome/a?p=generative_ai_settings for the list of covered features.
+  This policy defines the default setting for all covered generative AI features. For example, if this policy is set to value 1, then 1 will be the default setting for all covered generative AI features. It will not impact any manually set policy values. This setting will define the defaults for covered generative AI features in Chrome. See https://support.google.com/chrome/a?p=generative_ai_settings for the list of covered features.
 
   0 = Allow the feature to be used, while allowing Google to use relevant data to improve its AI models. Relevant data may include prompts, inputs, outputs, source materials, and written feedback, depending on the feature. It may also be reviewed by humans to improve AI models. 0 is the default value, except when noted below.
 

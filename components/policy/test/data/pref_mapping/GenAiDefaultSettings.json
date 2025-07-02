@@ -34,6 +34,9 @@
           },
           "browser.gemini_settings": {
             "value": 0
+          },
+          "lens.policy.lens_overlay_settings": {
+            "value": 0
           }
         }
       },
@@ -64,6 +67,9 @@
             "value": 1
           },
           "browser.gemini_settings": {
+            "value": 0
+          },
+          "lens.policy.lens_overlay_settings": {
             "value": 0
           }
         }
@@ -96,6 +102,9 @@
           },
           "browser.gemini_settings": {
             "value": 1
+          },
+          "lens.policy.lens_overlay_settings": {
+            "value": 1
           }
         }
       },
@@ -125,6 +134,9 @@
           },
           "browser.gemini_settings": {
             "default_value": 0
+          },
+          "lens.policy.lens_overlay_settings": {
+            "default_value": 0
           }
         }
       },
@@ -138,7 +150,8 @@
           "HistorySearchSettings": 2,
           "TabCompareSettings": 2,
           "GeminiSettings": 1,
-          "AIModeSettings": 1
+          "AIModeSettings": 1,
+          "LensOverlaySettings": 1
         },
         "prefs": {
           "devtools.gen_ai_settings": {
@@ -163,6 +176,9 @@
             "value": 1
           },
           "omnibox.ai_mode_settings": {
+            "value": 1
+          },
+          "lens.policy.lens_overlay_settings": {
             "value": 1
           }
         }
@@ -226,6 +242,9 @@
           },
           "browser.gemini_settings": {
             "value": 0
+          },
+          "lens.policy.lens_overlay_settings": {
+            "value": 0
           }
         }
       },
@@ -279,6 +298,9 @@
           },
           "omnibox.ai_mode_settings": {
             "value": 0
+          },
+          "lens.policy.lens_overlay_settings": {
+            "value": 0
           }
         }
       },
@@ -299,7 +321,8 @@
           "HistorySearchSettings": 2,
           "TabCompareSettings": 2,
           "GeminiSettings": 1,
-          "AIModeSettings": 1
+          "AIModeSettings": 1,
+          "LensOverlaySettings": 1
         },
         "prefs": {
           "ash.gen_ai_photo_editing_settings": {
@@ -348,6 +371,9 @@
             "value": 1
           },
           "omnibox.ai_mode_settings": {
+            "value": 1
+          },
+          "lens.policy.lens_overlay_settings": {
             "value": 1
           }
         }
