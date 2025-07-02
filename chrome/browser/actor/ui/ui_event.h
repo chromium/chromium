@@ -32,11 +32,19 @@ enum class MouseClickCount {
 };
 
 struct StartTask {
-  StartTask(std::optional<tabs::TabInterface::Handle>, actor::TaskId);
+  explicit StartTask(actor::TaskId);
   StartTask(const StartTask&);
   ~StartTask();
 
-  std::optional<tabs::TabInterface::Handle> tab_handle;
+  actor::TaskId task_id;
+};
+
+struct StartingToActOnTab {
+  StartingToActOnTab(tabs::TabInterface::Handle, actor::TaskId);
+  StartingToActOnTab(const StartingToActOnTab&);
+  ~StartingToActOnTab();
+
+  tabs::TabInterface::Handle tab_handle;
   actor::TaskId task_id;
 };
 
@@ -59,7 +67,8 @@ struct MouseClick {
   MouseClickCount click_count;
 };
 
-using UiEvent = std::variant<StartTask, MouseClick, MouseMove>;
+using UiEvent =
+    std::variant<StartTask, StartingToActOnTab, MouseClick, MouseMove>;
 
 }  // namespace actor::ui
 

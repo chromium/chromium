@@ -11,6 +11,8 @@
 
 namespace actor::ui {
 namespace {
+using testing::Return;
+
 constexpr PageTarget PointTarget() {
   return gfx::Point(10, 20);
 }
@@ -22,15 +24,24 @@ constexpr PageTarget DomNodeTarget() {
 
 class UiEventDebugStringTest : public ::testing::Test {
  protected:
-  tabs::TabInterface::Handle Handle() { return tab_interface_.GetHandle(); }
+  void SetUp() override {
+    ON_CALL(tab_interface_, GetTabHandle()).WillByDefault(Return(5555));
+  }
+
+  tabs::TabInterface::Handle Handle() {
+    return tabs::TabInterface::Handle(tab_interface_.GetTabHandle());
+  }
 
   tabs::MockTabInterface tab_interface_;
 };
 
 TEST_F(UiEventDebugStringTest, StartTask) {
-  EXPECT_EQ(DebugString(StartTask(std::nullopt, TaskId(123))),
-            "StartTask[id=123]");
-  EXPECT_EQ(DebugString(StartTask(Handle(), TaskId(456))), "StartTask[id=456]");
+  EXPECT_EQ(DebugString(StartTask(TaskId(123))), "StartTask[id=123]");
+}
+
+TEST_F(UiEventDebugStringTest, StartingToActOnTab) {
+  EXPECT_EQ(DebugString(StartingToActOnTab(Handle(), TaskId(123))),
+            "StartingToActOnTab[task_id=123, tab=5555]");
 }
 
 TEST_F(UiEventDebugStringTest, MouseMove) {

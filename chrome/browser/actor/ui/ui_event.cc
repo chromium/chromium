@@ -6,11 +6,15 @@
 
 namespace actor::ui {
 
-StartTask::StartTask(std::optional<tabs::TabInterface::Handle> th,
-                     actor::TaskId id)
-    : tab_handle(th), task_id(id) {}
+StartTask::StartTask(actor::TaskId id) : task_id(id) {}
 StartTask::~StartTask() = default;
 StartTask::StartTask(const StartTask&) = default;
+
+StartingToActOnTab::StartingToActOnTab(tabs::TabInterface::Handle th,
+                                       actor::TaskId id)
+    : tab_handle(th), task_id(id) {}
+StartingToActOnTab::~StartingToActOnTab() = default;
+StartingToActOnTab::StartingToActOnTab(const StartingToActOnTab&) = default;
 
 MouseClick::MouseClick(tabs::TabInterface::Handle th,
                        MouseClickType ct,
