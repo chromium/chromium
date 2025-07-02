@@ -9,6 +9,8 @@ include_rules = [
 
   "+third_party/leveldatabase",
   "+v8/include/v8-value-serializer-version.h",
+
+  "+components/base32",
 ]
 
 specific_include_rules = {

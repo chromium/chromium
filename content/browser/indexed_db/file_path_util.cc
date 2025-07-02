@@ -5,11 +5,25 @@
 #include "content/browser/indexed_db/file_path_util.h"
 
 #include <inttypes.h>
+#include <stddef.h>
+#include <stdint.h>
 
+#include <string>
+#include <string_view>
+
+#include "base/containers/span.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/function_ref.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/buildflag.h"
+#include "components/base32/base32.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "crypto/hash.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -18,6 +32,9 @@ namespace content::indexed_db {
 namespace {
 constexpr base::FilePath::CharType kBlobExtension[] =
     FILE_PATH_LITERAL(".blob");
+
+// The file name used for databases that have an empty name.
+constexpr char kEmptyDatabaseNameFileName[] = "0";
 }  // namespace
 
 const base::FilePath::CharType kLevelDBExtension[] =
@@ -116,6 +133,51 @@ bool IsPathTooLong(const base::FilePath& leveldb_dir) {
     return true;
   }
   return false;
+}
+
+base::FilePath DatabaseNameToFileName(std::u16string_view db_name) {
+  // The goal is to create a deterministic mapping from DB name to file name.
+  // There are essentially no constraints on `db_name`, in terms of length or
+  // contents. File names have to conform to a certain character set and length,
+  // (which depends on the file system). Thus, the space of all file names is
+  // smaller than the space of all database names, and we can't simply use the
+  // db name as the file name.
+  //
+  // To address this, we first hash the db name using SHA256, which ensures a
+  // negligible probability of collisions. Then we encode using Base32, because
+  // it uses only a character set that is safe for all file systems, including
+  // case-insensitive ones.
+  return db_name.empty()
+             ? base::FilePath::FromASCII(kEmptyDatabaseNameFileName)
+             : base::FilePath::FromASCII(base32::Base32Encode(
+                   crypto::hash::Sha256(base::as_byte_span(db_name)),
+                   base32::Base32EncodePolicy::OMIT_PADDING));
+}
+
+void EnumerateDatabasesInDirectory(
+    const base::FilePath& directory,
+    base::FunctionRef<void(const base::FilePath& path)> ref) {
+  base::FileEnumerator enumerator(directory, /*recursive=*/false,
+                                  base::FileEnumerator::FILES);
+  enumerator.ForEach([&](const base::FilePath& path) {
+    if (path.BaseName() ==
+        base::FilePath::FromASCII(kEmptyDatabaseNameFileName)) {
+      ref(path);
+      return;
+    }
+
+    std::string ascii_name = path.BaseName().MaybeAsASCII();
+    if (ascii_name.empty()) {
+      return;
+    }
+
+    if (base32::Base32Decode(ascii_name).size() !=
+        crypto::hash::DigestSizeForHashKind(crypto::hash::HashKind::kSha256)) {
+      return;
+    }
+
+    ref(path);
+  });
 }
 
 }  // namespace content::indexed_db

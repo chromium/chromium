@@ -99,6 +99,7 @@ source_set("indexed_db") {
 
   deps = [
     "//base",
+    "//components/base32",
     "//components/services/storage",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom",
@@ -129,6 +130,7 @@ source_set("unit_tests") {
   }
 
   sources = [
+    "file_path_util_unittest.cc",
     "file_stream_reader_to_data_pipe_unittest.cc",
     "indexed_db_context_unittest.cc",
     "indexed_db_leveldb_coding_unittest.cc",
