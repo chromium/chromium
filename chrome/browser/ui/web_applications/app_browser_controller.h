@@ -183,6 +183,9 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Gets the new tab URL for tabbed apps.
   virtual GURL GetAppNewTabUrl() const;
 
+  // Returns the pinned home tab if there is one, otherwise nullptr.
+  virtual content::WebContents* GetPinnedHomeTab() const;
+
   // Whether the app's tab strip should hide the new tab button, e.g. because
   // the app has a pinned home tab at the same URL as the new tab URL.
   virtual bool ShouldHideNewTabButton() const;

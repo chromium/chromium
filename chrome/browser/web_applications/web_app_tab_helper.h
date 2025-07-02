@@ -118,11 +118,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // window instead of in a browser tab.
   bool is_in_app_window() const { return window_app_id_.has_value(); }
 
-  bool is_pinned_home_tab() const { return is_pinned_home_tab_; }
-  void set_is_pinned_home_tab(bool is_pinned_home_tab) {
-    is_pinned_home_tab_ = is_pinned_home_tab;
-  }
-
   webapps::LaunchQueue& EnsureLaunchQueue();
 
   // content::WebContentsObserver:

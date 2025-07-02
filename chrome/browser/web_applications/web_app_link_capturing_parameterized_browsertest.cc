@@ -629,8 +629,8 @@ base::Value::Dict WebContentsToJson(const Browser& browser,
     }
   }
 
-  WebAppTabHelper* helper = WebAppTabHelper::FromWebContents(&web_contents);
-  if (helper->is_pinned_home_tab()) {
+  if (browser.app_controller() &&
+      browser.app_controller()->GetPinnedHomeTab() == &web_contents) {
     dict.Set("is_pinned_home_tab", true);
   }
 

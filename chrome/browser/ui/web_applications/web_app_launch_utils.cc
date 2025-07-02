@@ -354,12 +354,8 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
   CHECK_EQ(web_contents,
            target_browser->tab_strip_model()->GetActiveWebContents());
 
-  if (insert_as_pinned_home_tab) {
-    if (target_has_pinned_home_tab) {
-      target_browser->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
-    }
-    SetWebContentsIsPinnedHomeTab(
-        target_browser->tab_strip_model()->GetWebContentsAt(0));
+  if (insert_as_pinned_home_tab && target_has_pinned_home_tab) {
+    target_browser->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
   }
 
   if (!target_app_id) {
@@ -596,11 +592,6 @@ Browser* ReparentWebContentsIntoAppBrowser(
   return reparented_browser;
 }
 
-void SetWebContentsIsPinnedHomeTab(content::WebContents* contents) {
-  auto* helper = WebAppTabHelper::FromWebContents(contents);
-  helper->set_is_pinned_home_tab(true);
-}
-
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
     Browser* browser) {
   std::unique_ptr<AppBrowserController> controller;
@@ -646,13 +637,6 @@ void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id) {
     home_tab_nav_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
     home_tab_nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
     Navigate(&home_tab_nav_params);
-
-    content::WebContents* const web_contents =
-        home_tab_nav_params.navigated_or_inserted_contents;
-
-    if (web_contents) {
-      SetWebContentsIsPinnedHomeTab(web_contents);
-    }
   }
 }
 

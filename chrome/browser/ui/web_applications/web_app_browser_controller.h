@@ -84,6 +84,7 @@ class WebAppBrowserController : public AppBrowserController,
   std::u16string GetFormattedUrlOrigin() const override;
   GURL GetAppStartUrl() const override;
   GURL GetAppNewTabUrl() const override;
+  content::WebContents* GetPinnedHomeTab() const override;
   bool ShouldHideNewTabButton() const override;
   bool IsUrlInHomeTabScope(const GURL& url) const override;
   bool ShouldShowAppIconOnTab(int index) const override;
@@ -175,6 +176,10 @@ class WebAppBrowserController : public AppBrowserController,
   const raw_ptr<const ash::SystemWebAppDelegate> system_app_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   mutable std::optional<ui::ImageModel> app_icon_;
+
+  // Save this at launch time in case it changes with a manifest update while
+  // the window is open.
+  const bool has_pinned_home_tab_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The result of digital asset link verification of the web app.

@@ -7,6 +7,8 @@
 
 #include "content/public/browser/navigation_throttle.h"
 
+class Browser;
+
 namespace web_app {
 
 // A navigation throttle that helps tabbed web apps with a pinned home tab
@@ -30,7 +32,7 @@ class TabbedWebAppNavigationThrottle : public content::NavigationThrottle {
   // Links clicked from the home tab should open in a new app tab.
   ThrottleCheckResult OpenInNewTab();
   // Navigations to the home tab URL should open in the home tab.
-  ThrottleCheckResult FocusHomeTab();
+  ThrottleCheckResult FocusHomeTab(Browser* browser);
 };
 
 }  // namespace web_app

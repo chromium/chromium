@@ -134,8 +134,8 @@ std::optional<int> AppBrowserController::FindTabIndexForApp(
     const webapps::AppId& app_id,
     bool for_focus_existing,
     HomeTabScope home_tab_scope) {
-  auto is_valid_tab = [&app_id, home_tab_scope,
-                       for_focus_existing](content::WebContents* contents) {
+  auto is_valid_tab = [&app_id, home_tab_scope, for_focus_existing,
+                       browser](content::WebContents* contents) {
     WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(contents);
     if (app_id != tab_helper->app_id() || contents->HasOpener()) {
       return false;
@@ -147,7 +147,7 @@ std::optional<int> AppBrowserController::FindTabIndexForApp(
       return true;
     }
     return (home_tab_scope == HomeTabScope::kInScope) ==
-           tab_helper->is_pinned_home_tab();
+           (browser->app_controller()->GetPinnedHomeTab() == contents);
   };
   // The active web contents should have preference if it is in scope.
   if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
@@ -584,6 +584,10 @@ std::string AppBrowserController::GetTitleForMediaControls() const {
 
 GURL AppBrowserController::GetAppNewTabUrl() const {
   return GetAppStartUrl();
+}
+
+content::WebContents* AppBrowserController::GetPinnedHomeTab() const {
+  return nullptr;
 }
 
 bool AppBrowserController::ShouldHideNewTabButton() const {

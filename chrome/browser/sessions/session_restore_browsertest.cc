@@ -4335,9 +4335,7 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
       EXPECT_TRUE(browser->tab_strip_model()->IsTabPinned(0));
       EXPECT_FALSE(browser->tab_strip_model()->IsTabPinned(1));
 
-      EXPECT_TRUE(web_app::WebAppTabHelper::FromWebContents(
-                      browser->tab_strip_model()->GetWebContentsAt(0))
-                      ->is_pinned_home_tab());
+      EXPECT_TRUE(browser->app_controller()->GetPinnedHomeTab());
       app_checked = true;
     }
   }
