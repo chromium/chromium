@@ -365,6 +365,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReadAloud,
     &kReadAloudAudioOverviews,
     &kReadAloudAudioOverviewsFeedback,
+    &kReadAloudAudioOverviewsSkipDisclaimerWhenPossible,
     &kReadAloudInOverflowMenuInCCT,
     &kReadAloudInMultiWindow,
     &kReadAloudBackgroundPlayback,
@@ -1200,6 +1201,10 @@ BASE_FEATURE(kReadAloudAudioOverviews,
 
 BASE_FEATURE(kReadAloudAudioOverviewsFeedback,
              "ReadAloudAudioOverviewsFeedback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReadAloudAudioOverviewsSkipDisclaimerWhenPossible,
+             "ReadAloudAudioOverviewsSkipDisclaimerWhenPossible",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReadAloudInOverflowMenuInCCT,
