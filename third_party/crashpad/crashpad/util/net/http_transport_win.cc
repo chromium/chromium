@@ -35,6 +35,7 @@
 #include "package.h"
 #include "util/file/file_io.h"
 #include "util/net/http_body.h"
+#include "util/net/http_transport.h"
 #include "util/numeric/safe_assignment.h"
 #include "util/win/module_version.h"
 
@@ -283,25 +284,16 @@ bool HTTPTransportWin::ExecuteSynchronously(std::string* response_body) {
   size_t total_written = 0;
   FileOperationResult data_bytes;
   do {
-    struct {
-      char size[8];
-      char crlf0[2];
-      uint8_t data[32 * 1024];
-      char crlf1[2];
-    } buf;
-    static_assert(sizeof(buf) == sizeof(buf.size) +
-                                 sizeof(buf.crlf0) +
-                                 sizeof(buf.data) +
-                                 sizeof(buf.crlf1),
-                  "buf should not have padding");
-
+    DataBuffer buf;
     // Read a block of data.
-    data_bytes = body_stream()->GetBytesBuffer(buf.data, sizeof(buf.data));
+    static_assert(buf.kDataBytes < sizeof(buf.data));
+    data_bytes =
+        body_stream()->GetBytesBuffer(buf.data_span().data(), buf.kDataBytes);
     if (data_bytes == -1) {
       return false;
     }
     DCHECK_GE(data_bytes, 0);
-    DCHECK_LE(static_cast<size_t>(data_bytes), sizeof(buf.data));
+    DCHECK_LE(static_cast<size_t>(data_bytes), buf.kDataBytes);
 
     void* write_start;
     DWORD write_size;
@@ -309,36 +301,43 @@ bool HTTPTransportWin::ExecuteSynchronously(std::string* response_body) {
     if (chunked) {
       // Chunked encoding uses the entirety of buf. buf.size is presented in
       // hexadecimal without any leading "0x". The terminating CR and LF will be
-      // placed immediately following the used portion of buf.data, even if
-      // buf.data is not full, and not necessarily in buf.crlf1.
+      // placed immediately following the used portion of buf.data.
 
       unsigned int data_bytes_ui = base::checked_cast<unsigned int>(data_bytes);
 
       // snprintf() would NUL-terminate, but _snprintf() won’t.
-      int rv = _snprintf(buf.size, sizeof(buf.size), "%08x", data_bytes_ui);
+      static_assert(buf.kSizeBytes < sizeof(buf.size));
+      int rv = _snprintf(
+          buf.size_span().data(), buf.kSizeBytes, "%08x", data_bytes_ui);
       DCHECK_GE(rv, 0);
-      DCHECK_EQ(static_cast<size_t>(rv), sizeof(buf.size));
-      DCHECK_NE(buf.size[sizeof(buf.size) - 1], '\0');
+      DCHECK_EQ(static_cast<size_t>(rv), buf.kSizeBytes);
+      DCHECK_NE(buf.size_span()[buf.kSizeBytes - 1], '\0');
 
-      buf.crlf0[0] = '\r';
-      buf.crlf0[1] = '\n';
-      buf.data[data_bytes] = '\r';
-      buf.data[data_bytes + 1] = '\n';
+      base::span<char> size_crlf =
+          buf.size_span().subspan(buf.kSizeBytes, buf.kCRLFBytes);
+      size_crlf[0] = '\r';
+      size_crlf[1] = '\n';
+      base::span<uint8_t> data_crlf =
+          buf.data_span().subspan(data_bytes_ui, buf.kCRLFBytes);
+      data_crlf[0] = '\r';
+      data_crlf[1] = '\n';
 
-      // Skip leading zeroes in the chunk size.
-      unsigned int size_len;
-      for (size_len = sizeof(buf.size); size_len > 1; --size_len) {
-        if (buf.size[sizeof(buf.size) - size_len] != '0') {
+      // Move the left-hand edge of `buf.size` rightward to drop
+      // leading zeroes.
+      size_t to_skip = 0u;
+      for (const char c : buf.size_span().first(buf.kSizeBytes - 1)) {
+        if (c != '0') {
           break;
         }
+        ++to_skip;
       }
 
-      write_start = buf.crlf0 - size_len;
-      write_size = base::checked_cast<DWORD>(size_len + sizeof(buf.crlf0) +
-                                             data_bytes + sizeof(buf.crlf1));
+      write_start = buf.size_span().subspan(to_skip).data();
+      write_size = base::checked_cast<DWORD>(sizeof(buf.size) - to_skip +
+                                             data_bytes + buf.kCRLFBytes);
     } else {
       // When not using chunked encoding, only use buf.data.
-      write_start = buf.data;
+      write_start = buf.data.data();
       write_size = base::checked_cast<DWORD>(data_bytes);
     }
 

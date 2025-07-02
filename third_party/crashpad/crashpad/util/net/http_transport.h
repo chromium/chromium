@@ -15,9 +15,12 @@
 #ifndef CRASHPAD_UTIL_NET_HTTP_TRANSPORT_H_
 #define CRASHPAD_UTIL_NET_HTTP_TRANSPORT_H_
 
+#include <array>
+#include <cstdint>
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "util/net/http_headers.h"
 
@@ -115,6 +118,29 @@ class HTTPTransport {
   std::unique_ptr<HTTPBodyStream> body_stream_;
   double timeout_;
 };
+
+// Represents several contiguous buffers.
+// Heterogeneous byte types are a consequence of mixing `_snprintf()`
+// with `GetBytesBuffer()` in the implementation.
+struct __attribute__((packed)) DataBuffer {
+  static constexpr size_t kSizeBytes = 8u;
+  static constexpr size_t kCRLFBytes = 2u;
+  static constexpr size_t kDataBytes = 32u * 1024;
+
+  base::span<char> size_span() {
+    return base::as_writable_chars(base::span(size));
+  }
+  base::span<uint8_t> data_span() {
+    return base::as_writable_bytes(base::span(data));
+  }
+
+  std::array<char, kSizeBytes + kCRLFBytes> size;
+  std::array<uint8_t, kDataBytes + kCRLFBytes> data;
+};
+
+static_assert(sizeof(DataBuffer) ==
+                  sizeof(DataBuffer::size) + sizeof(DataBuffer::data),
+              "No padding is allowed in `DataBuffer`");
 
 }  // namespace crashpad
 
