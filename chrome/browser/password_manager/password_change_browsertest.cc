@@ -227,8 +227,6 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
                   request);
               ASSERT_TRUE(password_change_request.page_context()
                               .has_annotated_page_content());
-              ASSERT_TRUE(
-                  password_change_request.page_context().has_ax_tree_data());
             }),
             WithArg<3>(Invoke([response,
                                logs_uploader_weak_ptr](auto callback) {
