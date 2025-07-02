@@ -139,6 +139,10 @@ BASE_FEATURE(kLensOverlayBackToPage,
              "LensOverlayBackToPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensSearchNotFoundOnPageToast,
+             "kLensSearchNotFoundOnPageToast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -1310,6 +1314,10 @@ bool IsLensOverlayPermissionBubbleAltEnabled() {
 
 bool IsLensOverlayBackToPageEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayBackToPage);
+}
+
+bool IsLensSearchNotFoundOnPageToastEnabled() {
+  return base::FeatureList::IsEnabled(kLensSearchNotFoundOnPageToast);
 }
 
 }  // namespace lens::features

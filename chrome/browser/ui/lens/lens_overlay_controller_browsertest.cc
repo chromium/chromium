@@ -247,14 +247,6 @@ constexpr char kCheckSidePanelThumbnailShownScript[] =
     "return window.getComputedStyle(thumbContainer).display !== 'none' && "
     "       imageSrc.startsWith('data:image/jpeg');})();";
 
-constexpr char kCheckSidePanelToastShownScript[] =
-    "(function() {const appRoot = "
-    "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
-    "const toast = appRoot.getElementById('messageToast');"
-    "const toastStyle = window.getComputedStyle(toast);"
-    "return toastStyle.visibility !== 'hidden' && "
-    "        toastStyle.opacity !== 0;})();";
-
 constexpr char kHistoryStateScript[] =
     "(function() {history.replaceState({'test':1}, 'test'); "
     "history.pushState({'test':1}, 'test'); history.back();})();";
@@ -2822,7 +2814,6 @@ IN_PROC_BROWSER_TEST_F(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
-  int tabs = browser()->tab_strip_model()->count();
 
   controller->IssueSearchBoxRequestForTesting(
       kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
@@ -2865,6 +2856,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL nav_url = embedded_test_server()->GetURL(relative_url);
 
   // Simulate a cross-origin navigation on the results frame.
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   EXPECT_TRUE(content::ExecJs(
       results_frame, content::JsReplace(kSameTabLinkClickScript, nav_url),
       content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
@@ -2879,19 +2871,20 @@ IN_PROC_BROWSER_TEST_F(
                                                         ->GetPrimaryPage());
   EXPECT_FALSE(manager);
 
-  // It should not open a new tab as this URL matched exactly what is loaded on
-  // the page.
-  EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
-  // Verify that the side panel searchbox displays a toast.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(controller->GetSidePanelWebContentsForTesting(),
-                           kCheckSidePanelToastShownScript)
-        .ExtractBool();
-  }));
+  // Verify the new tab has the URL.
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+  EXPECT_EQ(new_tab->GetLastCommittedURL(), nav_url);
+
+  // Verify the loading state was never set.
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
+
+  // Record the text directive result.
   histogram_tester.ExpectTotalCount("Lens.Overlay.TextDirectiveResult", 1);
   histogram_tester.ExpectUniqueSample(
       "Lens.Overlay.TextDirectiveResult",
-      lens::LensOverlayTextDirectiveResult::kNotFoundOnPage, 1);
+      lens::LensOverlayTextDirectiveResult::kOpenedInNewTab, 1);
 }
 
 // TODO(crbug.com/413042395): This test is not testing overlay logic, but
@@ -2922,7 +2915,6 @@ IN_PROC_BROWSER_TEST_F(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
-  int tabs = browser()->tab_strip_model()->count();
 
   controller->IssueSearchBoxRequestForTesting(
       kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
@@ -2965,6 +2957,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL nav_url = embedded_test_server()->GetURL(relative_url);
 
   // Simulate a cross-origin navigation on the results frame.
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   EXPECT_TRUE(content::ExecJs(
       results_frame, content::JsReplace(kSameTabLinkClickScript, nav_url),
       content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
@@ -2979,19 +2972,20 @@ IN_PROC_BROWSER_TEST_F(
                                                         ->GetPrimaryPage());
   EXPECT_FALSE(manager);
 
-  // It should not open a new tab as this URL matched exactly what is loaded on
-  // the page.
-  EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
-  // Verify that the side panel searchbox displays a toast.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(controller->GetSidePanelWebContentsForTesting(),
-                           kCheckSidePanelToastShownScript)
-        .ExtractBool();
-  }));
+  // Verify the new tab has the URL.
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+  EXPECT_EQ(new_tab->GetLastCommittedURL(), nav_url);
+
+  // Verify the loading state was never set.
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
+
+  // Record the text directive result.
   histogram_tester.ExpectTotalCount("Lens.Overlay.TextDirectiveResult", 1);
   histogram_tester.ExpectUniqueSample(
       "Lens.Overlay.TextDirectiveResult",
-      lens::LensOverlayTextDirectiveResult::kNotFoundOnPage, 1);
+      lens::LensOverlayTextDirectiveResult::kOpenedInNewTab, 1);
 }
 
 // TODO(crbug.com/413042395): This test is not testing overlay logic, but
