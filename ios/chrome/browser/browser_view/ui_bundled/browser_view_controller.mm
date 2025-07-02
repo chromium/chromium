@@ -2260,6 +2260,10 @@ enum HeaderBehaviour {
 
             [weakSelf executeAndClearForegroundTabWasAddedCompletionBlock:YES];
           }));
+    } else {
+      if (isNTP && isIncognito) {
+        [omniboxHandler focusOmniboxForVoiceOver];
+      }
     }
     return;
   }
