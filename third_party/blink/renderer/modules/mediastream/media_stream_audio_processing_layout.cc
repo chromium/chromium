@@ -170,9 +170,9 @@ MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
     const AudioProcessingProperties& properties,
     int enabled_platform_effects,
     bool multichannel_processing) {
-  return ComputeWebrtcProcessingSettings(EchoCanceller::From(properties),
-                                         properties, enabled_platform_effects,
-                                         multichannel_processing);
+  return ComputeWebrtcProcessingSettings(
+      EchoCanceller::From(properties, enabled_platform_effects), properties,
+      enabled_platform_effects, multichannel_processing);
 }
 
 // static
@@ -182,7 +182,8 @@ std::optional<MediaStreamAudioProcessingLayout>
 MediaStreamAudioProcessingLayout::MakeForDisplayCapture(
     const AudioProcessingProperties& properties,
     int channels) {
-  if (!EchoCanceller::From(properties).IsEnabled()) {
+  if (!EchoCanceller::From(properties, /*available_platform_effects=*/0)
+           .IsEnabled()) {
     return std::nullopt;
   }
 
@@ -196,10 +197,11 @@ MediaStreamAudioProcessingLayout::MediaStreamAudioProcessingLayout(
     const AudioProcessingProperties& properties,
     int available_platform_effects,
     int channels)
-    : MediaStreamAudioProcessingLayout(properties,
-                                       EchoCanceller::From(properties),
-                                       available_platform_effects,
-                                       channels) {}
+    : MediaStreamAudioProcessingLayout(
+          properties,
+          EchoCanceller::From(properties, available_platform_effects),
+          available_platform_effects,
+          channels) {}
 
 MediaStreamAudioProcessingLayout::MediaStreamAudioProcessingLayout(
     const AudioProcessingProperties& properties,

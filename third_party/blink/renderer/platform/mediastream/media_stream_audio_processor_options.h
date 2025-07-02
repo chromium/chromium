@@ -11,6 +11,13 @@
 
 namespace blink {
 
+enum class EchoCancellationMode {
+  kDisabled,
+  kBrowserDecides,
+  kRemoteOnly,
+  kAll
+};
+
 // The result of parsing media stream constraints.
 struct PLATFORM_EXPORT AudioProcessingProperties {
   enum class EchoCancellationType {
@@ -64,7 +71,20 @@ class PLATFORM_EXPORT EchoCanceller {
 
   enum class ApmLocation { kRenderer, kAudioService };
 
-  static EchoCanceller From(const AudioProcessingProperties& properties);
+  static bool IsSystemWideAecAvailable(int available_platform_effects);
+
+  static EchoCanceller From(const AudioProcessingProperties& properties,
+                            int available_platform_effects);
+
+  // Can be removed when AudioProcessingProperties are switched to using
+  // EchoCancellation mode.
+  static EchoCanceller From(
+      AudioProcessingProperties::EchoCancellationType type);
+
+  static EchoCanceller From(EchoCancellationMode mode,
+                            int available_platform_effects);
+
+  static EchoCanceller MakeForTesting(EchoCanceller::Type type);
 
   Type type() const { return type_; }
 
@@ -87,6 +107,10 @@ class PLATFORM_EXPORT EchoCanceller {
   friend class MediaStreamAudioProcessingLayout;
 
   explicit EchoCanceller(Type type) : type_(type) {}
+
+  static Type GetPreferredAec(int available_platform_effects);
+  static Type GetSystemWideAec(int available_platform_effects);
+  static bool IsPlatformAecAvailable(int available_platform_effects);
 
   const Type type_ = Type::kNone;
 };

@@ -218,7 +218,8 @@ TEST_P(MediaStreamAudioProcessingLayoutTest,
 
   int expected_effects = available_platform_effects;
 
-  EchoCanceller echo_canceller = EchoCanceller::From(properties);
+  EchoCanceller echo_canceller =
+      EchoCanceller::From(properties, available_platform_effects);
 
   if (echo_canceller.IsPlatformProvided()) {
 #if (!BUILDFLAG(IS_WIN))
@@ -314,5 +315,148 @@ INSTANTIATE_TEST_SUITE_P(All,
                              ::testing::Bool()));
 
 #endif
+
+TEST(EchoCanceller, Disabled) {
+  EchoCanceller echo_canceller(
+      EchoCanceller::MakeForTesting(EchoCanceller::Type::kNone));
+  EXPECT_FALSE(echo_canceller.IsEnabled());
+  EXPECT_FALSE(echo_canceller.IsPlatformProvided());
+  EXPECT_FALSE(echo_canceller.IsChromeProvided());
+  EXPECT_FALSE(echo_canceller.NeedSystemLoopback());
+  EXPECT_EQ(echo_canceller.GetApmLocation(),
+            media::IsChromeWideEchoCancellationEnabled()
+                ? EchoCanceller::ApmLocation::kAudioService
+                : EchoCanceller::ApmLocation::kRenderer);
+}
+
+TEST(EchoCanceller, PeerConnection) {
+  EchoCanceller echo_canceller(
+      EchoCanceller::MakeForTesting(EchoCanceller::Type::kPeerConnection));
+  EXPECT_TRUE(echo_canceller.IsEnabled());
+  EXPECT_FALSE(echo_canceller.IsPlatformProvided());
+  EXPECT_TRUE(echo_canceller.IsChromeProvided());
+  EXPECT_FALSE(echo_canceller.NeedSystemLoopback());
+  EXPECT_EQ(echo_canceller.GetApmLocation(),
+            EchoCanceller::ApmLocation::kRenderer);
+}
+
+TEST(EchoCanceller, Loopback) {
+  EchoCanceller echo_canceller(
+      EchoCanceller::MakeForTesting(EchoCanceller::Type::kLoopbackBased));
+  EXPECT_TRUE(echo_canceller.IsEnabled());
+  EXPECT_FALSE(echo_canceller.IsPlatformProvided());
+  EXPECT_TRUE(echo_canceller.IsChromeProvided());
+  EXPECT_TRUE(echo_canceller.NeedSystemLoopback());
+  EXPECT_EQ(echo_canceller.GetApmLocation(),
+            EchoCanceller::ApmLocation::kAudioService);
+}
+
+TEST(EchoCanceller, ChromeWide) {
+  EchoCanceller echo_canceller(
+      EchoCanceller::MakeForTesting(EchoCanceller::Type::kChromeWide));
+  EXPECT_TRUE(echo_canceller.IsEnabled());
+  EXPECT_FALSE(echo_canceller.IsPlatformProvided());
+  EXPECT_TRUE(echo_canceller.IsChromeProvided());
+  EXPECT_FALSE(echo_canceller.NeedSystemLoopback());
+  EXPECT_EQ(echo_canceller.GetApmLocation(),
+            EchoCanceller::ApmLocation::kAudioService);
+}
+
+TEST(EchoCanceller, PlatformProvided) {
+  EchoCanceller echo_canceller(
+      EchoCanceller::MakeForTesting(EchoCanceller::Type::kPlatformProvided));
+  EXPECT_TRUE(echo_canceller.IsEnabled());
+  EXPECT_TRUE(echo_canceller.IsPlatformProvided());
+  EXPECT_FALSE(echo_canceller.IsChromeProvided());
+  EXPECT_FALSE(echo_canceller.NeedSystemLoopback());
+  EXPECT_EQ(echo_canceller.GetApmLocation(),
+            EchoCanceller::ApmLocation::kRenderer);
+}
+
+class EchoCancellationModeTest : public testing::TestWithParam<bool> {
+ public:
+  void SetUp() override {
+    effects_ = GetParam() ? media::AudioParameters::ECHO_CANCELLER : 0;
+  }
+
+ protected:
+  int effects_;
+};
+
+TEST_P(EchoCancellationModeTest, Default) {
+  EchoCanceller echo_canceller =
+      EchoCanceller::From(EchoCancellationMode::kBrowserDecides, effects_);
+  if (effects_) {
+    // Platform AEC effect is only exposed on the platforms where platform echo
+    // cancellation is either a default behavior or enforced via a feature flag,
+    // see media::IsSystemEchoCancellationEnforced().
+    EXPECT_EQ(echo_canceller.type(), EchoCanceller::Type::kPlatformProvided)
+        << " echo_canceller: " << echo_canceller.ToString();
+  } else if (media::IsChromeWideEchoCancellationEnabled()) {
+    EXPECT_EQ(echo_canceller.type(), EchoCanceller::Type::kChromeWide)
+        << " echo_canceller: " << echo_canceller.ToString();
+  } else {
+    EXPECT_EQ(echo_canceller.type(), EchoCanceller::Type::kPeerConnection)
+        << " echo_canceller: " << echo_canceller.ToString();
+  }
+}
+
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+TEST_P(EchoCancellationModeTest, Default_LoopbackAecEnforced) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      media::kSystemLoopbackAsAecReference, {{"forced_on", "true"}});
+  ASSERT_TRUE(media::IsChromeWideEchoCancellationEnabled());
+  EXPECT_TRUE(EchoCanceller::IsSystemWideAecAvailable(effects_));
+  EchoCanceller echo_canceller =
+      EchoCanceller::From(EchoCancellationMode::kBrowserDecides, effects_);
+  EXPECT_EQ(echo_canceller.type(), EchoCanceller::Type::kLoopbackBased);
+}
+#endif
+
+TEST_P(EchoCancellationModeTest, Disabled) {
+  EchoCanceller echo_canceller =
+      EchoCanceller::From(EchoCancellationMode::kDisabled, effects_);
+  EXPECT_EQ(echo_canceller.type(), EchoCanceller::Type::kNone);
+}
+
+TEST_P(EchoCancellationModeTest, RemoteOnly) {
+  EchoCanceller echo_canceller =
+      EchoCanceller::From(EchoCancellationMode::kRemoteOnly, effects_);
+  EXPECT_EQ(echo_canceller.type(), EchoCanceller::Type::kPeerConnection);
+}
+
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+TEST_P(EchoCancellationModeTest, AllLoopbackAec) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      media::kSystemLoopbackAsAecReference, {{"forced_on", "false"}});
+  EXPECT_TRUE(EchoCanceller::IsSystemWideAecAvailable(effects_));
+  EchoCanceller echo_canceller =
+      EchoCanceller::From(EchoCancellationMode::kAll, effects_);
+  EXPECT_EQ(echo_canceller.type(), EchoCanceller::Type::kLoopbackBased);
+}
+#endif
+
+TEST_P(EchoCancellationModeTest, AllPlatformAec) {
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      media::kSystemLoopbackAsAecReference);
+#endif
+  if (effects_) {
+    EXPECT_TRUE(EchoCanceller::IsSystemWideAecAvailable(effects_));
+    EchoCanceller echo_canceller =
+        EchoCanceller::From(EchoCancellationMode::kAll, effects_);
+    EXPECT_EQ(echo_canceller.type(), EchoCanceller::Type::kPlatformProvided);
+  } else {
+    EXPECT_FALSE(EchoCanceller::IsSystemWideAecAvailable(effects_));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         EchoCancellationModeTest,
+                         // Platform AEC effect on/off.
+                         ::testing::Bool());
 
 }  // namespace blink

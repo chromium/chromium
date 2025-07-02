@@ -550,7 +550,8 @@ TEST_P(ProcessedLocalAudioSourcePlatformEffectsTest,
                          media::AudioParameters::NOISE_SUPPRESSION |
                          media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
 
-  EchoCanceller echo_canceller = EchoCanceller::From(properties);
+  EchoCanceller echo_canceller =
+      EchoCanceller::From(properties, platform_effects);
 
   if (!properties.noise_suppression && !properties.auto_gain_control &&
       !echo_canceller.IsEnabled()) {

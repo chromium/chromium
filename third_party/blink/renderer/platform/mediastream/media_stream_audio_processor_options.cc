@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
 
 namespace blink {
@@ -55,7 +56,20 @@ std::string AudioProcessingProperties::ToString() const {
 }
 
 // static
-EchoCanceller EchoCanceller::From(const AudioProcessingProperties& properties) {
+bool EchoCanceller::IsSystemWideAecAvailable(int available_platform_effects) {
+  return IsPlatformAecAvailable(available_platform_effects) ||
+         media::IsSystemLoopbackAsAecReferenceEnabled();
+}
+
+// static
+EchoCanceller EchoCanceller::From(const AudioProcessingProperties& properties,
+                                  int available_platform_effects) {
+  return From(properties.echo_cancellation_type);
+}
+
+// static
+EchoCanceller EchoCanceller::From(
+    AudioProcessingProperties::EchoCancellationType type) {
   using EchoCancellationType = AudioProcessingProperties::EchoCancellationType;
   auto to_echo_canceller_type = [](EchoCancellationType type) {
     switch (type) {
@@ -72,8 +86,33 @@ EchoCanceller EchoCanceller::From(const AudioProcessingProperties& properties) {
     }
   };
 
+  return EchoCanceller(to_echo_canceller_type(type));
+}
+
+// static
+EchoCanceller EchoCanceller::From(EchoCancellationMode mode,
+                                  int available_platform_effects) {
+  auto to_echo_canceller_type = [](EchoCancellationMode mode,
+                                   int available_platform_effects) {
+    switch (mode) {
+      case EchoCancellationMode::kDisabled:
+        return Type::kNone;
+      case EchoCancellationMode::kBrowserDecides:
+        return GetPreferredAec(available_platform_effects);
+      case EchoCancellationMode::kRemoteOnly:
+        return Type::kPeerConnection;
+      case EchoCancellationMode::kAll:
+        return GetSystemWideAec(available_platform_effects);
+    }
+  };
+
   return EchoCanceller(
-      to_echo_canceller_type(properties.echo_cancellation_type));
+      to_echo_canceller_type(mode, available_platform_effects));
+}
+
+// static
+EchoCanceller EchoCanceller::MakeForTesting(EchoCanceller::Type type) {
+  return EchoCanceller(type);
 }
 
 EchoCanceller::ApmLocation EchoCanceller::GetApmLocation() const {
@@ -102,6 +141,40 @@ const char* EchoCanceller::ToString() const {
     case Type::kPeerConnection:
       return "PeerConnection";
   };
+}
+
+// static
+EchoCanceller::Type EchoCanceller::GetPreferredAec(
+    int available_platform_effects) {
+  if (media::IsSystemLoopbackAsAecReferenceForcedOn()) {
+    return Type::kLoopbackBased;
+  }
+  if (IsPlatformAecAvailable(available_platform_effects)) {
+    // Platform AEC effect is only exposed on the platforms where platform echo
+    // cancellation is either a default behavior or enforced via a feature flag,
+    // see media::IsSystemEchoCancellationEnforced().
+    return Type::kPlatformProvided;
+  }
+  if (media::IsChromeWideEchoCancellationEnabled()) {
+    return Type::kChromeWide;
+  }
+  return Type::kPeerConnection;
+}
+
+// static
+EchoCanceller::Type EchoCanceller::GetSystemWideAec(
+    int available_platform_effects) {
+  if (media::IsSystemLoopbackAsAecReferenceEnabled()) {
+    return Type::kLoopbackBased;
+  }
+  // See IsSystemWideAecAvailable().
+  CHECK(IsPlatformAecAvailable(available_platform_effects));
+  return Type::kPlatformProvided;
+}
+
+// static
+bool EchoCanceller::IsPlatformAecAvailable(int available_platform_effects) {
+  return available_platform_effects & media::AudioParameters::ECHO_CANCELLER;
 }
 
 }  // namespace blink
