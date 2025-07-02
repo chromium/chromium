@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/unowned_user_data/scoped_unowned_user_data.h"
 #include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
-#include "chrome/browser/ui/unowned_user_data/unowned_user_data_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
+// One user data class.
 class TestScopedUnownedUserData {
  public:
   DECLARE_USER_DATA(TestScopedUnownedUserData);
@@ -23,17 +23,20 @@ class TestScopedUnownedUserData {
 
 DEFINE_USER_DATA(TestScopedUnownedUserData);
 
-class TestUnownedUserDataSubclass
-    : public UnownedUserDataInterface<TestUnownedUserDataSubclass> {
+// Another, different user data class.
+class TestScopedUnownedUserData2 {
  public:
-  DECLARE_USER_DATA(TestUnownedUserDataSubclass);
+  DECLARE_USER_DATA(TestScopedUnownedUserData2);
 
-  explicit TestUnownedUserDataSubclass(UnownedUserDataHost& host)
-      : UnownedUserDataInterface(host) {}
-  ~TestUnownedUserDataSubclass() override = default;
+  explicit TestScopedUnownedUserData2(UnownedUserDataHost& host)
+      : scoped_data_(host, *this) {}
+  ~TestScopedUnownedUserData2() = default;
+
+ private:
+  ScopedUnownedUserData<TestScopedUnownedUserData2> scoped_data_;
 };
 
-DEFINE_USER_DATA(TestUnownedUserDataSubclass);
+DEFINE_USER_DATA(TestScopedUnownedUserData2);
 
 }  // namespace
 
@@ -48,71 +51,37 @@ TEST(UnownedUserDataTest, ScopedUnownedUserData) {
   EXPECT_EQ(nullptr, TestScopedUnownedUserData::Get(host));
 }
 
-// Tests basic functionality of a class inheriting from
-// UnownedUserDataInterface.
-// TODO(crbug.com/428749341): Re-enable this test for some specific Linux
-// builders where it fails consistently.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_UnownedUserDataInterface DISABLED_UnownedUserDataInterface
-#else
-#define MAYBE_UnownedUserDataInterface UnownedUserDataInterface
-#endif  // BUILDFLAG(IS_LINUX)
-
-TEST(UnownedUserDataTest, MAYBE_UnownedUserDataInterface) {
-  UnownedUserDataHost host;
-  EXPECT_EQ(nullptr, TestUnownedUserDataSubclass::Get(host));
-  {
-    TestUnownedUserDataSubclass test_data(host);
-    EXPECT_EQ(&test_data, TestUnownedUserDataSubclass::Get(host));
-  }
-  EXPECT_EQ(nullptr, TestUnownedUserDataSubclass::Get(host));
-}
-
-// Tests that different types of UnownedUserData are independent of one another
-// and can be individually set and unset.
-// TODO(crbug.com/428749341): Re-enable this test for some specific Linux
-// builders where it fails consistently.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DifferentTypesAreIndependent DISABLED_DifferentTypesAreIndependent
-#else
-#define MAYBE_DifferentTypesAreIndependent DifferentTypesAreIndependent
-#endif  // BUILDFLAG(IS_LINUX)
-TEST(UnownedUserDataTest, MAYBE_DifferentTypesAreIndependent) {
-  // We use the two types of TestUnownedUserDataSubclass and
-  // TestScopedUnownedUserData. These could be thought of as "UnownedUserData1"
-  // and "UnownedUserData2".
+TEST(UnownedUserDataTest, DifferentTypesAreIndependent) {
   UnownedUserDataHost host;
   // At the start, neither type has an associated entry on the host.
-  EXPECT_EQ(nullptr, TestUnownedUserDataSubclass::Get(host));
   EXPECT_EQ(nullptr, TestScopedUnownedUserData::Get(host));
+  EXPECT_EQ(nullptr, TestScopedUnownedUserData2::Get(host));
 
-  // Create an entry for TestUnownedUserDataSubclass.
-  std::optional<TestUnownedUserDataSubclass> test_data1;
+  // Create an entry for the first object only.
+  std::optional<TestScopedUnownedUserData> test_data1;
   test_data1.emplace(host);
 
-  // TestUnownedUserDataSubclass should have an associated entry, but
-  // TestScopedUnownedUserData should not.
-  EXPECT_EQ(&test_data1.value(), TestUnownedUserDataSubclass::Get(host));
-  EXPECT_EQ(nullptr, TestScopedUnownedUserData::Get(host));
+  // The first will have an entry, but thesecond will not.
+  EXPECT_EQ(&test_data1.value(), TestScopedUnownedUserData::Get(host));
+  EXPECT_EQ(nullptr, TestScopedUnownedUserData2::Get(host));
 
-  // Now, create an entry for TestScopedUnownedUserData.
-  std::optional<TestScopedUnownedUserData> test_data2;
+  // Now, create an entry for the second.
+  std::optional<TestScopedUnownedUserData2> test_data2;
   test_data2.emplace(host);
 
   // Both types should have entries.
-  EXPECT_EQ(&test_data1.value(), TestUnownedUserDataSubclass::Get(host));
-  EXPECT_EQ(&test_data2.value(), TestScopedUnownedUserData::Get(host));
+  EXPECT_EQ(&test_data1.value(), TestScopedUnownedUserData::Get(host));
+  EXPECT_EQ(&test_data2.value(), TestScopedUnownedUserData2::Get(host));
 
-  // Unset TestUnownedUserDataSubclass. TestScopedUnownedUserData's entry should
-  // be unaffected.
+  // Unset the first. The other's entry should be unaffected.
   test_data1.reset();
-  EXPECT_EQ(nullptr, TestUnownedUserDataSubclass::Get(host));
-  EXPECT_EQ(&test_data2.value(), TestScopedUnownedUserData::Get(host));
-
-  // Reset TestScopedUnownedUserData. Both types should now be unset.
-  test_data2.reset();
-  EXPECT_EQ(nullptr, TestUnownedUserDataSubclass::Get(host));
   EXPECT_EQ(nullptr, TestScopedUnownedUserData::Get(host));
+  EXPECT_EQ(&test_data2.value(), TestScopedUnownedUserData2::Get(host));
+
+  // Reset the second. Both types should now be unset.
+  test_data2.reset();
+  EXPECT_EQ(nullptr, TestScopedUnownedUserData::Get(host));
+  EXPECT_EQ(nullptr, TestScopedUnownedUserData2::Get(host));
 }
 
 // Tests that only one instance of a given type can be set on a host.

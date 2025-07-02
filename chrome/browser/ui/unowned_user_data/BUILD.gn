@@ -10,7 +10,6 @@ source_set("unowned_user_data") {
   public = [
     "scoped_unowned_user_data.h",
     "unowned_user_data_host.h",
-    "unowned_user_data_interface.h",
     "user_data_factory.h",
   ]
 

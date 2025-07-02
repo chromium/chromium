@@ -33,9 +33,6 @@
 //   };
 //
 //   DEFINE_USER_DATA(MyFeature);
-//
-// Note: See also UnownedUserDataInterface, if you prefer an inheritance pattern
-// and want slightly less boilerplate.
 template <class T>
 class ScopedUnownedUserData {
  public:

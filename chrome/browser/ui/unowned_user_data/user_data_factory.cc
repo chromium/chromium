@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/unowned_user_data/user_data_factory.h"
 
+#include <utility>
+
+#include "base/check_op.h"
+
 UserDataFactory::ScopedOverride::ScopedOverride() = default;
 UserDataFactory::ScopedOverride::~ScopedOverride() {
   Release();
