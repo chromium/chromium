@@ -1983,11 +1983,6 @@ BASE_FEATURE(kMultiCalendarSupport,
              "MultiCalendarSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables multi-zone rgb keyboard customization.
-BASE_FEATURE(kMultiZoneRgbKeyboard,
-             "MultiZoneRgbKeyboard",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Nearby Presence for scanning and discovery of nearby devices.
 BASE_FEATURE(kNearbyPresence,
              "NearbyPresence",
@@ -4100,10 +4095,6 @@ bool IsMinimumChromeVersionEnabled() {
 
 bool IsMultiCalendarSupportEnabled() {
   return base::FeatureList::IsEnabled(kMultiCalendarSupport);
-}
-
-bool IsMultiZoneRgbKeyboardEnabled() {
-  return base::FeatureList::IsEnabled(kMultiZoneRgbKeyboard);
 }
 
 bool IsEcheLauncherEnabled() {

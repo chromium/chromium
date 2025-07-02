@@ -77,12 +77,6 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
 void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightZoneColor(
     int zone,
     mojom::BacklightColor backlight_color) {
-  if (!ash::features::IsMultiZoneRgbKeyboardEnabled()) {
-    keyboard_backlight_receiver_.ReportBadMessage(
-        "Cannot call `SetBacklightZoneColor()` without multi-zone rgb keyboard "
-        "enabled");
-    return;
-  }
 
   DVLOG(4) << __func__ << " zone=" << zone
            << " backlight_color=" << backlight_color;

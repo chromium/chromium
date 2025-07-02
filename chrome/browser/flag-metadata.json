@@ -6667,11 +6667,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "multi-zone-rgb-keyboard",
-    "owners": [ "jasontt@chromium.org", "assistive-eng@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "mute-notification-snooze-action",
     "owners": [ "knollr@chromium.org", "peter@chromium.org" ],
     "expiry_milestone": 96

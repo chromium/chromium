@@ -7595,11 +7595,6 @@ const char kMultiCaptureUsageIndicatorUpdateDescription[] =
     "Enables the reworked usage indicators for the getAllScreensMedia API.";
 #endif
 
-const char kMultiZoneRgbKeyboardName[] =
-    "Enable multi-zone RGB keyboard customization";
-const char kMultiZoneRgbKeyboardDescription[] =
-    "Enable multi-zone RGB keyboard customization on supported devices.";
-
 const char kNotificationWidthIncreaseName[] =
     "Notification Width Increase Feature";
 const char kNotificationWidthIncreaseDescription[] =

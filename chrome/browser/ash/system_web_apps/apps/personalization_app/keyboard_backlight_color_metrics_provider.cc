@@ -49,8 +49,7 @@ void KeyboardBacklightColorMetricsProvider::ProvideCurrentSessionData(
       return;
     }
     case DisplayType::kMultiZone: {
-      if (!ash::features::IsMultiZoneRgbKeyboardEnabled() ||
-          ash::Shell::Get()->rgb_keyboard_manager()->GetZoneCount() <= 1) {
+      if (ash::Shell::Get()->rgb_keyboard_manager()->GetZoneCount() <= 1) {
         return;
       }
       base::UmaHistogramEnumeration(

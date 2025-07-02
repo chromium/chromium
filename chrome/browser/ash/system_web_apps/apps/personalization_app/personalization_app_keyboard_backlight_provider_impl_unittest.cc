@@ -83,8 +83,6 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
   PersonalizationAppKeyboardBacklightProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kMultiZoneRgbKeyboard}, {});
   }
   PersonalizationAppKeyboardBacklightProviderImplTest(
       const PersonalizationAppKeyboardBacklightProviderImplTest&) = delete;
@@ -165,7 +163,6 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;

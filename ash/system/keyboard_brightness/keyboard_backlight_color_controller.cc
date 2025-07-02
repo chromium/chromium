@@ -108,9 +108,7 @@ void KeyboardBacklightColorController::SetBacklightColor(
   DisplayBacklightColor(backlight_color);
   SetBacklightColorPref(backlight_color, account_id);
   SetDisplayType(DisplayType::kStatic, account_id);
-  if (features::IsMultiZoneRgbKeyboardEnabled()) {
-    UpdateAllBacklightZoneColors(backlight_color, account_id);
-  }
+  UpdateAllBacklightZoneColors(backlight_color, account_id);
   MaybeToggleOnKeyboardBrightness();
 }
 
@@ -164,7 +162,6 @@ KeyboardBacklightColorController::GetBacklightZoneColors(
 void KeyboardBacklightColorController::SetDisplayType(
     DisplayType type,
     const AccountId& account_id) {
-  DCHECK(features::IsMultiZoneRgbKeyboardEnabled());
   GetUserPrefService(account_id)
       ->SetInteger(prefs::kPersonalizationKeyboardBacklightColorDisplayType,
                    static_cast<int>(type));
@@ -240,10 +237,10 @@ void KeyboardBacklightColorController::OnActiveUserPrefServiceChanged(
   switch (display_type) {
     case DisplayType::kStatic: {
       const auto backlight_color = GetBacklightColor(account_id);
-      if (features::IsMultiZoneRgbKeyboardEnabled()) {
-        // Defaults the zone color to be the currently set backlight color.
-        UpdateAllBacklightZoneColors(backlight_color, account_id);
-      }
+
+      // Defaults the zone color to be the currently set backlight color.
+      UpdateAllBacklightZoneColors(backlight_color, account_id);
+
       switch (backlight_color) {
         case personalization_app::mojom::BacklightColor::kWallpaper: {
           // Displaying the wallpaper color is handled by

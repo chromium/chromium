@@ -15,7 +15,6 @@
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/session_manager/session_manager_types.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -71,10 +70,7 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
 
 class KeyboardBacklightColorControllerTest : public NoSessionAshTestBase {
  public:
-  KeyboardBacklightColorControllerTest() {
-    scoped_feature_list_.InitWithFeatures({features::kMultiZoneRgbKeyboard},
-                                          {});
-  }
+  KeyboardBacklightColorControllerTest() = default;
 
   KeyboardBacklightColorControllerTest(
       const KeyboardBacklightColorControllerTest&) = delete;
@@ -130,7 +126,6 @@ class KeyboardBacklightColorControllerTest : public NoSessionAshTestBase {
       nullptr;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
 

@@ -577,9 +577,7 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {
   source->AddInteger("keyboardBacklightZoneCount",
-                     features::IsMultiZoneRgbKeyboardEnabled()
-                         ? Shell::Get()->rgb_keyboard_manager()->GetZoneCount()
-                         : 0);
+                     Shell::Get()->rgb_keyboard_manager()->GetZoneCount());
 }
 
 void PersonalizationAppUI::HandleWebUIRequest(
