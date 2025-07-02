@@ -512,6 +512,7 @@ void ExistingUserController::CompleteLogin(const UserContext& user_context) {
   is_login_in_progress_ = true;
 
   user_has_empty_password_.reset();
+  user_has_challenge_response_keys_.reset();
 
   ContinueLoginIfDeviceNotDisabled(
       base::BindOnce(&ExistingUserController::DoCompleteLogin,
@@ -533,6 +534,7 @@ void ExistingUserController::Login(const UserContext& user_context,
 
   is_login_in_progress_ = true;
   user_has_empty_password_.reset();
+  user_has_challenge_response_keys_.reset();
 
   if (user_context.GetUserType() != user_manager::UserType::kRegular &&
       user_manager::UserManager::Get()->IsUserLoggedIn()) {
@@ -576,6 +578,8 @@ void ExistingUserController::PerformLogin(
   }
 
   user_has_empty_password_ = new_user_context.GetKey()->GetSecret().empty();
+  user_has_challenge_response_keys_ =
+      !new_user_context.GetChallengeResponseKeys().empty();
 
   if (new_user_context.IsUsingPin()) {
     std::optional<Key> key =
@@ -902,7 +906,8 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
 
   if (is_enterprise_managed &&
       user_context.GetUserType() == user_manager::UserType::kRegular &&
-      user_has_empty_password_.value_or(false)) {
+      user_has_empty_password_.value_or(false) &&
+      !user_has_challenge_response_keys_.value_or(false)) {
     // ERROR: Enterprise-managed regular user lacks an online password.
     // This scenario is unsupported.
     SYSLOG(ERROR) << "Authentication failed: Enterprise-managed user lacks an "
