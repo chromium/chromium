@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
+#include "chrome/browser/ui/views/commerce/product_specifications_page_action_view_controller.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -402,6 +403,29 @@ void BrowserActions::InitializeBrowserActions() {
               l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT))
           .SetImage(
               ui::ImageModel::FromVectorIcon(vector_icons::kShoppingmodeIcon))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* tab_features =
+                    browser->GetActiveTabInterface()->GetTabFeatures();
+                CHECK(tab_features);
+
+                tab_features
+                    ->commerce_product_specifications_page_action_view_controller()
+                    ->ShowConfirmationToast();
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionCommerceProductSpecifications)
+          .SetText(
+              l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT))
+          .SetTooltipText(
+              l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              omnibox::kProductSpecificationsAddIcon))
           .Build());
 
   //------- Chrome Menu Actions --------//

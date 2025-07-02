@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
+#include "chrome/browser/ui/views/commerce/product_specifications_page_action_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -506,6 +507,18 @@ void CommerceUiTabHelper::UpdatePriceTrackingIconView() {
 }
 
 void CommerceUiTabHelper::UpdateProductSpecificationsIconView() {
+  if (IsPageActionMigrated(PageActionIconType::kProductSpecifications)) {
+    tab()
+        .GetTabFeatures()
+        ->commerce_product_specifications_page_action_view_controller()
+        ->UpdatePageIcon(ShouldShowProductSpecificationsIconView(),
+                         ShouldExpandPageActionIcon(
+                             PageActionIconType::kProductSpecifications),
+                         IsInRecommendedSet(),
+                         GetProductSpecificationsLabel(IsInRecommendedSet()));
+    return;
+  }
+
   UpdatePageActionIconView(PageActionIconType::kProductSpecifications);
 }
 

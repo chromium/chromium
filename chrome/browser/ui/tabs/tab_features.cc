@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
+#include "chrome/browser/ui/views/commerce/product_specifications_page_action_view_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
@@ -280,6 +281,13 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
       commerce_discounts_page_action_view_controller_ =
           std::make_unique<commerce::DiscountsPageActionViewController>(
+              tab, *page_action_controller_, *commerce_ui_tab_helper_);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kProductSpecifications)) {
+      commerce_product_specifications_page_action_view_controller_ =
+          std::make_unique<
+              commerce::ProductSpecificationsPageActionViewController>(
               tab, *page_action_controller_, *commerce_ui_tab_helper_);
     }
   }

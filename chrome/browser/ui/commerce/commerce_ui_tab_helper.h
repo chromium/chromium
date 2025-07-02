@@ -32,6 +32,7 @@ class SidePanelRegistry;
 class SidePanelUI;
 class DiscountsBubbleCoordinator;
 class DiscountsIconViewBrowserTest;
+class ProductSpecificationsIconViewBrowserTest;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -182,6 +183,7 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
  private:
   friend class CommerceUiTabHelperTest;
   friend class ::DiscountsIconViewBrowserTest;
+  friend class ::ProductSpecificationsIconViewBrowserTest;
 
   void UpdateUiForShoppingServiceReady(ShoppingService* service);
 

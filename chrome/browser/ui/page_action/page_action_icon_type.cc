@@ -32,6 +32,8 @@ const base::FeatureParam<bool>* GetPageActionMigrationParam(
       return &features::kPageActionsMigrationPriceInsights;
     case PageActionIconType::kDiscounts:
       return &features::kPageActionsMigrationDiscounts;
+    case PageActionIconType::kProductSpecifications:
+      return &features::kPageActionsMigrationProductSpecifications;
     case PageActionIconType::kManagePasswords:
       return &features::kPageActionsMigrationManagePasswords;
     case PageActionIconType::kCookieControls:

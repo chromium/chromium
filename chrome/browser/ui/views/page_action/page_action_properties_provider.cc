@@ -94,6 +94,14 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               },
           },
           {
+              kActionCommerceProductSpecifications,
+              {
+                  .histogram_name = "ProductSpecifications",
+                  .type = PageActionIconType::kProductSpecifications,
+                  .element_identifier = kProductSpecificationsChipElementId,
+              },
+          },
+          {
               kActionShowPasswordsBubbleOrPage,
               {
                   .histogram_name = "ManagePasswords",
