@@ -424,9 +424,6 @@ crbug.com/849572 [ angle-vulkan passthrough ] conformance/extensions/angle-insta
 crbug.com/849572 [ angle-swiftshader passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/849572 [ angle-opengles display-server-wayland linux passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 
-# Nvidia bugs fixed in latest driver
-# TODO(http://crbug.com/887241): Upgrade the drivers on the bots.
-crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 
 crbug.com/951628 [ passthrough ] conformance/rendering/blending.html [ Failure ]
 
@@ -451,7 +448,6 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
-crbug.com/1490427 [ angle-vulkan arm fuchsia fuchsia-board-nelson web-engine-shell ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
 
 
@@ -527,14 +523,14 @@ crbug.com/420455918 [ mac amd-0x7340 angle-opengl ] conformance/renderbuffers/st
 
 ## Mac Intel ##
 # Canvas missing colored squares - synchronization issue.
-crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
-crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
-crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
-crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
-crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 
 ####################
@@ -565,8 +561,6 @@ crbug.com/angleproject/5038 [ android passthrough ] conformance/extensions/ext-c
 crbug.com/angleproject/5038 [ android no-passthrough qualcomm renderer-skia-gl ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/angleproject/5038 [ android-pie android-shield-android-tv no-passthrough nvidia renderer-skia-gl target-cpu-32 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
-# Was too difficult to suppress these failures on individual bots.
-crbug.com/1470376 [ android-oreo ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 ## Android NVIDIA Shield TV ##
 
@@ -626,7 +620,6 @@ crbug.com/396176034 [ android android-sm-a137f ] conformance/offscreencanvas/con
 
 crbug.com/1372149 [ android android-sm-a236b no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241618 [ android android-sm-s911u1 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
 crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
@@ -637,7 +630,7 @@ crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/con
 
 # Brya failures
 crbug.com/416483574 [ android android-brya ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
-crbug.com/416483574 [ android android-brya ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
+crbug.com/416483574 [ android android-brya angle-opengles renderer-skia-gl ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 
 
 ############
