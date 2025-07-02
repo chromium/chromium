@@ -121,12 +121,13 @@ class LensOverlayPageActionIconViewTest
                   },
               },
           },
-          {});
+          {lens::features::kLensOverlayKeyboardSelection});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {lens::features::kLensOverlay,
            lens::features::kLensOverlayOmniboxEntryPoint},
-          {::features::kPageActionsMigration});
+          {lens::features::kLensOverlayKeyboardSelection,
+           ::features::kPageActionsMigration});
     }
   }
 
