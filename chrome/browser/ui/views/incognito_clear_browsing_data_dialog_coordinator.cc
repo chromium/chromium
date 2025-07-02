@@ -5,15 +5,8 @@
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
 
 #include <memory>
-#include <utility>
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_utils.h"
 
@@ -27,14 +20,10 @@ IncognitoClearBrowsingDataDialogCoordinator::
 }
 
 void IncognitoClearBrowsingDataDialogCoordinator::Show(
-    IncognitoClearBrowsingDataDialogInterface::Type type) {
-  Browser* const browser = browser_->GetBrowserForMigrationOnly();
-  auto* avatar_toolbar_button = BrowserView::GetBrowserViewForBrowser(browser)
-                                    ->toolbar_button_provider()
-                                    ->GetAvatarToolbarButton();
-
+    IncognitoClearBrowsingDataDialogInterface::Type type,
+    views::View* anchor_view) {
   auto bubble = std::make_unique<IncognitoClearBrowsingDataDialog>(
-      avatar_toolbar_button, profile_, type);
+      anchor_view, profile_, type);
   DCHECK_EQ(nullptr, bubble_tracker_.view());
   bubble_tracker_.SetView(bubble.get());
 
@@ -55,7 +44,7 @@ IncognitoClearBrowsingDataDialog* IncognitoClearBrowsingDataDialogCoordinator::
 }
 
 IncognitoClearBrowsingDataDialogCoordinator::
-    IncognitoClearBrowsingDataDialogCoordinator(BrowserWindowInterface* browser)
-    : browser_(browser),
-      profile_(browser->GetProfile()),
-      user_education_(browser->GetUserEducationInterface()) {}
+    IncognitoClearBrowsingDataDialogCoordinator(
+        Profile* profile,
+        BrowserUserEducationInterface* user_education)
+    : profile_(profile), user_education_(user_education) {}

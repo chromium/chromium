@@ -339,7 +339,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       std::make_unique<UpgradeNotificationController>(browser);
 
   incognito_clear_browsing_data_dialog_coordinator_ =
-      std::make_unique<IncognitoClearBrowsingDataDialogCoordinator>(browser);
+      std::make_unique<IncognitoClearBrowsingDataDialogCoordinator>(
+          browser->GetProfile(), browser->GetUserEducationInterface());
 
   if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser)) {
     color_provider_browser_helper_ =

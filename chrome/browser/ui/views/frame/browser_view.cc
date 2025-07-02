@@ -6052,18 +6052,22 @@ void BrowserView::ShowHatsDialog(
 }
 
 void BrowserView::ShowIncognitoClearBrowsingDataDialog() {
+  CHECK(toolbar_button_provider_);
   browser()
       ->GetFeatures()
       .incognito_clear_browsing_data_dialog_coordinator()
-      ->Show(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble);
+      ->Show(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble,
+             toolbar_button_provider_->GetAvatarToolbarButton());
 }
 
 void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
+  CHECK(toolbar_button_provider_);
   browser()
       ->GetFeatures()
       .incognito_clear_browsing_data_dialog_coordinator()
       ->Show(IncognitoClearBrowsingDataDialogInterface::Type::
-                 kHistoryDisclaimerBubble);
+                 kHistoryDisclaimerBubble,
+             toolbar_button_provider_->GetAvatarToolbarButton());
 }
 
 bool BrowserView::IsTabModalPopupDeprecated() const {
