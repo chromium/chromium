@@ -107,6 +107,7 @@ import java.util.List;
 public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarManageable {
 
     private static final int ANIM_DURATION_MS = 250;
+    public static final String COMPONENT_NAME = "ArchivedTabsDialog";
 
     /** Interface exposing functionality to the menu items for the archived tabs dialog */
     public interface ArchiveDelegate {
@@ -817,7 +818,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         mDesktopWindowStateManager,
                         /* edgeToEdgeSupplier= */ null,
                         CreationMode.FULL_SCREEN,
-                        /* undoBarExplicitTrigger= */ null);
+                        /* undoBarExplicitTrigger= */ null,
+                        COMPONENT_NAME);
     }
 
     @VisibleForTesting

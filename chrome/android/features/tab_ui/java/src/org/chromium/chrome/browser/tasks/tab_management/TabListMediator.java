@@ -1227,6 +1227,11 @@ class TabListMediator implements TabListNotificationHandler {
                                         getOnMaybeTabClosedCallback(tabId));
                         tabModel.getTabRemover()
                                 .closeTabs(closureParams, /* allowDialog= */ true, listener);
+
+                        if (mComponentName.equals(ArchivedTabsDialogCoordinator.COMPONENT_NAME)
+                                && mUndoBarExplicitTrigger != null) {
+                            mUndoBarExplicitTrigger.triggerSnackbarForTab(closingTab);
+                        }
                     }
 
                     @Override

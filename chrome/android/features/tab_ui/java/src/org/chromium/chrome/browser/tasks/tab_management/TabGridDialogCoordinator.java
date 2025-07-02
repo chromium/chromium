@@ -366,7 +366,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* desktopWindowStateManager= */ null,
                             /* edgeToEdgeSupplier= */ null,
                             CreationMode.DIALOG,
-                            /* undoBarExplicitTrigger= */ null);
+                            /* undoBarExplicitTrigger= */ null,
+                            /* componentName= */ null);
         }
 
         return mTabListEditorCoordinator.getController();

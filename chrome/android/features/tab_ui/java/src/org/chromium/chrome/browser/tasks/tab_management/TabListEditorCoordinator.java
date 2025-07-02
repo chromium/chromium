@@ -300,6 +300,7 @@ class TabListEditorCoordinator {
     private final ModalDialogManager mModalDialogManager;
     private final @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
+    private final String mComponentName;
 
     private @Nullable MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private @Nullable TabListCoordinator mTabListCoordinator;
@@ -329,6 +330,9 @@ class TabListEditorCoordinator {
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param creationMode Mode in which list is created e.g. full screen mode or in a dialog.
      * @param undoBarExplicitTrigger Used to explicitly trigger the undo bar closure snackbar.
+     * @param componentName A unique string used to identify the parent component. Null if the
+     *     originating component is not important and the current component name is preferred.
+     *     Recommended to use the class name or make sure the string is unique.
      */
     public TabListEditorCoordinator(
             Activity activity,
@@ -348,7 +352,8 @@ class TabListEditorCoordinator {
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @CreationMode int creationMode,
-            @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger) {
+            @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
+            @Nullable String componentName) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
             mActivity = activity;
             mRootView = rootView;
@@ -365,6 +370,7 @@ class TabListEditorCoordinator {
             mModalDialogManager = modalDialogManager;
             mEdgeToEdgeSupplier = edgeToEdgeSupplier;
             mUndoBarExplicitTrigger = undoBarExplicitTrigger;
+            mComponentName = componentName == null ? COMPONENT_NAME : componentName;
 
             // The change processor isn't created until TabListCoordinator is created (lazily).
             mTabListEditorLayout =
@@ -578,7 +584,7 @@ class TabListEditorCoordinator {
                         /* priceWelcomeMessageControllerSupplier= */ null,
                         mTabListEditorLayout,
                         /* attachToParent= */ false,
-                        COMPONENT_NAME,
+                        mComponentName,
                         /* onModelTokenChange= */ null,
                         /* hasEmptyView= */ false,
                         /* emptyImageResId= */ Resources.ID_NULL,

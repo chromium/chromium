@@ -4943,6 +4943,48 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testSingleTabClosure_ArchivedTab_ExplicitTriggerSnackbar() {
+        mMediator =
+                new TabListMediator(
+                        mActivity,
+                        mModelList,
+                        TabListMode.GRID,
+                        mModalDialogManager,
+                        mCurrentTabGroupModelFilterSupplier,
+                        getTabThumbnailCallback(),
+                        mTabListFaviconProvider,
+                        false,
+                        () -> mSelectionDelegate,
+                        null,
+                        null,
+                        null,
+                        ArchivedTabsDialogCoordinator.COMPONENT_NAME,
+                        TabProperties.TabActionState.CLOSABLE,
+                        mDataSharingTabManager,
+                        /* onTabGroupCreation= */ null,
+                        mUndoBarExplicitTrigger);
+        initAndAssertAllProperties();
+
+        mModelList
+                .get(1)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
+                .run(
+                        mItemView2,
+                        mModelList.get(1).model.get(TabProperties.TAB_ID),
+                        /* triggeringMotion= */ null);
+
+        verify(mTabRemover)
+                .closeTabs(
+                        argThat(params -> params.tabs.get(0) == mTab2),
+                        /* allowDialog= */ eq(true),
+                        any());
+
+        verify(mUndoBarExplicitTrigger).triggerSnackbarForTab(eq(mTab2));
+    }
+
+    @Test
     public void sendsOpenGroupSignalCorrectly_SavedTabGroupType() {
         List<Tab> tabs = Arrays.asList(mTab1);
         List<String> syncIds = new ArrayList<>(Arrays.asList(SYNC_GROUP_ID1));
