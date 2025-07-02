@@ -23,14 +23,15 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
+#include "ipc/ipc_channel.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-data-view.h"
@@ -52,13 +53,20 @@ SkBitmap ResizeImageBlocking(const SkBitmap& image, int target_size) {
 
 }  // namespace
 
-class KioskWebAppData::IconFetcher : public ImageDecoder::ImageRequest {
+class KioskWebAppData::IconFetcher {
  public:
-  IconFetcher(const base::WeakPtr<KioskWebAppData>& client,
-              const GURL& icon_url)
-      : client_(client), icon_url_(icon_url) {}
+  using ResultCallback = base::OnceCallback<void(SkBitmap)>;
 
-  void Start() {
+  IconFetcher() = default;
+  IconFetcher(const IconFetcher&) = delete;
+  IconFetcher& operator=(const IconFetcher&) = delete;
+  ~IconFetcher() = default;
+
+  // `callback` will be called unless `this` is deleted.
+  // When download or decode fails, the callback is invoked with null.
+  void Start(const GURL& icon_url, ResultCallback callback) {
+    CHECK(callback);
+
     net::NetworkTrafficAnnotationTag traffic_annotation =
         net::DefineNetworkTrafficAnnotation("kiosk_app_icon", R"(
         semantics {
@@ -93,7 +101,7 @@ class KioskWebAppData::IconFetcher : public ImageDecoder::ImageRequest {
             "downloads a publicly available PNG file."
         })");
     auto resource_request = std::make_unique<network::ResourceRequest>();
-    resource_request->url = icon_url_;
+    resource_request->url = icon_url;
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     simple_loader_ = network::SimpleURLLoader::Create(
         std::move(resource_request), traffic_annotation);
@@ -115,65 +123,62 @@ class KioskWebAppData::IconFetcher : public ImageDecoder::ImageRequest {
 
     simple_loader_->DownloadToString(
         loader_factory,
-        base::BindOnce(
-            [](base::WeakPtr<KioskWebAppData> client,
-               std::unique_ptr<std::string> response_body) {
-              if (!client) {
-                return;
-              }
-              client->icon_fetcher_->OnSimpleLoaderComplete(
-                  std::move(response_body));
-            },
-            client_),
+        base::BindOnce(&IconFetcher::OnDownloadCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         kMaxIconFileSize);
   }
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
+ private:
+  void OnDownloadCompleted(ResultCallback callback,
+                           std::unique_ptr<std::string> response_body) {
     if (!response_body) {
       LOG(ERROR) << "Could not download icon url for kiosk app.";
+      std::move(callback).Run(SkBitmap());
       return;
     }
+
     // Call start to begin decoding.  The ImageDecoder will call OnImageDecoded
     // with the data when it is done.
-    ImageDecoder::Start(this, std::move(*response_body));
+    data_decoder::DecodeImageIsolated(
+        base::as_byte_span(*response_body),
+        data_decoder::mojom::ImageCodec::kDefault,
+        /*shrink_to_fit=*/false,
+        static_cast<int64_t>(IPC::Channel::kMaximumMessageSize),
+        /*desired_image_frame_size=*/gfx::Size(),
+        base::BindOnce(&IconFetcher::OnImageDecoded,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
- private:
-  // ImageDecoder::ImageRequest:
-  void OnImageDecoded(const SkBitmap& decoded_image) override {
-    if (!client_) {
+  void OnImageDecoded(ResultCallback callback, const SkBitmap& bitmap) {
+    if (bitmap.isNull()) {
+      LOG(ERROR) << "Could not download icon url for kiosk app.";
+      std::move(callback).Run(SkBitmap());
       return;
     }
 
     // Icons have to be square shaped.
-    if (decoded_image.width() != decoded_image.height()) {
+    if (bitmap.width() != bitmap.height() || bitmap.empty()) {
       LOG(ERROR) << "Received kiosk icon of invalid shape.";
+      std::move(callback).Run(SkBitmap());
       return;
     }
 
-    int size = decoded_image.width();
-    if (size == KioskWebAppData::kIconSize) {
-      client_->OnDidDownloadIcon(decoded_image);
-      return;
+    if (bitmap.width() == KioskWebAppData::kIconSize) {
+      std::move(callback).Run(bitmap);
+    } else {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          {base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+          base::BindOnce(ResizeImageBlocking, bitmap,
+                         KioskWebAppData::kIconSize),
+          std::move(callback));
     }
-
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::TaskPriority::USER_VISIBLE,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(ResizeImageBlocking, decoded_image,
-                       KioskWebAppData::kIconSize),
-        base::BindOnce(&KioskWebAppData::OnDidDownloadIcon, client_));
   }
 
-  void OnDecodeImageFailed() override {
-    // Do nothing.
-    LOG(ERROR) << "Could not download icon url for kiosk app.";
-  }
-
-  base::WeakPtr<KioskWebAppData> client_;
-  const GURL icon_url_;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
+
+  base::WeakPtrFactory<IconFetcher> weak_ptr_factory_{this};
 };
 
 KioskWebAppData::KioskWebAppData(KioskAppDataDelegate& delegate,
@@ -240,9 +245,10 @@ void KioskWebAppData::LoadIcon() {
 
   status_ = Status::kLoading;
 
-  icon_fetcher_ = std::make_unique<KioskWebAppData::IconFetcher>(
-      weak_ptr_factory_.GetWeakPtr(), icon_url_);
-  icon_fetcher_->Start();
+  icon_fetcher_ = std::make_unique<IconFetcher>();
+  icon_fetcher_->Start(icon_url_,
+                       base::BindOnce(&KioskWebAppData::OnDidDownloadIcon,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 GURL KioskWebAppData::GetLaunchableUrl() const {
@@ -325,10 +331,16 @@ GURL KioskWebAppData::GetLastIconUrl(const base::Value::Dict& dict) const {
   return icon_url_string ? GURL(*icon_url_string) : GURL();
 }
 
-void KioskWebAppData::OnDidDownloadIcon(const SkBitmap& icon) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+void KioskWebAppData::OnDidDownloadIcon(SkBitmap icon) {
+  if (icon.isNull()) {
+    // NOTE: Probably we should do something on error cases.
+    return;
+  }
 
-  std::unique_ptr<IconFetcher> fetcher = std::move(icon_fetcher_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_EQ(icon.width(), KioskWebAppData::kIconSize);
+
+  icon_fetcher_.reset();
 
   if (status_ == Status::kInstalled) {
     return;

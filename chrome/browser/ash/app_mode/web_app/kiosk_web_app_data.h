@@ -77,7 +77,7 @@ class KioskWebAppData : public KioskAppDataBase {
 
  private:
   class IconFetcher;
-  void OnDidDownloadIcon(const SkBitmap& icon);
+  void OnDidDownloadIcon(SkBitmap result);
   void OnIconLoadDone(std::optional<gfx::ImageSkia> icon);
 
   bool LoadLaunchUrlFromDictionary(const base::Value::Dict& dict);
