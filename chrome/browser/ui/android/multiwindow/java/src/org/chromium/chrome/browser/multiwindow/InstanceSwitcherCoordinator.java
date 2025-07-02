@@ -523,7 +523,7 @@ public class InstanceSwitcherCoordinator {
                     mIsInactiveListShowing
                             ? R.string.max_number_of_windows_instance_switcher_v2_inactive_tab
                             : R.string.max_number_of_windows_instance_switcher_v2_active_tab;
-            String text = mContext.getString(textRes, mMaxInstanceCount, mMaxInstanceCount - 1);
+            String text = mContext.getString(textRes, mMaxInstanceCount - 1);
             mMaxInfoView.setText(text);
             mMaxInfoView.setVisibility(View.VISIBLE);
         }

@@ -542,7 +542,6 @@ public class InstanceSwitcherCoordinatorTest {
                         .getActivity()
                         .getString(
                                 R.string.max_number_of_windows_instance_switcher_v2_active_tab,
-                                MAX_INSTANCE_COUNT,
                                 MAX_INSTANCE_COUNT - 1);
 
         // Verify that we show the max info message for the active tab.
@@ -562,7 +561,6 @@ public class InstanceSwitcherCoordinatorTest {
                         .getActivity()
                         .getString(
                                 R.string.max_number_of_windows_instance_switcher_v2_inactive_tab,
-                                MAX_INSTANCE_COUNT,
                                 MAX_INSTANCE_COUNT - 1);
 
         // Switch to the inactive instance tab.
