@@ -185,8 +185,12 @@ class TouchToFillPaymentMethodMediator {
             "Autofill.TouchToFill.LoyaltyCard.Outcome";
 
     @VisibleForTesting
-    static final String TOUCH_TO_FILL_LOYALTY_CARD_INDEX_SELECTED =
-            "Autofill.TouchToFill.LoyaltyCard.SelectedIndex";
+    static final String TOUCH_TO_FILL_AFFILIATED_LOYALTY_CARDS_SCREEN_INDEX_SELECTED =
+            "Autofill.TouchToFill.LoyaltyCard.Affiliated.SelectedIndex";
+
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_ALL_LOYALTY_CARDS_SCREEN_INDEX_SELECTED =
+            "Autofill.TouchToFill.LoyaltyCard.All.SelectedIndex";
 
     @VisibleForTesting
     static final String TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN =
@@ -484,9 +488,15 @@ class TouchToFillPaymentMethodMediator {
                 affiliatedLoyaltyCardSelected
                         ? TouchToFillLoyaltyCardOutcome.AFFILIATED_LOYALTY_CARD
                         : TouchToFillLoyaltyCardOutcome.NON_AFFILIATED_LOYALTY_CARD);
-        RecordHistogram.recordCount100Histogram(
-                TOUCH_TO_FILL_LOYALTY_CARD_INDEX_SELECTED,
-                mAffiliatedLoyaltyCards.indexOf(loyaltyCard));
+        if (mModel.get(CURRENT_SCREEN) == HOME_SCREEN) {
+            RecordHistogram.recordCount100Histogram(
+                    TOUCH_TO_FILL_AFFILIATED_LOYALTY_CARDS_SCREEN_INDEX_SELECTED,
+                    mAffiliatedLoyaltyCards.indexOf(loyaltyCard));
+        } else {
+            RecordHistogram.recordCount100Histogram(
+                    TOUCH_TO_FILL_ALL_LOYALTY_CARDS_SCREEN_INDEX_SELECTED,
+                    mAllLoyaltyCards.indexOf(loyaltyCard));
+        }
     }
 
     private void showAllLoyaltyCards() {

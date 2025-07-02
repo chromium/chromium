@@ -7041,6 +7041,30 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.TouchToFill.LoyaltyCard.Affiliated.SelectedIndex"
+    units="index" expires_after="2025-12-31">
+  <owner>tchudakov@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The index of the selected loyalty card on the affiliated loyalty cards
+    screen in the Touch To Fill bottom sheet. Recorded when user selects a
+    loyalty card from the list.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.TouchToFill.LoyaltyCard.All.SelectedIndex"
+    units="index" expires_after="2025-12-31">
+  <owner>tchudakov@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The index of the selected loyalty card on the all loyalty cards screen in
+    the Touch To Fill bottom sheet. Recorded when user selects a loyalty card
+    from the list.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.TouchToFill.LoyaltyCard.NumberOfAffiliatedLoyaltyCardsShown"
     units="loyalty cards" expires_after="2025-12-31">
@@ -7074,17 +7098,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>
     Records the user action on the Touch To Fill for loyalty cards. It is
     recorded when the Touch To Fill bottom sheet is closed.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.TouchToFill.LoyaltyCard.SelectedIndex" units="index"
-    expires_after="2025-12-31">
-  <owner>tchudakov@google.com</owner>
-  <owner>jsaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    The index of the selected loyalty card in the Touch To Fill bottom sheet.
-    Recorded when user selects a loyalty card from the list.
   </summary>
 </histogram>
 
