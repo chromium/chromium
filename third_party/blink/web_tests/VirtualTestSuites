@@ -5013,7 +5013,7 @@
     "args": [
       "--js-flags=--wasm-tiering-budget=100 --allow-natives-syntax"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "never"
   },
   {
     "prefix": "web-bluetooth-new-permissions-backend",
