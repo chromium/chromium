@@ -69,6 +69,13 @@ template("tflite_target_gen") {
   foreach(type, tflite_target_types) {
     target(invoker.target_type, target_name + type) {
       forward_variables_from(invoker, minimal_vars_to_forward_to_target)
+
+      if (defined(cflags) && filter_include(cflags, [ "-ObjC++" ]) != []) {
+        # Disable libc++ modules when compiling with Objective-C++ support, as
+        # it is incompatible with the libc++ modules build on macOS.
+        use_libcxx_modules = false
+      }
+
       if (defined(invoker.conditional_deps)) {
         _adjusted_deps = []
         foreach(dep, invoker.conditional_deps) {
