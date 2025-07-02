@@ -430,8 +430,11 @@ public class InstanceSwitcherCoordinator {
     private void selectInstance(InstanceInfo clickedItem) {
         int instanceId = clickedItem.instanceId;
 
-        // Skip selection if the instance is already selected or is the current instance.
-        if (mSelectedItem != null && mSelectedItem.instanceId == instanceId) return;
+        // Clear selection if the instance is already selected.
+        if (mSelectedItem != null && mSelectedItem.instanceId == instanceId) {
+            unselectItems();
+            return;
+        }
 
         assumeNonNull(mDialog);
         Iterator<ListItem> it =

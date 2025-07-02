@@ -605,6 +605,62 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testDeselectWindow() throws Exception {
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
+        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
+        final int itemClickCount = itemClickCallbackHelper.getCallCount();
+        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            openCallback,
+                            null,
+                            null,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances));
+                });
+
+        // Verify "Open" button is disabled before a selection is made.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+
+        // Select the second item.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(1, click()));
+
+        // Select the same item again, this should deselect the item.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(1, click()));
+
+        // Verify "Open" button is now disabled.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+
+        // Select the same item again.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(1, click()));
+
+        // Verify "Open" button is now enabled and open the selected instance.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
+                .inRoot(isDialog())
+                .check(matches(isEnabled()))
+                .perform(click());
+        itemClickCallbackHelper.waitForCallback(itemClickCount);
+    }
+
+    @Test
+    @SmallTest
     public void testSkipCloseConfirmation() throws Exception {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
