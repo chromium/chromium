@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DOMStorage.CommitSizeBytes" units="bytes"
-    expires_after="2025-08-10">
+    expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -301,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DOMStorage.CommitSizeBytesAggregated" units="bytes"
-    expires_after="2025-08-24">
+    expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -376,13 +376,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.GetUnacquirableLocksLongTimes" units="ms"
-    expires_after="2025-04-20">
+    expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Logs the duration of PartitionedLockManager::GetUnacquirableLocks, but only
     if it takes over 2ms to execute. This is intended to facilitate tracking
-    down performance issues. See crbug.com/384476946
+    down performance issues. See crbug.com/384476946.
+
+    Warning: this histogram was expired from 2025/04 to 2025/06; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -495,12 +498,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.QuotaCheckTime2.{QuotaCheckResult}" units="ms"
-    expires_after="2025-04-20">
+    expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Logs the result of quota checks made by the IndexedDB component on commit of
     readwrite txns.
+
+    Warning: this histogram was expired from 2025/04 to 2025/06; data may be
+    missing.
   </summary>
   <token key="QuotaCheckResult">
     <variant name="DroppedRequest"/>
@@ -645,12 +651,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBWrapper.CommitDelay" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2026-07-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Delay between the browser process receiving changes and those changes being
     written to the DB.
+
+    Warning: this histogram was expired from 2025/03 to 2025/06; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -810,12 +819,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Blob.FileReaderLoader.DataPipeNotReadableMojoError"
-    enum="FileReaderLoaderMojoResult" expires_after="2025-02-16">
+    enum="FileReaderLoaderMojoResult" expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Recorded when FileReaderLoader.FailureType2 records a data pipe not readable
     error. This is the specific type of Mojo error.
+
+    Warning: this histogram was expired from 2025/02 to 2025/06; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -844,7 +856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Buckets.BucketCount" units="buckets"
-    expires_after="2025-04-01">
+    expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -855,40 +867,59 @@ chromium-metrics-reviews@google.com.
     (per Chrome client). The count in histogram bucket N, divided by the size of
     the bucket, correlates to the number of sites for that Chrome client which
     use at least that many buckets.
+
+    Warning: this histogram was expired from 2025/04 to 2025/06; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Storage.Buckets.Parameters.Durability"
-    enum="StorageBucketDurabilityParameter" expires_after="2025-04-01">
+    enum="StorageBucketDurabilityParameter" expires_after="2025-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
-  <summary>The requested durability for a bucket when it is open()ed.</summary>
+  <summary>
+    The requested durability for a bucket when it is open()ed.
+
+    Warning: this histogram was expired from 2025/04 to 2025/06; data may be
+    missing.
+  </summary>
 </histogram>
 
 <histogram name="Storage.Buckets.Parameters.Expiration" units="minutes"
-    expires_after="2025-04-01">
+    expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The expiration time for a bucket, in minutes, if provided when it is
     open()ed. If not provided, the underflow bucket is used.
+
+    Warning: this histogram was expired from 2025/04 to 2025/06; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Storage.Buckets.Parameters.Persisted"
-    enum="StorageBucketPersistedParameter" expires_after="2025-04-01">
+    enum="StorageBucketPersistedParameter" expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
-  <summary>The requested persistence for a bucket when it is open()ed.</summary>
+  <summary>
+    The requested persistence for a bucket when it is open()ed.
+
+    Warning: this histogram was expired from 2025/04 to 2025/06; data may be
+    missing.
+  </summary>
 </histogram>
 
 <histogram name="Storage.Buckets.Parameters.QuotaKb" units="KB"
-    expires_after="2025-04-01">
+    expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The requested quota for a bucket, in kB, if provided. If not provided, the
     underflow bucket is used. Logged when the bucket is open()ed.
+
+    Warning: this histogram was expired from 2025/04 to 2025/06; data may be
+    missing.
   </summary>
 </histogram>
 
