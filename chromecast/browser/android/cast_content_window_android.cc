@@ -122,9 +122,7 @@ void CastContentWindowAndroid::MediaStoppedPlaying(
                                                 static_cast<jboolean>(false));
 }
 
-void CastContentWindowAndroid::OnActivityStopped(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void CastContentWindowAndroid::OnActivityStopped(JNIEnv* env) {
   for (auto& observer : observers_) {
     observer->OnWindowDestroyed();
   }
@@ -133,10 +131,8 @@ void CastContentWindowAndroid::OnActivityStopped(
 void CastContentWindowAndroid::RequestVisibility(
     VisibilityPriority visibility_priority) {}
 
-void CastContentWindowAndroid::OnVisibilityChange(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    int visibility_type) {
+void CastContentWindowAndroid::OnVisibilityChange(JNIEnv* env,
+                                                  int visibility_type) {
   NotifyVisibilityChange(static_cast<VisibilityType>(visibility_type));
 }
 

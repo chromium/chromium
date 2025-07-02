@@ -379,9 +379,12 @@ class AudioSinkAudioTrackImpl {
         mAudioTrackTimestampBuffer.putLong(8, 0);
         mAudioTrackTimestampBuffer.putLong(16, System.nanoTime());
 
-        AudioSinkAudioTrackImplJni.get().cacheDirectBufferAddress(mNativeAudioSinkAudioTrackImpl,
-                AudioSinkAudioTrackImpl.this, mPcmBuffer, mRenderingDelayBuffer,
-                mAudioTrackTimestampBuffer);
+        AudioSinkAudioTrackImplJni.get()
+                .cacheDirectBufferAddress(
+                        mNativeAudioSinkAudioTrackImpl,
+                        mPcmBuffer,
+                        mRenderingDelayBuffer,
+                        mAudioTrackTimestampBuffer);
     }
 
     @CalledByNative
@@ -837,8 +840,10 @@ class AudioSinkAudioTrackImpl {
 
     @NativeMethods
     interface Natives {
-        void cacheDirectBufferAddress(long nativeAudioSinkAndroidAudioTrackImpl,
-                AudioSinkAudioTrackImpl caller, ByteBuffer mPcmBuffer,
-                ByteBuffer mRenderingDelayBuffer, ByteBuffer mAudioTrackTimestampBuffer);
+        void cacheDirectBufferAddress(
+                long nativeAudioSinkAndroidAudioTrackImpl,
+                ByteBuffer mPcmBuffer,
+                ByteBuffer mRenderingDelayBuffer,
+                ByteBuffer mAudioTrackTimestampBuffer);
     }
 }

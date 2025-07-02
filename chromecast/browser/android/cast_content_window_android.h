@@ -44,10 +44,8 @@ class CastContentWindowAndroid : public CastContentWindow,
       content::WebContentsObserver::MediaStoppedReason reason) override;
 
   // Called through JNI.
-  void OnActivityStopped(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& jcaller);
+  void OnActivityStopped(JNIEnv* env);
   void OnVisibilityChange(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& jcaller,
                           int visibility_type);
 
  private:

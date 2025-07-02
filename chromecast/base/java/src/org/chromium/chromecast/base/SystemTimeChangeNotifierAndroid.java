@@ -37,7 +37,7 @@ public final class SystemTimeChangeNotifierAndroid {
             @Override
             public void onReceive(Context context, Intent intent) {
                 SystemTimeChangeNotifierAndroidJni.get().onTimeChanged(
-                        nativeSystemTimeChangeNotifier, SystemTimeChangeNotifierAndroid.this);
+                        nativeSystemTimeChangeNotifier);
             }
         };
         IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_CHANGED);
@@ -52,7 +52,6 @@ public final class SystemTimeChangeNotifierAndroid {
 
     @NativeMethods
     interface Natives {
-        void onTimeChanged(
-                long nativeSystemTimeChangeNotifierAndroid, SystemTimeChangeNotifierAndroid caller);
+        void onTimeChanged(long nativeSystemTimeChangeNotifierAndroid);
     }
 }

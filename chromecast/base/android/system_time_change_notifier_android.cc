@@ -24,8 +24,7 @@ SystemTimeChangeNotifierAndroid::~SystemTimeChangeNotifierAndroid() {
 }
 
 void SystemTimeChangeNotifierAndroid::OnTimeChanged(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+    JNIEnv* env) {
   NotifySystemTimeChanged();
 }
 

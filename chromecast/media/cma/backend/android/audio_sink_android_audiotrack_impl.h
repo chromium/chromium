@@ -66,7 +66,6 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   // byte_buffers.
   void CacheDirectBufferAddress(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& pcm_byte_buffer,
       const base::android::JavaParamRef<jobject>& rendering_delay_byte_buffer,
       const base::android::JavaParamRef<jobject>&

@@ -186,7 +186,6 @@ void AudioSinkAndroidAudioTrackImpl::PreventDelegateCalls() {
 
 void AudioSinkAndroidAudioTrackImpl::CacheDirectBufferAddress(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& pcm_byte_buffer,
     const JavaParamRef<jobject>& rendering_delay_byte_buffer,
     const JavaParamRef<jobject>& audio_track_timestamp_byte_buffer) {

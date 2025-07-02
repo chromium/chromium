@@ -22,8 +22,7 @@ class SystemTimeChangeNotifierAndroid : public SystemTimeChangeNotifier {
   ~SystemTimeChangeNotifierAndroid() override;
 
   // Called from Java.
-  void OnTimeChanged(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& jobj);
+  void OnTimeChanged(JNIEnv* env);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_notifier_;

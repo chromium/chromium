@@ -142,9 +142,7 @@ public class CastContentWindowAndroid
     public void onComponentClosed() {
         Log.d(TAG, "Component closed: sessionId=" + mSessionId);
         if (mNativeCastContentWindowAndroid != 0) {
-            CastContentWindowAndroidJni.get()
-                    .onActivityStopped(
-                            mNativeCastContentWindowAndroid, CastContentWindowAndroid.this);
+            CastContentWindowAndroidJni.get().onActivityStopped(mNativeCastContentWindowAndroid);
         }
     }
 
@@ -153,21 +151,14 @@ public class CastContentWindowAndroid
         Log.d(TAG, "Visiblity changed: sessionId=%s, visibility=%d", mSessionId, visibilityType);
         if (mNativeCastContentWindowAndroid != 0) {
             CastContentWindowAndroidJni.get()
-                    .onVisibilityChange(
-                            mNativeCastContentWindowAndroid,
-                            CastContentWindowAndroid.this,
-                            visibilityType);
+                    .onVisibilityChange(mNativeCastContentWindowAndroid, visibilityType);
         }
     }
 
     @NativeMethods
     interface Natives {
-        void onActivityStopped(
-                long nativeCastContentWindowAndroid, CastContentWindowAndroid caller);
+        void onActivityStopped(long nativeCastContentWindowAndroid);
 
-        void onVisibilityChange(
-                long nativeCastContentWindowAndroid,
-                CastContentWindowAndroid caller,
-                int visibilityType);
+        void onVisibilityChange(long nativeCastContentWindowAndroid, int visibilityType);
     }
 }
