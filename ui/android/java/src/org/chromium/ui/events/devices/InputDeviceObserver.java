@@ -61,12 +61,12 @@ public class InputDeviceObserver implements InputDeviceListener {
     // Override InputDeviceListener methods
     @Override
     public void onInputDeviceChanged(int deviceId) {
-        InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
+        InputDeviceObserverJni.get().inputConfigurationChanged();
     }
 
     @Override
     public void onInputDeviceRemoved(int deviceId) {
-        InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
+        InputDeviceObserverJni.get().inputConfigurationChanged();
         // InputDevice#getDevice() returns null for a removed device, and therefore we will use the
         // |mActiveDeviceMap| to determine the source type of the removed device.
         if (!mActiveDeviceMap.containsKey(deviceId)) return;
@@ -80,7 +80,7 @@ public class InputDeviceObserver implements InputDeviceListener {
 
     @Override
     public void onInputDeviceAdded(int deviceId) {
-        InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
+        InputDeviceObserverJni.get().inputConfigurationChanged();
         var device = InputDevice.getDevice(deviceId);
         if (device == null) return;
         if ((device.getSources() & InputDevice.SOURCE_KEYBOARD) == InputDevice.SOURCE_KEYBOARD) {
@@ -112,6 +112,6 @@ public class InputDeviceObserver implements InputDeviceListener {
 
     @NativeMethods
     interface Natives {
-        void inputConfigurationChanged(InputDeviceObserver caller);
+        void inputConfigurationChanged();
     }
 }

@@ -35,9 +35,7 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   ~EventForwarder();
 
-  base::android::ScopedJavaLocalRef<jobject> GetJavaWindowAndroid(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetJavaWindowAndroid(JNIEnv* env);
 
   // |oldest_event_time| and |latest_event_time| would be same for a MotionEvent
   // without any historical events attached to it. For cases when there are

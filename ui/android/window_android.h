@@ -80,7 +80,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   ~WindowAndroid() override;
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -102,25 +102,18 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   void SetNeedsAnimate();
   void Animate(base::TimeTicks begin_frame_time);
   void OnVisibilityChanged(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
                            bool visible);
-  void OnActivityStopped(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
-  void OnActivityStarted(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
+  void OnActivityStopped(JNIEnv* env);
+  void OnActivityStarted(JNIEnv* env);
   void OnUpdateRefreshRate(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
                            float refresh_rate);
   void OnSupportedRefreshRatesUpdated(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jfloatArray>& supported_refresh_rates);
   void OnAdaptiveRefreshRateInfoChanged(JNIEnv* env,
                                         jboolean supports_adaptive_refresh_rate,
                                         jfloat suggested_frame_rate_high);
-  void OnOverlayTransformUpdated(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void OnOverlayTransformUpdated(JNIEnv* env);
   void SendUnfoldLatencyBeginTimestamp(JNIEnv* env, jlong begin_time);
 
   void OnWindowPointerLockRelease(JNIEnv* env);

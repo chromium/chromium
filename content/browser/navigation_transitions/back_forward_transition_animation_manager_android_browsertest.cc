@@ -1936,10 +1936,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
   ui::WindowAndroid* window = web_contents()->GetTopLevelNativeWindow();
   // The first two args don't matter in tests.
-  window->OnVisibilityChanged(
-      /*env=*/nullptr,
-      /*obj=*/base::android::JavaParamRef<jobject>(nullptr),
-      /*visible=*/false);
+  window->OnVisibilityChanged(/*env=*/nullptr, /*visible=*/false);
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
 

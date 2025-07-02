@@ -61,7 +61,6 @@ SelectFileDialogImpl* SelectFileDialogImpl::Create(
 
 void SelectFileDialogImpl::OnFileSelected(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_object,
     const JavaParamRef<jstring>& filepath,
     const JavaParamRef<jstring>& display_name) {
   if (!listener_)
@@ -79,7 +78,6 @@ void SelectFileDialogImpl::OnFileSelected(
 
 void SelectFileDialogImpl::OnMultipleFilesSelected(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_object,
     const JavaParamRef<jobjectArray>& filepaths,
     const JavaParamRef<jobjectArray>& display_names) {
   if (!listener_)
@@ -110,9 +108,7 @@ void SelectFileDialogImpl::OnMultipleFilesSelected(
   listener_->MultiFilesSelected(selected_files);
 }
 
-void SelectFileDialogImpl::OnFileNotSelected(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& java_object) {
+void SelectFileDialogImpl::OnFileNotSelected(JNIEnv* env) {
   if (listener_)
     listener_->FileSelectionCanceled();
 }
@@ -137,15 +133,14 @@ void SelectFileDialogImpl::SetOpenWritable(bool open_writable) {
   open_writable_ = open_writable;
 }
 
-void SelectFileDialogImpl::SelectFileImpl(
-    SelectFileDialog::Type type,
-    const std::u16string& title,
-    const base::FilePath& default_path,
-    const SelectFileDialog::FileTypeInfo* file_types,
-    int file_type_index,
-    const std::string& default_extension,
-    gfx::NativeWindow owning_window,
-    const GURL* caller) {
+void SelectFileDialogImpl::SelectFileImpl(Type type,
+                                          const std::u16string& title,
+                                          const base::FilePath& default_path,
+                                          const FileTypeInfo* file_types,
+                                          int file_type_index,
+                                          const std::string& default_extension,
+                                          gfx::NativeWindow owning_window,
+                                          const GURL* caller) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   ScopedJavaLocalRef<jstring> intent_action =

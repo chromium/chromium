@@ -1422,11 +1422,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         recordImageCountHistograms(new String[] {filePath});
         if (nativeSelectFileDialogImpl != 0) {
             SelectFileDialogJni.get()
-                    .onFileSelected(
-                            nativeSelectFileDialogImpl,
-                            SelectFileDialog.this,
-                            filePath,
-                            displayName);
+                    .onFileSelected(nativeSelectFileDialogImpl, filePath, displayName);
         }
     }
 
@@ -1436,18 +1432,14 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         if (nativeSelectFileDialogImpl != 0) {
             SelectFileDialogJni.get()
                     .onMultipleFilesSelected(
-                            nativeSelectFileDialogImpl,
-                            SelectFileDialog.this,
-                            filePathArray,
-                            displayNameArray);
+                            nativeSelectFileDialogImpl, filePathArray, displayNameArray);
         }
     }
 
     protected void onFileNotSelected(long nativeSelectFileDialogImpl) {
         recordImageCountHistograms(new String[] {});
         if (nativeSelectFileDialogImpl != 0) {
-            SelectFileDialogJni.get()
-                    .onFileNotSelected(nativeSelectFileDialogImpl, SelectFileDialog.this);
+            SelectFileDialogJni.get().onFileNotSelected(nativeSelectFileDialogImpl);
         }
     }
 
@@ -1846,16 +1838,12 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     interface Natives {
         void onFileSelected(
                 long nativeSelectFileDialogImpl,
-                SelectFileDialog caller,
                 @Nullable String filePath,
                 @Nullable String displayName);
 
         void onMultipleFilesSelected(
-                long nativeSelectFileDialogImpl,
-                SelectFileDialog caller,
-                String[] filePathArray,
-                String[] displayNameArray);
+                long nativeSelectFileDialogImpl, String[] filePathArray, String[] displayNameArray);
 
-        void onFileNotSelected(long nativeSelectFileDialogImpl, SelectFileDialog caller);
+        void onFileNotSelected(long nativeSelectFileDialogImpl);
     }
 }

@@ -467,15 +467,12 @@ void JNI_Clipboard_CleanupForTesting(JNIEnv* env) {
 
 // ClipboardAndroid implementation.
 
-void ClipboardAndroid::OnPrimaryClipChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void ClipboardAndroid::OnPrimaryClipChanged(JNIEnv* env) {
   g_map.Get().OnPrimaryClipboardChanged();
 }
 
 void ClipboardAndroid::OnPrimaryClipTimestampInvalidated(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const jlong j_timestamp_ms) {
   base::Time timestamp =
       base::Time::FromMillisecondsSinceUnixEpoch(j_timestamp_ms);

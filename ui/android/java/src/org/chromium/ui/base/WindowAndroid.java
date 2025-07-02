@@ -677,8 +677,7 @@ public class WindowAndroid
      */
     public void onVisibilityChanged(boolean visible) {
         if (mNativeWindowAndroid == 0) return;
-        WindowAndroidJni.get()
-                .onVisibilityChanged(mNativeWindowAndroid, WindowAndroid.this, visible);
+        WindowAndroidJni.get().onVisibilityChanged(mNativeWindowAndroid, visible);
     }
 
     /**
@@ -688,7 +687,7 @@ public class WindowAndroid
     protected void onActivityStopped() {
         if (mNativeWindowAndroid == 0) return;
         for (ActivityStateObserver observer : mActivityStateObservers) observer.onActivityStopped();
-        WindowAndroidJni.get().onActivityStopped(mNativeWindowAndroid, WindowAndroid.this);
+        WindowAndroidJni.get().onActivityStopped(mNativeWindowAndroid);
     }
 
     /**
@@ -697,7 +696,7 @@ public class WindowAndroid
      */
     protected void onActivityStarted() {
         if (mNativeWindowAndroid == 0) return;
-        WindowAndroidJni.get().onActivityStarted(mNativeWindowAndroid, WindowAndroid.this);
+        WindowAndroidJni.get().onActivityStarted(mNativeWindowAndroid);
     }
 
     protected void onActivityPaused() {
@@ -871,7 +870,7 @@ public class WindowAndroid
         // Destroys the c++ WindowAndroid object if one has been created.
         if (mNativeWindowAndroid != 0) {
             // Native code clears |mNativeWindowAndroid|.
-            WindowAndroidJni.get().destroy(mNativeWindowAndroid, WindowAndroid.this);
+            WindowAndroidJni.get().destroy(mNativeWindowAndroid);
         }
 
         mUnownedUserDataHost.destroy();
@@ -904,7 +903,7 @@ public class WindowAndroid
             mNativeWindowAndroid =
                     WindowAndroidJni.get()
                             .init(
-                                    WindowAndroid.this,
+                                    this,
                                     mDisplayAndroid.getDisplayId(),
                                     getMouseWheelScrollFactor(),
                                     getWindowIsWideColorGamut());
@@ -1065,8 +1064,7 @@ public class WindowAndroid
     @Override
     public void onRefreshRateChanged(float refreshRate) {
         if (mNativeWindowAndroid != 0) {
-            WindowAndroidJni.get()
-                    .onUpdateRefreshRate(mNativeWindowAndroid, WindowAndroid.this, refreshRate);
+            WindowAndroidJni.get().onUpdateRefreshRate(mNativeWindowAndroid, refreshRate);
         }
     }
 
@@ -1151,9 +1149,7 @@ public class WindowAndroid
             if (mNativeWindowAndroid != 0) {
                 WindowAndroidJni.get()
                         .onSupportedRefreshRatesUpdated(
-                                mNativeWindowAndroid,
-                                WindowAndroid.this,
-                                getSupportedRefreshRates());
+                                mNativeWindowAndroid, getSupportedRefreshRates());
             }
         }
     }
@@ -1231,7 +1227,7 @@ public class WindowAndroid
 
     void onOverlayTransformUpdated() {
         if (mNativeWindowAndroid != 0) {
-            WindowAndroidJni.get().onOverlayTransformUpdated(mNativeWindowAndroid, this);
+            WindowAndroidJni.get().onOverlayTransformUpdated(mNativeWindowAndroid);
         }
     }
 
@@ -1378,27 +1374,25 @@ public class WindowAndroid
                 float scrollFactor,
                 boolean windowIsWideColorGamut);
 
-        void onVisibilityChanged(long nativeWindowAndroid, WindowAndroid caller, boolean visible);
+        void onVisibilityChanged(long nativeWindowAndroid, boolean visible);
 
-        void onActivityStopped(long nativeWindowAndroid, WindowAndroid caller);
+        void onActivityStopped(long nativeWindowAndroid);
 
-        void onActivityStarted(long nativeWindowAndroid, WindowAndroid caller);
+        void onActivityStarted(long nativeWindowAndroid);
 
-        void onUpdateRefreshRate(long nativeWindowAndroid, WindowAndroid caller, float refreshRate);
+        void onUpdateRefreshRate(long nativeWindowAndroid, float refreshRate);
 
-        void destroy(long nativeWindowAndroid, WindowAndroid caller);
+        void destroy(long nativeWindowAndroid);
 
         void onSupportedRefreshRatesUpdated(
-                long nativeWindowAndroid,
-                WindowAndroid caller,
-                float @Nullable [] supportedRefreshRates);
+                long nativeWindowAndroid, float @Nullable [] supportedRefreshRates);
 
         void onAdaptiveRefreshRateInfoChanged(
                 long nativeWindowAndroid,
                 boolean supportsAdaptiveRefreshRate,
                 float suggestedFrameRateHigh);
 
-        void onOverlayTransformUpdated(long nativeWindowAndroid, WindowAndroid caller);
+        void onOverlayTransformUpdated(long nativeWindowAndroid);
 
         void sendUnfoldLatencyBeginTimestamp(long nativeWindowAndroid, long beginTimestampMs);
 

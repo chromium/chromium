@@ -77,7 +77,6 @@ public class ViewConfigurationHelper {
         assert mDensity > 0;
         ViewConfigurationHelperJni.get()
                 .updateSharedViewConfiguration(
-                        ViewConfigurationHelper.this,
                         getMaximumFlingVelocity(),
                         getMinimumFlingVelocity(),
                         getTouchSlop(),
@@ -160,7 +159,6 @@ public class ViewConfigurationHelper {
     @NativeMethods
     interface Natives {
         void updateSharedViewConfiguration(
-                ViewConfigurationHelper caller,
                 float maximumFlingVelocity,
                 float minimumFlingVelocity,
                 float touchSlop,

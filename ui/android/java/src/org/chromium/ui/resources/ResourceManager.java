@@ -148,7 +148,6 @@ public class ResourceManager implements ResourceLoaderCallback {
         ResourceManagerJni.get()
                 .onResourceReady(
                         mNativeResourceManagerPtr,
-                        ResourceManager.this,
                         resType,
                         resId,
                         bitmap,
@@ -167,15 +166,13 @@ public class ResourceManager implements ResourceLoaderCallback {
 
         if (mNativeResourceManagerPtr == 0) return;
 
-        ResourceManagerJni.get()
-                .removeResource(mNativeResourceManagerPtr, ResourceManager.this, resType, resId);
+        ResourceManagerJni.get().removeResource(mNativeResourceManagerPtr, resType, resId);
     }
 
     /** Clear the cache of tinted assets that the native manager holds. */
     public void clearTintedResourceCache() {
         if (mNativeResourceManagerPtr == 0) return;
-        ResourceManagerJni.get()
-                .clearTintedResourceCache(mNativeResourceManagerPtr, ResourceManager.this);
+        ResourceManagerJni.get().clearTintedResourceCache(mNativeResourceManagerPtr);
     }
 
     private void saveMetadataForLoadedResource(
@@ -216,15 +213,13 @@ public class ResourceManager implements ResourceLoaderCallback {
     }
 
     public void dumpIfNoResource(int resType, int resId) {
-        ResourceManagerJni.get()
-                .dumpIfNoResource(mNativeResourceManagerPtr, ResourceManager.this, resType, resId);
+        ResourceManagerJni.get().dumpIfNoResource(mNativeResourceManagerPtr, resType, resId);
     }
 
     @NativeMethods
     interface Natives {
         void onResourceReady(
                 long nativeResourceManagerImpl,
-                ResourceManager caller,
                 int resType,
                 int resId,
                 Bitmap bitmap,
@@ -232,12 +227,10 @@ public class ResourceManager implements ResourceLoaderCallback {
                 int height,
                 long nativeResource);
 
-        void removeResource(
-                long nativeResourceManagerImpl, ResourceManager caller, int resType, int resId);
+        void removeResource(long nativeResourceManagerImpl, int resType, int resId);
 
-        void clearTintedResourceCache(long nativeResourceManagerImpl, ResourceManager caller);
+        void clearTintedResourceCache(long nativeResourceManagerImpl);
 
-        void dumpIfNoResource(
-                long nativeResourceManagerImpl, ResourceManager caller, int resType, int resId);
+        void dumpIfNoResource(long nativeResourceManagerImpl, int resType, int resId);
     }
 }

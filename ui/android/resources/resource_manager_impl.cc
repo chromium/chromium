@@ -202,8 +202,7 @@ Resource* ResourceManagerImpl::GetStaticResourceWithTint(
   return (*resource_map)[res_id].get();
 }
 
-void ResourceManagerImpl::ClearTintedResourceCache(JNIEnv* env,
-    const JavaRef<jobject>& jobj) {
+void ResourceManagerImpl::ClearTintedResourceCache(JNIEnv* env) {
   tinted_resources_.clear();
 }
 
@@ -220,7 +219,6 @@ void ResourceManagerImpl::PreloadResource(AndroidResourceType res_type,
 }
 
 void ResourceManagerImpl::OnResourceReady(JNIEnv* env,
-                                          const JavaRef<jobject>& jobj,
                                           jint res_type,
                                           jint res_id,
                                           const JavaRef<jobject>& bitmap,
@@ -248,7 +246,6 @@ void ResourceManagerImpl::OnResourceReady(JNIEnv* env,
 
 void ResourceManagerImpl::RemoveResource(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jobj,
     jint res_type,
     jint res_id) {
   resources_[res_type].erase(res_id);
@@ -256,7 +253,6 @@ void ResourceManagerImpl::RemoveResource(
 
 void ResourceManagerImpl::DumpIfNoResource(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jobj,
     jint res_type,
     jint res_id) {
   if (resources_[res_type].find(res_id) == resources_[res_type].end()) {

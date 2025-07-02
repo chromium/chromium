@@ -403,12 +403,12 @@ public class Clipboard {
 
     protected void notifyPrimaryClipChanged() {
         if (mNativeClipboard == 0) return;
-        ClipboardJni.get().onPrimaryClipChanged(mNativeClipboard, this);
+        ClipboardJni.get().onPrimaryClipChanged(mNativeClipboard);
     }
 
     protected void notifyPrimaryClipTimestampInvalidated(long timestamp) {
         if (mNativeClipboard == 0) return;
-        ClipboardJni.get().onPrimaryClipTimestampInvalidated(mNativeClipboard, this, timestamp);
+        ClipboardJni.get().onPrimaryClipTimestampInvalidated(mNativeClipboard, timestamp);
     }
 
     protected long getLastModifiedTimeToJavaTime() {
@@ -418,10 +418,9 @@ public class Clipboard {
 
     @NativeMethods
     interface Natives {
-        void onPrimaryClipChanged(long nativeClipboardAndroid, Clipboard caller);
+        void onPrimaryClipChanged(long nativeClipboardAndroid);
 
-        void onPrimaryClipTimestampInvalidated(
-                long nativeClipboardAndroid, Clipboard caller, long timestamp);
+        void onPrimaryClipTimestampInvalidated(long nativeClipboardAndroid, long timestamp);
 
         long getLastModifiedTimeToJavaTime(long nativeClipboardAndroid);
 

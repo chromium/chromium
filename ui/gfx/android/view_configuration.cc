@@ -134,7 +134,6 @@ base::LazyInstance<ViewConfigurationData>::Leaky g_view_configuration =
 
 static void JNI_ViewConfigurationHelper_UpdateSharedViewConfiguration(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jfloat maximum_fling_velocity,
     jfloat minimum_fling_velocity,
     jfloat touch_slop,

@@ -22,19 +22,15 @@ class SelectFileDialogImpl : public SelectFileDialog {
   SelectFileDialogImpl& operator=(const SelectFileDialogImpl&) = delete;
 
   void OnFileSelected(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& java_object,
                       const base::android::JavaParamRef<jstring>& filepath,
                       const base::android::JavaParamRef<jstring>& display_name);
 
   void OnMultipleFilesSelected(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_object,
       const base::android::JavaParamRef<jobjectArray>& filepaths,
       const base::android::JavaParamRef<jobjectArray>& display_names);
 
-  void OnFileNotSelected(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_object);
+  void OnFileNotSelected(JNIEnv* env);
 
   // From SelectFileDialog
   bool IsRunning(gfx::NativeWindow) const override;

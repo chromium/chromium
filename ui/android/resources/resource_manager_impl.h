@@ -55,7 +55,6 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
   // Called from Java
   // ----------------------------------------------------------
   void OnResourceReady(JNIEnv* env,
-                       const base::android::JavaRef<jobject>& jobj,
                        jint res_type,
                        jint res_id,
                        const base::android::JavaRef<jobject>& bitmap,
@@ -64,13 +63,10 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
                        jlong native_resource);
   void RemoveResource(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj,
       jint res_type,
       jint res_id);
-  void ClearTintedResourceCache(JNIEnv* env,
-      const base::android::JavaRef<jobject>& jobj);
+  void ClearTintedResourceCache(JNIEnv* env);
   void DumpIfNoResource(JNIEnv* env,
-                        const base::android::JavaRef<jobject>& jobj,
                         jint res_type,
                         jint res_id);
 

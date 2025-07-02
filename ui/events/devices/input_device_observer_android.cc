@@ -38,9 +38,7 @@ void InputDeviceObserverAndroid::RemoveObserver(
   Java_InputDeviceObserver_removeObserver(env);
 }
 
-static void JNI_InputDeviceObserver_InputConfigurationChanged(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+static void JNI_InputDeviceObserver_InputConfigurationChanged(JNIEnv* env) {
   InputDeviceObserverAndroid::GetInstance()
       ->NotifyObserversDeviceConfigurationChanged();
 }

@@ -103,8 +103,7 @@ public class DisplayAndroidManager {
 
             displayAndroid.onDisplayRemoved();
             if (mNativePointer != 0) {
-                DisplayAndroidManagerJni.get()
-                        .removeDisplay(mNativePointer, DisplayAndroidManager.this, sdkDisplayId);
+                DisplayAndroidManagerJni.get().removeDisplay(mNativePointer, sdkDisplayId);
             }
             mIdMap.remove(sdkDisplayId);
         }
@@ -220,8 +219,7 @@ public class DisplayAndroidManager {
 
     private void setNativePointer(long nativePointer) {
         mNativePointer = nativePointer;
-        DisplayAndroidManagerJni.get()
-                .setPrimaryDisplayId(mNativePointer, DisplayAndroidManager.this, mMainSdkDisplayId);
+        DisplayAndroidManagerJni.get().setPrimaryDisplayId(mNativePointer, mMainSdkDisplayId);
 
         for (int i = 0; i < mIdMap.size(); ++i) {
             updateDisplayOnNativeSide(mIdMap.valueAt(i));
@@ -258,7 +256,6 @@ public class DisplayAndroidManager {
         DisplayAndroidManagerJni.get()
                 .updateDisplay(
                         mNativePointer,
-                        DisplayAndroidManager.this,
                         displayAndroid.getDisplayId(),
                         displayAndroid.getDisplayName(),
                         displayAndroid.getBoundsAsArray(),
@@ -277,7 +274,6 @@ public class DisplayAndroidManager {
     interface Natives {
         void updateDisplay(
                 long nativeDisplayAndroidManager,
-                DisplayAndroidManager caller,
                 int sdkDisplayId,
                 @Nullable String label,
                 int[] bounds, // the order is: left, top, right, bottom
@@ -291,11 +287,9 @@ public class DisplayAndroidManager {
                 float hdrMaxLuminanceRatio,
                 boolean isInternal);
 
-        void removeDisplay(
-                long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);
+        void removeDisplay(long nativeDisplayAndroidManager, int sdkDisplayId);
 
-        void setPrimaryDisplayId(
-                long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);
+        void setPrimaryDisplayId(long nativeDisplayAndroidManager, int sdkDisplayId);
     }
 
     /** Clears the object returned by {@link #getInstance()} */

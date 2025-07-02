@@ -101,7 +101,7 @@ WindowAndroid::WindowAndroid(JNIEnv* env,
                         : kDefaultMouseWheelTickMultiplier * GetDipScale();
 }
 
-void WindowAndroid::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void WindowAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
@@ -194,34 +194,26 @@ void WindowAndroid::Animate(base::TimeTicks begin_frame_time) {
   observer_list_.Notify(&WindowAndroidObserver::OnAnimate, begin_frame_time);
 }
 
-void WindowAndroid::OnVisibilityChanged(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
-                                        bool visible) {
+void WindowAndroid::OnVisibilityChanged(JNIEnv* env, bool visible) {
   observer_list_.Notify(&WindowAndroidObserver::OnRootWindowVisibilityChanged,
                         visible);
 }
 
-void WindowAndroid::OnActivityStopped(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+void WindowAndroid::OnActivityStopped(JNIEnv* env) {
   observer_list_.Notify(&WindowAndroidObserver::OnActivityStopped);
 }
 
-void WindowAndroid::OnActivityStarted(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+void WindowAndroid::OnActivityStarted(JNIEnv* env) {
   observer_list_.Notify(&WindowAndroidObserver::OnActivityStarted);
 }
 
-void WindowAndroid::OnUpdateRefreshRate(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    float refresh_rate) {
+void WindowAndroid::OnUpdateRefreshRate(JNIEnv* env, float refresh_rate) {
   if (compositor_)
     compositor_->OnUpdateRefreshRate(refresh_rate);
 }
 
 void WindowAndroid::OnSupportedRefreshRatesUpdated(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const JavaParamRef<jfloatArray>& j_supported_refresh_rates) {
   std::vector<float> supported_refresh_rates;
   if (j_supported_refresh_rates) {
@@ -242,9 +234,7 @@ void WindowAndroid::OnAdaptiveRefreshRateInfoChanged(
       suggested_frame_rate_high;
 }
 
-void WindowAndroid::OnOverlayTransformUpdated(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void WindowAndroid::OnOverlayTransformUpdated(JNIEnv* env) {
   if (compositor_)
     compositor_->OnUpdateOverlayTransform();
 }
