@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_IDENTIFIER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.DEFAULT_MESSAGE_IDENTIFIER;
@@ -133,7 +134,7 @@ public class PersistentVersioningMessageMediator {
         removeMessageCard();
         TabGroupListVersioningMessageData messageData =
                 new TabGroupListVersioningMessageData(
-                        mContext, this::onPrimaryAction, ignored -> removeMessageCard());
+                        mContext, this::onPrimaryAction, this::onDismiss);
 
         mModelList.add(new ListItem(MESSAGE_CARD, createPropertyModel(messageData)));
 
@@ -143,6 +144,12 @@ public class PersistentVersioningMessageMediator {
 
     private void onPrimaryAction() {
         VersioningModalDialog.show(mContext, mModalDialogManager);
+    }
+
+    private void onDismiss(@MessageService.MessageType int type) {
+        removeMessageCard();
+        mVersioningMessageController.onMessageUiDismissed(
+                MessageType.VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE);
     }
 
     @VisibleForTesting
@@ -170,6 +177,7 @@ public class PersistentVersioningMessageMediator {
                 .with(UI_ACTION_PROVIDER, data.getActionProvider())
                 .with(ACTION_TEXT, data.getActionButtonText())
                 .with(UI_DISMISS_ACTION_PROVIDER, data.getDismissActionProvider())
+                .with(SHOULD_KEEP_AFTER_REVIEW, true)
                 .with(DESCRIPTION_TEXT, data.getMessageText())
                 .with(DISMISS_BUTTON_CONTENT_DESCRIPTION, dismissButtonDescription)
                 .with(IS_ICON_VISIBLE, false)
