@@ -49,7 +49,10 @@ void DriveShareAction::LaunchAction(
       intent->drive_share_url.value(),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
-  controller_->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
+  // Opening URL may close the bubble.
+  if (controller_) {
+    controller_->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
+  }
 }
 
 void DriveShareAction::OnClosing(

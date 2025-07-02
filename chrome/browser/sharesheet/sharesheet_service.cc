@@ -229,11 +229,11 @@ void SharesheetService::ShowBubbleForTesting(
     LaunchSource source,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
-    int num_actions_to_add) {
+    std::vector<::sharesheet::ShareActionType> actions) {
   CHECK(views::Widget::GetWidgetForNativeWindow(native_window));
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
-  for (int i = 0; i < num_actions_to_add; ++i) {
-    share_action_cache_->AddShareActionForTest();  // IN-TEST
+  for (auto action : actions) {
+    share_action_cache_->AddShareActionForTest(action);  // IN-TEST
   }
   auto targets = GetActionsForIntent(intent);
   OnReadyToShowBubble(native_window, std::move(intent),
