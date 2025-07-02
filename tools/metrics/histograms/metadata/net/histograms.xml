@@ -7324,6 +7324,32 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.SqlDiskCache.ExclusiveOperationDelay" units="microseconds"
+    expires_after="2025-09-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Measures the time an exclusive operation spends in the queue before it is
+    run in the SQL-based disk cache. This helps monitor potential delays and
+    starvation issues for exclusive operations. Recorded when an exclusive
+    operation is run. The histogram is not reported on Windows machines without
+    high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.NormalOperationDelay" units="microseconds"
+    expires_after="2025-09-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Measures the time a normal operation spends in the queue before it is run in
+    the SQL-based disk cache. This helps monitor potential delays and starvation
+    issues, especially when exclusive operations are frequent. Recorded when a
+    normal operation is run. The histogram is not reported on Windows machines
+    without high resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Net.SSL.ECHResult" enum="SSLECHResult"
     expires_after="2025-12-28">
   <owner>davidben@chromium.org</owner>

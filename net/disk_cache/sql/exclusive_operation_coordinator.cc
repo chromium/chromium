@@ -8,9 +8,36 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 
 namespace disk_cache {
+
+namespace {
+
+// Wraps an operation to record its queuing time in a UMA histogram.
+base::OnceCallback<
+    void(std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>)>
+WrapWithUmaQueuingTime(
+    base::OnceCallback<
+        void(std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>)>
+        operation,
+    const std::string_view histogram_name) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(
+             std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>)>
+             operation,
+         const std::string_view histogram_name, base::ElapsedTimer timer,
+         std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>
+             handle) {
+        base::UmaHistogramMicrosecondsTimes(histogram_name, timer.Elapsed());
+        std::move(operation).Run(std::move(handle));
+      },
+      std::move(operation), histogram_name, base::ElapsedTimer());
+}
+
+}  // namespace
 
 ExclusiveOperationCoordinator::OperationHandle::OperationHandle(
     base::PassKey<ExclusiveOperationCoordinator>,
@@ -29,6 +56,8 @@ ExclusiveOperationCoordinator::~ExclusiveOperationCoordinator() = default;
 
 void ExclusiveOperationCoordinator::PostOrRunExclusiveOperation(
     base::OnceCallback<void(std::unique_ptr<OperationHandle>)> operation) {
+  operation = WrapWithUmaQueuingTime(
+      std::move(operation), "Net.SqlDiskCache.ExclusiveOperationDelay");
   pending_exclusive_operations_.push(std::move(operation));
   TryToRunNextOperation(std::nullopt);
 }
@@ -36,12 +65,13 @@ void ExclusiveOperationCoordinator::PostOrRunExclusiveOperation(
 void ExclusiveOperationCoordinator::PostOrRunNormalOperation(
     const CacheEntryKey& key,
     base::OnceCallback<void(std::unique_ptr<OperationHandle>)> operation) {
+  operation = WrapWithUmaQueuingTime(std::move(operation),
+                                     "Net.SqlDiskCache.NormalOperationDelay");
   // If an exclusive operation is running or pending, queue the normal
   // operation. It will be run after all exclusive operations are done.
   // TODO(crbug.com/422065015): The current implementation prioritizes
   // exclusive operations, which could potentially starve normal operations if
-  // exclusive operations are frequent. Add metrics to measure the time normal
-  // operations spend waiting in the queue. If the delay is unacceptable, we may
+  // exclusive operations are frequent. If the delay is unacceptable, we may
   // need to implement a more sophisticated scheduling mechanism to ensure
   // fairness.
   if (exclusive_operation_running_ || !pending_exclusive_operations_.empty()) {
