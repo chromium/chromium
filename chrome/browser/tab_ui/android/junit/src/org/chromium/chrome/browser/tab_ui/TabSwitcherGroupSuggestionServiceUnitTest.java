@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.tab_ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -155,6 +157,13 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         UserResponseMetadata response = mUserResponseMetadataCaptor.getValue();
         assertEquals(11, response.mSuggestionId);
         assertEquals(UserResponse.NOT_SHOWN, response.mUserResponse);
+    }
+
+    @Test
+    public void testMaybeShowSuggestions_incognito() {
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        mService.maybeShowSuggestions();
+        verify(mGroupSuggestionsService, never()).getCachedSuggestions(anyInt());
     }
 
     @Test

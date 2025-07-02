@@ -144,7 +144,7 @@ public class TabSwitcherGroupSuggestionService {
     private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private final SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
     private final GroupSuggestionsService mGroupSuggestionsService;
-    private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+    private final Callback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
 
     /**
@@ -190,7 +190,9 @@ public class TabSwitcherGroupSuggestionService {
 
     /** Shows tab group suggestions if needed. */
     public void maybeShowSuggestions() {
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         clearSuggestions();
+        if (filter == null || isIncognitoMode(filter)) return;
 
         CachedSuggestions cachedSuggestions =
                 mGroupSuggestionsService.getCachedSuggestions(mWindowId);
@@ -218,6 +220,10 @@ public class TabSwitcherGroupSuggestionService {
         showSuggestion(groupSuggestionsList.get(0), userResponseCallback);
     }
 
+    private boolean isIncognitoMode(TabGroupModelFilter filter) {
+        return filter.getTabModel().isIncognitoBranded();
+    }
+
     /** Clears tab group suggestions if present. */
     public void clearSuggestions() {
         mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
@@ -228,7 +234,11 @@ public class TabSwitcherGroupSuggestionService {
         assert ChromeFeatureList.sTabSwitcherGroupSuggestionsTestModeAndroid.isEnabled()
                 : "Forcing suggestions is only allowed in test mode.";
 
-        TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+        clearSuggestions();
+        if (filter == null) return;
+
+        TabModel tabModel = filter.getTabModel();
         List<Integer> tabIds = new ArrayList<>();
 
         // Collect the bottom-most tabs that are not already in a group.
