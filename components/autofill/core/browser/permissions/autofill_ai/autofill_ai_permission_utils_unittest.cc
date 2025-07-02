@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -272,6 +273,14 @@ TEST_P(AutofillAiMayPerformActionTest, CountryCode) {
 TEST_P(AutofillAiMayPerformActionTest, AppLocale) {
   client().set_app_locale("de-DE");
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
+}
+
+TEST_P(AutofillAiMayPerformActionTest, AppLocaleWithOverride) {
+  base::test::ScopedFeatureList feature_list{features::kAutofillAiIgnoreLocale};
+  client().set_app_locale("de-DE");
+
+  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
 // Tests that listing, editing and removing entities is permitted even if the

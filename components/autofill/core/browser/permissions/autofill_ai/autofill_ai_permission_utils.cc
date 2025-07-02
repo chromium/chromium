@@ -234,7 +234,8 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
   }
 
   // App-locale.
-  if (app_locale != "en-US") {
+  if (app_locale != "en-US" &&
+      !base::FeatureList::IsEnabled(features::kAutofillAiIgnoreLocale)) {
     // If the user changes their app-locale, the feature might stop working,
     // but the data should not disappear.
     if (!(IsRelevantForDataTransparency(action) && has_entity_data_saved)) {

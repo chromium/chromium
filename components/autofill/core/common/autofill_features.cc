@@ -79,10 +79,14 @@ BASE_FEATURE(kAutofillAiCreateEntityDataManager,
 #endif
 );
 
-// If enabled, no GeoIp requirements are imposed for AutfillAi. Intended for
-// Dogfood and testing only.
+// If enabled, no GeoIp requirements are imposed for AutofillAi.
 BASE_FEATURE(kAutofillAiIgnoreGeoIp,
              "AutofillAiIgnoreGeoIp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, no locale requirements are imposed for AutfillAi.
+BASE_FEATURE(kAutofillAiIgnoreLocale,
+             "AutofillAiIgnoreLocale",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, `*_TAG` types are replaced with dynamic attribute assignments.
