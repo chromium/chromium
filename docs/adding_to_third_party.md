@@ -287,14 +287,14 @@ that can't with an [exception](https://issues.chromium.org/issues/new?component=
 
 The `Update Mechanism:` field specifies how this dependency is kept
 up-to-date. You will use one of the exact string formats listed below,
-replacing `(crbug.com/BUG_ID)` with the actual bug link where required.
-The format is `Primary[.SubsetSpecifier] (crbug.com/BUG_ID)`.
+replacing `(https://crbug.com/BUG_ID)` with the actual bug link where required.
+The format is `Primary[.SubsetSpecifier] (https://crbug.com/BUG_ID)`.
 
 **Accepted Values:**
 * `Autoroll`
-* `Manual (crbug.com/BUG_ID)`
-* `Static (crbug.com/BUG_ID)`
-* `Static.HardFork (crbug.com/BUG_ID)`
+* `Manual (https://crbug.com/BUG_ID)`
+* `Static (https://crbug.com/BUG_ID)`
+* `Static.HardFork (https://crbug.com/BUG_ID)`
 
 |||---||| 3,3,6
 ### Autoroll
