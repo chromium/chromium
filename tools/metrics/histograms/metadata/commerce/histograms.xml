@@ -217,8 +217,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.BottomSheet.ClusterTypeOnCopy"
-    enum="DiscountClusterType" expires_after="2025-07-27">
-  <owner>qib@google.com</owner>
+    enum="DiscountClusterType" expires_after="2026-07-27">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
