@@ -19002,6 +19002,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
           other {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph>, <ph name="APP1_NAME">{APP1_NAME}</ph> and # other apps.}
         }
       </message>
+      <message name="IDS_MULTI_CAPTURE_ACTIVE_CAPTURE_NOTIFICATION_MESSAGE" desc="String notifying that the screens are captured by a specific app.">
+        Your administrator is recording your screen with <ph name="APP0_NAME">{APP_NAME}</ph>.
+      </message>
     </if>
 
   <message name="IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE" desc="The title for the notification sent by Chrome informing the user that their decision to never show warnings for the url has been applied.">

@@ -522,6 +522,8 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service_factory.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/smart_card/chromeos_smart_card_delegate.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
@@ -1217,7 +1219,8 @@ void MaybeAddCondition(
 #if BUILDFLAG(IS_CHROMEOS)
 void NotifyMultiCaptureStarted(const std::string& label,
                                content::WebContents* web_contents,
-                               const webapps::AppId* app_id) {
+                               const webapps::AppId* app_id,
+                               content::BrowserContext* browser_context) {
   const url::Origin origin =
       url::Origin::Create(web_contents->GetLastCommittedURL());
   if (app_id) {
@@ -1229,19 +1232,27 @@ void NotifyMultiCaptureStarted(const std::string& label,
                 ->registrar_unsafe()
                 .GetAppShortName(*app_id),
             origin);
-  } else {
-    // TODO(b/319317165): Remove this case once the pivot to web apps is
-    // complete.
-    CHECK_DEREF(ash::Shell::Get())
-        .multi_capture_service()
-        ->NotifyMultiCaptureStarted(label, origin);
+
+    if (base::FeatureList::IsEnabled(
+            chromeos::features::kMultiCaptureReworkedUsageIndicators)) {
+      CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
+                      GetForBrowserContext(web_contents->GetBrowserContext()))
+          .MultiCaptureStarted(label, *app_id);
+    }
   }
 }
 
-void NotifyMultiCaptureStopped(const std::string& label) {
+void NotifyMultiCaptureStopped(const std::string& label,
+                               content::BrowserContext* browser_context) {
   CHECK_DEREF(ash::Shell::Get())
       .multi_capture_service()
       ->NotifyMultiCaptureStopped(label);
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kMultiCaptureReworkedUsageIndicators)) {
+    CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
+                    GetForBrowserContext(browser_context))
+        .MultiCaptureStopped(label);
+  }
 }
 
 bool IsSubAppsPermissionGrantedByAdmins(content::WebContents* contents) {
@@ -8299,20 +8310,20 @@ void ChromeContentBrowserClient::NotifyMultiCaptureStateChanged(
     content::GlobalRenderFrameHostId capturer_rfh_id,
     const std::string& label,
     MultiCaptureChanged state) {
+  content::WebContents* const web_contents = WebContents::FromRenderFrameHost(
+      RenderFrameHost::FromID(capturer_rfh_id));
+  if (!web_contents) {
+    return;
+  }
+
   switch (state) {
     case MultiCaptureChanged::kStarted: {
-      content::WebContents* const web_contents =
-          WebContents::FromRenderFrameHost(
-              RenderFrameHost::FromID(capturer_rfh_id));
-      if (!web_contents) {
-        return;
-      }
       NotifyMultiCaptureStarted(
-          label, web_contents,
-          web_app::WebAppTabHelper::GetAppId(web_contents));
+          label, web_contents, web_app::WebAppTabHelper::GetAppId(web_contents),
+          web_contents->GetBrowserContext());
     } break;
     case MultiCaptureChanged::kStopped:
-      NotifyMultiCaptureStopped(label);
+      NotifyMultiCaptureStopped(label, web_contents->GetBrowserContext());
       break;
   }
 }
