@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SHARE_INFO_H_
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SHARE_INFO_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
