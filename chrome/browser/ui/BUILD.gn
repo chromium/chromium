@@ -1765,11 +1765,6 @@ static_library("ui") {
       "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
       "//ui/webui/resources/js/browser_command:mojo_bindings",
       "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
-
-      # TODO(crbug.com/428666921): When the headers of chrome/browser/ui/performance_controls
-      # get componentized, these dependencies can be removed from here, and moved there.
-      "//chrome/browser/performance_manager/public/user_tuning",
-      "//chrome/browser/resource_coordinator",
     ]
 
     # Non-android public_deps for "ui" target.

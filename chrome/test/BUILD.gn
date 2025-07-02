@@ -788,11 +788,6 @@ static_library("test_support") {
       "//components/web_modal",
       "//ui/compositor:test_support",
       "//ui/snapshot",
-
-      # TODO(crbug.com/428666921): When chrome/browser/ui/performance_controls/test_support/
-      # gets componentized this dependency can be moved there, and GN targets like unit_tests,
-      # interactive_ui_tests and browser_tests will need to depend on it directly, instead.
-      "//chrome/browser/performance_manager/public/user_tuning",
     ]
 
     # Non-android deps for "test_support" target.
@@ -802,7 +797,6 @@ static_library("test_support") {
       "//chrome/browser/themes",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/find_bar",
-      "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/views/page_action:page_action",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:signin_utils",
@@ -815,6 +809,11 @@ static_library("test_support") {
       "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",
       "//components/webapps/isolated_web_apps:isolated_web_apps",
     ]
+
+    # TODO(crbug.com/428666921): Remove this dependency when c/b/ui/views/performance_controls/test_support/
+    # get componentized.
+    deps += [ "//chrome/browser/ui/performance_controls/test_support" ]
+
     if (!is_chromeos) {
       deps += [ "//chrome/browser/ui/webui/signin:profile" ]
     }
@@ -859,13 +858,6 @@ static_library("test_support") {
       "../browser/sync_file_system/mock_remote_file_sync_service.h",
       "../browser/themes/test/theme_service_changed_waiter.cc",
       "../browser/themes/test/theme_service_changed_waiter.h",
-      "../browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h",
-      "../browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.cc",
-      "../browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h",
-      "../browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h",
-      "../browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h",
-      "../browser/ui/performance_controls/test_support/resource_usage_collector_observer.cc",
-      "../browser/ui/performance_controls/test_support/resource_usage_collector_observer.h",
       "../browser/ui/profiles/profile_ui_test_utils.h",
       "../browser/ui/test/pixel_test_configuration_mixin.cc",
       "../browser/ui/test/pixel_test_configuration_mixin.h",
@@ -2388,6 +2380,7 @@ if (!is_android) {
       "//chrome/browser/ui/omnibox:browser_tests",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/page_info",
+      "//chrome/browser/ui/performance_controls:browser_tests",
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/privacy_sandbox:browser_tests",
@@ -2818,6 +2811,10 @@ if (!is_android) {
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//v8",
     ]
+
+    # TODO(crbug.com/428666921): Remove this dependency when
+    # c/b/ui/views/performance_controls/*browsertest.cc get componentized.
+    deps += [ "//chrome/browser/ui/performance_controls/test_support" ]
 
     # TODO(413315837): Remove this dependency when
     # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc gets modularized.
@@ -3490,8 +3487,6 @@ if (!is_android) {
       "../browser/ui/native_window_tracker_browsertest.cc",
       "../browser/ui/passwords/password_generation_popup_view_browsertest.cc",
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_browsertest.cc",
-      "../browser/ui/performance_controls/tab_resource_usage_collector_browsertest.cc",
-      "../browser/ui/performance_controls/tab_resource_usage_tab_helper_browsertest.cc",
       "../browser/ui/profiles/profile_error_browsertest.cc",
       "../browser/ui/promos/ios_promos_utils_browsertest.cc",
       "../browser/ui/renderer_event_injection_browsertest.cc",
@@ -3893,7 +3888,6 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui/extensions",
-      "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/toolbar/chrome_labs",
@@ -8032,10 +8026,6 @@ test("unit_tests") {
       "../browser/ui/passwords/password_generation_popup_controller_impl_unittest.cc",
       "../browser/ui/passwords/password_manager_navigation_throttle_unittest.cc",
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_unittest.cc",
-      "../browser/ui/performance_controls/performance_controls_hats_service_unittest.cc",
-      "../browser/ui/performance_controls/performance_controls_metrics_unittest.cc",
-      "../browser/ui/performance_controls/performance_intervention_button_controller_unittest.cc",
-      "../browser/ui/performance_controls/tab_resource_usage_tab_helper_unittest.cc",
       "../browser/ui/profiles/profile_view_utils_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
       "../browser/ui/startup/launch_mode_recorder_unittest.cc",
@@ -8215,6 +8205,7 @@ test("unit_tests") {
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:unit_tests",
       "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/performance_controls:unit_tests",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/search:unit_tests",
@@ -11576,7 +11567,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/lens",
         "//chrome/browser/ui/media_router",
-        "//chrome/browser/ui/performance_controls",
+        "//chrome/browser/ui/performance_controls/test_support",
         "//chrome/browser/ui/tabs",
         "//chrome/browser/ui/tabs:tab_group",
         "//chrome/browser/ui/tabs:tab_menu",
