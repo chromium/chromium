@@ -102,17 +102,6 @@ BASE_FEATURE(kNtpDummyModules,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// If enabled, the Compose box will appear upon clicking the NTP Compose
-// entrypoint.
-BASE_FEATURE(kNtpSearchboxComposebox,
-             "NtpSearchboxComposebox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, the Compose entrypoint will appear in the NTP Searchbox.
-BASE_FEATURE(kNtpSearchboxComposeEntrypoint,
-             "NtpSearchboxComposeEntrypoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, Google Drive module will be shown.
 // This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpDriveModule,
@@ -467,35 +456,6 @@ const base::FeatureParam<int>
         "NtpMicrosoftFilesModuleMaxNonInsightsFilesForCombinedParam",
         4);
 
-const base::FeatureParam<int> kNtpSearchboxComposeEntrypointMaxAnimationsParam(
-    &ntp_features::kNtpSearchboxComposeEntrypoint,
-    "NtpSearchboxComposeEntrypointMaxAnimationsParam",
-    3);
-
-const base::FeatureParam<int>
-    kNtpSearchboxComposeEntrypointDownscaleMaxImageSizeParam(
-        &ntp_features::kNtpSearchboxComposeEntrypoint,
-        "NtpSearchboxComposeEntrypointDownscaleMaxImageSizeParam",
-        1500000);
-
-const base::FeatureParam<int>
-    kNtpSearchboxComposeEntrypointDownscaleMaxImageWidthParam(
-        &ntp_features::kNtpSearchboxComposeEntrypoint,
-        "NtpSearchboxComposeEntrypointDownscaleMaxImageWidthParam",
-        1600);
-
-const base::FeatureParam<int>
-    kNtpSearchboxComposeEntrypointDownscaleMaxImageHeightParam(
-        &ntp_features::kNtpSearchboxComposeEntrypoint,
-        "NtpSearchboxComposeEntrypointDownscaleMaxImageHeightParam",
-        1600);
-
-const base::FeatureParam<int>
-    kNtpSearchboxComposeEntrypointImageCompressionQualityParam(
-        &ntp_features::kNtpSearchboxComposeEntrypoint,
-        "NtpSearchboxComposeEntrypointImageCompressionQualityParam",
-        40);
-
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kNtpModulesLoadTimeoutMilliseconds,
@@ -546,7 +506,4 @@ std::string GetMobilePromoTargetURL() {
   return (field_trial_url.empty()) ? kMobilePromoQRCodeURL : field_trial_url;
 }
 
-bool IsNtpComposeboxEnabled() {
-  return base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox);
-}
 }  // namespace ntp_features

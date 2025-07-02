@@ -29,6 +29,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_client.h"
@@ -502,11 +503,13 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("searchboxCr23SteadyStateShadow",
                      ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 
-  source->AddBoolean(
-      "searchboxShowComposeAnimation",
-      profile->GetPrefs()->GetInteger(
-          prefs::kNtpComposeButtonShownCountPrefName) <
-          ntp_features::kNtpSearchboxComposeEntrypointMaxAnimationsParam.Get());
+  source->AddBoolean("searchboxShowComposeAnimation",
+                     profile->GetPrefs()->GetInteger(
+                         prefs::kNtpComposeButtonShownCountPrefName) <
+                         ntp_composebox_fieldtrial::FeatureConfig()
+                             .Get()
+                             .config.entry_point()
+                             .num_page_load_animations());
 }
 
 // static

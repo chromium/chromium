@@ -12,7 +12,7 @@
 #include "base/numerics/safe_math.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
-#include "components/search/ntp_features.h"
+#include "components/search/ntp_composebox_fieldtrial.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -24,14 +24,11 @@ SkBitmap DownscaleImageIfNeeded(
     scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs) {
   auto size = gfx::Size(image.width(), image.height());
   int max_image_size =
-      ntp_features::kNtpSearchboxComposeEntrypointDownscaleMaxImageSizeParam
-          .Get();
+      ntp_composebox_fieldtrial::FeatureConfig::Get().downscale_max_image_size;
   int max_image_width =
-      ntp_features::kNtpSearchboxComposeEntrypointDownscaleMaxImageWidthParam
-          .Get();
-  int max_image_height =
-      ntp_features::kNtpSearchboxComposeEntrypointDownscaleMaxImageHeightParam
-          .Get();
+      ntp_composebox_fieldtrial::FeatureConfig::Get().downscale_max_image_width;
+  int max_image_height = ntp_composebox_fieldtrial::FeatureConfig::Get()
+                             .downscale_max_image_height;
   if (lens::ShouldDownscaleSize(size, max_image_size, max_image_width,
                                 max_image_height)) {
     return lens::DownscaleImage(image, max_image_width, max_image_height,
@@ -56,8 +53,8 @@ lens::ImageData DownscaleAndEncodeBitmap(
   auto resized_bitmap = DownscaleImageIfNeeded(image, client_logs);
   if (lens::EncodeImageMaybeWithTransparency(
           resized_bitmap,
-          ntp_features::
-              kNtpSearchboxComposeEntrypointImageCompressionQualityParam.Get(),
+          ntp_composebox_fieldtrial::FeatureConfig::Get()
+              .image_compression_quality,
           data, client_logs)) {
     image_data.mutable_image_metadata()->set_height(resized_bitmap.height());
     image_data.mutable_image_metadata()->set_width(resized_bitmap.width());

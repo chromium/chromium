@@ -82,6 +82,7 @@
 #include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -498,14 +499,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   source->AddBoolean(
       "searchboxShowComposeEntrypoint",
-      (base::FeatureList::IsEnabled(
-           ntp_features::kNtpSearchboxComposeEntrypoint) ||
-       base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox)) &&
+      ntp_composebox_fieldtrial::IsNtpSearchboxComposeEntrypointEnabled() &&
           omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
-  source->AddBoolean(
-      "searchboxShowComposebox",
-      base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox) &&
-          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
+  source->AddBoolean("searchboxShowComposebox",
+                     ntp_composebox_fieldtrial::FeatureConfig::Get().enabled &&
+                         omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,

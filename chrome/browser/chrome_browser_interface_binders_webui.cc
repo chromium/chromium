@@ -139,6 +139,7 @@
 #include "components/commerce/core/mojom/shopping_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
+#include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/search/ntp_features.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
@@ -707,7 +708,7 @@ void PopulateChromeWebUIFrameBinders(
         file_suggestion::mojom::MicrosoftFilesPageHandler, NewTabPageUI>(map);
   }
 
-  if (ntp_features::IsNtpComposeboxEnabled()) {
+  if (ntp_composebox_fieldtrial::FeatureConfig().Get().enabled) {
     RegisterWebUIControllerInterfaceBinder<
         composebox::mojom::ComposeboxPageHandler, NewTabPageUI>(map);
   }

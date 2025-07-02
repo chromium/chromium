@@ -33,8 +33,6 @@ BASE_DECLARE_FEATURE(kNtpAlphaBackgroundCollections);
 BASE_DECLARE_FEATURE(kNtpBackgroundImageErrorDetection);
 BASE_DECLARE_FEATURE(kNtpCalendarModule);
 BASE_DECLARE_FEATURE(kNtpChromeCartModule);
-BASE_DECLARE_FEATURE(kNtpSearchboxComposebox);
-BASE_DECLARE_FEATURE(kNtpSearchboxComposeEntrypoint);
 BASE_DECLARE_FEATURE(kNtpDriveModule);
 BASE_DECLARE_FEATURE(kNtpDriveModuleNoSyncRequirement);
 BASE_DECLARE_FEATURE(kNtpDriveModuleSegmentation);
@@ -229,21 +227,6 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<bool>
     kNtpMostRelevantTabResumptionModuleFilterLocalTabsParam;
 
-extern const base::FeatureParam<int>
-    kNtpSearchboxComposeEntrypointMaxAnimationsParam;
-// The maximum image size downscaling target (in pixels) for images sent through the composebox.
-extern const base::FeatureParam<int>
-    kNtpSearchboxComposeEntrypointDownscaleMaxImageSizeParam;
-// The maximum image width downscaling target (in pixels) for images sent through the composebox.
-extern const base::FeatureParam<int>
-    kNtpSearchboxComposeEntrypointDownscaleMaxImageWidthParam;
-// The maximum image height downscaling target (in pixels) for images sent through the composebox.
-extern const base::FeatureParam<int>
-    kNtpSearchboxComposeEntrypointDownscaleMaxImageHeightParam;
-// The composition quality to use when encoding images sent through the composebox.
-extern const base::FeatureParam<int>
-    kNtpSearchboxComposeEntrypointImageCompressionQualityParam;
-
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
 
@@ -268,7 +251,6 @@ int GetWallpaperSearchButtonHideCondition();
 
 std::string GetMobilePromoTargetURL();
 
-bool IsNtpComposeboxEnabled();
 }  // namespace ntp_features
 
 #endif  // COMPONENTS_SEARCH_NTP_FEATURES_H_

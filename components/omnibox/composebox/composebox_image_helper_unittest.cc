@@ -8,9 +8,8 @@
 
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
-#include "components/search/ntp_features.h"
+#include "components/search/ntp_composebox_fieldtrial.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -30,16 +29,11 @@ class ComposeboxImageHelperTest : public testing::Test {
   void SetUp() override {
     // Set all the feature params here to keep the test consistent if future
     // default values are changed.
-    feature_list_.InitAndEnableFeatureWithParameters(
-        ntp_features::kNtpSearchboxComposeEntrypoint,
-        {{"NtpSearchboxComposeEntrypointImageCompressionQualityParam",
-          base::StringPrintf("%d", kImageCompressionQuality)},
-         {"NtpSearchboxComposeEntrypointDownscaleMaxImageSizeParam",
-          base::StringPrintf("%d", kImageMaxArea)},
-         {"NtpSearchboxComposeEntrypointDownscaleMaxImageHeightParam",
-          base::StringPrintf("%d", kImageMaxHeight)},
-         {"NtpSearchboxComposeEntrypointDownscaleMaxImageWidthParam",
-          base::StringPrintf("%d", kImageMaxWidth)}});
+    scoped_config_.Get().enabled = true;
+    scoped_config_.Get().downscale_max_image_size = kImageMaxArea;
+    scoped_config_.Get().image_compression_quality = kImageCompressionQuality;
+    scoped_config_.Get().downscale_max_image_height = kImageMaxHeight;
+    scoped_config_.Get().downscale_max_image_width = kImageMaxWidth;
   }
 
  protected:
@@ -63,7 +57,7 @@ class ComposeboxImageHelperTest : public testing::Test {
     return std::string(base::as_string_view(data.value()));
   }
 
-  base::test::ScopedFeatureList feature_list_;
+  ntp_composebox_fieldtrial::ScopedFeatureConfigForTesting scoped_config_;
 };
 
 TEST_F(ComposeboxImageHelperTest, DownscaleAndEncodeBitmapMaxSize) {

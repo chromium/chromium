@@ -5833,8 +5833,8 @@ const char kNtpChromeCartModuleName[] = "NTP Chrome Cart Module";
 const char kNtpChromeCartModuleDescription[] =
     "Shows the chrome cart module on the New Tab Page.";
 
-const char kNtpSearchboxComposeboxName[] = "NTP Composebox";
-const char kNtpSearchboxComposeboxDescription[] =
+const char kNtpComposeboxName[] = "NTP Composebox";
+const char kNtpComposeboxDescription[] =
     "Shows the Composebox on the New Tab Page Searchbox upon clicking the "
     "entrypoint.";
 
