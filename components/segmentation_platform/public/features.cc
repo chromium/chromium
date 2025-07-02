@@ -151,7 +151,7 @@ BASE_FEATURE(kSegmentationPlatformComposePromotion,
 
 BASE_FEATURE(kSegmentationPlatformUmaFromSqlDb,
              "SegmentationPlatformUmaFromSqlDb",
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);

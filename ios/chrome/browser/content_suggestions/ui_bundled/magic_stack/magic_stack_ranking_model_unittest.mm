@@ -29,6 +29,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
@@ -63,6 +64,8 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/segmentation_platform/model/ukm_data_manager_test_utils.h"
+#import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -220,6 +223,11 @@ class MagicStackRankingModelTest : public PlatformTest {
         segmentation_platform::kEphemeralModuleBackendRankerTestOverride,
         "price_tracking_notification_promo");
 
+    segmentation_test_utils_ =
+        std::make_unique<segmentation_platform::UkmDataManagerTestUtils>(
+            &ukm_recorder_);
+    segmentation_test_utils_->PreProfileInit({});
+
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -230,8 +238,10 @@ class MagicStackRankingModelTest : public PlatformTest {
     builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDefaultFactory());
+        base::BindOnce(&MagicStackRankingModelTest::SetUpEnvironment,
+                       base::Unretained(this))
+            .Then(segmentation_platform::SegmentationPlatformServiceFactory::
+                      GetDefaultFactory()));
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
@@ -388,6 +398,12 @@ class MagicStackRankingModelTest : public PlatformTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
+  web::BrowserState* SetUpEnvironment(web::BrowserState* context) {
+    ProfileIOS* setup_profile = ProfileIOS::FromBrowserState(context);
+    segmentation_test_utils_->SetupForProfile(setup_profile);
+    return context;
+  }
+
   ProfileIOS* GetProfile() { return profile_.get(); }
 
   PrefService* GetLocalState() {
@@ -420,6 +436,9 @@ class MagicStackRankingModelTest : public PlatformTest {
   base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  ukm::TestUkmRecorder ukm_recorder_;
+  std::unique_ptr<segmentation_platform::UkmDataManagerTestUtils>
+      segmentation_test_utils_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
