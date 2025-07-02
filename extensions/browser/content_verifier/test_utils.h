@@ -325,7 +325,6 @@ class TestExtensionBuilder {
 
   std::unique_ptr<base::Value> CreateVerifiedContentsPayload() const;
 
-  std::unique_ptr<crypto::RSAPrivateKey> test_content_verifier_key_;
   ExtensionId extension_id_;
   std::vector<ExtensionResource> extension_resources_;
 

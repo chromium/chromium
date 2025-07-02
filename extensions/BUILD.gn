@@ -167,6 +167,7 @@ static_library("test_support") {
     "//components/user_prefs",
     "//content/public/common",
     "//content/test:test_support",
+    "//crypto:test_support",
     "//extensions/browser",
     "//extensions/browser:test_support",
     "//extensions/browser/api",

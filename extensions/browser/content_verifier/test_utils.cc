@@ -13,8 +13,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/sha2.h"
-#include "crypto/signature_creator.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
+#include "crypto/test_support.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -357,8 +358,7 @@ TestExtensionBuilder::TestExtensionBuilder()
     : TestExtensionBuilder(ExtensionId(32, 'a')) {}
 
 TestExtensionBuilder::TestExtensionBuilder(const ExtensionId& extension_id)
-    : test_content_verifier_key_(crypto::RSAPrivateKey::Create(2048)),
-      extension_id_(extension_id) {
+    : extension_id_(extension_id) {
   base::CreateDirectory(extension_dir_.UnpackedPath().Append(kMetadataFolder));
 }
 
@@ -409,19 +409,15 @@ std::string TestExtensionBuilder::CreateVerifiedContents() const {
   base::Base64UrlEncode(
       payload_value, base::Base64UrlEncodePolicy::OMIT_PADDING, &payload_b64);
 
-  std::string signature_sha256 = crypto::SHA256HashString("." + payload_b64);
-  std::vector<uint8_t> signature_source(signature_sha256.begin(),
-                                        signature_sha256.end());
-  std::vector<uint8_t> signature_value;
-  if (!crypto::SignatureCreator::Sign(
-          test_content_verifier_key_.get(), crypto::SignatureCreator::SHA256,
-          signature_source.data(), signature_source.size(), &signature_value))
-    return "";
+  auto signature =
+      crypto::sign::Sign(crypto::sign::SignatureKind::RSA_PKCS1_SHA256,
+                         crypto::test::FixedRsa2048PrivateKeyForTesting(),
+                         base::as_byte_span("." + payload_b64));
 
   std::string signature_b64;
-  base::Base64UrlEncode(
-      std::string(signature_value.begin(), signature_value.end()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &signature_b64);
+  base::Base64UrlEncode(base::as_byte_span(signature),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &signature_b64);
 
   base::Value::List signatures = base::Value::List().Append(
       base::Value::Dict()
@@ -455,9 +451,8 @@ void TestExtensionBuilder::WriteVerifiedContents() {
 
 std::vector<uint8_t> TestExtensionBuilder::GetTestContentVerifierPublicKey()
     const {
-  std::vector<uint8_t> public_key;
-  test_content_verifier_key_->ExportPublicKey(&public_key);
-  return public_key;
+  auto key = crypto::test::FixedRsa2048PrivateKeyForTesting();
+  return key.ToSubjectPublicKeyInfo();
 }
 
 std::unique_ptr<base::Value>
