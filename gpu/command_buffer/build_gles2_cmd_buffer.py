@@ -4158,11 +4158,6 @@ def main(argv):
       chromium_root_dir)
   gen.ParseGLH("gpu/command_buffer/gles2_cmd_buffer_functions.txt")
 
-  gen.WritePepperGLES2Interface("ppapi/api/ppb_opengles2.idl", False)
-  gen.WritePepperGLES2Interface("ppapi/api/dev/ppb_opengles2ext_dev.idl", True)
-  gen.WriteGLES2ToPPAPIBridge("ppapi/lib/gl/gles2/gles2.c")
-  gen.WritePepperGLES2Implementation(
-      "ppapi/shared_impl/ppb_opengles2_shared.cc")
   gen.WriteCommandIds("gpu/command_buffer/common/gles2_cmd_ids_autogen.h")
   gen.WriteFormat("gpu/command_buffer/common/gles2_cmd_format_autogen.h")
   gen.WriteFormatTest(
