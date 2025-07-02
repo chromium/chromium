@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/autofill/ml_log_router_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/core/browser/ml_model/logging/ml_log_router.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
@@ -57,8 +59,12 @@ std::unique_ptr<KeyedService> PasswordFieldClassificationModelHandlerFactory::
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
+  autofill::MLLogRouter* log_router =
+      autofill::MLLogRouterFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
   return std::make_unique<autofill::FieldClassificationModelHandler>(
       optimization_guide,
       optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION);
+          OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION,
+      log_router);
 }

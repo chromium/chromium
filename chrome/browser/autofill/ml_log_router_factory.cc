@@ -29,6 +29,7 @@ MLLogRouterFactory::MLLogRouterFactory()
     : ProfileKeyedServiceFactory(
           "MLLogRouter",
           ProfileSelections::Builder()
+              // Also provide a log router for guest profiles.
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {}
 

@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
+#include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/inference/model_handler.h"
@@ -93,7 +94,8 @@ bool ParsingSupportsMultipleFieldsOfType(FieldType type) {
 
 FieldClassificationModelHandler::FieldClassificationModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
-    optimization_guide::proto::OptimizationTarget optimization_target)
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    autofill::MLLogRouter* log_router)
     : optimization_guide::ModelHandler<
           FieldClassificationModelEncoder::ModelOutput,
           const FieldClassificationModelEncoder::ModelInput&>(
@@ -105,7 +107,8 @@ FieldClassificationModelHandler::FieldClassificationModelHandler(
           optimization_target,
           CreateModelMetadata()),
       optimization_target_(optimization_target),
-      predictions_cache_(kMaxPredictionsToCache) {
+      predictions_cache_(kMaxPredictionsToCache),
+      log_router_(log_router) {
   // Store the model in memory as soon as it is available and keep it loaded for
   // the whole browser session since we query predictions very regularly.
   // TODO(crbug.com/40276177): Maybe change both back to default behavior if we
@@ -161,6 +164,14 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
     // No model, no predictions.
     std::move(callback).Run(std::move(form_structure));
     return;
+  }
+
+  // Placeholder logging logic, just to establish that the piping works.
+  if (log_router_ && log_router_->HasReceivers()) {
+    autofill_ml_internals::mojom::MLPredictionLogPtr log =
+        autofill_ml_internals::mojom::MLPredictionLog::New();
+    log->form_signature = form_structure->FormSignatureAsStr();
+    log_router_->ProcessLog(std::move(log));
   }
 
   FieldClassificationModelEncoder::ModelInput encoded_input =
