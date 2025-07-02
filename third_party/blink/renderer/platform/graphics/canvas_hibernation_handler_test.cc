@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -30,14 +29,6 @@ namespace blink {
 using testing::Test;
 
 namespace {
-
-class FakeCanvasResourceHost : public CanvasResourceHost {
- public:
-  FakeCanvasResourceHost() = default;
-  ~FakeCanvasResourceHost() override = default;
-  void NotifyGpuContextLost() override {}
-  void InitializeForRecording(cc::PaintCanvas* canvas) const override {}
-};
 
 class TestHibernationHandlerDelegate
     : public CanvasHibernationHandler::Delegate {
@@ -70,7 +61,7 @@ class TestHibernationHandlerDelegate
         size_, GetN32FormatForCanvas(), kPremul_SkAlphaType,
         gfx::ColorSpace::CreateSRGB(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        kSharedImageUsageFlags, &host_);
+        kSharedImageUsageFlags);
 
     return resource_provider_.get();
   }
@@ -82,7 +73,6 @@ class TestHibernationHandlerDelegate
   }
 
  private:
-  FakeCanvasResourceHost host_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   bool page_visible_ = true;
   bool is_hibernating_ = false;
