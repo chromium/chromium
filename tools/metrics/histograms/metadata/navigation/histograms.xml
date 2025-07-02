@@ -2031,6 +2031,10 @@ chromium-metrics-reviews@google.com.
                  of the frame trees on its opener chain. This includes the
                  time to create the view's main frame, which could be either
                  a local frame or a remote frame (proxy)"/>
+    <variant name="Total"
+        summary="between when the navigation starts and when the renderer
+                 process finishes processing the navigation commit and sends
+                 a DidCommitNavigation reply."/>
     <variant name="WaitingForProcessReady"
         summary="between the navigation start time and when the renderer
                  process has finished initializing and starting its RunLoop.
