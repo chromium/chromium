@@ -888,7 +888,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     [self.miaButton
         setAccessibilityLabel:l10n_util::GetNSString(IDS_IOS_ACCNAME_MIA)];
-    [self.miaButton setAccessibilityIdentifier:@"MIA"];
+    [self.miaButton setAccessibilityIdentifier:kNTPMIAIdentifier];
 
     [_buttonStack addArrangedSubview:self.miaButton];
     if (self.useInlineMIA) {

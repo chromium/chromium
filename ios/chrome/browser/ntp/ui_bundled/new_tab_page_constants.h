@@ -34,6 +34,18 @@ extern NSString* const kNTPCustomizationMenuButtonIdentifier;
 // Represents the identity disc badge.
 extern NSString* const kNTPFeedHeaderIdentityDiscBadge;
 
+// Represents the MIA entry point.
+extern NSString* const kNTPMIAIdentifier;
+
+// Represents the Lens quick action.
+extern NSString* const kNTPLensQuickActionIdentifier;
+
+// Represents the Voice Search quick action.
+extern NSString* const kNTPVoiceSearchQuickActionIdentifier;
+
+// Represents the incognito quick action.
+extern NSString* const kNTPIncognitoQuickActionIdentifier;
+
 // Represents the NTP omnibox.
 extern NSString* const kNTPFakeOmniboxAccessibilityButton;
 

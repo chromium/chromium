@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -77,6 +78,53 @@ BOOL WaitForHistoryToDisappear() {
       waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
 }
 
+// The possible visibility states of quick actions.
+enum class QuickActionsVisibility {
+  // All three quick actions are fully visible.
+  kVisible = 0,
+  // Quick asctions are visible without incognito.
+  kVisibleWithoutIncognito = 1,
+  // Quick actions are not visible.
+  kNotVisible = 2,
+};
+
+// Verifies whether the quick action row respects the expected visibility.
+void VerifyQuickActionVisibility(QuickActionsVisibility expected_visibility) {
+  auto incognitoElement = [EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNTPIncognitoQuickActionIdentifier)];
+  auto lensElement =
+      [EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                             kNTPLensQuickActionIdentifier)];
+  auto voiceSearchElement = [EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNTPVoiceSearchQuickActionIdentifier)];
+
+  switch (expected_visibility) {
+    case QuickActionsVisibility::kVisible:
+      [incognitoElement assertWithMatcher:grey_sufficientlyVisible()];
+      [lensElement assertWithMatcher:grey_sufficientlyVisible()];
+      [voiceSearchElement assertWithMatcher:grey_sufficientlyVisible()];
+      break;
+    case QuickActionsVisibility::kVisibleWithoutIncognito:
+      [incognitoElement assertWithMatcher:grey_notVisible()];
+      [lensElement assertWithMatcher:grey_sufficientlyVisible()];
+      [voiceSearchElement assertWithMatcher:grey_sufficientlyVisible()];
+      break;
+    case QuickActionsVisibility::kNotVisible:
+      [incognitoElement assertWithMatcher:grey_notVisible()];
+      [lensElement assertWithMatcher:grey_notVisible()];
+      [voiceSearchElement assertWithMatcher:grey_notVisible()];
+      break;
+  }
+}
+
+void VerifyMIAButtonVisible(bool mia_button_visible) {
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kNTPMIAIdentifier)]
+      assertWithMatcher:mia_button_visible ? grey_sufficientlyVisible()
+                                           : grey_notVisible()];
+}
+
 }  // namespace
 
 @interface NewTabPageTestCase : ChromeTestCase
@@ -92,6 +140,34 @@ BOOL WaitForHistoryToDisappear() {
     config.features_enabled.push_back(
         switches::kEnableErrorBadgeOnIdentityDisc);
     config.features_disabled.push_back(kIdentityDiscAccountMenu);
+  }
+
+  if ([self isRunningTest:@selector(testNewTabShowsMIAEntryPointInline)]) {
+    config.features_enabled_and_params.push_back(
+        {kNTPMIAEntrypoint,
+         {{{kNTPMIAEntrypointParam,
+            kNTPMIAEntrypointParamOmniboxContainedInline}}}});
+  }
+
+  if ([self isRunningTest:@selector(testNewTabShowsMIAEntryPointInOmnibox)]) {
+    config.features_enabled_and_params.push_back(
+        {kNTPMIAEntrypoint,
+         {{{kNTPMIAEntrypointParam,
+            kNTPMIAEntrypointParamOmniboxContainedSingleButton}}}});
+  }
+  if ([self isRunningTest:@selector
+            (testNewTabShowsMIAEntryPointInEnlargedFakebox)]) {
+    config.features_enabled_and_params.push_back(
+        {kNTPMIAEntrypoint,
+         {{{kNTPMIAEntrypointParam,
+            kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}}}});
+  }
+  if ([self
+          isRunningTest:@selector(testIncognitoButtonNotShownInQuickActions)]) {
+    config.features_enabled_and_params.push_back(
+        {kNTPMIAEntrypoint,
+         {{{kNTPMIAEntrypointParam,
+            kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito}}}});
   }
 
   return config;
@@ -467,6 +543,63 @@ BOOL WaitForHistoryToDisappear() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kNTPFeedHeaderIdentityDiscBadge)]
       assertWithMatcher:grey_notVisible()];
+}
+
+#pragma mark - MIA Variations
+
+// Verifies the MIA entry point visiblity for the inline variation.
+- (void)testNewTabShowsMIAEntryPointInline {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  }
+  // Open a new tab page.
+  [ChromeEarlGrey openNewTab];
+  // Verify the MIA button is shown.
+  VerifyMIAButtonVisible(true);
+  // Quick actions should not be visible when MIA is displayed inline.
+  VerifyQuickActionVisibility(QuickActionsVisibility::kNotVisible);
+}
+
+// Verifies the MIA entry point visiblity for the omnibox contained variation.
+- (void)testNewTabShowsMIAEntryPointInOmnibox {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  }
+  // Open a new tab page.
+  [ChromeEarlGrey openNewTab];
+  // Verify the MIA button is shown.
+  VerifyMIAButtonVisible(true);
+  // Quick actions should not be visible.
+  VerifyQuickActionVisibility(QuickActionsVisibility::kVisible);
+}
+
+// Verifies the MIA entry point visiblity for the enlarged fakebox variation.
+- (void)testNewTabShowsMIAEntryPointInEnlargedFakebox {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  }
+
+  // Open a new tab page.
+  [ChromeEarlGrey openNewTab];
+  // Verify the MIA button is shown.
+  VerifyMIAButtonVisible(true);
+  // Quick actions should be visible.
+  VerifyQuickActionVisibility(QuickActionsVisibility::kVisible);
+}
+
+// Verifies that the quick actions menu doesn't show incognito for one specific
+// MIA entry point variation.
+- (void)testIncognitoButtonNotShownInQuickActions {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  }
+
+  // Open a new tab page.
+  [ChromeEarlGrey openNewTab];
+  // Verify the MIA button is shown.
+  VerifyMIAButtonVisible(true);
+  // QUick actions should not be visible.
+  VerifyQuickActionVisibility(QuickActionsVisibility::kVisibleWithoutIncognito);
 }
 
 @end

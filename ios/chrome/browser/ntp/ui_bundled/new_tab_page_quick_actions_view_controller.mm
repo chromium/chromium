@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -85,9 +86,13 @@ NSString* const kFakeboxMatchingBackgroundColor =
 - (void)setupQuickActionsButtonsAccessibility {
   _incognitoButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ACCNAME_NEW_INCOGNITO_TAB);
+  _incognitoButton.accessibilityIdentifier = kNTPIncognitoQuickActionIdentifier;
   _lensButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
+  _lensButton.accessibilityIdentifier = kNTPLensQuickActionIdentifier;
   _voiceSearchButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ACCNAME_VOICE_SEARCH);
+  _voiceSearchButton.accessibilityIdentifier =
+      kNTPVoiceSearchQuickActionIdentifier;
 }
 
 // Creates a new horizontal button stack view.
