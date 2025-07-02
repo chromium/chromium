@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/mobile_config.gni")
+
 declare_args() {
   # Control whether only WebKit is build. This is used by bots building
   # WebKit for mac but incorrectly setting `target_os="ios"`.
@@ -19,7 +21,8 @@ declare_args() {
   # Control whether //ios/chrome and //ios/web targets are build. This
   # is used by bots from projects based on top of Chromium that want to
   # only reuse shared code (//ios/net, //remoting/ios, ...).
-  ios_build_chrome = true
+  # This is false by default on iOS-based platforms like tvOS.
+  ios_build_chrome = target_platform == "iphoneos"
 
   # Controls whether universal links are blocked from opening native apps
   # when the user is browsing in off the record mode.

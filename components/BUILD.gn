@@ -1143,7 +1143,7 @@ if (use_blink) {
       deps += [ "//components/constrained_window:browser_tests" ]
     }
 
-    if (is_ios) {
+    if (is_ios && target_platform == "iphoneos") {
       entitlements_path = "//content/app/ios/appex/app.entitlements"
       bundle_deps = [
         ":components_tests_distiller_bundle_data",

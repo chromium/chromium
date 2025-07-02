@@ -35,7 +35,10 @@ if (is_android) {
 } else if (is_ios) {
   import("//build/config/apple/mobile_config.gni")
   import("//build/config/apple/swift_source_set.gni")
-  import("//content/shell/app/ios/extensions.gni")
+
+  if (target_platform == "iphoneos") {
+    import("//content/shell/app/ios/extensions.gni")
+  }
 }
 
 # TODO(crbug.com/1336055, spang): Investigate using shell_views with cast builds as
@@ -713,19 +716,21 @@ if (is_android) {
     info_plist = "app/ios/ios-app.plist"
   }
 
-  browserkit_extension("gpu_process") {
-    testonly = true
-    bundle_identifier = ios_gpu_process_bundle_identifier
-  }
+  if (target_platform == "iphoneos") {
+    browserkit_extension("gpu_process") {
+      testonly = true
+      bundle_identifier = ios_gpu_process_bundle_identifier
+    }
 
-  browserkit_extension("network_process") {
-    testonly = true
-    bundle_identifier = ios_network_process_bundle_identifier
-  }
+    browserkit_extension("network_process") {
+      testonly = true
+      bundle_identifier = ios_network_process_bundle_identifier
+    }
 
-  browserkit_extension("content_process") {
-    testonly = true
-    bundle_identifier = ios_content_process_bundle_identifier
+    browserkit_extension("content_process") {
+      testonly = true
+      bundle_identifier = ios_content_process_bundle_identifier
+    }
   }
 } else {
   executable("content_shell") {
