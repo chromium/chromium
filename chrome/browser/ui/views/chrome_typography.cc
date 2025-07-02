@@ -55,7 +55,8 @@ void ApplyCommonFontStyles(int context,
     case CONTEXT_OMNIBOX_PRIMARY:
     case CONTEXT_OMNIBOX_POPUP:
     case CONTEXT_OMNIBOX_SECTION_HEADER:
-    case CONTEXT_OMNIBOX_POPUP_ROW_CHIP: {
+    case CONTEXT_OMNIBOX_POPUP_ROW_CHIP:
+    case CONTEXT_OMNIBOX_TOOLBELT_BUTTON: {
       const bool is_touch_ui = ui::TouchUiController::Get()->touch_ui();
       int desired_font_size = is_touch_ui ? 15 : 14;
       const int omnibox_primary_delta =
@@ -64,8 +65,12 @@ void ApplyCommonFontStyles(int context,
       details.size_delta = omnibox_primary_delta;
       if (context == CONTEXT_DEEMPHASIZED) {
         --details.size_delta;
-      } else if (context == CONTEXT_OMNIBOX_POPUP_ROW_CHIP) {
+      } else if (context == CONTEXT_OMNIBOX_POPUP_ROW_CHIP ||
+                 context == CONTEXT_OMNIBOX_TOOLBELT_BUTTON) {
         details.size_delta -= 2;
+      }
+      if (context == CONTEXT_OMNIBOX_TOOLBELT_BUTTON) {
+        details.weight = gfx::Font::Weight::MEDIUM;
       }
       break;
     }

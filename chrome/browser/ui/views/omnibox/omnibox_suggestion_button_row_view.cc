@@ -123,13 +123,14 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
 
  public:
   OmniboxSuggestionRowButton(PressedCallback callback,
+                             int context,
                              const gfx::VectorIcon& icon,
                              const gfx::Image& image,
                              OmniboxPopupViewViews* popup_view,
                              OmniboxPopupSelection selection)
       : MdTextButton(std::move(callback),
                      u"",
-                     CONTEXT_OMNIBOX_PRIMARY,
+                     context,
                      /*use_text_color_for_icon=*/false),
         icon_(&icon),
         image_(image),
@@ -298,6 +299,7 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
+        CONTEXT_OMNIBOX_PRIMARY,
         vector_icons::kSearchChromeRefreshIcon, gfx::Image(), popup_view_,
         selection));
   }
@@ -311,6 +313,9 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     auto* button = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
+        match().IsToolbelt()
+            ? CONTEXT_OMNIBOX_TOOLBELT_BUTTON
+            : CONTEXT_OMNIBOX_PRIMARY,
         match().actions[action_index]->GetVectorIcon(),
         match().actions[action_index]->GetIconImage(), popup_view_, selection));
     action_buttons_.push_back(button);
@@ -336,6 +341,8 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
 
   // Only build views if there was a structural change. Without this check,
   // performance could be impacted by frequent unnecessary rebuilds.
+  // TODO(crbug.com/429029560): try removing this optimization or making the
+  // conditions smarter.
   if (action_buttons_.size() != match().actions.size()) {
     BuildViews();
   }
