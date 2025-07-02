@@ -4,6 +4,10 @@
 
 #include "components/omnibox/composebox/composebox_query_controller.h"
 
+#include <memory>
+#include <string>
+
+#include "base/base64url.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -164,6 +168,17 @@ void ComposeboxQueryController::NotifySessionAbandoned() {
 
 GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text) {
   session_state_ = SessionState::kQuerySubmitted;
+  if (!active_files_.empty()) {
+    // Since multiple file upload isn't supported right now, use the last file
+    // uploaded to determine `vit` param.
+    // TODO(crbug.com/428967670): Support multiple file upload.
+    const std::unique_ptr<FileInfo>& last_file = active_files_.rbegin()->second;
+    return GetUrlForMultimodalAim(
+        template_url_service_, kEntrypointParameterValue,
+        request_id_generator_.GetNextRequestId(
+            lens::RequestIdUpdateMode::kSearchUrl),
+        last_file->mime_type_, base::UTF8ToUTF16(query_text));
+  }
   return GetUrlForAim(template_url_service_, kEntrypointParameterValue,
                       base::UTF8ToUTF16(query_text));
 }

@@ -15,10 +15,12 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/base64url.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/keyword_web_data_service.h"
@@ -31,8 +33,14 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "net/base/url_util.h"
+#include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 
 namespace {
+
+constexpr char kVisualRequestIdQueryParameter[] = "vsrid";
+constexpr char kVisualInputTypeQueryParameter[] = "vit";
+constexpr char kVisualInputTypeQueryParameterPdfValue[] = "pdf";
+constexpr char kVisualInputTypeQueryParameterImageValue[] = "img";
 
 // Computes whether updates to the search engines database are needed.
 //
@@ -64,6 +72,17 @@ WDKeywordsResult::Metadata ComputeMergeEnginesRequirements(
   }
 
   return out_metadata;
+}
+
+std::string GetMimeTypeParamValue(lens::MimeType mime_type) {
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
+      return kVisualInputTypeQueryParameterPdfValue;
+    case lens::MimeType::kImage:
+      return kVisualInputTypeQueryParameterImageValue;
+    default:
+      NOTREACHED() << "File type not supported.";
+  }
 }
 
 }  // namespace
@@ -589,5 +608,26 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
   result_url =
       net::AppendOrReplaceQueryParameter(result_url, "aep", aim_entrypoint);
 
+  return result_url;
+}
+
+GURL GetUrlForMultimodalAim(
+    TemplateURLService* turl_service,
+    const std::string& aim_entrypoint,
+    const std::unique_ptr<lens::LensOverlayRequestId> request_id,
+    const lens::MimeType mime_type,
+    const std::u16string& query_text) {
+  GURL result_url = GetUrlForAim(turl_service, aim_entrypoint, query_text);
+  std::string serialized_request_id;
+  CHECK(request_id->SerializeToString(&serialized_request_id));
+  std::string encoded_request_id;
+  base::Base64UrlEncode(serialized_request_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_request_id);
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kVisualRequestIdQueryParameter, encoded_request_id);
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kVisualInputTypeQueryParameter,
+      GetMimeTypeParamValue(mime_type));
   return result_url;
 }

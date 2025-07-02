@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,6 +36,8 @@ constexpr char kTestServerSessionId[] = "test_server_session_id";
 constexpr char kLocale[] = "en-US";
 constexpr char kRegion[] = "US";
 constexpr char kTimeZone[] = "America/Los_Angeles";
+inline constexpr char kRequestIdParameterKey[] = "vsrid";
+inline constexpr char kVisualInputTypeParameterKey[] = "vit";
 
 class ComposeboxQueryControllerTest
     : public testing::Test,
@@ -559,6 +562,70 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientContextHasCorrectValues) {
 }
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
-  controller().CreateAimUrl("test");
+  GURL aim_url = controller().CreateAimUrl("test");
+
+  // Assert no lens params are added to unimodal text query.
+  std::string vsrid_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
+                                          &vsrid_value));
+
+  std::string vit_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
+                                          &vit_value));
+
   EXPECT_EQ(SessionState::kQuerySubmitted, controller().session_state());
+}
+
+TEST_F(ComposeboxQueryControllerTest, AimUrlWithUploadedPdf) {
+  // Wait until the state changes to kClusterInfoReceived.
+  base::RunLoop run_loop;
+  controller().set_on_query_controller_state_changed_callback(
+      base::BindLambdaForTesting([&](QueryControllerState state) {
+        if (state == QueryControllerState::kClusterInfoReceived) {
+          run_loop.Quit();
+        }
+      }));
+
+  // Start the session.
+  controller().NotifySessionStarted();
+  run_loop.Run();
+
+  // Add file to cache.
+  std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
+      std::make_unique<ComposeboxQueryController::FileInfo>();
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  file_info->file_token_ = file_token;
+  file_info->mime_type_ = lens::MimeType::kPdf;
+
+  SetExpectedFileUploadStatus(file_token, FileUploadStatus::kUploadSuccessful);
+
+  controller().StartFileUploadFlow(
+      std::move(file_info),
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>());
+
+  WaitForFileExpectedUploadStatus();
+
+  // Validate.
+  EXPECT_EQ(controller().GetFileInfo(file_token)->GetFileUploadStatus(),
+            FileUploadStatus::kUploadSuccessful);
+
+  // Check that the vsrid matches that for an image upload.
+  EXPECT_EQ(controller()
+                .GetFileInfo(file_token)
+                ->GetRequestIdForTesting()
+                ->sequence_id(),
+            1);
+
+  GURL aim_url = controller().CreateAimUrl("hello");
+
+  // Assert no lens params are added to multimodal text query.
+  std::string vsrid_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
+                                         &vsrid_value));
+  EXPECT_FALSE(vsrid_value.empty());
+
+  std::string vit_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
+                                         &vit_value));
+  EXPECT_EQ(vit_value, "pdf");
 }

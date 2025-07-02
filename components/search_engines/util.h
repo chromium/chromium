@@ -12,12 +12,17 @@
 #include <string>
 #include <vector>
 
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/template_url_service.h"
 
 class KeywordWebDataService;
 class PrefService;
 class TemplateURL;
+
+namespace lens {
+class LensOverlayRequestId;
+}  // namespace lens
 
 // Returns the short name of the default search engine, or the empty string if
 // none is set.
@@ -218,5 +223,20 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
 GURL GetUrlForAim(TemplateURLService* turl_service,
                   const std::string& aim_entrypoint,
                   const std::u16string& query_text = std::u16string());
+
+// Retrieves the URL for the AIM web page if the a file was uploaded as part
+// of the input.
+// `aim_entrypoint` (aep) is the source of the request.
+// `request_id` (vsrid) is the visual search request id used by lens to obtain
+// the uploaded context.
+// `mime_type` (vit) is the type of the file that has been uploaded.
+// TODO(crbug.com/428067264): Check if `lns_surface` should be supported as
+// well.
+GURL GetUrlForMultimodalAim(
+    TemplateURLService* turl_service,
+    const std::string& aim_entrypoint,
+    const std::unique_ptr<lens::LensOverlayRequestId> request_id,
+    const lens::MimeType mime_type,
+    const std::u16string& query_text = std::u16string());
 
 #endif  // COMPONENTS_SEARCH_ENGINES_UTIL_H_
