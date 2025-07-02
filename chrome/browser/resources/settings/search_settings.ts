@@ -178,6 +178,7 @@ function findAndHighlightMatches(request: SearchRequest, root: Node): number {
 function revealParentSection(
     node: Node, numResults: number, bubbles: Map<Node, number>) {
   let associatedControl: HTMLElement|null = null;
+  let subpageTitle: string = '';
 
   // Find corresponding SETTINGS-SECTION parent and make it visible.
   let parent = node;
@@ -191,14 +192,28 @@ function revealParentSection(
     }
     if (parent.nodeName === 'SETTINGS-SUBPAGE') {
       const subpage = parent as SettingsSubpageElement;
-      assert(
-          subpage.associatedControl,
-          'An associated control was expected for SETTINGS-SUBPAGE ' +
-              subpage.pageTitle + ', but was not found.');
       associatedControl = subpage.associatedControl;
+      subpageTitle = subpage.pageTitle;
     }
   }
-  (parent as SettingsSectionElement).hiddenBySearch = false;
+
+  const parentSection = parent as SettingsSectionElement;
+  parentSection.hiddenBySearch = false;
+
+  if (!parentSection.hasAttribute('section')) {
+    // Nothing else to do. A <settings-section> without a 'section' attribute
+    // indicates that it has been migrated to the plugin architecture, where
+    // <setttings-section> is just a presentational element and has no semantic
+    // meaning. Showing bubbles is handled by each individual plugin instead.
+    return;
+  }
+
+  if (subpageTitle !== '') {
+    assert(
+        associatedControl,
+        'An associated control was expected for SETTINGS-SUBPAGE ' +
+            subpageTitle + ', but was not found.');
+  }
 
   // Need to add the search bubble after the parent SETTINGS-SECTION has
   // become visible, otherwise |offsetWidth| returns zero.
@@ -209,7 +224,7 @@ function revealParentSection(
   }
 }
 
-function showBubble(
+export function showBubble(
     control: Node, numResults: number, bubbles: Map<Node, number>,
     horizontallyCenter: boolean) {
   const bubble = createEmptySearchBubble(control, horizontallyCenter);

@@ -286,9 +286,9 @@ suite('SearchSettingsTest', function() {
 
   test('associated control causes search highlight bubble', async () => {
     document.body.innerHTML = getTrustedStaticHtml`
-        <settings-section>
+        <settings-section section="foo">
           <button></button>
-          <settings-subpage>
+          <settings-subpage page-title="Title">
             hello
           </settings-subpage>
         </settings-section>`;
@@ -302,7 +302,7 @@ suite('SearchSettingsTest', function() {
 
   test('bubble result count', async () => {
     document.body.innerHTML = getTrustedStaticHtml`
-        <settings-section>
+        <settings-section section="foo">
           <select>
             <option>nohello</option>
             <option>hello dolly!</option>
@@ -311,7 +311,7 @@ suite('SearchSettingsTest', function() {
           </select>
 
           <button></button>
-          <settings-subpage>
+          <settings-subpage page-title="Title">
             hello there!
           </settings-subpage>
         </setting-section>`;
@@ -329,12 +329,12 @@ suite('SearchSettingsTest', function() {
 
   test('diacritics', async () => {
     document.body.innerHTML = getTrustedStaticHtml`
-        <settings-section>
+        <settings-section section="foo">
           <select>
             <option>año de oro</option>
           </select>
           <button></button>
-          <settings-subpage>
+          <settings-subpage page-title="Title">
             malibu cañon
           </settings-subpage>
           danger zone

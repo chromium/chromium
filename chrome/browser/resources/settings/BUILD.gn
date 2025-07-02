@@ -304,6 +304,8 @@ build_webui("build") {
     "search_settings.ts",
     "settings.ts",
     "settings_page/main_page_mixin.ts",
+    "settings_page/searchable_view_container_mixin.ts",
+    "settings_page/settings_view_mixin.ts",
     "settings_main/settings_plugin.ts",
     "site_settings/constants.ts",
     "site_settings/site_settings_mixin.ts",

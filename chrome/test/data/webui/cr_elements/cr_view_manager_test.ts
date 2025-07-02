@@ -42,7 +42,7 @@ suite('CrElementsViewManagerTest', function() {
     viewManager = document.body.querySelector('#viewManager')!;
   });
 
-  test('visibility', async function() {
+  test('switchView', async function() {
     assertViewVisible('viewOne', false);
     assertViewVisible('viewTwo', false);
     assertViewVisible('viewThree', false);
@@ -56,6 +56,32 @@ suite('CrElementsViewManagerTest', function() {
     assertViewVisible('viewOne', false);
     assertViewVisible('viewTwo', false);
     assertViewVisible('viewThree', true);
+  });
+
+  test('switchViews', async function() {
+    assertViewVisible('viewOne', false);
+    assertViewVisible('viewTwo', false);
+    assertViewVisible('viewThree', false);
+
+    await viewManager.switchViews(['viewOne', 'viewTwo']);
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', true);
+    assertViewVisible('viewThree', false);
+
+    await viewManager.switchViews(['viewTwo', 'viewThree']);
+    assertViewVisible('viewOne', false);
+    assertViewVisible('viewTwo', true);
+    assertViewVisible('viewThree', true);
+
+    await viewManager.switchViews(['viewOne', 'viewTwo', 'viewThree']);
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', true);
+    assertViewVisible('viewThree', true);
+
+    await viewManager.switchViews([]);
+    assertViewVisible('viewOne', false);
+    assertViewVisible('viewTwo', false);
+    assertViewVisible('viewThree', false);
   });
 
   test('visibility with show-all', async function() {
