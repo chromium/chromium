@@ -46,6 +46,7 @@ source_set("options") {
   sources = [
     "reader_mode_options_controls_view.h",
     "reader_mode_options_controls_view.mm",
+    "reader_mode_options_mutator.h",
     "reader_mode_options_view_controller.h",
     "reader_mode_options_view_controller.mm",
   ]
@@ -69,6 +70,7 @@ source_set("eg2_tests") {
     ":ui",
     "//components/dom_distiller/core",
     "//components/dom_distiller/core/mojom",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

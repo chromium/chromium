@@ -7,8 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ReaderModeOptionsMutator;
+
 // View controller for the reader mode options.
 @interface ReaderModeOptionsViewController : UINavigationController
+
+@property(nonatomic, weak) id<ReaderModeOptionsMutator> mutator;
 
 @end
 

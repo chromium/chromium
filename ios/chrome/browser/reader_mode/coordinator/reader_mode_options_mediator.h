@@ -7,8 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/reader_mode/ui/reader_mode_options_mutator.h"
+
+namespace dom_distiller {
+class DistilledPagePrefs;
+}
+
 // Mediator for the reader mode options.
-@interface ReaderModeOptionsMediator : NSObject
+@interface ReaderModeOptionsMediator : NSObject <ReaderModeOptionsMutator>
+
+// Initializer.
+- (instancetype)initWithDistilledPagePrefs:
+    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs;
 
 // Disconnects from the model layer.
 - (void)disconnect;

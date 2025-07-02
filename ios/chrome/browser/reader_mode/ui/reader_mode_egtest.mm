@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -31,6 +32,14 @@ void ExpectBodyHasThemeAndFont(const std::string& theme,
   const std::string resultStr = result.GetString();
   EXPECT_THAT(resultStr, HasSubstr(theme));
   EXPECT_THAT(resultStr, HasSubstr(font));
+}
+
+// Returns a matcher for a visible context menu item with the given
+// `message_id`.
+id<GREYMatcher> VisibleContextMenuItem(int message_id) {
+  return grey_allOf(
+      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(message_id),
+      grey_sufficientlyVisible(), nil);
 }
 }  // namespace
 
@@ -295,6 +304,78 @@ void ExpectBodyHasThemeAndFont(const std::string& theme,
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
+}
+
+// Tests that font family can be changed from the options view.
+- (void)testChangeReaderModeFontFamilyFromOptionsView {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+
+  // Tap the chip to open the options view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // The options view should be visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
+
+  ExpectBodyHasThemeAndFont("light", "sans-serif");
+
+  // Change the font family to Serif.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kReaderModeOptionsFontFamilyButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 VisibleContextMenuItem(
+                     IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SERIF_LABEL)]
+      performAction:grey_tap()];
+  GREYAssertEqual([ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kFont],
+                  static_cast<int>(dom_distiller::mojom::FontFamily::kSerif),
+                  @"Pref should be updated to Serif");
+  ExpectBodyHasThemeAndFont("light", "serif");
+
+  // Change the font family to Monospace.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kReaderModeOptionsFontFamilyButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 VisibleContextMenuItem(
+                     IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MONOSPACE_LABEL)]
+      performAction:grey_tap()];
+  GREYAssertEqual(
+      [ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kFont],
+      static_cast<int>(dom_distiller::mojom::FontFamily::kMonospace),
+      @"Pref should be updated to Monospace");
+  ExpectBodyHasThemeAndFont("light", "monospace");
+
+  // Change the font family back to Sans-Serif.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kReaderModeOptionsFontFamilyButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 VisibleContextMenuItem(
+                     IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SANS_SERIF_LABEL)]
+      performAction:grey_tap()];
+  GREYAssertEqual(
+      [ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kFont],
+      static_cast<int>(dom_distiller::mojom::FontFamily::kSansSerif),
+      @"Pref should be updated to Sans-Serif");
+  ExpectBodyHasThemeAndFont("light", "sans-serif");
 }
 
 @end

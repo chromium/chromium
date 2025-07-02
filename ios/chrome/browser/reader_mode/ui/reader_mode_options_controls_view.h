@@ -7,8 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ReaderModeOptionsMutator;
+
 // A view that contains the controls for the Reader Mode options.
 @interface ReaderModeOptionsControlsView : UIView
+
+@property(nonatomic, weak) id<ReaderModeOptionsMutator> mutator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_UI_READER_MODE_OPTIONS_CONTROLS_VIEW_H_

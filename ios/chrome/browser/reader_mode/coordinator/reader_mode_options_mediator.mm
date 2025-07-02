@@ -4,12 +4,32 @@
 
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_options_mediator.h"
 
-@implementation ReaderModeOptionsMediator
+#import "components/dom_distiller/core/distilled_page_prefs.h"
+
+@implementation ReaderModeOptionsMediator {
+  // The distilled page preferences.
+  raw_ptr<dom_distiller::DistilledPagePrefs> _distilledPagePrefs;
+}
+
+- (instancetype)initWithDistilledPagePrefs:
+    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs {
+  self = [super init];
+  if (self) {
+    _distilledPagePrefs = distilledPagePrefs;
+  }
+  return self;
+}
+
+#pragma mark - ReaderModeOptionsMutator
+
+- (void)setFontFamily:(dom_distiller::mojom::FontFamily)fontFamily {
+  _distilledPagePrefs->SetFontFamily(fontFamily);
+}
 
 #pragma mark - Public
 
 - (void)disconnect {
-  // TODO(crbug.com/409941529): Disconnect the mediator from the model layer.
+  _distilledPagePrefs = nullptr;
 }
 
 @end

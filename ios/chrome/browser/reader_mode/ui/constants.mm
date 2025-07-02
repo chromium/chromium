@@ -13,6 +13,9 @@ NSString* const kReaderModeChipViewAccessibilityIdentifier =
 NSString* const kReaderModeOptionsViewAccessibilityIdentifier =
     @"ReaderModeOptionsViewAccessibilityIdentifier";
 
+NSString* const kReaderModeOptionsFontFamilyButtonAccessibilityIdentifier =
+    @"ReaderModeOptionsFontFamilyButtonAccessibilityIdentifier";
+
 UIColor* ReaderModeLightBackgroundColor() {
   return [UIColor whiteColor];
 }

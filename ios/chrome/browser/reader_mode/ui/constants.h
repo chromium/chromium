@@ -18,6 +18,10 @@ extern NSString* const kReaderModeChipViewAccessibilityIdentifier;
 // The accessibility identifier of the Reader Mode options view.
 extern NSString* const kReaderModeOptionsViewAccessibilityIdentifier;
 
+// The accessibility identifier for the font family button.
+extern NSString* const
+    kReaderModeOptionsFontFamilyButtonAccessibilityIdentifier;
+
 // Reader mode color themes helpers.
 UIColor* ReaderModeLightBackgroundColor();
 UIColor* ReaderModeLightTextColor();

@@ -6,6 +6,7 @@
 
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
+#import "ios/chrome/browser/reader_mode/ui/reader_mode_options_mutator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -141,6 +142,8 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
       UIControlContentHorizontalAlignmentLeading;
   button.changesSelectionAsPrimaryAction = YES;
   button.showsMenuAsPrimaryAction = YES;
+  button.accessibilityIdentifier =
+      kReaderModeOptionsFontFamilyButtonAccessibilityIdentifier;
   // By default show Sans-Serif as the selected font family.
   button.menu = [self createFontFamilyMenuWithSelectedFamily:
                           dom_distiller::mojom::FontFamily::kSansSerif];
@@ -180,8 +183,9 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
               IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SANS_SERIF_LABEL)
                 image:nil
            identifier:nil
-              handler:^(UIAction* action){
-                  // TODO(crbug.com/409941529): Update font family with mutator.
+              handler:^(UIAction* action) {
+                [self.mutator
+                    setFontFamily:dom_distiller::mojom::FontFamily::kSansSerif];
               }];
 }
 
@@ -192,8 +196,9 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
                           IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SERIF_LABEL)
                 image:nil
            identifier:nil
-              handler:^(UIAction* action){
-                  // TODO(crbug.com/409941529): Update font family with mutator.
+              handler:^(UIAction* action) {
+                [self.mutator
+                    setFontFamily:dom_distiller::mojom::FontFamily::kSerif];
               }];
   return serifAction;
 }
@@ -206,8 +211,9 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
               IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MONOSPACE_LABEL)
                 image:nil
            identifier:nil
-              handler:^(UIAction* action){
-                  // TODO(crbug.com/409941529): Update font family with mutator.
+              handler:^(UIAction* action) {
+                [self.mutator
+                    setFontFamily:dom_distiller::mojom::FontFamily::kMonospace];
               }];
   return monospaceAction;
 }

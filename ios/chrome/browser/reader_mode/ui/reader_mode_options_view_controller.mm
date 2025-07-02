@@ -133,6 +133,7 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
   ReaderModeOptionsControlsView* controlsView =
       [[ReaderModeOptionsControlsView alloc] init];
   controlsView.translatesAutoresizingMaskIntoConstraints = NO;
+  controlsView.mutator = self.mutator;
   return controlsView;
 }
 

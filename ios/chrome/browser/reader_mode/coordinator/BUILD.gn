@@ -47,6 +47,7 @@ source_set("options") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/reader_mode/ui:options",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
