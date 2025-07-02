@@ -2736,9 +2736,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
     was not selected.
 
     Therefore the &quot;Selected&quot; bucket proportion is the CTR of the
-    action chip. Higher is better. The count of this bucket matches the
-    {ClusterKeywordTypeLabel} bucket of
-    Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType.
+    action chip. The count of this bucket matches the {ClusterKeywordTypeLabel}
+    bucket of Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType.
 
     The total count of both buckets is how many times we've offered the chip
     triggered by {ClusterKeywordTypeLabel} in total, and matches the
@@ -2767,7 +2766,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     was not selected.
 
     Therefore the &quot;Selected&quot; bucket proportion is the CTR of the
-    action chip. Higher is better. The count of this bucket matches the sum of
+    action chip. The count of this bucket matches the sum of
     Omnibox.SuggestionUsed.ResumeJourney.
 
     The total count of both buckets is how many times we've offered the chip
@@ -3798,6 +3797,33 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="RequestType">
     <variant name="NonPrefetch" summary="user-initiated requests"/>
     <variant name="Prefetch" summary="non-user-initiated proactive requests"/>
+  </token>
+</histogram>
+
+<histogram name="Omnibox.{OmniboxActionType}.Ctr" enum="BooleanSelected"
+    expires_after="2026-06-30">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Emitted when the user uses the Omnibox to go somewhere AND an action of the
+    given type was shown in the Omnibox popup.
+
+    This metric records &quot;Selected&quot; (1) if the action was selected and
+    records &quot;Not Selected&quot; (0) if the action was not selected.
+
+    Therefore, the &quot;Selected&quot; bucket proportion is the CTR
+    (click-through rate) of the action.
+
+    The total count of both buckets is how many times we've shown the action
+    total.
+  </summary>
+  <token key="OmniboxActionType">
+    <variant name="ContextualSearchFulfillmentAction"/>
+    <variant name="ContextualSearchOpenLensAction"/>
+    <variant name="StarterPackAiModeAction"/>
+    <variant name="StarterPackBookmarksAction"/>
+    <variant name="StarterPackHistoryAction"/>
+    <variant name="StarterPackTabsAction"/>
   </token>
 </histogram>
 

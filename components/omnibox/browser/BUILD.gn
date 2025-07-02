@@ -818,6 +818,7 @@ bundle_data("unit_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actions/contextual_search_action_unittest.cc",
     "actions/omnibox_action_in_suggest_unittest.cc",
     "actions/omnibox_answer_action_unittest.cc",
     "actions/omnibox_extension_action_unittest.cc",
