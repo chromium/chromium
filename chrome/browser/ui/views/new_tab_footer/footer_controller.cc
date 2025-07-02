@@ -71,6 +71,16 @@ NewTabFooterController::NewTabFooterController(BrowserWindowInterface* browser,
       base::BindRepeating(&NewTabFooterController::UpdateFooterVisibility,
                           weak_factory_.GetWeakPtr(),
                           /*log_on_load_metric=*/false));
+  local_state_pref_change_registrar_.Add(
+      prefs::kEnterpriseCustomLabelForBrowser,
+      base::BindRepeating(&NewTabFooterController::UpdateFooterVisibility,
+                          weak_factory_.GetWeakPtr(),
+                          /*log_on_load_metric=*/false));
+  local_state_pref_change_registrar_.Add(
+      prefs::kEnterpriseLogoUrlForBrowser,
+      base::BindRepeating(&NewTabFooterController::UpdateFooterVisibility,
+                          weak_factory_.GetWeakPtr(),
+                          /*log_on_load_metric=*/false));
 #endif
 
   tab_activation_subscription_ = browser_->RegisterActiveTabDidChange(

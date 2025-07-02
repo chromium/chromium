@@ -536,11 +536,24 @@ NewTabPageHandler::NewTabPageHandler(
       prefs::kSeedColorChangeCount,
       base::BindRepeating(&NewTabPageHandler::MaybeShowWebstoreToast,
                           base::Unretained(this)));
-
+  pref_change_registrar_.Add(
+      prefs::kNtpFooterVisible,
+      base::BindRepeating(&NewTabPageHandler::OnFooterVisibilityUpdated,
+                          base::Unretained(this)));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   local_state_pref_change_registrar_.Init(g_browser_process->local_state());
   local_state_pref_change_registrar_.Add(
       prefs::kNTPFooterManagementNoticeEnabled,
+      base::BindRepeating(&NewTabPageHandler::OnFooterVisibilityUpdated,
+                          base::Unretained(this)));
+  // If the management notice customization policies are hidden, we should fall
+  // back to the footer visibility set by the user.
+  local_state_pref_change_registrar_.Add(
+      prefs::kEnterpriseCustomLabelForBrowser,
+      base::BindRepeating(&NewTabPageHandler::OnFooterVisibilityUpdated,
+                          base::Unretained(this)));
+  local_state_pref_change_registrar_.Add(
+      prefs::kEnterpriseLogoUrlForBrowser,
       base::BindRepeating(&NewTabPageHandler::OnFooterVisibilityUpdated,
                           base::Unretained(this)));
 #endif

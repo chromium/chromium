@@ -309,4 +309,34 @@ IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
       // Ensure footer hides.
       WaitForHide(kNtpFooterId));
 }
+
+IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
+                       CustomizationTogglesVisibility) {
+  RunTestSequence(
+      // Open NTP.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Ensure footer shows.
+      WaitForShow(kNtpFooterId),
+      // Toggle off visibility.
+      Do([=, this]() {
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            prefs::kNtpFooterVisible, false);
+      }),
+      // Ensure footer hides.
+      WaitForHide(kNtpFooterId),
+      // Set a custom label policy.
+      Do([=]() {
+        g_browser_process->local_state()->SetString(
+            prefs::kEnterpriseCustomLabelForBrowser, "Custom Label");
+      }),
+      // Ensure footer shows
+      WaitForShow(kNtpFooterId),
+      // Unset the custom label policy.
+      Do([=]() {
+        g_browser_process->local_state()->SetString(
+            prefs::kEnterpriseCustomLabelForBrowser, "");
+      }),
+      // Ensure footer hides.
+      WaitForHide(kNtpFooterId));
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
