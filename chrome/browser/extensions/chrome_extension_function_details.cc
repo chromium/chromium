@@ -9,10 +9,10 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -51,13 +51,9 @@ ChromeExtensionFunctionDetails::GetCurrentWindowController() const {
   // is true, we will also search browsers in the incognito version of this
   // profile. Note that the profile may already be incognito, in which case
   // we will search the incognito version only, regardless of the value of
-  // |include_incognito|. Look only for browsers on the active desktop as it is
-  // preferable to pretend no browser is open then to return a browser on
-  // another desktop.
-  content::WebContents* web_contents = function_->GetSenderWebContents();
-  Profile* profile = Profile::FromBrowserContext(
-      web_contents ? web_contents->GetBrowserContext()
-                   : function_->browser_context());
+  // |include_incognito|.
+  Profile* profile = Profile::FromBrowserContext(function_->browser_context());
+
   Browser* browser = chrome::FindAnyBrowser(
       profile, function_->include_incognito_information());
   if (browser) {
@@ -105,7 +101,7 @@ gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
     }
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // Then, check for any app windows that are open.
   if (function_->extension() &&
       function_->extension()->is_app()) {
@@ -115,7 +111,7 @@ gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
     if (window)
       return window->web_contents()->GetTopLevelNativeWindow();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
   // TODO(crbug.com/419057482): Enable this logic on Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
