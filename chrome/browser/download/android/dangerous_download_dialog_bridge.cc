@@ -16,6 +16,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/download/android/download_dialog_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/url_formatter/elide_url.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -24,6 +25,15 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
+
+namespace {
+// Gets the "download domain" string shown in the dialog. Currently, this is
+// derived from the download URL.
+std::u16string GetDownloadDomain(download::DownloadItem* item) {
+  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+      item->GetURL());
+}
+}  // namespace
 
 DangerousDownloadDialogBridge::DangerousDownloadDialogBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -59,6 +69,8 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
       download_item->GetGuid(),
       base::UTF8ToUTF16(download_item->GetFileNameToReportUser().value()),
       download_item->GetTotalBytes(),
+      base::android::ConvertUTF16ToJavaString(env,
+                                              GetDownloadDomain(download_item)),
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_WARNING));
 }
 

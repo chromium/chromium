@@ -2200,10 +2200,16 @@ Your Google account may have other forms of browsing history like searches and a
         Download anyway
       </message>
       <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_TEXT" desc="Warning message shown on a dialog to ask user to validate the download of a dangerous file.">
-        Do you want to download <ph name="FILE_NAME">%1$s<ex>malware.exe</ex></ph> anyway?
+        Do you want to download "<ph name="FILE_NAME">^1<ex>malware.exe</ex></ph>" anyway?
+      </message>
+      <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_TEXT_WITH_DOMAIN" desc="Warning message shown on a dialog to ask user to validate the download of a dangerous file, including the domain of the download.">
+        Do you want to download "<ph name="FILE_NAME">^1<ex>malware.exe</ex></ph>" from <ph name="DOWNLOAD_DOMAIN">^2<ex>badsite.com</ex></ph> anyway?
       </message>
       <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_TEXT_WITH_SIZE" desc="Warning message shown on a dialog to ask user to validate the download of a dangerous file, with size information.">
-        Do you want to download <ph name="FILE_NAME">%1$s<ex>malware.exe</ex></ph> (<ph name="FILE_SIZE">%2$s<ex>100MB</ex></ph>) anyway?
+        Do you want to download "<ph name="FILE_NAME">^1<ex>malware.exe</ex></ph>" (<ph name="FILE_SIZE">^2<ex>100MB</ex></ph>) anyway?
+      </message>
+      <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_TEXT_WITH_SIZE_AND_DOMAIN" desc="Warning message shown on a dialog to ask user to validate the download of a dangerous file, with size information and the domain of the download.">
+        Do you want to download "<ph name="FILE_NAME">^1<ex>malware.exe</ex></ph>" (<ph name="FILE_SIZE">^2<ex>100MB</ex></ph>) from <ph name="DOWNLOAD_DOMAIN">^3<ex>badsite.com</ex></ph> anyway?
       </message>
       <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm a dangerous download">
         File might be harmful

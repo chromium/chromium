@@ -5,6 +5,12 @@
 package org.chromium.chrome.browser.download.dialogs;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 
 import androidx.annotation.IntDef;
 import androidx.core.content.res.ResourcesCompat;
@@ -13,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -55,31 +62,25 @@ public class DangerousDownloadDialog {
 
     /**
      * Called to show a warning dialog for dangerous download.
+     *
      * @param context Context for showing the dialog.
      * @param modalDialogManager Manager for managing the modal dialog.
      * @param fileName Name of the download file.
      * @param totalBytes Total bytes of the file.
+     * @param downloadDomain Domain name to associate with the downloaded file.
      * @param iconId Icon ID of the warning dialog.
      * @param callback Callback to run when confirming the download, true for accept the download,
-     *         false otherwise.
+     *     false otherwise.
      */
     public void show(
             Context context,
             ModalDialogManager modalDialogManager,
             String fileName,
             long totalBytes,
+            String downloadDomain,
             int iconId,
             Callback<Boolean> callback) {
         var resources = context.getResources();
-        String message =
-                totalBytes > 0
-                        ? resources.getString(R.string.dangerous_download_dialog_text, fileName)
-                        : resources.getString(
-                                R.string.dangerous_download_dialog_text_with_size,
-                                fileName,
-                                DownloadUtils.getStringForBytes(context, totalBytes));
-        ArrayList<CharSequence> message_paragraphs = new ArrayList<>(List.of(message));
-
         var controller =
                 new ModalDialogProperties.Controller() {
                     @Override
@@ -112,13 +113,16 @@ public class DangerousDownloadDialog {
                         }
                     }
                 };
+
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, controller)
                         .with(
                                 ModalDialogProperties.TITLE,
                                 resources.getString(R.string.dangerous_download_dialog_title))
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, message_paragraphs)
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPHS,
+                                getMessageParagraphs(context, fileName, totalBytes, downloadDomain))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources.getString(
@@ -140,6 +144,64 @@ public class DangerousDownloadDialog {
         modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);
         recordDangerousDownloadDialogEvent(
                 DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_SHOW);
+    }
+
+    /**
+     * Selects the appropriate message string template and inserts formatted substitutions.
+     *
+     * @return an ArrayList suitable for setting as MESSAGE_PARAGRAPHS property for the dialog.
+     */
+    private static ArrayList<CharSequence> getMessageParagraphs(
+            Context context, String fileName, long totalBytes, String downloadDomain) {
+        boolean hasSize = totalBytes > 0;
+        boolean hasDownloadDomain = !downloadDomain.isEmpty();
+
+        int stringResId;
+        int numSubstitutions;
+        if (hasSize && hasDownloadDomain) {
+            stringResId = R.string.dangerous_download_dialog_text_with_size_and_domain;
+            numSubstitutions = 3;
+        } else if (hasSize) {
+            stringResId = R.string.dangerous_download_dialog_text_with_size;
+            numSubstitutions = 2;
+        } else if (hasDownloadDomain) {
+            stringResId = R.string.dangerous_download_dialog_text_with_domain;
+            numSubstitutions = 2;
+        } else {
+            stringResId = R.string.dangerous_download_dialog_text;
+            numSubstitutions = 1;
+        }
+        CharSequence messageTemplate = context.getString(stringResId);
+        ArrayList<CharSequence> substitutions = new ArrayList<CharSequence>();
+
+        SpannableString formattedFileName = new SpannableString(fileName);
+        formattedFileName.setSpan(
+                new StyleSpan(Typeface.BOLD),
+                0,
+                fileName.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        substitutions.add(formattedFileName);
+
+        if (hasSize) {
+            String formattedSize = DownloadUtils.getStringForBytes(context, totalBytes);
+            substitutions.add(formattedSize);
+        }
+
+        if (hasDownloadDomain) {
+            SpannableString formattedDownloadDomain = new SpannableString(downloadDomain);
+            formattedDownloadDomain.setSpan(
+                    new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorLink(context)),
+                    0,
+                    downloadDomain.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            substitutions.add(formattedDownloadDomain);
+        }
+
+        assert substitutions.size() == numSubstitutions;
+        CharSequence message =
+                TextUtils.expandTemplate(
+                        messageTemplate, substitutions.toArray(new CharSequence[0]));
+        return new ArrayList<>(List.of(message));
     }
 
     /**

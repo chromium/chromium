@@ -44,6 +44,7 @@ public class DownloadDialogIncognitoTest {
     private static final String DOWNLOAD_PATH = "/android/Download";
     private static final String PAGE_URL = "www.pageurl.com/download";
     private static final String FILE_NAME = "download.pdf";
+    private static final String DOWNLOAD_DOMAIN = "pageurl.com";
     public static final int ICON_ID = R.drawable.btn_close;
 
     @Rule
@@ -179,6 +180,7 @@ public class DownloadDialogIncognitoTest {
                                     mModalDialogManager,
                                     FILE_NAME,
                                     TOTAL_BYTES,
+                                    DOWNLOAD_DOMAIN,
                                     ICON_ID,
                                     mResultCallback);
                 });
