@@ -3017,7 +3017,6 @@ static_library("ui") {
       "views/profiles/profile_management_flow_controller_impl.h",
       "views/profiles/profile_management_step_controller.cc",
       "views/profiles/profile_management_step_controller.h",
-      "views/profiles/profile_management_types.cc",
       "views/profiles/profile_management_types.h",
       "views/profiles/profile_menu_view.cc",
       "views/profiles/profile_menu_view.h",

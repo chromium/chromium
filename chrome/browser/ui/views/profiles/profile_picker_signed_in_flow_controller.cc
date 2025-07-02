@@ -108,18 +108,12 @@ void ProfilePickerSignedInFlowController::Cancel() {}
 void ProfilePickerSignedInFlowController::FinishAndOpenBrowser(
     PostHostClearedCallback callback) {
   bool is_continue_callback = !callback->is_null();
+
   if (url_to_open_.is_valid()) {
     auto open_url_callback = PostHostClearedCallback(
         base::BindOnce(&OpenNewTabInBrowser, url_to_open_));
-    callback = is_continue_callback
-                   ? PostHostClearedCallback(base::BindOnce(
-                         [](PostHostClearedCallback cb1,
-                            PostHostClearedCallback cb2, Browser* browser) {
-                           std::move(*cb1).Run(browser);
-                           std::move(*cb2).Run(browser);
-                         },
-                         std::move(open_url_callback), std::move(callback)))
-                   : PostHostClearedCallback(std::move(open_url_callback));
+    callback = CombineCallbacks<PostHostClearedCallback, Browser*>(
+        std::move(open_url_callback), std::move(callback));
   }
 
   FinishAndOpenBrowserInternal(std::move(callback), is_continue_callback);

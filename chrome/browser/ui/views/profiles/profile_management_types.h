@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_TYPES_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_TYPES_H_
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/strong_alias.h"
 
@@ -26,10 +27,23 @@ using PostHostClearedCallback =
     base::StrongAlias<class PostHostClearedCallbackTag,
                       base::OnceCallback<void(Browser*)>>;
 
-// Helper method to combine two existing PostHostClearedCallbacks
-// and schedule them to run one after the other.
-PostHostClearedCallback CombinePostHostClearedCallbacks(
-    PostHostClearedCallback first_post_host_cleared_callback,
-    PostHostClearedCallback second_post_host_cleared_callback);
+// Generic template to combine two callbacks of the same type `CallbackType`
+// without needing to forward the input parameters from the `callback1` to
+// `callback2`. `Params` must match with `CallbackType` input parameters.
+// Empty/Null callbacks are accepted and ignored.
+// Note: `CallbackType` should be of type `base::StrongAlias<Tag, Callback>`.
+template <class CallbackType, class... Params>
+CallbackType CombineCallbacks(CallbackType callback1, CallbackType callback2) {
+  return CallbackType(base::BindOnce(
+      [](CallbackType cb1, CallbackType cb2, Params... params) {
+        if (!cb1->is_null()) {
+          std::move(*cb1).Run(params...);
+        }
+        if (!cb2->is_null()) {
+          std::move(*cb2).Run(params...);
+        }
+      },
+      std::move(callback1), std::move(callback2)));
+}
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_TYPES_H_

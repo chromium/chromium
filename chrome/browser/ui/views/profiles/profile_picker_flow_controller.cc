@@ -214,11 +214,8 @@ class ProfileCreationSignedInFlowController
       return;
     }
     is_finishing_ = true;
-    callback =
-        callback->is_null()
-            ? CreateFreshProfileExperienceCallback()
-            : CombinePostHostClearedCallbacks(
-                  std::move(callback), CreateFreshProfileExperienceCallback());
+    callback = CombineCallbacks<PostHostClearedCallback, Browser*>(
+        std::move(callback), CreateFreshProfileExperienceCallback());
 
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
         &ProfileCreationSignedInFlowController::FinishFlow,
