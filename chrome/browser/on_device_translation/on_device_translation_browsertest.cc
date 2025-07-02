@@ -51,6 +51,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -2446,4 +2447,42 @@ IN_PROC_BROWSER_TEST_F(
   TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
+// Tests the behavior of the Translator API on a page with a file scheme URL.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, FileSchemeUrl) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath empty_html_path = temp_dir.GetPath().AppendASCII("empty.html");
+  ASSERT_TRUE(base::WriteFile(empty_html_path, "<html></html>"));
+  base::FilePath empty2_html_path =
+      temp_dir.GetPath().AppendASCII("empty2.html");
+  ASSERT_TRUE(base::WriteFile(empty2_html_path, "<html></html>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), net::FilePathToFileURL(empty_html_path)));
+
+  // The language pack for Japanese needs to be downloaded.
+  TestTranslationAvailable(browser(), "en", "ja", "downloadable");
+
+  // Create a translator.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      window._translator = await Translator.create({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      return await window._translator.translate('hello');
+    )"),
+            "en to ja: hello");
+
+  // After creating a translator, the language pair should be available.
+  TestTranslationAvailable(browser(), "en", "ja", "available");
+
+  // Navigate to another file URL. The availability should be reset.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), net::FilePathToFileURL(empty2_html_path)));
+  TestTranslationAvailable(browser(), "en", "ja", "downloadable");
+}
 }  // namespace on_device_translation

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_
 
+#include <set>
+#include <string>
+#include <utility>
+
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -123,6 +127,12 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   // for the given translation language pair, as needed.
   void SetInitializedTranslation(const std::string& source_language,
                                  const std::string& target_language);
+
+  // A set of language pairs that have been initialized for the current
+  // document. This is used for origins that cannot persist content settings,
+  // e.g. opaque origins or file schemes.
+  std::set<std::pair<std::string, std::string>>
+      transient_initialized_translations_;
 
   // `blink::mojom::TranslationManager` implementation.
   void CreateTranslator(
