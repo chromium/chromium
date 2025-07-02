@@ -903,7 +903,7 @@ class CC_EXPORT LayerTreeImpl {
   viz::BeginFrameArgs created_begin_frame_args_;
   int source_frame_number_ = 0;
   BeginMainFrameTraceId trace_id_{0};
-  raw_ptr<HeadsUpDisplayLayerImpl, DanglingUntriaged> hud_layer_;
+  raw_ptr<HeadsUpDisplayLayerImpl> hud_layer_;
   PropertyTrees property_trees_;
   SkColor4f background_color_;
 

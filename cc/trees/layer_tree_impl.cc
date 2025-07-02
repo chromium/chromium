@@ -603,6 +603,11 @@ gfx::PointF LayerTreeImpl::TotalMaxScrollOffset() const {
 OwnedLayerImplList LayerTreeImpl::DetachLayers() {
   render_surface_list_.clear();
   set_needs_update_draw_properties();
+  // Clear the HUD layer pointer since we're detaching all layers. If there is a
+  // HUD layer, it will be reset during PullLayerTreePropertiesFrom. But we must
+  // clear the ptr before then in case the HUD layer is destroyed, which would
+  // leave a dangling pointer.
+  hud_layer_ = nullptr;
   OwnedLayerImplList result = std::move(layer_list_);
   // TODO(crbug.com/40778609): remove diagnostic CHECK
   CHECK(!layer_list_.size());
