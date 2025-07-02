@@ -184,18 +184,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // without signing in.
   // `profile_color` is the profile's color. It is undefined for the default
   // theme.
-  // `profile_picked_time_on_startup` is the time when the user picked a
-  // profile to open, to measure browser startup performance. It is only set
-  // when the picker is shown on startup.
-  void SwitchToSignedOutPostIdentityFlow(
-      std::optional<SkColor> profile_color,
-      base::OnceCallback<void(bool)> switch_finished_callback);
+  void SwitchToSignedOutPostIdentityFlow(std::optional<SkColor> profile_color);
 
   // Callback used when the profile is created in the signed out flow.
-  void OnLocalProfileInitialized(
-      std::optional<SkColor> profile_color,
-      base::OnceCallback<void(bool)> switch_finished_callback,
-      Profile* profile);
+  void OnLocalProfileInitialized(std::optional<SkColor> profile_color,
+                                 Profile* profile);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Switches the layout to the sign-in screen (and creates a new profile or

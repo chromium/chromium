@@ -44,14 +44,13 @@ class ProfileManagementFlowControllerImpl
   // When `is_continue_callback` is true, the flow should finishing up
   // immediately so that `post_host_cleared_callback` can be executed, without
   // showing other steps.
-  // Otherwise, the flow can display post-identity steps, passing both
-  // `post_host_cleared_callback` and `step_switch_finished_callback` along so
-  // they can be executed at the right time.
+  // Otherwise, the flow can display post-identity steps, passing
+  // `post_host_cleared_callback` along so they can be executed at the right
+  // time.
   void HandleIdentityStepsCompleted(
       Profile* profile,
       PostHostClearedCallback post_host_cleared_callback,
-      bool is_continue_callback,
-      StepSwitchFinishedCallback step_switch_finished_callback);
+      bool is_continue_callback);
 
   // Register the steps that will be shown after the identity step. The steps
   // should be registered and pushed to the queue in the order in which they
@@ -62,9 +61,7 @@ class ProfileManagementFlowControllerImpl
 
   // Switches to the step at the front of the `post_identity_steps_` queue if it
   // is not empty.
-  // `step_switch_finished_callback` will be forwarded to `SwitchToStep()`.
-  void AdvanceToNextPostIdentityStep(
-      StepSwitchFinishedCallback step_switch_finished_callback);
+  void AdvanceToNextPostIdentityStep();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Creates, registers and switches to steps to implement the identity flow
@@ -79,8 +76,7 @@ class ProfileManagementFlowControllerImpl
  private:
   // Move to the steps that come after the identity step.
   void SwitchToPostIdentitySteps(
-      PostHostClearedCallback post_host_cleared_callback,
-      StepSwitchFinishedCallback step_switch_finished_callback);
+      PostHostClearedCallback post_host_cleared_callback);
 
   std::unique_ptr<ProfileManagementStepController> CreatePostSignInStep(
       Profile* signed_in_profile,

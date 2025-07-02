@@ -94,12 +94,6 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
     this.setMinimumSize_();
   }
 
-  override firstUpdated() {
-    this.addWebUiListener(
-        'create-profile-finished',
-        () => this.handleCreateLocalProfileFinished_());
-  }
-
   override onRouteChange(route: Routes, step: string) {
     if (!isProfileCreationAllowed() && route === Routes.NEW_PROFILE) {
       navigateTo(Routes.MAIN);
@@ -214,13 +208,6 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
   private setMinimumSize_() {
     this.style.setProperty(
         '--view-min-size', loadTimeData.getString('minimumPickerSize'));
-  }
-
-  private handleCreateLocalProfileFinished_() {
-    // On profile creation, the picker window is closed.
-    // 'navigateTo' is meaningful if the picker is shown in a tab.
-    navigateTo(Routes.MAIN);
-    this.profileCreationInProgress = false;
   }
 }
 

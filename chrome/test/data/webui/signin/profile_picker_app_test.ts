@@ -146,14 +146,6 @@ suite('ProfilePickerAppTest', function() {
     assertTrue(choice.$.signInButton.disabled);
     assertTrue(choice.$.notNowButton.disabled);
     assertTrue(choice.$.backButton.disabled);
-
-    webUIListenerCallback('create-profile-finished', []);
-    await microtasksFinished();
-    assertFalse(testElement.profileCreationInProgress);
-    assertFalse(choice.profileCreationInProgress);
-    assertFalse(choice.$.signInButton.disabled);
-    assertFalse(choice.$.notNowButton.disabled);
-    assertFalse(choice.$.backButton.disabled);
   });
 
   test('CreateLocalProfileWithBrowserSigninNotAllowed', async function() {

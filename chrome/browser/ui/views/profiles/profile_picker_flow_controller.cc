@@ -153,8 +153,7 @@ class ProfileCreationSignedInFlowController
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       std::optional<SkColor> profile_color,
-      base::OnceCallback<
-          void(PostHostClearedCallback, bool, StepSwitchFinishedCallback)>
+      base::OnceCallback<void(PostHostClearedCallback, bool)>
           step_completed_callback)
       : ProfilePickerSignedInFlowController(host,
                                             profile,
@@ -264,8 +263,7 @@ class ProfileCreationSignedInFlowController
         ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
 
     std::move(step_completed_callback_)
-        .Run(std::move(post_host_cleared_callback), is_continue_callback,
-             StepSwitchFinishedCallback());
+        .Run(std::move(post_host_cleared_callback), is_continue_callback);
   }
 
   // Controls whether the flow still needs to finalize (which includes showing
@@ -273,8 +271,7 @@ class ProfileCreationSignedInFlowController
   bool is_finishing_ = false;
 
   std::unique_ptr<ProfileNameResolver> profile_name_resolver_;
-  base::OnceCallback<
-      void(PostHostClearedCallback, bool, StepSwitchFinishedCallback)>
+  base::OnceCallback<void(PostHostClearedCallback, bool)>
       step_completed_callback_;
 };
 
@@ -657,8 +654,7 @@ ProfilePickerFlowController::CreateSignedInFlowController(
 }
 
 void ProfilePickerFlowController::SwitchToSignedOutPostIdentityFlow(
-    Profile* profile,
-    StepSwitchFinishedCallback step_switch_finished_callback) {
+    Profile* profile) {
   CHECK(profile);
   created_profile_ = profile->GetWeakPtr();
   CreateSignedOutFlowWebContents(created_profile_.get());
@@ -667,7 +663,7 @@ void ProfilePickerFlowController::SwitchToSignedOutPostIdentityFlow(
       created_profile_.get(),
       PostHostClearedCallback(base::BindOnce(&ShowLocalProfileCustomization,
                                              profile_picked_time_on_startup_)),
-      /*is_continue_callback=*/false, std::move(step_switch_finished_callback));
+      /*is_continue_callback=*/false);
 }
 
 void ProfilePickerFlowController::PickProfile(
