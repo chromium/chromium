@@ -27,8 +27,14 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.e
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 import static org.chromium.components.signin.test.util.TestAccounts.ACCOUNT1;
+import static org.chromium.components.signin.test.util.TestAccounts.ACCOUNT2;
+import static org.chromium.components.signin.test.util.TestAccounts.CHILD_ACCOUNT;
+import static org.chromium.components.signin.test.util.TestAccounts.MANAGED_ACCOUNT;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.graphics.Color;
+
+import androidx.annotation.IdRes;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -43,8 +49,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingUiDelegateAndroid;
@@ -56,18 +64,29 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateBridge;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateTestImpl;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingServiceImpl;
+import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
+import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,14 +110,53 @@ public class CollaborationIntegrationTest {
     private static final String TEST_ACCESS_TOKEN = "access_token";
     private static final String TEST_GROUP_TITLE = "group_title";
 
+    /** Counts the number of calls from DataSharingService. Only use on UI thread. */
+    private static class CountingShareObserver implements DataSharingService.Observer {
+        public int groupChangedCount;
+        public int groupAddedCount;
+
+        @Override
+        public void onGroupChanged(GroupData groupData) {
+            groupChangedCount++;
+        }
+
+        @Override
+        public void onGroupAdded(GroupData groupData) {
+            groupAddedCount++;
+        }
+    }
+
+    private static class CountingSyncObserver implements TabGroupSyncService.Observer {
+        public int nonNullTabGroupLocalIdChangedCount;
+
+        @Override
+        public void onTabGroupLocalIdChanged(
+                String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {
+            // Ignore calls while localTabGroupId is null, this hasn't been linked yet. This roughly
+            // helps up match conditions the SharedGroupObserver is looking for.
+            if (localTabGroupId != null) {
+                nonNullTabGroupLocalIdChangedCount++;
+            }
+        }
+    }
+
     @Rule(order = 0)
     public SyncTestRule mActivityTestRule = new SyncTestRule();
 
     @Rule(order = 1)
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_GROUPS)
+                    .setRevision(0)
+                    .build();
+
     private FakeDataSharingUIDelegateImpl mDataSharingUIDelegate;
     private DataSharingSDKDelegateTestImpl mDataSharingSDKDelegate;
+    private CountingShareObserver mCountingShareObserver;
+    private CountingSyncObserver mCountingSyncObserver;
 
     private Profile mProfile;
     private String mUrl;
@@ -113,6 +171,8 @@ public class CollaborationIntegrationTest {
     public void setUp() {
         mDataSharingUIDelegate = new FakeDataSharingUIDelegateImpl();
         mDataSharingSDKDelegate = new DataSharingSDKDelegateTestImpl();
+        mCountingShareObserver = new CountingShareObserver();
+        mCountingSyncObserver = new CountingSyncObserver();
         DataSharingUiDelegateAndroid.setForTesting(mDataSharingUIDelegate);
         DataSharingSDKDelegateBridge.setForTesting(mDataSharingSDKDelegate);
         mActivityTestRule.getSigninTestRule().addAccount(ACCOUNT1);
@@ -120,6 +180,10 @@ public class CollaborationIntegrationTest {
                 () -> {
                     mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
                     FirstRunStatus.setFirstRunFlowComplete(true);
+                    DataSharingServiceFactory.getForProfile(mProfile)
+                            .addObserver(mCountingShareObserver);
+                    TabGroupSyncServiceFactory.getForProfile(mProfile)
+                            .addObserver(mCountingSyncObserver);
                 });
         mUrl =
                 DataSharingServiceImpl.getDataSharingUrlForTesting(
@@ -139,6 +203,72 @@ public class CollaborationIntegrationTest {
                                             mActivityTestRule.getProfile(false));
                     service.setSharedEntitiesPreviewForTesting(TEST_COLLABORATION_ID);
                 });
+    }
+
+    private LocalTabGroupId createTabGroup() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        addBlankTabs(cta, false, 2);
+        mergeAllNormalTabsToAGroup(cta);
+        return mCollaborationTestUtils.getLocalTabGroupId(cta);
+    }
+
+    private void linkLocalGroupToSharedIdForOwner(
+            LocalTabGroupId localTabGroupId, String collaborationId, AccountInfo accountInfo) {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Callback<Boolean> callback =
+                (success) -> {
+                    mDataSharingSDKDelegate.addMembers(
+                            collaborationId,
+                            accountInfoToGroupMember(accountInfo, MemberRole.OWNER));
+                    mActivityTestRule.getFakeServerHelper().addCollaboration(collaborationId);
+                    mDataSharingUIDelegate.forceGroupCreation(collaborationId, TEST_ACCESS_TOKEN);
+                };
+        mDataSharingUIDelegate.setShowCreateFlowCallback(callback);
+        mCollaborationTestUtils.setupShareDelegateSupplier(cta);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    cta.getRootUiCoordinatorForTesting()
+                            .getDataSharingTabManager()
+                            .createOrManageFlow(
+                                    EitherGroupId.createLocalId(localTabGroupId),
+                                    CollaborationServiceShareOrManageEntryPoint.UNKNOWN,
+                                    (ignored) -> {});
+                });
+
+        // There's many async signals that fly around after linking the tab group. In particular we
+        // need the SharedGroupObserver to think the group is shared. For this, it already knows the
+        // tab group id it should watch for, but it needs to see that it's now associated with a
+        // valid collaboration id. And while the DataSharingService is what has member information
+        // for a collaboration id, the SharedGroupObserver cannot link its tab group id to the
+        // collaboration id that it'll be informed about until teh TabGroupSyncService lets it know
+        // about the mapping. Once both of these happen, we're safe to continue, but the order of
+        // these is not deterministic and we must wait for both.
+        int startingAddedCount =
+                ThreadUtils.runOnUiThreadBlocking(() -> mCountingShareObserver.groupChangedCount);
+        int startingNonNullSyncCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mCountingSyncObserver.nonNullTabGroupLocalIdChangedCount);
+        mCollaborationTestUtils.prepareToShareGroup(localTabGroupId, collaborationId);
+        CriteriaHelper.pollUiThread(
+                () -> mCountingShareObserver.groupAddedCount > startingAddedCount);
+        CriteriaHelper.pollUiThread(
+                () ->
+                        mCountingSyncObserver.nonNullTabGroupLocalIdChangedCount
+                                > startingNonNullSyncCount);
+    }
+
+    private void memberJoinsSharedGroup(String collaborationId, AccountInfo accountInfo) {
+        mDataSharingSDKDelegate.addMembers(
+                collaborationId, accountInfoToGroupMember(accountInfo, MemberRole.MEMBER));
+        // Will override the previous specifics with a different consistency_token.
+        mActivityTestRule.getFakeServerHelper().addCollaborationGroupToFakeServer(collaborationId);
+
+        int startingChangedCount =
+                ThreadUtils.runOnUiThreadBlocking(() -> mCountingShareObserver.groupChangedCount);
+        SyncTestUtil.triggerSync();
+        CriteriaHelper.pollUiThread(
+                () -> mCountingShareObserver.groupChangedCount > startingChangedCount);
     }
 
     @Test
@@ -200,10 +330,7 @@ public class CollaborationIntegrationTest {
         mActivityTestRule.loadUrlInNewTab(mUrl);
 
         final AtomicBoolean joinCalled = new AtomicBoolean();
-        Callback<Boolean> callback =
-                (success) -> {
-                    joinCalled.set(true);
-                };
+        Callback<Boolean> callback = (success) -> joinCalled.set(true);
         mDataSharingUIDelegate.setShowJoinFlowCallback(callback);
         setFakePreviewData();
 
@@ -222,11 +349,7 @@ public class CollaborationIntegrationTest {
         onViewWaiting(withId(R.id.button_primary)).perform(click());
 
         CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    return joinCalled.get();
-                },
-                WAIT_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+                joinCalled::get, WAIT_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
@@ -234,10 +357,7 @@ public class CollaborationIntegrationTest {
     public void testCollaborationCreateFlow() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         final AtomicBoolean createCalled = new AtomicBoolean();
-        Callback<Boolean> callback =
-                (success) -> {
-                    createCalled.set(true);
-                };
+        Callback<Boolean> callback = (success) -> createCalled.set(true);
         mDataSharingUIDelegate.setShowCreateFlowCallback(callback);
 
         // Create a tab group and enter TabGridDialog.
@@ -268,11 +388,7 @@ public class CollaborationIntegrationTest {
         onViewWaiting(withId(R.id.button_primary)).perform(click());
 
         CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    return createCalled.get();
-                },
-                WAIT_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+                createCalled::get, WAIT_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
@@ -292,7 +408,7 @@ public class CollaborationIntegrationTest {
     public void testDataSharingShowShare() {
         mCollaborationTestUtils.setUpSyncAndSignIn();
 
-        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
 
         // Setting create flow callback to show share sheet with share link.
@@ -319,7 +435,7 @@ public class CollaborationIntegrationTest {
     public void testDataSharingShowShareCancelled() {
         mCollaborationTestUtils.setUpSyncAndSignIn();
 
-        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
 
         // Setting create flow callback to cancel create flow.
@@ -339,7 +455,7 @@ public class CollaborationIntegrationTest {
     @MediumTest
     public void testDataSharingDeleteGroup() {
         mCollaborationTestUtils.setUpSyncAndSignIn();
-        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
 
@@ -387,7 +503,7 @@ public class CollaborationIntegrationTest {
     @MediumTest
     public void testDataSharingLeaveGroup() {
         mCollaborationTestUtils.setUpSyncAndSignIn();
-        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
 
@@ -435,7 +551,7 @@ public class CollaborationIntegrationTest {
     @MediumTest
     public void testDataSharingCloseGroup() {
         mCollaborationTestUtils.setUpSyncAndSignIn();
-        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
 
@@ -481,7 +597,7 @@ public class CollaborationIntegrationTest {
     @MediumTest
     public void testDataSharingKeepLastTabInGroup() {
         mCollaborationTestUtils.setUpSyncAndSignIn();
-        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
 
@@ -534,5 +650,35 @@ public class CollaborationIntegrationTest {
 
         // Verify that the collaboration exists.
         assertTrue(mCollaborationTestUtils.collaborationExistsInSyncService(TEST_COLLABORATION_ID));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTilesDialogRender() throws Exception {
+        mDataSharingUIDelegate.overrideAvatarColor(ACCOUNT1.getGaiaId(), Color.RED);
+        mDataSharingUIDelegate.overrideAvatarColor(ACCOUNT2.getGaiaId(), Color.BLUE);
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        mCollaborationTestUtils.setUpSyncAndSignIn();
+
+        LocalTabGroupId localTabGroupId = createTabGroup();
+        enterTabSwitcher(cta);
+        clickFirstCardFromTabSwitcher(cta);
+        CriteriaHelper.pollUiThread(() -> CollaborationTestUtils.isDialogFullyVisible(cta));
+
+        @IdRes int targetId = R.id.tab_group_toolbar;
+        mRenderTestRule.render(cta.findViewById(targetId), "tiles_dialog_not_shared");
+
+        linkLocalGroupToSharedIdForOwner(localTabGroupId, TEST_COLLABORATION_ID, ACCOUNT1);
+        mRenderTestRule.render(cta.findViewById(targetId), "tiles_dialog_only_owner");
+
+        memberJoinsSharedGroup(TEST_COLLABORATION_ID, ACCOUNT2);
+        mRenderTestRule.render(cta.findViewById(targetId), "tiles_dialog_two_faces");
+
+        memberJoinsSharedGroup(TEST_COLLABORATION_ID, CHILD_ACCOUNT);
+        mRenderTestRule.render(cta.findViewById(targetId), "tiles_dialog_three_faces");
+
+        memberJoinsSharedGroup(TEST_COLLABORATION_ID, MANAGED_ACCOUNT);
+        mRenderTestRule.render(cta.findViewById(targetId), "tiles_dialog_two_plus_count");
     }
 }

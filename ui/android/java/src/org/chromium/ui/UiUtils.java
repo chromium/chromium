@@ -531,4 +531,18 @@ public class UiUtils {
             }
         }
     }
+
+    /**
+     * Creates a single color bitmap of the given size.
+     *
+     * @param size The height and width.
+     * @param color The color the fill the bitmap with.
+     * @return The new bitmap.
+     */
+    public static Bitmap createBitmap(int size, @ColorInt int color) {
+        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(color);
+        return bitmap;
+    }
 }

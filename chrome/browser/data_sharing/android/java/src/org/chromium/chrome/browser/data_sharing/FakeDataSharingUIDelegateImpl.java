@@ -4,7 +4,13 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.graphics.Bitmap;
+
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -14,11 +20,17 @@ import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingRuntimeDataConfig;
+import org.chromium.google_apis.gaia.GaiaId;
+import org.chromium.ui.UiUtils;
 import org.chromium.url.GURL;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** Fake implementation of {@link DataSharingUIDelegate} */
 @NullMarked
 public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
+    private final Map<GaiaId, Integer> mGaiaIdToAvatarColor = new HashMap<>();
 
     private @Nullable Callback<Boolean> mShowCreateFlowCallback;
     private @Nullable Callback<Boolean> mShowJoinFlowCallback;
@@ -30,7 +42,14 @@ public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
     public FakeDataSharingUIDelegateImpl() {}
 
     @Override
-    public void getAvatarBitmap(DataSharingAvatarBitmapConfig avatarBitmapConfig) {}
+    public void getAvatarBitmap(DataSharingAvatarBitmapConfig avatarBitmapConfig) {
+        GaiaId gaiaId = assumeNonNull(avatarBitmapConfig.getGroupMember()).gaiaId;
+        @Px int size = avatarBitmapConfig.getAvatarSizeInPixels();
+        @ColorInt int fallback = avatarBitmapConfig.getAvatarFallbackColor();
+        @ColorInt int color = mGaiaIdToAvatarColor.getOrDefault(gaiaId, fallback);
+        Bitmap bitmap = UiUtils.createBitmap(size, color);
+        assumeNonNull(avatarBitmapConfig.getDataSharingAvatarCallback()).onAvatarLoaded(bitmap);
+    }
 
     @Override
     public void handleShareURLIntercepted(GURL url) {}
@@ -108,5 +127,10 @@ public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
     public void forceCreateFlowCancellation() {
         if (mCreateUiConfig == null || mCreateUiConfig.getCreateCallback() == null) return;
         mCreateUiConfig.getCreateCallback().onCancelClicked();
+    }
+
+    /** Avatar bitmap will the given color for the given user. */
+    public void overrideAvatarColor(GaiaId gaiaId, @ColorInt int color) {
+        mGaiaIdToAvatarColor.put(gaiaId, color);
     }
 }

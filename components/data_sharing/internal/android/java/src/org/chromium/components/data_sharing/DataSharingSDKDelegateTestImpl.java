@@ -35,7 +35,7 @@ public class DataSharingSDKDelegateTestImpl implements DataSharingSDKDelegate {
     /** Adds a list of members for a group. */
     public void addMembers(
             String groupId, org.chromium.components.data_sharing.GroupMember... members) {
-        List<GroupMember> protoMembers = new ArrayList<>();
+        List<GroupMember> protoMembers = mMembers.getOrDefault(groupId, new ArrayList<>());
         for (var member : members) {
             protoMembers.add(convertToProtoMember(member));
         }
@@ -100,6 +100,7 @@ public class DataSharingSDKDelegateTestImpl implements DataSharingSDKDelegate {
         ReadGroupsResult.Builder readGroupsResult = ReadGroupsResult.newBuilder();
         for (int count = 1; count <= groupsCount; count++) {
             String groupId = params.getGroupParams(count - 1).getGroupId();
+
             GroupData.Builder groupData =
                     GroupData.newBuilder()
                             .setGroupId(groupId)

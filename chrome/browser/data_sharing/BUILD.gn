@@ -230,10 +230,12 @@ if (is_android) {
       "//components/browser_ui/styles/android:java_resources",
       "//components/data_sharing/public:public_java",
       "//components/data_sharing/public/protocol:proto_java",
+      "//google_apis/gaia/android:java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/android_sdk:android_window_extensions_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_utils_java",
       "//url:url_java",
     ]
   }
