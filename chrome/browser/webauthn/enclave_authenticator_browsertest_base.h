@@ -107,6 +107,8 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
 
   void SimulateSuccessfulGpmPinCreation(const std::string& pin_value);
 
+  void WaitForEnclaveLoaded();
+
   scoped_refptr<base::TestMockTimeTaskRunner> timer_task_runner_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<TempDir> temp_dir_;

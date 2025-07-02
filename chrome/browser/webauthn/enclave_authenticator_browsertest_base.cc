@@ -324,16 +324,12 @@ void EnclaveAuthenticatorTestBase::SetTrustedVaultSlowAndCacheCallback() {
 
 void EnclaveAuthenticatorTestBase::SimulateSuccessfulGpmPinCreation(
     const std::string& pin_value) {
+  WaitForEnclaveLoaded();
+
   EnclaveManager* enclave_manager =
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
           browser()->profile());
   ASSERT_TRUE(enclave_manager);
-
-  if (!enclave_manager->is_loaded()) {
-    base::test::TestFuture<void> load_future;
-    enclave_manager->Load(load_future.GetCallback());
-    ASSERT_TRUE(load_future.Wait());
-  }
 
   enclave_manager->StoreKeys(
       kSyncGaiaId,
@@ -351,4 +347,17 @@ void EnclaveAuthenticatorTestBase::SimulateSuccessfulGpmPinCreation(
 
   ASSERT_TRUE(enclave_manager->is_ready());
   ASSERT_TRUE(enclave_manager->has_wrapped_pin());
+}
+
+void EnclaveAuthenticatorTestBase::WaitForEnclaveLoaded() {
+  EnclaveManager* enclave_manager =
+      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
+          browser()->profile());
+  ASSERT_TRUE(enclave_manager);
+
+  if (!enclave_manager->is_loaded()) {
+    base::test::TestFuture<void> load_future;
+    enclave_manager->Load(load_future.GetCallback());
+    ASSERT_TRUE(load_future.Wait());
+  }
 }

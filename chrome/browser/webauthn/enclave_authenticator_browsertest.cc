@@ -2051,6 +2051,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
   // normally.
   SetVaultConnectionToTimeout();
 
+  // Ensure the enclave state is loaded before proceeding. Otherwise the
+  // timer could be advanced before the timeout is set.
+  WaitForEnclaveLoaded();
+
   // Wait for the transport availability to be enumerated. The UI won't be shown
   // yet because the enclave is not ready.
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
@@ -2101,6 +2105,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithTimeout,
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+
+  // Ensure the enclave state is loaded before proceeding. Otherwise the
+  // timer could be advanced before the timeout is set.
+  WaitForEnclaveLoaded();
 
   // Wait for the transport availability to be enumerated. The UI won't be shown
   // yet because the enclave is not ready.
