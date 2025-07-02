@@ -5034,10 +5034,12 @@
     ],
     "expires": "Jan 1, 2026"
   },
+  "--webauthn-remote-desktop-support can be toggled with enterprise policies, ",
+  "so we need to support this long term.",
   {
     "prefix": "webauthn-remote-desktop-client-override",
     "owners": [
-      "martinkr@chromium.org"
+      "chrome-webauthn@google.com"
     ],
     "platforms": [
       "Linux",
@@ -5050,7 +5052,7 @@
     "args": [
       "--webauthn-remote-desktop-support"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "never"
   },
   "This individual test must be run separately from others, because it makes a",
   "huge memory allocation that often causes OOM if other tests have run in the",
