@@ -1208,6 +1208,55 @@ TEST_P(CardBenefitFormEventMetricsTest,
           1)));
 }
 
+// Tests that when we have one server card with a benefit available, we only log
+// `kSuggestionWithBenefitSelected` once when the card is selected twice.
+TEST_P(
+    CardBenefitFormEventMetricsTest,
+    Metrics_OneServerCardWithBenefitAvailable_LogSuggestionWithBenefitSelected) {
+  base::HistogramTester histogram_tester;
+
+  // Add server card with a benefit available.
+  AddBenefitToCard(card());
+
+  // Simulate selecting the server card with a benefit available.
+  ShowSuggestionsAndSelectCard(GetCreditCard());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Benefits",
+      CardBenefitFormEvent::kSuggestionWithBenefitSelected, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"Autofill.FormEvents.CreditCard.Benefits.", GetSuffix()}),
+      CardBenefitFormEvent::kSuggestionWithBenefitSelected, 1);
+
+  // Select the suggestion again.
+  ShowSuggestionsAndSelectCard(GetCreditCard());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Benefits",
+      CardBenefitFormEvent::kSuggestionWithBenefitSelected, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"Autofill.FormEvents.CreditCard.Benefits.", GetSuffix()}),
+      CardBenefitFormEvent::kSuggestionWithBenefitSelected, 1);
+}
+
+// Tests that when we have one server card without a benefit available, we don't
+// log `kSuggestionWithBenefitSelected`.
+TEST_P(
+    CardBenefitFormEventMetricsTest,
+    Metrics_OneServerCardWithoutBenefitAvailable_DoesNotLogSuggestionWithBenefitSelected) {
+  base::HistogramTester histogram_tester;
+  // Server card without a benefit available added in `SetUp()`
+
+  // Simulate selecting the server card without a benefit available.
+  ShowSuggestionsAndSelectCard(GetCreditCard());
+
+  histogram_tester.ExpectTotalCount("Autofill.FormEvents.CreditCard.Benefits",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Autofill.FormEvents.CreditCard.Benefits.", GetSuffix()}),
+      0);
+}
+
 // Tests that when we have one server card with a benefit available and a local
 // card, when we select the server card with a benefit available,
 // `kSuggestionWithBenefitSelectedWithMultipleServerCards` and
