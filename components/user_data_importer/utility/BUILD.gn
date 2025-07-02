@@ -99,10 +99,10 @@ source_set("unit_tests") {
   ]
 
   if (is_ios) {
+    public_deps = [ "//components/user_data_importer/ios" ]
     deps += [
       ":test_archive_bundle_data",
       "//components/password_manager/services/csv_password/ios:fake_password_parser_service",
-      "//components/user_data_importer/ios",
     ]
   } else {
     data_deps = [ ":test_archive" ]

@@ -413,9 +413,9 @@ void SafariDataImporter::OnBookmarksParsed(
     ImportCallback callback,
     BookmarkParser::BookmarkParsingResult result) {
   ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
-                   [&callback](auto) {
+                   [this, &callback](auto) {
                      // TODO(crbug.com/407587751): Log error to UMA.
-                     std::move(callback).Run(0);
+                     PostCallback(std::move(callback), 0);
                    });
 
   pending_bookmarks_ = std::move(value.bookmarks);
