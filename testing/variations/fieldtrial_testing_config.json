@@ -7752,6 +7752,36 @@
             ]
         }
     ],
+    "DemoModeSignInNonUS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DemoModeSignIn"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DemoModeSignInUS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DemoModeSignIn"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeprecateUnload": [
         {
             "platforms": [
