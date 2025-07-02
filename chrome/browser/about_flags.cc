@@ -10132,6 +10132,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripLayoutOptimizationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripLayoutOptimization)},
 
+    {"tab-strip-mouse-close-resize-delay",
+     flag_descriptions::kTabStripMouseCloseResizeDelayName,
+     flag_descriptions::kTabStripMouseCloseResizeDelayDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripMouseCloseResizeDelay)},
+
     {"tab-strip-transition-in-desktop-window",
      flag_descriptions::kTabStripTransitionInDesktopWindowName,
      flag_descriptions::kTabStripTransitionInDesktopWindowDescription,

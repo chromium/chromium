@@ -3238,6 +3238,9 @@ extern const char kTabStripIncognitoMigrationDescription[];
 extern const char kTabStripLayoutOptimizationName[];
 extern const char kTabStripLayoutOptimizationDescription[];
 
+extern const char kTabStripMouseCloseResizeDelayName[];
+extern const char kTabStripMouseCloseResizeDelayDescription[];
+
 extern const char kTabStripTransitionInDesktopWindowName[];
 extern const char kTabStripTransitionInDesktopWindowDescription[];
 

@@ -9356,6 +9356,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "tab-strip-mouse-close-resize-delay",
+    "owners": [ "nemco@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "tab-strip-transition-in-desktop-window",
     "owners": [ "aishwaryarj@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 143

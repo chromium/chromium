@@ -13435,6 +13435,7 @@ from previous Chrome versions.
   <int value="-214859547" label="OmniboxActionsUISimplification:enabled"/>
   <int value="-214763255" label="AndroidHub:disabled"/>
   <int value="-214618160" label="ESimPolicy:enabled"/>
+  <int value="-214542348" label="TabStripMouseCloseResizeDelay:disabled"/>
   <int value="-213952444"
       label="ClearLoginDatabaseForAllMigratedUPMUsers:enabled"/>
   <int value="-213893901"
@@ -14646,6 +14647,7 @@ from previous Chrome versions.
   <int value="240856309" label="MimeHandlerViewInCrossProcessFrame:enabled"/>
   <int value="241117669" label="EnterpriseBadgingForNtpFooter:disabled"/>
   <int value="241187301" label="BrowserTouchBar:disabled"/>
+  <int value="241510943" label="TabStripMouseCloseResizeDelay:enabled"/>
   <int value="242181887" label="NotificationOneTapUnsubscribe:disabled"/>
   <int value="244040049" label="DrawImmediatelyWhenInteractive:disabled"/>
   <int value="244208319"

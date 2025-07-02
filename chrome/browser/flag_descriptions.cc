@@ -5527,6 +5527,11 @@ const char kTabStripLayoutOptimizationName[] = "Tab Strip Layout Optimization";
 const char kTabStripLayoutOptimizationDescription[] =
     "Allows adding horizontal and vertical margin to the tab strip.";
 
+const char kTabStripMouseCloseResizeDelayName[] =
+    "Tab Strip Mouse Close Resize Delay";
+const char kTabStripMouseCloseResizeDelayDescription[] =
+    "Delays resizing the tab strip when closing a tab with the mouse.";
+
 const char kTabStripTransitionInDesktopWindowName[] =
     "Tab Strip Transition in Desktop Window";
 const char kTabStripTransitionInDesktopWindowDescription[] =
