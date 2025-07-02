@@ -7457,7 +7457,8 @@
                         "IdleTimeoutInSeconds": "60",
                         "MaxPreconnectRetryInterval": "30",
                         "MaxShortSessionThreshold": "30s",
-                        "PingIntervalInSeconds": "30"
+                        "PingIntervalInSeconds": "30",
+                        "QuicConnectionOptions": "ECCP"
                     },
                     "enable_features": [
                         "SearchEnginePreconnect2"
