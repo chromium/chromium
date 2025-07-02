@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
@@ -70,6 +72,11 @@ class LoopbackReferenceStreamIdProvider {
   LoopbackReferenceStreamIdProvider& operator=(
       const LoopbackReferenceStreamIdProvider&) = delete;
 
+  int GetId() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+    return next_stream_id_;
+  }
+
   int GetNextId() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
     return next_stream_id_++;
@@ -115,6 +122,16 @@ class LoopbackReferenceManagerCore
     }
   }
 
+  void SendLogMessage(const std::string& message) {
+    if (!audio_log_) {
+      return;
+    }
+
+    audio_log_->OnLogMessage(base::StringPrintf(
+        "LRMC::%s [id=%u] [this=0x%" PRIXPTR "]", message.c_str(),
+        stream_id_provider_->GetId(), reinterpret_cast<uintptr_t>(this)));
+  }
+
   ReferenceOpenOutcome StartListening(ReferenceOutput::Listener* listener,
                                       const std::string& device_id) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -142,6 +159,8 @@ class LoopbackReferenceManagerCore
     audio_log_ = audio_manager_->CreateAudioLog(
         media::AudioLogFactory::AudioComponent::kAudioInputController,
         stream_id_provider_->GetNextId());
+    SendLogMessage(
+        base::StrCat({"StartListening(device_id=", loopback_device_id, ")"}));
 
     // Create the stream, and return an error if we fail.
     loopback_stream_ = audio_manager_->MakeAudioInputStream(
@@ -174,6 +193,7 @@ class LoopbackReferenceManagerCore
 
   void StopListening(ReferenceOutput::Listener* listener) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    SendLogMessage("StopListening()");
     bool is_empty;
     {
       base::AutoLock scoped_lock(lock_);
@@ -219,6 +239,7 @@ class LoopbackReferenceManagerCore
 
   void OnErrorMainSequence() {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    SendLogMessage("OnError()");
     if (on_error_callback_) {
       std::move(on_error_callback_).Run();
     }

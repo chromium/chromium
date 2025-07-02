@@ -19,6 +19,7 @@
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_parameters.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -230,8 +231,8 @@ TEST_F(LoopbackReferenceManagerTest, DistributesAudioToListenersSameProvider) {
   StrictMock<MockListener> mock_listener_1;
   reference_signal_provider->StartListening(&mock_listener_1,
                                             output_device_id_);
-  EXPECT_EQ(mock_audio_log_raw_ptr->logged_messages,
-            "LOG CALLBACK TEST MESSAGE");
+  EXPECT_THAT(mock_audio_log_raw_ptr->logged_messages,
+              ::testing::HasSubstr("LOG CALLBACK TEST MESSAGE"));
 
   CHECK(mock_input_stream.captured_callback_);
   AudioInputCallback* audio_callback = *(mock_input_stream.captured_callback_);

@@ -297,9 +297,10 @@ AudioProcessor::AudioProcessor(
         __func__, input_format_.sample_rate(), output_format_.sample_rate()));
   }
   SendLogMessage(base::StringPrintf(
-      "%s({input_format_=[%s], output_format_=[%s]})", __func__,
-      input_format_.AsHumanReadableString().c_str(),
-      output_format_.AsHumanReadableString().c_str()));
+      "%s({input_format_=[%s], output_format_=[%s], added_aec_delay=[%d]})",
+      __func__, input_format_.AsHumanReadableString().c_str(),
+      output_format_.AsHumanReadableString().c_str(),
+      added_aec_delay_.InMilliseconds()));
 
   // If audio processing is needed, rebuffer to APM frame size. If not, rebuffer
   // to the requested output format.
