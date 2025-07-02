@@ -214,6 +214,9 @@
       <message name="IDS_ACCESSIBILITY_LIST_MENU_BUTTON" desc="Content description for the button that shows option menu for a list item.">
         <ph name="NAME_OF_LIST_ITEM">%1$s<ex>Movie Title</ex></ph> Options
       </message>
+      <message name="IDS_ACCESSIBILITY_EXTENSION_BUTTON" desc="Content description for the extension button.">
+        Extensions
+      </message>
     </messages>
   </release>
 </grit>

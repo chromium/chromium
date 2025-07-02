@@ -25,7 +25,8 @@ found in the LICENSE file.
         style="@style/ToolbarHoverableButton"
         android:src="@drawable/chrome_extension"
         app:menuVerticalOverlapAnchor="false"
-        app:tint="@color/default_icon_color_tint_list"/>
+        app:tint="@color/default_icon_color_tint_list"
+        android:tooltipText="@string/accessibility_extension_button"/>
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/extensions_divider"
