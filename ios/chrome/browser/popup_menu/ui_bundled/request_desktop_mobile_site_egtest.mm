@@ -15,6 +15,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
@@ -133,13 +134,18 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 // Sets the default mode to the passed `defaultMode`.
 - (void)selectDefaultMode:(NSString*)defaultMode {
   [ChromeEarlGreyUI openSettingsMenu];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kSettingsContentSettingsCellId),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
-      onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
-      performAction:grey_tap()];
+  {
+    // Disable the timer in this scope to avoid infinite spinner loop. EarlGrey
+    // tests wait for scroll bars to disappear after a scroll operation.
+    ScopedDisableTimerTracking disabler;
+    [[[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                                kSettingsContentSettingsCellId),
+                                            grey_sufficientlyVisible(), nil)]
+           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+        onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+        performAction:grey_tap()];
+  }
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSettingsDefaultSiteModeCellId)]
       performAction:grey_tap()];
