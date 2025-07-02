@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 config("unrar_warnings") {
   cflags = [
     # unrar frequently drops parentheses around logical ops
@@ -106,4 +108,12 @@ static_library("unrar") {
   ]
 
   deps = [ "//base" ]
+}
+
+fuzzer_test("unrar_fuzzer") {
+  sources = [ "unrar_fuzzer.cc" ]
+  deps = [
+    ":unrar",
+    "//base",
+  ]
 }
