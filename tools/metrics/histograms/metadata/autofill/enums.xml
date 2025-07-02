@@ -869,15 +869,15 @@ Called by update_autofill_enums.py.-->
              value edited"/>
   <int value="12097"
       label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: Autofilled value accepted"/>
-  <int value="12672"
+  <int value="12864"
       label="ADDRESS_HOME_ZIP_PREFIX: Not autofilled or autofilled value
              edited"/>
-  <int value="12673"
+  <int value="12865"
       label="ADDRESS_HOME_ZIP_PREFIX: Autofilled value accepted"/>
-  <int value="12736"
+  <int value="12928"
       label="ADDRESS_HOME_ZIP_SUFFIX: Not autofilled or autofilled value
              edited"/>
-  <int value="12737"
+  <int value="12929"
       label="ADDRESS_HOME_ZIP_SUFFIX: Autofilled value accepted"/>
 </enum>
 
@@ -1190,10 +1190,10 @@ Called by update_autofill_enums.py.-->
   <int value="2977" label="VEHICLE_PLATE_STATE: accepted"/>
   <int value="3024" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: edited"/>
   <int value="3025" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: accepted"/>
-  <int value="3168" label="ADDRESS_HOME_ZIP_PREFIX: edited"/>
-  <int value="3169" label="ADDRESS_HOME_ZIP_PREFIX: accepted"/>
-  <int value="3184" label="ADDRESS_HOME_ZIP_SUFFIX: edited"/>
-  <int value="3185" label="ADDRESS_HOME_ZIP_SUFFIX: accepted"/>
+  <int value="3216" label="ADDRESS_HOME_ZIP_PREFIX: edited"/>
+  <int value="3217" label="ADDRESS_HOME_ZIP_PREFIX: accepted"/>
+  <int value="3232" label="ADDRESS_HOME_ZIP_SUFFIX: edited"/>
+  <int value="3233" label="ADDRESS_HOME_ZIP_SUFFIX: accepted"/>
 </enum>
 
 <enum name="AutofillEmailOrLoyaltyCardAcceptanceMetricValue">
@@ -2037,8 +2037,8 @@ Called by update_autofill_enums.py.-->
   <int value="185" label="VEHICLE_YEAR"/>
   <int value="186" label="VEHICLE_PLATE_STATE"/>
   <int value="189" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID"/>
-  <int value="198" label="ADDRESS_HOME_ZIP_PREFIX"/>
-  <int value="199" label="ADDRESS_HOME_ZIP_SUFFIX"/>
+  <int value="201" label="ADDRESS_HOME_ZIP_PREFIX"/>
+  <int value="202" label="ADDRESS_HOME_ZIP_SUFFIX"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -3704,10 +3704,10 @@ Called by update_autofill_enums.py.-->
   <int value="745" label="VEHICLE_PLATE_STATE: Accepted"/>
   <int value="756" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: Ignored"/>
   <int value="757" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: Accepted"/>
-  <int value="792" label="ADDRESS_HOME_ZIP_PREFIX: Ignored"/>
-  <int value="793" label="ADDRESS_HOME_ZIP_PREFIX: Accepted"/>
-  <int value="796" label="ADDRESS_HOME_ZIP_SUFFIX: Ignored"/>
-  <int value="797" label="ADDRESS_HOME_ZIP_SUFFIX: Accepted"/>
+  <int value="804" label="ADDRESS_HOME_ZIP_PREFIX: Ignored"/>
+  <int value="805" label="ADDRESS_HOME_ZIP_PREFIX: Accepted"/>
+  <int value="808" label="ADDRESS_HOME_ZIP_SUFFIX: Ignored"/>
+  <int value="809" label="ADDRESS_HOME_ZIP_SUFFIX: Accepted"/>
 </enum>
 
 <!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->

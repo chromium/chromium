@@ -519,14 +519,14 @@ enum FieldType {
   // the client.
   EMAIL_OR_LOYALTY_MEMBERSHIP_ID = 189,
 
-  // Types 190 to 197 are not used on the client yet, but will likely be added
+  // Types 190 to 200 are not used on the client yet, but will likely be added
   // in the future.
 
   // ADDRESS_HOME_ZIP = ADDRESS_HOME_ZIP_PREFIX + separator +
   // ADDRESS_HOME_ZIP_SUFFIX.
   // For the US zip code 94043-4100 the types correspond to 94043 and 4100.
-  ADDRESS_HOME_ZIP_PREFIX = 198,
-  ADDRESS_HOME_ZIP_SUFFIX = 199,
+  ADDRESS_HOME_ZIP_PREFIX = 201,
+  ADDRESS_HOME_ZIP_SUFFIX = 202,
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
@@ -538,7 +538,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 200,
+  MAX_VALID_FIELD_TYPE = 203,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -638,8 +638,8 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Types for the country for driver's license and vehicle are not
            // used yet, but will likely be added in the future.
            (187 <= t && t <= 188) ||
-           // Values from 190 to 197 are reserved for the future.
-           (190 <= t && t <= 197);
+           // Values from 190 to 200 are reserved for the future.
+           (190 <= t && t <= 200);
   };
   return is_invalid(raw_value) ? fallback_value
                                : static_cast<FieldType>(raw_value);
