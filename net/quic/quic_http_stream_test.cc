@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/quic/quic_http_stream.h"
 
 #include <stdint.h>
@@ -341,19 +336,18 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
 
   // Configures the test fixture to use the list of expected writes.
   void Initialize() {
-    mock_writes_ = std::make_unique<MockWrite[]>(writes_.size());
+    mock_writes_.resize(writes_.size());
     for (size_t i = 0; i < writes_.size(); i++) {
       if (writes_[i].packet == nullptr) {
         mock_writes_[i] = MockWrite(writes_[i].mode, writes_[i].rv, i);
       } else {
-        mock_writes_[i] = MockWrite(
-            writes_[i].mode,
-            base::span(writes_[i].packet->data(), writes_[i].packet->length()));
+        mock_writes_[i] =
+            MockWrite(writes_[i].mode, writes_[i].packet->AsStringPiece());
       }
     }
 
     socket_data_ = std::make_unique<StaticSocketDataProvider>(
-        base::span<MockRead>(), base::span(mock_writes_.get(), writes_.size()));
+        base::span<MockRead>(), mock_writes_);
     socket_data_->set_printer(&printer_);
 
     auto socket = std::make_unique<MockUDPClientSocket>(socket_data_.get(),
@@ -636,7 +630,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE)};
   RecordingNetLogObserver net_log_observer_;
   scoped_refptr<TestTaskRunner> runner_;
-  std::unique_ptr<MockWrite[]> mock_writes_;
+  std::vector<MockWrite> mock_writes_;
   quic::MockClock clock_;
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
