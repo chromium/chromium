@@ -21,6 +21,7 @@
 #include "base/android/input_hint_checker.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/android/yield_to_looper_checker.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/message_loop/io_watcher.h"
@@ -33,6 +34,7 @@
 
 using base::android::InputHintChecker;
 using base::android::InputHintResult;
+using base::android::YieldToLooperChecker;
 
 namespace base {
 
@@ -455,16 +457,24 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
 
     next_work_info = delegate_->DoWork();
 
-    // As an optimization, yield to the Looper when input events are waiting to
-    // be handled. In some cases input events can remain undetected. Such "input
-    // hint false negatives" happen, for example, during initialization, in
-    // multi-window cases, or when a previous value is cached to throttle
-    // polling the input channel.
-    if (is_type_ui_ && next_work_info.is_immediate() &&
-        InputHintChecker::HasInput()) {
-      InputHintChecker::GetInstance().set_is_after_input_yield(true);
-      ScheduleWork();
-      return;
+    if (is_type_ui_ && next_work_info.is_immediate()) {
+      // To reduce startup ANRs, yield if an embedder signifies that startup is
+      // currently running.
+      if (YieldToLooperChecker::GetInstance().ShouldYield()) {
+        ScheduleWork();
+        return;
+      }
+
+      // As an optimization, yield to the Looper when input events are waiting
+      // to be handled. In some cases input events can remain undetected. Such
+      // "input hint false negatives" happen, for example, during
+      // initialization, in multi-window cases, or when a previous value is
+      // cached to throttle polling the input channel.
+      if (InputHintChecker::HasInput()) {
+        InputHintChecker::GetInstance().set_is_after_input_yield(true);
+        ScheduleWork();
+        return;
+      }
     }
   } while (next_work_info.is_immediate());
 

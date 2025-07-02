@@ -1218,6 +1218,8 @@ component("base") {
       "android/task_scheduler/task_traits_android.h",
       "android/thread_instruction_count.cc",
       "android/thread_instruction_count.h",
+      "android/yield_to_looper_checker.cc",
+      "android/yield_to_looper_checker.h",
       "debug/stack_trace_android.cc",
       "files/file_util_android.cc",
       "files/scoped_file_android.cc",

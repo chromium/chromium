@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/input_hint_checker.h"
+#include "base/android/yield_to_looper_checker.h"
 #include "base/test/test_support_android.h"
 #endif
 
@@ -281,7 +282,58 @@ TEST_P(MessagePumpTest, DetectingHasInputYieldsOnUi) {
   EXPECT_EQ(initial_work_enters + work_loop_entered,
             GetAndroidNonDelayedWorkEnterCount());
 }
-#endif
+
+TEST_P(MessagePumpTest, YieldDuringStartup) {
+  testing::InSequence sequence;
+  MessagePumpType pump_type = GetParam();
+  testing::StrictMock<MockMessagePumpDelegate> delegate(pump_type);
+
+  uint32_t initial_work_enters = GetAndroidNonDelayedWorkEnterCount();
+
+  // Override the first DoWork() to return an immediate next. Also set startup
+  // as running.
+  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([pump_type] {
+    if (pump_type == MessagePumpType::UI) {
+      android::YieldToLooperChecker::GetInstance().SetStartupRunning(true);
+    }
+    auto work_info =
+        MessagePump::Delegate::NextWorkInfo{.delayed_run_time = TimeTicks()};
+    CHECK(work_info.is_immediate());
+    return work_info;
+  }));
+
+  // Override the second DoWork() and mark startup as complete so we don't yield
+  // again.
+  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([pump_type] {
+    if (pump_type == MessagePumpType::UI) {
+      // Mark startup as done so we don't yield again
+      android::YieldToLooperChecker::GetInstance().SetStartupRunning(false);
+    }
+    return MessagePump::Delegate::NextWorkInfo{.delayed_run_time = TimeTicks()};
+  }));
+
+  // Override the third DoWork() to quit the loop.
+  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+    message_pump_->Quit();
+    return MessagePump::Delegate::NextWorkInfo{.delayed_run_time =
+                                                   TimeTicks::Max()};
+  }));
+
+  // No immediate next_work_info remaining before the yield.
+  EXPECT_CALL(delegate, DoIdleWork()).Times(0);
+
+  message_pump_->Run(&delegate);
+
+  // Expect two calls to DoNonDelayedLooperWork(). The first one occurs as a
+  // result of MessagePump::Run(). The second one is the result of yielding
+  // after YieldDuringStartup() returns true. For non-UI MessagePumpType the
+  // MessagePump::Create() does not intercept entering DoNonDelayedLooperWork(),
+  // so it remains 0 instead of 1.
+  uint32_t work_loop_entered = (pump_type == MessagePumpType::UI) ? 2 : 0;
+  EXPECT_EQ(initial_work_enters + work_loop_entered,
+            GetAndroidNonDelayedWorkEnterCount());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   testing::InSequence sequence;
