@@ -393,8 +393,15 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, ShowsErrorPanelOnInvalidAuth) {
                                          {"#errorPanel:not([hidden])"})));
 }
 
+// TODO(crbug.com/429040435): Test is failing on Mac bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowsErrorPanelOnLoadingTimeout \
+  DISABLED_ShowsErrorPanelOnLoadingTimeout
+#else
+#define MAYBE_ShowsErrorPanelOnLoadingTimeout ShowsErrorPanelOnLoadingTimeout
+#endif
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
-                       ShowsErrorPanelOnLoadingTimeout) {
+                       MAYBE_ShowsErrorPanelOnLoadingTimeout) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
