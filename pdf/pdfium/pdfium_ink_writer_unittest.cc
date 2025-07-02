@@ -195,7 +195,7 @@ TEST_P(PDFiumInkWriterTest, WriteToCroppedPage) {
 
   base::FilePath expectation_path = GetInkTestDataFilePath(
       GetTestDataPathWithPlatformSuffix("ink_writer_cropped.png"));
-  CheckPdfRendering(saved_pdf_data, /*page_index=*/0, gfx::Size(145, 97),
+  CheckPdfRendering(saved_pdf_data, /*page_index=*/0, gfx::Size(135, 90),
                     expectation_path);
 
   // Load `saved_pdf_data` into `saved_engine` and get a handle to the one and

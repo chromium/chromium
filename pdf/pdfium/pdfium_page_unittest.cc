@@ -153,7 +153,7 @@ TEST_P(PDFiumPageTest, IsCharInPageBounds) {
   EXPECT_EQ(page.GetCharCount(), 30);
 
   const gfx::RectF page_bounds = page.GetCroppedRect();
-  EXPECT_EQ(page_bounds, gfx::RectF(193.33333f, 129.33333f));
+  EXPECT_EQ(page_bounds, gfx::RectF(180.0f, 120.0f));
 
   EXPECT_EQ(page.GetCharUnicode(0), static_cast<uint32_t>('H'));
   EXPECT_FALSE(page.IsCharInPageBounds(0, page_bounds));
