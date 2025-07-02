@@ -28,7 +28,6 @@ public class XrUtils {
     }
 
     private static boolean isXrDeviceInternal() {
-        return PackageManagerUtils.hasSystemFeature(PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)
-                || PackageManagerUtils.hasSystemFeature(PackageManagerUtils.XR_OPENXR_FEATURE_NAME);
+        return PackageManagerUtils.hasSystemFeature(PackageManagerUtils.XR_OPENXR_FEATURE_NAME);
     }
 }

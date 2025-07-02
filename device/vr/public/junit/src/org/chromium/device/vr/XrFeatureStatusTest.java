@@ -7,7 +7,6 @@ package org.chromium.device.vr;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME;
 import static org.chromium.base.PackageManagerUtils.XR_OPENXR_FEATURE_NAME;
 
 import android.content.pm.PackageManager;
@@ -35,14 +34,6 @@ public class XrFeatureStatusTest {
     }
 
     @Test
-    public void isXrDevice_systemHasImmersiveFeature_isTrue() {
-        mShadowPackageManager.setSystemFeature(XR_IMMERSIVE_FEATURE_NAME, true);
-        assertTrue(
-                "Device supports " + XR_IMMERSIVE_FEATURE_NAME + " should be XR device.",
-                XrFeatureStatus.isXrDevice());
-    }
-
-    @Test
     public void isXrDevice_systemHasOpenXrFeature_isTrue() {
         mShadowPackageManager.setSystemFeature(XR_OPENXR_FEATURE_NAME, true);
         assertTrue(
@@ -51,15 +42,10 @@ public class XrFeatureStatusTest {
     }
 
     @Test
-    public void isXrDevice_systemDoesNotHaveOpenXrOrImmersiveFeature_isFalse() {
-        mShadowPackageManager.setSystemFeature(XR_IMMERSIVE_FEATURE_NAME, false);
+    public void isXrDevice_systemDoesNotHaveOpenXrFeature_isFalse() {
         mShadowPackageManager.setSystemFeature(XR_OPENXR_FEATURE_NAME, false);
         assertFalse(
-                "Only device supports "
-                        + XR_OPENXR_FEATURE_NAME
-                        + " or "
-                        + XR_IMMERSIVE_FEATURE_NAME
-                        + " is XR device.",
+                "Only device supports " + XR_OPENXR_FEATURE_NAME + " is XR device.",
                 XrFeatureStatus.isXrDevice());
     }
 }

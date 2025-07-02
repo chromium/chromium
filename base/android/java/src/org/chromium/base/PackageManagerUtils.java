@@ -19,8 +19,6 @@ import java.util.List;
 /** This class provides Android PackageManager related utility methods. */
 @NullMarked
 public class PackageManagerUtils {
-    public static final String XR_IMMERSIVE_FEATURE_NAME = "android.software.xr.immersive";
-
     public static final String XR_OPENXR_FEATURE_NAME = "android.software.xr.api.openxr";
 
     private static final String TAG = "PackageManagerUtils";
