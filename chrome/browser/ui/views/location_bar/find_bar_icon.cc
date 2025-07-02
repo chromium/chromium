@@ -14,6 +14,9 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/view_class_properties.h"
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarIcon, kElementId);
 
 FindBarIcon::FindBarIcon(
     Browser* browser,
@@ -26,6 +29,7 @@ FindBarIcon::FindBarIcon(
                          "Find"),
       browser_(browser) {
   DCHECK(browser_);
+  SetProperty(views::kElementIdentifierKey, kElementId);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND));
 }
 
