@@ -9,8 +9,15 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
 
+class UrlLoadingBrowserAgent;
+
 // The handler for opening links for BWG.
 @interface BWGLinkOpeningHandler : NSObject <BWGLinkOpeningDelegate>
+
+// Initialize the handler with a URL loading browser agent.
+- (instancetype)initWithURLLoader:(UrlLoadingBrowserAgent*)URLLoadingAgent
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

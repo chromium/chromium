@@ -4,12 +4,31 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
 
-@implementation BWGLinkOpeningHandler
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "url/gurl.h"
+
+@implementation BWGLinkOpeningHandler {
+  // The URL loading agent for opening URLs.
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingAgent;
+}
 
 #pragma mark - BWGLinkOpeningDelegate
 
+- (instancetype)initWithURLLoader:(UrlLoadingBrowserAgent*)URLLoadingAgent {
+  self = [super self];
+  if (self) {
+    _URLLoadingAgent = URLLoadingAgent;
+  }
+  return self;
+}
+
 - (void)openURLInNewTab:(NSString*)URL {
-  // TODO(crbug.com/419070800): Implement link opening.
+  UrlLoadParams params =
+      UrlLoadParams::InNewTab(GURL(base::SysNSStringToUTF8(URL)));
+  params.append_to = OpenPosition::kCurrentTab;
+  _URLLoadingAgent->Load(params);
 }
 
 @end

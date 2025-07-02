@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 
@@ -40,7 +41,8 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
   bwg_gateway_ = ios::provider::CreateBWGGateway();
 
   if (bwg_gateway_) {
-    bwg_link_opening_handler_ = [[BWGLinkOpeningHandler alloc] init];
+    bwg_link_opening_handler_ = [[BWGLinkOpeningHandler alloc]
+        initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser_)];
     bwg_gateway_.linkOpeningHandler = bwg_link_opening_handler_;
 
     bwg_session_handler_ = [[BWGSessionHandler alloc]
