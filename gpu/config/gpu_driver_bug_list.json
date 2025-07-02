@@ -3487,21 +3487,6 @@
       ]
     },
     {
-      "id": 444,
-      "description": "Disable shared image encode for VP9 MFVEA on Intel ",
-      "comment":[
-        "VP9 encode accelerator corrupts color output when accepting RGB shared images",
-        "as input."
-      ],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "disable_vp9_shared_image_encode"
-      ]
-    },
-    {
       "id": 445,
       "description": "Disable shared D3D device for MFVEA on Intel ",
       "comment":[
@@ -3527,21 +3512,6 @@
       "device_id": ["0x36333630"],
       "features": [
         "disable_direct_composition_letterbox_video_optimization"
-      ]
-    },
-    {
-      "id": 447,
-      "description": "Disable shared image encode for AV1 MFVEA on NVidia",
-      "comment":[
-        "AV1 encode accelerator corrupts color output when accepting RGB shared images",
-        "as input."
-      ],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x10de",
-      "features": [
-        "disable_av1_shared_image_encode"
       ]
     },
     {

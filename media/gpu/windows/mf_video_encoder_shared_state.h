@@ -50,7 +50,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncoderSharedState {
   virtual ~MediaFoundationVideoEncoderSharedState();
 
   void GetSupportedProfilesInternal();
-  bool SupportsSharedImageEncoding(VideoCodec codec);
 
   gpu::GpuDriverBugWorkarounds workarounds_;
   VideoEncodeAccelerator::SupportedProfiles supported_profiles_;
