@@ -1374,7 +1374,46 @@ TEST(HlsTagsTest, ParseXDateRangeTag) {
       ToTagName(MediaPlaylistTagName::kXDateRange),
       "#EXT-X-DATERANGE:ID=\"ad\",START-DATE=\"2022-07-19T01:04:57+0000\"\n",
       "ID=\"ad\",START-DATE=\"2022-07-19T01:04:57+0000\"");
-  // TODO(crbug.com/40057824): Implement the EXT-X-DATERANGE tag.
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+  {
+    auto result = OkTest<XDateRangeTag>(
+        "ID=\"Z\",START-DATE=\"1994-03-18T17:12:00.000-07:00\"", dict, subs);
+    EXPECT_EQ(result.tag.id.Str(), "Z");
+  }
+  {
+    auto result = OkTest<XDateRangeTag>(
+        "ID=\"Z\",CLASS=\"X\",START-DATE=\"2010-02-19T14:54:23.031+08:00\",CUE="
+        "\"PRE,ONCE\",END-DATE=\"2999-02-29T23:59:59.999+00:00\",DURATION=42,"
+        "PLANNED-DURATION=42,END-ON-NEXT=YES",
+        dict, subs);
+    EXPECT_EQ(result.tag.id.Str(), "Z");
+    EXPECT_EQ(result.tag.client_class.value().Str(), "X");
+    EXPECT_EQ(result.tag.duration.value(), 42.00);
+    EXPECT_EQ(result.tag.planned_duration.value(), 42.00);
+    EXPECT_EQ(result.tag.cue.value().size(), 2u);
+    EXPECT_EQ(result.tag.end_on_next, true);
+  }
+
+  // Cant have PRE and POST
+  ErrorTest<XDateRangeTag>(
+      "ID=\"Z\",START-DATE=\"2010-02-19T14:54:23.031+08:00\",CUE=\"PRE,POST\"",
+      dict, subs, ParseStatusCode::kMalformedTag);
+
+  // Duration & Planned duration must be >= 0
+  ErrorTest<XDateRangeTag>(
+      "ID=\"Z\",START-DATE=\"2010-02-19T14:54:23.031+08:00\",DURATION=-1", dict,
+      subs, ParseStatusCode::kMalformedTag);
+  ErrorTest<XDateRangeTag>(
+      "ID=\"Z\",START-DATE=\"2010-02-19T14:54:23.031+08:00\",PLANNED-DURATION=-"
+      "1",
+      dict, subs, ParseStatusCode::kMalformedTag);
+
+  // END-ON-NEXT=YES requires a CLASS
+  ErrorTest<XDateRangeTag>(
+      "ID=\"Z\",START-DATE=\"2010-02-19T14:54:23.031+08:00\",END-ON-NEXT=YES",
+      dict, subs, ParseStatusCode::kMalformedTag);
 }
 
 TEST(HlsTagsTest, ParseXDiscontinuityTag) {

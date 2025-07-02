@@ -358,6 +358,50 @@ constexpr std::string_view GetAttributeName(
   NOTREACHED();
 }
 
+enum class XDateRangeTagAttribute {
+  kClass,
+  kCue,
+  kDuration,
+  kEndDate,
+  kEndOnNext,
+  kId,
+  kPlannedDuration,
+  kSCTE35cmd,
+  kSCTE35in,
+  kSCTE35out,
+  kStartDate,
+  kMaxValue = kStartDate,
+};
+
+constexpr std::string_view GetAttributeName(XDateRangeTagAttribute attribute) {
+  switch (attribute) {
+    case XDateRangeTagAttribute::kClass:
+      return "CLASS";
+    case XDateRangeTagAttribute::kCue:
+      return "CUE";
+    case XDateRangeTagAttribute::kDuration:
+      return "DURATION";
+    case XDateRangeTagAttribute::kEndDate:
+      return "END-DATE";
+    case XDateRangeTagAttribute::kEndOnNext:
+      return "END-ON-NEXT";
+    case XDateRangeTagAttribute::kId:
+      return "ID";
+    case XDateRangeTagAttribute::kPlannedDuration:
+      return "PLANNED-DURATION";
+    case XDateRangeTagAttribute::kSCTE35cmd:
+      return "SCTE35-CMD";
+    case XDateRangeTagAttribute::kSCTE35in:
+      return "SCTE35-IN";
+    case XDateRangeTagAttribute::kSCTE35out:
+      return "SCTE35-OUT";
+    case XDateRangeTagAttribute::kStartDate:
+      return "START-DATE";
+  };
+
+  NOTREACHED();
+}
+
 template <typename T, size_t kLast>
 constexpr bool IsAttributeEnumSorted(std::index_sequence<kLast>) {
   return true;
@@ -1765,6 +1809,137 @@ ParseStatus::Or<XPreloadHintTag> XPreloadHintTag::Parse(
             .uri = std::move(uri).value(),
             .byterange_start = std::move(byterange_start).value(),
             .byterange_length = std::move(byterange_length).value()};
+      });
+}
+
+struct XDateRangeTag::CtorArgs {
+  decltype(XDateRangeTag::id) id;
+  decltype(XDateRangeTag::client_class) client_class;
+  decltype(XDateRangeTag::start_date) start_date;
+  decltype(XDateRangeTag::cue) cue;
+  decltype(XDateRangeTag::end_date) end_date;
+  decltype(XDateRangeTag::duration) duration;
+  decltype(XDateRangeTag::planned_duration) planned_duration;
+  decltype(XDateRangeTag::end_on_next) end_on_next;
+};
+
+XDateRangeTag::XDateRangeTag(CtorArgs args)
+    : id(std::move(args.id)),
+      client_class(std::move(args.client_class)),
+      start_date(std::move(args.start_date)),
+      cue(std::move(args.cue)),
+      end_date(std::move(args.end_date)),
+      duration(std::move(args.duration)),
+      planned_duration(std::move(args.planned_duration)),
+      end_on_next(std::move(args.end_on_next)) {}
+
+XDateRangeTag::~XDateRangeTag() = default;
+XDateRangeTag::XDateRangeTag(const XDateRangeTag&) = default;
+
+struct CueImpl
+    : types::parsing::SubstitutingParser<CueImpl, XDateRangeTag::Cue> {
+  static ParseStatus::Or<XDateRangeTag::Cue> Parse(
+      ResolvedSourceString content) {
+    if (content.Str() == "PRE") {
+      return XDateRangeTag::Cue::kPre;
+    } else if (content.Str() == "POST") {
+      return XDateRangeTag::Cue::kPost;
+    } else if (content.Str() == "ONCE") {
+      return XDateRangeTag::Cue::kOnce;
+    } else {
+      return ParseStatusCode::kMalformedTag;
+    }
+  }
+};
+
+ParseStatus::Or<XDateRangeTag> XDateRangeTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XDateRangeTag::kName));
+  return RequireNonEmptyMap<XDateRangeTagAttribute>(tag.GetContent())
+      .MapValue([&vars, &subs](auto map) -> ParseStatus::Or<XDateRangeTag> {
+        auto id = ParseField<ResolvedSourceString>(
+            XDateRangeTagAttribute::kId, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(id);
+
+        auto client_class = ParseField<std::optional<ResolvedSourceString>>(
+            XDateRangeTagAttribute::kClass, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(client_class);
+
+        auto maybe_cue =
+            ParseField<std::optional<std::vector<XDateRangeTag::Cue>>>(
+                XDateRangeTagAttribute::kCue, map,
+                &types::parsing::EnumeratedStringList<
+                    CueImpl>::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(maybe_cue);
+        std::optional<std::vector<XDateRangeTag::Cue>> cue =
+            std::move(maybe_cue).value();
+
+        auto start_date = ParseField<base::Time>(
+            XDateRangeTagAttribute::kStartDate, map,
+            &types::parsing::Quoted<
+                types::parsing::ISO8601Date>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(start_date);
+
+        auto end_date = ParseField<std::optional<base::Time>>(
+            XDateRangeTagAttribute::kEndDate, map,
+            &types::parsing::Quoted<
+                types::parsing::ISO8601Date>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(end_date);
+
+        auto maybe_duration = ParseField<std::optional<types::DecimalInteger>>(
+            XDateRangeTagAttribute::kDuration, map,
+            &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(maybe_duration);
+        auto duration = std::move(maybe_duration).value();
+
+        auto maybe_planned_duration =
+            ParseField<std::optional<types::DecimalInteger>>(
+                XDateRangeTagAttribute::kPlannedDuration, map,
+                &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(maybe_planned_duration);
+        auto planned_duration = std::move(maybe_planned_duration).value();
+
+        auto maybe_end_on_next = ParseField<std::optional<bool>>(
+            XDateRangeTagAttribute::kEndOnNext, map,
+            &types::parsing::YesOrNo::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(maybe_end_on_next);
+        auto end_on_next = std::move(maybe_end_on_next).value();
+        if (!end_on_next.value_or(true)) {
+          // END-ON-NEXT is required to be absent or have a value of YES.
+          return ParseStatus::Codes::kMalformedTag;
+        }
+
+        // the Cue list must not contain PRE and POST
+        if (cue.has_value()) {
+          auto pre = std::find(cue->begin(), cue->end(), Cue::kPre);
+          auto post = std::find(cue->begin(), cue->end(), Cue::kPost);
+          if (pre != cue->end() && post != cue->end()) {
+            return ParseStatus::Codes::kMalformedTag;
+          }
+        }
+
+        // A tag with an END_ON_NEXT attribute must have a class
+        if (end_on_next.value_or(false) && !(*client_class).has_value()) {
+          return ParseStatus::Codes::kMalformedTag;
+        }
+
+        return XDateRangeTag(XDateRangeTag::CtorArgs{
+            .id = std::move(id).value(),
+            .client_class = std::move(client_class).value(),
+            .start_date = std::move(start_date).value(),
+            .cue = cue,
+            .end_date = std::move(end_date).value(),
+            .duration = duration,
+            .planned_duration = planned_duration,
+            .end_on_next = end_on_next.value_or(false)});
       });
 }
 

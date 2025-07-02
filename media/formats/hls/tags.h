@@ -570,6 +570,82 @@ struct MEDIA_EXPORT XSessionKeyTag {
   std::optional<ResolvedSourceString> keyformat_versions;
 };
 
+// Some additional notes from the spec:
+/*
+   A CUE attribute containing PRE indicates that an action is to be
+   triggered before playback of the primary asset begins, regardless of
+   where playback begins in the primary asset.
+
+   A CUE attribute containing POST indicates that an action is to be
+   triggered after the primary asset has been played to its end without
+   error.
+
+   The presence of a CUE attribute that contains ONCE indicates that an
+   action is to be triggered once.  It SHOULD NOT be triggered again,
+   even if the user replays the portion of the primary asset that
+   includes the trigger point.
+
+   A CUE attribute MUST NOT include both PRE and POST.
+
+   An EXT-X-DATERANGE tag with an END-ON-NEXT=YES attribute MUST have a
+   CLASS attribute.  Other EXT-X-DATERANGE tags with the same CLASS
+   attribute MUST NOT specify Date Ranges that overlap.
+
+   An EXT-X-DATERANGE tag with an END-ON-NEXT=YES attribute MUST NOT
+   contain DURATION or END-DATE attributes.
+
+   A Date Range with neither a DURATION, an END-DATE, nor an END-ON-
+   NEXT=YES attribute has an unknown duration, even if it has a PLANNED-
+   DURATION.
+
+   If a Playlist contains an EXT-X-DATERANGE tag, it MUST also contain
+   at least one EXT-X-PROGRAM-DATE-TIME tag.
+
+   If a Playlist contains two EXT-X-DATERANGE tags with the same ID
+   attribute value, then any AttributeName that appears in both tags
+   MUST have the same AttributeValue.
+
+   If a Date Range contains both a DURATION attribute and an END-DATE
+   attribute, the value of the END-DATE attribute MUST be equal to the
+   value of the START-DATE attribute plus the value of the DURATION
+   attribute.
+
+   Clients SHOULD ignore EXT-X-DATERANGE tags with illegal syntax.
+*/
+struct MEDIA_EXPORT XDateRangeTag {
+  enum class Cue { kPre, kPost, kOnce };
+
+  static constexpr auto kName = MediaPlaylistTagName::kXDateRange;
+  static ParseStatus::Or<XDateRangeTag> Parse(
+      TagItem,
+      const VariableDictionary&,
+      VariableDictionary::SubstitutionBuffer&);
+
+  struct CtorArgs;
+  ~XDateRangeTag();
+  explicit XDateRangeTag(CtorArgs);
+  XDateRangeTag(const XDateRangeTag&);
+
+  ResolvedSourceString id;
+  std::optional<ResolvedSourceString> client_class;
+  base::Time start_date;
+  std::optional<std::vector<Cue>> cue;
+  std::optional<base::Time> end_date;
+  std::optional<types::DecimalInteger> duration;
+
+  std::optional<types::DecimalInteger> planned_duration;
+
+  // TODO(crbug.com/314836475): SCTE-CMD, SCTE-IN, and SCTE-OUT are one of the
+  // last things to be supported. The SCTE35 spec is quite a complicated.
+
+  bool end_on_next;
+
+  // TODO(crbug.com/314836475): Implement support for arbitrary attributes at
+  // some point. There isn't much use here since we have no way to surface any
+  // of this information.
+  base::flat_map<ResolvedSourceString, ResolvedSourceString> attributes;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

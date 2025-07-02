@@ -64,6 +64,15 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
 }
 
 // static
+ParseStatus::Or<base::Time> ISO8601Date::Parse(ResolvedSourceString str) {
+  base::Time time;
+  if (base::Time::FromString(str.Str().data(), &time)) {
+    return time;
+  }
+  return ParseStatusCode::kMalformedTag;
+}
+
+// static
 ParseStatus::Or<ResolvedSourceString> RawStr::Parse(ResolvedSourceString str) {
   return str;
 }
