@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browser_controls;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -57,8 +58,18 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     // All controls are stored in a Map and we should only have one of each control type.
     private final Map<@TopControlType Integer, TopControlLayer> mControls;
 
-    public TopControlsStacker() {
+    private final BrowserControlsSizer mBrowserControlsSizer;
+
+    /**
+     * Constructs the top controls stacker, which is used to calculate heights and offsets for any
+     * top controls.
+     *
+     * @param browserControlsSizer {@link BrowserControlsSizer} to request browser controls changes.
+     */
+    public TopControlsStacker(BrowserControlsSizer browserControlsSizer) {
         mControls = new HashMap<>();
+        mBrowserControlsSizer = browserControlsSizer;
+        mBrowserControlsSizer.addObserver(this);
     }
 
     /**
@@ -81,8 +92,22 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         mControls.remove(control.getTopControlType());
     }
 
+    // BrowserControlsStateProvider.Observer implementation:
+
+    @Override
+    public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
+        // No-op by default until refactor work is enabled.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TOP_CONTROLS_REFACTOR)) return;
+
+        // Inform any controls that there was a change to the top controls height.
+        for (TopControlLayer topControlLayer : mControls.values()) {
+            topControlLayer.onTopControlLayerHeightChanged(topControlsHeight, topControlsMinHeight);
+        }
+    }
+
     /** Tear down |this| and clear all existing controls from the Map. */
     public void destroy() {
         mControls.clear();
+        mBrowserControlsSizer.removeObserver(this);
     }
 }

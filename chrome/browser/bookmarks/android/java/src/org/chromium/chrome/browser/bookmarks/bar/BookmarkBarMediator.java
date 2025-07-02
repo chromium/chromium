@@ -151,6 +151,10 @@ class BookmarkBarMediator
         mProfileSupplier.removeObserver(mProfileSupplierObserver);
     }
 
+    protected void setTopMargin(int newTopMargin) {
+        mModel.set(BookmarkBarProperties.TOP_MARGIN, newTopMargin);
+    }
+
     // BookmarkBarItemsProvider.Observer implementation.
 
     @Override

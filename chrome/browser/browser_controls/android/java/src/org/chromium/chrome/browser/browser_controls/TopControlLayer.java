@@ -30,4 +30,13 @@ public interface TopControlLayer {
     default boolean contributesToTotalHeight() {
         return true;
     }
+
+    /**
+     * Called whenever {@link BrowserControlsManager} provides a signal that the height of the top
+     * controls are changed.
+     *
+     * @param topControlsHeight The new height of the top controls.
+     * @param topControlsMinHeight The new minimum height of the top controls.
+     */
+    default void onTopControlLayerHeightChanged(int topControlsHeight, int topControlsMinHeight) {}
 }
