@@ -429,11 +429,14 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
   storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
       storage_shared_buffer().TakeFindRegistrationResult(client_url, key);
   if (!preflight_result.is_null()) {
+    std::optional<std::vector<GURL>> scope_vector;
+    if (scopes.has_value()) {
+      scope_vector = std::vector(scopes->begin(), scopes->end());
+    }
     DidFindRegistrationForClientUrl(
         client_url, key, trace_event_id, std::move(callback),
         storage::mojom::ServiceWorkerDatabaseStatus::kOk,
-        std::move(preflight_result),
-        std::vector(scopes->begin(), scopes->end()));
+        std::move(preflight_result), scope_vector);
     return;
   }
 
