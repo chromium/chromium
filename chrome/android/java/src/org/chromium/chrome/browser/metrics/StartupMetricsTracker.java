@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.metrics;
 import android.os.SystemClock;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.BinderCallsListener;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
@@ -36,6 +36,7 @@ import org.chromium.url.GURL;
  * <p>Uses different cold start heuristics from {@link LegacyTabStartupMetricsTracker}. These
  * heuristics aim to replace a few metrics from Startup.Android.Cold.*.
  */
+@NullMarked
 public class StartupMetricsTracker {
 
     private static final long TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS = 2500;
@@ -70,8 +71,7 @@ public class StartupMetricsTracker {
         }
 
         @Override
-        public void onDidFinishNavigationInPrimaryMainFrame(
-                Tab tab, @NonNull NavigationHandle navigation) {
+        public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
             if (!mShouldTrack || mFirstNavigationCommitted) return;
             boolean shouldTrack =
                     navigation.hasCommitted()
@@ -131,8 +131,8 @@ public class StartupMetricsTracker {
     private final long mActivityStartTimeMs;
     private boolean mFirstVisibleContentRecorded;
 
-    private TabModelSelectorTabObserver mTabObserver;
-    private PageObserver mPageObserver;
+    private @Nullable TabModelSelectorTabObserver mTabObserver;
+    private @Nullable PageObserver mPageObserver;
     private boolean mShouldTrack = true;
     private boolean mShouldTrackTimeToFirstDraw = true;
     private @ActivityType int mHistogramSuffix;
@@ -199,7 +199,7 @@ public class StartupMetricsTracker {
      * @param ntpRootView Root view containing the search provider logo (if available), search box,
      *     MV tiles etc.
      */
-    public void registerNtpViewObserver(@NonNull View ntpRootView) {
+    public void registerNtpViewObserver(View ntpRootView) {
         if (!mShouldTrackTimeToFirstDraw) return;
         trackTimeToFirstDraw(ntpRootView, NTP_COLD_START_HISTOGRAM);
     }
@@ -211,7 +211,7 @@ public class StartupMetricsTracker {
      *
      * @param searchActivityRootView SearchActivity's root view.
      */
-    public void registerSearchActivityViewObserver(@NonNull View searchActivityRootView) {
+    public void registerSearchActivityViewObserver(View searchActivityRootView) {
         if (!mShouldTrackTimeToFirstDraw) return;
         trackTimeToFirstDraw(
                 searchActivityRootView, "Startup.Android.Cold.SearchActivity.TimeToFirstDraw");

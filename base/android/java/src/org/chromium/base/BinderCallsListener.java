@@ -178,7 +178,7 @@ public class BinderCallsListener {
     private boolean mInstalled;
 
     @UiThread
-    public static @Nullable BinderCallsListener getInstance() {
+    public static BinderCallsListener getInstance() {
         ThreadUtils.assertOnUiThread();
 
         if (sInstance == null) sInstance = new BinderCallsListener();

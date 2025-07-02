@@ -10,6 +10,8 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
@@ -26,6 +28,7 @@ import org.chromium.url.GURL;
  * Tracks the first navigation and first contentful paint events for a tab within an activity during
  * startup.
  */
+@NullMarked
 public class LegacyTabStartupMetricsTracker {
     private static final String FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
             "Startup.Android.Cold.FirstPaintOccurredPreForeground";
@@ -67,8 +70,8 @@ public class LegacyTabStartupMetricsTracker {
     // Event duration recorded from the |mActivityStartTimeMs|.
     private long mFirstCommitTimeMs;
     private @ActivityType int mHistogramSuffix;
-    private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
-    private PageLoadMetricsObserverImpl mPageLoadMetricsObserver;
+    private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
+    private @Nullable PageLoadMetricsObserverImpl mPageLoadMetricsObserver;
     private boolean mShouldTrackStartupMetrics;
     private boolean mFirstVisibleContentRecorded;
     private boolean mFirstVisibleContent2Recorded;

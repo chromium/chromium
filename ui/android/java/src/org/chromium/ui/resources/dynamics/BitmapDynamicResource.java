@@ -37,7 +37,7 @@ public class BitmapDynamicResource implements DynamicResource {
     /**
      * @param bitmap A bitmap to update this resource.
      */
-    public void setBitmap(Bitmap bitmap) {
+    public void setBitmap(@Nullable Bitmap bitmap) {
         // Not updating bitmap is still bad, but better than a crash. We will still crash if there
         // is no bitmap to start with. See http://crbug.com/471234 for more.
         if (bitmap == null) return;

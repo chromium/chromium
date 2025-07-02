@@ -199,9 +199,9 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                     new LayerTitleCache(
                             mHost.getContext(),
                             getResourceManager(),
-                            mTabStripHeightSupplier.get());
+                            mTabStripHeightSupplier.get(),
+                            selector);
             // TODO: TitleCache should be a part of the ResourceManager.
-            mLayerTitleCache.setTabModelSelector(selector);
             mLayerTitleCacheSupplier.set(mLayerTitleCache);
         }
 
