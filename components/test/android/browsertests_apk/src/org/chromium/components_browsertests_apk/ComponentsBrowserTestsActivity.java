@@ -6,7 +6,7 @@ package org.chromium.components_browsertests_apk;
 
 import android.os.Bundle;
 
-import org.chromium.base.test.util.UrlUtils;
+import org.chromium.base.PathUtils;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_shell.browsertests.ContentShellBrowserTestActivity;
 
@@ -23,10 +23,8 @@ public class ComponentsBrowserTestsActivity extends ContentShellBrowserTestActiv
 
     @Override
     protected File getPrivateDataDirectory() {
-        // TODO(agrieve): We should not be touching the side-loaded test data directory.
-        //     https://crbug.com/617734
         return new File(
-                UrlUtils.getIsolatedTestRoot(),
+                PathUtils.getDataDirectory(),
                 ComponentsBrowserTestsApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
     }
 
