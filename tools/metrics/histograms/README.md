@@ -14,10 +14,13 @@ specify a priori).
 
 ### Directly Measure What You Want
 
-Measure exactly what you want, whether that's the time used for a function call,
-the number of bytes transmitted to fetch a page, the number of items in a list,
-etc. Do not assume you can calculate what you want from other histograms, as
-most ways of doing this are incorrect.
+Usually it's best to measure exactly what you want. The only exception is when
+you can derive what you want to measure from the data from a single histogram.
+(This is described in more detail below.) Values you should measure directly
+include: the time used for a function call, the number of bytes transmitted to
+fetch a page, the number of items in a list, etc. Do not assume you can
+calculate what you want from other histograms, as most ways of doing this are
+incorrect.
 
 For example, suppose you want to measure the runtime of a function that just
 calls two subfunctions, each of which is instrumented with histogram logging.
@@ -30,7 +33,20 @@ simply add up the two histograms to get a total duration histogram, you're
 implicitly assuming the two histograms' values are independent, which may not be
 the case.
 
-Directly measure what you care about; don't try to derive it from other data.
+Instead of logging in Chromium, custom queries or dashboard analysis over
+existing data can be used. Those should be used only if what you want can be
+trivially derived from a single histogram (plus their `client_id`). For example,
+suppose you have a "feature used" histogram. If you want to measure the number
+of clients who use a feature in a day, you can compute the number of clients who
+uploaded the "feature used = True" value. You don't need to write code to emit
+"did this Chrome client use this feature this day". (It's not even clear how to
+emit that histogram that correctly and reliably. Do you emit it when the browser
+closes? Periodically, every 24 hours? On startup, about the previous day(s)?) In
+some narrow circumstances, if you're careful, server-side analysis is an
+acceptable way to compute metrics.
+
+In short, directly measure what you care about; don't try to derive it from
+other data unless it can be derived trivially.
 
 ### Provide Context
 
