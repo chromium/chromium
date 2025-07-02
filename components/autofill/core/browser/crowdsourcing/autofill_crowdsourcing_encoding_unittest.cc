@@ -143,11 +143,10 @@ Matcher<AutofillUploadContents> SerializesAndDeepEquals(
            expected.property())
   auto field_matcher = [](const AutofillUploadContents::Field& expected) {
     return AllOf(
-        PROPERTY_EQ(signature), PROPERTY_EQ(name), PROPERTY_EQ(autocomplete),
-        PROPERTY_EQ(type), PROPERTY_EQ(generation_type),
-        PROPERTY_EQ(css_classes), PROPERTY_EQ(properties_mask), PROPERTY_EQ(id),
-        PROPERTY_EQ(generated_password_changed), PROPERTY_EQ(vote_type),
-        PROPERTY_EQ(initial_value_hash), PROPERTY_EQ(single_username_vote_type),
+        PROPERTY_EQ(signature), PROPERTY_EQ(generation_type),
+        PROPERTY_EQ(properties_mask), PROPERTY_EQ(generated_password_changed),
+        PROPERTY_EQ(vote_type), PROPERTY_EQ(initial_value_hash),
+        PROPERTY_EQ(single_username_vote_type),
         PROPERTY_EQ(is_most_recent_single_username_candidate),
         PROPERTY_EQ(initial_value_changed),
         Property("autofill_type", &AutofillUploadContents::Field::autofill_type,
@@ -175,9 +174,8 @@ Matcher<AutofillUploadContents> SerializesAndDeepEquals(
   return AllOf(
       PROPERTY_EQ(client_version), PROPERTY_EQ(form_signature),
       PROPERTY_EQ(secondary_form_signature), PROPERTY_EQ(autofill_used),
-      PROPERTY_EQ(data_present), PROPERTY_EQ(action_signature),
-      PROPERTY_EQ(login_form_signature), PROPERTY_EQ(submission),
-      PROPERTY_EQ(form_name), PROPERTY_EQ(passwords_revealed),
+      PROPERTY_EQ(data_present), PROPERTY_EQ(login_form_signature),
+      PROPERTY_EQ(submission), PROPERTY_EQ(passwords_revealed),
       PROPERTY_EQ(password_has_letter),
       PROPERTY_EQ(password_has_special_symbol), PROPERTY_EQ(password_length),
       PROPERTY_EQ(password_special_symbol), PROPERTY_EQ(submission_event),
@@ -187,10 +185,6 @@ Matcher<AutofillUploadContents> SerializesAndDeepEquals(
       Property("field_data", &AutofillUploadContents::field_data,
                ElementsAreArray(
                    base::ToVector(expected.field_data(), field_matcher))),
-      Property("button_title", &AutofillUploadContents::button_title,
-               ElementsAreArray(base::ToVector(
-                   expected.button_title(),
-                   EqualsProto<AutofillUploadContents_ButtonTitle>))),
       ResultOf(strip_metadata, serializes_same_as_matcher));
 #undef PROPERTY_EQ
 }

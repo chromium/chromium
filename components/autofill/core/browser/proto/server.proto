@@ -288,19 +288,6 @@ message AutofillUploadContents {
     // AutoFillFieldType
     repeated fixed32 autofill_type = 7;
 
-    // The value of the name attribute on the field, if present. Otherwise, the
-    // value of the id attribute. See HTMLFormControlElement::nameForAutofill.
-    // TODO(850606): Deprecate once randomized metadata is launched.
-    optional string name = 8;
-
-    // The value of the autocomplete attribute on the field, if present.
-    // TODO(850606): Deprecate once randomized metadata is launched.
-    optional string autocomplete = 9;
-
-    // The type of input control for this field (e.g. text, textarea, email).
-    // TODO(850606): Deprecate once randomized metadata is launched.
-    optional string type = 10;
-
     // The field-level metadata associated with this field, randomized.
     optional AutofillRandomizedFieldMetadata randomized_field_metadata = 33;
 
@@ -318,18 +305,9 @@ message AutofillUploadContents {
     // The type of password generation, if it happened.
     optional PasswordGenerationType generation_type = 17;
 
-    // The value of the class attribute on the field, if present.
-    // TODO(850606): Deprecate once randomized metadata is launched.
-    optional string css_classes = 19;
-
     // The properties mask (i.e. whether the field was autofilled, user
     // modified, etc.) See FieldPropertiesFlags.
     optional uint32 properties_mask = 20;
-
-    // The value of the id attribute, if it differs from the name attribute.
-    // Otherwise, this field is absent.
-    // TODO(850606): Deprecate once randomized metadata is launched.
-    optional string id = 21;
 
     // True iff the user changed generated password. If there was no generation,
     // the field is absent.
@@ -419,10 +397,11 @@ message AutofillUploadContents {
 
     // List of format strings which match the field's value.
     repeated FormatString format_string = 51;
+
+    reserved 8, 9, 10, 19, 21;
+    reserved "name", "autocomplete", "type", "css_classes", "id";
   }
   repeated Field field_data = 48;
-  // Signature of the form action host (e.g. Hash64Bit("example.com")).
-  optional fixed64 action_signature = 13;
 
   // Signature of the form. This is currently used when password generated on a
   // password field of a registration form is used on a password field of a
@@ -431,9 +410,6 @@ message AutofillUploadContents {
 
   // Whether a form submission event was observed.
   optional bool submission = 15;
-
-  // The form name.
-  optional string form_name = 16;
 
   // True if the non-obfuscated password values were shown to the user.
   optional bool passwords_revealed = 24;
@@ -499,19 +475,6 @@ message AutofillUploadContents {
   // Low precision hashes for form-level metadata observed by the client.
   optional ThreeBitHashedFormMetadata three_bit_hashed_form_metadata = 49;
 
-  // Information about a button's title (sync with another ButtonTitle in this
-  // proto).
-  message ButtonTitle {
-    // Text showed on the button.
-    optional string title = 1;
-
-    // Describes how the button is implemented in HTML source.
-    optional ButtonTitleType type = 2;
-  }
-  // Titles of form's buttons.
-  // TODO(850606): Deprecate once randomized metadata is launched.
-  repeated ButtonTitle button_title = 36;
-
   // Whether the fields are enclosed by a <form> tag or are unowned elements.
   optional bool has_form_tag = 37;
 
@@ -527,8 +490,6 @@ message AutofillUploadContents {
     EDITED_NEGATIVE = 4;
   }
 
-  reserved 42;
-
   // The form signature of related forms, which were submitted on the same
   // origin shortly prior. If set, `last_address_form_submitted` or
   // `last_credit_card_form_submitted` is equal to `form_signature`.
@@ -536,6 +497,7 @@ message AutofillUploadContents {
   optional fixed64 second_last_address_form_submitted = 44;
   optional fixed64 last_credit_card_form_submitted = 45;
 
-  reserved 5;
-  reserved "Field";
+  reserved 5, 13, 16, 36, 42;
+  reserved "Field", "action_signature", "form_name", "button_title";
+  reserved "ButtonTitle";
 }
