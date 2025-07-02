@@ -157,6 +157,15 @@ bool RequestExistsExactlyOnce(
          });
 }
 
+void EraseRequest(std::vector<base::WeakPtr<PermissionRequest>>& requests,
+                  PermissionRequest* request) {
+  std::erase_if(requests,
+                [request](base::WeakPtr<PermissionRequest> weak_ptr) -> bool {
+                  CHECK(weak_ptr);
+                  return weak_ptr.get() == request;
+                });
+}
+
 }  // namespace
 
 // PermissionRequestManager ----------------------------------------------------
@@ -403,11 +412,7 @@ bool PermissionRequestManager::
 void PermissionRequestManager::FinalizeAndCancelRequest(
     PermissionRequest* request) {
   if (request_sources_map_.erase(request) > 0) {
-    std::erase_if(validated_requests_,
-                  [request](base::WeakPtr<PermissionRequest> weak_ptr) -> bool {
-                    CHECK(weak_ptr);
-                    return weak_ptr.get() == request;
-                  });
+    EraseRequest(validated_requests_, request);
   }
   request->Cancelled();
 }
@@ -739,12 +744,7 @@ void PermissionRequestManager::FinalizeCurrentRequests() {
   //  during requests_.clear() at the end of this function.
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
-    std::erase_if(
-        validated_requests_,
-        [requests_iter](base::WeakPtr<PermissionRequest> weak_ptr) -> bool {
-          CHECK(weak_ptr);
-          return weak_ptr.get() == requests_iter->get();
-        });
+    EraseRequest(validated_requests_, requests_iter->get());
     request_sources_map_.erase(requests_iter->get());
     FinishRequestIncludingDuplicates(requests_iter->get());
   }
@@ -1220,12 +1220,7 @@ void PermissionRequestManager::CleanUpRequests() {
   for (; !pending_permission_requests_.IsEmpty();
        pending_permission_requests_.Pop()) {
     auto* pending_request = pending_permission_requests_.Peek();
-    std::erase_if(
-        validated_requests_,
-        [pending_request](base::WeakPtr<PermissionRequest> weak_ptr) -> bool {
-          CHECK(weak_ptr);
-          return weak_ptr.get() == pending_request;
-        });
+    EraseRequest(validated_requests_, pending_request);
     request_sources_map_.erase(pending_request);
     CancelRequestIncludingDuplicates(pending_request);
     FinishRequestIncludingDuplicates(pending_request);
