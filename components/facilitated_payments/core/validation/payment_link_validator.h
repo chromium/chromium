@@ -31,6 +31,9 @@ class PaymentLinkValidator {
   // Returns the `Scheme` of the given `payment_link_url`.
   Scheme GetScheme(const GURL& payment_link_url) const;
 
+  // Sanitizes a GURL by removing its query and fragment components.
+  GURL SanitizeForPaymentAppRetrieval(const GURL& payment_link_url);
+
  private:
   const std::vector<std::string> valid_prefixes_;
 };

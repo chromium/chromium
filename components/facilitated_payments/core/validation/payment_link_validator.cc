@@ -53,4 +53,17 @@ PaymentLinkValidator::Scheme PaymentLinkValidator::GetScheme(
   return Scheme::kInvalid;
 }
 
+GURL PaymentLinkValidator::SanitizeForPaymentAppRetrieval(
+    const GURL& payment_link_url) {
+  GURL::Replacements replacements;
+
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  replacements.ClearPort();
+  replacements.ClearUsername();
+  replacements.ClearPassword();
+
+  return payment_link_url.ReplaceComponents(replacements);
+}
+
 }  // namespace payments::facilitated

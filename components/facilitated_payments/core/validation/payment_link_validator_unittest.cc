@@ -58,5 +58,22 @@ TEST(PaymentLinkValidatorTest, CaseSensitive) {
   EXPECT_EQ(validator.GetScheme(link), PaymentLinkValidator::Scheme::kInvalid);
 }
 
+TEST(PaymentLinkValidatorTest, SanitizeForPaymentAppRetrieval) {
+  PaymentLinkValidator validator;
+  GURL link(
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
+  EXPECT_EQ(validator.SanitizeForPaymentAppRetrieval(link),
+            GURL("https://www.itmx.co.th/facilitated-payment/prompt-pay"));
+}
+
+TEST(PaymentLinkValidatorTest, SanitizeForPaymentAppRetrieval_ExtraCase) {
+  PaymentLinkValidator validator;
+  GURL link(
+      "https://username:password@www.itmx.co.th:8080/facilitated-payment/"
+      "prompt-pay?path=fake_path#anchor");
+  EXPECT_EQ(validator.SanitizeForPaymentAppRetrieval(link),
+            GURL("https://www.itmx.co.th/facilitated-payment/prompt-pay"));
+}
+
 }  // namespace
 }  // namespace payments::facilitated
