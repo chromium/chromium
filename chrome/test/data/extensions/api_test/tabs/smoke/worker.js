@@ -13,4 +13,10 @@ function testCreateTab() {
   });
 }
 
-chrome.test.runTests([testCreateTab]);
+function testOnUpdated() {
+  // TODO(crbug.com/371432155): When TabsEventRouterAndroid is implemented,
+  // use chrome.tabs.onUpdated.addListener() to test it. For now, just succeed.
+  chrome.test.succeed();
+}
+
+chrome.test.runTests([testCreateTab, testOnUpdated]);

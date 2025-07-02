@@ -7,20 +7,27 @@
 #include <memory>
 
 #include "base/lazy_instance.h"
-#include "chrome/browser/extensions/api/tabs/tabs_event_router.h"
-#include "chrome/browser/extensions/api/tabs/windows_event_router.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_system.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/api/tabs/tabs_event_router_android.h"
+#else
+#include "chrome/browser/extensions/api/tabs/tabs_event_router.h"
+#include "chrome/browser/extensions/api/tabs/windows_event_router.h"
+#endif
+
 namespace extensions {
 
 TabsWindowsAPI::TabsWindowsAPI(content::BrowserContext* context)
-    : browser_context_(context),
-      windows_event_router_(
-          new WindowsEventRouter(Profile::FromBrowserContext(context))) {
+    : browser_context_(context) {
+#if !BUILDFLAG(IS_ANDROID)
+  windows_event_router_ = std::make_unique<WindowsEventRouter>(
+      Profile::FromBrowserContext(browser_context_));
+#endif
   EventRouter* event_router = EventRouter::Get(browser_context_);
 
   // Tabs API Events.
@@ -56,17 +63,31 @@ TabsWindowsAPI* TabsWindowsAPI::Get(content::BrowserContext* context) {
   return BrowserContextKeyedAPIFactory<TabsWindowsAPI>::Get(context);
 }
 
+void TabsWindowsAPI::InitTabsEventRouter() {
+#if BUILDFLAG(IS_ANDROID)
+  tabs_event_router_android_ = std::make_unique<TabsEventRouterAndroid>(
+      Profile::FromBrowserContext(browser_context_));
+#else
+  tabs_event_router_ = std::make_unique<TabsEventRouter>(
+      Profile::FromBrowserContext(browser_context_));
+#endif
+}
+
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/371432155): Delete this method once TabsEventRouter works on
+// desktop Android.
+TabsEventRouterAndroid* TabsWindowsAPI::tabs_event_router_android() {
+  return tabs_event_router_android_.get();
+}
+#else
 TabsEventRouter* TabsWindowsAPI::tabs_event_router() {
-  if (!tabs_event_router_.get()) {
-    tabs_event_router_ = std::make_unique<TabsEventRouter>(
-        Profile::FromBrowserContext(browser_context_));
-  }
   return tabs_event_router_.get();
 }
 
 WindowsEventRouter* TabsWindowsAPI::windows_event_router() {
   return windows_event_router_.get();
 }
+#endif
 
 void TabsWindowsAPI::Shutdown() {
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
@@ -82,7 +103,7 @@ TabsWindowsAPI::GetFactoryInstance() {
 
 void TabsWindowsAPI::OnListenerAdded(const EventListenerInfo& details) {
   // Initialize the event routers.
-  tabs_event_router();
+  InitTabsEventRouter();
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
 }
 

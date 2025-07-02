@@ -1803,9 +1803,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithoutId) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
-  // This implicitly creates the `TabsEventRouter`, which is required to get a
-  // tab update event.
-  TabsWindowsAPI::Get(profile())->tabs_event_router();
+  // Create the `TabsEventRouter`, which is required to get a tab update event.
+  TabsWindowsAPI::Get(profile())->InitTabsEventRouter();
 
   chrome::AddTabAt(browser(), GURL(), -1, true);
   chrome::AddTabAt(browser(), GURL(), -1, true);
@@ -1864,9 +1863,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, Freezing) {
     }
   }
 
-  // This implicitly creates the `TabsEventRouter`, which is required to get a
-  // tab update event.
-  TabsWindowsAPI::Get(profile())->tabs_event_router();
+  // Create the `TabsEventRouter`, which is required to get a tab update event.
+  TabsWindowsAPI::Get(profile())->InitTabsEventRouter();
 
   // Freeze the background tab and wait for a tab update event.
   TestEventRouterObserver event_router_observer(EventRouter::Get(profile()));
