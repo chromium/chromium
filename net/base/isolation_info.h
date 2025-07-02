@@ -173,7 +173,7 @@ class NET_EXPORT IsolationInfo {
   // Note: error pages resulting from a failed navigation should always use a
   // transient IsolationInfo with no nonce.
   static IsolationInfo CreateTransient(
-      const std::optional<base::UnguessableToken>& nonce);
+      std::optional<base::UnguessableToken> nonce);
 
   // Creates an IsolationInfo from the serialized contents. Returns a nullopt
   // if deserialization fails or if data is inconsistent.
@@ -200,10 +200,10 @@ class NET_EXPORT IsolationInfo {
   // `site_for_cookies` is not HTTP/HTTPS.
   static IsolationInfo Create(
       RequestType request_type,
-      const url::Origin& top_frame_origin,
-      const url::Origin& frame_origin,
-      const SiteForCookies& site_for_cookies,
-      const std::optional<base::UnguessableToken>& nonce = std::nullopt,
+      url::Origin top_frame_origin,
+      url::Origin frame_origin,
+      SiteForCookies site_for_cookies,
+      std::optional<base::UnguessableToken> nonce = std::nullopt,
       NetworkIsolationPartition network_isolation_partition =
           NetworkIsolationPartition::kGeneral,
       std::optional<FrameAncestorRelation> frame_ancestor_relation =
@@ -222,10 +222,10 @@ class NET_EXPORT IsolationInfo {
   // Intended for use by cross-process deserialization.
   static std::optional<IsolationInfo> CreateIfConsistent(
       RequestType request_type,
-      const std::optional<url::Origin>& top_frame_origin,
-      const std::optional<url::Origin>& frame_origin,
-      const SiteForCookies& site_for_cookies,
-      const std::optional<base::UnguessableToken>& nonce = std::nullopt,
+      std::optional<url::Origin> top_frame_origin,
+      std::optional<url::Origin> frame_origin,
+      SiteForCookies site_for_cookies,
+      std::optional<base::UnguessableToken> nonce = std::nullopt,
       NetworkIsolationPartition network_isolation_partition =
           NetworkIsolationPartition::kGeneral,
       std::optional<FrameAncestorRelation> frame_ancestor_relation =
@@ -296,10 +296,10 @@ class NET_EXPORT IsolationInfo {
 
  private:
   IsolationInfo(RequestType request_type,
-                const std::optional<url::Origin>& top_frame_origin,
-                const std::optional<url::Origin>& frame_origin,
-                const SiteForCookies& site_for_cookies,
-                const std::optional<base::UnguessableToken>& nonce,
+                std::optional<url::Origin> top_frame_origin,
+                std::optional<url::Origin> frame_origin,
+                SiteForCookies site_for_cookies,
+                std::optional<base::UnguessableToken> nonce,
                 NetworkIsolationPartition network_isolation_partition,
                 std::optional<FrameAncestorRelation> frame_ancestor_relation);
 

@@ -165,10 +165,10 @@ IsolationInfo IsolationInfo::CreateForInternalRequest(
 }
 
 IsolationInfo IsolationInfo::CreateTransient(
-    const std::optional<base::UnguessableToken>& nonce) {
+    std::optional<base::UnguessableToken> nonce) {
   url::Origin opaque_origin;
   return IsolationInfo(RequestType::kOther, opaque_origin, opaque_origin,
-                       SiteForCookies(), /*nonce=*/nonce,
+                       SiteForCookies(), /*nonce=*/std::move(nonce),
                        NetworkIsolationPartition::kGeneral,
                        /*frame_ancestor_relation=*/std::nullopt);
 }
@@ -214,10 +214,10 @@ std::optional<IsolationInfo> IsolationInfo::Deserialize(
 
 IsolationInfo IsolationInfo::Create(
     RequestType request_type,
-    const url::Origin& top_frame_origin,
-    const url::Origin& frame_origin,
-    const SiteForCookies& site_for_cookies,
-    const std::optional<base::UnguessableToken>& nonce,
+    url::Origin top_frame_origin,
+    url::Origin frame_origin,
+    SiteForCookies site_for_cookies,
+    std::optional<base::UnguessableToken> nonce,
     NetworkIsolationPartition network_isolation_partition,
     std::optional<FrameAncestorRelation> frame_ancestor_relation) {
   // TODO(crbug.com/420876079): Remove this "recovery" and force all callers to
@@ -226,8 +226,9 @@ IsolationInfo IsolationInfo::Create(
   if (request_type == RequestType::kMainFrame && !frame_ancestor_relation) {
     frame_ancestor_relation = FrameAncestorRelation::kSameOrigin;
   }
-  return IsolationInfo(request_type, top_frame_origin, frame_origin,
-                       site_for_cookies, nonce, network_isolation_partition,
+  return IsolationInfo(request_type, std::move(top_frame_origin),
+                       std::move(frame_origin), std::move(site_for_cookies),
+                       std::move(nonce), network_isolation_partition,
                        frame_ancestor_relation);
 }
 
@@ -264,10 +265,10 @@ IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
 
 std::optional<IsolationInfo> IsolationInfo::CreateIfConsistent(
     RequestType request_type,
-    const std::optional<url::Origin>& top_frame_origin,
-    const std::optional<url::Origin>& frame_origin,
-    const SiteForCookies& site_for_cookies,
-    const std::optional<base::UnguessableToken>& nonce,
+    std::optional<url::Origin> top_frame_origin,
+    std::optional<url::Origin> frame_origin,
+    SiteForCookies site_for_cookies,
+    std::optional<base::UnguessableToken> nonce,
     NetworkIsolationPartition network_isolation_partition,
     std::optional<FrameAncestorRelation> frame_ancestor_relation) {
   // TODO(crbug.com/420876079): Remove this "recovery" and force all callers to
@@ -280,9 +281,10 @@ std::optional<IsolationInfo> IsolationInfo::CreateIfConsistent(
                     site_for_cookies, nonce, frame_ancestor_relation)) {
     return std::nullopt;
   }
-  return IsolationInfo(request_type, top_frame_origin, frame_origin,
-                       site_for_cookies, nonce, network_isolation_partition,
-                       std::move(frame_ancestor_relation));
+  return IsolationInfo(request_type, std::move(top_frame_origin),
+                       std::move(frame_origin), std::move(site_for_cookies),
+                       std::move(nonce), network_isolation_partition,
+                       frame_ancestor_relation);
 }
 
 IsolationInfo IsolationInfo::CreateForRedirect(
@@ -460,34 +462,34 @@ std::string_view IsolationInfo::FrameAncestorRelationString(
 
 IsolationInfo::IsolationInfo(
     RequestType request_type,
-    const std::optional<url::Origin>& top_frame_origin,
-    const std::optional<url::Origin>& frame_origin,
-    const SiteForCookies& site_for_cookies,
-    const std::optional<base::UnguessableToken>& nonce,
+    std::optional<url::Origin> top_frame_origin,
+    std::optional<url::Origin> frame_origin,
+    SiteForCookies site_for_cookies,
+    std::optional<base::UnguessableToken> nonce,
     NetworkIsolationPartition network_isolation_partition,
     std::optional<FrameAncestorRelation> frame_ancestor_relation)
     : request_type_(request_type),
-      top_frame_origin_(top_frame_origin),
-      frame_origin_(frame_origin),
+      top_frame_origin_(std::move(top_frame_origin)),
+      frame_origin_(std::move(frame_origin)),
       frame_ancestor_relation_(frame_ancestor_relation),
       network_isolation_key_(
-          !top_frame_origin
+          !top_frame_origin_
               ? NetworkIsolationKey()
-              : NetworkIsolationKey(SchemefulSite(*top_frame_origin),
-                                    SchemefulSite(*frame_origin),
+              : NetworkIsolationKey(SchemefulSite(*top_frame_origin_),
+                                    SchemefulSite(*frame_origin_),
                                     nonce,
                                     network_isolation_partition)),
       network_anonymization_key_(
-          !top_frame_origin ? NetworkAnonymizationKey()
-                            : NetworkAnonymizationKey::CreateFromFrameSite(
-                                  SchemefulSite(*top_frame_origin),
-                                  SchemefulSite(*frame_origin),
-                                  nonce,
-                                  network_isolation_partition)),
-      site_for_cookies_(site_for_cookies),
-      nonce_(nonce) {
+          !top_frame_origin_ ? NetworkAnonymizationKey()
+                             : NetworkAnonymizationKey::CreateFromFrameSite(
+                                   SchemefulSite(*top_frame_origin_),
+                                   SchemefulSite(*frame_origin_),
+                                   nonce,
+                                   network_isolation_partition)),
+      site_for_cookies_(std::move(site_for_cookies)),
+      nonce_(std::move(nonce)) {
   DCHECK(IsConsistent(request_type_, top_frame_origin_, frame_origin_,
-                      site_for_cookies_, nonce, frame_ancestor_relation_));
+                      site_for_cookies_, nonce_, frame_ancestor_relation_));
 }
 
 }  // namespace net
