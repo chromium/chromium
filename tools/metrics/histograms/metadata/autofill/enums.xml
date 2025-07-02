@@ -3289,6 +3289,9 @@ Called by update_autofill_enums.py.-->
       label="Suggestion of a masked server card without a benefit available
              was selected when the user had two or more server cards, and at
              least one had a benefit available (once)"/>
+  <int value="6"
+      label="Suggestion of a masked server card with a benefit available was
+             filled (once)"/>
   <int value="8"
       label="Suggestion of a masked server card with a benefit available was
              filled when the user had two or more server cards, and at least
