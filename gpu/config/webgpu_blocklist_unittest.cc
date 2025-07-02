@@ -45,7 +45,10 @@ TEST_F(WebGPUBlocklistTest, BlockAndroidVendorId) {
   info3.vendorID = 0x8086;
 
   if (build_info->sdk_int() < base::android::SDK_VERSION_S) {
-    // If the Android version is R or lower everything should be blocked.
+    // If the Android version is R or lower, the Vulkan backend should be
+    // blocked.
+    info1.backendType = info2.backendType = info3.backendType =
+        WGPUBackendType_Vulkan;
     EXPECT_TRUE(IsWebGPUAdapterBlocklisted(info1));
     EXPECT_TRUE(IsWebGPUAdapterBlocklisted(info2));
     EXPECT_TRUE(IsWebGPUAdapterBlocklisted(info3));
