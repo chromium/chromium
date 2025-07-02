@@ -9237,7 +9237,7 @@ crbug.com/424009458 [ Mac ] webaudio/codec-tests/webm/webm-decode.html [ Failure
 crbug.com/423416578 [ Linux ] custom-elements/form-validation-bubble-appearance.html [ Crash Failure Pass ]
 
 # Gardener 2025-06-12
-crbug.com/422636456 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Pass Timeout ]
+crbug.com/422636456 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Pass Timeout ]
 crbug.com/414257771 [ Mac ] external/wpt/notifications/shownotification.https.window.html [ Failure Pass ]
 
 # Until ScriptSrcHashesV1 launches, these only pass in virtual tests.
