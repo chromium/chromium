@@ -34,13 +34,19 @@ BASE_FEATURE(kReaderModeUseReadability,
              "ReaderModeUseReadability",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<bool> kReaderModeUseReadabilityUseDisiller{
+#if !BUILDFLAG(IS_IOS)
+constexpr base::FeatureParam<bool> kReaderModeUseReadabilityUseDistiller{
     &kReaderModeUseReadability, /*name=*/"use_distiller",
     /*default_value=*/false};
+#endif
 
 bool ShouldUseReadabilityDistiller() {
+#if BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(kReaderModeUseReadability);
+#else
   return base::FeatureList::IsEnabled(kReaderModeUseReadability) &&
-         kReaderModeUseReadabilityUseDisiller.Get();
+         kReaderModeUseReadabilityUseDistiller.Get();
+#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

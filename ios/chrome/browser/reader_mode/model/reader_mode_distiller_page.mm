@@ -6,6 +6,7 @@
 
 #import "base/base64.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/dom_distiller/core/dom_distiller_features.h"
 #import "components/dom_distiller/ios/distiller_page_utils.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -48,7 +49,11 @@ bool ReaderModeDistillerPage::ShouldFetchOfflineData() {
 void ReaderModeDistillerPage::HandleJavaScriptResult(
     const GURL& url,
     const base::Value* result) {
-  base::Value result_as_value =
-      dom_distiller::ParseValueFromScriptResult(result);
-  OnDistillationDone(url, &result_as_value);
+  if (dom_distiller::ShouldUseReadabilityDistiller()) {
+    OnDistillationDone(url, result);
+  } else {
+    base::Value result_as_value =
+        dom_distiller::ParseValueFromScriptResult(result);
+    OnDistillationDone(url, &result_as_value);
+  }
 }

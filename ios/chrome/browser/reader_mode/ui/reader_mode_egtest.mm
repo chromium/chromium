@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "components/dom_distiller/core/dom_distiller_features.h"
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "components/dom_distiller/core/pref_names.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
@@ -66,6 +67,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   } else {
     config.features_enabled.push_back(
         kEnableReaderModePageEligibilityForToolsMenu);
+  }
+  if ([self isRunningTest:@selector(testReadabilityEnabled)]) {
+    config.features_enabled.push_back(dom_distiller::kReaderModeUseReadability);
   }
   return config;
 }
@@ -376,6 +380,39 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
       static_cast<int>(dom_distiller::mojom::FontFamily::kSansSerif),
       @"Pref should be updated to Sans-Serif");
   ExpectBodyHasThemeAndFont("light", "sans-serif");
+}
+
+// Tests that Reading Mode UI continues to be functional when changing the
+// underlying distillation architecture.
+- (void)testReadabilityEnabled {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+
+  // Close Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+
+  // The Reader Mode UI is not visible.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_hidden(YES)];
 }
 
 @end

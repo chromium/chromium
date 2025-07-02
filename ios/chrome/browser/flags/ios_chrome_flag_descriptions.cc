@@ -1295,6 +1295,11 @@ const char kReaderModeReadabilityHeuristicName[] =
 const char kReaderModeReadabilityHeuristicDescription[] =
     "Enables Readability heuristic for Reader Mode UI.";
 
+const char kReaderModeReadabilityDistillerName[] =
+    "Enables Readability distiller for Reader Mode";
+const char kReaderModeReadabilityDistillerDescription[] =
+    "Enables Readability distiller for Reader Mode UI.";
+
 const char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 const char kRefactorToolbarsSizeDescription[] =
     "When enabled, the toolbars size does not use broadcaster but observers.";
