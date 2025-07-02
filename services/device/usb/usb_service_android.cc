@@ -43,7 +43,6 @@ UsbServiceAndroid::~UsbServiceAndroid() {
 }
 
 void UsbServiceAndroid::DeviceAttached(JNIEnv* env,
-                                       const JavaRef<jobject>& caller,
                                        const JavaRef<jobject>& usb_device) {
   scoped_refptr<UsbDeviceAndroid> device =
       UsbDeviceAndroid::Create(env, weak_factory_.GetWeakPtr(), usb_device);
@@ -52,7 +51,6 @@ void UsbServiceAndroid::DeviceAttached(JNIEnv* env,
 }
 
 void UsbServiceAndroid::DeviceDetached(JNIEnv* env,
-                                       const JavaRef<jobject>& caller,
                                        jint device_id) {
   auto it = devices_by_id_.find(device_id);
   if (it == devices_by_id_.end())
@@ -69,11 +67,9 @@ void UsbServiceAndroid::DeviceDetached(JNIEnv* env,
   NotifyDeviceRemoved(device);
 }
 
-void UsbServiceAndroid::DevicePermissionRequestComplete(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& caller,
-    jint device_id,
-    jboolean granted) {
+void UsbServiceAndroid::DevicePermissionRequestComplete(JNIEnv* env,
+                                                        jint device_id,
+                                                        jboolean granted) {
   const auto it = devices_by_id_.find(device_id);
   if (it == devices_by_id_.end()) {
     return;

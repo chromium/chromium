@@ -117,10 +117,8 @@ void PrintingContextAndroid::AskUserForSettings(
   }
 }
 
-void PrintingContextAndroid::AskUserForSettingsReply(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jboolean success) {
+void PrintingContextAndroid::AskUserForSettingsReply(JNIEnv* env,
+                                                     jboolean success) {
   DCHECK(callback_);
   if (!success) {
     // TODO(cimamoglu): Differentiate between `kFailed` And `kCancel`.
@@ -154,9 +152,7 @@ void PrintingContextAndroid::AskUserForSettingsReply(
   std::move(callback_).Run(mojom::ResultCode::kSuccess);
 }
 
-void PrintingContextAndroid::ShowSystemDialogDone(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void PrintingContextAndroid::ShowSystemDialogDone(JNIEnv* env) {
   DCHECK(callback_);
   // Settings are not updated, callback is called only to unblock javascript.
   std::move(callback_).Run(mojom::ResultCode::kCanceled);

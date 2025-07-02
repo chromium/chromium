@@ -48,7 +48,6 @@ class NET_EXPORT_PRIVATE JavaNegotiateResultWrapper {
       base::OnceCallback<void(int, const std::string&)> thread_safe_callback);
 
   void SetResult(JNIEnv* env,
-                 const base::android::JavaParamRef<jobject>& obj,
                  int result,
                  const base::android::JavaParamRef<jstring>& token);
 

@@ -120,11 +120,8 @@ public class HttpNegotiateAuthenticator {
             } catch (OperationCanceledException | AuthenticatorException | IOException e) {
                 Log.w(TAG, "ERR_UNEXPECTED: Error while attempting to retrieve accounts.", e);
                 HttpNegotiateAuthenticatorJni.get()
-                        .setResult(
-                                mRequestData.nativeResultObject,
-                                HttpNegotiateAuthenticator.this,
-                                NetError.ERR_UNEXPECTED,
-                                null);
+                        .setResult(mRequestData.nativeResultObject, NetError.ERR_UNEXPECTED, null);
+
                 return;
             }
 
@@ -137,7 +134,6 @@ public class HttpNegotiateAuthenticator {
                 HttpNegotiateAuthenticatorJni.get()
                         .setResult(
                                 mRequestData.nativeResultObject,
-                                HttpNegotiateAuthenticator.this,
                                 NetError.ERR_MISSING_AUTH_CREDENTIALS,
                                 null);
                 return;
@@ -153,7 +149,6 @@ public class HttpNegotiateAuthenticator {
                 HttpNegotiateAuthenticatorJni.get()
                         .setResult(
                                 mRequestData.nativeResultObject,
-                                HttpNegotiateAuthenticator.this,
                                 NetError.ERR_MISSING_AUTH_CREDENTIALS,
                                 null);
                 return;
@@ -173,7 +168,6 @@ public class HttpNegotiateAuthenticator {
                 HttpNegotiateAuthenticatorJni.get()
                         .setResult(
                                 mRequestData.nativeResultObject,
-                                HttpNegotiateAuthenticator.this,
                                 NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT,
                                 null);
                 return;
@@ -205,11 +199,8 @@ public class HttpNegotiateAuthenticator {
             } catch (OperationCanceledException | AuthenticatorException | IOException e) {
                 Log.w(TAG, "ERR_UNEXPECTED: Error while attempting to obtain a token.", e);
                 HttpNegotiateAuthenticatorJni.get()
-                        .setResult(
-                                mRequestData.nativeResultObject,
-                                HttpNegotiateAuthenticator.this,
-                                NetError.ERR_UNEXPECTED,
-                                null);
+                        .setResult(mRequestData.nativeResultObject, NetError.ERR_UNEXPECTED, null);
+
                 return;
             }
 
@@ -349,7 +340,6 @@ public class HttpNegotiateAuthenticator {
         HttpNegotiateAuthenticatorJni.get()
                 .setResult(
                         requestData.nativeResultObject,
-                        HttpNegotiateAuthenticator.this,
                         status,
                         result.getString(AccountManager.KEY_AUTHTOKEN));
     }
@@ -379,7 +369,6 @@ public class HttpNegotiateAuthenticator {
             HttpNegotiateAuthenticatorJni.get()
                     .setResult(
                             requestData.nativeResultObject,
-                            HttpNegotiateAuthenticator.this,
                             NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT,
                             null);
             return;
@@ -427,7 +416,6 @@ public class HttpNegotiateAuthenticator {
             HttpNegotiateAuthenticatorJni.get()
                     .setResult(
                             requestData.nativeResultObject,
-                            HttpNegotiateAuthenticator.this,
                             NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT,
                             null);
             return;
@@ -460,9 +448,6 @@ public class HttpNegotiateAuthenticator {
     @NativeMethods
     interface Natives {
         void setResult(
-                long nativeJavaNegotiateResultWrapper,
-                HttpNegotiateAuthenticator caller,
-                int status,
-                @Nullable String authToken);
+                long nativeJavaNegotiateResultWrapper, int status, @Nullable String authToken);
     }
 }

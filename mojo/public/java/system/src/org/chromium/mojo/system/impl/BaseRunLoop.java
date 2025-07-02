@@ -22,25 +22,25 @@ class BaseRunLoop implements RunLoop {
 
     BaseRunLoop(CoreImpl core) {
         this.mCore = core;
-        this.mRunLoopID = BaseRunLoopJni.get().createBaseRunLoop(BaseRunLoop.this);
+        this.mRunLoopID = BaseRunLoopJni.get().createBaseRunLoop();
     }
 
     @Override
     public void run() {
         assert mRunLoopID != 0 : "The run loop cannot run once closed";
-        BaseRunLoopJni.get().run(BaseRunLoop.this);
+        BaseRunLoopJni.get().run();
     }
 
     @Override
     public void runUntilIdle() {
         assert mRunLoopID != 0 : "The run loop cannot run once closed";
-        BaseRunLoopJni.get().runUntilIdle(BaseRunLoop.this);
+        BaseRunLoopJni.get().runUntilIdle();
     }
 
     @Override
     public void postDelayedTask(Runnable runnable, long delay) {
         assert mRunLoopID != 0 : "The run loop cannot run tasks once closed";
-        BaseRunLoopJni.get().postDelayedTask(BaseRunLoop.this, mRunLoopID, runnable, delay);
+        BaseRunLoopJni.get().postDelayedTask(mRunLoopID, runnable, delay);
     }
 
     @Override
@@ -51,7 +51,7 @@ class BaseRunLoop implements RunLoop {
         // We don't want to de-register a different run loop!
         assert mCore.getCurrentRunLoop() == this : "Only the current run loop can be closed";
         mCore.clearCurrentRunLoop();
-        BaseRunLoopJni.get().deleteMessageLoop(BaseRunLoop.this, mRunLoopID);
+        BaseRunLoopJni.get().deleteMessageLoop(mRunLoopID);
         mRunLoopID = 0;
     }
 
@@ -62,14 +62,14 @@ class BaseRunLoop implements RunLoop {
 
     @NativeMethods
     interface Natives {
-        long createBaseRunLoop(BaseRunLoop caller);
+        long createBaseRunLoop();
 
-        void run(BaseRunLoop caller);
+        void run();
 
-        void runUntilIdle(BaseRunLoop caller);
+        void runUntilIdle();
 
-        void postDelayedTask(BaseRunLoop caller, long runLoopID, Runnable runnable, long delay);
+        void postDelayedTask(long runLoopID, Runnable runnable, long delay);
 
-        void deleteMessageLoop(BaseRunLoop caller, long runLoopID);
+        void deleteMessageLoop(long runLoopID);
     }
 }

@@ -27,16 +27,12 @@ class UsbServiceAndroid final : public UsbService {
 
   // Methods called by Java.
   void DeviceAttached(JNIEnv* env,
-                      const base::android::JavaRef<jobject>& caller,
                       const base::android::JavaRef<jobject>& usb_device);
   void DeviceDetached(JNIEnv* env,
-                      const base::android::JavaRef<jobject>& caller,
                       jint device_id);
-  void DevicePermissionRequestComplete(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& caller,
-      jint device_id,
-      jboolean granted);
+  void DevicePermissionRequestComplete(JNIEnv* env,
+                                       jint device_id,
+                                       jboolean granted);
 
   // Called by UsbDeviceAndroid.
   base::android::ScopedJavaLocalRef<jobject> OpenDevice(

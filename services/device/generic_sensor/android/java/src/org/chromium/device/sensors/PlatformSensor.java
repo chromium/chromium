@@ -257,8 +257,7 @@ public class PlatformSensor implements SensorEventListener {
     @GuardedBy("mLock")
     protected void sensorError() {
         if (mNativePlatformSensorAndroid != 0) {
-            PlatformSensorJni.get()
-                    .notifyPlatformSensorError(mNativePlatformSensorAndroid, PlatformSensor.this);
+            PlatformSensorJni.get().notifyPlatformSensorError(mNativePlatformSensorAndroid);
         }
     }
 
@@ -268,13 +267,7 @@ public class PlatformSensor implements SensorEventListener {
             double timestamp, double value1, double value2, double value3, double value4) {
         PlatformSensorJni.get()
                 .updatePlatformSensorReading(
-                        mNativePlatformSensorAndroid,
-                        PlatformSensor.this,
-                        timestamp,
-                        value1,
-                        value2,
-                        value3,
-                        value4);
+                        mNativePlatformSensorAndroid, timestamp, value1, value2, value3, value4);
     }
 
     @Override
@@ -349,11 +342,10 @@ public class PlatformSensor implements SensorEventListener {
 
     @NativeMethods
     interface Natives {
-        void notifyPlatformSensorError(long nativePlatformSensorAndroid, PlatformSensor caller);
+        void notifyPlatformSensorError(long nativePlatformSensorAndroid);
 
         void updatePlatformSensorReading(
                 long nativePlatformSensorAndroid,
-                PlatformSensor caller,
                 double timestamp,
                 double value1,
                 double value2,

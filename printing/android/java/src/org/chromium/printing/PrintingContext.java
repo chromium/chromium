@@ -111,20 +111,18 @@ public class PrintingContext {
 
     private void askUserForSettingsReply(boolean success) {
         assert mNativeObject != 0;
-        PrintingContextJni.get()
-                .askUserForSettingsReply(mNativeObject, PrintingContext.this, success);
+        PrintingContextJni.get().askUserForSettingsReply(mNativeObject, success);
     }
 
     private void showSystemDialogDone() {
         assert mNativeObject != 0;
-        PrintingContextJni.get().showSystemDialogDone(mNativeObject, PrintingContext.this);
+        PrintingContextJni.get().showSystemDialogDone(mNativeObject);
     }
 
     @NativeMethods
     interface Natives {
-        void askUserForSettingsReply(
-                long nativePrintingContextAndroid, PrintingContext caller, boolean success);
+        void askUserForSettingsReply(long nativePrintingContextAndroid, boolean success);
 
-        void showSystemDialogDone(long nativePrintingContextAndroid, PrintingContext caller);
+        void showSystemDialogDone(long nativePrintingContextAndroid);
     }
 }

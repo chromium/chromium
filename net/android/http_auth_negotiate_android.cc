@@ -38,7 +38,6 @@ JavaNegotiateResultWrapper::JavaNegotiateResultWrapper(
 JavaNegotiateResultWrapper::~JavaNegotiateResultWrapper() = default;
 
 void JavaNegotiateResultWrapper::SetResult(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj,
                                            int result,
                                            const JavaParamRef<jstring>& token) {
   // This will be called on the UI thread, so we have to post a task back to the

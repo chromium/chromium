@@ -246,15 +246,9 @@ public class ProxyChangeListener {
             if (cfg != null) {
                 ProxyChangeListenerJni.get()
                         .proxySettingsChangedTo(
-                                mNativePtr,
-                                ProxyChangeListener.this,
-                                cfg.mHost,
-                                cfg.mPort,
-                                cfg.mPacUrl,
-                                cfg.mExclusionList);
+                                mNativePtr, cfg.mHost, cfg.mPort, cfg.mPacUrl, cfg.mExclusionList);
             } else {
-                ProxyChangeListenerJni.get()
-                        .proxySettingsChanged(mNativePtr, ProxyChangeListener.this);
+                ProxyChangeListenerJni.get().proxySettingsChanged(mNativePtr);
             }
         }
     }
@@ -377,13 +371,12 @@ public class ProxyChangeListener {
         @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
         void proxySettingsChangedTo(
                 long nativePtr,
-                ProxyChangeListener caller,
                 String host,
                 int port,
                 @Nullable String pacUrl,
                 String[] exclusionList);
 
         @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
-        void proxySettingsChanged(long nativePtr, ProxyChangeListener caller);
+        void proxySettingsChanged(long nativePtr);
     }
 }

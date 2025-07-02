@@ -188,11 +188,7 @@ public class HttpNegotiateAuthenticatorTest {
         // Should fail because there are no accounts
         callback.run(makeFuture(new Account[] {}));
         verify(mAuthenticatorJniMock)
-                .setResult(
-                        eq(42L),
-                        eq(authenticator),
-                        eq(NetError.ERR_MISSING_AUTH_CREDENTIALS),
-                        (String) isNull());
+                .setResult(eq(42L), eq(NetError.ERR_MISSING_AUTH_CREDENTIALS), (String) isNull());
 
         // Should succeed, for a single account we use it for the AccountManager#getAuthToken call.
         Account testAccount = new Account("a", type);
@@ -209,11 +205,7 @@ public class HttpNegotiateAuthenticatorTest {
         // Should fail because there is more than one account
         callback.run(makeFuture(new Account[] {new Account("a", type), new Account("b", type)}));
         verify(mAuthenticatorJniMock, times(2))
-                .setResult(
-                        eq(42L),
-                        eq(authenticator),
-                        eq(NetError.ERR_MISSING_AUTH_CREDENTIALS),
-                        (String) isNull());
+                .setResult(eq(42L), eq(NetError.ERR_MISSING_AUTH_CREDENTIALS), (String) isNull());
     }
 
     /**
@@ -282,7 +274,7 @@ public class HttpNegotiateAuthenticatorTest {
         resultBundle.putBundle(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT, context);
         resultBundle.putString(AccountManager.KEY_AUTHTOKEN, "output_token");
         mBundleCallbackCaptor.getValue().run(makeFuture(resultBundle));
-        verify(mAuthenticatorJniMock).setResult(1234, authenticator, 0, "output_token");
+        verify(mAuthenticatorJniMock).setResult(1234, 0, "output_token");
 
         // Check that the next call to getNextAuthToken uses the correct context
         authenticator.getNextAuthToken(5678, "test_principal", "", true);
@@ -306,7 +298,7 @@ public class HttpNegotiateAuthenticatorTest {
         mBundleCallbackCaptor
                 .getValue()
                 .run(this.<Bundle>makeFuture(new OperationCanceledException()));
-        verify(mAuthenticatorJniMock).setResult(5678, authenticator, NetError.ERR_UNEXPECTED, null);
+        verify(mAuthenticatorJniMock).setResult(5678, NetError.ERR_UNEXPECTED, null);
     }
 
     @Test
@@ -318,7 +310,6 @@ public class HttpNegotiateAuthenticatorTest {
         verify(mAuthenticatorJniMock)
                 .setResult(
                         anyLong(),
-                        eq(authenticator),
                         eq(NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT),
                         (String) isNull());
     }
@@ -423,8 +414,7 @@ public class HttpNegotiateAuthenticatorTest {
             resultBundle.putInt(HttpNegotiateConstants.KEY_SPNEGO_RESULT, spnegoError);
         }
         mBundleCallbackCaptor.getValue().run(makeFuture(resultBundle));
-        verify(mAuthenticatorJniMock)
-                .setResult(anyLong(), eq(authenticator), eq(expectedError), (String) isNull());
+        verify(mAuthenticatorJniMock).setResult(anyLong(), eq(expectedError), (String) isNull());
     }
 
     /**
