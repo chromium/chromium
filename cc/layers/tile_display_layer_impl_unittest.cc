@@ -166,6 +166,21 @@ TEST_F(TileDisplayLayerImplTest,
       false);
 }
 
+// Verifies that GetContentsResourceId() handles the error case of being called
+// when the layer has no tiles, setting the resource ID to invalid in that case.
+TEST_F(TileDisplayLayerImplTest, GetContentsResourceIdHandlesLackOfTiles) {
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  layer->SetIsBackdropFilterMask(true);
+
+  viz::ResourceId mask_resource_id = viz::ResourceId(42);
+  gfx::Size mask_texture_size;
+  gfx::SizeF mask_uv_size;
+  layer->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
+                               &mask_uv_size);
+  EXPECT_EQ(mask_resource_id, viz::kInvalidResourceId);
+}
+
 class TileDisplayLayerImplWithEdgeAADisabledTest
     : public TileDisplayLayerImplTest {
  public:

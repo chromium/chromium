@@ -336,8 +336,17 @@ void TileDisplayLayerImpl::GetContentsResourceId(
     viz::ResourceId* resource_id,
     gfx::Size* resource_size,
     gfx::SizeF* resource_uv_size) const {
-  CHECK(is_backdrop_filter_mask_);
-  CHECK_EQ(tilings_.size(), 1u);
+  *resource_id = viz::kInvalidResourceId;
+
+  // We need contents resource for backdrop filter masks only.
+  if (!is_backdrop_filter_mask_) {
+    return;
+  }
+
+  // Masks are only supported if they fit on exactly one tile.
+  if (tilings_.size() != 1u) {
+    return;
+  }
 
   const float max_contents_scale = tilings_.front()->contents_scale_key();
   gfx::Rect content_rect =
@@ -347,7 +356,16 @@ void TileDisplayLayerImpl::GetContentsResourceId(
 
   auto iter = TilingSetCoverageIterator<Tiling>(
       tilings_, content_rect, max_contents_scale, ideal_scale_key);
-  CHECK(iter->resource());
+
+  // We cannot do anything if the mask resource was not provided.
+  if (!iter || !*iter || !iter->resource()) {
+    return;
+  }
+
+  DCHECK(iter.geometry_rect() == content_rect)
+      << "iter rect " << iter.geometry_rect().ToString() << " content rect "
+      << content_rect.ToString();
+
   *resource_id = iter->resource()->resource_id;
   *resource_size = iter->resource()->resource_size;
   gfx::SizeF requested_tile_size =
