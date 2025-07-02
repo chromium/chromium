@@ -426,20 +426,6 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
     }
   }
 
-  storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
-      storage_shared_buffer().TakeFindRegistrationResult(client_url, key);
-  if (!preflight_result.is_null()) {
-    std::optional<std::vector<GURL>> scope_vector;
-    if (scopes.has_value()) {
-      scope_vector = std::vector(scopes->begin(), scopes->end());
-    }
-    DidFindRegistrationForClientUrl(
-        client_url, key, trace_event_id, std::move(callback),
-        storage::mojom::ServiceWorkerDatabaseStatus::kOk,
-        std::move(preflight_result), scope_vector);
-    return;
-  }
-
   if (base::FeatureList::IsEnabled(
           kServiceWorkerMergeFindRegistrationForClientUrl)) {
     std::vector<FindRegistrationCallback>& callbacks =
@@ -458,6 +444,22 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
           /*callback=*/base::DoNothing(),
           storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
           std::vector(scopes->begin(), scopes->end()));
+      return;
+    }
+    storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
+        storage_shared_buffer().TakeFindRegistrationResult(client_url, key);
+    if (!preflight_result.is_null()) {
+      std::optional<std::vector<GURL>> scope_vector;
+      if (scopes.has_value()) {
+        scope_vector = std::vector(scopes->begin(), scopes->end());
+      }
+      DidFindRegistrationForClientUrl(
+          client_url, key, trace_event_id,
+          // Pass a fake callback here as the proper callback will
+          // be invoked via find_registration_callbacks_
+          /*callback=*/base::DoNothing(),
+          storage::mojom::ServiceWorkerDatabaseStatus::kOk,
+          std::move(preflight_result), scope_vector);
       return;
     }
     // TODO(crbug.com/352578800): Consider moving this block before
@@ -497,6 +499,19 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
           client_url, key, trace_event_id, std::move(callback),
           storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
           std::vector(scopes->begin(), scopes->end()));
+      return;
+    }
+    storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
+        storage_shared_buffer().TakeFindRegistrationResult(client_url, key);
+    if (!preflight_result.is_null()) {
+      std::optional<std::vector<GURL>> scope_vector;
+      if (scopes.has_value()) {
+        scope_vector = std::vector(scopes->begin(), scopes->end());
+      }
+      DidFindRegistrationForClientUrl(
+          client_url, key, trace_event_id, std::move(callback),
+          storage::mojom::ServiceWorkerDatabaseStatus::kOk,
+          std::move(preflight_result), scope_vector);
       return;
     }
     // TODO(crbug.com/352578800): Consider moving this block before
