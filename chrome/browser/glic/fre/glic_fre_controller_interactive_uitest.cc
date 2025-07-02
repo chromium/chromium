@@ -162,7 +162,7 @@ class GlicFreControllerUiTest : public test::InteractiveGlicTest {
   base::HistogramTester histogram_tester_;
 };
 
-class GlicFreControllerUiTimeoutTest : public GlicFreControllerUiTest {
+class GlicFreControllerUiTimeoutTest : public test::InteractiveGlicTest {
  public:
   void SetUp() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
@@ -178,19 +178,20 @@ class GlicFreControllerUiTimeoutTest : public GlicFreControllerUiTest {
     features_.InitWithFeaturesAndParameters(
         enabled_features, {features::kGlicWarming, features::kGlicFreWarming});
 
-    fre_server_.AddDefaultHandlers();
     // Register a handler that will hang, to simulate a timeout.
     fre_server_.RegisterRequestHandler(base::BindRepeating(
-        [](const GURL& url, const net::test_server::HttpRequest& request)
+        [](const base::FilePath& test_data_dir, const GURL& fre_url,
+           const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (request.relative_url == url.path()) {
+          if (request.GetURL() == fre_url) {
             return std::make_unique<net::test_server::HungResponse>();
           }
           return nullptr;
         },
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("gen/chrome/test/data/webui/glic/"),
         fre_url()));
     ASSERT_TRUE(fre_server_.InitializeAndListen());
-
     fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
 
     InteractiveGlicTestT::SetUp();
@@ -211,14 +212,15 @@ class GlicFreControllerUiTimeoutTest : public GlicFreControllerUiTest {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  GlicFreController* GetFreController() {
+    return GetService()->window_controller().fre_controller();
+  }
+
  private:
   GlicKeyedService* GetService() {
     return GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   }
 
-  GlicFreController* GetFreController() {
-    return GetService()->window_controller().fre_controller();
-  }
   base::test::ScopedFeatureList features_;
   net::EmbeddedTestServer fre_server_;
   GURL fre_url_;
@@ -393,21 +395,15 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, ShowsErrorPanelOnInvalidAuth) {
                                          {"#errorPanel:not([hidden])"})));
 }
 
-// TODO(crbug.com/429040435): Test is failing on Mac and Linux bots.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_ShowsErrorPanelOnLoadingTimeout \
-  DISABLED_ShowsErrorPanelOnLoadingTimeout
-#else
-#define MAYBE_ShowsErrorPanelOnLoadingTimeout ShowsErrorPanelOnLoadingTimeout
-#endif
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
-                       MAYBE_ShowsErrorPanelOnLoadingTimeout) {
+                       ShowsErrorPanelOnLoadingTimeout) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(
+          kFreWebUiState,
+          base::BindOnce(&GlicFreControllerUiTimeoutTest::GetFreController,
+                         base::Unretained(this))),
       PressButton(kGlicButtonElementId),
       WaitForShow(GlicFreDialogView::kWebViewElementIdForTesting),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kError), Do([this]() {
