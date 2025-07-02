@@ -39,10 +39,6 @@ namespace v8 {
 class Function;
 }  // namespace v8
 
-namespace WTF {
-class TextPosition;
-}
-
 namespace blink {
 class Animation;
 class CSSStyleSheetResource;

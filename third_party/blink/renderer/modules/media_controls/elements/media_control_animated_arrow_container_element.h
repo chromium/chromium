@@ -10,10 +10,6 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_div_element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
-namespace WTF {
-class AtomicString;
-}
-
 namespace blink {
 
 class MediaControlsImpl;

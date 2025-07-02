@@ -14,10 +14,6 @@
 #include "third_party/blink/renderer/modules/service_worker/extendable_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
-namespace WTF {
-class AtomicString;
-}
-
 namespace blink {
 
 class CanMakePaymentRespondWithObserver;

@@ -9,14 +9,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/ad_script_identifier.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace v8 {
 class Isolate;
 }  // namespace v8
-
-namespace WTF {
-class StringView;
-}  // namespace WTF
 
 namespace blink {
 class ExecutionContext;

@@ -18,10 +18,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
-namespace WTF {
-class AtomicString;
-}
-
 namespace blink {
 
 class ExceptionState;

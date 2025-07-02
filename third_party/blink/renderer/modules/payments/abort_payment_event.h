@@ -11,10 +11,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
-namespace WTF {
-class AtomicString;
-}
-
 namespace blink {
 
 class AbortPaymentRespondWithObserver;

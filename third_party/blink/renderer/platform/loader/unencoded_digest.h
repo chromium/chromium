@@ -11,10 +11,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace WTF {
-class SegmentedBuffer;
-}  // namespace WTF
-
 namespace blink {
 
 class HTTPHeaderMap;

@@ -11,10 +11,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
-class AtomicString;
-}  // namespace WTF
-
 namespace blink {
 
 class PresentationConnectionCloseEventInit;

@@ -53,6 +53,7 @@ class SharedBuffer;
 class String;
 class StringImpl;
 class StringView;
+class TextPosition;
 
 }  // namespace WTF
 
