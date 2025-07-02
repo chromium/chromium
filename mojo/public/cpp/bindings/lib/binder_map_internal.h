@@ -130,8 +130,12 @@ class GenericCallbackBinderWithContext {
 
   GenericCallbackBinderWithContext(const GenericCallbackBinderWithContext&) =
       delete;
+  GenericCallbackBinderWithContext(GenericCallbackBinderWithContext&&) =
+      default;
   GenericCallbackBinderWithContext& operator=(
       const GenericCallbackBinderWithContext&) = delete;
+  GenericCallbackBinderWithContext& operator=(
+      GenericCallbackBinderWithContext&&) = default;
 
   ~GenericCallbackBinderWithContext() = default;
 

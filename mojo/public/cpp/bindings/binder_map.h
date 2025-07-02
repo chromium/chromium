@@ -70,8 +70,7 @@ class BinderMapWithContext {
   void Add(std::type_identity_t<BinderType<Interface>> binder,
            scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     Add(internal::StaticString(Interface::Name_),
-        std::make_unique<
-            internal::GenericCallbackBinderWithContext<ContextType>>(
+        internal::GenericCallbackBinderWithContext<ContextType>(
             Traits::MakeGenericBinder(std::move(binder)),
             std::move(task_runner)));
   }
@@ -89,8 +88,7 @@ class BinderMapWithContext {
   void Add(std::type_identity_t<FuncType<Interface>>* func,
            scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     Add(internal::StaticString(Interface::Name_),
-        std::make_unique<
-            internal::GenericCallbackBinderWithContext<ContextType>>(
+        internal::GenericCallbackBinderWithContext<ContextType>(
             Traits::MakeGenericBinder(func), std::move(task_runner)));
   }
 
@@ -118,7 +116,7 @@ class BinderMapWithContext {
     if (it == binders_.end())
       return false;
 
-    it->second->BindInterface(receiver->PassPipe());
+    it->second.BindInterface(receiver->PassPipe());
     return true;
   }
 
@@ -133,7 +131,7 @@ class BinderMapWithContext {
     if (it == binders_.end())
       return default_binder_ && default_binder_.Run(context, *receiver);
 
-    it->second->BindInterface(std::move(context), receiver->PassPipe());
+    it->second.BindInterface(std::move(context), receiver->PassPipe());
     return true;
   }
 
@@ -158,23 +156,21 @@ class BinderMapWithContext {
  private:
   using IsVoidContext = std::is_same<ContextType, void>;
 
-  void Add(
-      internal::StaticString name,
-      std::unique_ptr<internal::GenericCallbackBinderWithContext<ContextType>>
-          binder) {
+  void Add(internal::StaticString name,
+           internal::GenericCallbackBinderWithContext<ContextType>&& binder) {
     // This is not a public method because it is not safe to use with a
     // non-static `name`. The map key is a `string_view` which would result in
     // a dangling pointer if the underlying string were to be freed.
-    //
     // While it may be possible to make this safe by using `std::string` as the
     // key, this is explicitly not supported, as we want to avoid the overhead
     // of copying strings at runtime.
-    binders_[std::string_view(name)] = std::move(binder);
+    auto key = std::string_view(name);
+    binders_.erase(key);
+    binders_.try_emplace(key, std::move(binder));
   }
 
-  std::map<
-      std::string_view,
-      std::unique_ptr<internal::GenericCallbackBinderWithContext<ContextType>>>
+  std::map<std::string_view,
+           internal::GenericCallbackBinderWithContext<ContextType>>
       binders_;
   DefaultBinder default_binder_;
 };
