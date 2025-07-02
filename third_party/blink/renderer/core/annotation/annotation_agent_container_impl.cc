@@ -11,6 +11,7 @@
 #include "base/types/pass_key.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
+#include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_generator.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_selector.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -93,6 +95,22 @@ void AnnotationAgentContainerImpl::BindReceiver(
     mojo::PendingReceiver<mojom::blink::AnnotationAgentContainer> receiver) {
   DCHECK(frame);
   DCHECK(frame->GetDocument());
+
+  // If the current frame embeds a plugin, and that plugin supports annotation,
+  // allow the plugin to bind the receiver.
+  // TODO(crbug.com/427455182): Support embedded plugins.
+  if (frame->View()->Plugins().size() == 1u) {
+    WebPluginContainerImpl* web_plugin_container =
+        *frame->View()->Plugins().begin();
+    CHECK(web_plugin_container);
+    WebPlugin* plugin = web_plugin_container->Plugin();
+    CHECK(plugin);
+    if (plugin->SupportsAnnotation()) {
+      plugin->BindAnnotationAgentContainer(std::move(receiver));
+      return;
+    }
+  }
+
   Document& document = *frame->GetDocument();
 
   auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(document);

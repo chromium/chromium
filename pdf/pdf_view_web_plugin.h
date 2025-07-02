@@ -35,6 +35,8 @@
 #include "pdf/preview_mode_client.h"
 #include "pdf/v8_value_converter.h"
 #include "services/screen_ai/buildflags/buildflags.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -95,7 +97,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                                public PostMessageReceiver::Client,
                                public PaintManager::Client,
                                public PdfAccessibilityActionHandler,
-                               public PreviewModeClient::Client {
+                               public PreviewModeClient::Client,
+                               public blink::mojom::AnnotationAgentContainer {
  public:
   // Do not save files larger than 100 MB. This cap should be kept in sync with
   // and is also enforced in chrome/browser/resources/pdf/pdf_viewer.ts.
@@ -337,6 +340,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
       const gfx::Range& replacement_range,
       int relative_cursor_pos) override;
   void ImeFinishComposingTextForPlugin(bool keep_selection) override;
+  bool SupportsAnnotation() const override;
+  void BindAnnotationAgentContainer(
+      blink::CrossVariantMojoReceiver<
+          blink::mojom::AnnotationAgentContainerInterfaceBase> pending_receiver)
+      override;
 
   // PDFiumEngineClient:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
@@ -443,6 +451,18 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;
   void PreviewDocumentLoadFailed() override;
+
+  // `blink::mojom::AnnotationAgentContainer`:
+  void CreateAgent(
+      mojo::PendingRemote<blink::mojom::AnnotationAgentHost> host_remote,
+      mojo::PendingReceiver<blink::mojom::AnnotationAgent> agent_receiver,
+      blink::mojom::AnnotationType type,
+      blink::mojom::SelectorPtr selector,
+      std::optional<int> search_range_start_node_id) override;
+  void CreateAgentFromSelection(
+      blink::mojom::AnnotationType type,
+      CreateAgentFromSelectionCallback callback) override;
+  void RemoveAgentsOfType(blink::mojom::AnnotationType type) override;
 
   // Initializes the plugin for testing, bypassing certain consistency checks.
   bool InitializeForTesting();
@@ -995,6 +1015,10 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   // Maximum size of save data in each block.
   uint32_t max_save_buffer_size_;
+
+  // Used to allow the embedder to scroll-to and highlight a text fragment.
+  mojo::Receiver<blink::mojom::AnnotationAgentContainer>
+      annotation_agent_container_receiver_{this};
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   enum class SearchifyState {

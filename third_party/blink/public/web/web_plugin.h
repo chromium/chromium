@@ -37,7 +37,9 @@
 #include "base/containers/span.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_drag_status.h"
@@ -292,6 +294,15 @@ class WebPlugin {
 
   // Indicate composition is complete to plugin.
   virtual void ImeFinishComposingTextForPlugin(bool keep_selection) {}
+
+  // Returns if this plugin supports Blink's annotation. See annotation.mojom.
+  virtual bool SupportsAnnotation() const { return false; }
+
+  // Binds the pending receiver of the `AnnotationAgentContainer`. No-op if
+  // `SupportsAnnotation()` is false.
+  virtual void BindAnnotationAgentContainer(
+      CrossVariantMojoReceiver<mojom::AnnotationAgentContainerInterfaceBase>
+          pending_receiver) {}
 
  protected:
   virtual ~WebPlugin() = default;
