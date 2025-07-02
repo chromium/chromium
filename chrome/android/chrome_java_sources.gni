@@ -314,6 +314,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/layouts/content/TabContentManagerHandler.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/content/TitleBitmapFactory.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/eventfilter/AreaMotionEventFilter.java",
+  "java/src/org/chromium/chrome/browser/compositor/layouts/eventfilter/AreaMotionEventHandler.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/eventfilter/BlackHoleEventFilter.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/eventfilter/MotionEventFilter.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/eventfilter/MotionEventHandler.java",

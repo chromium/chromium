@@ -54,7 +54,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
-import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
+import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDragHandler;
@@ -267,7 +267,7 @@ public class StripLayoutHelperManager
     // Drag-Drop
     private @Nullable TabStripDragHandler mTabStripDragHandler;
 
-    private class TabStripEventHandler implements MotionEventHandler {
+    private class TabStripEventHandler implements AreaMotionEventHandler {
         @Override
         public void onDown(float x, float y, int buttons) {
             if (DragDropGlobalState.hasValue()) {
@@ -360,8 +360,8 @@ public class StripLayoutHelperManager
         }
 
         @Override
-        public void onHoverExit() {
-            getActiveStripLayoutHelper().onHoverExit();
+        public void onHoverExit(boolean inArea) {
+            getActiveStripLayoutHelper().onHoverExit(inArea);
         }
 
         @Override
@@ -776,7 +776,7 @@ public class StripLayoutHelperManager
     @Override
     public void onPauseWithNative() {
         // Clear any persisting tab strip hover state when the activity is paused.
-        getActiveStripLayoutHelper().onHoverExit();
+        getActiveStripLayoutHelper().onHoverExit(/* inTabStrip= */ false);
     }
 
     private void handleModelSelectorButtonClick() {

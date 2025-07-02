@@ -2454,7 +2454,8 @@ public class StripLayoutHelper
     }
 
     /** Called on hover exit event. */
-    public void onHoverExit() {
+    public void onHoverExit(boolean inTabStrip) {
+        // TODO(crbug.com/419015257): Use inTabStrip to delay resize on tab close from mouse.
         clearLastHoveredTab();
 
         // Clear tab strip button (NTB and MSB) hover state.
