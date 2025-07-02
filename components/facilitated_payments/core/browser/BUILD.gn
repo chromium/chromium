@@ -6,6 +6,7 @@ static_library("browser") {
   sources = [
     "device_delegate.h",
     "facilitated_payments_api_client.h",
+    "facilitated_payments_app_info_list.h",
     "facilitated_payments_client.cc",
     "facilitated_payments_client.h",
     "facilitated_payments_driver.cc",
@@ -88,6 +89,8 @@ static_library("test_support") {
     "mock_device_delegate.h",
     "mock_facilitated_payments_api_client.cc",
     "mock_facilitated_payments_api_client.h",
+    "mock_facilitated_payments_app_info_list.cc",
+    "mock_facilitated_payments_app_info_list.h",
     "mock_facilitated_payments_client.cc",
     "mock_facilitated_payments_client.h",
     "network_api/mock_facilitated_payments_network_interface.cc",

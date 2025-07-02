@@ -10,6 +10,8 @@ static_library("android") {
     "device_delegate_android.h",
     "facilitated_payments_api_client_android.cc",
     "facilitated_payments_api_client_android.h",
+    "facilitated_payments_app_info_list_android.cc",
+    "facilitated_payments_app_info_list_android.h",
     "secure_payload_android.cc",
     "secure_payload_android.h",
   ]
