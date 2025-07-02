@@ -130,6 +130,10 @@ message ScrollAction {
 }
 
 // Move mouse action.
+// This is considered a low-level building block for more complex actions, e.g.
+// scroll_at can be mouse_move + scroll action.
+// This action also covers hovering, equivalent to "hovering at" when used in
+// isolation.
 // Next ID: 3
 message MoveMouseAction {
   ActionTarget target = 1 [features = { field_presence: EXPLICIT }];

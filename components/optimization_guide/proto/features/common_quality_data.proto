@@ -369,35 +369,53 @@ message BoundingRect {
 // Note: ScrollerInfo is populated for ANNOTATED_PAGE_CONTENT_MODE_DEFAULT. The
 // rest of the fields are only populated for
 // ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.
-// Next ID: 15
+// Next ID: 16
 message InteractionInfo {
   // Set if the content node is scrollable.
   ScrollerInfo scroller_info = 12 [features = { field_presence: EXPLICIT }];
 
   // Whether the content node is selectable.
-  bool is_selectable = 3 [features = { field_presence: EXPLICIT }];
+  bool is_selectable = 3 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
   // Whether the content node is editable; i.e. whether the user can type into
   // it. This refers to the text actually being editable, not whether the
   // content node is a text field.
-  bool is_editable = 4 [features = { field_presence: EXPLICIT }];
+  bool is_editable = 4 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
   // Whether the content node can be resized. This is relevant for scroll
   // containers and iframes which have the CSS resize behavior.
-  bool can_resize_horizontal = 5 [features = { field_presence: EXPLICIT }];
+  bool can_resize_horizontal = 5 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
-  bool can_resize_vertical = 6 [features = { field_presence: EXPLICIT }];
+  bool can_resize_vertical = 6 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
   // Whether the content node is focusable.
   bool is_focusable = 7 [features = { field_presence: EXPLICIT }];
 
   // Whether the content node is draggable.
-  bool is_draggable = 9 [features = { field_presence: EXPLICIT }];
+  bool is_draggable = 9 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
   // Whether the content node is clickable. This checks for whether the node is
   // a clickable control (e.g. form control elements) or has activation
   // behavior. It also checks for whether the node has a click handler.
-  bool is_clickable = 10 [features = { field_presence: EXPLICIT }];
+  bool is_clickable = 10 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
   // The z-order of the content node relative to other nodes in the same
   // Document. A higher value means the node is in front of other nodes with
@@ -414,6 +432,10 @@ message InteractionInfo {
   // caused that.
   // Note: This may not capture all the reasons.
   repeated ClickabilityReason debug_clickability_reasons = 14;
+
+  // Provides signals which indicate whether the node is actionable. The action
+  // may be triggered by clicking or hovering on the element.
+  repeated ClickabilityReason clickability_reasons = 15;
 
   reserved 8, 1, 2, 11;
 }
@@ -1739,7 +1761,7 @@ enum ContentAttributeType {
 }
 
 // The reason why a node is clickable.
-// Next ID: 7
+// Next ID: 10
 enum ClickabilityReason {
   // The node is a native form control.
   CLICKABILITY_REASON_CLICKABLE_CONTROL = 0;
@@ -1762,6 +1784,20 @@ enum ClickabilityReason {
 
   // The node has a clickable aria role.
   CLICKABILITY_REASON_ARIA_ROLE = 6;
+
+  // The node has the aria-haspopup attribute indicating it opens a popup on
+  // activation.
+  CLICKABILITY_REASON_ARIA_HAS_POPUP = 7;
+
+  // The node has the aria-expanded attribute indicating it controls the
+  // visibility of other elements. This reason implies that the associated
+  // control is currently expanded.
+  CLICKABILITY_REASON_ARIA_EXPANDED_TRUE = 8;
+
+  // The node has the aria-expanded attribute indicating it controls the
+  // visibility of other elements. This reason implies that the associated
+  // control is currently collapsed.
+  CLICKABILITY_REASON_ARIA_EXPANDED_FALSE = 9;
 }
 
 // Next ID: 5

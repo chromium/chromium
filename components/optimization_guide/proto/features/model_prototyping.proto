@@ -279,8 +279,8 @@ message BrowserDataCollectionSpecifier {
 
 // Specifies the context to collect for a single page.
 message PageContextSpecifier {
-  // Send the default data (a subset of the data below) in addition to any
-  // other fields set to true below.
+  // Send the default data (all data below except annotated_page_content) in
+  // addition to any other fields set to true below.
   bool default_data = 1 [features = { field_presence: IMPLICIT }];
 
   // Whether to collect the inner text of the page.
