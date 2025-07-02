@@ -22,28 +22,30 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Quota.AgeOfDataInDays" units="days" expires_after="2025-04-13">
+<histogram name="Quota.AgeOfDataInDays" units="days" expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     How many kilobytes are how old. Similar to |AgeOfOrigin| except a sample is
     added for each kilobyte of an origin's data. Logged hourly for all origins
-    with stored data.
+    with stored data. Warning: this histogram was expired from 2025/04 to
+    2025/06; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Quota.AgeOfOriginInDays" units="days"
-    expires_after="2025-04-13">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     How many days it's been since an origin's temporary storage has been
-    accessed. Logged hourly for all origins with stored data.
+    accessed. Logged hourly for all origins with stored data. Warning: this
+    histogram was expired from 2025/04 to 2025/06; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace" units="MB"
-    expires_after="2025-12-28">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -53,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace2" units="MB"
-    expires_after="2025-11-16">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -78,13 +80,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.DatabaseSpecificError.{Statement}"
-    enum="SqliteLoggedResultCode" expires_after="2025-06-08">
+    enum="SqliteLoggedResultCode" expires_after="2025-12-07">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Records error codes returned by SQLite for operations on the quota database.
     These are logged separately for each database operation to help isolate
-    issues the quota db might be facing.
+    issues the quota db might be facing. Warning: this histogram was expired in
+    2025/06; data may be missing.
   </summary>
   <token key="Statement">
     <variant name="BootstrapDefaultBucket"/>
@@ -139,7 +142,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2025-11-30">
+<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -150,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBucketAccessCount" units="units"
-    expires_after="2025-07-19">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -161,68 +164,78 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBucketDaysSinceAccess" units="units"
-    expires_after="2025-01-05">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The number of days since the evicted bucket was last accessed. Logged when
     the bucket is evicted. Replaces Quota.EvictedOriginDaysSinceAccess when
-    eviction was per origin.
+    eviction was per origin. Warning: this histogram was expired from 2025/01 to
+    2025/06; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Quota.EvictedBucketsPerHour" units="buckets"
-    expires_after="2024-09-01">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Number of evicted buckets in an hour. Replaces Quota.EvictedOriginPerHour
-    when eviction was per origin.
+    when eviction was per origin. Warning: this histogram was expired from
+    2024/09 to 2025/06; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Quota.EvictedBytesPerRound" units="MB"
-    expires_after="2024-09-01">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Amount of usage used by evicted buckets in an eviction round. Prior to M94,
-    evictions were based on per origin instead of per bucket.
+    evictions were based on per origin instead of per bucket. Warning: this
+    histogram was expired from 2024/09 to 2025/06; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Quota.EvictionRoundsPerHour" units="units"
-    expires_after="2025-04-27">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    Number of eviction rounds in an hour. Histogram expired between 2020/10 and
-    2022/06.
+    Number of eviction rounds in an hour. Warning: this histogram was expired
+    from 2020/10 to 2022/06 and from 2025/04 to 2025/06; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Quota.GlobalTemporaryPoolSize" units="MB"
-    expires_after="2024-12-08">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The size of the global temporary storage pool. Logged at irregular
-    intervals.
+    intervals. Warning: this histogram was expired from 2024/12 to 2025/06; data
+    may be missing.
   </summary>
 </histogram>
 
 <histogram name="Quota.GlobalUsageOfTemporaryStorage" units="MB"
-    expires_after="2024-12-24">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
-  <summary>Global usage of temporary storage.</summary>
+  <summary>
+    Global usage of temporary storage. Warning: this histogram was expired from
+    2024/12 to 2025/06; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Quota.NumberOfEvictedBucketsPerRound" units="units"
     expires_after="2025-04-27">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
-  <summary>Number of evicted buckets per round.</summary>
+  <summary>
+    Number of evicted buckets per round. Warning: this histogram was expired
+    from 2025/04 to 2025/06; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Quota.OrphanBucketCount" units="areas"
@@ -240,12 +253,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable" units="%"
-    expires_after="2024-12-08">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Percentage of the storage device that is free. Logged at irregular
-    intervals.
+    intervals. Warning: this histogram was expired from 2024/12 to 2025/06; data
+    may be missing.
   </summary>
 </histogram>
 
@@ -260,31 +274,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentUsedByOrigin" units="%"
-    expires_after="2024-12-08">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Percentage of an origin's quota that is being used by the origin. Logged at
-    irregular intervals.
+    irregular intervals. Warning: this histogram was expired from 2024/12 to
+    2025/06; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Quota.PercentUsedForTemporaryStorage2" units="%"
-    expires_after="2024-12-08">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Percentage of the storage device that is being use for temporary storage.
-    Logged when collecting usage information.
+    Logged when collecting usage information. Warning: this histogram was
+    expired from 2024/12 to 2025/06; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseDisabled"
-    enum="QuotaDatabaseDisabledReason" expires_after="2024-07-21">
+    enum="QuotaDatabaseDisabledReason" expires_after="2025-12-07">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    Records at which step the QuotaDatabase failed to bootstrap.
+    Records at which step the QuotaDatabase failed to bootstrap. Warning: this
+    histogram was expired from 2024/07 to 2025/06; data may be missing.
   </summary>
 </histogram>
 
@@ -296,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseReset" enum="QuotaDatabaseResetReason"
-    expires_after="2025-07-27">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -306,7 +323,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.QuotaForOrigin" units="MB" expires_after="2024-12-08">
+<histogram name="Quota.QuotaForOrigin" units="MB" expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -315,7 +332,8 @@ chromium-metrics-reviews@google.com.
     consult the quota system for &quot;usage and quota&quot; to determine if
     there is sufficient space available for the new data. This value is logged
     at the time of that consultation. The frequency is dependent on how
-    individual websites use the various storage apis.)
+    individual websites use the various storage apis.) Warning: this histogram
+    was expired from 2024/12 to 2025/06; data may be missing.
   </summary>
 </histogram>
 
@@ -334,22 +352,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TimeSpentToAEvictionRound" units="units"
-    expires_after="2025-05-19">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    Time spent to an eviction round. Histogram expired between 2018/08 and
-    2022/06.
+    Time spent to an eviction round. Warning: this histogram was expired from
+    2018/08 to 2022/06 and from 2025/05 to 2025/06; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Quota.TotalBucketCount" units="buckets"
-    expires_after="2025-04-13">
+    expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Total number of entries in the QuotaDatabase buckets table for a profile.
-    Logged hourly.
+    Logged hourly. Warning: this histogram was expired from 2025/04 to 2025/06;
+    data may be missing.
   </summary>
 </histogram>
 
@@ -372,7 +391,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.UsageByOrigin" units="MB" expires_after="2025-07-19">
+<histogram name="Quota.UsageByOrigin" units="MB" expires_after="2025-12-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

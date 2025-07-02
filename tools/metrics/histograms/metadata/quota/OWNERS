@@ -5,6 +5,6 @@ per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
 # Primary
 ayui@chromium.org
+leimy@chromium.org
 
 # Secondary
-
