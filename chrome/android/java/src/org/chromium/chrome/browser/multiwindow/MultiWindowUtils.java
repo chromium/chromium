@@ -41,7 +41,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
@@ -66,8 +65,8 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.XrUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -217,18 +216,21 @@ public class MultiWindowUtils implements ActivityStateListener {
             return TabWindowManager.MAX_SELECTORS_S;
         }
 
-        if (BuildConfig.IS_DESKTOP_ANDROID || XrUtils.isXrDevice()) {
-            return TabWindowManager.MAX_SELECTORS;
+        Context context = ContextUtils.getApplicationContext();
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            int memoryThresholdMb =
+                    ChromeFeatureList.sDisableInstanceLimitMemoryThresholdMb.getValue();
+            boolean isAboveMemoryThreshold =
+                    SysUtils.amountOfPhysicalMemoryKB()
+                            >= memoryThresholdMb * ConversionUtils.KILOBYTES_PER_MEGABYTE;
+            if (isAboveMemoryThreshold) {
+                return ChromeFeatureList.sDisableInstanceLimitMaxCount.getValue();
+            } else {
+                return TabWindowManager.MAX_SELECTORS_S;
+            }
         }
 
-        int memoryThresholdMb = ChromeFeatureList.sDisableInstanceLimitMemoryThresholdMb.getValue();
-        boolean isAboveMemoryThreshold =
-                SysUtils.amountOfPhysicalMemoryKB()
-                        >= memoryThresholdMb * ConversionUtils.KILOBYTES_PER_MEGABYTE;
-        if (isAboveMemoryThreshold) {
-            return ChromeFeatureList.sDisableInstanceLimitMaxCount.getValue();
-        }
-        return TabWindowManager.MAX_SELECTORS_S;
+        return TabWindowManager.MAX_SELECTORS;
     }
 
     /** Returns the singleton instance of MultiWindowUtils. */
