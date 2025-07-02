@@ -537,7 +537,7 @@ public class ToolbarTablet extends ToolbarLayout {
     }
 
     @Override
-    void hideOptionalButton() {
+    protected void hideOptionalButton() {
         if (mOptionalButton == null || mOptionalButton.getVisibility() == View.GONE) {
             return;
         }

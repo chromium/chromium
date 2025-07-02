@@ -2629,7 +2629,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
-    void hideOptionalButton() {
+    protected void hideOptionalButton() {
         mButtonData = null;
         if (mOptionalButtonCoordinator == null
                 || mOptionalButtonCoordinator.getViewVisibility() == View.GONE

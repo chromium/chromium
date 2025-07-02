@@ -766,7 +766,7 @@ public abstract class ToolbarLayout extends FrameLayout
     protected void updateOptionalButton(ButtonData buttonData) {}
 
     /** Hide the optional toolbar button. */
-    void hideOptionalButton() {}
+    protected void hideOptionalButton() {}
 
     /**
      * @return Optional button view.
