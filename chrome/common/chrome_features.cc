@@ -573,6 +573,9 @@ BASE_FEATURE(kGlicScrollTo, "GlicScrollTo", base::FEATURE_DISABLED_BY_DEFAULT);
 // is set (and fail the request if it's not).
 const base::FeatureParam<bool> kGlicScrollToEnforceDocumentId{
     &kGlicScrollTo, "glic-scroll-to-enforce-document-id", false};
+// Expand the scrollTo capability to PDF documents.
+const base::FeatureParam<bool> kGlicScrollToPDF{&kGlicScrollTo,
+                                                "glic-scroll-to-pdf", false};
 
 // Controls whether the web client should resize itself to fit the window.
 BASE_FEATURE(kGlicSizingFitWindow,
