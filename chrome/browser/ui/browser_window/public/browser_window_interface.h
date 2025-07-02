@@ -92,13 +92,18 @@ class BrowserWindowInterface : public content::PageNavigator {
   // state, etc.
   virtual ui::BaseWindow* GetWindow() = 0;
 
-  // Returns the profile that semantically owns this browser window. On desktop
-  // platforms (including the experimental desktop android platform), this value
-  // is never null, and never changes for the lifetime of a given browser
-  // window. All tabs contained in a browser window have the same
-  // profile/BrowserContext as the browser window itself. On mobile platforms,
-  // there may be multiple profiles for a given window; when implemented, this
-  // should return the profile of the currently-selected context.
+  // Returns the profile that semantically owns this browser window.
+  // On most desktop platforms, there is only one profile per browser window.
+  // This will never be null and never changes for the lifetime of a given
+  // browser window. All tabs contained in a browser window have the same
+  // Profile / BrowserContext as the browser window itself.
+  // On mobile platforms, this is not the case -- browser windows may have
+  // multiple profiles. Since this is currently not needed on mobile platforms,
+  // this is okay.
+  // On the experimental desktop android platform, we are adapting the mobile
+  // version to have the same guarantees as existing desktop platforms. Thus,
+  // when implemented, this will return a single Profile for the given browser
+  // window.
   virtual Profile* GetProfile() = 0;
 
   // Returns a session-unique ID.
