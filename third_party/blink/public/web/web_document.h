@@ -45,7 +45,6 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_css_origin.h"
 #include "third_party/blink/public/web/web_draggable_region.h"
-#include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_error_types.h"
@@ -62,6 +61,7 @@ class WebElement;
 class WebFormElement;
 class WebFormControlElement;
 class WebElementCollection;
+class WebLocalFrame;
 class WebString;
 class WebURL;
 struct WebDistillabilityFeatures;
