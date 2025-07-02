@@ -2501,8 +2501,16 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTestOOPVideoDecoderTest,
 
 // Asserts RenderProcessHosts are configured to reflect the embedder's policy
 // defined by `ContentBrowserClient::DisallowV8FeatureFlagOverridesForSite()`.
+// TODO(crbug.com/420278695): Flaky on TSan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_DisallowV8FeatureFlagOverridesAppliedToHosts \
+  DISABLED_DisallowV8FeatureFlagOverridesAppliedToHosts
+#else
+#define MAYBE_DisallowV8FeatureFlagOverridesAppliedToHosts \
+  DisallowV8FeatureFlagOverridesAppliedToHosts
+#endif
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
-                       DisallowV8FeatureFlagOverridesAppliedToHosts) {
+                       MAYBE_DisallowV8FeatureFlagOverridesAppliedToHosts) {
   class DisallowV8FeatureOverridesContentBrowserClient
       : public ContentBrowserTestContentBrowserClient {
    public:
