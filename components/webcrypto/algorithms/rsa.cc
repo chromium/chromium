@@ -21,6 +21,7 @@
 #include "components/webcrypto/jwk.h"
 #include "components/webcrypto/status.h"
 #include "crypto/evp.h"
+#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
@@ -230,24 +231,13 @@ Status ImportRsaPublicKey(const blink::WebCryptoAlgorithm& algorithm,
                           base::span<const uint8_t> n,
                           base::span<const uint8_t> e,
                           blink::WebCryptoKey* key) {
-  bssl::UniquePtr<BIGNUM> n_bn(BN_bin2bn(n.data(), n.size(), nullptr));
-  bssl::UniquePtr<BIGNUM> e_bn(BN_bin2bn(e.data(), e.size(), nullptr));
-  if (!n_bn || !e_bn) {
+  auto pubkey = crypto::keypair::PublicKey::FromRsaPublicKeyComponents(n, e);
+  if (!pubkey) {
     return Status::OperationError();
   }
-
-  bssl::UniquePtr<RSA> rsa(RSA_new_public_key(n_bn.get(), e_bn.get()));
-  if (!rsa) {
-    return Status::DataError();
-  }
-
-  // Create a corresponding EVP_PKEY.
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  if (!pkey || !EVP_PKEY_set1_RSA(pkey.get(), rsa.get()))
-    return Status::OperationError();
 
   return CreateWebCryptoRsaPublicKey(
-      std::move(pkey), algorithm.Id(),
+      bssl::UpRef(pubkey->key()), algorithm.Id(),
       algorithm.RsaHashedImportParams()->GetHash(), extractable, usages, key);
 }
 

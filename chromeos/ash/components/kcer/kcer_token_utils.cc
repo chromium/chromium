@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/kcer_token_utils.h"
 
 #include "base/functional/callback_helpers.h"
@@ -14,9 +9,12 @@
 #include "chromeos/ash/components/kcer/helpers/key_helper.h"
 #include "chromeos/ash/components/kcer/kcer_histograms.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/evp.h"
+#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 
 namespace kcer::internal {
+
 namespace {
 
 // A helper method for error handling. When some method fails and should return
@@ -56,72 +54,20 @@ PublicKeySpki MakeRsaSpki(const base::span<const uint8_t>& modulus,
                           const base::span<const uint8_t>& exponent) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-  bssl::UniquePtr<BIGNUM> modulus_bignum(
-      BN_bin2bn(modulus.data(), modulus.size(), nullptr));
-  bssl::UniquePtr<BIGNUM> exponent_bignum(
-      BN_bin2bn(exponent.data(), exponent.size(), nullptr));
-  if (!modulus_bignum || !exponent_bignum) {
+  auto pubkey =
+      crypto::keypair::PublicKey::FromRsaPublicKeyComponents(modulus, exponent);
+  if (!pubkey) {
     return {};
   }
-
-  bssl::UniquePtr<RSA> rsa(
-      RSA_new_public_key(modulus_bignum.get(), exponent_bignum.get()));
-  if (!rsa) {
-    return {};
-  }
-
-  bssl::UniquePtr<EVP_PKEY> ssl_public_key(EVP_PKEY_new());
-  if (!ssl_public_key || !EVP_PKEY_set1_RSA(ssl_public_key.get(), rsa.get())) {
-    return {};
-  }
-
-  bssl::ScopedCBB cbb;
-  uint8_t* der = nullptr;
-  size_t der_len = 0;
-  if (!CBB_init(cbb.get(), 0) ||
-      !EVP_marshal_public_key(cbb.get(), ssl_public_key.get()) ||
-      !CBB_finish(cbb.get(), &der, &der_len)) {
-    return {};
-  }
-  bssl::UniquePtr<uint8_t> der_deleter(der);
-
-  return PublicKeySpki(std::vector<uint8_t>(der, der + der_len));
+  return PublicKeySpki(crypto::evp::PublicKeyToBytes(pubkey->key()));
 }
 
 PublicKeySpki MakeEcSpki(const base::span<const uint8_t>& ec_point) {
-  bssl::UniquePtr<EC_KEY> ec(EC_KEY_new());
-  if (!ec) {
+  auto pubkey = crypto::keypair::PublicKey::FromEcP256Point(ec_point);
+  if (!pubkey) {
     return {};
   }
-
-  if (!EC_KEY_set_group(ec.get(), EC_group_p256())) {
-    return {};
-  }
-
-  EC_KEY* ec_ptr = ec.get();
-  const uint8_t* data_2 = ec_point.data();
-  size_t data_2_len = ec_point.size();
-  if (!o2i_ECPublicKey(&ec_ptr, &data_2, data_2_len)) {
-    return {};
-  }
-
-  bssl::UniquePtr<EVP_PKEY> ssl_public_key(EVP_PKEY_new());
-  if (!ssl_public_key ||
-      !EVP_PKEY_set1_EC_KEY(ssl_public_key.get(), ec.get())) {
-    return {};
-  }
-
-  bssl::ScopedCBB cbb;
-  uint8_t* der = nullptr;
-  size_t der_len = 0;
-  if (!CBB_init(cbb.get(), 0) ||
-      !EVP_marshal_public_key(cbb.get(), ssl_public_key.get()) ||
-      !CBB_finish(cbb.get(), &der, &der_len)) {
-    return {};
-  }
-  bssl::UniquePtr<uint8_t> der_deleter(der);
-
-  return PublicKeySpki(std::vector<uint8_t>(der, der + der_len));
+  return PublicKeySpki(crypto::evp::PublicKeyToBytes(pubkey->key()));
 }
 
 Pkcs11Id MakePkcs11Id(base::span<const uint8_t> public_key_data) {
@@ -267,8 +213,11 @@ void KcerTokenUtils::ImportCert(
   AddAttribute(cert_attrs, chromeos::PKCS11_CKA_ISSUER, issuer_name_der);
   AddAttribute(cert_attrs, chromeos::PKCS11_CKA_SUBJECT, subject_name_der);
   AddAttribute(cert_attrs, chromeos::PKCS11_CKA_SERIAL_NUMBER,
-               base::span(serial_number_der.get(),
-                          static_cast<size_t>(serial_number_der_size)));
+               UNSAFE_BUFFERS(
+                   // SAFETY: BoringSSL guarantees that serial_number_der has
+                   // serial_number_der_size bytes of DER.
+                   base::span(serial_number_der.get(),
+                              static_cast<size_t>(serial_number_der_size))));
   if (!is_hardware_backed) {
     AddAttribute(cert_attrs, chaps::kForceSoftwareAttribute, MakeSpan(&kTrue));
   }

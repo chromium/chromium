@@ -200,6 +200,48 @@ std::optional<PublicKey> PublicKey::FromSubjectPublicKeyInfo(
   return std::optional<PublicKey>(PublicKey(std::move(pkey)));
 }
 
+std::optional<PublicKey> PublicKey::FromRsaPublicKeyComponents(
+    base::span<const uint8_t> n,
+    base::span<const uint8_t> e) {
+  bssl::UniquePtr<BIGNUM> bn_n(BN_bin2bn(n.data(), n.size(), nullptr));
+  bssl::UniquePtr<BIGNUM> bn_e(BN_bin2bn(e.data(), e.size(), nullptr));
+  if (!bn_n || !bn_e) {
+    return std::nullopt;
+  }
+
+  bssl::UniquePtr<RSA> rsa(RSA_new_public_key(bn_n.get(), bn_e.get()));
+  if (!rsa) {
+    return std::nullopt;
+  }
+
+  // The only failure mode for EVP_PKEY_new() is memory allocation failures,
+  // and the only failure mode for EVP_PKEY_set1_RSA() is being passed a null
+  // key or RSA object.
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
+  CHECK(pkey);
+  CHECK(EVP_PKEY_set1_RSA(pkey.get(), rsa.get()));
+  return PublicKey(std::move(pkey));
+}
+
+std::optional<PublicKey> PublicKey::FromEcP256Point(
+    base::span<const uint8_t> p) {
+  bssl::UniquePtr<EC_KEY> ec(EC_KEY_new());
+  CHECK(ec);
+  CHECK(EC_KEY_set_group(ec.get(), EC_group_p256()));
+
+  if (!EC_KEY_oct2key(ec.get(), p.data(), p.size(), nullptr)) {
+    return std::nullopt;
+  }
+
+  // The only failure mode for EVP_PKEY_new() is memory allocation failures,
+  // and the only failure mode for EVP_PKEY_set1_EC_KEY() is being passed a null
+  // key or EC_KEY object.
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
+  CHECK(pkey);
+  CHECK(EVP_PKEY_set1_EC_KEY(pkey.get(), ec.get()));
+  return PublicKey(std::move(pkey));
+}
+
 std::vector<uint8_t> PublicKey::ToSubjectPublicKeyInfo() const {
   return ExportEVPPublicKey(key_.get());
 }

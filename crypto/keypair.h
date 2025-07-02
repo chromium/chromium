@@ -97,10 +97,31 @@ class CRYPTO_EXPORT PublicKey {
   static std::optional<PublicKey> FromSubjectPublicKeyInfo(
       base::span<const uint8_t> spki);
 
+  // Imports a pair of big-endian big integers (n, e) to form an RSA public key.
+  // Returns nullopt if the parameters are invalid for some reason.
+  //
+  // Note: if you need to serialize and deserialize RSA keys, you should
+  // probably use SubjectPublicKeyInfo instead of rolling your own serialization
+  // format for the (n, e) pair.
+  static std::optional<PublicKey> FromRsaPublicKeyComponents(
+      base::span<const uint8_t> n,
+      base::span<const uint8_t> e);
+
+  // Imports a big-endian integer point to form an EC P-256 public key. Returns
+  // nullopt if the point is not on the curve or something else is wrong with
+  // it.
+  //
+  // Note: unless you *only* want an EC P-256 key, you should use
+  // SubjectPublicKeyInfo as a serialization format rather than inventing your
+  // own format.
+  static std::optional<PublicKey> FromEcP256Point(
+      base::span<const uint8_t> point);
+
   // Exports a PublicKey as an X.509 SubjectPublicKeyInfo.
   std::vector<uint8_t> ToSubjectPublicKeyInfo() const;
 
   EVP_PKEY* key() { return key_.get(); }
+  const EVP_PKEY* key() const { return key_.get(); }
 
   bool IsRsa() const;
   bool IsEc() const;
