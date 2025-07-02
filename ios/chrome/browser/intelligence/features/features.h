@@ -7,6 +7,10 @@
 
 #import "base/feature_list.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 // Feature flag controlling whether enhanced calendar is enabled.
 BASE_DECLARE_FEATURE(kEnhancedCalendar);
 
@@ -23,6 +27,10 @@ bool IsPageActionMenuEnabled();
 // the AI hub.
 bool IsDirectBWGEntryPoint();
 extern const char kPageActionMenuDirectEntryPointParam[];
+
+// The BWG session validity duration in minutes.
+const base::TimeDelta BWGSessionValidityDuration();
+extern const char kBWGSessionValidityDurationParam[];
 
 // Holds the variations of the BWG Promo Consent flow.
 enum class BWGPromoConsentVariations {

@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/time/time.h"
 
 BASE_FEATURE(kEnhancedCalendar,
              "EnhancedCalendar",
@@ -30,6 +31,13 @@ bool IsDirectBWGEntryPoint() {
   CHECK(IsPageActionMenuEnabled());
   return base::GetFieldTrialParamByFeatureAsBool(
       kPageActionMenu, kPageActionMenuDirectEntryPointParam, false);
+}
+
+const char kBWGSessionValidityDurationParam[] = "BWGSessionValidityDuration";
+
+const base::TimeDelta BWGSessionValidityDuration() {
+  return base::Minutes(base::GetFieldTrialParamByFeatureAsInt(
+      kPageActionMenu, kBWGSessionValidityDurationParam, 30));
 }
 
 const char kBWGPromoConsentParams[] = "BWGPromoConsentVariations";

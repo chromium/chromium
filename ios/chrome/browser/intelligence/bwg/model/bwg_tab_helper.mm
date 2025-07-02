@@ -10,6 +10,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
@@ -60,10 +61,9 @@ std::optional<std::string> BwgTabHelper::GetServerId() {
   }
 
   // Return the server ID if it hasn't yet expired, otherwise clean it up.
-  // TODO(crbug.com/424264708): Make the expiration time Finchable.
   int64_t latest_valid_timestamp =
       base::Time::Now().InMillisecondsSinceUnixEpoch() -
-      base::Minutes(30).InMilliseconds();
+      BWGSessionValidityDuration().InMilliseconds();
   if (*creation_timestamp > latest_valid_timestamp) {
     return *server_id;
   }

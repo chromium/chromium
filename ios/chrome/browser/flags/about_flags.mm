@@ -1379,9 +1379,14 @@ const FeatureEntry::FeatureVariation kOmniboxMobileParityVariations[] = {
 const FeatureEntry::FeatureParam kPageActionMenuDirectEntryPoint[] = {
     {kPageActionMenuDirectEntryPointParam, "true"},
 };
+const FeatureEntry::FeatureParam kPageActionMenuBWGSessionValidityDuration[] = {
+    {kBWGSessionValidityDurationParam, "1"}};
 const FeatureEntry::FeatureVariation kPageActionMenuVariations[] = {
     {"Direct Entry Point", kPageActionMenuDirectEntryPoint,
      std::size(kPageActionMenuDirectEntryPoint), nullptr},
+    {"1 min session validity duration",
+     kPageActionMenuBWGSessionValidityDuration,
+     std::size(kPageActionMenuBWGSessionValidityDuration), nullptr},
 };
 
 // LINT.IfChange(FingerprintingProtectionFeatureParams)
