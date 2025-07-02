@@ -176,7 +176,7 @@ bool PaymentManifestDownloader::Download::IsLinkHeaderDownload() const {
 }
 
 bool PaymentManifestDownloader::Download::IsResponseBodyDownload() const {
-  return type == Type::FALLBACK_TO_RESPONSE_BODY || type == Type::RESPONSE_BODY;
+  return type == Type::RESPONSE_BODY;
 }
 
 void PaymentManifestDownloader::OnURLLoaderRedirect(
@@ -270,12 +270,8 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
       RespondWithHttpStatusCodeError(final_url, headers->response_code(), *log_,
                                      std::move(download->callback));
     } else {
-      RespondWithContent(
-          response_body,
-          download->type == Download::Type::FALLBACK_TO_RESPONSE_BODY
-              ? errors::kNoContentAndNoLinkHeader
-              : errors::kNoContentInPaymentManifest,
-          final_url, *log_, std::move(download->callback));
+      RespondWithContent(response_body, errors::kNoContentInPaymentManifest,
+                         final_url, *log_, std::move(download->callback));
     }
     return;
   }
@@ -411,8 +407,6 @@ void PaymentManifestDownloader::InitiateDownload(
     case Download::Type::LINK_HEADER_WITH_FALLBACK_TO_RESPONSE_BODY:
       resource_request->method = net::HttpRequestHeaders::kHeadMethod;
       break;
-    case Download::Type::FALLBACK_TO_RESPONSE_BODY:
-    // Intentional fall through.
     case Download::Type::RESPONSE_BODY:
       resource_request->method = net::HttpRequestHeaders::kGetMethod;
       break;

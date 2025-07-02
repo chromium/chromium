@@ -140,7 +140,6 @@ class PaymentManifestDownloader {
   struct Download {
     enum class Type {
       LINK_HEADER_WITH_FALLBACK_TO_RESPONSE_BODY,
-      FALLBACK_TO_RESPONSE_BODY,
       RESPONSE_BODY,
     };
 
