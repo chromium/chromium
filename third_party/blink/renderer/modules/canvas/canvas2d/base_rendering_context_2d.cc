@@ -1617,7 +1617,7 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
       resource_provider_from_webgpu_access_.get();
   host->ReplaceResourceProviderForCanvas2D(
       std::move(resource_provider_from_webgpu_access_));
-  resource_provider->SetCanvasResourceHost(host);
+  resource_provider->SetDelegate(host);
 
   // Disassociate the WebGPU texture from the SharedImage to end its
   // SharedImage access.

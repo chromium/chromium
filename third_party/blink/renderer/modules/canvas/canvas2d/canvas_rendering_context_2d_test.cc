@@ -159,7 +159,6 @@
 class GrDirectContext;
 
 namespace blink {
-class CanvasResourceHost;
 class ExecutionContext;
 
 namespace {
@@ -525,7 +524,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
  public:
   FakeCanvasResourceProvider(gfx::Size size,
                              RasterModeHint hint,
-                             CanvasResourceHost* resource_host,
+                             CanvasResourceProvider::Delegate* delegate,
                              CompositingMode compositing_mode)
       : CanvasResourceProvider(CanvasResourceProvider::kSharedImage,
                                size,
@@ -533,7 +532,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
                                kPremul_SkAlphaType,
                                gfx::ColorSpace::CreateSRGB(),
                                SharedGpuContext::ContextProviderWrapper(),
-                               resource_host),
+                               delegate),
         is_accelerated_(hint != RasterModeHint::kPreferCPU),
         supports_direct_compositing_(
             compositing_mode == CompositingMode::kSupportsDirectCompositing) {
@@ -2088,9 +2087,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 TEST_P(CanvasRenderingContext2DTestAccelerated, GetImageAfterContextLoss) {
   CreateContext(kNonOpaque);
 
-  // For CanvasResourceHost to check for the GPU context being lost as part of
-  // checking resource validity, it is necessary to have both accelerated
-  // raster/compositing and a CC layer.
+  // For CanvasRenderingContextHost to check for the GPU context being
+  // lost as part of checking resource validity, it is necessary to have both
+  // accelerated raster/compositing and a CC layer.
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
   EXPECT_TRUE(CanvasElement().IsCanvas2DResourceValid());
@@ -2105,9 +2104,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
        PrepareMailboxWhenContextIsLostWithFailedRestore) {
   CreateContext(kNonOpaque);
 
-  // For CanvasResourceHost to check for the GPU context being lost as part of
-  // checking resource validity, it is necessary to have both accelerated
-  // raster/compositing and a CC layer.
+  // For CanvasRenderingContextHost to check for the GPU context being
+  // lost as part of checking resource validity, it is necessary to have both
+  // accelerated raster/compositing and a CC layer.
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
   // The resource should start off valid.
@@ -2630,9 +2629,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
 
   CreateContext(kNonOpaque);
 
-  // For CanvasResourceHost to check for the GPU context being lost as part of
-  // checking resource validity, it is necessary to have both accelerated
-  // raster/compositing and a CC layer.
+  // For CanvasRenderingContextHost to check for the GPU context being
+  // lost as part of checking resource validity, it is necessary to have both
+  // accelerated raster/compositing and a CC layer.
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
   EXPECT_TRUE(CanvasElement().IsCanvas2DResourceValid());

@@ -282,7 +282,7 @@ CanvasRenderingContextHost::ReplaceResourceProviderForCanvas2D(
   resource_provider_for_canvas2d_ = std::move(new_resource_provider);
   UpdateMemoryUsage();
   if (old_resource_provider) {
-    old_resource_provider->SetCanvasResourceHost(nullptr);
+    old_resource_provider->SetDelegate(nullptr);
   }
   return old_resource_provider;
 }

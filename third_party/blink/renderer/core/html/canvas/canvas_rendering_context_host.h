@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -45,7 +44,7 @@ enum class RasterModeHint {
 
 class CORE_EXPORT CanvasRenderingContextHost
     : public GarbageCollectedMixin,
-      public CanvasResourceHost,
+      public CanvasResourceProvider::Delegate,
       public CanvasImageSource,
       public ImageBitmapSource,
       public CanvasHibernationHandler::Delegate {
@@ -119,8 +118,9 @@ class CORE_EXPORT CanvasRenderingContextHost
   int width() const { return Size().width(); }
   int height() const { return Size().height(); }
 
-  // Partial CanvasResourceHost implementation
+  // Partial CanvasResourceProvider::Delegate implementation
   void InitializeForRecording(cc::PaintCanvas*) const final;
+
   virtual void PageVisibilityChanged();
 
   bool IsWebGL() const;
