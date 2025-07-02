@@ -48,7 +48,8 @@ public class TabModelHolderFactory {
                     nextTabPolicySupplier,
                     modelDelegate,
                     asyncTabParamsManager,
-                    tabRemover);
+                    tabRemover,
+                    tabUngrouperFactory);
         }
         return createLegacyTabModelHolder(
                 profile,
@@ -93,7 +94,8 @@ public class TabModelHolderFactory {
                     asyncTabParamsManager,
                     activityType,
                     modelDelegate,
-                    tabRemover);
+                    tabRemover,
+                    tabUngrouperFactory);
         }
         return createLegacyIncognitoTabModelHolder(
                 profileProvider,
@@ -126,7 +128,11 @@ public class TabModelHolderFactory {
             NextTabPolicySupplier nextTabPolicySupplier,
             TabModelDelegate modelDelegate,
             AsyncTabParamsManager asyncTabParamsManager,
-            TabRemover tabRemover) {
+            TabRemover tabRemover,
+            TabUngrouperFactory tabUngrouperFactory) {
+        TabGroupModelFilter[] filterHolder = new TabGroupModelFilter[1];
+        TabUngrouper tabUngrouper =
+                tabUngrouperFactory.create(/* isIncognitoBranded= */ false, () -> filterHolder[0]);
         TabCollectionTabModelImpl regularTabModel =
                 new TabCollectionTabModelImpl(
                         profile,
@@ -139,7 +145,9 @@ public class TabModelHolderFactory {
                         nextTabPolicySupplier,
                         modelDelegate,
                         asyncTabParamsManager,
-                        tabRemover);
+                        tabRemover,
+                        tabUngrouper);
+        filterHolder[0] = regularTabModel;
 
         return new TabModelHolder(regularTabModel, regularTabModel);
     }
@@ -154,7 +162,8 @@ public class TabModelHolderFactory {
             AsyncTabParamsManager asyncTabParamsManager,
             @ActivityType int activityType,
             TabModelDelegate modelDelegate,
-            TabRemover tabRemover) {
+            TabRemover tabRemover,
+            TabUngrouperFactory tabUngrouperFactory) {
         IncognitoTabModelImplCreator incognitoCreator =
                 new IncognitoTabModelImplCreator(
                         profileProvider,
@@ -166,7 +175,8 @@ public class TabModelHolderFactory {
                         asyncTabParamsManager,
                         activityType,
                         modelDelegate,
-                        tabRemover);
+                        tabRemover,
+                        tabUngrouperFactory);
         IncognitoTabModelImpl incognitoTabModel = new IncognitoTabModelImpl(incognitoCreator);
 
         return new IncognitoTabModelHolder(
@@ -230,7 +240,8 @@ public class TabModelHolderFactory {
                         asyncTabParamsManager,
                         activityType,
                         modelDelegate,
-                        tabRemover);
+                        tabRemover,
+                        tabUngrouperFactory);
         IncognitoTabModelImpl incognitoTabModel = new IncognitoTabModelImpl(incognitoCreator);
 
         return new IncognitoTabModelHolder(

@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -35,7 +36,10 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
-/** Unit tests for {@link TabCollectionTabModelImpl}. */
+/**
+ * Unit tests for {@link TabCollectionTabModelImpl}. More substantive tests are in {@link
+ * TabCollectionTabModelImplTest}.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabCollectionTabModelImplUnitTest {
     private static final long TAB_MODEL_JNI_BRIDGE_PTR = 875943L;
@@ -55,6 +59,7 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
     @Mock private AsyncTabParamsManager mAsyncTabParamsManager;
     @Mock private TabRemover mTabRemover;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private TabModelObserver mTabModelObserver;
 
     private TabCollectionTabModelImpl mTabModel;
@@ -94,7 +99,8 @@ public class TabCollectionTabModelImplUnitTest {
                         mNextTabPolicySupplier,
                         mTabModelDelegate,
                         mAsyncTabParamsManager,
-                        mTabRemover);
+                        mTabRemover,
+                        mTabUngrouper);
         mTabModel.addObserver(mTabModelObserver);
     }
 
@@ -254,5 +260,14 @@ public class TabCollectionTabModelImplUnitTest {
                 TabList.INVALID_TAB_INDEX,
                 mTabModel.indexOf(MockTab.createAndInitialize(123, mProfile)));
         verify(mTabCollectionTabModelImplJni, never()).getIndexOfTabRecursive(anyLong(), any());
+    }
+
+    @Test
+    public void testIsTabInTabGroup() {
+        MockTab tab = MockTab.createAndInitialize(123, mProfile);
+        tab.setIsInitialized(true);
+        assertFalse(mTabModel.isTabInTabGroup(tab));
+        tab.setTabGroupId(new Token(1L, 2L));
+        assertTrue(mTabModel.isTabInTabGroup(tab));
     }
 }

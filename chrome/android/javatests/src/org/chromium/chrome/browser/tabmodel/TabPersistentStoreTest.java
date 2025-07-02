@@ -234,6 +234,10 @@ public class TabPersistentStoreTest {
                             () ->
                                     getTabGroupModelFilterProvider()
                                             .getTabGroupModelFilter(/* isIncognito= */ true));
+            TabUngrouperFactory incognitoTabUngrouperFactory =
+                    (unused, filterSupplier) -> {
+                        return new PassthroughTabUngrouper(filterSupplier);
+                    };
             IncognitoTabModelImpl incognitoTabModel =
                     new IncognitoTabModelImpl(
                             new IncognitoTabModelImplCreator(
@@ -246,7 +250,8 @@ public class TabPersistentStoreTest {
                                     AsyncTabParamsManagerSingleton.getInstance(),
                                     NO_RESTORE_TYPE,
                                     this,
-                                    incognitoTabRemover));
+                                    incognitoTabRemover,
+                                    incognitoTabUngrouperFactory));
             initialize(
                     TabModelHolderFactory.createTabModelHolderForTesting(regularTabModel),
                     TabModelHolderFactory.createIncognitoTabModelHolderForTesting(

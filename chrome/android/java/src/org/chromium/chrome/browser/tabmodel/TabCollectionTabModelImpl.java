@@ -72,8 +72,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     private final TabModelDelegate mModelDelegate;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final TabRemover mTabRemover;
-    // TODO(crbug.com/405343634): Replace this with the appropriate TabUngrouper.
-    private final TabUngrouper mTabUngrouper = new PassthroughTabUngrouper(() -> this);
+    private final TabUngrouper mTabUngrouper;
 
     private long mNativeTabCollectionTabModelImplPtr;
     // Only ever true for the regular tab model. Called after tab state is initialized, before
@@ -93,6 +92,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
      * @param modelDelegate The {@link TabModelDelegate} for interacting outside the tab model.
      * @param asyncTabParamsManager To detect if an async tab operation is in progress.
      * @param tabRemover For removing tabs.
+     * @param tabUngrouper For ungrouping tabs.
      */
     public TabCollectionTabModelImpl(
             Profile profile,
@@ -105,7 +105,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             NextTabPolicySupplier nextTabPolicySupplier,
             TabModelDelegate modelDelegate,
             AsyncTabParamsManager asyncTabParamsManager,
-            TabRemover tabRemover) {
+            TabRemover tabRemover,
+            TabUngrouper tabUngrouper) {
         super(profile);
         assertOnUiThread();
         mIsArchivedTabModel = isArchivedTabModel;
@@ -117,6 +118,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         mModelDelegate = modelDelegate;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mTabRemover = tabRemover;
+        mTabUngrouper = tabUngrouper;
 
         initializeNative(activityType, isArchivedTabModel);
     }
@@ -627,6 +629,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int getTabCountForGroup(@Nullable Token tabGroupId) {
+        assertOnUiThread();
         if (tabGroupId == null) return 0;
 
         return TabCollectionTabModelImplJni.get()
@@ -660,7 +663,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public boolean isTabInTabGroup(Tab tab) {
-        return false;
+        assertOnUiThread();
+        return tab.getTabGroupId() != null;
     }
 
     @Override
