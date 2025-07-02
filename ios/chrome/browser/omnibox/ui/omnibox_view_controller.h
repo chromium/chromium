@@ -17,22 +17,6 @@
 @protocol OmniboxKeyboardDelegate;
 @protocol TextFieldViewContaining;
 
-// Delegate for paste actions in OmniboxViewController.
-@protocol OmniboxViewControllerPasteDelegate
-
-// User tapped on the keyboard accessory's paste button.
-- (void)didTapPasteToSearchButton:(NSArray<NSItemProvider*>*)itemProviders;
-// User tapped on the Search Copied Text from the omnibox menu.
-- (void)didTapSearchCopiedText;
-// User tapped on the Search Copied Image from the omnibox menu.
-- (void)didTapSearchCopiedImage;
-// User tapped on the Lens Image from the omnibox menu.
-- (void)didTapLensCopiedImage;
-// User tapped on the Visit Copied Link from the omnibox menu.
-- (void)didTapVisitCopiedLink;
-
-@end
-
 @interface OmniboxViewController : UIViewController <EditViewAnimatee,
                                                      LocationBarOffsetProvider,
                                                      OmniboxConsumer>
@@ -62,8 +46,6 @@
 @property(nonatomic, assign)
     UISemanticContentAttribute semanticContentAttribute;
 
-/// Delegate for paste actions.
-@property(nonatomic, weak) id<OmniboxViewControllerPasteDelegate> pasteDelegate;
 /// Delegate for keyboard actions.
 @property(nonatomic, weak) id<OmniboxKeyboardDelegate> popupKeyboardDelegate;
 

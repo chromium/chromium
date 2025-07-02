@@ -14,8 +14,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/omnibox/browser/actions/omnibox_action_concepts.h"
-#import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/strings/grit/components_strings.h"

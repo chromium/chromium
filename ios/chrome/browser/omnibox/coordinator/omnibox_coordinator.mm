@@ -175,7 +175,6 @@
   mediator.sceneState = browser->GetSceneState();
   mediator.URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(browser);
-  viewController.pasteDelegate = mediator;
   viewController.mutator = mediator;
 
   DCHECK(_client.get());

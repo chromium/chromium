@@ -16,7 +16,6 @@ source_set("popup") {
     "//components/feature_engagement/public",
     "//components/history/core/browser",
     "//components/image_fetcher/core",
-    "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/password_manager/core/browser",
     "//components/search_engines",

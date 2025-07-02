@@ -8,7 +8,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/omnibox/browser/autocomplete_match.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -260,6 +259,133 @@ using base::UserMetricsAction;
   [self.omniboxTextController onDeleteBackward];
 }
 
+#pragma mark ContextMenu event
+
+- (void)pasteToSearch:(NSArray<NSItemProvider*>*)itemProviders {
+  __weak __typeof(self) weakSelf = self;
+  auto textCompletion =
+      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          NSString* text = static_cast<NSString*>(providedItem);
+          if (text) {
+            [weakSelf.loadQueryCommandsHandler loadQuery:text immediately:YES];
+            [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
+          }
+        });
+      };
+  auto imageSearchCompletion =
+      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          UIImage* image = static_cast<UIImage*>(providedItem);
+          if (image) {
+            [weakSelf loadImageQuery:image];
+            [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
+          }
+        });
+      };
+  auto lensCompletion =
+      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          UIImage* image = base::apple::ObjCCast<UIImage>(providedItem);
+          if (image) {
+            [weakSelf lensImage:image];
+          }
+        });
+      };
+  for (NSItemProvider* itemProvider in itemProviders) {
+    if ([itemProvider canLoadObjectOfClass:[UIImage class]]) {
+      // Either provide a Lens option or a reverse-image-search option.
+      if ([self shouldUseLens]) {
+        RecordAction(
+            UserMetricsAction("Mobile.OmniboxPasteButton.LensCopiedImage"));
+        [itemProvider loadObjectOfClass:[UIImage class]
+                      completionHandler:lensCompletion];
+        break;
+      } else if (self.searchEngineSupportsSearchByImage) {
+        RecordAction(
+            UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedImage"));
+        [itemProvider loadObjectOfClass:[UIImage class]
+                      completionHandler:imageSearchCompletion];
+        break;
+      }
+    } else if ([itemProvider canLoadObjectOfClass:[NSURL class]]) {
+      RecordAction(
+          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedLink"));
+      default_browser::NotifyOmniboxURLCopyPasteAndNavigate(
+          self.isIncognito, self.tracker, self.sceneState);
+      // Load URL as a NSString to avoid further conversion.
+      [itemProvider loadObjectOfClass:[NSString class]
+                    completionHandler:textCompletion];
+      break;
+    } else if ([itemProvider canLoadObjectOfClass:[NSString class]]) {
+      RecordAction(
+          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedText"));
+      default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
+      [itemProvider loadObjectOfClass:[NSString class]
+                    completionHandler:textCompletion];
+      break;
+    }
+  }
+}
+
+- (void)visitCopiedLink {
+  default_browser::NotifyOmniboxURLCopyPasteAndNavigate(
+      self.isIncognito, self.tracker, self.sceneState);
+  __weak __typeof(self) weakSelf = self;
+  ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
+      base::BindOnce(^(std::optional<GURL> optionalURL) {
+        if (!optionalURL) {
+          return;
+        }
+        NSString* url = [NSString cr_fromString:optionalURL.value().spec()];
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [weakSelf.loadQueryCommandsHandler loadQuery:url immediately:YES];
+          [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
+        });
+      }));
+}
+
+- (void)searchCopiedText {
+  default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
+  __weak __typeof(self) weakSelf = self;
+  ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
+      base::BindOnce(^(std::optional<std::u16string> optionalText) {
+        if (!optionalText) {
+          return;
+        }
+        NSString* query = [NSString cr_fromString16:optionalText.value()];
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [weakSelf.loadQueryCommandsHandler loadQuery:query immediately:YES];
+          [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
+        });
+      }));
+}
+
+- (void)searchCopiedImage {
+  __weak __typeof(self) weakSelf = self;
+  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
+      base::BindOnce(^(std::optional<gfx::Image> optionalImage) {
+        if (!optionalImage) {
+          return;
+        }
+        UIImage* image = optionalImage.value().ToUIImage();
+        [weakSelf loadImageQuery:image];
+        [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
+      }));
+}
+
+- (void)lensCopiedImage {
+  __weak __typeof(self) weakSelf = self;
+  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
+      base::BindOnce(^(std::optional<gfx::Image> optionalImage) {
+        if (!optionalImage) {
+          return;
+        }
+        UIImage* image = optionalImage.value().ToUIImage();
+        [weakSelf lensImage:image];
+      }));
+}
+
 #pragma mark - OmniboxTextControllerDelegate
 
 - (void)omniboxTextController:(OmniboxTextController*)omniboxTextController
@@ -367,133 +493,6 @@ using base::UserMetricsAction;
     self.placeholderService->FetchDefaultSearchEngineIcon(
         self.faviconSize, base::BindRepeating(completion));
   }
-}
-
-#pragma mark - OmniboxViewControllerPasteDelegate
-
-- (void)didTapPasteToSearchButton:(NSArray<NSItemProvider*>*)itemProviders {
-  __weak __typeof(self) weakSelf = self;
-  auto textCompletion =
-      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          NSString* text = static_cast<NSString*>(providedItem);
-          if (text) {
-            [weakSelf.loadQueryCommandsHandler loadQuery:text immediately:YES];
-            [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
-          }
-        });
-      };
-  auto imageSearchCompletion =
-      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          UIImage* image = static_cast<UIImage*>(providedItem);
-          if (image) {
-            [weakSelf loadImageQuery:image];
-            [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
-          }
-        });
-      };
-  auto lensCompletion =
-      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          UIImage* image = base::apple::ObjCCast<UIImage>(providedItem);
-          if (image) {
-            [weakSelf lensImage:image];
-          }
-        });
-      };
-  for (NSItemProvider* itemProvider in itemProviders) {
-    if ([itemProvider canLoadObjectOfClass:[UIImage class]]) {
-      // Either provide a Lens option or a reverse-image-search option.
-      if ([self shouldUseLens]) {
-        RecordAction(
-            UserMetricsAction("Mobile.OmniboxPasteButton.LensCopiedImage"));
-        [itemProvider loadObjectOfClass:[UIImage class]
-                      completionHandler:lensCompletion];
-        break;
-      } else if (self.searchEngineSupportsSearchByImage) {
-        RecordAction(
-            UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedImage"));
-        [itemProvider loadObjectOfClass:[UIImage class]
-                      completionHandler:imageSearchCompletion];
-        break;
-      }
-    } else if ([itemProvider canLoadObjectOfClass:[NSURL class]]) {
-      RecordAction(
-          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedLink"));
-      default_browser::NotifyOmniboxURLCopyPasteAndNavigate(
-          self.isIncognito, self.tracker, self.sceneState);
-      // Load URL as a NSString to avoid further conversion.
-      [itemProvider loadObjectOfClass:[NSString class]
-                    completionHandler:textCompletion];
-      break;
-    } else if ([itemProvider canLoadObjectOfClass:[NSString class]]) {
-      RecordAction(
-          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedText"));
-      default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
-      [itemProvider loadObjectOfClass:[NSString class]
-                    completionHandler:textCompletion];
-      break;
-    }
-  }
-}
-
-- (void)didTapVisitCopiedLink {
-  default_browser::NotifyOmniboxURLCopyPasteAndNavigate(
-      self.isIncognito, self.tracker, self.sceneState);
-  __weak __typeof(self) weakSelf = self;
-  ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
-      base::BindOnce(^(std::optional<GURL> optionalURL) {
-        if (!optionalURL) {
-          return;
-        }
-        NSString* url = [NSString cr_fromString:optionalURL.value().spec()];
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf.loadQueryCommandsHandler loadQuery:url immediately:YES];
-          [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
-        });
-      }));
-}
-
-- (void)didTapSearchCopiedText {
-  default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
-  __weak __typeof(self) weakSelf = self;
-  ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
-      base::BindOnce(^(std::optional<std::u16string> optionalText) {
-        if (!optionalText) {
-          return;
-        }
-        NSString* query = [NSString cr_fromString16:optionalText.value()];
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf.loadQueryCommandsHandler loadQuery:query immediately:YES];
-          [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
-        });
-      }));
-}
-
-- (void)didTapSearchCopiedImage {
-  __weak __typeof(self) weakSelf = self;
-  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(std::optional<gfx::Image> optionalImage) {
-        if (!optionalImage) {
-          return;
-        }
-        UIImage* image = optionalImage.value().ToUIImage();
-        [weakSelf loadImageQuery:image];
-        [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
-      }));
-}
-
-- (void)didTapLensCopiedImage {
-  __weak __typeof(self) weakSelf = self;
-  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(std::optional<gfx::Image> optionalImage) {
-        if (!optionalImage) {
-          return;
-        }
-        UIImage* image = optionalImage.value().ToUIImage();
-        [weakSelf lensImage:image];
-      }));
 }
 
 #pragma mark - Private methods

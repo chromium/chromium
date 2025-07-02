@@ -409,7 +409,7 @@ using base::UserMetricsAction;
   // Interacted while focused.
   self.omniboxInteractedWhileFocused = YES;
 
-  [self.pasteDelegate didTapPasteToSearchButton:itemProviders];
+  [self.mutator pasteToSearch:itemProviders];
 }
 
 - (void)textFieldDidAcceptInput:(OmniboxTextFieldIOS*)textField {
@@ -631,25 +631,25 @@ using base::UserMetricsAction;
   RecordAction(
       UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedImage"));
   self.omniboxInteractedWhileFocused = YES;
-  [self.pasteDelegate didTapSearchCopiedImage];
+  [self.mutator searchCopiedImage];
 }
 
 - (void)lensCopiedImage:(id)sender {
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.LensCopiedImage"));
   self.omniboxInteractedWhileFocused = YES;
-  [self.pasteDelegate didTapLensCopiedImage];
+  [self.mutator lensCopiedImage];
 }
 
 - (void)visitCopiedLink:(id)sender {
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.VisitCopiedLink"));
   self.omniboxInteractedWhileFocused = YES;
-  [self.pasteDelegate didTapVisitCopiedLink];
+  [self.mutator visitCopiedLink];
 }
 
 - (void)searchCopiedText:(id)sender {
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   self.omniboxInteractedWhileFocused = YES;
-  [self.pasteDelegate didTapSearchCopiedText];
+  [self.mutator searchCopiedText];
 }
 
 #pragma mark - UIScribbleInteractionDelegate

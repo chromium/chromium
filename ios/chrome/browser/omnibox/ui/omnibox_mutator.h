@@ -58,6 +58,23 @@
 /// Called when the backspace button is pressed in the Omnibox text field.
 - (void)onDeleteBackward;
 
+#pragma mark - ContextMenu event
+
+/// User tapped on the keyboard accessory's paste button.
+- (void)pasteToSearch:(NSArray<NSItemProvider*>*)itemProviders;
+
+/// User tapped on the Search Copied Text from the omnibox menu.
+- (void)searchCopiedText;
+
+/// User tapped on the Search Copied Image from the omnibox menu.
+- (void)searchCopiedImage;
+
+/// User tapped on the Lens Image from the omnibox menu.
+- (void)lensCopiedImage;
+
+/// User tapped on the Visit Copied Link from the omnibox menu.
+- (void)visitCopiedLink;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_OMNIBOX_MUTATOR_H_

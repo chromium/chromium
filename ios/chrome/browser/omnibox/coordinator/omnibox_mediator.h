@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_mutator.h"
-#import "ios/chrome/browser/omnibox/ui/omnibox_view_controller.h"
 
 class FaviconLoader;
 @protocol LensCommands;
@@ -28,9 +27,8 @@ class Tracker;
 }
 
 /// A mediator object that updates the omnibox according to the model changes.
-@interface OmniboxMediator : NSObject <OmniboxMutator,
-                                       OmniboxTextControllerDelegate,
-                                       OmniboxViewControllerPasteDelegate>
+@interface OmniboxMediator
+    : NSObject <OmniboxMutator, OmniboxTextControllerDelegate>
 
 /// Delegate for events in this class.
 @property(nonatomic, weak) id<OmniboxMediatorDelegate> delegate;
