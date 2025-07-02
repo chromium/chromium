@@ -1387,6 +1387,19 @@ const FeatureEntry::FeatureVariation kOmniboxMobileParityVariations[] = {
      kOmniboxMobileParityEnableFeedForGoogleOnly,
      std::size(kOmniboxMobileParityEnableFeedForGoogleOnly), nullptr}};
 
+// LINT.IfChange(DataSharingVersioningChoices)
+const FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
+    {"Default", "", ""},
+    {flag_descriptions::kDataSharingSharedDataTypesEnabled,
+     switches::kEnableFeatures, "SharedDataTypesKillSwitch"},
+    {flag_descriptions::kDataSharingSharedDataTypesEnabledWithUi,
+     switches::kEnableFeatures,
+     "SharedDataTypesKillSwitch,DataSharingEnableUpdateChromeUI"},
+    {"Disabled", switches::kDisableFeatures,
+     "SharedDataTypesKillSwitch, DataSharingEnableUpdateChromeUI"},
+};
+// LINT.ThenChange(//chrome/browser/about_flags.cc:DataSharingVersioningChoices)
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2688,7 +2701,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShareExtensionForMultiprofileName,
      flag_descriptions::kShareExtensionForMultiprofileDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kShareExtensionForMultiprofile)},
-
+    // LINT.IfChange(DataSharingVersioning)
+    {"shared-data-types-kill-switch",
+     flag_descriptions::kDataSharingVersioningStatesName,
+     flag_descriptions::kDataSharingVersioningStatesDescription,
+     flags_ui::kOsIos, MULTI_VALUE_TYPE(kDataSharingVersioningStateChoices)},
+    // LINT.ThenChange(//chrome/browser/about_flags.cc:DataSharingVersioning)
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
