@@ -43,6 +43,10 @@ constexpr int kProgressBarHeight = 3;
 // Unique identifier within the CookieControlsBubbleView hierarchy.
 constexpr int kFaviconID = 1;
 
+// Delay in milliseconds before triggering a page reload for the tracking
+// protections UI.
+constexpr int kReloadUIDisplayDelay = 200;
+
 // Expected URL types for `UrlIdentity::CreateFromUrl()`.
 constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
@@ -90,23 +94,47 @@ void CookieControlsBubbleViewController::OnUserTriggeredReloadingAction() {
   if (!web_contents_) {
     return;
   }
-
-  web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
-
-  SwitchToReloadingView();
-}
-
-void CookieControlsBubbleViewController::SwitchToReloadingView() {
   if (controller_->ShowActFeatures()) {
     bubble_view_->GetContentView()
         ->SetTrackingProtectionsButtonReloadingState();
+    bubble_view_->GetContentView()->SetSpinnerVisible(true);
+
+    // Delay reload to avoid a crash caused by Throbber callbacks running
+    // after the UI has already been torn down.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CookieControlsBubbleViewController::CloseBubbleAndReloadPage,
+            weak_factory_.GetWeakPtr()),
+        base::Milliseconds(kReloadUIDisplayDelay));
+
   } else {
+    web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
+    SwitchToReloadingView();
+  }
+
+  SetReloadingTimeout();
+}
+
+void CookieControlsBubbleViewController::CloseBubbleAndReloadPage() {
+  // Stop animation and close the bubble before triggering reload.
+  if (bubble_view_ && bubble_view_->GetContentView()) {
+    bubble_view_->GetContentView()->SetSpinnerVisible(false);
+    CloseBubble();
+  }
+
+  web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
+}
+
+void CookieControlsBubbleViewController::SwitchToReloadingView() {
     bubble_view_->SwitchToReloadingView();
     bubble_view_->GetReloadingView()->GetViewAccessibility().AnnounceText(
         l10n_util::GetStringFUTF16(IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL,
                                    GetSubjectUrlName(web_contents_.get())));
     bubble_view_->GetReloadingView()->RequestFocus();
-  }
+}
+
+void CookieControlsBubbleViewController::SetReloadingTimeout() {
   // Set a timeout for how long the reloading UI is shown for.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -336,8 +364,8 @@ void CookieControlsBubbleViewController::OnTrackingProtectionsButtonPressed() {
   // TODO(crbug.com/388294499): Add metrics for ACT actions.
   controller_->SetStateChangedViaBypass(true);
   is_reloading_state_ = true;
-  OnUserTriggeredReloadingAction();
   controller_->OnTrackingProtectionsChangedForSite();
+  OnUserTriggeredReloadingAction();
   bubble_view_->GetContentView()->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kAlert, true);
 }
