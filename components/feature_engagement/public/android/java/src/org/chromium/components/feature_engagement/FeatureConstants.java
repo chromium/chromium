@@ -108,6 +108,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
     FeatureConstants.IPH_TAB_SWITCHER_XR,
     FeatureConstants.IPH_TAB_TEARING_XR,
+    FeatureConstants.IPH_TOUCH_TO_SEARCH_CALLOUT,
     FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE,
@@ -413,4 +414,7 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users about the tab tearing gesture on an XR device. */
     String IPH_TAB_TEARING_XR = "IPH_TabTearingXR";
+
+    /** An IPH feature to inform users that the touch to search panel can be expanded. */
+    String IPH_TOUCH_TO_SEARCH_CALLOUT = "IPH_TouchToSearchCallout";
 }

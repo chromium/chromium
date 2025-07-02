@@ -311,9 +311,9 @@ constexpr base::FeatureParam<std::string> kQuickDeleteAndroidSurveyTriggerId(
     "trigger_id",
     /*default_value=*/"");
 
-constexpr base::FeatureParam<bool> kTouchToSearchCalloutTextVariant(
+constexpr base::FeatureParam<bool> kTouchToSearchCalloutIph(
     &kTouchToSearchCallout,
-    "text_variant",
+    "iph",
     /*default_value=*/false);
 
 }  // namespace android

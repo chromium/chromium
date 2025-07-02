@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -31,16 +34,21 @@ import org.chromium.chrome.browser.compositor.scene_layer.ContextualSearchSceneL
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -127,6 +135,9 @@ public class ContextualSearchPanel extends OverlayPanel {
 
     /** Whether we have started collapsing the panel. */
     private boolean mDidStartCollapsing;
+
+    /** Used for requesting in-product-help. */
+    @Nullable private UserEducationHelper mUserEducationHelper;
 
     // ============================================================================================
     // Constructor
@@ -520,6 +531,8 @@ public class ContextualSearchPanel extends OverlayPanel {
             mShouldPromoteToTabAfterMaximizing = false;
             mManagementDelegate.promoteToTab();
         }
+
+        updateTouchToSearchIph();
     }
 
     @Override
@@ -997,6 +1010,53 @@ public class ContextualSearchPanel extends OverlayPanel {
      */
     public ContextualSearchCalloutControl getCalloutControl() {
         return getSearchBarControl().getCalloutControl();
+    }
+
+    private void updateTouchToSearchIph() {
+        if (!ChromeFeatureList.sTouchToSearchCalloutIph.getValue()) {
+            return;
+        }
+
+        if (getPanelState() == PanelState.PEEKED) {
+            maybeShowTouchToSearchIph();
+        } else if (getPanelState() == PanelState.EXPANDED) {
+            TrackerFactory.getTrackerForProfile(getProfile())
+                    .notifyEvent("touch_to_search_expansion_used");
+            getUserEducationHelper().dismissTextBubble();
+        }
+    }
+
+    private UserEducationHelper getUserEducationHelper() {
+        if (mUserEducationHelper == null) {
+            mUserEducationHelper =
+                    new UserEducationHelper(
+                            mActivity, getProfile(), new Handler(Looper.getMainLooper()));
+        }
+        return mUserEducationHelper;
+    }
+
+    private void maybeShowTouchToSearchIph() {
+        if (mContainerView == null) {
+            return;
+        }
+        // IPH appears above the TTS panel.
+        Rect anchorRect =
+                new Rect(
+                        mContainerView.getLeft(),
+                        (int) (mContainerView.getBottom() - (getHeight() / mPxToDp)),
+                        mContainerView.getRight(),
+                        mContainerView.getBottom());
+        getUserEducationHelper()
+                .requestShowIph(
+                        new IphCommandBuilder(
+                                        mContext.getResources(),
+                                        FeatureConstants.IPH_TOUCH_TO_SEARCH_CALLOUT,
+                                        /* stringId= */ R.string.contextual_search_callout_iph,
+                                        /* accessibilityStringId= */ R.string
+                                                .contextual_search_callout_iph)
+                                .setAnchorView(mContainerView)
+                                .setAnchorRect(anchorRect)
+                                .build());
     }
 
     // ============================================================================================

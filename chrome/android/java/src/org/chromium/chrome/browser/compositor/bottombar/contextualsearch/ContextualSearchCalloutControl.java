@@ -65,8 +65,12 @@ public class ContextualSearchCalloutControl extends OverlayPanelInflater {
                 resourceLoader);
         mListener = listener;
 
+        // The callout icon feature is only enabled when IPH is disabled.
+        boolean isCalloutIconFeatureEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_SEARCH_CALLOUT)
+                        && !ChromeFeatureList.sTouchToSearchCalloutIph.getValue();
         // Pre-inflate so that the contextual search text padding is adjusted to the callout width.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_SEARCH_CALLOUT)) {
+        if (isCalloutIconFeatureEnabled) {
             inflate();
             invalidate();
         }

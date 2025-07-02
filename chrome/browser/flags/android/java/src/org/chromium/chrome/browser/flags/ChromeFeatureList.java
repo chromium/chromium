@@ -1689,8 +1689,8 @@ public abstract class ChromeFeatureList {
     public static final IntCachedFeatureParam sWebApkMinShellApkVersionValue =
             newIntCachedFeatureParam(WEB_APK_MIN_SHELL_APK_VERSION, "version", 146);
 
-    public static final BooleanCachedFeatureParam sTouchToSearchCalloutTextVariant =
-            newBooleanCachedFeatureParam(TOUCH_TO_SEARCH_CALLOUT, "text_variant", false);
+    public static final BooleanCachedFeatureParam sTouchToSearchCalloutIph =
+            newBooleanCachedFeatureParam(TOUCH_TO_SEARCH_CALLOUT, "iph", false);
 
     /** All {@link CachedFeatureParam}s of features in this FeatureList */
     public static final List<CachedFeatureParam<?>> sParamsCached =
@@ -1779,7 +1779,7 @@ public abstract class ChromeFeatureList {
                     sTabStripLayoutOptimizationOnExternalDisplay,
                     sTabStripLayoutOptimizationOnExternalDisplayOemDenylist,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
-                    sTouchToSearchCalloutTextVariant,
+                    sTouchToSearchCalloutIph,
                     sUseChimeAndroidSdkAlwaysRegister,
                     sWebApkMinShellApkVersionValue);
 

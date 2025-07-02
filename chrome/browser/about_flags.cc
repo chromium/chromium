@@ -4683,13 +4683,13 @@ const FeatureEntry::FeatureVariation kHistorySyncOptinExpansionPillVariations[] 
 
 #if BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kTouchToSearchCalloutTextVariantParams[] = {
-    {"text_variant", "true"},
+const FeatureEntry::FeatureParam kTouchToSearchCalloutIphParams[] = {
+    {"iph", "true"},
 };
 const FeatureEntry::FeatureVariation kTouchToSearchCalloutVariations[] = {
     {"Default", nullptr, 0, nullptr},
-    {"Text Variant", kTouchToSearchCalloutTextVariantParams,
-     std::size(kTouchToSearchCalloutTextVariantParams), nullptr},
+    {"IPH", kTouchToSearchCalloutIphParams,
+     std::size(kTouchToSearchCalloutIphParams), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_ANDROID)
