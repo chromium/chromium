@@ -1849,7 +1849,7 @@ chromium-metrics-reviews@google.com.
     name="Enterprise.DMServerCloudPolicyRequestStatus{EnterpriseDMServerCloudPolicyRequest}"
     enum="EnterpriseDeviceManagementStatus" expires_after="2025-12-01">
   <owner>vincb@google.com</owner>
-  <owner>zmin@chromium.com</owner>
+  <owner>zmin@chromium.org</owner>
   <summary>
     Records the returned status of fetching cloud policies from the dmserver.
 
