@@ -30,7 +30,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -47,6 +46,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/autocomplete_change_observer.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/download/public/common/download_item.h"
@@ -56,7 +56,6 @@
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
-#include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -177,35 +176,6 @@ class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
  private:
   raw_ptr<javascript_dialogs::AppModalDialogController> dialog_ = nullptr;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-};
-
-
-class AutocompleteChangeObserver : public AutocompleteController::Observer {
- public:
-  explicit AutocompleteChangeObserver(Profile* profile) {
-    scoped_observation_.Observe(
-        AutocompleteControllerEmitterFactory::GetForBrowserContext(profile));
-  }
-
-  AutocompleteChangeObserver(const AutocompleteChangeObserver&) = delete;
-  AutocompleteChangeObserver& operator=(const AutocompleteChangeObserver&) =
-      delete;
-  ~AutocompleteChangeObserver() override = default;
-
-  void Wait() { run_loop_.Run(); }
-
-  // AutocompleteController::Observer:
-  void OnResultChanged(AutocompleteController* controller,
-                       bool default_match_changed) override {
-    if (run_loop_.running())
-      run_loop_.Quit();
-  }
-
- private:
-  base::RunLoop run_loop_;
-  base::ScopedObservation<AutocompleteControllerEmitter,
-                          AutocompleteController::Observer>
-      scoped_observation_{this};
 };
 
 // Helper class to notify AllTabsObserver that a WebContents has been destroyed.

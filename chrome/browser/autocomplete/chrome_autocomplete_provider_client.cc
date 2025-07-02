@@ -88,7 +88,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/autocomplete/keyword_extensions_delegate_impl.h"
 #include "chrome/browser/autocomplete/unscoped_extension_provider_delegate_impl.h"
 #include "extensions/common/extension_features.h"
@@ -306,7 +306,7 @@ ChromeAutocompleteProviderClient::GetShortcutsBackendIfExists() {
 std::unique_ptr<KeywordExtensionsDelegate>
 ChromeAutocompleteProviderClient::GetKeywordExtensionsDelegate(
     KeywordProvider* keyword_provider) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return std::make_unique<KeywordExtensionsDelegateImpl>(profile_,
                                                          keyword_provider);
 #else
@@ -317,7 +317,7 @@ ChromeAutocompleteProviderClient::GetKeywordExtensionsDelegate(
 std::unique_ptr<UnscopedExtensionProviderDelegate>
 ChromeAutocompleteProviderClient::GetUnscopedExtensionProviderDelegate(
     UnscopedExtensionProvider* provider) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExperimentalOmniboxLabs));
   return std::make_unique<UnscopedExtensionProviderDelegateImpl>(profile_,

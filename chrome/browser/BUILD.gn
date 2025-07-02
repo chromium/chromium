@@ -7538,7 +7538,13 @@ static_library("browser") {
   }
 
   if (enable_extensions_core) {
-    sources += [ "download/download_crx_util.cc" ]
+    sources += [
+      "autocomplete/keyword_extensions_delegate_impl.cc",
+      "autocomplete/keyword_extensions_delegate_impl.h",
+      "autocomplete/unscoped_extension_provider_delegate_impl.cc",
+      "autocomplete/unscoped_extension_provider_delegate_impl.h",
+      "download/download_crx_util.cc",
+    ]
 
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
@@ -7574,12 +7580,8 @@ static_library("browser") {
     sources += [
       "accessibility/animation_policy_prefs.cc",
       "accessibility/animation_policy_prefs.h",
-      "autocomplete/keyword_extensions_delegate_impl.cc",
-      "autocomplete/keyword_extensions_delegate_impl.h",
       "autocomplete/shortcuts_extensions_manager.cc",
       "autocomplete/shortcuts_extensions_manager.h",
-      "autocomplete/unscoped_extension_provider_delegate_impl.cc",
-      "autocomplete/unscoped_extension_provider_delegate_impl.h",
       "browsing_data/counters/hosted_apps_counter.cc",
       "browsing_data/counters/hosted_apps_counter.h",
       "clipboard/chrome_clipboard_permission_context_delegate.cc",

@@ -128,6 +128,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
     return result;
   }
 
+  AutocompleteController* autocomplete_controller_for_test() {
+    return autocomplete_controller_.get();
+  }
+
   class Factory : public ProfileKeyedServiceFactory {
    public:
     static AutocompleteControllerAndroid* GetForProfile(Profile* profile);

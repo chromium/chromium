@@ -21,7 +21,7 @@
 #include "components/omnibox/browser/omnibox_suggestions_watcher.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #error "Should not be included when extensions are disabled"
 #endif
 

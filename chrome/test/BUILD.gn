@@ -153,6 +153,7 @@ static_library("test_support") {
   deps = [
     "//chrome/browser:global_features",
     "//chrome/browser/background:background",
+    "//chrome/browser/omnibox",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/status_icons:status_icons",
@@ -219,6 +220,8 @@ static_library("test_support") {
     "../browser/tpcd/support/trial_test_utils.h",
     "../test/base/menu_model_test.cc",
     "../test/base/menu_model_test.h",
+    "base/autocomplete_change_observer.cc",
+    "base/autocomplete_change_observer.h",
     "base/chrome_render_view_host_test_harness.cc",
     "base/chrome_render_view_host_test_harness.h",
     "base/chrome_render_view_test.cc",
@@ -2040,13 +2043,17 @@ if (is_android) {
 
     if (enable_desktop_android_extensions) {
       sources += [
-        # Can't be part of platform_browser_tests because it runs in
-        # interactive_ui_tests on Win/Mac/Linux.
+        # These API tests can't be part of platform_browser_tests because they
+        # run in interactive_ui_tests on Win/Mac/Linux.
         "../browser/extensions/api/notifications/notifications_apitest.cc",
+        "../browser/extensions/api/omnibox/omnibox_api_interactive_test.cc",
         "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
       ]
 
-      deps += [ "//chrome/browser/extensions" ]
+      deps += [
+        "//chrome/browser/extensions",
+        "//chrome/browser/omnibox",
+      ]
 
       data += [
         "//chrome/test/data/extensions/",
@@ -11362,6 +11369,7 @@ if (!is_android && !is_chromeos_device) {
 
       deps += [
         "//chrome/browser/controlled_frame:test_support",
+        "//chrome/browser/omnibox",
         "//chrome/browser/ui/download",
         "//chrome/browser/ui/exclusive_access:test_support",
         "//extensions/browser/api:extensions_api_client",
