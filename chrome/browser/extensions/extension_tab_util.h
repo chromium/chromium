@@ -130,9 +130,9 @@ class ExtensionTabUtil {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   static int GetTabId(const content::WebContents* web_contents);
+  static int GetWindowIdOfTab(const content::WebContents* web_contents);
 
 #if !BUILDFLAG(IS_ANDROID)
-  static int GetWindowIdOfTab(const content::WebContents* web_contents);
   static base::Value::List CreateTabList(Browser* browser,
                                          const Extension* extension,
                                          mojom::ContextType context);

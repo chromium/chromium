@@ -509,12 +509,12 @@ int ExtensionTabUtil::GetTabId(const WebContents* web_contents) {
   return sessions::SessionTabHelper::IdForTab(web_contents).id();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 int ExtensionTabUtil::GetWindowIdOfTab(const WebContents* web_contents) {
   return sessions::SessionTabHelper::IdForWindowContainingTab(web_contents)
       .id();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 std::string ExtensionTabUtil::GetBrowserWindowTypeText(Browser& browser) {
   return WindowControllerFromBrowser(&browser)->GetWindowTypeText();
@@ -533,6 +533,7 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   api::tabs::Tab tab_object;
   tab_object.id = GetTabId(contents);
   tab_object.index = tab_index;
+  tab_object.window_id = GetWindowIdOfTab(contents);
   return tab_object;
 #else
   if (!tab_strip)

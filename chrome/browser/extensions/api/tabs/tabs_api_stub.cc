@@ -6,9 +6,12 @@
 
 #include "base/notimplemented.h"
 #include "base/values.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -18,8 +21,23 @@ namespace tabs = api::tabs;
 
 namespace {
 
+constexpr char kNoActiveTab[] = "No active tab";
 constexpr char kTabsNotImplemented[] = "chrome.tabs not implemented";
 constexpr char kWindowsNotImplemented[] = "chrome.windows not implemented";
+
+content::WebContents* GetActiveWebContents() {
+  for (TabModel* tab_model : TabModelList::models()) {
+    if (!tab_model->IsActiveModel()) {
+      continue;
+    }
+    auto* web_contents = tab_model->GetActiveWebContents();
+    if (!web_contents) {
+      continue;
+    }
+    return web_contents;
+  }
+  return nullptr;
+}
 
 }  // namespace
 
@@ -97,27 +115,52 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   NOTIMPLEMENTED() << "Using stub implementation and returning active tab";
   base::Value::List result;
   api::tabs::Tab tab_object;
-  // Always return the active tab in the current window.
-  for (TabModel* tab_model : TabModelList::models()) {
-    if (!tab_model->IsActiveModel()) {
-      continue;
-    }
-    auto* web_contents = tab_model->GetActiveWebContents();
-    if (!web_contents) {
-      continue;
-    }
-    tab_object.id = ExtensionTabUtil::GetTabId(web_contents);
-    result.Append(tab_object.ToValue());
-    return RespondNow(WithArguments(std::move(result)));
+  auto* web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kNoActiveTab));
   }
-  return RespondNow(Error("No active tab"));
+  tab_object.id = ExtensionTabUtil::GetTabId(web_contents);
+  result.Append(tab_object.ToValue());
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   std::optional<tabs::Create::Params> params =
       tabs::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
+  NOTIMPLEMENTED() << "Using stub implementation and creating a new tab";
+
+  // The use of a lambda is copy-pasted from the Win/Mac/Linux implementation.
+  // It's not clear why it is needed, but it is.
+  return RespondNow([&]() -> ResponseValue {
+    // Get the tab model of the active tab.
+    content::WebContents* parent = GetActiveWebContents();
+    CHECK(parent);
+    if (!parent) {
+      return Error(kNoActiveTab);
+    }
+    TabModel* tab_model = TabModelList::GetTabModelForWebContents(parent);
+    CHECK_EQ(parent, tab_model->GetActiveWebContents());
+
+    // Create a new tab.
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(browser_context()));
+    CHECK(contents);
+    content::WebContents* second_web_contents = contents.release();
+    tab_model->CreateTab(TabAndroid::FromWebContents(parent),
+                         second_web_contents,
+                         /*select=*/true);
+
+    // Add the new tab object to the result.
+    ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+        ExtensionTabUtil::GetScrubTabBehavior(
+            extension(), source_context_type(), second_web_contents);
+    api::tabs::Tab tab_object = ExtensionTabUtil::CreateTabObject(
+        second_web_contents, scrub_tab_behavior, extension());
+    base::Value::Dict result = tab_object.ToValue();
+    return has_callback() ? WithArguments(std::move(result)) : NoArguments();
+  }());
 }
 
 ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {

@@ -2047,6 +2047,7 @@ if (is_android) {
         # run in interactive_ui_tests on Win/Mac/Linux.
         "../browser/extensions/api/notifications/notifications_apitest.cc",
         "../browser/extensions/api/omnibox/omnibox_api_interactive_test.cc",
+        "../browser/extensions/api/tabs/tabs_apitest_android.cc",
         "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
       ]
 
