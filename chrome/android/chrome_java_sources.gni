@@ -1144,6 +1144,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ui/activity_recreation/ActivityRecreationController.java",
   "java/src/org/chromium/chrome/browser/ui/activity_recreation/ActivityRecreationUiState.java",
   "java/src/org/chromium/chrome/browser/ui/system/StatusBarColorController.java",
+  "java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/SavedTabGroupUndoBarController.java",
   "java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/TabUndoBarController.java",
   "java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarController.java",
   "java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarExplicitTrigger.java",

@@ -110,7 +110,9 @@ public class ArchivedTabsDialogCoordinatorTest {
     private static final int TAB1_ID = 456;
     private static final Token TAB_GROUP_ID1 = new Token(829L, 283L);
     private static final String SYNC_GROUP_ID1 = "test_sync_group_id1";
+    private static final String SYNC_GROUP_ID2 = "test_sync_group_id2";
     private static final String GROUP_TITLE1 = "My Group";
+    private static final String GROUP_TITLE2 = "Test";
     private static final @TabGroupColorId int SYNC_GROUP_COLOR1 = TabGroupColorId.BLUE;
     private static final GURL TAB_URL_1 = new GURL("https://url1.com");
 
@@ -924,7 +926,98 @@ public class ArchivedTabsDialogCoordinatorTest {
 
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(1)
-                .verifyUndoSnackbarWithTextIsShown("2 tabs closed");
+                .verifyUndoSnackbarWithTextIsShown("1 tab group, 2 tabs closed");
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    public void testSelectCloseArchivedTabGroup() {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        SavedTabGroup savedTabGroup =
+                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+
+        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
+        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
+
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("TabGroups.CloseArchivedTabsMenuItem.TabGroupCount", 1)
+                        .expectIntRecords("TabGroups.CloseArchivedTabsMenuItem.TabGroupTabCount", 1)
+                        .build();
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.resultRobot.verifyToolbarSelectionText("1 item");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close item");
+
+        // Assert that the group was archived and emit an event with the new archive status.
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
+        savedTabGroup.archivalTimeMs = null;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
+
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(1)
+                .verifyUndoSnackbarWithTextIsShown("My Group tab group closed");
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    public void testSelectCloseArchivedTabGroups() {
+        when(mTabGroupSyncService.getAllGroupIds())
+                .thenReturn(new String[] {SYNC_GROUP_ID1, SYNC_GROUP_ID2});
+        SavedTabGroup savedTabGroup1 =
+                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
+        SavedTabGroup savedTabGroup2 =
+                createSavedTabGroup(SYNC_GROUP_ID2, GROUP_TITLE2, SYNC_GROUP_COLOR1, 1, true);
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+
+        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
+        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select items");
+
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("TabGroups.CloseArchivedTabsMenuItem.TabGroupCount", 2)
+                        .expectIntRecords("TabGroups.CloseArchivedTabsMenuItem.TabGroupTabCount", 2)
+                        .build();
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        mRobot.resultRobot.verifyToolbarSelectionText("2 items");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close items");
+
+        // Assert that the group was archived and emit an event with the new archive status.
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID2, false);
+        savedTabGroup1.archivalTimeMs = null;
+        savedTabGroup2.archivalTimeMs = null;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup1);
+                    notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup2);
+                });
+
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(1)
+                .verifyUndoSnackbarWithTextIsShown("2 tab groups closed");
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
         histogramExpectation.assertExpected();
@@ -967,7 +1060,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
 
-        mRobot.resultRobot.verifyUndoSnackbarWithTextIsShown("2 tabs closed");
+        mRobot.resultRobot.verifyUndoSnackbarWithTextIsShown("1 tab group, 2 tabs closed");
 
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());

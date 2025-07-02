@@ -74,7 +74,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.undo_tab_close_snackbar.TabUndoBarController;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.SavedTabGroupUndoBarController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -185,6 +185,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                     TabClosureParams.closeTabs(tabs).build(),
                                     /* allowDialog= */ false);
                     closeArchivedTabGroups(tabGroupSyncIds);
+                    mUndoBarController.queueUndoBar(tabs, tabGroupSyncIds);
                     RecordHistogram.recordCount1000Histogram(
                             "Tabs.CloseArchivedTabsMenuItem.TabCount", tabs.size());
                     RecordUserAction.record("Tabs.CloseArchivedTabsMenuItem");
@@ -409,7 +410,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final BackPressManager mBackPressManager;
     private final TabArchiveSettings mTabArchiveSettings;
     private final ModalDialogManager mModalDialogManager;
-    private final TabUndoBarController mUndoBarController;
+    private final SavedTabGroupUndoBarController mUndoBarController;
     private final ActionConfirmationDialog mActionConfirmationDialog;
     private final ViewGroup mDialogView;
     private final ViewGroup mTabSwitcherView;
@@ -491,11 +492,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         .getTabModelSelector()
                         .getModel(/* incognito= */ false);
         mUndoBarController =
-                new TabUndoBarController(
+                new SavedTabGroupUndoBarController(
                         mActivity,
                         mArchivedTabModelOrchestrator.getTabModelSelector(),
                         /* snackbarManageable= */ this,
-                        /* dialogVisibilitySupplier= */ null);
+                        tabGroupSyncService);
         mTabSwitcherView = tabSwitcherView;
 
         // Inflate the dialog view and hook it up
@@ -570,7 +571,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         }
 
         mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
-        mUndoBarController.destroy();
     }
 
     private void tearDownTabListEditorCoordinator() {
@@ -606,7 +606,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
         mOnTabSelectingListener = onTabSelectingListener;
         mArchivedTabModelOrchestrator.getTabCountSupplier().addObserver(mTabCountObserver);
-        mUndoBarController.initialize();
 
         TabListEditorController controller = mTabListEditorCoordinator.getController();
         controller.setLifecycleObserver(mTabListEditorLifecycleObserver);
@@ -818,7 +817,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         mDesktopWindowStateManager,
                         /* edgeToEdgeSupplier= */ null,
                         CreationMode.FULL_SCREEN,
-                        /* undoBarExplicitTrigger= */ null,
+                        mUndoBarController,
                         COMPONENT_NAME);
     }
 

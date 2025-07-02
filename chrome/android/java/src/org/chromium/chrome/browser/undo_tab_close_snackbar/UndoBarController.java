@@ -48,6 +48,12 @@ public abstract class UndoBarController
             this.tabs.addAll(tabs);
             this.isAllTabs = isAllTabs;
         }
+
+        TabClosureEvent(List<Tab> tabs, List<String> savedTabGroupSyncIds, boolean isAllTabs) {
+            this.tabs.addAll(tabs);
+            this.savedTabGroupSyncIds.addAll(savedTabGroupSyncIds);
+            this.isAllTabs = isAllTabs;
+        }
     }
 
     /**
