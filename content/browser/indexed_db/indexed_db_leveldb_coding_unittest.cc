@@ -843,17 +843,23 @@ TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
           CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey()))),
   });
 
-  for (size_t i = 0; i < keys.size() - 1; ++i) {
+  for (size_t i = 0; i < keys.size(); ++i) {
     const IndexedDBKey& key_a = keys[i];
-    const IndexedDBKey& key_b = keys[i + 1];
+    std::string encoded_a = EncodeSortableIDBKey(key_a);
+    EXPECT_TRUE(encoded_a.size());
 
+    ASSERT_TRUE(DecodeSortableIDBKey(encoded_a).IsValid());
+    EXPECT_TRUE(DecodeSortableIDBKey(encoded_a).Equals(key_a));
+
+    if (i == keys.size() - 1) {
+      break;
+    }
+
+    const IndexedDBKey& key_b = keys[i + 1];
     SCOPED_TRACE(testing::Message() << "Comparing keys " << key_a.DebugString()
                                     << " and " << key_b.DebugString());
 
     EXPECT_TRUE(key_a.IsLessThan(key_b));
-
-    std::string encoded_a = EncodeSortableIDBKey(key_a);
-    EXPECT_TRUE(encoded_a.size());
     std::string encoded_b = EncodeSortableIDBKey(key_b);
     EXPECT_TRUE(encoded_b.size());
 

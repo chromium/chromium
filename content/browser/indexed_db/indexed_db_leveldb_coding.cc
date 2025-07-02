@@ -126,11 +126,11 @@ void EncodeStringWithSentinel(const std::u16string& value, std::string* into) {
 // `output`. Returns true on success.
 bool DecodeStringWithSentinel(std::string_view& encoded,
                               std::u16string* output) {
-  constexpr int kChunkLengthInBytes = sizeof(kPaddingByte) + sizeof(char16_t);
-  if (encoded.size() < kChunkLengthInBytes + kSentinelLength) {
+  if (encoded.empty()) {
     return false;
   }
 
+  constexpr int kChunkLengthInBytes = sizeof(kPaddingByte) + sizeof(char16_t);
   for (; !encoded.empty(); encoded = encoded.substr(kChunkLengthInBytes)) {
     if (encoded.front() == kSentinel) {
       encoded = encoded.substr(kSentinelLength);
@@ -165,10 +165,10 @@ void EncodeBinaryWithSentinel(const std::string& value, std::string* into) {
 // Reads and consumes the first bytes of `encoded` and outputs decoded binary as
 // string in `output`. Returns true on success.
 bool DecodeBinaryWithSentinel(std::string_view& encoded, std::string* output) {
-  constexpr int kChunkLengthInBytes = sizeof(kPaddingByte) + 1;
-  if (encoded.size() < kChunkLengthInBytes + kSentinelLength) {
+  if (encoded.empty()) {
     return false;
   }
+  constexpr int kChunkLengthInBytes = sizeof(kPaddingByte) + 1;
   for (; !encoded.empty(); encoded = encoded.substr(kChunkLengthInBytes)) {
     if (encoded.front() == kSentinel) {
       encoded = encoded.substr(1);
