@@ -490,6 +490,13 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   [self updateWidgetPromoCellLayoutIfNeeded];
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  if ([self.scrimView isDescendantOfView:self.view]) {
+    [self.view bringSubviewToFront:self.scrimView];
+  }
+}
+
 #pragma mark - SettingsRootTableViewController
 
 - (void)loadModel {
@@ -1316,18 +1323,28 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 // Shows scrim overlay and hide toolbar.
 - (void)showScrim {
-  if (self.scrimView.alpha < 1.0f) {
-    self.scrimView.alpha = 0.0f;
-    [self.tableView addSubview:self.scrimView];
-    // We attach our constraints to the superview because the tableView is
-    // a scrollView and it seems that we get an empty frame when attaching to
-    // it.
-    AddSameConstraints(self.scrimView, self.view.superview);
+  UIView* scrimView = self.scrimView;
+  if (scrimView.alpha < 1.0f) {
+    scrimView.alpha = 0.0f;
+    [self.tableView addSubview:scrimView];
+
+    UIView* superview = self.tableView.superview;
+
+    [NSLayoutConstraint activateConstraints:@[
+      [scrimView.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor],
+      [scrimView.trailingAnchor
+          constraintEqualToAnchor:superview.trailingAnchor],
+      [scrimView.bottomAnchor constraintEqualToAnchor:superview.bottomAnchor],
+      [scrimView.topAnchor
+          constraintEqualToAnchor:self.navigationController.navigationBar
+                                      .bottomAnchor],
+
+    ]];
     self.tableView.accessibilityElementsHidden = YES;
     self.tableView.scrollEnabled = NO;
     [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
                      animations:^{
-                       self.scrimView.alpha = 1.0f;
+                       scrimView.alpha = 1.0f;
                        [self.view layoutIfNeeded];
                      }];
   }
