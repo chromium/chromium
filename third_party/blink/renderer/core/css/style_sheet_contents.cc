@@ -698,6 +698,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kViewTransition:
       case StyleRuleBase::kFunction:
       case StyleRuleBase::kPositionTry:
+      case StyleRuleBase::kCustomMedia:
         break;
       case StyleRuleBase::kApplyMixin:
         // TODO(sesse): Should we go down into the rules here?

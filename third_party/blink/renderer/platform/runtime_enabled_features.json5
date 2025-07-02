@@ -1240,6 +1240,10 @@
       status: "experimental",
     },
     {
+      name: "CSSCustomMedia",
+      status: "test",
+    },
+    {
       // Allows getComputedStyle() and similar to get information about :visited colors.
       // Only safe if PartitionVisitedLinkDatabaseWithSelfLinks is enabled.
       name: "CSSDoNotHideVisitedColor",

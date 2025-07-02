@@ -310,6 +310,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kMixin:
     case StyleRule::kApplyMixin:
     case StyleRule::kPositionTry:
+    case StyleRule::kCustomMedia:
       // TODO(andruud): Handle other descriptor types here.
       // Note that we can reach this path through @supports at-rule(...).
       return nullptr;

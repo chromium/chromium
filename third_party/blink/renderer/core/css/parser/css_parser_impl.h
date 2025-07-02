@@ -89,6 +89,7 @@ class CORE_EXPORT CSSParserImpl {
           CSSAtRuleID::kCSSAtRuleFontFeatureValues,
           CSSAtRuleID::kCSSAtRuleFunction,
           CSSAtRuleID::kCSSAtRuleMixin,
+          CSSAtRuleID::kCSSAtRuleCustomMedia,
       };
 
   // A few rules are only valid top-level. For example, you may not specify
@@ -330,6 +331,7 @@ class CORE_EXPORT CSSParserImpl {
   ConsumeFunctionParameters(CSSParserTokenStream& stream);
   StyleRuleMixin* ConsumeMixinRule(CSSParserTokenStream& stream);
   StyleRuleApplyMixin* ConsumeApplyMixinRule(CSSParserTokenStream& stream);
+  StyleRuleCustomMedia* ConsumeCustomMediaRule(CSSParserTokenStream& stream);
 
   StyleRuleKeyframe* ConsumeKeyframeStyleRule(
       std::unique_ptr<Vector<KeyframeOffset>> key_list,

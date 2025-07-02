@@ -7,6 +7,7 @@
 #include <bitset>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_lazy_parsing_state.h"
 #include "third_party/blink/renderer/core/css/parser/css_lazy_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
@@ -39,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
@@ -942,6 +945,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
     case CSSAtRuleID::kCSSAtRuleRightMiddle:
     case CSSAtRuleID::kCSSAtRuleRightBottom:
       return ConsumePageMarginRule(id, stream);
+    case CSSAtRuleID::kCSSAtRuleCustomMedia:
+      return ConsumeCustomMediaRule(stream);
     case CSSAtRuleID::kCSSAtRuleInvalid:
     case CSSAtRuleID::kCount:
       ConsumeErroneousAtRule(stream, id);
@@ -2492,6 +2497,66 @@ StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
       std::move(key_list),
       CreateCSSPropertyValueSet(parsed_properties_, kCSSKeyframeRuleMode,
                                 context_->GetDocument()));
+}
+
+namespace {
+
+// https://drafts.csswg.org/css-extensions-1/#typedef-extension-name
+bool IsValidExtensionName(const CSSParserToken& token) {
+  if (token.GetType() != kIdentToken) {
+    return false;
+  }
+  StringView value = token.Value();
+  return value.length() >= 2 && value[0] == '-' && value[1] == '-';
+}
+
+std::optional<bool> GetBooleanValue(const CSSParserToken& token) {
+  if (token.GetType() != kIdentToken) {
+    return std::nullopt;
+  }
+  if (token.Value() == "true") {
+    return true;
+  }
+  if (token.Value() == "false") {
+    return false;
+  }
+  return std::nullopt;
+}
+
+}  // namespace
+
+StyleRuleCustomMedia* CSSParserImpl::ConsumeCustomMediaRule(
+    CSSParserTokenStream& stream) {
+  const CSSParserToken& name_token = stream.Peek();
+  if (!IsValidExtensionName(name_token)) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleCustomMedia);
+    return nullptr;
+  }
+  String name = name_token.Value().ToString();
+  stream.ConsumeIncludingWhitespace();
+
+  std::optional<bool> bool_val = GetBooleanValue(stream.Peek());
+  if (bool_val.has_value()) {
+    stream.ConsumeIncludingWhitespace();
+    if (!stream.AtEnd()) {
+      return nullptr;
+    }
+    return MakeGarbageCollected<StyleRuleCustomMedia>(
+        StyleRuleCustomMedia(AtomicString(name), *bool_val));
+  }
+
+  MediaQuerySet* media_query_set = MediaQueryParser::ParseMediaQuerySet(
+      stream, context_->GetExecutionContext());
+  if (!media_query_set) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleCustomMedia);
+    return nullptr;
+  }
+  if (!stream.AtEnd()) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleCustomMedia);
+    return nullptr;
+  }
+  return MakeGarbageCollected<StyleRuleCustomMedia>(
+      StyleRuleCustomMedia(AtomicString(name), media_query_set));
 }
 
 StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
