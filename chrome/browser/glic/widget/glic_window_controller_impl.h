@@ -31,6 +31,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -54,7 +55,8 @@ class GlicButton;
 // window is open |attached_browser_| indicates if the window is attached or
 // standalone. See |IsAttached|
 class GlicWindowControllerImpl
-    : public GlicWindowController,
+    : public display::DisplayObserver,
+      public GlicWindowController,
       public views::WidgetObserver,
       public Host::Observer,
       public web_modal::WebContentsModalDialogManagerDelegate,
@@ -136,6 +138,10 @@ class GlicWindowControllerImpl
                              const gfx::Rect& new_bounds) override;
   void OnWidgetUserResizeStarted() override;
   void OnWidgetUserResizeEnded() override;
+
+  // display::DisplayObserver implementation
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
  private:
   Host& host() const;
@@ -269,6 +275,9 @@ class GlicWindowControllerImpl
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       glic_widget_observation_{this};
+
+  // Observes the display configuration.
+  display::ScopedOptionalDisplayObserver display_observer_{this};
 
   // Used for observing closing of the pinned browser.
   std::optional<base::CallbackListSubscription> browser_close_subscription_;
