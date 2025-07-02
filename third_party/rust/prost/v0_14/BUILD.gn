@@ -10,23 +10,23 @@ import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
   crate_name = "prost"
-  epoch = "0.13"
+  epoch = "0.14"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/encoding.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/encoding/length_delimiter.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/encoding/varint.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/encoding/wire_type.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/message.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/name.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/encoding.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/encoding/length_delimiter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/encoding/varint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/encoding/wire_type.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/message.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/name.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/types.rs",
   ]
   inputs = [
-    "//third_party/rust/chromium_crates_io/vendor/prost-v0_13/src/../README.md",
+    "//third_party/rust/chromium_crates_io/vendor/prost-v0_14/src/../README.md",
   ]
 
   build_native_rust_unit_tests = false
@@ -35,13 +35,13 @@ cargo_crate("lib") {
   cargo_pkg_name = "prost"
   cargo_pkg_description =
       "A Protocol Buffers implementation for the Rust Language."
-  cargo_pkg_version = "0.13.5"
+  cargo_pkg_version = "0.14.1"
 
   allow_unsafe = true
 
   deps = [
     "//third_party/rust/bytes/v1:lib",
-    "//third_party/rust/prost_derive/v0_13:lib",
+    "//third_party/rust/prost_derive/v0_14:lib",
   ]
   features = [
     "default",

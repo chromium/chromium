@@ -30,9 +30,9 @@ First, add `prost` and its public dependencies to your `Cargo.toml`:
 
 ```ignore
 [dependencies]
-prost = "0.13"
+prost = "0.14"
 # Only necessary if using Protobuf well-known types:
-prost-types = "0.13"
+prost-types = "0.14"
 ```
 
 The recommended way to add `.proto` compilation to a Cargo project is to use the
@@ -380,9 +380,9 @@ the `std` features in `prost` and `prost-types`:
 
 ```ignore
 [dependencies]
-prost = { version = "0.13.5", default-features = false, features = ["prost-derive"] }
+prost = { version = "0.14.1", default-features = false, features = ["derive"] }
 # Only necessary if using Protobuf well-known types:
-prost-types = { version = "0.13.5", default-features = false }
+prost-types = { version = "0.14.1", default-features = false }
 ```
 
 Additionally, configure `prost-build` to output `BTreeMap`s instead of `HashMap`s

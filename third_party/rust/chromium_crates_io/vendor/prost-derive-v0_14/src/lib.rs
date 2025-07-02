@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/prost-derive/0.13.5")]
+#![doc(html_root_url = "https://docs.rs/prost-derive/0.14.1")]
 // The `quote!` macro requires deep recursion.
 #![recursion_limit = "4096"]
 
@@ -439,17 +439,12 @@ fn try_oneof(input: TokenStream) -> Result<TokenStream, Error> {
         let tag = field.tags()[0];
         let merge = field.merge(quote!(value));
         quote! {
-            #tag => {
-                match field {
-                    ::core::option::Option::Some(#ident::#variant_ident(ref mut value)) => {
-                        #merge
-                    },
-                    _ => {
-                        let mut owned_value = ::core::default::Default::default();
-                        let value = &mut owned_value;
-                        #merge.map(|_| *field = ::core::option::Option::Some(#ident::#variant_ident(owned_value)))
-                    },
-                }
+            #tag => if let ::core::option::Option::Some(#ident::#variant_ident(value)) = field {
+                #merge
+            } else {
+                let mut owned_value = ::core::default::Default::default();
+                let value = &mut owned_value;
+                #merge.map(|_| *field = ::core::option::Option::Some(#ident::#variant_ident(owned_value)))
             }
         }
     });
