@@ -45,7 +45,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListItemType;
-import org.chromium.ui.listmenu.ListMenuItemViewBinder;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -384,7 +383,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM,
                 new LayoutViewBuilder(R.layout.context_menu_row),
-                ListMenuItemViewBinder::binder);
+                ContextMenuItemViewBinder::bind);
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                 new LayoutViewBuilder(R.layout.context_menu_share_row),

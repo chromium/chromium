@@ -13,7 +13,7 @@ found in the LICENSE file.
     android:paddingHorizontal="@dimen/context_menu_list_lateral_padding">
 
     <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/menu_item_icon"
+        android:id="@+id/menu_row_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="6dp"
@@ -25,7 +25,7 @@ found in the LICENSE file.
         android:tintMode="src_in" />
 
     <TextView
-        android:id="@+id/menu_item_text"
+        android:id="@+id/menu_row_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:duplicateParentState="true"
