@@ -18,9 +18,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
-#include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_identifiability_metrics.h"
+#include "content/browser/service_worker/service_worker_process_manager.h"
+#include "content/browser/service_worker/service_worker_registry.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -48,6 +49,7 @@ namespace content {
 
 class BrowserContext;
 class ChromeBlobStorageContext;
+class ServiceWorkerContextCore;
 class ServiceWorkerContextObserver;
 class StoragePartitionImpl;
 
