@@ -213,7 +213,9 @@ class BigQueryQuerier:
       A pandas.Series object for each row returned by the query. Columns can be
       accessed directly as attributes.
     """
-    client = bigquery.Client(project=self._project)
+    client = bigquery.Client(
+        project=self._project,
+        default_query_job_config=bigquery.QueryJobConfig(use_legacy_sql=False))
     job = client.query(query)
     row_iterator = job.result()
     # Using a Dataframe iterator instead of directly using |row_iterator| allows
