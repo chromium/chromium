@@ -4155,7 +4155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DocumentScan.ScanFailed" enum="DocumentScanSaneBackend"
-    expires_after="2025-07-27">
+    expires_after="2026-01-27">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
