@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/actor/ui/mock_event_dispatcher.h"
 #include "chrome/common/actor.mojom.h"
@@ -32,12 +33,23 @@ namespace actor {
 
 using ::optimization_guide::proto::BrowserAction;
 using testing::_;
+using testing::Eq;
 using testing::Invoke;
+using testing::Property;
 
 namespace {
 constexpr int kFakeContentNodeId = 123;
 constexpr char kActionResultHistogram[] =
     "Actor.ExecutionEngine.Action.ResultCode";
+
+auto UiEventDispatcherCallback(
+    base::RepeatingCallback<mojom::ActionResultPtr()> result_fn) {
+  return [result_fn = std::move(result_fn)](
+             Profile*, const ToolRequest&,
+             ui::UiEventDispatcher::UiCompleteCallback callback) mutable {
+    std::move(callback).Run(result_fn.Run());
+  };
+}
 
 class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
  public:
@@ -112,6 +124,13 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     auto execution_engine = ExecutionEngine::CreateForTesting(
         profile(), std::move(ui_event_dispatcher), GetTab());
     task_ = std::make_unique<ActorTask>(std::move(execution_engine));
+
+    ON_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _, _))
+        .WillByDefault(Invoke(
+            UiEventDispatcherCallback(base::BindRepeating(MakeOkResult))));
+    ON_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _, _))
+        .WillByDefault(Invoke(
+            UiEventDispatcherCallback(base::BindRepeating(MakeOkResult))));
   }
 
   void TearDown() override {
@@ -143,14 +162,6 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
 
   void AssociateTabInterface() { tab_state_.emplace(web_contents()); }
   void ClearTabInterface() { tab_state_.reset(); }
-
-  auto UiEventDispatcherCallback(mojom::ActionResultPtr result) {
-    return [result = std::move(result)](
-               Profile*, const ToolRequest&,
-               ui::UiEventDispatcher::UiCompleteCallback callback) mutable {
-      std::move(callback).Run(std::move(result));
-    };
-  }
 
   base::HistogramTester histograms_;
   FakeChromeRenderFrame fake_chrome_render_frame_;
@@ -185,10 +196,14 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _, _))
-      .WillOnce(Invoke(UiEventDispatcherCallback(MakeOkResult())));
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _, _))
-      .WillOnce(Invoke(UiEventDispatcherCallback(MakeOkResult())));
+  EXPECT_CALL(*mock_ui_event_dispatcher_,
+              OnPreTool(profile(),
+                        Property(&ToolRequest::JournalEvent, Eq("Click")), _))
+      .Times(1);
+  EXPECT_CALL(*mock_ui_event_dispatcher_,
+              OnPostTool(profile(),
+                         Property(&ToolRequest::JournalEvent, Eq("Click")), _))
+      .Times(1);
   EXPECT_TRUE(
       Act(GURL("http://localhost/"), base::BindLambdaForTesting([this]() {
             return MakeClick(*main_rfh(), kFakeContentNodeId);
@@ -198,16 +213,39 @@ TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
 }
 
 TEST_F(ExecutionEngineTest, ActFailsOnUnsupportedUrl) {
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _, _)).Times(0);
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(profile(), _, _)).Times(0);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(profile(), _, _)).Times(0);
   EXPECT_FALSE(Act(GURL(chrome::kChromeUIVersionURL),
                    base::BindLambdaForTesting([this]() {
                      return MakeClick(*main_rfh(), kFakeContentNodeId);
                    })));
 }
 
-// TODO(crbug.com/425784083): Add testing that covers errors returned from
-// UiEventDispatcher.
+TEST_F(ExecutionEngineTest, UiOnPreToolFails) {
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(profile(), _, _))
+      .WillOnce(Invoke(
+          UiEventDispatcherCallback(base::BindRepeating(MakeErrorResult))));
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(profile(), _, _)).Times(0);
+  EXPECT_FALSE(
+      Act(GURL("http://localhost/"), base::BindLambdaForTesting([this]() {
+            return MakeClick(*main_rfh(), kFakeContentNodeId);
+          })));
+  histograms_.ExpectUniqueSample(kActionResultHistogram,
+                                 mojom::ActionResultCode::kError, 1);
+}
+
+TEST_F(ExecutionEngineTest, UiOnPostToolFails) {
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(profile(), _, _)).Times(1);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(profile(), _, _))
+      .WillOnce(Invoke(
+          UiEventDispatcherCallback(base::BindRepeating(MakeErrorResult))));
+  EXPECT_FALSE(
+      Act(GURL("http://localhost/"), base::BindLambdaForTesting([this]() {
+            return MakeClick(*main_rfh(), kFakeContentNodeId);
+          })));
+  histograms_.ExpectUniqueSample(kActionResultHistogram,
+                                 mojom::ActionResultCode::kError, 1);
+}
 
 TEST_F(ExecutionEngineTest, ActFailsWhenTabDestroyed) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
