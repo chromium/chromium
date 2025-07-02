@@ -151,9 +151,16 @@ void ProfileManagementFlowControllerImpl::HandleIdentityStepsCompleted(
   CHECK(profile);
 
   if (is_continue_callback) {
-    // The flow is closing, we just drop `step_switch_finished_callback`, only
-    // schedule `post_host_cleared_callback` to run.
-    FinishFlowAndRunInBrowser(profile, std::move(post_host_cleared_callback));
+    RegisterStep(
+        Step::kFinishFlow,
+        ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
+            host(),
+            base::BindOnce(
+                &ProfileManagementFlowControllerImpl::FinishFlowAndRunInBrowser,
+                base::Unretained(this), profile,
+                std::move(post_host_cleared_callback))));
+    SwitchToStep(Step::kFinishFlow, /*reset_state=*/true,
+                 std::move(step_switch_finished_callback));
     return;
   }
 
