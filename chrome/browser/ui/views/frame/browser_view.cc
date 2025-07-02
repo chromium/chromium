@@ -2742,10 +2742,20 @@ void BrowserView::UpdateWindowControlsOverlayToggleVisible() {
 void BrowserView::UpdateBorderlessModeEnabled() {
   bool borderless_mode_enabled = AppUsesBorderlessMode();
 
-  if (toolbar_ && toolbar_->custom_tab_bar() &&
+  // The final visibility of both the CustomTabBarView and the
+  // InfobarContainerView is determined by BrowserView::Layout() - initially
+  // they will start as visible by default. However BrowserView::Layout() is
+  // also dependent on the state of `borderless_mode_enabled_`. To ensure these
+  // visibility checks are performed once both views have reached a valid state
+  // we must wait for BrowserView::Layout() to resolve first.
+  // TODO(crbug.com/429093006): This circular dependency should be resolved and
+  // checks against the existence of the custom tab bar or infobar container
+  // should be independent of layout state.
+  if (!needs_layout() && toolbar_ && toolbar_->custom_tab_bar() &&
       toolbar_->custom_tab_bar()->GetVisible()) {
     borderless_mode_enabled = false;
-  } else if (infobar_container_ && infobar_container_->GetVisible()) {
+  } else if (!needs_layout() && infobar_container_ &&
+             infobar_container_->GetVisible()) {
     borderless_mode_enabled = false;
   } else if (IsImmersiveModeEnabled()) {
     borderless_mode_enabled = false;
