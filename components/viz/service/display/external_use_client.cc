@@ -36,8 +36,11 @@ ExternalUseClient::ImageContext::ImageContext(
       // images.
       color_space_(resource.color_space.GetAsFullRangeRGB().ToSkColorSpace()),
       origin_(resource.origin),
-      resource_source_(resource.resource_source),
-      ycbcr_info_(resource.ycbcr_info) {}
+      resource_source_(resource.resource_source) {
+#if BUILDFLAG(IS_ANDROID)
+  ycbcr_info_ = resource.ycbcr_info;
+#endif
+}
 
 ExternalUseClient::ImageContext::~ImageContext() = default;
 

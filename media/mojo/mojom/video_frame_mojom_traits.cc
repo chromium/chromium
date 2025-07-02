@@ -139,8 +139,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
         return media::mojom::VideoFrameData::NewSharedImageData(
             media::mojom::SharedImageVideoFrameData::New(
                 std::move(shared_image.value()), std::move(sync_token),
-                /*is_mappable_si_enabled=*/true,
-                std::move(input->ycbcr_info())));
+                /*is_mappable_si_enabled=*/true));
       }
     }
 
@@ -154,10 +153,17 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     shared_image = input->shared_image()->Export(
         /*with_buffer_handle=*/true);
     sync_token = input->acquire_sync_token();
+#if BUILDFLAG(IS_ANDROID)
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image.value()), std::move(sync_token),
             /*is_mappable_si_enabled=*/true, std::move(input->ycbcr_info())));
+#else
+    return media::mojom::VideoFrameData::NewSharedImageData(
+        media::mojom::SharedImageVideoFrameData::New(
+            std::move(shared_image.value()), std::move(sync_token),
+            /*is_mappable_si_enabled=*/true));
+#endif
 #endif
   }
 
@@ -166,10 +172,17 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     // VideoFrames.
     CHECK(!is_mappable_si_enabled);
     gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
+#if BUILDFLAG(IS_ANDROID)
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image), input->acquire_sync_token(),
             /*is_mappable_si_enabled=*/false, std::move(input->ycbcr_info())));
+#else
+    return media::mojom::VideoFrameData::NewSharedImageData(
+        media::mojom::SharedImageVideoFrameData::New(
+            std::move(shared_image), input->acquire_sync_token(),
+            /*is_mappable_si_enabled=*/false));
+#endif
   }
 
   if (input->storage_type() == media::VideoFrame::STORAGE_OPAQUE) {
@@ -423,10 +436,6 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     if (!shared_image_data.ReadSyncToken(&sync_token)) {
       return false;
     }
-    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
-    if (!shared_image_data.ReadYcbcrData(&ycbcr_info)) {
-      return false;
-    }
 
     bool is_mappable_si_enabled = shared_image_data.is_mappable_si_enabled();
     if (is_mappable_si_enabled) {
@@ -448,7 +457,13 @@ bool StructTraits<media::mojom::VideoFrameDataView,
           natural_size, timestamp);
     }
 
+#if BUILDFLAG(IS_ANDROID)
+    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+    if (!shared_image_data.ReadYcbcrData(&ycbcr_info)) {
+      return false;
+    }
     frame->set_ycbcr_info(ycbcr_info);
+#endif
   } else if (data.is_opaque_data()) {
     DCHECK(metadata.tracking_token.has_value());
     frame = media::VideoFrame::WrapTrackingToken(

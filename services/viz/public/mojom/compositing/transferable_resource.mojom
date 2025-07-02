@@ -69,6 +69,8 @@ struct TransferableResource {
   gfx.mojom.ColorSpace color_space;
   gfx.mojom.HDRMetadata hdr_metadata;
   bool needs_detiling;
+
+  [EnableIf=is_android]
   gpu.mojom.VulkanYCbCrInfo? ycbcr_info;
   skia.mojom.SurfaceOrigin origin;
   skia.mojom.AlphaType alpha_type;

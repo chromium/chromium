@@ -15,13 +15,16 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#endif
 
 namespace gpu {
 class ClientSharedImage;
@@ -195,10 +198,10 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // different synchronization types based on their needs.
   SynchronizationType synchronization_type = SynchronizationType::kSyncToken;
 
+#if BUILDFLAG(IS_ANDROID)
   // YCbCr info for resources backed by YCbCr Vulkan images.
   std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
 
-#if BUILDFLAG(IS_ANDROID)
   // Indicates whether this resource may be overlaid on Android via legacy
   // overlay flow, since it's backed by a SurfaceView. It's good to find this
   // out in advance, since one has no fallback path for displaying a

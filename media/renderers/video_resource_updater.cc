@@ -838,9 +838,9 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
     transfer_resource.synchronization_type =
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   }
-  transfer_resource.ycbcr_info = video_frame->ycbcr_info();
 
 #if BUILDFLAG(IS_ANDROID)
+  transfer_resource.ycbcr_info = video_frame->ycbcr_info();
   transfer_resource.is_backed_by_surface_view =
       video_frame->metadata().in_surface_view;
 #endif
