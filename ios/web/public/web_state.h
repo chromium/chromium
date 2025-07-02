@@ -71,6 +71,13 @@ void IgnoreOverRealizationCheck();
 // Core interface for interaction with the web.
 class WebState : public base::SupportsUserData {
  public:
+  // Policy for realization.
+  enum class RealizationPolicy {
+    kRelaxed,
+    kEnforceNoAttachedData,
+    kDefault = kRelaxed,
+  };
+
   // Callback used to load the full information for the WebState when
   // it will become realized.
   using WebStateStorageLoader =
@@ -260,11 +267,15 @@ class WebState : public base::SupportsUserData {
   // to call it as the WebState will lazily switch to "realized" state when
   // needed.
   //
+  // The parameter `policy` can be used to enforce that there are no objects
+  // attached to the WebState when it is realized. If the WebState is realized
+  // the `policy` is ignored.
+  //
   // Returns `this` so that the method can be chained such as:
   //
   //    WebState* web_state = ...;
-  //    web_state->ForceRealized()->SetDelegate(this);
-  virtual WebState* ForceRealized() = 0;
+  //    web_state->ForceRealizedWithPolicy(policy)->SetDelegate(this);
+  virtual WebState* ForceRealizedWithPolicy(RealizationPolicy policy) = 0;
 
   // Whether or not a web view is allowed to exist in this WebState. Defaults
   // to false; this should be enabled before attempting to access the view.
@@ -538,6 +549,9 @@ class WebState : public base::SupportsUserData {
 
   // Returns the under page background color.
   virtual UIColor* GetUnderPageBackgroundColor() = 0;
+
+  // Helper that calls ForceRealizedWithPolicy() with default policy.
+  WebState* ForceRealized();
 
  protected:
   friend class WebStatePolicyDecider;

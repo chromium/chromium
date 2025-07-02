@@ -84,6 +84,10 @@ WebState::InterfaceBinder* WebState::GetInterfaceBinderForMainFrame() {
   return nullptr;
 }
 
+WebState* WebState::ForceRealized() {
+  return ForceRealizedWithPolicy(RealizationPolicy::kDefault);
+}
+
 void WebState::NotifyWebStateRealized(WebStateObserverList& observers) {
   DCHECK(IsRealized());
 

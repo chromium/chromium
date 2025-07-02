@@ -297,7 +297,7 @@ class WebStateImpl final : public WebState {
   void SetDelegate(WebStateDelegate* delegate) final;
   std::unique_ptr<WebState> Clone() const final;
   bool IsRealized() const final;
-  WebState* ForceRealized() final;
+  WebState* ForceRealizedWithPolicy(RealizationPolicy policy) final;
   bool IsWebUsageEnabled() const final;
   void SetWebUsageEnabled(bool enabled) final;
   UIView* GetView() final;
