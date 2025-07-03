@@ -1582,6 +1582,7 @@ class UIResourceFreedIfLostWhileExported : public LayerTreeHostContextTest {
 
   void DeleteAndEndTest() {
     ui_resource_->DeleteResource();
+    ui_resource_.reset();
     EndTest();
   }
 
