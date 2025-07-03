@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -255,6 +256,78 @@ TEST_F(BackendParamsManagerTest, OldestEntriesAreRemovedFirst) {
     ++original_timestamps_it;
     ++timestamps_after_reduction_it;
   }
+}
+
+TEST_F(BackendParamsManagerTest, IllegalCharactersInKey) {
+  BackendParamsManager params_manager(temp_dir_.GetPath());
+
+  // Trying to create BackendParams with an unsupported character in the key
+  // does not produce a valid BackendParams instance but does not crash.
+  std::string invalid_key("%");
+  {
+    BackendParams params = params_manager.GetOrCreateParamsSync(
+        BackendType::kSqlite, invalid_key,
+        BackendParamsManager::AccessRights::kReadWrite);
+
+    EXPECT_FALSE(params.db_file.IsValid());
+  }
+
+  // Same test but async.
+  {
+    BackendParams backend_params;
+    base::RunLoop run_loop;
+    params_manager.GetParamsSyncOrCreateAsync(
+        BackendType::kSqlite, invalid_key,
+        BackendParamsManager::AccessRights::kReadWrite,
+        base::BindLambdaForTesting(
+            [&backend_params, &run_loop](const BackendParams& result) {
+              backend_params = result.Copy();
+              run_loop.Quit();
+            }));
+
+    // Makes sure the callback runs on the ThreadPool.
+    run_loop.Run();
+
+    EXPECT_FALSE(backend_params.db_file.IsValid());
+  }
+}
+
+TEST_F(BackendParamsManagerTest, FullAllowedCharacterSetHandled) {
+  BackendParamsManager params_manager(temp_dir_.GetPath());
+
+  BackendParams params = params_manager.GetOrCreateParamsSync(
+      BackendType::kSqlite,
+      BackendParamsManager::GetAllAllowedCharactersInKeysForTesting(),
+      BackendParamsManager::AccessRights::kReadWrite);
+
+  // Extracted name was usable as file name.
+  EXPECT_TRUE(params.db_file.IsValid());
+}
+
+TEST(BackendParamsManager, KeyToFileName) {
+  // Invalid tokens results in empty string and not a crash.
+  EXPECT_EQ(BackendParamsManager::KeyFromFileName(" "), "");
+  EXPECT_EQ(BackendParamsManager::KeyFromFileName("  "), "");
+
+  // Invalid characters result in an empty string and not a crash.
+  EXPECT_EQ(BackendParamsManager::KeyFromFileName("/"), "");
+
+  // Verify file name is obfuscated.
+  std::string filename("devs_first_db");
+  EXPECT_EQ(BackendParamsManager::KeyFromFileName(filename).find(filename),
+            std::string::npos);
+  EXPECT_EQ(BackendParamsManager::KeyFromFileName(filename).find("devs"),
+            std::string::npos);
+  EXPECT_EQ(BackendParamsManager::KeyFromFileName(filename).find("first"),
+            std::string::npos);
+}
+
+TEST(BackendParamsManager, KeyToFileNameIsReversible) {
+  std::string allowed_characters =
+      BackendParamsManager::GetAllAllowedCharactersInKeysForTesting();
+  EXPECT_EQ(BackendParamsManager::KeyFromFileName(
+                BackendParamsManager::FileNameFromKey(allowed_characters)),
+            allowed_characters);
 }
 
 }  // namespace persistent_cache

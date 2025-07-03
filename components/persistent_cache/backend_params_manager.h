@@ -12,6 +12,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -41,7 +42,12 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParamsManager {
 
   using CompletedCallback = base::OnceCallback<void(const BackendParams&)>;
 
-  // Use to get backend params matching parameters through `callback`.
+  // Use to get backend params matching parameters directly or through
+  // `callback`. An invalid BackendParams instance is returned if `key` does
+  // not respect restrictions. Keys used in this class should be as short as
+  // possible to minimize the risk of them being too long to be used in a file
+  // path. Not all characters are allowed. See
+  // `GetAllAllowedCharactersInKeysForTesting`.
   void GetParamsSyncOrCreateAsync(BackendType backend_type,
                                   const std::string& key,
                                   AccessRights access_rights,
@@ -59,7 +65,30 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParamsManager {
   // instead. Returns the number of bytes deleted.
   int64_t BringDownTotalFootprintOfFiles(int64_t target_footprint);
 
+  // Use to get a string containing all characters supported in keys.
+  static std::string GetAllAllowedCharactersInKeysForTesting();
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(BackendParamsManager, InvalidCharactersHandled);
+  FRIEND_TEST_ALL_PREFIXES(BackendParamsManager, KeyToFileName);
+  FRIEND_TEST_ALL_PREFIXES(BackendParamsManager, KeyToFileNameIsReversible);
+
+  // Function that simplifies a key string into a form suitable to be used as a
+  // file name by this class. The function also takes care of lightly
+  // obfuscating the value. This is not a security measure but more a way to
+  // underline the fact that the files are not meant to be discovered and
+  // modified by third parties.
+  //
+  // On Windows some file names are reserved
+  // (https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names).
+  // As such the result of this function should always be used by appending a
+  // file extension as provided by this class to avoid using problems.
+  static std::string FileNameFromKey(const std::string& key);
+
+  // Inverse of `FileNameFromKey`. Will return an empty string on an invalid
+  // filename which needs to be handled.
+  static std::string KeyFromFileName(const std::string& key);
+
   struct BackendParamsKey {
     BackendType backend_type;
     std::string key;
@@ -83,7 +112,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParamsManager {
 
   static BackendParams CreateParamsSync(base::FilePath directory,
                                         BackendType backend_type,
-                                        const std::string& key,
+                                        const std::string& filename,
                                         AccessRights access_rights);
 
   // Saves params for later retrieval.

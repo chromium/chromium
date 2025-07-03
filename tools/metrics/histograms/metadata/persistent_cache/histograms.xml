@@ -75,6 +75,17 @@ chromium-metrics-reviews@google.com.
   <token key="Mode" variants="Mode"/>
 </histogram>
 
+<histogram name="PersistentCache.ParamsManager.FilenameCharactersOverLimit"
+    units="Characters" expires_after="2026-06-09">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Logs how many characters over the OS defined limit the path of a backing
+    file was after it was calculated. Logged when file creation fails and the
+    path is too long.
+  </summary>
+</histogram>
+
 <histogram name="PersistentCache.ParamsManager.{FileType}.DeleteSuccess"
     enum="Boolean" expires_after="2026-06-09">
   <owner>olivierli@chromium.org</owner>
