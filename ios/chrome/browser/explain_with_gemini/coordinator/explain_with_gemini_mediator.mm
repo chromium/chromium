@@ -31,18 +31,14 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 }  // namespace
 
 @implementation ExplainWithGeminiMediator {
-  // The Browser's WebStateList.
-  base::WeakPtr<WebStateList> _webStateList;
   raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<AuthenticationService> _authService;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                     identityManager:(signin::IdentityManager*)identityManager
-                         authService:(AuthenticationService*)authService {
+- (instancetype)initWithIdentityManager:
+                    (signin::IdentityManager*)identityManager
+                            authService:(AuthenticationService*)authService {
   if ((self = [super init])) {
-    CHECK(webStateList);
-    _webStateList = webStateList->AsWeakPtr();
     _identityManager = identityManager;
     _authService = authService;
   }
@@ -51,18 +47,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
 #pragma mark - Private
 
-// Getter for WebSelectionTabHelper.
-- (WebSelectionTabHelper*)webSelectionTabHelper {
-  web::WebState* webState =
-      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
-  if (!webState) {
-    return nullptr;
-  }
-  WebSelectionTabHelper* helper = WebSelectionTabHelper::FromWebState(webState);
-  return helper;
-}
-
-// Checks if Explain With Gemini can be performed.
+// Checks if Explain With Gemini can be performed generally.
 - (BOOL)canPerformExplainWithGemini {
   CHECK(ExplainGeminiEditMenuPosition() !=
         PositionForExplainGeminiEditMenu::kDisabled);
@@ -70,7 +55,16 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
       [self isManagedAccount]) {
     return NO;
   };
-  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
+  return YES;
+}
+
+// Checks if Explain With Gemini can be performed in `webState`.
+- (BOOL)canPerformExplainWithGeminiInWebState:(web::WebState*)webState {
+  if (!webState || ![self canPerformExplainWithGemini]) {
+    return NO;
+  }
+  WebSelectionTabHelper* tabHelper =
+      WebSelectionTabHelper::FromWebState(webState);
   return tabHelper && tabHelper->CanRetrieveSelectedText() &&
          self.applicationCommandHandler;
 }
@@ -112,8 +106,15 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 }
 
 // Adds Explain With Gemini item to the menu with a completion block.
-- (void)addItemWithCompletion:(ProceduralBlockWithItemArray)completion {
-  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
+- (void)addItemForWebState:(base::WeakPtr<web::WebState>)weakWebState
+            withCompletion:(ProceduralBlockWithItemArray)completion {
+  if (!weakWebState) {
+    completion(@[]);
+    return;
+  }
+  web::WebState* webState = weakWebState.get();
+  WebSelectionTabHelper* tabHelper =
+      WebSelectionTabHelper::FromWebState(webState);
   if (!tabHelper) {
     completion(@[]);
     return;
@@ -193,15 +194,19 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
 - (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder
                       inWebState:(web::WebState*)webState {
-  // TODO(crbug.com/427168159): use webState.
-  if (![self canPerformExplainWithGemini]) {
+  if (!webState) {
     return;
   }
 
+  if (![self canPerformExplainWithGeminiInWebState:webState]) {
+    return;
+  }
+
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   __weak __typeof(self) weakSelf = self;
   ProceduralBlockWithBlockWithItemArray provider =
       ^(ProceduralBlockWithItemArray completion) {
-        [weakSelf addItemWithCompletion:completion];
+        [weakSelf addItemForWebState:weakWebState withCompletion:completion];
       };
   UIDeferredMenuElement* deferredMenuElement =
       [UIDeferredMenuElement elementWithProvider:provider];

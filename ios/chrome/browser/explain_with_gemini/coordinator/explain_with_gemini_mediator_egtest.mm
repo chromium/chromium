@@ -16,6 +16,9 @@
 #import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
 #import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -40,11 +43,11 @@ using ::base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-const char kElementToLongPress[] = "selectid";
+const char kCSSSelectorToLongPress[] = "em";
 
 // Returns an ElementSelector for `ElementToLongPress`.
 ElementSelector* ElementToLongPressSelector() {
-  return [ElementSelector selectorWithElementID:kElementToLongPress];
+  return [ElementSelector selectorWithCSSSelector:kCSSSelectorToLongPress];
 }
 
 // An HTML template that puts some text in a simple span element.
@@ -58,7 +61,19 @@ const char kBasicSelectionHtmlTemplate[] =
     "  </head>"
     "  <body>"
     "    Page Loaded <br/><br/>"
-    "    This text contains a <span id='selectid'>text</span>.<br/><br/><br/>"
+    "    This text contains a <em>text</em>.<br/><br/><br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
+    "    Other very interesting text<br/>"
     "  </body>"
     "</html>";
 
@@ -118,6 +133,9 @@ bool FindEditMenuAction(NSString* accessibility_label) {
   AppLaunchConfiguration config;
   config.features_enabled_and_params.push_back(
       {kExplainGeminiEditMenu, {{{kExplainGeminiEditMenuParams, "2"}}}});
+  if ([self isRunningTest:@selector(testExplainWithGeminiInReadingMode)]) {
+    config.features_enabled_and_params.push_back({kEnableReaderMode, {}});
+  }
   return config;
 }
 
@@ -242,6 +260,28 @@ bool FindEditMenuAction(NSString* accessibility_label) {
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
   GREYAssertFalse(found, @"✦ Explain button was found");
+}
+
+// Checks if Explain With Gemini button is present in Reading Mode.
+- (void)testExplainWithGeminiInReadingMode {
+  [self loadPage];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+
+  [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
+  bool found = FindEditMenuAction([NSString
+      stringWithFormat:@"✦ %@", l10n_util::GetNSString(
+                                    IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
+  GREYAssertTrue(found, @"✦ Explain button not found");
 }
 
 @end

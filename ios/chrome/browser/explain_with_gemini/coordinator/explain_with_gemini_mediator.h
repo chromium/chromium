@@ -13,8 +13,6 @@
 
 @protocol ApplicationCommands;
 
-class WebStateList;
-
 // Mediator that mediates between the browser container views and Explain
 // Gemini.
 @interface ExplainWithGeminiMediator : NSObject <EditMenuBuilder>
@@ -22,11 +20,10 @@ class WebStateList;
 // The handler for ApplicationCommands commands.
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandHandler;
 
-// Initializer for a mediator. `webStateList` is the WebStateList for the
-// BrowserContainer that owns this mediator.
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                     identityManager:(signin::IdentityManager*)identityManager
-                         authService:(AuthenticationService*)authService
+// Initializer for a mediator.
+- (instancetype)initWithIdentityManager:
+                    (signin::IdentityManager*)identityManager
+                            authService:(AuthenticationService*)authService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

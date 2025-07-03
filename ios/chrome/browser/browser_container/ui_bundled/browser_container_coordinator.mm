@@ -141,10 +141,9 @@
           PositionForExplainGeminiEditMenu::kDisabled &&
       !incognito) {
     _explainWithGeminiMediator = [[ExplainWithGeminiMediator alloc]
-        initWithWebStateList:webStateList
-             identityManager:IdentityManagerFactory::GetForProfile(profile)
-                 authService:AuthenticationServiceFactory::GetForProfile(
-                                 profile)];
+        initWithIdentityManager:IdentityManagerFactory::GetForProfile(profile)
+                    authService:AuthenticationServiceFactory::GetForProfile(
+                                    profile)];
 
     _explainWithGeminiMediator.applicationCommandHandler =
         applicationCommandsHandler;
