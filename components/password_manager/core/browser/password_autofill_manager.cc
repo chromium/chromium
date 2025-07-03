@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
@@ -189,10 +190,19 @@ void PasswordAutofillManager::DidSelectSuggestion(
   if (suggestion.type == autofill::SuggestionType::kAllSavedPasswordsEntry ||
       suggestion.type == autofill::SuggestionType::kGeneratePasswordEntry ||
       suggestion.type ==
-          autofill::SuggestionType::kWebauthnSignInWithAnotherDevice) {
+          autofill::SuggestionType::kWebauthnSignInWithAnotherDevice ||
+      suggestion.type == autofill::SuggestionType::kTroubleSigningInEntry) {
     return;
   }
-
+  if (suggestion.type == autofill::SuggestionType::kBackupPasswordEntry) {
+    const auto payload =
+        suggestion
+            .GetPayload<autofill::Suggestion::PasswordSuggestionDetails>();
+    CHECK(payload.backup_password);
+    password_manager_driver_->PreviewSuggestion(
+        payload.username, payload.backup_password.value());
+    return;
+  }
   PreviewSuggestion(GetUsernameFromSuggestion(suggestion.main_text.value),
                     suggestion.type);
 }
@@ -273,7 +283,28 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           std::move(last_popup_open_args_).suggestions, suggestion));
       break;
     }
-    default:
+    case autofill::SuggestionType::kBackupPasswordEntry: {
+      // The payload is set during suggestion generation and contains the backup
+      // password in its password field.
+      auto payload =
+          suggestion
+              .GetPayload<autofill::Suggestion::PasswordSuggestionDetails>();
+      OnPasswordCredentialSuggestionAccepted(
+          base::BindOnce(&PasswordAutofillManager::FillBackupSuggestion,
+                         weak_ptr_factory_.GetWeakPtr(), payload));
+      break;
+    }
+    case autofill::SuggestionType::kTroubleSigningInEntry: {
+      auto payload =
+          suggestion
+              .GetPayload<autofill::Suggestion::PasswordSuggestionDetails>();
+      undo_password_change_controller_.OnTroubleSigningInClicked(payload);
+
+      UpdatePopup(
+          suggestion_generator_.GetProactiveRecoverySuggestions(payload));
+      return;
+    }
+    default: {
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kPassword,
           password_client_->IsOffTheRecord());
@@ -286,6 +317,9 @@ void PasswordAutofillManager::DidAcceptSuggestion(
         // Navigation happened before suggestion acceptance.
         return;
       }
+      auto fill_suggestion_callback =
+          base::BindOnce(&PasswordAutofillManager::FillSuggestion,
+                         weak_ptr_factory_.GetWeakPtr(), *password_credential);
       if (password_credential->is_grouped_affiliation) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
@@ -302,11 +336,13 @@ void PasswordAutofillManager::DidAcceptSuggestion(
                 base::BindOnce(&PasswordAutofillManager::
                                    OnPasswordCredentialSuggestionAccepted,
                                weak_ptr_factory_.GetWeakPtr(),
-                               *password_credential));
+                               std::move(fill_suggestion_callback)));
 #endif
       } else {
-        OnPasswordCredentialSuggestionAccepted(*password_credential);
+        OnPasswordCredentialSuggestionAccepted(
+            std::move(fill_suggestion_callback));
       }
+    }
   }
 
   bool enter_loading_state =
@@ -533,11 +569,6 @@ void PasswordAutofillManager::DidNavigateMainFrame() {
   wait_for_passkeys_timer_.Stop();
 }
 
-bool PasswordAutofillManager::PreviewSuggestionForTest(
-    const std::u16string& username) {
-  return PreviewSuggestion(username, autofill::SuggestionType::kPasswordEntry);
-}
-
 void PasswordAutofillManager::SetManualFallbackFlowForTest(
     std::unique_ptr<PasswordSuggestionFlow> manual_fallback_flow) {
   manual_fallback_flow_.swap(manual_fallback_flow);
@@ -616,6 +647,20 @@ void PasswordAutofillManager::FillSuggestion(
   password_manager_driver_->FillSuggestion(password_and_metadata.username_value,
                                            password_and_metadata.password_value,
                                            base::DoNothing());
+  undo_password_change_controller_.OnSuggestionSelected(password_and_metadata);
+}
+
+void PasswordAutofillManager::FillBackupSuggestion(
+    const autofill::Suggestion::PasswordSuggestionDetails& payload) {
+  CHECK(payload.backup_password);
+
+  password_manager_driver_->FillSuggestion(
+      payload.username, payload.backup_password.value(), base::DoNothing());
+
+  autofill::PasswordAndMetadata password_and_metadata;
+  password_and_metadata.username_value = payload.username;
+  password_and_metadata.backup_password_value = payload.backup_password;
+  undo_password_change_controller_.OnSuggestionSelected(password_and_metadata);
 }
 
 bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
@@ -693,7 +738,7 @@ void PasswordAutofillManager::OnFaviconReady(
 }
 
 void PasswordAutofillManager::OnBiometricReauthCompleted(
-    const autofill::PasswordAndMetadata& password_and_metadata,
+    base::OnceClosure fill_suggestion_callback,
     bool auth_succeeded) {
   authenticator_.reset();
   base::UmaHistogramBoolean(
@@ -701,26 +746,26 @@ void PasswordAutofillManager::OnBiometricReauthCompleted(
   if (!auth_succeeded) {
     return;
   }
-  FillSuggestion(password_and_metadata);
+  std::move(fill_suggestion_callback).Run();
 }
 
 void PasswordAutofillManager::OnPasswordCredentialSuggestionAccepted(
-    const autofill::PasswordAndMetadata& password_and_metadata) {
+    base::OnceClosure fill_suggestion_callback) {
   CancelBiometricReauthIfOngoing();
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       password_client_->GetDeviceAuthenticator();
   // Note: this is currently only implemented on Android, Mac and Windows.
   // For other platforms, the `authenticator` will be null.
   if (!password_client_->IsReauthBeforeFillingRequired(authenticator.get())) {
-    FillSuggestion(password_and_metadata);
+    std::move(fill_suggestion_callback).Run();
     return;
   }
   authenticator_ = std::move(authenticator);
 
   std::u16string message;
-  auto on_reath_complete =
-      base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), password_and_metadata);
+  auto on_reauth_complete = base::BindOnce(
+      &PasswordAutofillManager::OnBiometricReauthCompleted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(fill_suggestion_callback));
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   const std::u16string origin = base::UTF8ToUTF16(GetShownOrigin(
@@ -730,7 +775,7 @@ void PasswordAutofillManager::OnPasswordCredentialSuggestionAccepted(
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   authenticator_->AuthenticateWithMessage(
       message, metrics_util::TimeCallbackMediumTimes(
-                   std::move(on_reath_complete),
+                   std::move(on_reauth_complete),
                    "PasswordManager.PasswordFilling.AuthenticationTime2"));
 }
 

@@ -125,9 +125,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
     return CHECK_DEREF(manual_fallback_metrics_recorder_.get());
   }
 
-  // A public version of PreviewSuggestion(), only for use in tests.
-  bool PreviewSuggestionForTest(const std::u16string& username);
-
   void SetManualFallbackFlowForTest(
       std::unique_ptr<PasswordSuggestionFlow> manual_fallback_flow);
 
@@ -140,6 +137,18 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
 
   base::WeakPtr<PasswordAutofillManager> GetWeakPtr();
 
+#if defined(UNIT_TEST)
+  // A public version of PreviewSuggestion(), only for use in tests.
+  bool PreviewSuggestionForTest(const std::u16string& username) {
+    return PreviewSuggestion(username,
+                             autofill::SuggestionType::kPasswordEntry);
+  }
+
+  UndoPasswordChangeController& undo_password_change_controller() {
+    return undo_password_change_controller_;
+  }
+#endif  // defined(UNIT_TEST)
+
  private:
   // Validates and forwards the given objects to the autofill client.
   bool ShowPopup(const gfx::RectF& bounds,
@@ -150,10 +159,18 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   // Validates and forwards the given objects to the autofill client.
   void UpdatePopup(std::vector<autofill::Suggestion> suggestions);
 
-  // Fills `password_and_metadata` suggestion by passing username and password
-  // to the password manager driver.
+  // Fills `password_and_metadata` suggestion by passing
+  // `password_and_metadata.username_value` and
+  // `password_and_metadata.password_value` to the password manager driver.
   void FillSuggestion(
       const autofill::PasswordAndMetadata& password_and_metadata);
+
+  // Fills `password_and_metadata` suggestion by passing
+  // `password_and_metadata.username_value` and
+  // `password_and_metadata.backup_password_value` to the password manager
+  // driver.
+  void FillBackupSuggestion(
+      const autofill::Suggestion::PasswordSuggestionDetails& payload);
 
   // Attempts to find and preview the suggestions with the user name |username|
   // and the `type` indicating the store (account-stored or
@@ -193,16 +210,14 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
       PasswordManagerClient::ReauthSucceeded reauth_succeeded);
 
   // Called when the biometric reauth that guards password filling completes.
-  // `type` identifies the suggestion that was selected for
-  // filling.
-  void OnBiometricReauthCompleted(
-      const autofill::PasswordAndMetadata& password_and_metadata,
-      bool auth_succeded);
+  // Runs `fill_suggestion_callback` if reauth  was successful
+  void OnBiometricReauthCompleted(base::OnceClosure fill_suggestion_callback,
+                                  bool auth_succeded);
 
-  // Fills the password credential suggestion. Triggers authentication if
-  // needed.
+  // Fills the password credential suggestion by running
+  // `fill_suggestion_callback`. Triggers authentication if needed.
   void OnPasswordCredentialSuggestionAccepted(
-      const autofill::PasswordAndMetadata& password_and_metadata);
+      base::OnceClosure fill_suggestion_callback);
 
   // Cancels an ongoing biometric re-authentication. Usually, because
   // the filling scope has changed or because |this| is being destroyed.

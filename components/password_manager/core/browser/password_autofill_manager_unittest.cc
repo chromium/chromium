@@ -120,6 +120,7 @@ using UkmEntry = ukm::builders::PageWithPassword;
 const char16_t kInvalidUsername[] = u"no-username";
 const char16_t kAliceUsername[] = u"alice";
 const char16_t kAlicePassword[] = u"password";
+const char16_t kAliceBackupPassword[] = u"backup_password";
 const char16_t kAliceAccountStoredPassword[] = u"account-stored-password";
 
 constexpr char kMainFrameUrl[] = "https://example.com/";
@@ -297,7 +298,9 @@ RespondWithTestIcon(Unused, FaviconImageCallback callback, Unused) {
 class PasswordAutofillManagerTest : public testing::Test {
  protected:
   PasswordAutofillManagerTest()
-      : test_username_(kAliceUsername), test_password_(kAlicePassword) {}
+      : test_username_(kAliceUsername),
+        test_password_(kAlicePassword),
+        backup_password_(kAliceBackupPassword) {}
 
   void SetUp() override {
     // Add a preferred login.
@@ -398,6 +401,7 @@ class PasswordAutofillManagerTest : public testing::Test {
 
   std::u16string test_username_;
   std::u16string test_password_;
+  std::u16string backup_password_;
 
  private:
   autofill::PasswordFormFillData fill_data_;
@@ -2211,6 +2215,80 @@ TEST_F(PasswordAutofillManagerTest,
                   autofill::SuggestionType::kPasswordEntry,
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       PasswordRecoveryFlow_SuccessfulFillRecoverySuggestion) {
+  fill_data().preferred_login.backup_password_value = u"backup_password";
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+  const Suggestion::Payload& payload = Suggestion::PasswordSuggestionDetails(
+      test_username_, test_password_, backup_password_);
+
+  EXPECT_CALL(*client.mock_driver(),
+              FillSuggestion(test_username_, backup_password_, _));
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kBackupPasswordEntry, test_username_,
+          payload),
+      SuggestionPosition{.row = 0});
+
+  EXPECT_EQ(
+      password_autofill_manager_->undo_password_change_controller().GetState(
+          test_username_),
+      PasswordRecoveryState::kTroubleSigningIn);
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       PasswordRecoveryFlow_PreviewBackupSuggestion) {
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client, nullptr);
+  const Suggestion::PasswordSuggestionDetails payload(
+      test_username_, test_password_, backup_password_);
+  const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      autofill::SuggestionType::kBackupPasswordEntry, test_username_, payload);
+
+  EXPECT_CALL(*client.mock_driver(),
+              PreviewSuggestion(test_username_, backup_password_));
+  password_autofill_manager_->DidSelectSuggestion(suggestion);
+  testing::Mock::VerifyAndClearExpectations(client.mock_driver());
+
+  EXPECT_EQ(
+      password_autofill_manager_->undo_password_change_controller().GetState(
+          test_username_),
+      PasswordRecoveryState::kRegularFlow);
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       PasswordRecoveryFlow_ClickTroubleSigningInSuggestion) {
+  fill_data().preferred_login.backup_password_value = u"backup_password";
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+  const Suggestion::Payload& payload = Suggestion::PasswordSuggestionDetails(
+      test_username_, test_password_, backup_password_);
+
+  EXPECT_CALL(*client.mock_driver(),
+              FillSuggestion(test_username_, backup_password_, _));
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kBackupPasswordEntry, test_username_,
+          payload),
+      SuggestionPosition{.row = 0});
+  // Clicking on trouble signin in will update the popup.
+  EXPECT_CALL(autofill_client, UpdateAutofillSuggestions);
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kTroubleSigningInEntry,
+          u"Trouble signing in", payload),
+      SuggestionPosition{.row = 0});
+
+  testing::Mock::VerifyAndClearExpectations(client.mock_driver());
+  EXPECT_EQ(
+      password_autofill_manager_->undo_password_change_controller().GetState(
+          test_username_),
+      PasswordRecoveryState::kIncludeBackup);
 }
 
 }  // namespace
