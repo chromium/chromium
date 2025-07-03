@@ -2925,9 +2925,6 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
     bool& invalid_rule_error) {
   // A nested style rule. Recurse into the parser; we need to move the parsed
   // properties out of the way while we're parsing the child rule, though.
-  // TODO(sesse): The spec says that any properties after a nested rule
-  // should be ignored. We don't support this yet.
-  // See https://github.com/w3c/csswg-drafts/issues/7501.
   HeapVector<CSSPropertyValue, 64> outer_parsed_properties;
   swap(parsed_properties_, outer_parsed_properties);
   StyleRuleBase* child;
