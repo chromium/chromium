@@ -2727,16 +2727,27 @@ class Spanifier {
         frontier_exclusions,
         hasAncestor(cxxRecordDecl(anyOf(hasName("raw_ptr"), hasName("span")))));
 
-    // Exclude literal strings as these need to become string_view
-    auto pointer_type = pointerType(pointee(qualType(unless(
+    // Matches a pointer type, including `auto*`, but not `auto` which deduces
+    // to a pointer type.
+    auto non_auto_pointer_type = pointerType(pointee(qualType(unless(
         anyOf(qualType(hasDeclaration(
                   cxxRecordDecl(raw_ptr_plugin::isAnonymousStructOrUnion()))),
               hasUnqualifiedDesugaredType(
                   anyOf(functionType(), memberPointerType(), voidType())),
+              // Exclude literal strings as these need to become string_view.
               hasCanonicalType(
                   anyOf(asString("const char"), asString("const wchar_t"),
                         asString("const char8_t"), asString("const char16_t"),
                         asString("const char32_t"))))))));
+    // Matches a pointer type, including `auto` which deduces to a pointer type.
+    auto pointer_type =
+        type(anyOf(non_auto_pointer_type,
+                   autoType(hasDeducedType(qualType(non_auto_pointer_type)))));
+
+    // Matches a pointer type loc without a restriction like `pointer_type`,
+    // which excludes certain pointer types.
+    auto pointer_type_loc = loc(qualType(anyOf(
+        pointerType(), autoType(hasDeducedType(qualType(pointerType()))))));
 
     auto raw_ptr_type = qualType(
         hasDeclaration(classTemplateSpecializationDecl(hasName("raw_ptr"))));
@@ -2789,11 +2800,11 @@ class Spanifier {
                   asString("const char32_t"))))))));
 
     auto rhs_call_expr = callExpr(callee(
-        functionDecl(hasReturnTypeLoc(pointerTypeLoc().bind("rhs_type_loc")),
+        functionDecl(hasReturnTypeLoc(pointer_type_loc.bind("rhs_type_loc")),
                      exclude_literal_strings, unless(exclusions))));
 
     auto lhs_call_expr = callExpr(callee(
-        functionDecl(hasReturnTypeLoc(pointerTypeLoc().bind("lhs_type_loc")),
+        functionDecl(hasReturnTypeLoc(pointer_type_loc.bind("lhs_type_loc")),
                      exclude_literal_strings, unless(exclusions))));
 
     auto lhs_expr = expr(anyOf(declRefExpr(to(anyOf(lhs_var, lhs_param))),
@@ -2912,7 +2923,7 @@ class Spanifier {
                                            .bind("unsafe_function_decl")))
                            .bind("unsafe_function_call_expr"),
                        callExpr(callee(functionDecl(
-                           hasReturnTypeLoc(pointerTypeLoc()),
+                           hasReturnTypeLoc(pointer_type_loc),
                            anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
                                  isExpansionInSystemHeader(),
                                  raw_ptr_plugin::isInExternCContext())))),
@@ -3194,7 +3205,7 @@ class Spanifier {
                 conditionalOperator(hasTrueExpression(rhs_expr_variations))))),
             unless(isExpansionInSystemHeader()),
             forFunction(functionDecl(
-                hasReturnTypeLoc(pointerTypeLoc().bind("lhs_type_loc")),
+                hasReturnTypeLoc(pointer_type_loc.bind("lhs_type_loc")),
                 unless(exclusions))))
             .bind("lhs_stmt"));
     Match(returned_var_or_member, MatchAdjacency);
@@ -3207,7 +3218,7 @@ class Spanifier {
                        hasFalseExpression(rhs_expr_variations))),
                    unless(isExpansionInSystemHeader()),
                    forFunction(functionDecl(
-                       hasReturnTypeLoc(pointerTypeLoc().bind("lhs_type_loc")),
+                       hasReturnTypeLoc(pointer_type_loc.bind("lhs_type_loc")),
                        unless(exclusions))))
             .bind("lhs_stmt"));
     Match(returned_var_or_member2, MatchAdjacency);
@@ -3294,7 +3305,7 @@ class Spanifier {
 
     auto fct_decls_returns = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
-        functionDecl(hasReturnTypeLoc(pointerTypeLoc().bind("rhs_type_loc")),
+        functionDecl(hasReturnTypeLoc(pointer_type_loc.bind("rhs_type_loc")),
                      unless(exclusions))
             .bind("fct_decl"));
     Match(fct_decls_returns, RewriteFunctionParamAndReturnType);

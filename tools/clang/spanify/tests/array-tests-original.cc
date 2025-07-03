@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <iterator>
 #include <tuple>
 
 // No rewrite expected.
@@ -149,4 +150,31 @@ struct ProgramInfo {
 void test_with_mutable() {
   const ProgramInfo info;
   info.filename_offsets[UnsafeIndex()] = 0xdead;
+}
+
+void test_for_loop() {
+  int arr[] = {1, 2, 3};
+
+  // Expected rewrite:
+  //   for (base::span<int> it = std::begin(arr); it != std::end(arr);
+  //        base::PreIncrementSpan(it)) {
+  //   }
+  for (auto it = std::begin(arr); it != std::end(arr); ++it) {
+  }
+  // Expected rewrite:
+  //   for (base::span<int> it = std::begin(arr); it != std::end(arr);
+  //        base::PreIncrementSpan(it)) {
+  //   }
+  for (auto* it = std::begin(arr); it != std::end(arr); ++it) {
+  }
+  // TODO(yukishiino): Support `auto` + `cbegin/cend`.
+  for (auto it = std::cbegin(arr); it != std::cend(arr); ++it) {
+  }
+  // TODO(yukishiino): Support `auto*` + `cbegin/cend`.
+  for (auto* it = std::cbegin(arr); it != std::cend(arr); ++it) {
+  }
+  // Note that reverse_iterator (rbegin, rend, crbegin, crend) won't be
+  // supported because reverse_iterator never be of a pointer type (`it++`
+  // cannot move backward if `it` is a raw pointer), hence they're out of
+  // scope of the spanification.
 }
