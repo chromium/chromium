@@ -28,6 +28,8 @@
 
 #include <unicode/utf16.h>
 
+#include <array>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
