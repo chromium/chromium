@@ -265,7 +265,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2230777942707397948">Jendela kosong</translation>
 <translation id="223356358902285214">Aktivitas Web &amp; Aplikasi</translation>
 <translation id="2234827758954819389">Panduan Privasi</translation>
-<translation id="2238038374973843156">Pindahkan grup ke jendela lain</translation>
+<translation id="2238038374973843156">Pindah grup ke jendela lain</translation>
 <translation id="2239812875700136898">Kontrol artikel Anda dengan tombol Opsi untuk Discover</translation>
 <translation id="2247789808226901522">Kartu sudah tidak berlaku</translation>
 <translation id="2248941474044011069">Sandi Anda dienkripsi di perangkat sebelum disimpan ke Pengelola Sandi Google</translation>
@@ -1719,7 +1719,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8439974325294139057"><ph name="LANG" /> - Bahasa sudah siap, mulai ulang <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Artikel tidak tersedia</translation>
 <translation id="8443209985646068659">Chrome tak bisa diupdate</translation>
-<translation id="8443600937324357591">Pindahkan tab ke jendela lain</translation>
+<translation id="8443600937324357591">Pindah tab ke jendela lain</translation>
 <translation id="8445448999790540984">Tidak dapat mengekspor sandi</translation>
 <translation id="8446884382197647889">Pelajari Lebih Lanjut</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{Izin dihapus dari 1 situs}other{Izin dihapus dari # situs}}</translation>

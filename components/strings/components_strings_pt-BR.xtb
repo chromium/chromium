@@ -1299,7 +1299,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3203025201812691413">O URL não pode ficar em branco</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
 <translation id="3203366800380907218">Da Web</translation>
-<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> pode ter conteúdo para maiores</translation>
+<translation id="3207830513221832868">O endereço <ph name="BLOCKED_URL" /> pode ter conteúdo para maiores</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
 <translation id="3208701679386778924">Envie um relatório para que possamos melhorar as atualizações do ChromeOS.</translation>
 <translation id="3209034400446768650">Esta página pode emitir cobranças em dinheiro</translation>
@@ -3878,7 +3878,7 @@ Mais detalhes:
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Tecnologia do Google</translation>
 <translation id="7537536606612762813">Obrigatória</translation>
-<translation id="7543525346216957623">Peça ajuda para um familiar responsável</translation>
+<translation id="7543525346216957623">Peça ajuda à sua família</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Corrigir erros de conexão</translation>
 <translation id="7549584377607005141">Esta página da Web requer os dados inseridos anteriormente para ser exibida de modo correto. É possível enviá-los novamente mas, ao fazer isso, você repete qualquer ação realizada anteriormente na página.</translation>

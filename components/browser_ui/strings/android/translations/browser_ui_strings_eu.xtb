@@ -68,7 +68,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="1796588414813960292">Soinua behar duten eginbideek ez dute funtzionatuko</translation>
 <translation id="1799920918471566157">Chrome-ri buruzko aholkuak</translation>
 <translation id="1816835383954230954">Aktibatuta dagoenean, Chrome-k bizkorrago funtzionatzen du eta JavaScript darabilten eginbideek behar bezala funtzionatu beharko lukete. Desaktibatuta dagoenean, errendimendua gutxitzen du, baina V8 erasoen aurrean indartzen du.</translation>
-<translation id="1818308510395330587"><ph name="APP_NAME" /> aplikazioari errealitate areagotua erabiltzeko baimena emateko, kamera erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
+<translation id="1818308510395330587"><ph name="APP_NAME" /> aplikazioari EA erabiltzeko baimena emateko, kamera erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Kokapenerako sarbidea desaktibatuta dago gailuan. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Webguneek gailuko fitxategi eta karpetak atzitu ohi dituzte lana automatikoki gordetzeko eta antzeko funtzioak gauzatzeko</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
@@ -129,7 +129,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="2490684707762498678">Kudeatzailea: <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Laguntza eta iritziak</translation>
 <translation id="2501278716633472235">Egin atzera</translation>
-<translation id="2533138527374486328">Aktibatuta badago, webguneek sare lokaleko edozein gailutara konektatzeko eska dezake. Desaktibatuta badago, webguneek ezin dute konektatu sare lokaleko gailuetara.</translation>
+<translation id="2533138527374486328">Aktibatuta badago, webguneek sare lokaleko edozein gailutara konektatzeko eska dezake. Desaktibatuta badago, webguneak ezin dira konektatu sare lokaleko gailuetara.</translation>
 <translation id="2546283357679194313">Cookieak eta webguneetako datuak</translation>
 <translation id="2570922361219980984">Kokapenerako sarbidea desaktibatuta dago gailu honetan ere. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Zabalduta; egin klik tolesteko.</translation>
@@ -669,7 +669,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> webguneari baimena eman zaio</translation>
 <translation id="9017522656123387064">Hautapen modutik irten zara</translation>
 <translation id="9019902583201351841">Gurasoek kudeatuta</translation>
-<translation id="902236149563113779">Webguneek kameraren posizioaren jarraipena egin ohi dute errealitate areagotua darabilten eginbideak eskaintzeko, hala nola jokoak edo errealitate areagotuko jarraibideak</translation>
+<translation id="902236149563113779">Webguneek kameraren posizioaren jarraipena egin ohi dute EA darabilten eginbideak eskaintzeko, hala nola jokoak edo errealitate areagotuko jarraibideak</translation>
 <translation id="9039697262778250930">Baliteke webgune horietako saioa amaitzea</translation>
 <translation id="9074739597929991885">Bluetootha</translation>
 <translation id="9106233582039520022">Cookieak ezabatu nahi dituzu?</translation>

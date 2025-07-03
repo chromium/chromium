@@ -5267,7 +5267,7 @@ None（なし）に設定するか未設定のままにした場合、ARC アプ
           このポリシーを設定した場合、ユーザーによる変更やオーバーライドはできません。
 
           このポリシーを設定しない場合、モノラル音声は初期設定ではログイン画面で無効ですが、ユーザーはいつでも有効にできます。</translation>
-<translation id="493253860646951791">安全でない SwiftShader の WebGL フォールバックのサポートを有効にする</translation>
+<translation id="493253860646951791">安全でない SwiftShader による WebGL フォールバックのサポートを有効にする</translation>
 <translation id="4933301190614090397">ブラウザのシャットダウン時のキープアライブ リクエストに許可される継続時間（秒単位）を制御します。指定されている場合、ブラウザのシャットダウンを指定された秒数までの間ブロックして、キープアライブ（https://fetch.spec.whatwg.org/#request-keepalive-flag）リクエストを処理できます。デフォルト値（0）はこの機能が無効になっていることを表します。</translation>
 <translation id="4933339133618140916">このポリシーを True に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> でユーザーにプロダクトのプロモーション用コンテンツが表示されます。
 
@@ -7652,7 +7652,7 @@ URL が <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> の URL パターンと競
 <translation id="6513453889192806240">HTTPS レイテンシ</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> の画像</translation>
 <translation id="6518102411616460786">ターゲット チャンネルがチャンネル ダウングレードの対象になるまで待機する</translation>
-<translation id="6518286606938091609">安全でない SwiftShader の WebGL フォールバックのサポートを無効にする</translation>
+<translation id="6518286606938091609">安全でない SwiftShader による WebGL フォールバックのサポートを無効にする</translation>
 <translation id="6518894783486860562">セキュリティ上の理由から、<ph name="SHOW_SUBAPPS_APP_API_NAME" />、<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" />、<ph name="SHOW_SUBAPPS_LIST_API_NAME" /> ウェブ API を呼び出すには、事前のユーザー操作（「一時的な有効化」）が必要で、操作がない場合は呼び出せません。さらに、ユーザーには確認ダイアログで操作の確認が求められます。
 
 このポリシーでは、事前のユーザー操作やユーザーに確認を求めることなく、これらの API を呼び出せるオリジンを指定できます。

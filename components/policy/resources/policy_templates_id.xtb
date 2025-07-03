@@ -2041,7 +2041,7 @@ Jika kebijakan ini disetel ke nilai 2 - BlockPartitioning, partisi penyimpanan p
 
 Gunakan <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> untuk menonaktifkan partisi penyimpanan pihak ketiga bagi origin tingkat teratas tertentu. Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, lihat https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
 
-Metode ini akan dihapus di Chrome 145, dan sebaiknya menggunakan metode requestStorageAccess sebagai gantinya: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Masukan dapat diberikan di https://crbug.com/425248669.</translation>
+Metode ini akan dihapus di Chrome 145, dan sebaiknya gunakan metode requestStorageAccess sebagai gantinya: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Masukan dapat diberikan di https://crbug.com/425248669.</translation>
 <translation id="2386362615870139244">Izinkan penguncian layar saat bangun</translation>
 <translation id="2387469539700985783">Kebijakan ini tidak memengaruhi pelaporan yang dilakukan oleh Android.</translation>
 <translation id="2388701318721126001">Jika kebijakan ini disetel ke nonaktif, gambar wallpaper <ph name="PRODUCT_OS_NAME" /> pengguna tidak dapat dipilih dari album Google Foto.
@@ -8564,7 +8564,7 @@ Untuk mengetahui informasi mendetail tentang pola yang valid, lihat https://clou
 
 Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, lihat https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
 
-Metode ini akan dihapus di Chrome 145, dan sebaiknya menggunakan metode requestStorageAccess sebagai gantinya: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Masukan dapat diberikan di https://crbug.com/425248669.</translation>
+Metode ini akan dihapus di Chrome 145, dan sebaiknya gunakan metode requestStorageAccess sebagai gantinya: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Masukan dapat diberikan di https://crbug.com/425248669.</translation>
 <translation id="668153983584136017">Kebijakan ini tidak digunakan lagi karena algoritma GREASE yang diperbarui telah diaktifkan secara default sejak M103.
 Jika disetel ke aktif, fitur Pembaruan GREASE Petunjuk Klien Agen Pengguna akan memperbarui algoritme GREASE Agen Pengguna ke spesifikasi terbaru.
       Spesifikasi terbaru dapat menyebabkan error pada beberapa situs yang membatasi karakter yang mungkin dimuat oleh permintaan. Lihat spesifikasi untuk informasi selengkapnya: https://wicg.github.io/ua-client-hints/#grease
