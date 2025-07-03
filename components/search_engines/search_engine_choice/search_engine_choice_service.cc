@@ -13,11 +13,15 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -25,6 +29,7 @@
 #include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "components/country_codes/country_codes.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -477,24 +482,52 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
     return;
   }
 
-  // This block monitors the prevalence of some hard to reproduce case where
-  // this method is called more than once per profile session with
-  // `is_from_cached_state == true`, which seems to indicate a choice being made
-  // more than once per profile during the same session. If this had been
-  // actually triggered by a user flow, it could imply that they had to complete
-  // the choice screen more than once, which is bad UX.
-  // See crbug.com/390272573 for context and past debugging attempts.
+  // This block adds some debugging data for b/344899110, where the method
+  // is called from the choice moment while a display state is already cached.
+  // TODO(b/344899110): Clean up the debugging info when the bug is fixed.
   if (!is_from_cached_state) {
-    if (!has_recorded_display_state_) {
+    if (!display_state_record_caller_) {
       CHECK(!profile_prefs_->HasPrefPath(
           prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
-      has_recorded_display_state_ = true;
+      display_state_record_caller_ =
+          std::make_unique<base::debug::StackTrace>();
     } else {
-      // Re-entry, we just record a histogram and let the code otherwise
-      // proceed.
-      base::UmaHistogramBoolean(
-          "Search.ChoiceDebug.UnexpectedRecordDisplayStateReentryHasCompletion",
-          GetChoiceCompletionMetadata(profile_prefs_.get()).has_value());
+      // Recording a stack trace to crash keys, based on
+      // https://crsrc.org/c/docs/debugging_with_crash_keys.md
+      static crash_reporter::CrashKeyString<1024> caller_trace_key(
+          "ChoiceService-og_caller_trace");
+      crash_reporter::SetCrashKeyStringToStackTrace(
+          &caller_trace_key, *display_state_record_caller_.get());
+
+      SCOPED_CRASH_KEY_BOOL(
+          "ChoiceService", "ds_pref_has_value",
+          profile_prefs_->HasPrefPath(
+              prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
+
+      std::optional<ChoiceScreenDisplayState> already_cached_display_state =
+          ChoiceScreenDisplayState::FromDict(profile_prefs_->GetDict(
+              prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
+      std::optional<base::Time> completion_time =
+          GetChoiceScreenCompletionTimestamp(profile_prefs_.get());
+
+      SCOPED_CRASH_KEY_STRING64(
+          "ChoiceService", "choice_time_delta",
+          completion_time.has_value()
+              ? base::StringPrintf("%" PRId64 "ms",
+                                   (base::Time::Now() - completion_time.value())
+                                       .InMilliseconds())
+              : "<null>");
+      SCOPED_CRASH_KEY_STRING32(
+          "ChoiceService", "screen_items_equal",
+          already_cached_display_state.has_value()
+              ? (already_cached_display_state.value().search_engines ==
+                         display_state.search_engines
+                     ? "yes"
+                     : "no")
+              : "no value");
+
+      NOTREACHED(base::NotFatalUntil::M141);
+      caller_trace_key.Clear();
     }
   }
 
@@ -633,7 +666,7 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
 }
 
 void SearchEngineChoiceService::ResetState() {
-  has_recorded_display_state_ = false;
+  display_state_record_caller_.reset();
 }
 
 // static
