@@ -256,22 +256,24 @@ class CORE_EXPORT HTMLCanvasElement final
   }
   void SetNeedsCompositingUpdate() override;
 
+  // CanvasResourceProvider::Delegate implementation
   void NotifyGpuContextLost() override;
+  bool IsPrinting() const override;
+  bool TransferToGPUTextureWasInvoked() override;
+
+  // CanvasRenderingContextHost implementation
   void UpdateMemoryUsage() override;
   size_t GetMemoryUsage() const override;
   bool ShouldAccelerate2dContext() const override;
   bool LowLatencyEnabled() const override;
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D();
-  bool IsPrinting() const override;
   bool IsHibernating() const override;
   void SetTransferToGPUTextureWasInvoked() override;
-  bool TransferToGPUTextureWasInvoked() override;
-
-  // CanvasRenderingContextHost implementation.
   UkmParameters GetUkmParameters() override;
+  bool EnableAccelerationForCanvas2D() final;
+
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D();
 
   void DisableAccelerationForCanvas2D();
-  bool EnableAccelerationForCanvas2D() final;
 
   // ImageBitmapSource implementation
   ScriptPromise<ImageBitmap> CreateImageBitmap(
