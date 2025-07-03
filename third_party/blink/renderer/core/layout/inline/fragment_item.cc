@@ -772,7 +772,7 @@ const Font& FragmentItem::ScaledFont() const {
 }
 
 void FragmentItem::SetFitTextScale(FitTextScale scale) {
-  if (scale.scale != 1.0f) {
+  if (scale.scale == 1.0f) {
     return;
   }
   auto* data = MakeGarbageCollected<SvgFragmentData>();

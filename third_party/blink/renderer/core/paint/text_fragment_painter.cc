@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/fit_text_scale.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
@@ -311,6 +312,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   const auto* const svg_inline_text =
       DynamicTo<LayoutSVGInlineText>(layout_object);
   float scaling_factor = 1.0f;
+  bool is_scaled_inline_only = false;
   if (svg_inline_text) [[unlikely]] {
     DCHECK(text_item.IsSvgText());
     scaling_factor = svg_inline_text->ScalingFactor();
@@ -319,6 +321,11 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
         svg_inline_text->Parent()->VisualRectInLocalSVGCoordinates());
   } else {
     DCHECK(!text_item.IsSvgText());
+    if (RuntimeEnabledFeatures::CssFitWidthTextEnabled()) {
+      auto fit_text_scale = text_item.GetFitTextScale();
+      scaling_factor = fit_text_scale.scale;
+      is_scaled_inline_only = fit_text_scale.is_scaled_inline_only;
+    }
     PhysicalRect ink_overflow = text_item.SelfInkOverflowRect();
     ink_overflow.Move(physical_box.offset);
     visual_rect = ToEnclosingRect(ink_overflow);
@@ -391,8 +398,12 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   GraphicsContextStateSaver state_saver(context, /*save_and_restore=*/false);
   const int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
-  LineRelativeOffset text_origin{physical_box.offset.left,
-                                 physical_box.offset.top + ascent};
+  LayoutUnit top = physical_box.offset.top + ascent;
+  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() &&
+      !is_scaled_inline_only && !svg_inline_text) {
+    top = LayoutUnit(physical_box.offset.top + ascent * scaling_factor);
+  }
+  LineRelativeOffset text_origin{physical_box.offset.left, top};
   if (text_combine) [[unlikely]] {
     text_origin.line_over =
         text_combine->AdjustTextTopForPaint(physical_box.offset.top);
@@ -438,6 +449,21 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       svg_state.EnsureShaderTransform().PostConcat(
           fragment_transform.Inverse());
     }
+  } else if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() &&
+             scaling_factor != 1.0f) {
+    state_saver.SaveIfNeeded();
+    AffineTransform t;
+    if (is_scaled_inline_only) {
+      t.SetMatrix(
+          scaling_factor, 0, 0, 1,
+          text_origin.line_left - scaling_factor * text_origin.line_left, 0);
+    } else {
+      t.SetMatrix(
+          scaling_factor, 0, 0, scaling_factor,
+          text_origin.line_left - scaling_factor * text_origin.line_left,
+          text_origin.line_over - scaling_factor * text_origin.line_over);
+    }
+    context.ConcatCTM(t);
   }
 
   const bool paint_marker_backgrounds =
