@@ -4659,6 +4659,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Autofill_ParsedLoyaltyCardForm">
+  <owner>vizcay@google.com</owner>
+  <description>
+    This user action is logged when a loyalty card form is parsed.
+  </description>
+</action>
+
 <action name="Autofill_ParsedProfileForm" not_user_triggered="true">
   <owner>battre@chromium.org</owner>
   <description>

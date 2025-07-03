@@ -1020,8 +1020,14 @@ TEST_F(AutofillMetricsTest, LoyaltyCardCheckoutFlowUserActions) {
                                       FormControlType::kInputText),
                   CreateTestFormField("Loyalty Number", "loyalty-number", "",
                                       FormControlType::kInputText)});
-  autofill_manager().AddSeenForm(
-      form, {LOYALTY_MEMBERSHIP_PROGRAM, LOYALTY_MEMBERSHIP_ID});
+  // Simulate an Autofill query on a profile field.
+  {
+    base::UserActionTester user_action_tester;
+    autofill_manager().AddSeenForm(
+        form, {LOYALTY_MEMBERSHIP_PROGRAM, LOYALTY_MEMBERSHIP_ID});
+    EXPECT_EQ(
+        1, user_action_tester.GetActionCount("Autofill_ParsedLoyaltyCardForm"));
+  }
 
   // Simulate an Autofill query on a loyalty card field.
   autofill_manager().OnAskForValuesToFillTest(form,
