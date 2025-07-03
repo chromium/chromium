@@ -48,8 +48,6 @@ ShadowTreeStyleSheetCollection::ShadowTreeStyleSheetCollection(
 void ShadowTreeStyleSheetCollection::CollectStyleSheets(
     StyleEngine& engine,
     StyleSheetCollection& collection) {
-  StyleEngine::RuleSetScope rule_set_scope;
-
   for (Node* n : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*n);
     DCHECK(!candidate.IsXSL());
@@ -62,8 +60,7 @@ void ShadowTreeStyleSheetCollection::CollectStyleSheets(
     collection.AppendSheetForList(sheet);
     if (candidate.CanBeActivated(g_null_atom)) {
       CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
-      collection.AppendActiveStyleSheet(std::make_pair(
-          css_sheet, rule_set_scope.RuleSetForSheet(engine, css_sheet)));
+      collection.AppendActiveStyleSheet(css_sheet);
     }
   }
 
@@ -77,16 +74,15 @@ void ShadowTreeStyleSheetCollection::CollectStyleSheets(
       continue;
     }
     DCHECK_EQ(GetTreeScope().GetDocument(), sheet->ConstructorDocument());
-    collection.AppendActiveStyleSheet(
-        std::make_pair(sheet, engine.RuleSetForSheet(*sheet)));
+    collection.AppendActiveStyleSheet(sheet);
   }
 }
 
 void ShadowTreeStyleSheetCollection::UpdateActiveStyleSheets(
     StyleEngine& engine) {
-  // StyleSheetCollection is GarbageCollected<>, allocate it on the heap.
   auto* collection = MakeGarbageCollected<StyleSheetCollection>();
   CollectStyleSheets(engine, *collection);
+  collection->CreateRuleSets(engine);
   ApplyActiveStyleSheetChanges(*collection);
 }
 

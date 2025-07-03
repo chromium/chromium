@@ -952,23 +952,6 @@ RuleSet* StyleEngine::CreateUnconnectedRuleSet(CSSStyleSheet& sheet) {
   return sheet.Contents()->CreateUnconnectedRuleSet(*media_query_evaluator_);
 }
 
-RuleSet* StyleEngine::RuleSetScope::RuleSetForSheet(StyleEngine& engine,
-                                                    CSSStyleSheet* css_sheet) {
-  RuleSet* rule_set = engine.RuleSetForSheet(*css_sheet);
-  if (rule_set && rule_set->HasCascadeLayers() &&
-      !css_sheet->Contents()->HasSingleOwnerNode() &&
-      !layer_rule_sets_.insert(rule_set).is_new_entry) {
-    // The condition above is met for a stylesheet with cascade layers which
-    // shares StyleSheetContents with another stylesheet in this TreeScope.
-    // WillMutateRules() creates a unique StyleSheetContents for this sheet to
-    // avoid incorrectly identifying two separate anonymous layers as the same
-    // layer.
-    css_sheet->WillMutateRules();
-    rule_set = engine.RuleSetForSheet(*css_sheet);
-  }
-  return rule_set;
-}
-
 void StyleEngine::ClearResolvers() {
   DCHECK(!GetDocument().InStyleRecalc());
 
