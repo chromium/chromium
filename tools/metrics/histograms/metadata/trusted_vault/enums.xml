@@ -76,6 +76,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="MD5 digest mismatch"/>
   <int value="4" label="File proto deserialization failed"/>
   <int value="5" label="Data proto deserialization failed"/>
+  <int value="6" label="SHA256 digest mismatch"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->

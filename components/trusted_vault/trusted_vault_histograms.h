@@ -140,7 +140,8 @@ enum class TrustedVaultFileReadStatusForUMA {
   kMD5DigestMismatch = 3,
   kFileProtoDeserializationFailed = 4,
   kDataProtoDeserializationFailed = 5,
-  kMaxValue = kDataProtoDeserializationFailed
+  kSHA256DigestMismatch = 6,
+  kMaxValue = kSHA256DigestMismatch
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultFileReadStatus)
 

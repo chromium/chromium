@@ -135,4 +135,9 @@ message LocalTrustedVaultFileContent {
   // MD5 digest of `serialized_local_trusted_vault` formatted as hexadecimal
   // string.
   optional string md5_digest_hex_string = 2;
+
+  // SHA256 digest of `serialized_local_trusted_vault` formatted as hexadecimal
+  // string. Added in crrev.com/c/6702027 as part of a migtation effort away
+  // from MD5.
+  optional string sha256_digest_hex_string = 3;
 }

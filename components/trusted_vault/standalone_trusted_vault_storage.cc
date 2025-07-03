@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
@@ -13,10 +14,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "crypto/hash.h"
 #include "crypto/obsolete/md5.h"
 
 namespace trusted_vault {
@@ -78,6 +81,18 @@ trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
         security_domain_id,
         TrustedVaultFileReadStatusForUMA::kMD5DigestMismatch);
     return data_proto;
+  }
+
+  if (base::FeatureList::IsEnabled(kEnableTrustedVaultSHA256)) {
+    if (file_proto.has_sha256_digest_hex_string() &&
+        (base::Base64Encode(crypto::hash::Sha256(base::as_byte_span(
+             file_proto.serialized_local_trusted_vault()))) !=
+         file_proto.sha256_digest_hex_string())) {
+      RecordTrustedVaultFileReadStatus(
+          security_domain_id,
+          TrustedVaultFileReadStatusForUMA::kSHA256DigestMismatch);
+      return data_proto;
+    }
   }
 
   if (!data_proto.ParseFromString(
@@ -181,6 +196,11 @@ void WriteDataToDiskImpl(const trusted_vault_pb::LocalTrustedVault& data,
   file_proto.set_serialized_local_trusted_vault(data.SerializeAsString());
   file_proto.set_md5_digest_hex_string(
       MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()));
+  if (base::FeatureList::IsEnabled(kEnableTrustedVaultSHA256)) {
+    file_proto.set_sha256_digest_hex_string(
+        base::Base64Encode(crypto::hash::Sha256(
+            base::as_byte_span(file_proto.serialized_local_trusted_vault()))));
+  }
   bool success = base::ImportantFileWriter::WriteFileAtomically(
       file_path, file_proto.SerializeAsString(), "TrustedVault");
   if (!success) {
