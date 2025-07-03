@@ -16,7 +16,7 @@
 namespace {
 
 // The horizontal inset for the main stack view.
-constexpr CGFloat kMainStackViewHorizontalInset = 16.0;
+constexpr CGFloat kMainStackViewInset = 16.0;
 
 // The spacing between items in the main stack view.
 constexpr CGFloat kMainStackViewSpacing = 16.0;
@@ -52,6 +52,7 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
   // Initialize custom content detent.
   UISheetPresentationControllerDetent* contentDetent =
       [self createCustomContentDetent];
+  self.sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
   self.sheetPresentationController.detents = @[ contentDetent ];
   self.sheetPresentationController.largestUndimmedDetentIdentifier =
       contentDetent.identifier;
@@ -68,10 +69,16 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
 
 - (CGFloat)resolveDetentValueForSheetPresentation:
     (id<UISheetPresentationControllerDetentResolutionContext>)context {
-  CGFloat mainStackHeight =
+  CGFloat detentValue =
       [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-          .height;
-  return mainStackHeight + self.navigationBar.frame.size.height;
+          .height +
+      self.navigationBar.frame.size.height;
+  // If there is no safe area inset preventing the bottom of the main stack
+  // from touching the bottom of `self.view`, then add an inset manually.
+  if (self.view.safeAreaInsets.bottom == 0) {
+    detentValue += kMainStackViewInset;
+  }
+  return detentValue;
 }
 
 #pragma mark - UI actions
@@ -115,7 +122,7 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
         constraintEqualToAnchor:_mainStackView.centerXAnchor],
     [safeAreaLayoutGuide.widthAnchor
         constraintEqualToAnchor:_mainStackView.widthAnchor
-                       constant:2 * kMainStackViewHorizontalInset]
+                       constant:2 * kMainStackViewInset]
   ]];
 
   return contentViewController;
