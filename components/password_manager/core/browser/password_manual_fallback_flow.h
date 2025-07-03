@@ -114,9 +114,12 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
   void RunFlowImpl(const gfx::RectF& bounds,
                    base::i18n::TextDirection text_direction);
   // Authenticates the user before filling any values into the fields if the
-  // authentication is configured for the device. `fill_fields` is used to fill
-  // values into the fields.
-  void MaybeAuthenticateBeforeFilling(base::OnceClosure fill_fields);
+  // authentication is configured for the device or if a password value is being
+  // filled on a non password field. `fill_fields` is used to fill values into
+  // the fields.
+  void MaybeAuthenticateBeforeFilling(
+      base::OnceClosure fill_fields,
+      bool is_password_filled_in_non_password_field);
   // Executed when the biometric reautch that guards password filling completes.
   // `fill_fields` is used to fill values into the fields.
   void OnBiometricReauthCompleted(base::OnceClosure fill_fields,

@@ -273,7 +273,8 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
                   GetUsernameFromLabel(suggestion.labels[0][0].value),
                   payload.password,
                   autofill::AutofillSuggestionTriggerSource::
-                      kManualFallbackPasswords)));
+                      kManualFallbackPasswords),
+              /*is_password_filled_in_non_password_field=*/false));
       break;
     }
     case autofill::SuggestionType::kPasswordFieldByFieldFilling:
@@ -292,7 +293,9 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
                              base::Unretained(password_manager_driver_),
                              payload.password,
                              autofill::AutofillSuggestionTriggerSource::
-                                 kManualFallbackPasswords)));
+                                 kManualFallbackPasswords),
+              // Request reauth if filling the password on a non password field.
+              form ? field_id_ != form->password_element_renderer_id : true));
       break;
     }
     case autofill::SuggestionType::kViewPasswordDetails: {
@@ -374,13 +377,19 @@ void PasswordManualFallbackFlow::RunFlowImpl(
 }
 
 void PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling(
-    base::OnceClosure fill_fields) {
+    base::OnceClosure fill_fields,
+    bool is_password_filled_in_non_password_field) {
   CancelBiometricReauthIfOngoing();
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       password_client_->GetDeviceAuthenticator();
   // Note: this is currently only implemented on Android, Mac and Windows.
   // For other platforms, the `authenticator` will be null.
-  if (!password_client_->IsReauthBeforeFillingRequired(authenticator.get())) {
+  // Authentication is always required if the user is entering their password on
+  // a non password field.
+  bool authentication_required =
+      password_client_->IsReauthBeforeFillingRequired(authenticator.get()) ||
+      is_password_filled_in_non_password_field;
+  if (!authenticator || !authentication_required) {
     std::move(fill_fields).Run();
   } else {
     authenticator_ = std::move(authenticator);
