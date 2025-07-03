@@ -21,11 +21,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 #include "base/numerics/safe_conversions.h"
@@ -55,7 +50,8 @@ AtomicString::AtomicString(base::span<const UChar> chars,
 AtomicString::AtomicString(const UChar* chars)
     : string_(AtomicStringTable::Instance().Add(
           chars,
-          chars ? LengthOfNullTerminatedString(chars) : 0,
+          // SAFETY: safe when `chars` points to a null-terminated cstring.
+          chars ? UNSAFE_BUFFERS(LengthOfNullTerminatedString(chars)) : 0,
           AtomicStringUCharEncoding::kUnknown)) {}
 
 AtomicString::AtomicString(const StringView& string_view)
