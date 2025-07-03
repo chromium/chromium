@@ -6,20 +6,26 @@
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <style>
-      @mixin --m1 {
+      @mixin --m1() {
         .cls {
           color: green;
         }
       }
-      @mixin invalid-name {
+      @mixin invalid-name() {
         .cls {
           color: red;
         }
       }
-      @mixin --empty {}
+      @mixin missing-argument-list {
+        .cls {
+          color: red;
+        }
+      }
+      @mixin --empty() {}
       div {
         @apply --m1;
         @apply invalid-name;
+        @apply missing-argument-list;
         @apply --empty;
       }
     </style>
