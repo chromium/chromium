@@ -8,15 +8,14 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -35,6 +34,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/random.h"
 #include "extensions/browser/extension_registry.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -83,9 +83,8 @@ ResettableSettingsSnapshot::ResettableSettingsSnapshot(Profile* profile)
   // ExtensionSet is sorted but it seems to be an implementation detail.
   std::sort(enabled_extensions_.begin(), enabled_extensions_.end());
 
-  // Calculate the MD5 sum of the GUID to make sure that no part of the GUID
-  // contains information identifying the sender of the report.
-  guid_ = base::MD5String(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  // Choose a random ID for this snapshot and store it.
+  guid_ = base::ToLowerASCII(base::HexEncode(crypto::RandBytesAsArray<16>()));
 }
 
 ResettableSettingsSnapshot::~ResettableSettingsSnapshot() {
