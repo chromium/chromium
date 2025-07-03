@@ -228,8 +228,7 @@ class TileInteractionDelegateImpl
                 return !isCustomizationItemSupported(/* matchIsCustomLink= */ true);
             case ContextMenuItemId.PIN_THIS_SHORTCUT:
                 return isCustomizationItemSupported(/* matchIsCustomLink= */ false);
-            case ContextMenuItemId.EDIT_SHORTCUT:
-                return true;
+            case ContextMenuItemId.EDIT_SHORTCUT: // Fall through.
             case ContextMenuItemId.UNPIN:
                 return isCustomizationItemSupported(/* matchIsCustomLink= */ true);
             default:
