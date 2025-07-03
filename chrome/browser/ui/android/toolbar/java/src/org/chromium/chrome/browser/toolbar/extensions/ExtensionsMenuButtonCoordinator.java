@@ -26,6 +26,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
 @NullMarked
 public class ExtensionsMenuButtonCoordinator implements Destroyable {
 
+    private final Context mContext;
     private final ListMenuButton mExtensionsMenuButton;
     private final MaterialDivider mExtensionsMenuTabSwitcherDivider;
     private final ThemeColorProvider mThemeColorProvider;
@@ -35,6 +36,7 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
     private final Callback<Profile> mProfileUpdatedCallback = this::onProfileUpdated;
 
     @Nullable private Profile mProfile;
+    @Nullable private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
 
     public ExtensionsMenuButtonCoordinator(
             Context context,
@@ -42,6 +44,8 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
             MaterialDivider extensionsMenuTabSwitcherDivider,
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<Profile> profileSupplier) {
+        mContext = context;
+
         mExtensionsMenuButton = extensionsMenuButton;
         mExtensionsMenuButton.setOnClickListener(this::onClick);
 
@@ -77,9 +81,12 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
     }
 
     void onClick(View view) {
-        if (view != mExtensionsMenuButton) return;
+        if (mExtensionsMenuCoordinator == null) {
+            mExtensionsMenuCoordinator =
+                    new ExtensionsMenuCoordinator(mContext, mExtensionsMenuButton);
+        }
 
-        // TODO(crbug.com/409181513): Implement popup view for extensions.
+        mExtensionsMenuCoordinator.showMenu();
     }
 
     public void onTintChanged(
@@ -91,6 +98,10 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
 
     @Override
     public void destroy() {
+        if (mExtensionsMenuCoordinator != null) {
+            mExtensionsMenuCoordinator.destroy();
+            mExtensionsMenuCoordinator = null;
+        }
         mExtensionsMenuButton.setOnClickListener(null);
         mThemeColorProvider.removeTintObserver(mTintObserver);
         mProfileSupplier.removeObserver(mProfileUpdatedCallback);

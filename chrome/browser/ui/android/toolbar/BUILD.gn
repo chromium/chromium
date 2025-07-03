@@ -244,6 +244,7 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopupContents.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuButtonCoordinator.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuCoordinator.java",
     ]
 
     srcjar_deps += [ "//extensions/browser:extension_action_enums" ]
@@ -330,6 +331,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/incognito_small.png",
     "java/res/drawable-xxxhdpi/popup_bg_bottom.9.png",
     "java/res/drawable/chrome_extension.xml",
+    "java/res/drawable/extensions_menu_bg_tinted.xml",
     "java/res/drawable/home_surface_search_box_background.xml",
     "java/res/drawable/ic_close_all_tabs.xml",
     "java/res/drawable/ic_switch_out_of_incognito.xml",
@@ -357,6 +359,7 @@ android_resources("java_resources") {
     "java/res/layout/control_container.xml",
     "java/res/layout/extension_action_button.xml",
     "java/res/layout/extension_toolbar_container.xml",
+    "java/res/layout/extensions_menu.xml",
     "java/res/layout/home_page_buttons_layout.xml",
     "java/res/layout/menu_button.xml",
     "java/res/layout/navigation_popup_item.xml",
@@ -485,6 +488,7 @@ robolectric_library("junit") {
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -507,6 +511,9 @@ robolectric_library("junit") {
   ]
 
   if (enable_extensions_core) {
-    sources += [ "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediatorTest.java" ]
+    sources += [
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediatorTest.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuCoordinatorTest.java",
+    ]
   }
 }
