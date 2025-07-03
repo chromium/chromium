@@ -1199,8 +1199,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 }
 
 // Regression test for https://crbug.com/368289857.
+// TODO(crbug.com/429352317): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
-                       NavigateWhileHidden_NotCaptured) {
+  DISABLED_NavigateWhileHidden_NotCaptured) {
   // TODO(crbug.com/390571607): Update this test to support default
   // SiteInstanceGroup in all parameterization modes.
   if (ShouldUseDefaultSiteInstanceGroup()) {
