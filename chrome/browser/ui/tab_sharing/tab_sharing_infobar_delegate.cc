@@ -11,9 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
@@ -23,6 +21,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
@@ -32,6 +31,7 @@
 #include "media/capture/capture_switches.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -160,9 +160,10 @@ class TabSharingInfoBarDelegate::SwitchToTabButton
     DCHECK(web_contents);
 
     web_contents->GetDelegate()->ActivateContents(web_contents);
-    Browser* const browser = chrome::FindBrowserWithTab(web_contents);
-    if (browser && browser->window()) {
-      browser->window()->Activate();
+    tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+    BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+    if (browser && browser->GetWindow()) {
+      browser->GetWindow()->Activate();
     }
   }
 
