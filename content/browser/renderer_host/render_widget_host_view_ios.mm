@@ -961,6 +961,14 @@ void RenderWidgetHostViewIOS::DeleteSurroundingText(int before, int after) {
   }
 }
 
+void RenderWidgetHostViewIOS::ExecuteEditCommand(const std::string& command) {
+  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+  if (!input_handler) {
+    return;
+  }
+  input_handler->ExecuteEditCommand(command, std::nullopt);
+}
+
 void RenderWidgetHostViewIOS::SendKeyEvent(
     const input::NativeWebKeyboardEvent& event) {
   auto* host = GetFocusedWidget();

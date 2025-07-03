@@ -425,12 +425,19 @@ static void* kObservingContext = &kObservingContext;
   if (entry.state == BEKeyPressState::BEKeyPressStateDown) {
     BEKeyEntryContext* contextForKeyDown =
         [[BEKeyEntryContext alloc] initWithKeyEntry:entry];
-    [contextForKeyDown setDocumentEditable:YES];
-    [contextForKeyDown setShouldInsertCharacter:YES];
-    [[self asyncInputDelegate]
+    [contextForKeyDown setDocumentEditable:[self isEditable]];
+    // To trigger key commands correctly, e.g. trigger
+    // `transposeCharactersAroundSelection` on Ctrl+T, we need to set
+    // `shouldInsertCharacter` to NO when users are not inputing characters.
+    // Otherwise, the key commands will not be triggered.
+    BOOL isCharInput = entry.key.characters.length == 1 &&
+                       (entry.key.modifierFlags == 0 ||
+                        entry.key.modifierFlags == UIKeyModifierShift);
+    [contextForKeyDown setShouldInsertCharacter:isCharInput];
+    BOOL handled = [[self asyncInputDelegate]
         shouldDeferEventHandlingToSystemForTextInput:self
                                              context:contextForKeyDown];
-    completionHandler(entry, YES);
+    completionHandler(entry, handled);
   } else {
     completionHandler(entry, NO);
   }
@@ -448,6 +455,8 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (void)transposeCharactersAroundSelection {
+  CHECK(_view);
+  _view->ExecuteEditCommand("transpose");
 }
 
 - (BOOL)replaceText:(NSString*)originalText
