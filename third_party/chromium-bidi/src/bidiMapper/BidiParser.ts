@@ -79,6 +79,9 @@ export interface BidiCommandParameterParser {
   parseRemoveUserContextParameters(
     params: unknown,
   ): Browser.RemoveUserContextParameters;
+  parseSetClientWindowStateParameters(
+    params: unknown,
+  ): Browser.SetClientWindowStateParameters;
   // keep-sorted end
 
   // Browsing Context module
@@ -143,6 +146,9 @@ export interface BidiCommandParameterParser {
 
   // Network module
   // keep-sorted start block=yes
+  parseAddDataCollectorParams(
+    params: unknown,
+  ): Network.AddDataCollectorParameters;
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters;
   parseContinueRequestParams(
     params: unknown,
@@ -154,9 +160,13 @@ export interface BidiCommandParameterParser {
     params: unknown,
   ): Network.ContinueWithAuthParameters;
   parseFailRequestParams(params: unknown): Network.FailRequestParameters;
+  parseGetDataParams(params: unknown): Network.GetDataParameters;
   parseProvideResponseParams(
     params: unknown,
   ): Network.ProvideResponseParameters;
+  parseRemoveDataCollectorParams(
+    params: unknown,
+  ): Network.RemoveDataCollectorParameters;
   parseRemoveInterceptParams(
     params: unknown,
   ): Network.RemoveInterceptParameters;

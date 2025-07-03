@@ -65,10 +65,26 @@ export namespace Browser {
       WebDriverBidi.Browser.RemoveUserContextParametersSchema,
     );
   }
+  export function parseSetClientWindowStateParameters(
+    params: unknown,
+  ): Protocol.Browser.SetClientWindowStateParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Browser.SetClientWindowStateParametersSchema,
+    );
+  }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-network */
 export namespace Network {
+  export function parseAddDataCollectorParameters(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    return parseObject(
+      params,
+      WebDriverBidi.Network.AddDataCollectorParametersSchema,
+    ) as Protocol.Network.AddDataCollectorParameters;
+  }
+
   export function parseAddInterceptParameters(params: unknown) {
     // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
     return parseObject(
@@ -106,12 +122,28 @@ export namespace Network {
     );
   }
 
+  export function parseGetDataParameters(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    return parseObject(
+      params,
+      WebDriverBidi.Network.GetDataParametersSchema,
+    ) as Protocol.Network.GetDataParameters;
+  }
+
   export function parseProvideResponseParameters(params: unknown) {
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
       WebDriverBidi.Network.ProvideResponseParametersSchema,
     ) as Protocol.Network.ProvideResponseParameters;
+  }
+
+  export function parseRemoveDataCollectorParameters(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    return parseObject(
+      params,
+      WebDriverBidi.Network.RemoveDataCollectorParametersSchema,
+    ) as Protocol.Network.RemoveDataCollectorParameters;
   }
 
   export function parseRemoveInterceptParameters(params: unknown) {

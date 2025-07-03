@@ -109,6 +109,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Browser.RemoveUserContextParameters {
     return params as Browser.RemoveUserContextParameters;
   }
+  parseSetClientWindowStateParameters(
+    params: unknown,
+  ): Browser.SetClientWindowStateParameters {
+    return params as Browser.SetClientWindowStateParameters;
+  }
   // keep-sorted end
 
   // Browsing Context module
@@ -234,6 +239,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
 
   // Network module
   // keep-sorted start block=yes
+  parseAddDataCollectorParams(
+    params: unknown,
+  ): Network.AddDataCollectorParameters {
+    return params as Network.AddDataCollectorParameters;
+  }
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters {
     return params as Network.AddInterceptParameters;
   }
@@ -255,10 +265,18 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   parseFailRequestParams(params: unknown): Network.FailRequestParameters {
     return params as Network.FailRequestParameters;
   }
+  parseGetDataParams(params: unknown): Network.GetDataParameters {
+    return params as Network.GetDataParameters;
+  }
   parseProvideResponseParams(
     params: unknown,
   ): Network.ProvideResponseParameters {
     return params as Network.ProvideResponseParameters;
+  }
+  parseRemoveDataCollectorParams(
+    params: unknown,
+  ): Network.RemoveDataCollectorParameters {
+    return params as Network.RemoveDataCollectorParameters;
   }
   parseRemoveInterceptParams(
     params: unknown,
