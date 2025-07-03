@@ -11,6 +11,7 @@
 #import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/data_sharing/test_support/test_utils.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync/base/command_line_switches.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -748,8 +749,9 @@ void WaitForFakeJoinFlowView() {
   [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Cancel.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Close the tab by using the context menu and check the alert.
@@ -763,8 +765,9 @@ void WaitForFakeJoinFlowView() {
   [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Cancel.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Open the tab and try to close it with the tab grid icon context menu.
@@ -781,8 +784,9 @@ void WaitForFakeJoinFlowView() {
   [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Cancel.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
