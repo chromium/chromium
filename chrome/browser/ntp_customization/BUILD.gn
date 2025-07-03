@@ -71,7 +71,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/edit_icon_circle_background.xml",
     "java/res/drawable/forward_arrow_icon.xml",
-    "java/res/drawable/ntp_customization_bottom_sheet_background.xml",
     "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_bottom.xml",
     "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_middle.xml",
     "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_single.xml",
