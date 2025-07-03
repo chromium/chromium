@@ -17,6 +17,7 @@ source_set("ui") {
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
