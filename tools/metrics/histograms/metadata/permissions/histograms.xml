@@ -545,7 +545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AutoBlocker.EmbargoPromptSuppression"
-    enum="PermissionEmbargoStatus" expires_after="2025-01-24">
+    enum="PermissionEmbargoStatus" expires_after="2025-09-24">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -558,6 +558,9 @@ chromium-metrics-reviews@google.com.
     If the (origin, permission) pair was previously placed under embargo, no
     prompt is displayed and the reason for embargo is recorded. Otherwise, the
     prompt is shown and a no embargo reason is recorded.
+
+    Warning: this histogram was expired from 2025-01-24 to 2025-07-02; data may
+    be missing.
   </summary>
 </histogram>
 
