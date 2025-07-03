@@ -157,6 +157,10 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnLargeBlobForICloudKeychain);
 #endif  // BUILDFLAG(IS_MAC)
 
+// Enables large blob support for Google Password Manager.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnLargeBlobForGPM);
+
 // Sends a PIN generation number to the enclave on a PIN wrapping request.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnSendPinGeneration);

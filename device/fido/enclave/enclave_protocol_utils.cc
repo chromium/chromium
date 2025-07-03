@@ -34,6 +34,7 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/types.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -394,10 +395,12 @@ ParseMakeCredentialResponse(cbor::Value response_value,
     }
   }
   bool large_blob_supported = false;
-  it = last_response->find(
-      cbor::Value(kMakeCredentialResponseLargeBlobSupportedKey));
-  if (it != last_response->end() && it->second.is_bool()) {
-    large_blob_supported = it->second.GetBool();
+  if (base::FeatureList::IsEnabled(device::kWebAuthnLargeBlobForGPM)) {
+    it = last_response->find(
+        cbor::Value(kMakeCredentialResponseLargeBlobSupportedKey));
+    if (it != last_response->end() && it->second.is_bool()) {
+      large_blob_supported = it->second.GetBool();
+    }
   }
 
   std::vector<uint8_t> credential_id =
