@@ -5046,13 +5046,6 @@
       status: "experimental",
     },
     {
-      // Makes navigation APIs to use focus node for caret navigation instead
-      // of selection start.
-      // https://crbug.com/40658856
-      name: "UseSelectionFocusNodeForCaretNavigation",
-      status: "stable",
-    },
-    {
       // Fix for https://crbug.com/421314614
       name: "UseSelectionInDOMTreeAnchorInExtendSelection",
       status: "stable"
