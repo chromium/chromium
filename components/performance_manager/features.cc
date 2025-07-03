@@ -268,6 +268,22 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "unfreeze_duration",
                    base::Seconds(5));
 
+BASE_FEATURE(kInfiniteTabsFreezingOnMemoryPressure,
+             "InfiniteTabsFreezingOnMemoryPressure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kInfiniteTabsFreezingOnMemoryPressureInterval,
+                   &kInfiniteTabsFreezingOnMemoryPressure,
+                   "interval",
+                   base::Seconds(5));
+
+BASE_FEATURE_PARAM(int,
+                   kInfiniteTabsFreezingOnMemoryPressurePercent,
+                   &kInfiniteTabsFreezingOnMemoryPressure,
+                   "percent_threshold",
+                   15);
+
 BASE_FEATURE(kResourceAttributionIncludeOrigins,
              "ResourceAttributionIncludeOrigins",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -280,6 +280,13 @@ class FreezingPolicy : public PageNodeObserver,
   // eliminate randomness.
   virtual base::TimeTicks GenerateRandomPeriodicUnfreezePhase() const;
 
+  // Called when the memory pressure state of the system is updated. Triggers a
+  // policy-wide re-evaluation of page freezing.
+  void CheckMemoryPressureForFreezing();
+
+  // Triggers a re-evaluation of the frozen state for all pages in the graph.
+  void UpdateAllPagesFrozenState();
+
   // Used to freeze pages.
   std::unique_ptr<Freezer> freezer_;
 
@@ -321,6 +328,13 @@ class FreezingPolicy : public PageNodeObserver,
 
   // Number of visible tabs.
   int num_visible_tabs_ = 0;
+
+  // Timer to periodically check system memory.
+  base::RepeatingTimer memory_check_timer_;
+
+  // True if the system is considered to be under memory pressure by our
+  // internal check.
+  bool is_under_memory_pressure_ = false;
 
   base::WeakPtrFactory<FreezingPolicy> weak_factory_{this};
 };

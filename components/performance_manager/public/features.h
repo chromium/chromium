@@ -208,6 +208,19 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kInfiniteTabsFreezing_UnfreezeDuration);
 
+// If enabled, eligible tabs may be frozen on Windows if the system is under
+// memory pressure. A tab is eligible if it would be freezable by the
+// kInfiniteTabsFreezing policy.
+BASE_DECLARE_FEATURE(kInfiniteTabsFreezingOnMemoryPressure);
+
+// The interval at which to check for memory pressure when enabled.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kInfiniteTabsFreezingOnMemoryPressureInterval);
+
+// The available physical memory percentage below which to trigger freezing when
+// enabled.
+BASE_DECLARE_FEATURE_PARAM(int, kInfiniteTabsFreezingOnMemoryPressurePercent);
+
 // When enabled, Resource Attribution measurements will include contexts for
 // individual origins.
 BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);

@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -256,22 +257,24 @@ FreezingPolicy::FreezingPolicy(
     resource_usage_query_observation_.Observe(&resource_usage_query_.value());
     resource_usage_query_->Start(kCPUMeasurementInterval);
   }
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(
+          features::kInfiniteTabsFreezingOnMemoryPressure)) {
+    memory_check_timer_.Start(
+        FROM_HERE,
+        features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get(), this,
+        &FreezingPolicy::CheckMemoryPressureForFreezing);
+  }
+#endif
 }
 
 FreezingPolicy::~FreezingPolicy() = default;
 
 void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
-  const base::TimeTicks now = base::TimeTicks::Now();
   is_battery_saver_active_ = is_enabled;
-
   // Update frozen state for all connected sets of pages (toggling the state of
   // battery saver mode can affect the frozen state of any connected set).
-  base::flat_set<raw_ptr<const PageNode>> visited_pages;
-  for (auto& [id, state] : browsing_instance_states_) {
-    if (!base::Contains(visited_pages, *state.pages.begin())) {
-      UpdateFrozenState(*state.pages.begin(), now, &visited_pages);
-    }
-  }
+  UpdateAllPagesFrozenState();
 }
 
 void FreezingPolicy::AddFreezeVote(PageNode* page_node) {
@@ -469,6 +472,12 @@ void FreezingPolicy::UpdateFrozenState(
                  FreezingType::kInfiniteTabs) &&
              !is_in_periodic_unfreeze &&
              base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing)) {
+    should_be_frozen = true;
+  } else if (can_freeze_per_type_tracker.CanFreeze(
+                 FreezingType::kInfiniteTabs) &&
+             !is_in_periodic_unfreeze && is_under_memory_pressure_ &&
+             base::FeatureList::IsEnabled(
+                 features::kInfiniteTabsFreezingOnMemoryPressure)) {
     should_be_frozen = true;
   }
 
@@ -1397,6 +1406,55 @@ base::TimeTicks FreezingPolicy::GenerateRandomPeriodicUnfreezePhase() const {
          base::Milliseconds(base::RandInt(
              0, features::kInfiniteTabsFreezing_UnfreezeInterval.Get()
                     .InMilliseconds()));
+}
+
+void FreezingPolicy::CheckMemoryPressureForFreezing() {
+#if BUILDFLAG(IS_WIN)
+  base::SystemMemoryInfoKB info;
+  if (!base::GetSystemMemoryInfo(&info)) {
+    // Cannot get system memory info, do nothing.
+    return;
+  }
+
+  // The moderate pressure threshold value is lifted from the default logic in
+  // SystemMemoryPressureEvaluator. It was determined experimentally to ensure
+  // sufficient responsiveness of the memory pressure subsystem with minimal
+  // overhead.
+  const int kPressureThresholdPercent =
+      features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
+
+  uint64_t total_kb = info.total;
+  uint64_t avail_kb = info.avail_phys;
+
+  int available_percent = 0;
+  if (total_kb > 0) {
+    available_percent =
+        static_cast<int>((static_cast<double>(avail_kb) / total_kb) * 100.0);
+  }
+
+  bool is_now_under_pressure = available_percent < kPressureThresholdPercent;
+
+  // If the pressure state hasn't changed, there's nothing to do.
+  if (is_now_under_pressure == is_under_memory_pressure_) {
+    return;
+  }
+
+  // The state has changed. Update the flag and re-evaluate all pages.
+  is_under_memory_pressure_ = is_now_under_pressure;
+  UpdateAllPagesFrozenState();
+
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+void FreezingPolicy::UpdateAllPagesFrozenState() {
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  base::flat_set<raw_ptr<const PageNode>> visited_pages;
+  for (auto& [id, state] : browsing_instance_states_) {
+    if (!base::Contains(visited_pages, *state.pages.begin())) {
+      UpdateFrozenState(*state.pages.begin(), now, &visited_pages);
+    }
+  }
 }
 
 }  // namespace performance_manager
