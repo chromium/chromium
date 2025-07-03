@@ -5488,7 +5488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabStrip.NullTabHoverCardView.ShowDelayed"
-    enum="Boolean" expires_after="2025-07-01">
+    enum="Boolean" expires_after="2025-12-01">
   <owner>renkens@google.com</owner>
   <owner>aishwaryarj@google.com</owner>
   <summary>
