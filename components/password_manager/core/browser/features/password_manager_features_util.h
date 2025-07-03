@@ -98,6 +98,18 @@ inline constexpr char kObsoleteAccountStorageDefaultStoreKey[] =
     "default_store";
 void MigrateDefaultProfileStorePref(PrefService* pref_service);
 
+// Password change HaTS product-specific data fields.
+//
+// Note: Counts and runtime should use bucketing.
+inline constexpr char kPasswordChangeSuggestedPasswordsAdoption[] =
+    "Has user ever adopted suggested passwords";
+inline constexpr char kPasswordChangeBreachedPasswordsCount[] =
+    "Number of breached passwords";
+inline constexpr char kPasswordChangeSavedPasswordsCount[] =
+    "Number of saved passwords";
+inline constexpr char kPasswordChangeRuntime[] =
+    "Password change feature runtime, in milliseconds";
+
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager::features_util

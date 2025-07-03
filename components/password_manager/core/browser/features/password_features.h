@@ -173,6 +173,11 @@ BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
 // Enables improvements to password change functionality.
 BASE_DECLARE_FEATURE(kImprovedPasswordChangeService);
 
+inline constexpr base::FeatureParam<std::string>
+    kPasswordChangeSuccessSurveyTriggerId{
+        &kImprovedPasswordChangeService, "PasswordChangeSuccessSurveyTriggerId",
+        /*default_value=*/""};
+
 // All features parameters in alphabetical order.
 }  // namespace password_manager::features
 

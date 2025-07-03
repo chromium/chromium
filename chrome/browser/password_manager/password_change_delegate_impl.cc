@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -20,6 +21,9 @@
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -32,6 +36,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -41,6 +46,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -120,6 +126,49 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile* profile,
   new_web_contents->Resize({0, 0, 1024, 768});
 
   return new_web_contents;
+}
+
+// Tries to launch a password change survey in `web_contents`. `trigger`
+// specifies which scenario occurred (e.g. error or successful password change).
+// `password_change_duration` specifies the feature runtime until reaching the
+// trigger condition.
+void MaybeLaunchSurvey(const std::string& trigger,
+                       base::TimeDelta password_change_duration,
+                       Profile* profile,
+                       content::WebContents* web_contents) {
+  CHECK(profile);
+  CHECK(web_contents);
+
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile,
+                                        /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  int64_t bucketed_total_passwords = ukm::GetExponentialBucketMinForCounts1000(
+      profile->GetPrefs()->GetInteger(
+          password_manager::prefs::kTotalPasswordsAvailableForAccount) +
+      profile->GetPrefs()->GetInteger(
+          password_manager::prefs::kTotalPasswordsAvailableForProfile));
+  int64_t bucketed_runtime = ukm::GetSemanticBucketMinForDurationTiming(
+      password_change_duration.InMilliseconds());
+  // TODO(crbug.com/383079813): Pass actual values for suggested password
+  // adoption and breached passwords count. Ensure the latter is bucketed.
+
+  hats_service->LaunchDelayedSurveyForWebContents(
+      trigger, web_contents,
+      /*timeout_ms=*/0, /*product_specific_bits_data=*/
+      {{password_manager::features_util::
+            kPasswordChangeSuggestedPasswordsAdoption,
+        false}},
+      /*product_specific_string_data=*/
+      {{password_manager::features_util::kPasswordChangeBreachedPasswordsCount,
+        ""},
+       {password_manager::features_util::kPasswordChangeSavedPasswordsCount,
+        base::ToString(bucketed_total_passwords)},
+       {password_manager::features_util::kPasswordChangeRuntime,
+        base::ToString(bucketed_runtime)}});
 }
 
 }  // namespace
@@ -346,8 +395,10 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
 }
 
 void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
+  base::TimeDelta password_change_duration =
+      base::Time::Now() - flow_start_time_;
   base::UmaHistogramMediumTimes("PasswordManager.PasswordChangeTimeOverall",
-                                base::Time::Now() - flow_start_time_);
+                                password_change_duration);
   if (!result) {
     UpdateState(State::kPasswordChangeFailed);
   } else {
@@ -356,6 +407,8 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
     submission_verifier_->SavePassword(username_);
     NotifyPasswordChangeFinishedSuccessfully(originator_);
     UpdateState(State::kPasswordSuccessfullyChanged);
+    MaybeLaunchSurvey(kHatsSurveyTriggerPasswordChangeSuccess,
+                      password_change_duration, profile_, originator_);
   }
   // TODO(crbug.com/407503334): Upload final log on destructor.
   logs_uploader_->UploadFinalLog();

@@ -29,6 +29,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"  // nogncheck
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"  // nogncheck
 #include "components/performance_manager/public/features.h"  // nogncheck
 #include "components/permissions/constants.h"                // nogncheck
 #include "components/safe_browsing/core/common/features.h"   // nogncheck
@@ -76,6 +77,8 @@ constexpr char kHatsSurveyTriggerLensOverlayResults[] = "lens-overlay-results";
 constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
 constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
     "ntp-photos-module-opt-out";
+constexpr char kHatsSurveyTriggerPasswordChangeSuccess[] =
+    "password-change-success";
 constexpr char kHatsSurveyTriggerPerformanceControlsPPM[] = "performance-ppm";
 // The permission prompt trigger permits configuring multiple triggers
 // simultaneously. Each trigger increments a counter at the end -->
@@ -632,6 +635,22 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   merchant_trust_learn_survey_config.probability =
       page_info::kMerchantTrustLearnSurveyProbability.Get();
   survey_configs.push_back(merchant_trust_learn_survey_config);
+
+  // Automated password change surveys.
+  survey_configs.emplace_back(
+      &password_manager::features::kImprovedPasswordChangeService,
+      kHatsSurveyTriggerPasswordChangeSuccess,
+      password_manager::features::kPasswordChangeSuccessSurveyTriggerId.Get(),
+      /*product_specific_bits_data_fields=*/
+      std::vector<std::string>{password_manager::features_util::
+                                   kPasswordChangeSuggestedPasswordsAdoption},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{
+          password_manager::features_util::
+              kPasswordChangeBreachedPasswordsCount,
+          password_manager::features_util::kPasswordChangeSavedPasswordsCount,
+          password_manager::features_util::kPasswordChangeRuntime});
+
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,
                               kHatsSurveyTriggerAndroidStartupSurvey);

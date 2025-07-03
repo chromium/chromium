@@ -36,6 +36,7 @@ extern const char kHatsSurveyTriggerHistoryEmbeddings[];
 extern const char kHatsSurveyTriggerLensOverlayResults[];
 extern const char kHatsSurveyTriggerNtpModules[];
 extern const char kHatsSurveyTriggerNtpPhotosModuleOptOut[];
+extern const char kHatsSurveyTriggerPasswordChangeSuccess[];
 extern const char kHatsSurveyTriggerPerformanceControlsPPM[];
 extern const char kHatsSurveyTriggerPrivacyGuide[];
 extern const char kHatsSurveyTriggerRedWarning[];
