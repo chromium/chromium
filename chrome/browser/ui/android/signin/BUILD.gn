@@ -58,7 +58,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncConfig.java",
     "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncCoordinator.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/ConfirmImportSyncDataDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConsentTextTracker.java",
     "java/src/org/chromium/chrome/browser/ui/signin/DialogWhenLargeContentLayout.java",
@@ -156,7 +155,6 @@ android_resources("java_resources") {
     "java/res/layout/batch_upload_dialog_view.xml",
     "java/res/layout/bottom_sheet_signin_history_sync_container.xml",
     "java/res/layout/central_account_card_view.xml",
-    "java/res/layout/confirm_import_sync_data.xml",
     "java/res/layout/fullscreen_signin_and_history_sync_landscape_view.xml",
     "java/res/layout/fullscreen_signin_and_history_sync_portrait_view.xml",
     "java/res/layout/fullscreen_signin_bottom_group_view.xml",
@@ -295,7 +293,6 @@ android_library("unit_device_javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.signin"
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/signin/ConfirmImportSyncDataDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogRenderTest.java",
