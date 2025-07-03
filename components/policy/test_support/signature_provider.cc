@@ -12,10 +12,12 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
+#include "base/strings/string_view_util.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/keypair.h"
 #include "crypto/rsa_private_key.h"
-#include "crypto/signature_creator.h"
+#include "crypto/sign.h"
 #include "device_management_backend.pb.h"
 
 namespace em = enterprise_management;
@@ -186,27 +188,21 @@ bool SignatureProvider::SigningKey::Sign(
     const std::string& str,
     em::PolicyFetchRequest::SignatureType signature_type,
     std::string* signature) const {
-  crypto::SignatureCreator::HashAlgorithm crypto_hash_alg;
+  crypto::sign::SignatureKind kind;
   switch (signature_type) {
     case em::PolicyFetchRequest::SHA256_RSA:
-      crypto_hash_alg = crypto::SignatureCreator::SHA256;
+      kind = crypto::sign::SignatureKind::RSA_PKCS1_SHA256;
       break;
     case em::PolicyFetchRequest::NONE:
     case em::PolicyFetchRequest::SHA1_RSA:
-      crypto_hash_alg = crypto::SignatureCreator::SHA1;
+      kind = crypto::sign::SignatureKind::RSA_PKCS1_SHA1;
       break;
   }
 
-  std::unique_ptr<crypto::SignatureCreator> signer =
-      crypto::SignatureCreator::Create(private_key_.get(), crypto_hash_alg);
-
-  std::vector<uint8_t> input(str.begin(), str.end());
-  std::vector<uint8_t> result;
-
-  if (!signer->Update(input.data(), input.size()) || !signer->Final(&result)) {
-    return false;
-  }
-
+  auto wrapped_key = crypto::keypair::PrivateKey::FromDeprecatedRSAPrivateKey(
+      private_key_.get());
+  std::vector<uint8_t> result =
+      crypto::sign::Sign(kind, wrapped_key, base::as_byte_span(str));
   signature->assign(std::string(result.begin(), result.end()));
 
   return true;
@@ -231,17 +227,11 @@ void SignatureProvider::SetSigningKeysForChildDomain() {
 
 bool SignatureProvider::SignVerificationData(const std::string& data,
                                              std::string* signature) const {
-  std::unique_ptr<crypto::SignatureCreator> signer =
-      crypto::SignatureCreator::Create(verification_key_.get(),
-                                       crypto::SignatureCreator::SHA256);
-
-  std::vector<uint8_t> input(data.begin(), data.end());
-  std::vector<uint8_t> result;
-
-  if (!signer->Update(input.data(), input.size()) || !signer->Final(&result)) {
-    return false;
-  }
-
+  auto wrapped_key = crypto::keypair::PrivateKey::FromDeprecatedRSAPrivateKey(
+      verification_key_.get());
+  std::vector<uint8_t> result =
+      crypto::sign::Sign(crypto::sign::SignatureKind::RSA_PKCS1_SHA256,
+                         wrapped_key, base::as_byte_span(data));
   signature->assign(std::string(result.begin(), result.end()));
 
   return true;

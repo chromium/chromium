@@ -7,7 +7,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
 #include "crypto/rsa_private_key.h"
-#include "crypto/signature_creator.h"
 #include "device_management_backend.pb.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"

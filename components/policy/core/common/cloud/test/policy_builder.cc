@@ -7,10 +7,13 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "crypto/signature_creator.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace em = enterprise_management;
@@ -348,13 +351,13 @@ void SignData(const std::string& data,
               crypto::RSAPrivateKey* const key,
               std::string* const signature,
               em::PolicyFetchRequest::SignatureType signature_type) {
-  crypto::SignatureCreator::HashAlgorithm algorithm;
+  crypto::sign::SignatureKind kind;
   switch (signature_type) {
     case em::PolicyFetchRequest::SHA1_RSA:
-      algorithm = crypto::SignatureCreator::SHA1;
+      kind = crypto::sign::SignatureKind::RSA_PKCS1_SHA1;
       break;
     case em::PolicyFetchRequest::SHA256_RSA:
-      algorithm = crypto::SignatureCreator::SHA256;
+      kind = crypto::sign::SignatureKind::RSA_PKCS1_SHA256;
       break;
     default:
       // `em::PolicyFetchRequest::NONE` indicates unsigned blobs.
@@ -362,14 +365,11 @@ void SignData(const std::string& data,
       NOTREACHED();
   }
 
-  std::unique_ptr<crypto::SignatureCreator> signature_creator(
-      crypto::SignatureCreator::Create(key, algorithm));
-  signature_creator->Update(reinterpret_cast<const uint8_t*>(data.c_str()),
-                            data.size());
-  std::vector<uint8_t> signature_bytes;
-  CHECK(signature_creator->Final(&signature_bytes));
-  signature->assign(reinterpret_cast<const char*>(signature_bytes.data()),
-                    signature_bytes.size());
+  auto wrapped_key =
+      crypto::keypair::PrivateKey::FromDeprecatedRSAPrivateKey(key);
+  std::vector<uint8_t> signature_bytes =
+      crypto::sign::Sign(kind, wrapped_key, base::as_byte_span(data));
+  signature->assign(base::as_string_view(signature_bytes));
 }
 
 }  // namespace

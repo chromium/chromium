@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "crypto/openssl_util.h"
+#include "crypto/rsa_private_key.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -115,6 +116,11 @@ std::optional<PrivateKey> PrivateKey::FromPrivateKeyInfo(
   }
 
   return std::optional<PrivateKey>(PrivateKey(std::move(pkey)));
+}
+
+// static
+PrivateKey PrivateKey::FromDeprecatedRSAPrivateKey(RSAPrivateKey* key) {
+  return PrivateKey(bssl::UpRef(key->key()));
 }
 
 std::vector<uint8_t> PrivateKey::ToPrivateKeyInfo() const {

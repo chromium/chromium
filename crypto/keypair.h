@@ -12,6 +12,10 @@
 #include "crypto/subtle_passkey.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
+namespace crypto {
+class RSAPrivateKey;
+}
+
 namespace crypto::keypair {
 
 // This class wraps an EVP_PKEY containing a private key. Since EVP_PKEY is
@@ -47,6 +51,10 @@ class CRYPTO_EXPORT PrivateKey {
   // it after the PrivateKeyInfo block.
   static std::optional<PrivateKey> FromPrivateKeyInfo(
       base::span<const uint8_t> pki);
+
+  // Deprecated compatibility interface for using new signing APIs with the old
+  // RSAPrivateKey type. Do not add new uses.
+  static PrivateKey FromDeprecatedRSAPrivateKey(RSAPrivateKey* key);
 
   // Deliberately not present in this API:
   // ECPrivateKey::CreateFromEncryptedPrivateKeyInfo(): imports a PKCS#8

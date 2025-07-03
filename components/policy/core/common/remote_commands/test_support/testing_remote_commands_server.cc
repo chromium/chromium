@@ -8,17 +8,20 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
 #include "base/location.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/signature_creator.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
@@ -47,28 +50,23 @@ int GetCommandIdOrDefault(const em::SignedData& signed_command) {
 
 std::string SignDataWithTestKey(const std::string& data,
                                 SignatureType algorithm) {
-  crypto::SignatureCreator::HashAlgorithm crypto_hash_alg;
+  crypto::sign::SignatureKind kind;
 
   switch (algorithm) {
     case em::PolicyFetchRequest::SHA256_RSA:
-      crypto_hash_alg = crypto::SignatureCreator::SHA256;
+      kind = crypto::sign::SignatureKind::RSA_PKCS1_SHA256;
       break;
     case em::PolicyFetchRequest::NONE:
     case em::PolicyFetchRequest::SHA1_RSA:
-      crypto_hash_alg = crypto::SignatureCreator::SHA1;
+      kind = crypto::sign::SignatureKind::RSA_PKCS1_SHA1;
       break;
   }
 
-  std::unique_ptr<crypto::RSAPrivateKey> private_key =
-      PolicyBuilder::CreateTestSigningKey();
-  std::unique_ptr<crypto::SignatureCreator> signer =
-      crypto::SignatureCreator::Create(private_key.get(), crypto_hash_alg);
-
-  std::vector<uint8_t> input(data.begin(), data.end());
-  std::vector<uint8_t> result;
-
-  CHECK(signer->Update(input.data(), input.size()));
-  CHECK(signer->Final(&result));
+  auto key = PolicyBuilder::CreateTestSigningKey();
+  auto wrapped_key =
+      crypto::keypair::PrivateKey::FromDeprecatedRSAPrivateKey(key.get());
+  std::vector<uint8_t> result =
+      crypto::sign::Sign(kind, wrapped_key, base::as_byte_span(data));
 
   return std::string(result.begin(), result.end());
 }
