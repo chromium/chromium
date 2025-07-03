@@ -85,6 +85,8 @@ class MostVisitedSitesBridge {
       jint title_source,
       jint source);
 
+  jdouble GetSuggestionScore(JNIEnv* env, const GURL& url);
+
  private:
   ~MostVisitedSitesBridge();
 

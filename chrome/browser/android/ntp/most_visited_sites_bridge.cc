@@ -307,6 +307,11 @@ void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(
       /*url_for_rappor=*/GURL()));
 }
 
+jdouble MostVisitedSitesBridge::GetSuggestionScore(JNIEnv* env,
+                                                   const GURL& url) {
+  return most_visited_->GetSuggestionScore(url);
+}
+
 static jlong JNI_MostVisitedSitesBridge_Init(JNIEnv* env,
                                              const JavaParamRef<jobject>& obj,
                                              Profile* profile,

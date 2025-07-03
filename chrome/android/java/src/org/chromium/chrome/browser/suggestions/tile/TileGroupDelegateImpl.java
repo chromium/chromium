@@ -215,6 +215,11 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     }
 
     @Override
+    public double getSuggestionScore(GURL url) {
+        return mMostVisitedSites.getSuggestionScore(url);
+    }
+
+    @Override
     public void destroy() {
         assert !mIsDestroyed;
         mIsDestroyed = true;

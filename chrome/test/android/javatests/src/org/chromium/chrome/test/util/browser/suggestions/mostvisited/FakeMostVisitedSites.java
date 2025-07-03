@@ -99,7 +99,12 @@ public class FakeMostVisitedSites implements MostVisitedSites {
         //  Metrics are stubbed out.
     }
 
-    /** @return Whether {@link #addBlocklistedUrl} has been called on the given URL. */
+    @Override
+    public double getSuggestionScore(GURL url) {
+        return INVALID_SUGGESTION_SCORE;
+    }
+
+    /** Returns whether {@link #addBlocklistedUrl} has been called on the given URL. */
     public boolean isUrlBlocklisted(GURL url) {
         return mBlocklistedUrls.contains(url);
     }

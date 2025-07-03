@@ -155,6 +155,13 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
                         tile.getSource());
     }
 
+    @Override
+    public double getSuggestionScore(GURL url) {
+        if (mNativeMostVisitedSitesBridge == 0) return MostVisitedSites.INVALID_SUGGESTION_SCORE;
+        return MostVisitedSitesBridgeJni.get()
+                .getSuggestionScore(mNativeMostVisitedSitesBridge, url);
+    }
+
     @CalledByNative
     private static SiteSuggestion makeSiteSuggestion(
             @JniType("std::u16string") String title,
@@ -265,5 +272,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
                 int tileType,
                 int titleSource,
                 int source);
+
+        double getSuggestionScore(long nativeMostVisitedSitesBridge, @JniType("GURL") GURL url);
     }
 }

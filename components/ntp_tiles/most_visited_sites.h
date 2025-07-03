@@ -90,6 +90,11 @@ class MostVisitedSites :
 #endif
     public history::TopSitesObserver {
  public:
+  // LINT.IfChange(kInvalidSuggestionScore)
+  // Value to indicate that a site suggestion score is unavailable.
+  static constexpr double kInvalidSuggestionScore = -1.0;
+  // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSites.java)
+
   // The observer to be notified when the list of most visited sites changes.
   class Observer : public base::CheckedObserver {
    public:
@@ -258,6 +263,13 @@ class MostVisitedSites :
   //  SupervisedUserServiceObserver implementation.
   void OnURLFilterChanged() override;
 #endif
+
+  // Returns the score of a tile in |current_tiles_| identified by |url|, or
+  // |kInvalidSuggestionScore| if not found. Caveat: On startup,
+  // |current_tiles_| may store cached values, so returned score will be 0.0.
+  // In this case, the caller needs to be robust against 0.0, or first force a
+  // rebuild by calling RefreshTiles().
+  double GetSuggestionScore(const GURL& url) const;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   static void ResetProfilePrefs(PrefService* prefs);

@@ -449,6 +449,17 @@ void MostVisitedSites::OnURLFilterChanged() {
 }
 #endif
 
+double MostVisitedSites::GetSuggestionScore(const GURL& url) const {
+  if (current_tiles_.has_value()) {
+    for (const auto& tile : *current_tiles_) {
+      if (tile.url == url) {
+        return tile.score;
+      }
+    }
+  }
+  return kInvalidSuggestionScore;
+}
+
 // static
 void MostVisitedSites::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {

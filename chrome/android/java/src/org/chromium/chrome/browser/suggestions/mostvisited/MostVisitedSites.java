@@ -17,6 +17,12 @@ import java.util.List;
 /** Methods to provide most recent urls, titles and thumbnails. */
 @NullMarked
 public interface MostVisitedSites extends CustomLinkOperations {
+    // LINT.IfChange(INVALID_SUGGESTION_SCORE)
+    /** Value to indicate that a site suggestion score is unavailable. */
+    public static final double INVALID_SUGGESTION_SCORE = -1.0;
+
+    // LINT.ThenChange(//components/ntp_tiles/most_visited_sites.h)
+
     /** An interface for handling events in {@link MostVisitedSites}. */
     interface Observer {
         /**
@@ -86,7 +92,14 @@ public interface MostVisitedSites extends CustomLinkOperations {
 
     /**
      * Records the opening of a Most Visited Item.
+     *
      * @param tile Object holding the details of a tile.
      */
     void recordOpenedMostVisitedItem(Tile tile);
+
+    /**
+     * Returns the score of a recent suggestion identified by {@param url}, which is {@link
+     * INVALID_SUGGESTION_SCORE} if not found.
+     */
+    double getSuggestionScore(GURL url);
 }
