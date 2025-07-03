@@ -4,6 +4,7 @@
 
 #include "media/base/picture_in_picture_events_info.h"
 
+#include <array>
 #include <string>
 
 #include "base/notreached.h"
