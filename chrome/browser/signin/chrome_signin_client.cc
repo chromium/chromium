@@ -161,6 +161,8 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     signin_metrics::ProfileSignout::kMovePrimaryAccount,
     // Allowed as the profile is being deleted anyway.
     signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion,
+    // Allowed as the user declined the enterprise management disclaimer.
+    signin_metrics::ProfileSignout::kUserDeclinedEnterpriseManagementDisclaimer,
 };
 
 // Returns the histogram suffix name per group of `signin_metrics::AccessPoint`.

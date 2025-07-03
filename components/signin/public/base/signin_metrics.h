@@ -130,8 +130,10 @@ enum class ProfileSignout {
   // Triggered when the user opens the app from a widget with no selected
   // account. iOS only.
   kSignoutFromWidgets = 39,
+  // User declined the enterprise management disclaimer.
+  kUserDeclinedEnterpriseManagementDisclaimer = 40,
   // Keep this as the last enum.
-  kMaxValue = kSignoutFromWidgets
+  kMaxValue = kUserDeclinedEnterpriseManagementDisclaimer,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

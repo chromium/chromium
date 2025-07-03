@@ -204,6 +204,8 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::
         kUserClickedSignoutFromUserPolicyNotificationDialog:
     case signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion:
+    case signin_metrics::ProfileSignout::
+        kUserDeclinedEnterpriseManagementDisclaimer:
       return true;
   }
 }
@@ -323,6 +325,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kUserDisabledAllowChromeSignIn,
     signin_metrics::ProfileSignout::kSignoutBeforeSupervisedSignin,
     signin_metrics::ProfileSignout::kSignoutFromWidgets,
+    signin_metrics::ProfileSignout::kUserDeclinedEnterpriseManagementDisclaimer,
 };
 
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout

@@ -6923,6 +6923,8 @@ static_library("browser") {
       "enterprise/signin/enterprise_signin_service.h",
       "enterprise/signin/enterprise_signin_service_factory.cc",
       "enterprise/signin/enterprise_signin_service_factory.h",
+      "enterprise/signin/managed_profile_creation_controller.cc",
+      "enterprise/signin/managed_profile_creation_controller.h",
       "enterprise/signin/managed_profile_creator.cc",
       "enterprise/signin/managed_profile_creator.h",
       "enterprise/signin/managed_profile_required_navigation_throttle.cc",

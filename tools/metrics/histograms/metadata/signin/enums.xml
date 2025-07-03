@@ -1162,6 +1162,10 @@ chromium-metrics-reviews@google.com.
     and if there is a signed-in account in the app, sign-out is performed. iOS
     only.
   </int>
+  <int value="40"
+      label="Sign out when declining the enterprise management disclaimer">
+    The user tried to sign in but declined the enterprise management disclaimer.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">
