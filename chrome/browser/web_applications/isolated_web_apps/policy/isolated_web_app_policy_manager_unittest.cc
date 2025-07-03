@@ -310,6 +310,8 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
     EXPECT_THAT(
         web_app->GetSources(),
         Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaUserInstalled})));
+    EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
+        url_info.app_id(), WebAppFilter::PolicyInstalledIsolatedWebApp()));
   }
 
   WebAppTestUninstallObserver uninstall_observer(profile());
@@ -332,6 +334,8 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
   ASSERT_THAT(web_app, NotNull());
   EXPECT_THAT(web_app->GetSources(),
               Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      url_info.app_id(), WebAppFilter::PolicyInstalledIsolatedWebApp()));
 }
 
 TEST_F(IsolatedWebAppPolicyManagerTest,

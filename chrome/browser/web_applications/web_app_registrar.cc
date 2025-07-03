@@ -281,8 +281,9 @@ bool WebAppRegistrar::IsPlaceholderApp(
     const webapps::AppId& app_id,
     const WebAppManagement::Type source_type) const {
   const WebApp* web_app = GetAppById(app_id);
-  if (!web_app)
+  if (!web_app) {
     return false;
+  }
 
   const WebApp::ExternalConfigMap& config_map =
       web_app->management_to_external_config_map();
@@ -446,8 +447,9 @@ WebAppRegistrar::GetExternallyInstalledApps(
     const WebApp::ExternalConfigMap& config_map =
         web_app.management_to_external_config_map();
     auto it = config_map.find(management_source);
-    if (it != config_map.end() && !it->second.install_urls.empty())
+    if (it != config_map.end() && !it->second.install_urls.empty()) {
       installed_apps[web_app.app_id()] = it->second.install_urls;
+    }
   }
   return installed_apps;
 }
@@ -455,8 +457,9 @@ WebAppRegistrar::GetExternallyInstalledApps(
 std::optional<webapps::AppId> WebAppRegistrar::LookupExternalAppId(
     const GURL& install_url) const {
   std::optional<webapps::AppId> app_id = LookUpAppIdByInstallUrl(install_url);
-  if (app_id.has_value())
+  if (app_id.has_value()) {
     return app_id;
+  }
 
   return std::nullopt;
 }
@@ -494,8 +497,9 @@ bool WebAppRegistrar::HasExternalAppWithInstallSource(
 GURL WebAppRegistrar::GetAppLaunchUrl(const webapps::AppId& app_id) const {
   const GURL& start_url = GetAppStartUrl(app_id);
   const std::string* launch_query_params = GetAppLaunchQueryParams(app_id);
-  if (!start_url.is_valid() || !launch_query_params)
+  if (!start_url.is_valid() || !launch_query_params) {
     return start_url;
+  }
 
   GURL::Replacements replacements;
   if (start_url.query_piece().empty()) {
@@ -515,8 +519,9 @@ GURL WebAppRegistrar::GetAppLaunchUrl(const webapps::AppId& app_id) const {
 
 GURL WebAppRegistrar::GetAppScope(const webapps::AppId& app_id) const {
   std::optional<GURL> scope = GetAppScopeInternal(app_id);
-  if (scope)
+  if (scope) {
     return *scope;
+  }
   return GetAppStartUrl(app_id).GetWithoutFilename();
 }
 
@@ -586,8 +591,9 @@ int WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,
   std::string app_scope = GetAppScope(app_id).spec();
 
   // The app may have been uninstalled.
-  if (app_scope.empty())
+  if (app_scope.empty()) {
     return 0;
+  }
 
   int score =
       base::StartsWith(url_spec, app_scope, base::CompareCase::SENSITIVE)
@@ -642,8 +648,9 @@ DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(
   std::vector<DisplayMode> display_mode_overrides =
       GetAppDisplayModeOverride(app_id);
 
-  if (!display_mode_overrides.empty())
+  if (!display_mode_overrides.empty()) {
     return display_mode_overrides[0];
+  }
 
   return GetAppDisplayMode(app_id);
 }
@@ -671,8 +678,9 @@ GURL WebAppRegistrar::GetAppNewTabUrl(const webapps::AppId& app_id) const {
 
     if (web_app->tab_strip()) {
       std::optional<GURL> url = web_app->tab_strip().value().new_tab_button.url;
-      if (url.has_value())
+      if (url.has_value()) {
         return url.value();
+      }
     }
   }
   // Apps that don't set a new_tab_button.url will use the start URL.
@@ -683,8 +691,9 @@ std::optional<GURL> WebAppRegistrar::GetAppPinnedHomeTabUrl(
     const webapps::AppId& app_id) const {
   if (IsTabbedWindowModeEnabled(app_id)) {
     const WebApp* web_app = GetAppById(app_id);
-    if (!web_app)
+    if (!web_app) {
       return std::nullopt;
+    }
 
     if (web_app->tab_strip() &&
         std::holds_alternative<blink::Manifest::HomeTabParams>(
@@ -734,8 +743,9 @@ std::optional<proto::os_state::WebAppOsIntegration>
 WebAppRegistrar::GetAppCurrentOsIntegrationState(
     const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
-  if (!web_app)
+  if (!web_app) {
     return std::nullopt;
+  }
 
   return web_app->current_os_integration_states();
 }
@@ -776,8 +786,9 @@ WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
   });
 
   std::vector<webapps::AppId> app_ids;
-  for (const WebApp& app : apps_in_sync_install)
+  for (const WebApp& app : apps_in_sync_install) {
     app_ids.push_back(app.app_id());
+  }
 
   return app_ids;
 }
@@ -798,8 +809,9 @@ std::vector<webapps::AppId> WebAppRegistrar::GetAppsPendingUninstall() const {
 
 bool WebAppRegistrar::AppsExistWithExternalConfigData() const {
   for (const WebApp& web_app : GetApps()) {
-    if (web_app.management_to_external_config_map().size() > 0)
+    if (web_app.management_to_external_config_map().size() > 0) {
       return true;
+    }
   }
   return false;
 }
@@ -951,6 +963,10 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
 
   if (filter.is_isolated_app_) {
     return IsIsolated(app_id);
+  }
+
+  if (filter.is_policy_installed_iwa) {
+    return IsIsolated(app_id) && IsInstalledByPolicy(app_id);
   }
 
   if (filter.is_crafted_app_) {
@@ -1154,8 +1170,9 @@ bool WebAppRegistrar::IsRegisteredLaunchProtocol(
     const webapps::AppId& app_id,
     const std::string& protocol_scheme) const {
   const WebApp* web_app = GetAppById(app_id);
-  if (!web_app)
+  if (!web_app) {
     return false;
+  }
 
   return base::Contains(web_app->protocol_handlers(), protocol_scheme,
                         [](const auto& info) { return info.protocol; });
@@ -1622,8 +1639,9 @@ const apps::FileHandlers* WebAppRegistrar::GetAppFileHandlers(
 bool WebAppRegistrar::IsAppFileHandlerPermissionBlocked(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  if (!web_app)
+  if (!web_app) {
     return false;
+  }
 
   const bool user_disallowed =
       web_app->file_handler_approval_state() == ApiApprovalState::kDisallowed;
@@ -1724,8 +1742,9 @@ bool WebAppRegistrar::ExpectThatFileHandlersAreRegisteredWithOs(
 std::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  if (!web_app)
+  if (!web_app) {
     return std::nullopt;
+  }
 
   if (!web_app->scope().is_valid()) {
     return std::nullopt;
@@ -1807,8 +1826,9 @@ base::Time WebAppRegistrar::GetAppLatestInstallTime(
 std::optional<webapps::WebappInstallSource>
 WebAppRegistrar::GetLatestAppInstallSource(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
-  if (!web_app)
+  if (!web_app) {
     return std::nullopt;
+  }
 
   return web_app->latest_install_source();
 }
@@ -2081,8 +2101,9 @@ std::vector<webapps::AppId> WebAppRegistrar::GetAppIdsForAppSet(
     const AppSet& app_set) const {
   std::vector<webapps::AppId> app_ids;
 
-  for (const WebApp& app : app_set)
+  for (const WebApp& app : app_set) {
     app_ids.push_back(app.app_id());
+  }
 
   return app_ids;
 }
