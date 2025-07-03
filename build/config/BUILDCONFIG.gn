@@ -383,6 +383,7 @@ default_compiler_configs = [
   "//build/config/compiler:thinlto_optimize_default",
   "//build/config/compiler:tot_warnings",
   "//build/config/compiler/pgo:default_pgo_flags",
+  "//build/config/compiler:sanitize_c_array_bounds",
   "//build/config/coverage:default_coverage",
   "//build/config/sanitizers:default_sanitizer_flags",
 ]
