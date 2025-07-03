@@ -20,7 +20,6 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/theme:java",
-    "//chrome/browser/ui/android/toolbar:java",
     "//third_party/android_deps:material_design_java",
     "//ui/android:ui_full_java",
   ]
@@ -28,10 +27,31 @@ android_library("java") {
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/flags:java",
+      "//content/public/android:content_full_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
-    sources += [ "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionServiceImpl.java" ]
+    sources += [
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionAction.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionPopupContents.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionsBridge.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionServiceImpl.java",
+    ]
+    srcjar_deps += [
+      ":jni_headers",
+      "//extensions/browser:extension_action_enums",
+    ]
     resources_package = "org.chromium.chrome.browser.ui.extensions"
+  }
+}
+
+if (enable_extensions_core) {
+  generate_jni("jni_headers") {
+    sources = [
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionAction.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionPopupContents.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionsBridge.java",
+    ]
   }
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/toolbar/extension_actions_bridge.h"
+#include "chrome/browser/ui/android/extensions/extension_actions_bridge.h"
 
 #include <memory>
 #include <variant>
@@ -10,7 +10,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/toolbar/extension_actions_bridge_factory.h"
+#include "chrome/browser/ui/android/extensions/extension_actions_bridge_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -21,8 +21,8 @@
 #include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/ui/android/toolbar/jni_headers/ExtensionAction_jni.h"
-#include "chrome/browser/ui/android/toolbar/jni_headers/ExtensionActionsBridge_jni.h"
+#include "chrome/browser/ui/android/extensions/jni_headers/ExtensionAction_jni.h"
+#include "chrome/browser/ui/android/extensions/jni_headers/ExtensionActionsBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

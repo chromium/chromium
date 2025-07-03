@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.extensions;
+package org.chromium.chrome.browser.ui.extensions;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;

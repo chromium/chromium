@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.ui.base.WindowAndroid;
 
 /** The implementation of {@link ExtensionToolbarCoordinator}. */

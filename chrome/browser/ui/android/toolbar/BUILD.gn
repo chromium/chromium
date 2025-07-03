@@ -172,6 +172,7 @@ android_library("java") {
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/desktop_windowing:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
+    "//chrome/browser/ui/android/extensions:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/favicon:java_resources",
     "//chrome/browser/ui/android/layouts:java",
@@ -236,20 +237,15 @@ android_library("java") {
 
   if (enable_extensions_core) {
     sources += [
-      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionAction.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonProperties.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonViewBinder.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListCoordinator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopup.java",
-      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopupContents.java",
-      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarCoordinatorImpl.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuButtonCoordinator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuCoordinator.java",
     ]
-
-    srcjar_deps += [ "//extensions/browser:extension_action_enums" ]
 
     deps += [
       "//base/version_info/android:version_constants_java",
@@ -257,6 +253,7 @@ android_library("java") {
       "//components/embedder_support/android:web_contents_delegate_java",
       "//components/thin_webview:factory_java",
       "//components/thin_webview:java",
+      "//extensions/browser:extension_action_enums",
     ]
   }
 }
@@ -269,14 +266,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/toolbar/top/ResourceFactory.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarSceneLayer.java",
   ]
-
-  if (enable_extensions_core) {
-    sources += [
-      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionAction.java",
-      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopupContents.java",
-      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
-    ]
-  }
 }
 
 android_resources("java_resources") {
@@ -464,6 +453,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/desktop_windowing:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/edge_to_edge/internal:java",
+    "//chrome/browser/ui/android/extensions:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/omnibox:java",

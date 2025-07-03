@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.extensions;
+package org.chromium.chrome.browser.ui.extensions;
 
 import android.graphics.Bitmap;
 import android.view.KeyEvent;
@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.extensions.ShowAction;
 
-/** A JNI bridge providing access to information of extension actions in the toolbar. */
+/** A JNI bridge to interact with extension actions for the toolbar. */
 @NullMarked
 @JNINamespace("extensions")
 public class ExtensionActionsBridge {
@@ -30,7 +30,7 @@ public class ExtensionActionsBridge {
 
     @CalledByNative
     @VisibleForTesting
-    ExtensionActionsBridge(long nativeExtensionActionsBridge) {
+    public ExtensionActionsBridge(long nativeExtensionActionsBridge) {
         mNativeExtensionActionsBridge = nativeExtensionActionsBridge;
     }
 
@@ -127,7 +127,7 @@ public class ExtensionActionsBridge {
 
     @CalledByNative
     @VisibleForTesting
-    void onActionAdded(@JniType("std::string") String actionId) {
+    public void onActionAdded(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
             observer.onActionAdded(actionId);
         }
@@ -135,7 +135,7 @@ public class ExtensionActionsBridge {
 
     @CalledByNative
     @VisibleForTesting
-    void onActionRemoved(@JniType("std::string") String actionId) {
+    public void onActionRemoved(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
             observer.onActionRemoved(actionId);
         }
@@ -143,7 +143,7 @@ public class ExtensionActionsBridge {
 
     @CalledByNative
     @VisibleForTesting
-    void onActionUpdated(@JniType("std::string") String actionId) {
+    public void onActionUpdated(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
             observer.onActionUpdated(actionId);
         }
@@ -151,7 +151,7 @@ public class ExtensionActionsBridge {
 
     @CalledByNative
     @VisibleForTesting
-    void onActionModelInitialized() {
+    public void onActionModelInitialized() {
         for (Observer observer : mObservers) {
             observer.onActionModelInitialized();
         }
@@ -159,7 +159,7 @@ public class ExtensionActionsBridge {
 
     @CalledByNative
     @VisibleForTesting
-    void onPinnedActionsChanged() {
+    public void onPinnedActionsChanged() {
         for (Observer observer : mObservers) {
             observer.onPinnedActionsChanged();
         }
@@ -167,7 +167,7 @@ public class ExtensionActionsBridge {
 
     @CalledByNative
     @VisibleForTesting
-    void onActionIconUpdated(@JniType("std::string") String actionId) {
+    public void onActionIconUpdated(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
             observer.onActionIconUpdated(actionId);
         }

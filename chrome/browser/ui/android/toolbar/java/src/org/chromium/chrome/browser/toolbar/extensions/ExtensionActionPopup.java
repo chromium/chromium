@@ -17,6 +17,7 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;

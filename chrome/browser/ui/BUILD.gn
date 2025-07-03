@@ -951,18 +951,21 @@ static_library("ui") {
 
     if (enable_extensions_core) {
       sources += [
+        "android/extensions/extension_action_popup_contents.cc",
+        "android/extensions/extension_action_popup_contents.h",
+        "android/extensions/extension_actions_bridge.cc",
+        "android/extensions/extension_actions_bridge.h",
+        "android/extensions/extension_actions_bridge_factory.cc",
+        "android/extensions/extension_actions_bridge_factory.h",
         "android/extensions/extension_keybinding_registry_android.cc",
         "android/extensions/extension_keybinding_registry_android.h",
-        "android/toolbar/extension_action_popup_contents.cc",
-        "android/toolbar/extension_action_popup_contents.h",
-        "android/toolbar/extension_actions_bridge.cc",
-        "android/toolbar/extension_actions_bridge.h",
-        "android/toolbar/extension_actions_bridge_factory.cc",
-        "android/toolbar/extension_actions_bridge_factory.h",
         "extensions/extension_dialog_utils_android.cc",
       ]
 
-      deps += [ "//extensions/browser:extension_action_enums" ]
+      deps += [
+        "//chrome/browser/ui/android/extensions:jni_headers",
+        "//extensions/browser:extension_action_enums",
+      ]
     }
   } else {
     # !is_android

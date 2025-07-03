@@ -12,7 +12,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionsBridge;
 
 /** The implementation of {@link ExtensionService}. */
 @NullMarked

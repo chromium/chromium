@@ -506,7 +506,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/android/toolbar/extension_actions_bridge_factory.h"
+#include "chrome/browser/ui/android/extensions/extension_actions_bridge_factory.h"
 #endif
 #endif
 

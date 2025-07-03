@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/toolbar/extension_action_popup_contents.h"
+#include "chrome/browser/ui/android/extensions/extension_action_popup_contents.h"
 
 #include "base/android/jni_string.h"
 #include "base/notimplemented.h"
@@ -16,7 +16,7 @@
 #include "extensions/browser/extension_registry.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/ui/android/toolbar/jni_headers/ExtensionActionPopupContents_jni.h"
+#include "chrome/browser/ui/android/extensions/jni_headers/ExtensionActionPopupContents_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.extensions;
+package org.chromium.chrome.browser.ui.extensions;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -25,7 +25,8 @@ public class ExtensionAction {
 
     @CalledByNative
     @VisibleForTesting
-    ExtensionAction(@JniType("std::string") String id, @JniType("std::string") String title) {
+    public ExtensionAction(
+            @JniType("std::string") String id, @JniType("std::string") String title) {
         mId = id;
         mTitle = title;
     }
