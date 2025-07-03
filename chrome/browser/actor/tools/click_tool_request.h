@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 
@@ -16,19 +17,16 @@ class ToolRequestVisitorFunctor;
 
 class ClickToolRequest : public PageToolRequest {
  public:
-  enum class ClickType { kLeft, kRight };
-  enum class ClickCount { kSingle, kDouble };
-
   ClickToolRequest(tabs::TabHandle tab_handle,
                    const Target& target,
-                   ClickType type,
-                   ClickCount count);
+                   MouseClickType type,
+                   MouseClickCount count);
   ~ClickToolRequest() override;
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
-  ClickType GetClickType() const { return click_type_; }
-  ClickCount GetClickCount() const { return click_count_; }
+  MouseClickType GetClickType() const { return click_type_; }
+  MouseClickCount GetClickCount() const { return click_count_; }
 
   // ToolRequest
   std::string JournalEvent() const override;
@@ -38,8 +36,8 @@ class ClickToolRequest : public PageToolRequest {
   std::unique_ptr<PageToolRequest> Clone() const override;
 
  private:
-  ClickType click_type_;
-  ClickCount click_count_;
+  MouseClickType click_type_;
+  MouseClickCount click_count_;
 };
 
 }  // namespace actor

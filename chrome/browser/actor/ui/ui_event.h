@@ -8,6 +8,7 @@
 #include <optional>
 #include <variant>
 
+#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/geometry/point.h"
@@ -20,16 +21,6 @@ struct DomNode {
 };
 
 using PageTarget = std::variant<gfx::Point, DomNode>;
-
-enum class MouseClickType {
-  kLeft,
-  kRight,
-};
-
-enum class MouseClickCount {
-  kSingle,
-  kDouble,
-};
 
 struct StartTask {
   explicit StartTask(actor::TaskId);

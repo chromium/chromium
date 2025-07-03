@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
@@ -137,8 +138,7 @@ TEST_F(EventDispatcherTest, TwoUiEvents) {
       }));
   ClickToolRequest tr(tabs::TabHandle(123),
                       PageToolRequest::Target(gfx::Point(10, 50)),
-                      ClickToolRequest::ClickType::kLeft,
-                      ClickToolRequest::ClickCount::kSingle);
+                      MouseClickType::kLeft, MouseClickCount::kSingle);
   TestFuture<mojom::ActionResultPtr> result;
   dispatcher_->OnPreTool(profile_.get(), tr, result.GetCallback());
   EXPECT_TRUE(IsOk(*result.Get()));
@@ -153,8 +153,7 @@ TEST_F(EventDispatcherTest, TwoUiEventsWithFirstOneFailing) {
       .Times(0);
   ClickToolRequest tr(tabs::TabHandle(123),
                       PageToolRequest::Target(gfx::Point(10, 50)),
-                      ClickToolRequest::ClickType::kLeft,
-                      ClickToolRequest::ClickCount::kSingle);
+                      MouseClickType::kLeft, MouseClickCount::kSingle);
   TestFuture<mojom::ActionResultPtr> result;
   dispatcher_->OnPreTool(profile_.get(), tr, result.GetCallback());
   EXPECT_EQ(result.Get()->code, mojom::ActionResultCode::kError);

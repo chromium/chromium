@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/notimplemented.h"
+#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
@@ -87,9 +88,6 @@ std::optional<PageToolRequest::Target> ToPageToolTarget(
 std::unique_ptr<ToolRequest> CreateClickRequest(
     const ClickAction& action,
     TabInterface* deprecated_fallback_tab) {
-  using ClickCount = ClickToolRequest::ClickCount;
-  using ClickType = ClickToolRequest::ClickType;
-
   TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
 
   if (!action.has_target() || !action.has_click_count() ||
@@ -97,13 +95,13 @@ std::unique_ptr<ToolRequest> CreateClickRequest(
     return nullptr;
   }
 
-  ClickCount count;
+  MouseClickCount count;
   switch (action.click_count()) {
     case apc::ClickAction_ClickCount_SINGLE:
-      count = ClickCount::kSingle;
+      count = MouseClickCount::kSingle;
       break;
     case apc::ClickAction_ClickCount_DOUBLE:
-      count = ClickCount::kDouble;
+      count = MouseClickCount::kDouble;
       break;
     case apc::ClickAction_ClickCount_UNKNOWN_CLICK_COUNT:
     case apc::
@@ -111,17 +109,17 @@ std::unique_ptr<ToolRequest> CreateClickRequest(
     case apc::
         ClickAction_ClickCount_ClickAction_ClickCount_INT_MAX_SENTINEL_DO_NOT_USE_:
       // TODO(crbug.com/412700289): Revert once this is set.
-      count = ClickCount::kSingle;
+      count = MouseClickCount::kSingle;
       break;
   }
 
-  ClickType type;
+  MouseClickType type;
   switch (action.click_type()) {
     case apc::ClickAction_ClickType_LEFT:
-      type = ClickType::kLeft;
+      type = MouseClickType::kLeft;
       break;
     case apc::ClickAction_ClickType_RIGHT:
-      type = ClickType::kRight;
+      type = MouseClickType::kRight;
       break;
     case apc::
         ClickAction_ClickType_ClickAction_ClickType_INT_MIN_SENTINEL_DO_NOT_USE_:
@@ -129,7 +127,7 @@ std::unique_ptr<ToolRequest> CreateClickRequest(
         ClickAction_ClickType_ClickAction_ClickType_INT_MAX_SENTINEL_DO_NOT_USE_:
     case apc::ClickAction_ClickType_UNKNOWN_CLICK_TYPE:
       // TODO(crbug.com/412700289): Revert once this is set.
-      type = ClickType::kLeft;
+      type = MouseClickType::kLeft;
       break;
   }
 

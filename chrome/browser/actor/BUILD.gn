@@ -142,8 +142,14 @@ source_set("impl") {
 # headers without depending on all of :actor.
 # This avoids dependency cycles.
 source_set("types") {
-  sources = [ "task_id.h" ]
-  public_deps = [ "//base" ]
+  sources = [
+    "shared_types.h",
+    "task_id.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/common:mojo_bindings",
+  ]
 }
 
 source_set("test_support") {

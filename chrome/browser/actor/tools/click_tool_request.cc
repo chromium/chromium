@@ -13,8 +13,8 @@ using ::tabs::TabHandle;
 
 ClickToolRequest::ClickToolRequest(TabHandle tab_handle,
                                    const Target& target,
-                                   ClickType type,
-                                   ClickCount count)
+                                   MouseClickType type,
+                                   MouseClickCount count)
     : PageToolRequest(tab_handle, target),
       click_type_(type),
       click_count_(count) {}
@@ -31,25 +31,8 @@ std::string ClickToolRequest::JournalEvent() const {
 
 mojom::ToolActionPtr ClickToolRequest::ToMojoToolAction() const {
   auto click = mojom::ClickAction::New();
-
-  switch (click_type_) {
-    case ClickType::kLeft:
-      click->type = actor::mojom::ClickAction::Type::kLeft;
-      break;
-    case ClickType::kRight:
-      click->type = actor::mojom::ClickAction::Type::kRight;
-      break;
-  }
-
-  switch (click_count_) {
-    case ClickCount::kSingle:
-      click->count = actor::mojom::ClickAction::Count::kSingle;
-      break;
-    case ClickCount::kDouble:
-      click->count = actor::mojom::ClickAction::Count::kDouble;
-      break;
-  }
-
+  click->type = click_type_;
+  click->count = click_count_;
   return mojom::ToolAction::NewClick(std::move(click));
 }
 

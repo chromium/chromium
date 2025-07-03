@@ -46,26 +46,6 @@ PageTarget ConvertTarget(const PageToolRequest::Target& t) {
   NOTREACHED();
 }
 
-MouseClickType ConvertClickType(const ClickToolRequest::ClickType& ct) {
-  switch (ct) {
-    case ClickToolRequest::ClickType::kLeft:
-      return MouseClickType::kLeft;
-    case ClickToolRequest::ClickType::kRight:
-      return MouseClickType::kRight;
-  }
-  NOTREACHED();
-}
-
-MouseClickCount ConvertClickCount(const ClickToolRequest::ClickCount& ct) {
-  switch (ct) {
-    case ClickToolRequest::ClickCount::kSingle:
-      return MouseClickCount::kSingle;
-    case ClickToolRequest::ClickCount::kDouble:
-      return MouseClickCount::kDouble;
-  }
-  NOTREACHED();
-}
-
 template <typename T>
 auto NoUiEvents =
     [](const T& tr) -> std::deque<UiEvent> { return std::deque<UiEvent>(); };
@@ -74,8 +54,7 @@ constexpr Visitor PreToolEventsFn{
     [](const ClickToolRequest& tr) {
       return std::deque<UiEvent>{
           MouseMove(tr.GetTabHandle(), ConvertTarget(tr.GetTarget())),
-          MouseClick(tr.GetTabHandle(), ConvertClickType(tr.GetClickType()),
-                     ConvertClickCount(tr.GetClickCount()))};
+          MouseClick(tr.GetTabHandle(), tr.GetClickType(), tr.GetClickCount())};
     },
     NoUiEvents<ActivateTabToolRequest>,
     NoUiEvents<CloseTabToolRequest>,
