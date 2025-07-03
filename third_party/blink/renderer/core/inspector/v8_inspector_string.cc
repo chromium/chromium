@@ -138,8 +138,8 @@ using blink::protocol::Binary;
 using blink::protocol::StringUtil;
 
 // static
-bool ProtocolTypeTraits<WTF::String>::Deserialize(DeserializerState* state,
-                                                  String* value) {
+bool ProtocolTypeTraits<blink::String>::Deserialize(DeserializerState* state,
+                                                    blink::String* value) {
   auto* tokenizer = state->tokenizer();
   if (tokenizer->TokenTag() == crdtp::cbor::CBORTokenTag::STRING8) {
     const auto str = tokenizer->GetString8();
@@ -157,8 +157,8 @@ bool ProtocolTypeTraits<WTF::String>::Deserialize(DeserializerState* state,
 }
 
 // static
-void ProtocolTypeTraits<WTF::String>::Serialize(const String& value,
-                                                std::vector<uint8_t>* bytes) {
+void ProtocolTypeTraits<blink::String>::Serialize(const blink::String& value,
+                                                  std::vector<uint8_t>* bytes) {
   if (value.length() == 0) {
     crdtp::cbor::EncodeString8(crdtp::span<uint8_t>(), bytes);  // Empty string.
     return;
@@ -182,7 +182,7 @@ bool ProtocolTypeTraits<blink::protocol::Binary>::Deserialize(
   }
   if (tokenizer->TokenTag() == crdtp::cbor::CBORTokenTag::STRING8) {
     const auto str_span = tokenizer->GetString8();
-    String str = StringUtil::fromUTF8(str_span.data(), str_span.size());
+    blink::String str = StringUtil::fromUTF8(str_span.data(), str_span.size());
     bool success = false;
     *value = Binary::fromBase64(str, &success);
     return success;

@@ -386,21 +386,12 @@ namespace xpathyy {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
-      // kNodeType
-      // kPI
-      // kFunctionName
-      // kLiteral
-      // kVariableReference
-      // kNumber
-      // kNameTest
-      char dummy1[sizeof (String)];
-
       // ArgumentList
-      char dummy2[sizeof (blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Expression>>>)];
+      char dummy1[sizeof (blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Expression>>>)];
 
       // OptionalPredicateList
       // PredicateList
-      char dummy3[sizeof (blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Predicate>>>)];
+      char dummy2[sizeof (blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Predicate>>>)];
 
       // Expr
       // Predicate
@@ -417,20 +408,29 @@ namespace xpathyy {
       // AdditiveExpr
       // MultiplicativeExpr
       // UnaryExpr
-      char dummy4[sizeof (blink::Persistent<blink::xpath::Expression>)];
+      char dummy3[sizeof (blink::Persistent<blink::xpath::Expression>)];
 
       // LocationPath
       // AbsoluteLocationPath
       // RelativeLocationPath
-      char dummy5[sizeof (blink::Persistent<blink::xpath::LocationPath>)];
+      char dummy4[sizeof (blink::Persistent<blink::xpath::LocationPath>)];
 
       // NodeTest
-      char dummy6[sizeof (blink::Persistent<blink::xpath::Step::NodeTest>)];
+      char dummy5[sizeof (blink::Persistent<blink::xpath::Step::NodeTest>)];
 
       // Step
       // DescendantOrSelf
       // AbbreviatedStep
-      char dummy7[sizeof (blink::Persistent<blink::xpath::Step>)];
+      char dummy6[sizeof (blink::Persistent<blink::xpath::Step>)];
+
+      // kNodeType
+      // kPI
+      // kFunctionName
+      // kLiteral
+      // kVariableReference
+      // kNumber
+      // kNameTest
+      char dummy7[sizeof (blink::String)];
 
       // kEqOp
       // kRelOp
@@ -612,16 +612,6 @@ namespace xpathyy {
       {
         switch (this->kind ())
     {
-      case symbol_kind::S_kNodeType: // kNodeType
-      case symbol_kind::S_kPI: // kPI
-      case symbol_kind::S_kFunctionName: // kFunctionName
-      case symbol_kind::S_kLiteral: // kLiteral
-      case symbol_kind::S_kVariableReference: // kVariableReference
-      case symbol_kind::S_kNumber: // kNumber
-      case symbol_kind::S_kNameTest: // kNameTest
-        value.move< String > (std::move (that.value));
-        break;
-
       case symbol_kind::S_ArgumentList: // ArgumentList
         value.move< blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Expression>>> > (std::move (that.value));
         break;
@@ -665,6 +655,16 @@ namespace xpathyy {
         value.move< blink::Persistent<blink::xpath::Step> > (std::move (that.value));
         break;
 
+      case symbol_kind::S_kNodeType: // kNodeType
+      case symbol_kind::S_kPI: // kPI
+      case symbol_kind::S_kFunctionName: // kFunctionName
+      case symbol_kind::S_kLiteral: // kLiteral
+      case symbol_kind::S_kVariableReference: // kVariableReference
+      case symbol_kind::S_kNumber: // kNumber
+      case symbol_kind::S_kNameTest: // kNameTest
+        value.move< blink::String > (std::move (that.value));
+        break;
+
       case symbol_kind::S_kEqOp: // kEqOp
       case symbol_kind::S_kRelOp: // kRelOp
         value.move< blink::xpath::EqTestOp::Opcode > (std::move (that.value));
@@ -697,18 +697,6 @@ namespace xpathyy {
 #else
       basic_symbol (typename Base::kind_type t)
         : Base (t)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, String&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const String& v)
-        : Base (t)
-        , value (v)
       {}
 #endif
 
@@ -785,6 +773,18 @@ namespace xpathyy {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, blink::String&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const blink::String& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, blink::xpath::EqTestOp::Opcode&& v)
         : Base (t)
         , value (std::move (v))
@@ -844,16 +844,6 @@ namespace xpathyy {
         // Value type destructor.
 switch (yykind)
     {
-      case symbol_kind::S_kNodeType: // kNodeType
-      case symbol_kind::S_kPI: // kPI
-      case symbol_kind::S_kFunctionName: // kFunctionName
-      case symbol_kind::S_kLiteral: // kLiteral
-      case symbol_kind::S_kVariableReference: // kVariableReference
-      case symbol_kind::S_kNumber: // kNumber
-      case symbol_kind::S_kNameTest: // kNameTest
-        value.template destroy< String > ();
-        break;
-
       case symbol_kind::S_ArgumentList: // ArgumentList
         value.template destroy< blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Expression>>> > ();
         break;
@@ -895,6 +885,16 @@ switch (yykind)
       case symbol_kind::S_DescendantOrSelf: // DescendantOrSelf
       case symbol_kind::S_AbbreviatedStep: // AbbreviatedStep
         value.template destroy< blink::Persistent<blink::xpath::Step> > ();
+        break;
+
+      case symbol_kind::S_kNodeType: // kNodeType
+      case symbol_kind::S_kPI: // kPI
+      case symbol_kind::S_kFunctionName: // kFunctionName
+      case symbol_kind::S_kLiteral: // kLiteral
+      case symbol_kind::S_kVariableReference: // kVariableReference
+      case symbol_kind::S_kNumber: // kNumber
+      case symbol_kind::S_kNameTest: // kNameTest
+        value.template destroy< blink::String > ();
         break;
 
       case symbol_kind::S_kEqOp: // kEqOp
@@ -1008,10 +1008,10 @@ switch (yykind)
 #endif
       {}
 #if 201103L <= YY_CPLUSPLUS
-      symbol_type (int tok, String v)
+      symbol_type (int tok, blink::String v)
         : super_type (token_kind_type (tok), std::move (v))
 #else
-      symbol_type (int tok, const String& v)
+      symbol_type (int tok, const blink::String& v)
         : super_type (token_kind_type (tok), v)
 #endif
       {}
@@ -1257,14 +1257,14 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_kNodeType (String v)
+      make_kNodeType (blink::String v)
       {
         return symbol_type (token::kNodeType, std::move (v));
       }
 #else
       static
       symbol_type
-      make_kNodeType (const String& v)
+      make_kNodeType (const blink::String& v)
       {
         return symbol_type (token::kNodeType, v);
       }
@@ -1272,14 +1272,14 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_kPI (String v)
+      make_kPI (blink::String v)
       {
         return symbol_type (token::kPI, std::move (v));
       }
 #else
       static
       symbol_type
-      make_kPI (const String& v)
+      make_kPI (const blink::String& v)
       {
         return symbol_type (token::kPI, v);
       }
@@ -1287,14 +1287,14 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_kFunctionName (String v)
+      make_kFunctionName (blink::String v)
       {
         return symbol_type (token::kFunctionName, std::move (v));
       }
 #else
       static
       symbol_type
-      make_kFunctionName (const String& v)
+      make_kFunctionName (const blink::String& v)
       {
         return symbol_type (token::kFunctionName, v);
       }
@@ -1302,14 +1302,14 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_kLiteral (String v)
+      make_kLiteral (blink::String v)
       {
         return symbol_type (token::kLiteral, std::move (v));
       }
 #else
       static
       symbol_type
-      make_kLiteral (const String& v)
+      make_kLiteral (const blink::String& v)
       {
         return symbol_type (token::kLiteral, v);
       }
@@ -1317,14 +1317,14 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_kVariableReference (String v)
+      make_kVariableReference (blink::String v)
       {
         return symbol_type (token::kVariableReference, std::move (v));
       }
 #else
       static
       symbol_type
-      make_kVariableReference (const String& v)
+      make_kVariableReference (const blink::String& v)
       {
         return symbol_type (token::kVariableReference, v);
       }
@@ -1332,14 +1332,14 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_kNumber (String v)
+      make_kNumber (blink::String v)
       {
         return symbol_type (token::kNumber, std::move (v));
       }
 #else
       static
       symbol_type
-      make_kNumber (const String& v)
+      make_kNumber (const blink::String& v)
       {
         return symbol_type (token::kNumber, v);
       }
@@ -1377,14 +1377,14 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_kNameTest (String v)
+      make_kNameTest (blink::String v)
       {
         return symbol_type (token::kNameTest, std::move (v));
       }
 #else
       static
       symbol_type
-      make_kNameTest (const String& v)
+      make_kNameTest (const blink::String& v)
       {
         return symbol_type (token::kNameTest, v);
       }

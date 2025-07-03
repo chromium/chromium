@@ -63,7 +63,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Treat as bytes-off-the-wire.
   bool saw_error;
-  const String decoded =
+  const blink::String decoded =
       codec->Decode(byte_span, flush_behavior, stop_on_error, saw_error);
 
   // Treat as blink 8-bit string (latin1).

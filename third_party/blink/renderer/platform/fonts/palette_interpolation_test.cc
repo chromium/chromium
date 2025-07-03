@@ -24,14 +24,14 @@ namespace {
 
 constexpr double kMaxAlphaDifference = 0.01;
 
-String pathToColorPalettesTestFont() {
+blink::String pathToColorPalettesTestFont() {
   base::FilePath wpt_palette_font_path(
       blink::StringToFilePath(blink::test::BlinkWebTestsDir()));
   wpt_palette_font_path = wpt_palette_font_path.Append(FILE_PATH_LITERAL(
       "external/wpt/css/css-fonts/resources/COLR-palettes-test-font.ttf"));
   return blink::FilePathToString(wpt_palette_font_path);
 }
-String pathToNonColorTestFont() {
+blink::String pathToNonColorTestFont() {
   return blink::test::BlinkWebTestsFontsTestDataPath("Ahem.ttf");
 }
 

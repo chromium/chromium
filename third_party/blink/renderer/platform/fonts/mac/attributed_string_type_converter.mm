@@ -22,7 +22,7 @@ TypeConverter<ui::mojom::blink::AttributedStringPtr, CFAttributedStringRef>::
   // Create the return value.
   ui::mojom::blink::AttributedStringPtr attributed_string =
       ui::mojom::blink::AttributedString::New();
-  attributed_string->string = String(ns_attributed_string.string);
+  attributed_string->string = blink::String(ns_attributed_string.string);
 
   // Iterate over all the attributes in the string.
   NSUInteger length = ns_attributed_string.length;
@@ -33,11 +33,11 @@ TypeConverter<ui::mojom::blink::AttributedStringPtr, CFAttributedStringRef>::
                                  effectiveRange:&effective_range];
 
     NSFont* font = ns_attributes[NSFontAttributeName];
-    String font_name;
+    blink::String font_name;
     float font_point_size;
     // Only encode the attributes if the filtered set contains font information.
     if (font) {
-      font_name = String(font.fontName);
+      font_name = blink::String(font.fontName);
       font_point_size = font.pointSize;
       if (!font_name.empty()) {
         // Convert the attributes.

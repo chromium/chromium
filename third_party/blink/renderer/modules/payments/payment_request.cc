@@ -167,7 +167,7 @@ struct TypeConverter<PaymentValidationErrorsPtr,
       const blink::PaymentValidationErrors& input) {
     PaymentValidationErrorsPtr output =
         payments::mojom::blink::PaymentValidationErrors::New();
-    output->error = input.hasError() ? input.error() : g_empty_string;
+    output->error = input.hasError() ? input.error() : blink::g_empty_string;
     auto* payer_errors =
         input.hasPayer() ? input.payer() : blink::PayerErrors::Create();
     output->payer = PayerErrors::From(*payer_errors);
@@ -183,9 +183,9 @@ template <>
 struct TypeConverter<PayerErrorsPtr, blink::PayerErrors> {
   static PayerErrorsPtr Convert(const blink::PayerErrors& input) {
     PayerErrorsPtr output = payments::mojom::blink::PayerErrors::New();
-    output->email = input.hasEmail() ? input.email() : g_empty_string;
-    output->name = input.hasName() ? input.name() : g_empty_string;
-    output->phone = input.hasPhone() ? input.phone() : g_empty_string;
+    output->email = input.hasEmail() ? input.email() : blink::g_empty_string;
+    output->name = input.hasName() ? input.name() : blink::g_empty_string;
+    output->phone = input.hasPhone() ? input.phone() : blink::g_empty_string;
     return output;
   }
 };
@@ -193,6 +193,7 @@ struct TypeConverter<PayerErrorsPtr, blink::PayerErrors> {
 template <>
 struct TypeConverter<AddressErrorsPtr, blink::AddressErrors> {
   static AddressErrorsPtr Convert(const blink::AddressErrors& input) {
+    using blink::g_empty_string;
     AddressErrorsPtr output = payments::mojom::blink::AddressErrors::New();
     output->address_line =
         input.hasAddressLine() ? input.addressLine() : g_empty_string;

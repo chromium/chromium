@@ -734,9 +734,5 @@ inline StringView::StringView(const String& string LIFETIME_BOUND)
 
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(String)
 
-// TODO(crbug.com/422768753): Remove these `using` directives.
-using blink::g_empty_string;
-using blink::String;
-
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_

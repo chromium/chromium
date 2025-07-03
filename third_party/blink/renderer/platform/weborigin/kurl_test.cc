@@ -1267,7 +1267,7 @@ class KURLTestTraits {
   using UrlType = blink::KURL;
 
   static UrlType CreateUrlFromString(std::string_view s) {
-    return blink::KURL(String::FromUTF8(s));
+    return blink::KURL(blink::String::FromUTF8(s));
   }
 
   static bool IsAboutBlank(const UrlType& url) { return url.IsAboutBlankURL(); }

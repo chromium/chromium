@@ -48,14 +48,14 @@ class OffscreenFontCache {
     }
   }
 
-  void AddFont(String name, blink::FontDescription& font) {
+  void AddFont(blink::String name, blink::FontDescription& font) {
     fonts_resolved_.insert(name, font);
     auto add_result = font_lru_list_.PrependOrMoveToFirst(name);
     DCHECK(add_result.is_new_entry);
     PruneLocalFontCache(kHardMaxCachedFonts);
   }
 
-  blink::FontDescription* GetFont(String name) {
+  blink::FontDescription* GetFont(blink::String name) {
     auto i = fonts_resolved_.find(name);
     if (i != fonts_resolved_.end()) {
       auto add_result = font_lru_list_.PrependOrMoveToFirst(name);
@@ -66,8 +66,8 @@ class OffscreenFontCache {
   }
 
  private:
-  HashMap<String, blink::FontDescription> fonts_resolved_;
-  LinkedHashSet<String> font_lru_list_;
+  HashMap<blink::String, blink::FontDescription> fonts_resolved_;
+  LinkedHashSet<blink::String> font_lru_list_;
 };
 
 OffscreenFontCache& GetOffscreenFontCache() {

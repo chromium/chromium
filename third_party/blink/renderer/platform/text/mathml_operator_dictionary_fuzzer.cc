@@ -19,7 +19,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   blink::FuzzedDataProvider data_provider(data, size);
   const blink::MathMLOperatorDictionaryForm form =
       data_provider.ConsumeEnum<blink::MathMLOperatorDictionaryForm>();
-  String content = data_provider.ConsumeRandomLengthString(size - 1);
+  blink::String content = data_provider.ConsumeRandomLengthString(size - 1);
   content.Ensure16Bit();
   blink::FindCategory(content, form);
   return 0;

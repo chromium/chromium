@@ -84,10 +84,10 @@ using blink::xpath::Step;
 %left kPlus kMinus
 %left kOr kAnd
 %token <blink::xpath::Step::Axis> kAxisName
-%token <String> kNodeType kPI kFunctionName kLiteral
-%token <String> kVariableReference kNumber
+%token <blink::String> kNodeType kPI kFunctionName kLiteral
+%token <blink::String> kVariableReference kNumber
 %token kDotDot kSlashSlash
-%token <String> kNameTest
+%token <blink::String> kNameTest
 %token kXPathError
 
 %type <blink::Persistent<blink::xpath::LocationPath>> LocationPath

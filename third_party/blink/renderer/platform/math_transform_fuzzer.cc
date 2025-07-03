@@ -17,7 +17,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       blink::BlinkFuzzerTestSupport();
   blink::test::TaskEnvironment task_environment;
   blink::FuzzedDataProvider data_provider(data, size);
-  String content = data_provider.ConsumeRandomLengthString(size);
+  blink::String content = data_provider.ConsumeRandomLengthString(size);
   content.Ensure16Bit();
   blink::UTF16TextIterator text_iterator(content.Span16());
   UChar32 code_point;

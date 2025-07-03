@@ -122,8 +122,9 @@ namespace crdtp {
 
 template <>
 struct ProtocolTypeTraits<WTF::String> {
-  static bool Deserialize(DeserializerState* state, String* value);
-  static void Serialize(const String& value, std::vector<uint8_t>* bytes);
+  static bool Deserialize(DeserializerState* state, blink::String* value);
+  static void Serialize(const blink::String& value,
+                        std::vector<uint8_t>* bytes);
 };
 
 template <>

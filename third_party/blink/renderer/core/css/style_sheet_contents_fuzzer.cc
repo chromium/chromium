@@ -28,7 +28,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   auto* styleSheet =
       blink::MakeGarbageCollected<blink::StyleSheetContents>(context);
 
-  styleSheet->ParseString(String::FromUTF8WithLatin1Fallback(data_string));
+  styleSheet->ParseString(
+      blink::String::FromUTF8WithLatin1Fallback(data_string));
 
   return 0;
 }

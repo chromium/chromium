@@ -23,7 +23,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       blink::SecurityOrigin::CreateFromString("https://example.com/");
   // SAFETY: Just make a span from the function arguments provided by libfuzzer.
   blink::PermissionsPolicyParser::ParseHeader(
-      g_empty_string, WTF::String(UNSAFE_BUFFERS(base::span(data, size))),
-      origin.get(), logger, logger);
+      blink::g_empty_string,
+      WTF::String(UNSAFE_BUFFERS(base::span(data, size))), origin.get(), logger,
+      logger);
   return 0;
 }

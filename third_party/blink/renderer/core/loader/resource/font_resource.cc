@@ -66,7 +66,7 @@
 #endif  // IS_WIN
 
 using ResultOrError =
-    base::expected<blink::FontResource::DecodedResult, String>;
+    base::expected<blink::FontResource::DecodedResult, blink::String>;
 
 namespace WTF {
 

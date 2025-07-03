@@ -81,7 +81,7 @@ namespace {
 
 static const blink::WebStyleSheetKey GenerateStyleSheetKey() {
   static unsigned counter = 0;
-  return String::Number(++counter);
+  return blink::String::Number(++counter);
 }
 
 }  // namespace

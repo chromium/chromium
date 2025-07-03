@@ -116,12 +116,12 @@ blink::LoadingMode ConvertToBlink(LoadingMode in) {
 }
 
 // ===== Converters for other basic Blink types =====
-String ConvertToBlink(const std::string& in) {
-  return String::FromUTF8(in);
+::blink::String ConvertToBlink(const std::string& in) {
+  return ::blink::String::FromUTF8(in);
 }
 
-String ConvertToBlink(const std::optional<std::string>& in) {
-  return in ? String::FromUTF8(*in) : String();
+::blink::String ConvertToBlink(const std::optional<std::string>& in) {
+  return in ? ::blink::String::FromUTF8(*in) : ::blink::String();
 }
 
 ::blink::KURL ConvertToBlink(const GURL& in) {
@@ -188,7 +188,7 @@ blink::CSPSourceListPtr ConvertToBlink(const CSPSourceListPtr& source_list) {
   CHECK(source_list);
 
   Vector<blink::CSPSourcePtr> sources = ConvertToBlink(source_list->sources);
-  Vector<String> nonces = ConvertToBlink(source_list->nonces);
+  Vector<::blink::String> nonces = ConvertToBlink(source_list->nonces);
   Vector<blink::CSPHashSourcePtr> hashes = ConvertToBlink(source_list->hashes);
   Vector<blink::CSPHashSourcePtr> url_hashes =
       ConvertToBlink(source_list->url_hashes);

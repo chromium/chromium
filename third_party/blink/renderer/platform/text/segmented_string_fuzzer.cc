@@ -42,7 +42,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       if (!offset) {
         break;
       }
-      str.replace(offset, 0, String("\n"));
+      str.replace(offset, 0, blink::String("\n"));
     }
     return str;
   };
@@ -59,7 +59,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     operation op =
         static_cast<operation>(fuzzed_data.ConsumeIntegralInRange<int>(
             operation::kOpFinish, operation::kOpLast - 1));
-    String character;
+    blink::String character;
     switch (op) {
       case kOpFinish:
         finished = true;

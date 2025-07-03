@@ -54,6 +54,8 @@
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+namespace blink {
+
 namespace {
 String MaybeRemoveCSSImportant(String string) {
   const StringView kImportantSuffix(" !important");
@@ -62,8 +64,6 @@ String MaybeRemoveCSSImportant(String string) {
              : string;
 }
 }  // namespace
-
-namespace blink {
 
 CSSDefaultStyleSheets& CSSDefaultStyleSheets::Instance() {
   DEFINE_STATIC_LOCAL(Persistent<CSSDefaultStyleSheets>,

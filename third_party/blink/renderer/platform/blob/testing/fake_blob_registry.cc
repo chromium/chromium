@@ -17,7 +17,7 @@ namespace mojob = ::blink::mojom::blink;
 class DataElementReader {
  public:
   DataElementReader(mojo::PendingReceiver<mojob::Blob> blob,
-                    const String& uuid,
+                    const blink::String& uuid,
                     Vector<mojob::DataElementPtr> elements)
       : blob_(std::move(blob)),
         uuid_(uuid),
@@ -91,7 +91,7 @@ class DataElementReader {
   };
 
   mojo::PendingReceiver<mojob::Blob> blob_;
-  String uuid_;
+  blink::String uuid_;
   Vector<mojob::DataElementPtr> elements_;
 
   Vector<mojob::DataElementPtr>::iterator elements_index_;

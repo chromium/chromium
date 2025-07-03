@@ -243,22 +243,25 @@ void ShowScrollPropertyTree(const blink::LocalFrameView& rootFrame) {
   LOG(INFO) << "Scroll tree:\n" << ScrollPropertyTreeAsString(rootFrame).Utf8();
 }
 
-String TransformPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
+blink::String TransformPropertyTreeAsString(
+    const blink::LocalFrameView& rootFrame) {
   return blink::FrameViewPropertyTreePrinter(blink::TransformNodeCollector())
       .TreeAsString(rootFrame);
 }
 
-String ClipPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
+blink::String ClipPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
   return blink::FrameViewPropertyTreePrinter(blink::ClipNodeCollector())
       .TreeAsString(rootFrame);
 }
 
-String EffectPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
+blink::String EffectPropertyTreeAsString(
+    const blink::LocalFrameView& rootFrame) {
   return blink::FrameViewPropertyTreePrinter(blink::EffectNodeCollector())
       .TreeAsString(rootFrame);
 }
 
-String ScrollPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
+blink::String ScrollPropertyTreeAsString(
+    const blink::LocalFrameView& rootFrame) {
   return blink::FrameViewPropertyTreePrinter(blink::ScrollNodeCollector())
       .TreeAsString(rootFrame);
 }
