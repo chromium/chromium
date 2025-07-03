@@ -2092,6 +2092,20 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         mNativeObj, virtualViewId, positionInfoStartIndex, positionInfoLength);
     }
 
+    public int @Nullable [] getChildIdsForTesting(int virtualViewId) {
+        if (!isNativeInitialized()) return null;
+        assert isRootManagerConnected()
+                : "Accessibility root manager should be connected when the native object is"
+                        + " initialized.";
+        if (virtualViewId == View.NO_ID) {
+            int rootId = WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
+            return new int[] {rootId};
+        } else {
+            return WebContentsAccessibilityImplJni.get()
+                    .getChildIdsForTesting(mNativeObj, virtualViewId);
+        }
+    }
+
     protected void requestSendAccessibilityEvent(AccessibilityEvent event) {
         // If there is no parent, then the event can be ignored. In general the parent is only
         // transiently null (such as during teardown, switching tabs...). Also ensure that
@@ -2402,6 +2416,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         int[] getCharacterBoundingBoxes(
                 long nativeWebContentsAccessibilityAndroid, int id, int start, int len);
+
+        int[] getChildIdsForTesting(long nativeWebContentsAccessibilityAndroid, int virtualViewId);
 
         int getTextLength(long nativeWebContentsAccessibilityAndroid, int id);
 

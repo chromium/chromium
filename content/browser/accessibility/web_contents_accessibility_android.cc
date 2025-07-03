@@ -2384,6 +2384,22 @@ WebContentsAccessibilityAndroid::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+ScopedJavaLocalRef<jintArray>
+WebContentsAccessibilityAndroid::GetChildIdsForTesting(JNIEnv* env,
+                                                       jint unique_id) {
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return nullptr;
+  }
+  std::vector<int> child_ids;
+  for (const auto& child : node->PlatformChildren()) {
+    const auto& android_node =
+        static_cast<const BrowserAccessibilityAndroid&>(child);
+    child_ids.push_back(android_node.GetUniqueId());
+  }
+  return base::android::ToJavaIntArray(env, child_ids);
+}
+
 jlong JNI_WebContentsAccessibilityImpl_InitWithAXTree(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,

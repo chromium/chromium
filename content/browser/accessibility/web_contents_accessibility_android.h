@@ -411,6 +411,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
 
+  base::android::ScopedJavaLocalRef<jintArray> GetChildIdsForTesting(
+      JNIEnv* env,
+      jint unique_id);
+
  private:
   friend class MockWebContentsAccessibilityAndroid;
 
