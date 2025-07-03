@@ -1588,7 +1588,7 @@
       // crbug.com/1463890, crbug.com/1463891: CSS `text-spacing` shorthand
       name: "CSSTextSpacing",
       depends_on: ["CSSTextAutoSpace"],
-      status: "experimental",
+      status: "test",
     },
     {
       // crbug.com/41442840: Enabled by default on M139, remove after M141.
