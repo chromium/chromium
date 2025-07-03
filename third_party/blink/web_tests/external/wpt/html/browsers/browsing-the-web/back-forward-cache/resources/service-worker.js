@@ -37,6 +37,16 @@ self.addEventListener('message', function(event) {
       port.onclose = () => {
         isCloseEventFired = true;
       };
+    } else if (event.data.type == 'storePort') {
+      self.storedPort = event.ports[0];
+      self.storedPort.postMessage('Port stored');
+    } else if (event.data.type == 'postMessageViaTransferredPort') {
+      if (self.storedPort) {
+        self.storedPort.postMessage('Message from SW via transferred port');
+        event.data.port.postMessage('PASS');
+      } else {
+        event.data.port.postMessage('FAIL: port not stored');
+      }
     }
   });
 
