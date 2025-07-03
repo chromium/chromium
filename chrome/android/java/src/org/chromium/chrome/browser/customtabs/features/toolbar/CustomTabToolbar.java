@@ -840,6 +840,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBar.updateOptionalButton(buttonData);
     }
 
+    @Override
+    protected void hideOptionalButton() {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
+        if (!mIntentDataProvider.isOptionalButtonSupported()) return;
+
+        mLocationBar.hideOptionalButton();
+    }
+
     /** Resets optional button internal state. */
     public void resetOptionalButtonState() {
         mLocationBar.resetOptionalButtonState(/* resetFallbackMenu= */ true);
@@ -1657,6 +1665,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
             mOptionalButtonCoordinator.updateButton(buttonData, isIncognitoBranded());
             setOptionalButtonBackgroundInset();
+        }
+
+        private void hideOptionalButton() {
+            if (mOptionalButtonCoordinator == null
+                    || mOptionalButtonCoordinator.getViewVisibility() == View.GONE) {
+                return;
+            }
+            mOptionalButtonCoordinator.hideButton();
         }
 
         // Modify the inset of the optional background drawable to match that of the icon secondary
