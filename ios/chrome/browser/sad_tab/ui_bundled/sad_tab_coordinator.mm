@@ -23,21 +23,21 @@
 #import "ios/web/public/web_state.h"
 
 @interface SadTabCoordinator () <SadTabViewControllerDelegate,
-                                 DependencyInstalling> {
-  SadTabViewController* _viewController;
-  // Bridge to observe the web state list from Objective-C.
-  std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
-}
+                                 TabsDependencyInstalling>
 @end
 
-@implementation SadTabCoordinator
+@implementation SadTabCoordinator {
+  SadTabViewController* _viewController;
+  // Bridge to observe the web state list from Objective-C.
+  std::unique_ptr<TabsDependencyInstallerBridge> _dependencyInstallerBridge;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _dependencyInstallerBridge =
-        std::make_unique<WebStateDependencyInstallerBridge>(
+        std::make_unique<TabsDependencyInstallerBridge>(
             self, self.browser->GetWebStateList());
   }
   return self;
@@ -157,7 +157,7 @@
   [self stop];
 }
 
-#pragma mark - DependencyInstalling
+#pragma mark - TabsDependencyInstalling
 
 - (void)installDependencyForWebState:(web::WebState*)webState {
   SadTabTabHelper::FromWebState(webState)->SetDelegate(self);

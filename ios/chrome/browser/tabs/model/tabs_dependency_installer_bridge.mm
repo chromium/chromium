@@ -4,19 +4,19 @@
 
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
 
-WebStateDependencyInstallerBridge::WebStateDependencyInstallerBridge(
-    id<DependencyInstalling> installing,
+TabsDependencyInstallerBridge::TabsDependencyInstallerBridge(
+    id<TabsDependencyInstalling> installing,
     WebStateList* web_state_list)
-    : installing_(installing), observer_(web_state_list, this) {}
+    : installing_(installing), installation_helper_(web_state_list, this) {}
 
-void WebStateDependencyInstallerBridge::InstallDependency(
+void TabsDependencyInstallerBridge::InstallDependency(
     web::WebState* web_state) {
   if ([installing_
           respondsToSelector:@selector(installDependencyForWebState:)]) {
     [installing_ installDependencyForWebState:web_state];
   }
 }
-void WebStateDependencyInstallerBridge::UninstallDependency(
+void TabsDependencyInstallerBridge::UninstallDependency(
     web::WebState* web_state) {
   if ([installing_
           respondsToSelector:@selector(uninstallDependencyForWebState:)]) {

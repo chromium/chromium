@@ -6,9 +6,9 @@
 
 #import "base/check.h"
 
-WebStateDependencyInstallationObserver::WebStateDependencyInstallationObserver(
+TabsDependencyInstallationHelper::TabsDependencyInstallationHelper(
     WebStateList* web_state_list,
-    DependencyInstaller* dependency_installer)
+    TabsDependencyInstaller* dependency_installer)
     : web_state_list_(web_state_list),
       dependency_installer_(dependency_installer) {
   DCHECK(web_state_list_);
@@ -20,8 +20,7 @@ WebStateDependencyInstallationObserver::WebStateDependencyInstallationObserver(
   }
 }
 
-WebStateDependencyInstallationObserver::
-    ~WebStateDependencyInstallationObserver() {
+TabsDependencyInstallationHelper::~TabsDependencyInstallationHelper() {
   for (int i = 0; i < web_state_list_->count(); i++) {
     OnWebStateRemoved(web_state_list_->GetWebStateAt(i));
   }
@@ -29,7 +28,7 @@ WebStateDependencyInstallationObserver::
 
 #pragma mark - WebStateListObserver
 
-void WebStateDependencyInstallationObserver::WebStateListDidChange(
+void TabsDependencyInstallationHelper::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
@@ -74,7 +73,7 @@ void WebStateDependencyInstallationObserver::WebStateListDidChange(
   }
 }
 
-void WebStateDependencyInstallationObserver::WebStateListDestroyed(
+void TabsDependencyInstallationHelper::WebStateListDestroyed(
     WebStateList* web_state_list) {
   // Checking that all WebStates have been destroyed before destroying
   // the WebStateList, so we should not be observing anything.
@@ -82,7 +81,7 @@ void WebStateDependencyInstallationObserver::WebStateListDestroyed(
   web_state_list_observation_.Reset();
 }
 
-void WebStateDependencyInstallationObserver::OnWebStateAdded(
+void TabsDependencyInstallationHelper::OnWebStateAdded(
     web::WebState* web_state) {
   if (web_state->IsRealized()) {
     dependency_installer_->InstallDependency(web_state);
@@ -91,7 +90,7 @@ void WebStateDependencyInstallationObserver::OnWebStateAdded(
   }
 }
 
-void WebStateDependencyInstallationObserver::OnWebStateRemoved(
+void TabsDependencyInstallationHelper::OnWebStateRemoved(
     web::WebState* web_state) {
   if (web_state->IsRealized()) {
     dependency_installer_->UninstallDependency(web_state);
@@ -100,13 +99,13 @@ void WebStateDependencyInstallationObserver::OnWebStateRemoved(
   }
 }
 
-void WebStateDependencyInstallationObserver::WebStateRealized(
+void TabsDependencyInstallationHelper::WebStateRealized(
     web::WebState* web_state) {
   web_state_observations_.RemoveObservation(web_state);
   OnWebStateAdded(web_state);
 }
 
-void WebStateDependencyInstallationObserver::WebStateDestroyed(
+void TabsDependencyInstallationHelper::WebStateDestroyed(
     web::WebState* web_state) {
   web_state_observations_.RemoveObservation(web_state);
 }

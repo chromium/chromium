@@ -13,11 +13,8 @@
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
-@interface VcardCoordinator () <DependencyInstalling, VcardTabHelperDelegate> {
-  // Bridge which observes WebStateList and alerts this coordinator when this
-  // needs to register the Mediator with a new WebState.
-  std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
-}
+@interface VcardCoordinator () <TabsDependencyInstalling,
+                                VcardTabHelperDelegate>
 
 // NavigationController that contains a viewController used to display a
 // contact.
@@ -25,14 +22,18 @@
 
 @end
 
-@implementation VcardCoordinator
+@implementation VcardCoordinator {
+  // Bridge which observes WebStateList and alerts this coordinator when this
+  // needs to register the Mediator with a new WebState.
+  std::unique_ptr<TabsDependencyInstallerBridge> _dependencyInstallerBridge;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser {
   if ((self = [super initWithBaseViewController:baseViewController
                                         browser:browser])) {
     _dependencyInstallerBridge =
-        std::make_unique<WebStateDependencyInstallerBridge>(
+        std::make_unique<TabsDependencyInstallerBridge>(
             self, browser->GetWebStateList());
   }
   return self;
@@ -46,7 +47,7 @@
   self.navigationViewController = nil;
 }
 
-#pragma mark - DependencyInstalling methods
+#pragma mark - TabsDependencyInstalling methods
 
 - (void)installDependencyForWebState:(web::WebState*)webState {
   VcardTabHelper::FromWebState(webState)->set_delegate(self);

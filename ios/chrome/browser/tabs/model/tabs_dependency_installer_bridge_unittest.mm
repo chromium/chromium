@@ -14,7 +14,7 @@
 #import "testing/platform_test.h"
 
 // Test object for tracking calls through the DpendencyInstalling protocol.
-@interface TestInstaller : NSObject <DependencyInstalling>
+@interface TestInstaller : NSObject <TabsDependencyInstalling>
 
 @property(nonatomic) NSInteger installCount;
 @property(nonatomic) NSInteger uninstallCount;
@@ -30,9 +30,9 @@
 }
 @end
 
-class WebStateDependencyInstallerBridgeTest : public PlatformTest {
+class TabsDependencyInstallerBridgeTest : public PlatformTest {
  public:
-  WebStateDependencyInstallerBridgeTest()
+  TabsDependencyInstallerBridgeTest()
       : web_state_list_(&web_state_list_delegate_),
         installer_([[TestInstaller alloc] init]) {}
 
@@ -44,8 +44,8 @@ class WebStateDependencyInstallerBridgeTest : public PlatformTest {
 
 // Test that inserting and replacing web states calls the dependency installer
 // the expected number of times.
-TEST_F(WebStateDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
-  WebStateDependencyInstallerBridge bridge(installer_, &web_state_list_);
+TEST_F(TabsDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
+  TabsDependencyInstallerBridge bridge(installer_, &web_state_list_);
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web_state_list_.InsertWebState(
       std::move(web_state_1),
@@ -58,8 +58,8 @@ TEST_F(WebStateDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
 }
 
 // Tests that deleting the installer bridge uninstalls all web states.
-TEST_F(WebStateDependencyInstallerBridgeTest, UninstallOnBridgeDestruction) {
-  auto bridge = std::make_unique<WebStateDependencyInstallerBridge>(
+TEST_F(TabsDependencyInstallerBridgeTest, UninstallOnBridgeDestruction) {
+  auto bridge = std::make_unique<TabsDependencyInstallerBridge>(
       installer_, &web_state_list_);
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web_state_list_.InsertWebState(

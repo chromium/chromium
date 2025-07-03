@@ -31,9 +31,8 @@ AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     Browser* browser,
     UIViewController* base_view_controller)
     : BrowserUserData(browser), base_view_controller_(base_view_controller) {
-  installation_observer_ =
-      std::make_unique<WebStateDependencyInstallationObserver>(
-          browser->GetWebStateList(), this);
+  installation_helper_ = std::make_unique<TabsDependencyInstallationHelper>(
+      browser->GetWebStateList(), this);
   browser_->AddObserver(this);
   application_handler_ =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
@@ -150,7 +149,7 @@ void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
 }
 
 void AccountConsistencyBrowserAgent::BrowserDestroyed(Browser* browser) {
-  installation_observer_.reset();
+  installation_helper_.reset();
   browser_->RemoveObserver(this);
 }
 

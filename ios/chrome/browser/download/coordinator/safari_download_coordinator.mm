@@ -52,13 +52,9 @@ const char kUmaDownloadMobileConfigFileUI[] =
 const char kUmaDownloadAppleWalletOrderFileUI[] =
     "Download.IOSDownloadAppleWalletOrderFileUI";
 
-@interface SafariDownloadCoordinator () <DependencyInstalling,
+@interface SafariDownloadCoordinator () <TabsDependencyInstalling,
                                          SafariDownloadTabHelperDelegate,
-                                         SFSafariViewControllerDelegate> {
-  // Bridge which observes WebStateList and alerts this coordinator when this
-  // needs to register the Mediator with a new WebState.
-  std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
-}
+                                         SFSafariViewControllerDelegate>
 
 // Coordinator used to display modal alerts to the user.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
@@ -68,14 +64,18 @@ const char kUmaDownloadAppleWalletOrderFileUI[] =
 
 @end
 
-@implementation SafariDownloadCoordinator
+@implementation SafariDownloadCoordinator {
+  // Bridge which observes WebStateList and alerts this coordinator when this
+  // needs to register the Mediator with a new WebState.
+  std::unique_ptr<TabsDependencyInstallerBridge> _dependencyInstallerBridge;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser {
   if ((self = [super initWithBaseViewController:baseViewController
                                         browser:browser])) {
     _dependencyInstallerBridge =
-        std::make_unique<WebStateDependencyInstallerBridge>(
+        std::make_unique<TabsDependencyInstallerBridge>(
             self, browser->GetWebStateList());
   }
   return self;
@@ -132,7 +132,7 @@ const char kUmaDownloadAppleWalletOrderFileUI[] =
   [self dismissAlertCoordinator];
 }
 
-#pragma mark - DependencyInstalling methods
+#pragma mark - TabsDependencyInstalling methods
 
 - (void)installDependencyForWebState:(web::WebState*)webState {
   SafariDownloadTabHelper::FromWebState(webState)->set_delegate(self);

@@ -14,9 +14,8 @@
 #import "ios/web/public/web_state_observer.h"
 
 // Interface for classes wishing to install and/or uninstall dependencies
-// (delegates, etc) for each WebState using
-// WebStateDependencyInstallationObserver (below).
-class DependencyInstaller {
+// (delegates, etc) for each WebState using TabsDependencyInstallationHelper.
+class TabsDependencyInstaller {
  public:
   // Serves as a hook for any installation work needed to set up a per-WebState
   // dependency.
@@ -24,32 +23,27 @@ class DependencyInstaller {
   // Serves as a hook for any cleanup work needed to remove a dependency when it
   // is no longer needed.
   virtual void UninstallDependency(web::WebState* web_state) {}
-  virtual ~DependencyInstaller() {}
+  virtual ~TabsDependencyInstaller() {}
 };
 
 // Classes wishing to install/uninstall dependencies (such as delegates) for
-// each WebState can create an instance and pass a DependencyInstaller
+// each WebState can create an instance and pass a TabsDependencyInstaller
 // configured to do the installing/uninstalling work. This class acts as a
 // forwarder, listening for changes in the WebStateList and invoking the
 // installation/uninstallation methods as necessary.
-class WebStateDependencyInstallationObserver : public WebStateListObserver,
-                                               public web::WebStateObserver {
+class TabsDependencyInstallationHelper : public WebStateListObserver,
+                                         public web::WebStateObserver {
  public:
-  WebStateDependencyInstallationObserver(
+  TabsDependencyInstallationHelper(
       WebStateList* web_state_list,
-      DependencyInstaller* dependency_installer);
-  ~WebStateDependencyInstallationObserver() override;
+      TabsDependencyInstaller* dependency_installer);
+  ~TabsDependencyInstallationHelper() override;
 
   // WebStateListObserver:
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
   void WebStateListDestroyed(WebStateList* web_state_list) override;
-
-  WebStateDependencyInstallationObserver(
-      const WebStateDependencyInstallationObserver&) = delete;
-  WebStateDependencyInstallationObserver& operator=(
-      const WebStateDependencyInstallationObserver&) = delete;
 
  private:
   // Helper methods that call InstallDependency/UninstallDependency on the
@@ -67,7 +61,7 @@ class WebStateDependencyInstallationObserver : public WebStateListObserver,
   raw_ptr<WebStateList> web_state_list_;
   // The class which installs/uninstalls dependencies in response to changes to
   // the WebStateList
-  raw_ptr<DependencyInstaller> dependency_installer_;
+  raw_ptr<TabsDependencyInstaller> dependency_installer_;
   // Automatically detaches `this` from the WebStateList when destroyed
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_observation_{this};

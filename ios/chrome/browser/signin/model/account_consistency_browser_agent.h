@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 // them.
 class AccountConsistencyBrowserAgent
     : public BrowserUserData<AccountConsistencyBrowserAgent>,
-      public DependencyInstaller,
+      public TabsDependencyInstaller,
       public ManageAccountsDelegate,
       public BrowserObserver {
  public:
@@ -37,7 +37,7 @@ class AccountConsistencyBrowserAgent
       const AccountConsistencyBrowserAgent&) = delete;
   ~AccountConsistencyBrowserAgent() override;
 
-  // DependencyInstaller
+  // TabsDependencyInstaller
   void InstallDependency(web::WebState* web_state) override;
   void UninstallDependency(web::WebState* web_state) override;
 
@@ -79,8 +79,7 @@ class AccountConsistencyBrowserAgent
   // Bridge object to act as the delegate.
   ManageAccountsDelegateBridge* bridge_;
   // Observer to handle webstate registration and deregistration events.
-  std::unique_ptr<WebStateDependencyInstallationObserver>
-      installation_observer_;
+  std::unique_ptr<TabsDependencyInstallationHelper> installation_helper_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_CONSISTENCY_BROWSER_AGENT_H_

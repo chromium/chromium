@@ -58,18 +58,18 @@
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/device_form_factor.h"
 
-@interface TabLifecycleMediator () <DependencyInstalling>
+@interface TabLifecycleMediator () <TabsDependencyInstalling>
 @end
 
 @implementation TabLifecycleMediator {
   // Bridge to observe the web state list from Objective-C.
-  std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
+  std::unique_ptr<TabsDependencyInstallerBridge> _dependencyInstallerBridge;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList {
   if ((self = [super init])) {
     _dependencyInstallerBridge =
-        std::make_unique<WebStateDependencyInstallerBridge>(self, webStateList);
+        std::make_unique<TabsDependencyInstallerBridge>(self, webStateList);
   }
   return self;
 }
@@ -80,7 +80,7 @@
   _dependencyInstallerBridge.reset();
 }
 
-#pragma mark - DependencyInstalling
+#pragma mark - TabsDependencyInstalling
 
 - (void)installDependencyForWebState:(web::WebState*)webState {
   // If there is a prerender service, this webstate shouldn't be a prerendered
