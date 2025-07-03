@@ -585,6 +585,14 @@ class WebAppNonClientFrameViewChromeOSTest
       PageActionIconType type,
       std::optional<actions::ActionId> action_id = std::nullopt) {
     if (IsPageActionMigrated(type)) {
+      if (!action_id.has_value()) {
+        // The find page action will not exist post-migration.
+        // TODO(https://crbug.com/376283618): Update the comment after
+        // migration.
+        DCHECK_EQ(type, PageActionIconType::kFind);
+        return nullptr;
+      }
+
       return browser_view_->toolbar_button_provider()->GetPageActionView(
           action_id.value());
     }
@@ -748,14 +756,23 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowZoomIcon) {
 
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowFindIcon) {
   SetUpWebApp();
-  IconLabelBubbleView* find_icon = GetPageActionView(PageActionIconType::kFind);
 
-  EXPECT_TRUE(find_icon);
-  EXPECT_FALSE(find_icon->GetVisible());
+  const bool find_page_action_migrated =
+      IsPageActionMigrated(PageActionIconType::kFind);
+
+  IconLabelBubbleView* find_icon = GetPageActionView(PageActionIconType::kFind);
+  if (find_page_action_migrated) {
+    EXPECT_FALSE(find_icon);
+  } else {
+    EXPECT_TRUE(find_icon);
+    EXPECT_FALSE(find_icon->GetVisible());
+  }
 
   chrome::Find(app_browser_);
 
-  ASSERT_TRUE(WaitForVisible(true, find_icon));
+  if (!find_page_action_migrated) {
+    ASSERT_TRUE(WaitForVisible(true, find_icon));
+  }
 }
 
 // TODO(crbug.com/420040505): Fix failures on the Linux Chromium OS ASan LSan

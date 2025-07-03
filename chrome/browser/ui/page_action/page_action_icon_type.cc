@@ -40,6 +40,8 @@ const base::FeatureParam<bool>* GetPageActionMigrationParam(
       return &features::kPageActionsMigrationCookieControls;
     case PageActionIconType::kAutofillAddress:
       return &features::kPageActionsMigrationAutofillAddress;
+    case PageActionIconType::kFind:
+      return &features::kPageActionsMigrationFind;
     default:
       return nullptr;
   }
