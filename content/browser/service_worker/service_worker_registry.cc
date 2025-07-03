@@ -435,113 +435,59 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
       // Merges duplicate requests into the preceding in-flight request.
       return;
     }
-    FindRegistrationForClientUrlTraceEventBegin(trace_event_id, client_url);
-    if (no_registration) {
-      DidFindRegistrationForClientUrl(
-          client_url, key, trace_event_id,
-          // Pass a fake callback here as the proper callback will
-          // be invoked via find_registration_callbacks_
-          /*callback=*/base::DoNothing(),
-          storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
-          std::vector(scopes->begin(), scopes->end()));
-      return;
+    // Overwrite with a fake callback here as the actual callback is stored in
+    // `find_registration_callbacks_`, and will be invoked in
+    // `RunFindRegistrationCallbacks()`.
+    callback = base::DoNothing();
+  }
+
+  FindRegistrationForClientUrlTraceEventBegin(trace_event_id, client_url);
+  if (no_registration) {
+    DidFindRegistrationForClientUrl(
+        client_url, key, trace_event_id, std::move(callback),
+        storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
+        std::vector(scopes->begin(), scopes->end()));
+    return;
+  }
+  storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
+      storage_shared_buffer().TakeFindRegistrationResult(client_url, key);
+  if (!preflight_result.is_null()) {
+    std::optional<std::vector<GURL>> scope_vector;
+    if (scopes.has_value()) {
+      scope_vector = std::vector(scopes->begin(), scopes->end());
     }
-    storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
-        storage_shared_buffer().TakeFindRegistrationResult(client_url, key);
-    if (!preflight_result.is_null()) {
-      std::optional<std::vector<GURL>> scope_vector;
-      if (scopes.has_value()) {
-        scope_vector = std::vector(scopes->begin(), scopes->end());
-      }
-      DidFindRegistrationForClientUrl(
-          client_url, key, trace_event_id,
-          // Pass a fake callback here as the proper callback will
-          // be invoked via find_registration_callbacks_
-          /*callback=*/base::DoNothing(),
-          storage::mojom::ServiceWorkerDatabaseStatus::kOk,
-          std::move(preflight_result), scope_vector);
-      return;
-    }
-    // TODO(crbug.com/352578800): Consider moving this block before
-    // kServiceWorkerMergeFindRegistrationForClientUrl check since this block
-    // will be skipped when no_registration is true.
-    if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
-            context_->wrapper()->browser_context(), client_url)) {
-      // If `client_url` is eligible for SyntheticResponse, create a fake
-      // ServiceWorker registration so that the navigation is handled by
-      // ServiceWorker main resource loader.
-      is_mojo_called = true;
-      CreateInvokerAndStartRemoteCall(
-          &storage::mojom::ServiceWorkerStorageControl::
-              GetFakeRegistrationForClientUrl,
-          base::BindOnce(
-              &ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
-              weak_factory_.GetWeakPtr(), client_url, key, trace_event_id,
-              base::DoNothing()),
-          client_url, key);
-      return;
-    }
+    DidFindRegistrationForClientUrl(
+        client_url, key, trace_event_id, std::move(callback),
+        storage::mojom::ServiceWorkerDatabaseStatus::kOk,
+        std::move(preflight_result), scope_vector);
+    return;
+  }
+  // TODO(crbug.com/352578800): Consider moving this block before
+  // kServiceWorkerMergeFindRegistrationForClientUrl check since this block
+  // will be skipped when no_registration is true.
+  if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
+          context_->wrapper()->browser_context(), client_url)) {
+    // If `client_url` is eligible for SyntheticResponse, create a fake
+    // ServiceWorker registration so that the navigation is handled by
+    // ServiceWorker main resource loader.
     is_mojo_called = true;
     CreateInvokerAndStartRemoteCall(
         &storage::mojom::ServiceWorkerStorageControl::
-            FindRegistrationForClientUrl,
-        base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
-                       weak_factory_.GetWeakPtr(), client_url, key,
-                       trace_event_id,
-                       // Pass a fake callback here as the proper callback will
-                       // be invoked via find_registration_callbacks_
-                       /*callback=*/base::DoNothing()),
-        client_url, key);
-  } else {
-    FindRegistrationForClientUrlTraceEventBegin(trace_event_id, client_url);
-    if (no_registration) {
-      DidFindRegistrationForClientUrl(
-          client_url, key, trace_event_id, std::move(callback),
-          storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
-          std::vector(scopes->begin(), scopes->end()));
-      return;
-    }
-    storage::mojom::ServiceWorkerFindRegistrationResultPtr preflight_result =
-        storage_shared_buffer().TakeFindRegistrationResult(client_url, key);
-    if (!preflight_result.is_null()) {
-      std::optional<std::vector<GURL>> scope_vector;
-      if (scopes.has_value()) {
-        scope_vector = std::vector(scopes->begin(), scopes->end());
-      }
-      DidFindRegistrationForClientUrl(
-          client_url, key, trace_event_id, std::move(callback),
-          storage::mojom::ServiceWorkerDatabaseStatus::kOk,
-          std::move(preflight_result), scope_vector);
-      return;
-    }
-    // TODO(crbug.com/352578800): Consider moving this block before
-    // kServiceWorkerMergeFindRegistrationForClientUrl check since this block
-    // will be skipped when no_registration is true.
-    if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
-            context_->wrapper()->browser_context(), client_url)) {
-      // If `client_url` is eligible for SyntheticResponse, create a fake
-      // ServiceWorker registration so that the navigation is handled by
-      // ServiceWorker main resource loader.
-      is_mojo_called = true;
-      CreateInvokerAndStartRemoteCall(
-          &storage::mojom::ServiceWorkerStorageControl::
-              GetFakeRegistrationForClientUrl,
-          base::BindOnce(
-              &ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
-              weak_factory_.GetWeakPtr(), client_url, key, trace_event_id,
-              std::move(callback)),
-          client_url, key);
-      return;
-    }
-    is_mojo_called = true;
-    CreateInvokerAndStartRemoteCall(
-        &storage::mojom::ServiceWorkerStorageControl::
-            FindRegistrationForClientUrl,
+            GetFakeRegistrationForClientUrl,
         base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
                        weak_factory_.GetWeakPtr(), client_url, key,
                        trace_event_id, std::move(callback)),
         client_url, key);
+    return;
   }
+  is_mojo_called = true;
+  CreateInvokerAndStartRemoteCall(
+      &storage::mojom::ServiceWorkerStorageControl::
+          FindRegistrationForClientUrl,
+      base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
+                     weak_factory_.GetWeakPtr(), client_url, key,
+                     trace_event_id, std::move(callback)),
+      client_url, key);
 }
 
 void ServiceWorkerRegistry::FindRegistrationForScope(
