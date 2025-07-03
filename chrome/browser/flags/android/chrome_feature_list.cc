@@ -375,6 +375,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRightEdgeGoesForwardGestureNav,
     &kSearchInCCT,
     &kSearchInCCTAlternateTapHandling,
+    &kSearchInCCTIfEnabledByEmbedder,
+    &kSearchInCCTAlternateTapHandlingIfEnabledByEmbedder,
     &kSearchResumptionModuleAndroid,
     &kSettingsSingleActivity,
     &kShareCustomActionsInCCT,
@@ -1369,6 +1371,14 @@ BASE_FEATURE(kSearchInCCT, "SearchInCCT", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSearchInCCTAlternateTapHandling,
              "SearchInCCTAlternateTapHandling",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSearchInCCTIfEnabledByEmbedder,
+             "SearchInCCTIfEnabledByEmbedder",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSearchInCCTAlternateTapHandlingIfEnabledByEmbedder,
+             "SearchInCCTAlternateTapHandlingIfEnabledByEmbedder",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchResumptionModuleAndroid,
              "SearchResumptionModuleAndroid",

@@ -564,6 +564,10 @@ public abstract class ChromeFeatureList {
     public static final String SEARCH_IN_CCT = "SearchInCCT";
     public static final String SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING =
             "SearchInCCTAlternateTapHandling";
+    public static final String SEARCH_IN_CCT_IF_ENABLED_BY_EMBEDDER =
+            "SearchInCCTIfEnabledByEmbedder";
+    public static final String SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING_IF_ENABLED_BY_EMBEDDER =
+            "SearchInCCTAlternateTapHandlingIfEnabledByEmbedder";
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
     public static final String SEED_ACCOUNTS_REVAMP = "SeedAccountsRevamp";
     public static final String SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER =
@@ -703,8 +707,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAndroidTabGroupsColorUpdateGm3 =
-            newCachedFlag(ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3, false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(
+                    ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
             newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
     public static final CachedFlag sAndroidThemeModule =
@@ -935,6 +939,10 @@ public abstract class ChromeFeatureList {
                     SEARCH_IN_CCT, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sSearchInCCTAlternateTapHandling =
             newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING, false);
+    public static final CachedFlag sSearchInCCTIfEnabledByEmbedder =
+            newCachedFlag(SEARCH_IN_CCT_IF_ENABLED_BY_EMBEDDER, true);
+    public static final CachedFlag sSearchInCCTAlternateTapHandlingIfEnabledByEmbedder =
+            newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sSettingsSingleActivity =
             newCachedFlag(SETTINGS_SINGLE_ACTIVITY, false);
     public static final CachedFlag sShowHomeButtonPolicyAndroid =
@@ -1115,6 +1123,8 @@ public abstract class ChromeFeatureList {
                     sSafetyHubWeakAndReusedPasswords,
                     sSearchInCCT,
                     sSearchInCCTAlternateTapHandling,
+                    sSearchInCCTIfEnabledByEmbedder,
+                    sSearchInCCTAlternateTapHandlingIfEnabledByEmbedder,
                     sSettingsSingleActivity,
                     sShowHomeButtonPolicyAndroid,
                     sSkipIsolatedSplitPreload,
@@ -1539,12 +1549,9 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sEdgeToEdgeEverywhereIsDebugging =
             newBooleanCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_everywhere_debug", false);
 
-    public static final IntCachedFeatureParam
-            sEdgeToEdgeTabletInvisibleBottomChinMinWidth =
-                    newIntCachedFeatureParam(
-                            EDGE_TO_EDGE_TABLET,
-                            "e2e_tablet_invisible_bottom_chin_min_width",
-                            -1);
+    public static final IntCachedFeatureParam sEdgeToEdgeTabletInvisibleBottomChinMinWidth =
+            newIntCachedFeatureParam(
+                    EDGE_TO_EDGE_TABLET, "e2e_tablet_invisible_bottom_chin_min_width", -1);
 
     public static final IntCachedFeatureParam sEdgeToEdgeTabletMinWidthThreshold =
             newIntCachedFeatureParam(EDGE_TO_EDGE_TABLET, "e2e_tablet_width_threshold", -1);
