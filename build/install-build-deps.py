@@ -10,16 +10,22 @@
 
 import argparse
 import functools
+import logging
 import os
 import re
 import shutil
 import subprocess
 import sys
 
+logging.basicConfig(stream=sys.stderr,
+                    level=logging.INFO,
+                    format='%(name)s [%(levelname)s]: %(message)s')
+logger = logging.getLogger(os.path.basename(sys.argv[0]))
+
 
 @functools.lru_cache(maxsize=1)
 def build_apt_package_list():
-  print("Building apt package list.", file=sys.stderr)
+  logger.info("Building apt package list.")
   output = subprocess.check_output(["apt-cache", "dumpavail"]).decode()
   arch_map = {"i386": ":i386"}
   package_regex = re.compile(r"^Package: (.+?)$.+?^Architecture: (.+?)$",
@@ -134,8 +140,8 @@ def parse_args(argv):
 
 def check_lsb_release():
   if not shutil.which("lsb_release"):
-    print("ERROR: lsb_release not found in $PATH", file=sys.stderr)
-    print("try: sudo apt-get install lsb-release", file=sys.stderr)
+    logger.error("lsb_release not found in $PATH")
+    logger.error("try: sudo apt-get install lsb-release")
     sys.exit(1)
 
 
@@ -171,36 +177,32 @@ def check_distro(options):
 
   if (distro_codename() not in supported_codenames
       and distro_id not in supported_ids):
-    print(
-        "WARNING: The following distributions are supported,",
-        "but distributions not in the list below can also try to install",
-        "dependencies by passing the `--unsupported` parameter.",
-        "EoS refers to end of standard support and does not include",
-        "extended security support.",
-        "\tUbuntu 20.04 LTS (focal with EoS April 2025)",
-        "\tUbuntu 22.04 LTS (jammy with EoS June 2027)",
-        "\tUbuntu 24.04 LTS (noble with EoS June 2029)",
-        "\tDebian 11 (bullseye) or later",
-        sep="\n",
-        file=sys.stderr,
-    )
+    logger.warning(
+        ("The following distributions are supported, "
+         "but distributions not in the list below can also try to install "
+         "dependencies by passing the `--unsupported` parameter."))
+    logger.warning(
+        ("EoS refers to end of standard support and does not include "
+         "extended security support.\n"
+         "\tUbuntu 20.04 LTS (focal with EoS April 2025)\n"
+         "\tUbuntu 22.04 LTS (jammy with EoS June 2027)\n"
+         "\tUbuntu 24.04 LTS (noble with EoS June 2029)\n"
+         "\tDebian 11 (bullseye) or later"))
     sys.exit(1)
 
 
 def check_architecture():
   architecture = subprocess.check_output(["uname", "-m"]).decode().strip()
   if architecture not in ["i686", "x86_64", 'aarch64']:
-    print("Only x86 and ARM64 architectures are currently supported",
-          file=sys.stderr)
+    logger.error("Only x86 and ARM64 architectures are currently supported")
     sys.exit(1)
 
 
 def check_root():
   if os.geteuid() != 0:
-    print("Running as non-root user.", file=sys.stderr)
-    print("You might have to enter your password one or more times for 'sudo'.",
-          file=sys.stderr)
-    print(file=sys.stderr)
+    logger.info("Running as non-root user.")
+    logger.info(
+        "You might have to enter your password one or more times for 'sudo'.\n")
 
 
 def apt_update(options):
@@ -463,9 +465,9 @@ def lib_list():
 
 def lib32_list(options):
   if not options.lib32:
-    print("Skipping 32-bit libraries.", file=sys.stderr)
+    logger.info("Skipping 32-bit libraries.")
     return []
-  print("Including 32-bit libraries.", file=sys.stderr)
+  logger.info("Including 32-bit libraries.")
 
   packages = [
       # 32-bit libraries needed for a 32-bit build
@@ -524,9 +526,9 @@ def lib32_list(options):
 # added here.
 def backwards_compatible_list(options):
   if not options.backwards_compatible:
-    print("Skipping backwards compatible packages.", file=sys.stderr)
+    logger.info("Skipping backwards compatible packages.")
     return []
-  print("Including backwards compatible packages.", file=sys.stderr)
+  logger.info("Including backwards compatible packages.")
 
   packages = [
       "7za",
@@ -687,9 +689,9 @@ def backwards_compatible_list(options):
 
 def arm_list(options):
   if not options.arm:
-    print("Skipping ARM cross toolchain.", file=sys.stderr)
+    logger.info("Skipping ARM cross toolchain.")
     return []
-  print("Including ARM cross toolchain.", file=sys.stderr)
+  logger.info("Including ARM cross toolchain.")
 
   # arm cross toolchain packages needed to build chrome on armhf
   packages = [
@@ -739,9 +741,9 @@ def dbg_package_name(package):
 
 def dbg_list(options):
   if not options.syms:
-    print("Skipping debugging symbols.", file=sys.stderr)
+    logger.info("Skipping debugging symbols.")
     return []
-  print("Including debugging symbols.", file=sys.stderr)
+  logger.info("Including debugging symbols.")
 
   packages = [
       dbg_package for package in lib_list()
@@ -814,25 +816,23 @@ def quick_check(options):
       unknown.append(p)
 
   if not_installed:
-    print("WARNING: The following packages are not installed:", file=sys.stderr)
-    print(" ".join(not_installed), file=sys.stderr)
+    logger.warning("The following packages are not installed:")
+    logger.warning(" ".join(not_installed))
 
   if unknown:
-    print("WARNING: The following packages are unknown to your system",
-          file=sys.stderr)
-    print("(maybe missing a repo or need to 'sudo apt-get update'):",
-          file=sys.stderr)
-    print(" ".join(unknown), file=sys.stderr)
+    logger.error("The following packages are unknown to your system")
+    logger.error("(maybe missing a repo or need to `sudo apt-get update`):")
+    logger.error(" ".join(unknown))
 
   sys.exit(1)
 
 
 def find_missing_packages(options):
-  print("Finding missing packages...", file=sys.stderr)
+  logger.info("Finding missing packages...")
 
   packages = package_list(options)
-  packages_str = " ".join(packages)
-  print("Packages required: " + packages_str, file=sys.stderr)
+  packages_str = "\n  ".join(packages)
+  logger.info("Packages required:\n  " + packages_str)
 
   query_cmd = ["apt-get", "--just-print", "install"] + packages
   env = os.environ.copy()
@@ -864,20 +864,17 @@ def install_packages(options):
     if packages:
       quiet = ["-qq", "--assume-yes"] if options.no_prompt else []
       subprocess.check_call(["sudo", "apt-get", "install"] + quiet + packages)
-      print(file=sys.stderr)
+      logger.info("")
     else:
-      print("No missing packages, and the packages are up to date.",
-            file=sys.stderr)
+      logger.info("No missing packages, and the packages are up to date.")
 
   except subprocess.CalledProcessError as e:
     # An apt-get exit status of 100 indicates that a real error has occurred.
-    print("`apt-get --just-print install ...` failed", file=sys.stderr)
+    logger.error("`apt-get --just-print install ...` failed")
     if e.stdout is not None:
-      print("It produced the following output:", file=sys.stderr)
-      print(e.stdout, file=sys.stderr)
-    print("You will have to install the above packages yourself.",
-          file=sys.stderr)
-    print(file=sys.stderr)
+      logger.error("It produced the following output:\n")
+      logger.error(e.stdout.decode("utf-8"))
+    logger.error("You will have to install the above packages yourself.\n")
     sys.exit(100)
 
 
@@ -885,9 +882,9 @@ def install_packages(options):
 # apt-get, since install-chromeos-fonts depends on curl.
 def install_chromeos_fonts(options):
   if not options.chromeos_fonts:
-    print("Skipping installation of Chrome OS fonts.", file=sys.stderr)
+    logger.info("Skipping installation of Chrome OS fonts.")
     return
-  print("Installing Chrome OS fonts.", file=sys.stderr)
+  logger.info("Installing Chrome OS fonts.")
 
   dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -896,28 +893,25 @@ def install_chromeos_fonts(options):
         ["sudo",
          os.path.join(dir, "linux", "install-chromeos-fonts.py")])
   except subprocess.CalledProcessError:
-    print("ERROR: The installation of the Chrome OS default fonts failed.",
-          file=sys.stderr)
+    logger.error("The installation of the Chrome OS default fonts failed.")
     if (subprocess.check_output(
         ["stat", "-f", "-c", "%T", dir], ).decode().startswith("nfs")):
-      print(
-          "The reason is that your repo is installed on a remote file system.",
-          file=sys.stderr)
+      logger.error(
+          "The reason is that your repo is installed on a remote file system.")
     else:
-      print(
-          "This is expected if your repo is installed on a remote file system.",
-          file=sys.stderr)
+      logger.info(
+          "This is expected if your repo is installed on a remote file system.")
 
-    print("It is recommended to install your repo on a local file system.",
-          file=sys.stderr)
-    print("You can skip the installation of the Chrome OS default fonts with",
-          file=sys.stderr)
-    print("the command line option: --no-chromeos-fonts.", file=sys.stderr)
+    logger.info(
+        "It is recommended to install your repo on a local file system.")
+    logger.info(
+        "You can skip the installation of the Chrome OS default fonts with")
+    logger.info("the command line option: --no-chromeos-fonts.")
     sys.exit(1)
 
 
 def install_locales():
-  print("Installing locales.", file=sys.stderr)
+  logger.info("Installing locales.")
   CHROMIUM_LOCALES = [
       "da_DK.UTF-8", "en_US.UTF-8", "fr_FR.UTF-8", "he_IL.UTF-8", "zh_TW.UTF-8"
   ]
@@ -934,7 +928,7 @@ def install_locales():
     if locale_gen != old_locale_gen:
       subprocess.check_call(["sudo", "locale-gen"])
     else:
-      print("Locales already up-to-date.", file=sys.stderr)
+      logger.info("Locales already up-to-date.")
   else:
     for locale in CHROMIUM_LOCALES:
       subprocess.check_call(["sudo", "locale-gen", locale])
