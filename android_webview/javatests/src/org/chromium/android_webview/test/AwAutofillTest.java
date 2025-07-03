@@ -62,6 +62,7 @@ import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.autofill.AutofillProviderTestHelper;
 import org.chromium.components.autofill.AutofillProviderUMA;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.TestViewStructure;
 import org.chromium.components.autofill_public.ViewType;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -2043,7 +2044,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                                             true)
                                     .build();
                         });
-        mUMATestHelper.simulateServerPredictionBeforeTriggeringAutofill(/*USERNAME*/ 86);
+        mUMATestHelper.simulateServerPredictionBeforeTriggeringAutofill(FieldType.USERNAME);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     histograms.assertExpected();
@@ -2070,7 +2071,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
-        mUMATestHelper.simulateServerPrediction(/*NO_SERVER_DATA*/ 0);
+        mUMATestHelper.simulateServerPrediction(FieldType.NO_SERVER_DATA);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     histograms.assertExpected();
@@ -2625,8 +2626,12 @@ public class AwAutofillTest extends AwParameterizedTest {
                                         mAwContents.getWebContents(),
                                         new String[] {"text1", "text2"},
                                         new int[][] {
-                                            {86 /* USERNAME */, 9 /* EMAIL_ADDRESS */,},
-                                            {9 /* EMAIL_ADDRESS */,}
+                                            {
+                                                FieldType.USERNAME, FieldType.EMAIL_ADDRESS,
+                                            },
+                                            {
+                                                FieldType.EMAIL_ADDRESS,
+                                            }
                                         }));
 
         int cnt = 0;
@@ -2707,13 +2712,13 @@ public class AwAutofillTest extends AwParameterizedTest {
                                         mAwContents.getWebContents(),
                                         new String[] {"name", "num", "exp", "csc"},
                                         new int[][] {
-                                            {51 /* CREDIT_CARD_NAME_FULL */},
-                                            {52 /*CREDIT_CARD_NUMBER*/},
+                                            {FieldType.CREDIT_CARD_NAME_FULL},
+                                            {FieldType.CREDIT_CARD_NUMBER},
                                             {
-                                                56 /*CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR*/,
-                                                57 /*CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR*/,
+                                                FieldType.CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                                FieldType.CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
                                             },
-                                            {59 /*CREDIT_CARD_VERIFICATION_CODE*/}
+                                            {FieldType.CREDIT_CARD_VERIFICATION_CODE}
                                         }));
 
         int cnt = 0;
@@ -2820,7 +2825,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                                 .simulateMainFrameAutofillServerResponseForTesting(
                                         mAwContents.getWebContents(),
                                         new String[] {"text1", "text2"},
-                                        new int[] {86 /* USERNAME */, 9 /* EMAIL_ADDRESS */}));
+                                        new int[] {FieldType.USERNAME, FieldType.EMAIL_ADDRESS}));
 
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
@@ -2948,8 +2953,8 @@ public class AwAutofillTest extends AwParameterizedTest {
                                         mAwContents.getWebContents(),
                                         new String[] {"text1", "text2"},
                                         new int[][] {
-                                            {86 /* USERNAME */, 9 /* EMAIL_ADDRESS */},
-                                            {9 /* EMAIL_ADDRESS */}
+                                            {FieldType.USERNAME, FieldType.EMAIL_ADDRESS},
+                                            {FieldType.EMAIL_ADDRESS}
                                         }));
 
         cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_PREDICTIONS_AVAILABLE});
@@ -3041,7 +3046,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                                 .simulateMainFrameAutofillServerResponseForTesting(
                                         mAwContents.getWebContents(),
                                         new String[] {"text1", "text2"},
-                                        new int[] {86 /* USERNAME */, 9 /* EMAIL_ADDRESS */}));
+                                        new int[] {FieldType.USERNAME, FieldType.EMAIL_ADDRESS}));
 
         cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_PREDICTIONS_AVAILABLE});
         assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
@@ -3125,8 +3130,8 @@ public class AwAutofillTest extends AwParameterizedTest {
                                         mAwContents.getWebContents(),
                                         new String[] {"text1", "text2"},
                                         new int[][] {
-                                            {86 /* USERNAME */, 9 /* EMAIL_ADDRESS */},
-                                            {9 /* EMAIL_ADDRESS */}
+                                            {FieldType.USERNAME, FieldType.EMAIL_ADDRESS},
+                                            {FieldType.EMAIL_ADDRESS}
                                         }));
 
         cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_PREDICTIONS_AVAILABLE});
