@@ -65,6 +65,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.VersioningMessageController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,6 +114,7 @@ public class ArchivedTabModelOrchestratorTest {
     @Mock private TabPersistentStore mNormalTabPersistentStore;
     @Mock private TabModelSelectorBase mTabModelSelector;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private VersioningMessageController mVersioningMessageController;
 
     private Profile mProfile;
     private FakeDeferredStartupHandler mDeferredStartupHandler;
@@ -127,6 +129,8 @@ public class ArchivedTabModelOrchestratorTest {
     public void setUp() throws Exception {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        when(mTabGroupSyncService.getVersioningMessageController())
+                .thenReturn(mVersioningMessageController);
 
         mDeferredStartupHandler = new FakeDeferredStartupHandler();
         DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);

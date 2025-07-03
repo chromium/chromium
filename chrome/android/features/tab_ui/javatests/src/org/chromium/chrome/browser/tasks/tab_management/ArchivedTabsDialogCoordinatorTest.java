@@ -91,6 +91,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
+import org.chromium.components.tab_group_sync.VersioningMessageController;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -127,6 +128,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private VersioningMessageController mVersioningMessageController;
 
     @Captor ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncServiceObserverCaptor;
 
@@ -150,6 +152,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         doNothing()
                 .when(mTabGroupSyncService)
                 .addObserver(mTabGroupSyncServiceObserverCaptor.capture());
+        when(mTabGroupSyncService.getVersioningMessageController())
+                .thenReturn(mVersioningMessageController);
 
         mInitialPage = mCtaTestRule.startOnBlankPage();
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
