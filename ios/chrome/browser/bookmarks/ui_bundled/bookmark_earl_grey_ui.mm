@@ -305,9 +305,9 @@ id<GREYMatcher> SearchIconButton() {
       performAction:grey_tap()];
 
   // Tap on Open All.
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(buttonLabelId)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     buttonLabelId)] performAction:grey_tap()];
 }
 
 - (void)verifyContextMenuForSingleURLWithEditEnabled:(BOOL)editEnabled {
