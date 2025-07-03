@@ -683,9 +683,7 @@ public abstract class BrowserServicesIntentDataProvider {
         return ACTIVITY_SIDE_SHEET_POSITION_END;
     }
 
-    // TODO(crbug.com/422968546): Update java doc once the flag is removed from the method
-    // implementation.
-    /** Return whether calling package should be allowed to present an interactive Omnibox. */
+    /** Return whether omnibox is allowed to be displayed in the CCT. */
     public boolean isInteractiveOmniboxAllowed() {
         return false;
     }

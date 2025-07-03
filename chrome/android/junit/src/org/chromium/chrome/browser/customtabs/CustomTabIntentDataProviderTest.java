@@ -1224,7 +1224,7 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void searchInCct_originValidation() {
+    public void isInteractiveOmniboxEnabled_originValidation() {
         ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting(
                 "com.a.b.c|org.d.e.f");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -1234,20 +1234,19 @@ public class CustomTabIntentDataProviderTest {
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
-        assertTrue(dataProvider.isInteractiveOmniboxAllowed());
+        assertTrue(dataProvider.isInteractiveOmniboxEnabled());
 
         when(connection.getClientPackageNameForSession(any())).thenReturn("org.d.e.f");
-        assertTrue(dataProvider.isInteractiveOmniboxAllowed());
+        assertTrue(dataProvider.isInteractiveOmniboxEnabled());
 
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.d.e.f");
-        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+        assertFalse(dataProvider.isInteractiveOmniboxEnabled());
     }
 
     @Test
     @DisableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void searchInCct_allowedPackagesRejectedWithFeatureDisabled() {
-        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting(
-                "com.a.b.c|org.d.e.f");
+    public void isInteractiveOmniboxEnabled_featureDisabled() {
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
 
@@ -1255,19 +1254,11 @@ public class CustomTabIntentDataProviderTest {
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
-        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
-
-        when(connection.getClientPackageNameForSession(any())).thenReturn("org.d.e.f");
-        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
-
-        when(connection.getClientPackageNameForSession(any())).thenReturn("com.d.e.f");
-        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+        assertFalse(dataProvider.isInteractiveOmniboxEnabled());
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void searchInCct_notAllowedInOffTheRecordMode() {
-        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
 
@@ -1276,14 +1267,11 @@ public class CustomTabIntentDataProviderTest {
                 spy(new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT));
         when(dataProvider.isOffTheRecord()).thenReturn(true);
 
-        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
         assertFalse(dataProvider.isInteractiveOmniboxAllowed());
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void searchInCct_notAllowedOnPartialCcts() {
-        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
 
@@ -1292,18 +1280,29 @@ public class CustomTabIntentDataProviderTest {
                 spy(new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT));
         when(dataProvider.isPartialCustomTab()).thenReturn(true);
 
-        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
         assertFalse(dataProvider.isInteractiveOmniboxAllowed());
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void searchInCct_notAllowedOnAutomotive() {
         var shadowPkgMgr = Shadows.shadowOf(mContext.getPackageManager());
         shadowPkgMgr.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
         assertTrue(BuildInfo.getInstance().isAutomotive);
 
-        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void isInteractiveOmniboxEnabled_featureDisabled_returnsFalse() {
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting(
+                "com.a.b.c|org.d.e.f");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
 
@@ -1311,7 +1310,44 @@ public class CustomTabIntentDataProviderTest {
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
-        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+        assertFalse(dataProvider.isInteractiveOmniboxEnabled());
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("org.d.e.f");
+        assertFalse(dataProvider.isInteractiveOmniboxEnabled());
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.d.e.f");
+        assertFalse(dataProvider.isInteractiveOmniboxEnabled());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void isInteractiveOmniboxEnabled_featureEnabled_returnsTrue() {
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting(
+                "com.a.b.c|org.d.e.f");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        assertTrue(dataProvider.isInteractiveOmniboxEnabled());
+
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void isInteractiveOmniboxEnabled_packageNotAllowed_returnsFalse() {
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting(
+                "com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.d.e.f");
+        assertFalse(dataProvider.isInteractiveOmniboxEnabled());
     }
 
     @Test
