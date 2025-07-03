@@ -8,9 +8,9 @@
 
 #include <string>
 
-namespace mojo {
-namespace test {
-namespace binder_map_unittest {
+#include "mojo/public/cpp/bindings/tests/binder_map_unittest.test-mojom.h"
+
+namespace mojo::test::binder_map_unittest {
 
 void NonStaticString() {
   {
@@ -27,6 +27,15 @@ void NonStaticString() {
   }
 }
 
-}  // namespace binder_map_unittest
-}  // namespace test
-}  // namespace mojo
+void AddCapturingLambda() {
+  BinderMap map;
+  int captured = 42;
+
+  map.Add<mojom::TestInterface1>(  // expected-error {{no matching member function for call to 'Add'}}
+    [&captured](PendingReceiver<mojom::TestInterface1> receiver) {
+      captured++;
+    }
+  );
+}
+
+}  // namespace mojo::test::binder_map_unittest
