@@ -100,14 +100,21 @@ class GraphBuilderOrt {
   std::string CreateInitializer(base::span<const int64_t> shape,
                                 base::span<const DataType> data);
 
-  // A helper method wrapping the `CreateInitializer` above. It creates a
+  // A helper method wrapping the `CreateInitializer` method above. It adds a
   // scalar initializer with the given scalar value (tensor of empty shape) to
   // the graph, returning the name of the initializer.
   template <typename DataType>
     requires internal::IsSupportedTensorType<DataType>
   std::string CreateScalarInitializer(const DataType& value);
 
-  // A helper method wrapping the `CreateInitializer` above. It creates a 1D
+  // A helper method wrapping the `CreateInitializer` method above. It adds a
+  // 1D initializer with the given data (tensor of shape [data.size()]) to the
+  // graph, returning the name of the initializer.
+  template <typename DataType>
+    requires internal::IsSupportedTensorType<DataType>
+  std::string Create1DInitializer(base::span<const DataType> data);
+
+  // A helper method wrapping the `CreateInitializer` method above. It adds a 1D
   // int64 initializer with the given uint32 array (shape is [array.size()]) to
   // the graph, returning the name of the initializer.
   std::string CreateInt64InitializerForUint32Array(
@@ -129,6 +136,14 @@ class GraphBuilderOrt {
                      base::span<const uint32_t> shape);
   std::string CreateExpandNode(base::cstring_view input,
                                base::span<const uint32_t> shape);
+
+  void AddSliceNode(base::cstring_view node_name,
+                    base::cstring_view input,
+                    base::cstring_view output,
+                    base::span<const int64_t> axes_value,
+                    base::span<const int64_t> starts_value,
+                    base::span<const int64_t> ends_value,
+                    base::span<const int64_t> steps_value);
 
   // Clamp the indices to the range [-dim_size, dim_size), the given data type
   // should be indices's data type.
@@ -170,9 +185,11 @@ class GraphBuilderOrt {
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
   void AddPreluOperation(const mojom::Prelu& prelu);
   void AddReshapeOperation(const mojom::Reshape& reshape);
+  void AddReverseOperation(const mojom::Reverse& reverse);
   void AddScatterElementsOperation(
       const mojom::ScatterElements& scatter_elements);
   void AddScatterNDOperation(const mojom::ScatterND& scatter_nd);
+  void AddSliceOperation(const mojom::Slice& slice);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
   void AddSplitOperation(const mojom::Split& split);
   void AddTileOperation(const mojom::Tile& tile);

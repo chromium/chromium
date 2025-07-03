@@ -190,7 +190,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        // https://github.com/microsoft/onnxruntime/issues/24285
        /*reshape_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*reverse_input=*/{},
+       /*reverse_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*scatter_elements_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
        /*scatter_elements_indices=*/
@@ -202,7 +203,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*scatter_nd_updates=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*slice_input=*/{},
+       /*slice_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*softplus_input=*/{},
        /*softsign_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},

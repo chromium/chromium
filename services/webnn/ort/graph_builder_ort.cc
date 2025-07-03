@@ -5,6 +5,7 @@
 #include "services/webnn/ort/graph_builder_ort.h"
 
 #include <array>
+#include <numeric>
 
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -79,6 +80,7 @@ constexpr base::cstring_view kOpTypeReshape = "Reshape";
 constexpr base::cstring_view kOpTypeScatterElements = "ScatterElements";
 constexpr base::cstring_view kOpTypeScatterND = "ScatterND";
 constexpr base::cstring_view kOpTypeSigmoid = "Sigmoid";
+constexpr base::cstring_view kOpTypeSlice = "Slice";
 constexpr base::cstring_view kOpTypeSoftmax = "Softmax";
 constexpr base::cstring_view kOpTypeSoftsign = "Softsign";
 constexpr base::cstring_view kOpTypeSplit = "Split";
@@ -257,6 +259,14 @@ std::string GraphBuilderOrt::CreateScalarInitializer(const DataType& value) {
       /*shape=*/{}, base::span_from_ref(value));
 }
 
+template <typename DataType>
+  requires internal::IsSupportedTensorType<DataType>
+std::string GraphBuilderOrt::Create1DInitializer(
+    base::span<const DataType> data) {
+  std::array<int64_t, 1> shape = {base::checked_cast<int64_t>(data.size())};
+  return CreateInitializer<DataType>(shape, data);
+}
+
 std::string GraphBuilderOrt::CreateInt64InitializerForUint32Array(
     base::span<const uint32_t> array) {
   std::array<int64_t, 1> array_dims = {
@@ -318,6 +328,27 @@ std::string GraphBuilderOrt::CreateExpandNode(
 
   AddExpandNode(node_name, input, output, shape);
   return output;
+}
+
+void GraphBuilderOrt::AddSliceNode(base::cstring_view node_name,
+                                   base::cstring_view input,
+                                   base::cstring_view output,
+                                   base::span<const int64_t> axes_value,
+                                   base::span<const int64_t> starts_value,
+                                   base::span<const int64_t> ends_value,
+                                   base::span<const int64_t> steps_value) {
+  // ONNX `Slice` op's `axes`, `starts`， `ends` and `steps` are operands of
+  // data type int64 rather than attributes.
+  const std::string axes = Create1DInitializer<int64_t>(axes_value);
+  const std::string starts = Create1DInitializer<int64_t>(starts_value);
+  const std::string ends = Create1DInitializer<int64_t>(ends_value);
+  const std::string steps = Create1DInitializer<int64_t>(steps_value);
+
+  std::array<const char*, 5> inputs = {
+      input.c_str(), starts.c_str(), ends.c_str(), axes.c_str(), steps.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeSlice, node_name, inputs, outputs);
 }
 
 std::string GraphBuilderOrt::ClampIndices(base::cstring_view indices,
@@ -1190,6 +1221,31 @@ void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   model_editor_.AddNode(kOpTypeReshape, node_name, inputs, outputs);
 }
 
+void GraphBuilderOrt::AddReverseOperation(const mojom::Reverse& reverse) {
+  const std::string node_name = GenerateNodeName(reverse.label);
+  const std::string input = GetOperandNameById(reverse.input_operand_id);
+  const std::string output = GetOperandNameById(reverse.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.reverse_input.Supports(
+      GetOperand(reverse.input_operand_id).descriptor));
+
+  // Axes can be empty, which means no dimensions are reversed.
+  base::FixedArray<int64_t> axes(reverse.axes.begin(), reverse.axes.end());
+  size_t axes_size = axes.size();
+
+  // Emulate reverse operation using backward slice with negative steps.
+  // For each axis to be reversed:
+  // - start = -1 (last element)
+  // - end = min_int64 (goes to the beginning)
+  // - step = -1 (backward direction)
+  base::FixedArray<int64_t> starts(axes_size, -1);
+  base::FixedArray<int64_t> ends(axes_size,
+                                 std::numeric_limits<int64_t>::min());
+  base::FixedArray<int64_t> steps(axes_size, -1);
+
+  return AddSliceNode(node_name, input, output, axes, starts, ends, steps);
+}
+
 void GraphBuilderOrt::AddScatterElementsOperation(
     const mojom::ScatterElements& scatter_elements) {
   const std::string node_name = GenerateNodeName(scatter_elements.label);
@@ -1269,6 +1325,32 @@ void GraphBuilderOrt::AddScatterNDOperation(
   std::array<const char*, 1> outputs = {output.c_str()};
 
   model_editor_.AddNode(kOpTypeScatterND, node_name, inputs, outputs);
+}
+
+void GraphBuilderOrt::AddSliceOperation(const mojom::Slice& slice) {
+  const std::string node_name = GenerateNodeName(slice.label);
+  const std::string input = GetOperandNameById(slice.input_operand_id);
+  const std::string output = GetOperandNameById(slice.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.slice_input.Supports(
+      GetOperand(slice.input_operand_id).descriptor));
+
+  base::FixedArray<int64_t> starts(slice.ranges.size());
+  base::FixedArray<int64_t> ends(slice.ranges.size());
+  base::FixedArray<int64_t> steps(slice.ranges.size());
+  for (size_t i = 0; i < slice.ranges.size(); ++i) {
+    starts[i] = base::checked_cast<int64_t>(slice.ranges[i].start);
+    ends[i] = base::checked_cast<int64_t>(slice.ranges[i].start +
+                                          slice.ranges[i].size);
+    steps[i] = base::checked_cast<int64_t>(slice.ranges[i].stride);
+  }
+
+  // Explicitly provide axes to avoid validation failure of DirectML EP.
+  // https://github.com/microsoft/onnxruntime/issues/25252
+  base::FixedArray<int64_t> axes(slice.ranges.size());
+  std::iota(axes.begin(), axes.end(), 0);
+
+  AddSliceNode(node_name, input, output, axes, starts, ends, steps);
 }
 
 void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
@@ -1499,12 +1581,20 @@ GraphBuilderOrt::BuildModel() {
         AddReshapeOperation(*operation->get_reshape());
         break;
       }
+      case mojom::Operation::Tag::kReverse: {
+        AddReverseOperation(*operation->get_reverse());
+        break;
+      }
       case mojom::Operation::Tag::kScatterElements: {
         AddScatterElementsOperation(*operation->get_scatter_elements());
         break;
       }
       case mojom::Operation::Tag::kScatterNd: {
         AddScatterNDOperation(*operation->get_scatter_nd());
+        break;
+      }
+      case mojom::Operation::Tag::kSlice: {
+        AddSliceOperation(*operation->get_slice());
         break;
       }
       case mojom::Operation::Tag::kSigmoid: {
@@ -1559,8 +1649,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kResample2d:
-      case mojom::Operation::Tag::kReverse:
-      case mojom::Operation::Tag::kSlice:
       case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kTriangular:
       case mojom::Operation::Tag::kWhere:
