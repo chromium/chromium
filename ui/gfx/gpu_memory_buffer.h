@@ -6,6 +6,7 @@
 #define UI_GFX_GPU_MEMORY_BUFFER_H_
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_types.h"
@@ -45,6 +46,10 @@ class COMPONENT_EXPORT(GFX) GpuMemoryBuffer {
   // Returns a pointer to the memory address of a plane. Buffer must have been
   // successfully mapped using a call to Map() before calling this function.
   virtual void* memory(size_t plane) = 0;
+
+  // Returns a span pointing to the plane's memory. The buffer must have been
+  // successfully mapped using a call to Map() before calling this function.
+  virtual base::span<uint8_t> memory_span(size_t plane);
 
   // Unmaps the buffer. It's illegal to use any pointer returned by memory()
   // after this has been called.

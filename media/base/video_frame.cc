@@ -1942,6 +1942,12 @@ uint8_t* VideoFrame::ScopedMapping::Memory(uint32_t plane_index) {
           : scoped_mapping_->GetMemoryForPlane(plane_index).data());
 }
 
+base::span<uint8_t> VideoFrame::ScopedMapping::GetMemoryAsSpan(
+    uint32_t plane_index) {
+  return gpu_memory_buffer_ ? gpu_memory_buffer_->memory_span(plane_index)
+                            : scoped_mapping_->GetMemoryForPlane(plane_index);
+}
+
 size_t VideoFrame::ScopedMapping::Stride(uint32_t plane_index) {
   return gpu_memory_buffer_ ? base::checked_cast<size_t>(
                                   gpu_memory_buffer_->stride(plane_index))

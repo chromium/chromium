@@ -132,6 +132,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     // Returns a pointer to the beginning of the plane.
     uint8_t* Memory(uint32_t plane_index);
 
+    // Returns a span pointing to the plane's memory.
+    base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index);
+
     // Returns plane stride.
     size_t Stride(uint32_t plane_index);
 

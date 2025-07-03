@@ -194,15 +194,15 @@ void ProcessAsyncMappingResult(
   }
 
   const size_t num_planes = VideoFrame::NumPlanes(video_frame->format());
-  std::array<uint8_t*, VideoFrame::kMaxPlanes> plane_addrs = {};
+  std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> planes = {};
   for (size_t i = 0; i < num_planes; i++) {
-    plane_addrs[i] = scoped_mapping->Memory(i);
+    planes[i] = scoped_mapping->GetMemoryAsSpan(i);
   }
 
   auto mapped_frame = VideoFrame::WrapExternalYuvDataWithLayout(
       video_frame->layout(), video_frame->visible_rect(),
-      video_frame->natural_size(), plane_addrs[0], plane_addrs[1],
-      plane_addrs[2], video_frame->timestamp());
+      video_frame->natural_size(), planes[0], planes[1], planes[2],
+      video_frame->timestamp());
 
   if (!mapped_frame) {
     std::move(result_cb).Run(nullptr);
@@ -568,14 +568,14 @@ scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
   }
 
   const size_t num_planes = VideoFrame::NumPlanes(video_frame->format());
-  std::array<uint8_t*, VideoFrame::kMaxPlanes> plane_addrs = {};
+  std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> planes = {};
   for (size_t i = 0; i < num_planes; i++)
-    plane_addrs[i] = scoped_mapping->Memory(i);
+    planes[i] = scoped_mapping->GetMemoryAsSpan(i);
 
   auto mapped_frame = VideoFrame::WrapExternalYuvDataWithLayout(
       video_frame->layout(), video_frame->visible_rect(),
-      video_frame->natural_size(), plane_addrs[0], plane_addrs[1],
-      plane_addrs[2], video_frame->timestamp());
+      video_frame->natural_size(), planes[0], planes[1], planes[2],
+      video_frame->timestamp());
 
   if (!mapped_frame) {
     return nullptr;
