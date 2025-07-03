@@ -857,9 +857,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::INTERRUPTED);
 }
 
-// TODO(crbug.com/414822762): Fix flaky test.
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
-                       DISABLED_DlpAndMalwareViolations) {
+                       DlpAndMalwareViolations) {
   // This allows the blocking DM token reads happening on profile-Connector
   // triggers.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -932,8 +931,6 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       /*scan_id*/ last_request().request_token());
   WaitForDownloadToFinish();
 
-  run_loop.Run();
-
   // The file should be blocked.
   ASSERT_EQ(download_items().size(), 1u);
   download::DownloadItem* item = *download_items().begin();
@@ -949,6 +946,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
                                 true, 1);
   histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.MalwareResult",
                                 true, 1);
+  run_loop.Run();
 }
 
 class DownloadRestrictionsDeepScanningBrowserTest
