@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
 import("//skia/features.gni")
 import("//ui/gl/features.gni")
 
@@ -99,6 +100,9 @@ source_set("client_sources") {
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
   ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 source_set("gles2_cmd_helper_sources") {

@@ -27,7 +27,7 @@
 
 namespace gpu {
 
-class GpuMemoryBufferSupport;
+class ClientSharedImage;
 
 // Implementation of GPU memory buffer based on dxgi textures.
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
@@ -83,7 +83,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
   const gfx::DXGIHandleToken& GetToken() const;
 
  private:
-  friend GpuMemoryBufferSupport;
+  friend ClientSharedImage;
 
   static std::unique_ptr<GpuMemoryBufferImplDXGI> CreateFromHandle(
       gfx::GpuMemoryBufferHandle handle,

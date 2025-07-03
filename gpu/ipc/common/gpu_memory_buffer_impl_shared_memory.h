@@ -14,7 +14,7 @@
 
 namespace gpu {
 
-class GpuMemoryBufferSupport;
+class ClientSharedImage;
 
 // Implementation of GPU memory buffer based on shared memory.
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
@@ -72,7 +72,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
  private:
-  friend class GpuMemoryBufferSupport;
+  friend class ClientSharedImage;
 
   static std::unique_ptr<GpuMemoryBufferImplSharedMemory> CreateFromHandle(
       gfx::GpuMemoryBufferHandle handle,

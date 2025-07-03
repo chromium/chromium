@@ -16,18 +16,8 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
-#endif
-
 #if BUILDFLAG(IS_OZONE)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
-#include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -54,11 +44,7 @@ gfx::GpuMemoryBufferType GetNativeGpuMemoryBufferType() {
 
 }  // namespace
 
-GpuMemoryBufferSupport::GpuMemoryBufferSupport() {
-#if BUILDFLAG(IS_OZONE)
-  client_native_pixmap_factory_ = ui::CreateClientNativePixmapFactoryOzone();
-#endif
-}
+GpuMemoryBufferSupport::GpuMemoryBufferSupport() = default;
 
 GpuMemoryBufferSupport::~GpuMemoryBufferSupport() = default;
 
@@ -219,48 +205,6 @@ bool GpuMemoryBufferSupport::IsConfigurationSupportedForTest(
   }
 
   NOTREACHED();
-}
-
-std::unique_ptr<GpuMemoryBufferImpl>
-GpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
-    gfx::GpuMemoryBufferHandle handle,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    GpuMemoryBufferImpl::DestructionCallback callback,
-    GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback
-        copy_native_buffer_to_shmem_callback,
-    scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
-  switch (handle.type) {
-    case gfx::SHARED_MEMORY_BUFFER:
-      return GpuMemoryBufferImplSharedMemory::CreateFromHandle(
-          std::move(handle), size, format, usage, std::move(callback));
-#if BUILDFLAG(IS_MAC)
-    case gfx::IO_SURFACE_BUFFER:
-      return GpuMemoryBufferImplIOSurface::CreateFromHandle(
-          std::move(handle), size, format, usage, std::move(callback));
-#endif
-#if BUILDFLAG(IS_OZONE)
-    case gfx::NATIVE_PIXMAP:
-      return GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory_.get(), std::move(handle), size, format,
-          usage, std::move(callback));
-#endif
-#if BUILDFLAG(IS_WIN)
-    case gfx::DXGI_SHARED_HANDLE:
-      return GpuMemoryBufferImplDXGI::CreateFromHandle(
-          std::move(handle), size, format, usage, std::move(callback),
-          std::move(copy_native_buffer_to_shmem_callback), std::move(pool));
-#endif
-#if BUILDFLAG(IS_ANDROID)
-    case gfx::ANDROID_HARDWARE_BUFFER:
-      return nullptr;
-#endif
-    default:
-      // TODO(dcheng): Remove default case (https://crbug.com/676224).
-      NOTREACHED() << gfx::BufferFormatToString(format) << ", "
-                   << gfx::BufferUsageToString(usage);
-  }
 }
 
 }  // namespace gpu

@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/ipc/common/exported_shared_image.mojom-shared.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/color_space.h"
@@ -259,6 +260,18 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   friend class base::RefCountedThreadSafe<ClientSharedImage>;
   friend class SharedImageTexture;
   ~ClientSharedImage();
+
+  // static
+  std::unique_ptr<GpuMemoryBufferImpl> CreateGpuMemoryBufferImplFromHandle(
+      gfx::GpuMemoryBufferHandle handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      GpuMemoryBufferImpl::DestructionCallback callback,
+      GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback
+          copy_native_buffer_to_shmem_callback =
+              GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback(),
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
 
   // This constructor is used only when importing an owned ClientSharedImage,
   // which should only be done via implementations of

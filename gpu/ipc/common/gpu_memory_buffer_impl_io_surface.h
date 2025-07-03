@@ -18,7 +18,7 @@
 
 namespace gpu {
 
-class GpuMemoryBufferSupport;
+class ClientSharedImage;
 
 // Implementation of GPU memory buffer based on IO surfaces.
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
@@ -58,7 +58,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
  private:
-  friend GpuMemoryBufferSupport;
+  friend ClientSharedImage;
 
   static std::unique_ptr<GpuMemoryBufferImplIOSurface> CreateFromHandle(
       const gfx::GpuMemoryBufferHandle& handle,

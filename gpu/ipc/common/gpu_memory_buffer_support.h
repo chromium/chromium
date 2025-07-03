@@ -17,16 +17,9 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
-namespace gfx {
-class ClientNativePixmapFactory;
-}  // namespace gfx
-#endif
 
 namespace gpu {
 using GpuMemoryBufferConfigurationKey = gfx::BufferUsageAndFormat;
@@ -45,7 +38,6 @@ struct hash<gpu::GpuMemoryBufferConfigurationKey> {
 }  // namespace std
 
 namespace gpu {
-class ClientSharedImage;
 
 // Provides a common factory for GPU memory buffer implementations.
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
@@ -74,37 +66,10 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
                                        gfx::BufferUsage usage);
 
  private:
-  // ClientSharedImage is the only entity that should be creating GMBs via
-  // GpuMemoryBufferSupport.
-  friend class ClientSharedImage;
-
-  // Creates a GpuMemoryBufferImpl from the given |handle|. |size| and |format|
-  // should match what was used to allocate the |handle|. |callback|, if
-  // non-null, is called when instance is deleted, which is not necessarily on
-  // the same thread as this function was called on and instance was created on.
-  // |copy_native_buffer_to_shmem_callback| and |pool| are only needed if the
-  // created buffer is a windows DXGI buffer and it needs to be mapped at the
-  // consumer.
-  virtual std::unique_ptr<GpuMemoryBufferImpl>
-  CreateGpuMemoryBufferImplFromHandle(
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      GpuMemoryBufferImpl::DestructionCallback callback,
-      GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback
-          copy_native_buffer_to_shmem_callback =
-              GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback(),
-      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
-
   // Returns whether the provided buffer format is supported.
   static bool IsNativeGpuMemoryBufferConfigurationSupported(
       gfx::BufferFormat format,
       gfx::BufferUsage usage);
-
-#if BUILDFLAG(IS_OZONE)
-  std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
-#endif
 };
 
 }  // namespace gpu

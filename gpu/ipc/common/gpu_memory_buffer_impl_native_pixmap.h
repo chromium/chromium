@@ -30,7 +30,7 @@ class VaapiJpegEncodeAccelerator;
 
 namespace gpu {
 
-class GpuMemoryBufferSupport;
+class ClientSharedImage;
 
 // Implementation of GPU memory buffer based on Ozone native pixmap.
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
@@ -93,7 +93,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
   friend class arc::GpuArcVideoEncodeAccelerator;
   friend class media::V4L2JpegEncodeAccelerator;
   friend class media::VaapiJpegEncodeAccelerator;
-  friend class GpuMemoryBufferSupport;
+  friend class ClientSharedImage;
 
   static std::unique_ptr<GpuMemoryBufferImplNativePixmap> CreateFromHandle(
       gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
