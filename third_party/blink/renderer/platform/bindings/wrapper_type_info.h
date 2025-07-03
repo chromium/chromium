@@ -55,7 +55,9 @@ constexpr std::underlying_type_t<v8::CppHeapPointerTag>
     kScriptWrappableStartTag = 256;
 // LINT.ThenChange(third_party/blink/renderer/bindings/scripts/web_idl/idl_compiler.py:ScriptWrappableStartTag)
 
-constexpr v8::CppHeapPointerTagRange kScriptWrappableTagRange(
+// TODO(ahaas): We should define separate ranges here for ScriptWrappable-only
+// and for `ScriptWrappable` + `gin::Wrappable`.
+constexpr v8::CppHeapPointerTagRange kObjectWrapTagRange(
     static_cast<v8::CppHeapPointerTag>(kScriptWrappableStartTag),
     v8::CppHeapPointerTag::kLastTag);
 
@@ -186,13 +188,19 @@ inline ScriptWrappable* ToAnyScriptWrappable(
     v8::Isolate* isolate,
     const v8::TracedReference<v8::Object>& wrapper) {
   return v8::Object::Unwrap<ScriptWrappable>(isolate, wrapper,
-                                             kScriptWrappableTagRange);
+                                             kObjectWrapTagRange);
+}
+
+inline v8::Object::Wrappable* ToAnyWrappable(v8::Isolate* isolate,
+                                             v8::Local<v8::Object> wrapper) {
+  return v8::Object::Unwrap<v8::Object::Wrappable>(isolate, wrapper,
+                                                   kObjectWrapTagRange);
 }
 
 inline ScriptWrappable* ToAnyScriptWrappable(v8::Isolate* isolate,
                                              v8::Local<v8::Object> wrapper) {
   return v8::Object::Unwrap<ScriptWrappable>(isolate, wrapper,
-                                             kScriptWrappableTagRange);
+                                             kObjectWrapTagRange);
 }
 
 PLATFORM_EXPORT const WrapperTypeInfo* ToWrapperTypeInfo(

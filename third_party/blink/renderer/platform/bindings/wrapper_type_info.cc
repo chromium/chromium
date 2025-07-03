@@ -51,13 +51,19 @@ const WrapperTypeInfo* ToWrapperTypeInfo(const ScriptWrappable* wrappable) {
 }
 
 const WrapperTypeInfo* ToWrapperTypeInfo(v8::Local<v8::Object> wrapper) {
-  const auto* wrappable = ToAnyScriptWrappable(wrapper->GetIsolate(), wrapper);
+  const v8::Object::Wrappable* wrappable =
+      ToAnyWrappable(wrapper->GetIsolate(), wrapper);
   // It's either us or legacy embedders
   DCHECK(!wrappable || !WrapperTypeInfo::HasLegacyInternalFieldsSet(wrapper));
   if (!wrappable) {
     return nullptr;
   }
-  return ToWrapperTypeInfo(wrappable);
+  const v8::Object::WrapperTypeInfo* type_info =
+      wrappable->GetWrapperTypeInfo();
+  if (!type_info || type_info->type_id != gin::kEmbedderBlink) {
+    return nullptr;
+  }
+  return static_cast<const WrapperTypeInfo*>(type_info);
 }
 
 }  // namespace blink

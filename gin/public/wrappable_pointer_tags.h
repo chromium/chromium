@@ -20,13 +20,13 @@ namespace gin {
 enum WrappablePointerTag : uint16_t {
   // The type tags for gin::Wrappable start at the end of the value range to
   // avoid overlaps with the type tags of blink::ScriptWrappable.
-  kFirstTag = 0x7F80,
+  kFirstPointerTag = 0x7F80,
   kTestObject = 0x7F80,  // gin::MyObject
   kTestObject2,          // gin::MyObject2
-  kLastTag = kTestObject2
+  kLastPointerTag = kTestObject2
 };
 
-static_assert(kLastTag <
+static_assert(kLastPointerTag <
                   static_cast<uint16_t>(v8::CppHeapPointerTag::kZappedEntryTag),
               "The defined type tags exceed the range of allowed tags. Adjust "
               "the start value of this enum such that all values fit.");

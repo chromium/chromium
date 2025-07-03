@@ -77,7 +77,8 @@ v8::EmbedderGraph::Node::Detachedness V8GCController::DetachednessFromWrapper(
     void*) {
   const WrapperTypeInfo* wrapper_type_info =
       ToWrapperTypeInfo(v8_value.As<v8::Object>());
-  if (wrapper_type_info->wrapper_class_id != WrapperTypeInfo::kNodeClassId) {
+  if (!wrapper_type_info ||
+      wrapper_type_info->wrapper_class_id != WrapperTypeInfo::kNodeClassId) {
     return v8::EmbedderGraph::Node::Detachedness::kUnknown;
   }
   const auto& root_node = OpaqueRootForGC(
