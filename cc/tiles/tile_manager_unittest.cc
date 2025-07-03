@@ -3940,8 +3940,8 @@ TEST_F(HdrImageTileManagerTest, DecodeHdrImagesToSdrP3) {
 class TileManagerCheckRasterQueriesTest : public TileManagerTest {
  public:
   TileManagerCheckRasterQueriesTest()
-      : pending_raster_queries_(
-            viz::TestContextProvider::CreateWorker().get()) {}
+      : worker_context_provider_(viz::TestContextProvider::CreateWorker()),
+        pending_raster_queries_(worker_context_provider_.get()) {}
 
   void SetUp() override {
     TileManagerTest::SetUp();
@@ -3958,6 +3958,9 @@ class TileManagerCheckRasterQueriesTest : public TileManagerTest {
     MOCK_METHOD0(CheckRasterFinishedQueries, bool());
   };
 
+  // MockRasterQueryQueue holds onto a ptr to TestContextProvider, so member
+  // declaration order is important to avoid a dangling pointer.
+  scoped_refptr<viz::TestContextProvider> worker_context_provider_;
   MockRasterQueryQueue pending_raster_queries_;
 };
 
