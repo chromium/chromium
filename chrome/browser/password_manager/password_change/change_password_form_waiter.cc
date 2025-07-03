@@ -65,9 +65,10 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
     return;
   }
 
-  // Either confirmation password or the old password must be present in a
-  // change password form.
-  if (!parsed_form->confirmation_password_element_renderer_id &&
+  // If there are multiple fields, either confirmation password or the old
+  // password must be present in a change password form.
+  if (parsed_form->form_data.fields().size() > 1 &&
+      !parsed_form->confirmation_password_element_renderer_id &&
       !parsed_form->password_element_renderer_id) {
     return;
   }
