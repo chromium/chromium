@@ -8,11 +8,11 @@
 #if defined(COMPONENT_BUILD)
 #if defined(WIN32)
 
-#if defined(GPU_IMPLEMENTATION)
+#if defined(GPU_CONFIG_IMPLEMENTATION)
 #define GPU_CONFIG_EXPORT __declspec(dllexport)
 #else
 #define GPU_CONFIG_EXPORT __declspec(dllimport)
-#endif  // defined(GPU_IMPLEMENTATION)
+#endif  // defined(GPU_CONFIG_IMPLEMENTATION)
 
 #else  // defined(WIN32)
 #define GPU_CONFIG_EXPORT __attribute__((visibility("default")))

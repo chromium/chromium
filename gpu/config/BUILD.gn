@@ -13,14 +13,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-group("config") {
-  if (is_component_build) {
-    public_deps = [ "//gpu" ]
-  } else {
-    public_deps = [ ":config_sources" ]
-  }
-}
-
 process_json_outputs = [
   "$target_gen_dir/gpu_driver_bug_list_arrays_and_structs_autogen.h",
   "$target_gen_dir/gpu_driver_bug_list_autogen.cc",
@@ -87,10 +79,6 @@ action("workaround_list") {
   }
 }
 
-source_set("export") {
-  sources = [ "gpu_config_export.h" ]
-}
-
 source_set("webgpu_blocklist_impl") {
   sources = [
     "webgpu_blocklist_impl.cc",
@@ -102,16 +90,13 @@ source_set("webgpu_blocklist_impl") {
   public_deps = [ "//third_party/dawn/include/dawn:cpp_headers" ]
 }
 
-source_set("config_sources") {
-  # External code should depend on this via //gpu/config above rather than
-  # depending on this directly or the component build will break.
-  visibility = [ "//gpu/*" ]
-
+component("config") {
   sources = [
     "device_perf_info.cc",
     "device_perf_info.h",
     "gpu_blocklist.cc",
     "gpu_blocklist.h",
+    "gpu_config_export.h",
     "gpu_control_list.cc",
     "gpu_control_list.h",
     "gpu_crash_keys.cc",
@@ -156,12 +141,11 @@ source_set("config_sources") {
 
   sources += process_json_outputs
 
-  configs += [ "//gpu:gpu_implementation" ]
+  defines = [ "GPU_CONFIG_IMPLEMENTATION" ]
 
-  public_deps = [
-    ":export",
-    "//components/crash/core/common:crash_key",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//components/crash/core/common:crash_key" ]
 
   if (enable_vulkan) {
     public_deps += [ "//gpu/vulkan" ]

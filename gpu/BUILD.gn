@@ -45,10 +45,7 @@ config("webgpu_implementation") {
 component("gpu") {
   # Do not depend on this component directly, depend on relevant gpu/{config,ipc,command_buffer}/{client,common,service} targets.
   visibility = [ "//gpu/*" ]
-  public_deps = [
-    "//gpu/config:config_sources",
-    "//gpu/ipc/common:ipc_common_sources",
-  ]
+  public_deps = [ "//gpu/ipc/common:ipc_common_sources" ]
 }
 
 component("gles2") {

@@ -111,7 +111,10 @@ source_set("ipc_common_sources") {
       "gpu_memory_buffer_impl_dxgi.cc",
       "gpu_memory_buffer_impl_dxgi.h",
     ]
-    libs = [ "d3d11.lib" ]
+    libs = [
+      "d3d11.lib",
+      "dxguid.lib",
+    ]
   }
   if (use_ozone) {
     sources += [
@@ -145,7 +148,7 @@ source_set("ipc_common_sources") {
     "//base",
     "//components/viz/common:shared_image_format",
     "//gpu/command_buffer/common",
-    "//gpu/config:config_sources",
+    "//gpu/config",
     "//third_party/libyuv",
     "//ui/base",
     "//ui/gfx:color_space",
@@ -163,7 +166,10 @@ source_set("ipc_common_sources") {
       "gpu_memory_buffer_impl_io_surface.cc",
       "gpu_memory_buffer_impl_io_surface.h",
     ]
-    frameworks = [ "IOSurface.framework" ]
+    frameworks = [
+      "IOSurface.framework",
+      "CoreFoundation.framework",
+    ]
   }
 
   if (is_ios && target_platform == "iphoneos") {
@@ -444,7 +450,7 @@ mojom("interfaces") {
       traits_sources = [ "gpu_feature_info_mojom_traits.cc" ]
       traits_headers = [ "gpu_feature_info_mojom_traits.h" ]
       traits_public_deps = [
-        "//gpu/config:config_sources",
+        "//gpu/config",
         "//ui/gfx/geometry/mojom",
       ]
     },
@@ -490,7 +496,7 @@ mojom("interfaces") {
       traits_sources = [ "gpu_info_mojom_traits.cc" ]
       traits_headers = [ "gpu_info_mojom_traits.h" ]
       traits_public_deps = [
-        "//gpu/config:config_sources",
+        "//gpu/config",
         "//ui/gfx/geometry/mojom",
       ]
     },
@@ -687,7 +693,7 @@ mojom("interfaces") {
         traits_sources = [ "luid_mojom_traits.cc" ]
         traits_public_deps = [
           ":mojom_traits",
-          "//gpu/config:config_sources",
+          "//gpu/config",
         ]
       },
     ]
