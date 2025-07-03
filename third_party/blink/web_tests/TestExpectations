@@ -2781,7 +2781,6 @@ crbug.com/424798906 external/wpt/pointerevents/pointerevent_element_haspointerca
 # ====== New tests from wpt-importer added here ======
 crbug.com/429130580 [ Win10.20h2 ] external/wpt/mediacapture-fromelement/HTMLCanvasElement-captureStream-settings.tentative.html [ Pass Timeout ]
 crbug.com/429130580 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_parse_error-downgraded.tentative.html [ Crash ]
-crbug.com/429115411 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Timeout ]
 crbug.com/429112747 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/data-prefix-and-mask-size.https.window.html [ Skip Timeout ]
 crbug.com/429112747 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.html [ Skip Timeout ]
 crbug.com/429123936 [ Mac14 ] external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html [ Crash ]
@@ -9284,3 +9283,6 @@ crbug.com/427612820 external/wpt/soft-navigation-heuristics/load-classic-script-
 # Flaky soft-navigation-heuristics WPT test which was ported from LCP (under investigation)
 crbug.com/426391960 virtual/soft-navigation-heuristics-pre-paint-attribution/external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
 crbug.com/426391960 external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
+
+# Gardener 2025-07-03
+crbug.com/429394126 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure Timeout ]
