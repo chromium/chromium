@@ -1653,6 +1653,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
+    // TODO (http://crbug.com/422968546) Remove flag check and package name check once
+    // isInteractiveOmniboxEnabled is used in the implementation.
     public boolean isInteractiveOmniboxAllowed() {
         if (!ChromeFeatureList.sSearchInCCT.isEnabled()) return false;
         if (isOffTheRecord()) return false;
@@ -1662,6 +1664,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return isPackageNameInList(
                 getClientPackageName(),
                 ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.getValue());
+    }
+
+    @Override
+    public boolean isInteractiveOmniboxEnabled() {
+        return ChromeFeatureList.sSearchInCCT.isEnabled()
+                && isPackageNameInList(
+                        getClientPackageName(),
+                        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.getValue());
     }
 
     @Override
