@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property filter value 'brightness(calc(-10%))'
+  assert_equals: expected "brightness(0)" but got "brightness(-0.1)"
+Harness: the test ran to completion.
+

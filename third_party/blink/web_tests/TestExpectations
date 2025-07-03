@@ -2778,6 +2778,11 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/424798906 external/wpt/pointerevents/pointerevent_element_haspointercapture.html?touch [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win10.20h2 ] external/wpt/mediacapture-fromelement/HTMLCanvasElement-captureStream-settings.tentative.html [ Pass Timeout ]
+[ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_parse_error-downgraded.tentative.html [ Crash ]
+[ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Timeout ]
+[ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/data-prefix-and-mask-size.https.window.html [ Skip Timeout ]
+[ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.html [ Skip Timeout ]
 crbug.com/429123936 [ Mac14 ] external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html [ Crash ]
 crbug.com/429123936 [ Win11-arm64 ] external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html [ Crash ]
 crbug.com/429115402 external/wpt/css/css-text/hanging-punctuation/hanging-punctuation-allow-end-001.xht [ Failure ]
@@ -7223,7 +7228,10 @@ crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/perform
 
 # Test is flaky because of test_driver.bless, see crbug.com/1066891
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
-crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure ]
+crbug.com/1382865 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure ]
+crbug.com/1382865 [ Mac ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure ]
+crbug.com/1382865 [ Win10.20h2 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure ]
+crbug.com/1382865 [ Win11 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure ]
 
 # Tests disabled for the memory measurement API.
 crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/detached.https.window.html [ Skip Timeout ]

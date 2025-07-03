@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] rowspan can't be zero
+  assert_equals: expected 1 but got 0
+[FAIL] table 7
+  assert_equals: \n<table>\n  <tbody><tr style="height: 100px">\n    <td id="rowspan" rowspan="0" data-expected-height="100">100 height</td>\n  </tr>\n  <tr style="height: 100px"></tr>\n</tbody></table>\nheight expected 100 but got 208
+Harness: the test ran to completion.
+
