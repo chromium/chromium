@@ -8,6 +8,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
 import androidx.annotation.VisibleForTesting;
@@ -18,6 +19,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.PackageUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /** A JNI bridge to allow the native side to interact with the Android device. */
 @JNINamespace("payments::facilitated")
@@ -71,5 +73,11 @@ public class DeviceDelegate {
         } catch (ActivityNotFoundException e) {
             // TODO(crbug.com/419108993): Log metrics.
         }
+    }
+
+    @CalledByNative
+    static ResolveInfo[] getSupportedPaymentApps(GURL paymentLinkUrl) {
+        // TODO(crbug.com/428716832): Implement payments app retrieval logic.
+        return new ResolveInfo[0];
     }
 }

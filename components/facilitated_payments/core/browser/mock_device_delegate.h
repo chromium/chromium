@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "components/facilitated_payments/core/browser/device_delegate.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace payments::facilitated {
@@ -21,6 +22,10 @@ class MockDeviceDelegate : public DeviceDelegate {
   MOCK_METHOD(void,
               SetOnReturnToChromeCallback,
               (base::OnceClosure),
+              (override));
+  MOCK_METHOD(std::unique_ptr<FacilitatedPaymentsAppInfoList>,
+              GetSupportedPaymentApps,
+              (const GURL& payment_link_url),
               (override));
 };
 

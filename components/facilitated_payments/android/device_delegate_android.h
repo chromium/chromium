@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/facilitated_payments/core/browser/device_delegate.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "content/public/browser/web_contents.h"
 
 namespace payments::facilitated {
@@ -35,6 +36,9 @@ class DeviceDelegateAndroid : public DeviceDelegate {
   // returns to the foreground. The `callback` is not called if the active tab
   // that called this method is closed or if the app itself is closed.
   void SetOnReturnToChromeCallback(base::OnceClosure callback) final;
+
+  std::unique_ptr<FacilitatedPaymentsAppInfoList> GetSupportedPaymentApps(
+      const GURL& payment_link_url) override;
 
  private:
   friend class DeviceDelegateAndroidTest;

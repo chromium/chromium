@@ -4,11 +4,18 @@
 
 #include "components/facilitated_payments/android/device_delegate_android.h"
 
+#include <memory>
+
 #include "base/android/application_status_listener.h"
 #include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "components/facilitated_payments/android/facilitated_payments_app_info_list_android.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+#include "url/android/gurl_android.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/facilitated_payments/android/java/jni_headers/DeviceDelegate_jni.h"
@@ -66,6 +73,16 @@ void DeviceDelegateAndroid::OnApplicationStateChanged(
     is_chrome_in_background_ = false;
     std::move(on_return_to_chrome_callback_).Run();
   }
+}
+
+std::unique_ptr<FacilitatedPaymentsAppInfoList>
+DeviceDelegateAndroid::GetSupportedPaymentApps(const GURL& payment_link_url) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobjectArray> raw_array =
+      Java_DeviceDelegate_getSupportedPaymentApps(
+          env, url::GURLAndroid::FromNativeGURL(env, payment_link_url));
+  return std::make_unique<FacilitatedPaymentsAppInfoListAndroid>(
+      std::move(raw_array));
 }
 
 }  // namespace payments::facilitated
