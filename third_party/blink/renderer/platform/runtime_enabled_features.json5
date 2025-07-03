@@ -2615,10 +2615,6 @@
       status: "stable"
     },
     {
-      name: "ImportMapIntegrity",
-      status: "stable"
-    },
-    {
       // Improved retargeting behavior of ToggleEvent.source and
       // CommandEvent.source to match Event.relatedTarget.
       // crbug.com/420639769

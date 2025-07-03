@@ -325,8 +325,7 @@ ImportMap* ImportMap::Parse(const String& input,
   IntegrityMap normalized_integrity_map;
 
   // <spec step="8">If parsed["integrity"] exists, then:</spec>
-  if (RuntimeEnabledFeatures::ImportMapIntegrityEnabled() &&
-      parsed_map->Get("integrity")) {
+  if (parsed_map->Get("integrity")) {
     context.CountUse(WebFeature::kImportMapIntegrity);
     // <spec step="8.1">If parsed["integrity"] is not a map, then throw a
     // TypeError indicating that the "scopes" top-level key must be a JSON
