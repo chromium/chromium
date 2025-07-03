@@ -138,14 +138,13 @@ public class PostTask {
     }
 
     /**
-     * Returns true if the traits are UI traits, the current thread is the UI thread and for
-     * pre-native tasks, scheduling is not disabled.
+     * Returns true if the traits are UI traits, the current thread is the UI thread and running UI
+     * tasks before native init is allowed.
      */
     public static boolean canRunTaskImmediately(@TaskTraits int taskTraits) {
-        if (isUiTaskTraits(taskTraits)) {
-            return ThreadUtils.runningOnUiThread() && !sDisablePreNativeUiTasks;
-        }
-        return false;
+        return isUiTaskTraits(taskTraits)
+                && ThreadUtils.runningOnUiThread()
+                && canRunUiTaskBeforeNativeInit(taskTraits);
     }
 
     /**
@@ -321,16 +320,16 @@ public class PostTask {
     }
 
     /**
-     * If set to true, prevents directly running or forwarding pre-native UI tasks to the Android UI
-     * thread handler. Instead, those tasks are left in the pre-native queue and thus handled by the
-     * native task runner.
+     * If set to true, prevents directly running or forwarding pre-native non-startup UI tasks to
+     * the Android UI thread handler. Instead, those tasks are left in the pre-native queue and thus
+     * handled by the native task runner.
      */
     public static void disablePreNativeUiTasks(boolean disable) {
         sDisablePreNativeUiTasks = disable;
     }
 
-    static boolean preNativeUiTasksAreDisabled() {
-        return sDisablePreNativeUiTasks;
+    static boolean canRunUiTaskBeforeNativeInit(@TaskTraits int taskTraits) {
+        return taskTraits == TaskTraits.UI_STARTUP || !sDisablePreNativeUiTasks;
     }
 
     public static void resetUiThreadForTesting() {

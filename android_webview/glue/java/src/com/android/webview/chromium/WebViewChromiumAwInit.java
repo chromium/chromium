@@ -67,11 +67,15 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryPrefetcher;
+import org.chromium.base.library_loader.LoaderErrors;
+import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
+import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ResourceBundle;
@@ -303,7 +307,7 @@ public class WebViewChromiumAwInit {
             return;
         }
 
-        if (mIsStartupTaskExperimentEnabled) {
+        if (anyStartupTaskExperimentIsEnabled()) {
             if (mStartupException != null) {
                 throw mStartupException;
             } else if (mStartupError != null) {
@@ -332,10 +336,11 @@ public class WebViewChromiumAwInit {
     // Postcondition of calling `.run` on the returned StartupTasksRunner is that Chromium startup
     // is finished.
     private StartupTasksRunner initializeStartupTasksRunner() {
-        ArrayDeque<Runnable> tasks = new ArrayDeque<>();
-        tasks.addLast(
+        ArrayDeque<Runnable> preBrowserProcessStartTasks = new ArrayDeque<>();
+        ArrayDeque<Runnable> postBrowserProcessStartTasks = new ArrayDeque<>();
+        preBrowserProcessStartTasks.addLast(
                 () -> {
-                    if (mIsStartupTaskExperimentEnabled) {
+                    if (anyStartupTaskExperimentIsEnabled()) {
                         // Disable java-side PostTask scheduling. The native-side task runners are
                         // also disabled in the native code. The unscheduled prenative tasks are
                         // migrated to the native task runner. The native task runner is enabled
@@ -421,22 +426,14 @@ public class WebViewChromiumAwInit {
                         finishVariationsInitLocked();
                     }
                 });
-        tasks.addLast(AwBrowserProcess::start);
-        tasks.addLast(
-                () -> {
-                    // TODO(crbug.com/332706093): See if this can be moved before loading
-                    // native.
-                    AwClassPreloader.preloadClasses();
 
-                    AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(
-                            /* updateMetricsConsent= */ true);
-                    doNetworkInitializations(ContextUtils.getApplicationContext());
-                });
+        addBrowserProcessStartTasksToQueue(
+                preBrowserProcessStartTasks, postBrowserProcessStartTasks);
 
         // This has to be done after variations are initialized, so components could
         // be registered or not depending on the variations flags.
-        tasks.addLast(AwBrowserProcess::loadComponents);
-        tasks.addLast(
+        postBrowserProcessStartTasks.addLast(AwBrowserProcess::loadComponents);
+        postBrowserProcessStartTasks.addLast(
                 () -> {
                     AwBrowserProcess.initializeMetricsLogUploader();
 
@@ -569,14 +566,73 @@ public class WebViewChromiumAwInit {
                     // This runs all the pending tasks queued for after Chromium init is
                     // finished, so should run after `mInitState` is `INIT_FINISHED`.
                     mFactory.getRunQueue().notifyChromiumStarted();
-                    if (mIsStartupTaskExperimentEnabled) {
+                    if (anyStartupTaskExperimentIsEnabled()) {
                         // Re-enables the taskrunners
                         PostTask.disablePreNativeUiTasks(false);
                         AwBrowserProcess.onStartupComplete();
                     }
                 });
 
-        return new StartupTasksRunner(tasks);
+        return new StartupTasksRunner(preBrowserProcessStartTasks, postBrowserProcessStartTasks);
+    }
+
+    private void addBrowserProcessStartTasksToQueue(
+            ArrayDeque<Runnable> preBrowserProcessStartTasks,
+            ArrayDeque<Runnable> postBrowserProcessStartTasks) {
+        StartupCallback callback =
+                new StartupCallback() {
+                    @Override
+                    public void onSuccess() {
+                        mStartupTasksRunner.finishAsyncRun();
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        throw new ProcessInitException(LoaderErrors.NATIVE_STARTUP_FAILED);
+                    }
+                };
+        // Currently, browser process startup is run synchronously. With the phase 2 startup tasks
+        // experiment, run browser process startup asynchronously. The callback then triggers the
+        // continuation of our startup tasks execution.
+        // If a sync startup preempts an async startup, we need to run browser process startup
+        // synchronously if the scheduled browser process async startup hasn't completed.
+        if (shouldEnableStartupTasksExperimentP2()) {
+            preBrowserProcessStartTasks.addLast(
+                    () -> {
+                        AwBrowserProcess.runPreBrowserProcessStart();
+                        if (mStartupTasksRunner.getRunState() == StartupTasksRunner.ASYNC) {
+                            AwBrowserProcess.triggerAsyncBrowserProcess(callback);
+                        }
+                    });
+            postBrowserProcessStartTasks.addLast(
+                    () -> {
+                        AwBrowserProcess.finishBrowserProcessStart();
+                        runImmediateTaskAfterBrowserProcessInit();
+                    });
+        } else {
+            preBrowserProcessStartTasks.addLast(
+                    () -> {
+                        // Starts browser process synchronously.
+                        AwBrowserProcess.runPreBrowserProcessStart();
+                        AwBrowserProcess.finishBrowserProcessStart();
+                        if (mStartupTasksRunner.getRunState() == StartupTasksRunner.ASYNC) {
+                            // Tell the StartupTaskRunner to continue with the
+                            // postBrowserProcessStartQueue.
+                            mStartupTasksRunner.finishAsyncRun();
+                        }
+                    });
+
+            postBrowserProcessStartTasks.addLast(this::runImmediateTaskAfterBrowserProcessInit);
+        }
+    }
+
+    // Run the next startup task following BrowserProcess init.
+    private void runImmediateTaskAfterBrowserProcessInit() {
+        // TODO(crbug.com/332706093): See if this can be moved before loading native.
+        AwClassPreloader.preloadClasses();
+
+        AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
+        doNetworkInitializations(ContextUtils.getApplicationContext());
     }
 
     private void recordStartupMetrics(
@@ -592,6 +648,14 @@ public class WebViewChromiumAwInit {
         mWebViewStartUpDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(
                 longestUiBlockingTaskTimeMs);
         mWebViewStartUpCallbackRunQueue.notifyChromiumStarted();
+
+        BrowserStartupController browserController = BrowserStartupController.getInstance();
+        longestUiBlockingTaskTimeMs =
+                Math.max(
+                        longestUiBlockingTaskTimeMs,
+                        Math.max(
+                                browserController.getContentStartDuration(),
+                                browserController.getFlushStartupTasksDuration()));
 
         // Record histograms
         String startupModeString =
@@ -1038,6 +1102,19 @@ public class WebViewChromiumAwInit {
         }
     }
 
+    boolean shouldEnableStartupTasksExperimentP2() {
+        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2)) {
+            return true;
+        }
+
+        return WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2);
+    }
+
+    private boolean anyStartupTaskExperimentIsEnabled() {
+        return mIsStartupTaskExperimentEnabled || shouldEnableStartupTasksExperimentP2();
+    }
+
     // These are objects that need to be created on the UI thread and after chromium has started.
     // Thus created during startChromium for ease.
     private static final class ChromiumStartedGlobals {
@@ -1140,7 +1217,9 @@ public class WebViewChromiumAwInit {
     // This class is responsible for running chromium startup tasks asynchronously or synchronously
     // depending on if startup is triggered from the background or UI thread.
     private final class StartupTasksRunner {
-        private final ArrayDeque<Runnable> mQueue;
+        private final ArrayDeque<Runnable> mPreBrowserProcessStartQueue;
+        private final ArrayDeque<Runnable> mPostBrowserProcessStartQueue;
+        private final int mPreBrowserProcessStartTasksSize;
         private final int mNumTasks;
         private boolean mAsyncHasBeenTriggered;
         private long mLongestUiBlockingTaskTimeMs;
@@ -1150,6 +1229,7 @@ public class WebViewChromiumAwInit {
         private @CallSite int mStartCallSite = CallSite.COUNT;
         private @CallSite int mFinishCallSite = CallSite.COUNT;
         private boolean mFirstTaskFromSynchronousCall;
+        private int mRunState = StartupTasksRunner.UNSET;
 
         private static final int UNSET = 0;
         private static final int SYNC = 1;
@@ -1182,9 +1262,13 @@ public class WebViewChromiumAwInit {
 
         // LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewChromiumStartupMode)
 
-        StartupTasksRunner(ArrayDeque<Runnable> tasks) {
-            mQueue = tasks;
-            mNumTasks = tasks.size();
+        StartupTasksRunner(
+                ArrayDeque<Runnable> preBrowserProcessStartTasks,
+                ArrayDeque<Runnable> postBrowserProcessStartTasks) {
+            mPreBrowserProcessStartQueue = preBrowserProcessStartTasks;
+            mPostBrowserProcessStartQueue = postBrowserProcessStartTasks;
+            mPreBrowserProcessStartTasksSize = preBrowserProcessStartTasks.size();
+            mNumTasks = mPreBrowserProcessStartTasksSize + postBrowserProcessStartTasks.size();
         }
 
         void run(@CallSite int callSite, boolean triggeredFromUIThread) {
@@ -1202,19 +1286,19 @@ public class WebViewChromiumAwInit {
             }
 
             // Early return to avoid repeating the return call within sync and async blocks
-            if (mQueue.isEmpty()) {
+            if (mPostBrowserProcessStartQueue.isEmpty()) {
                 assert mInitState.get() == INIT_FINISHED;
                 return;
             }
 
-            if (mIsStartupTaskExperimentEnabled && !triggeredFromUIThread) {
+            if (anyStartupTaskExperimentIsEnabled() && !triggeredFromUIThread) {
                 // Prevents triggering async run multiple times and thus reduce the interval between
                 // tasks.
                 if (mAsyncHasBeenTriggered) {
                     return;
                 }
                 mAsyncHasBeenTriggered = true;
-                runAsyncStartupTaskAndPostNext(/* taskNum= */ 1);
+                startAsyncRun();
             } else {
                 // This lets us track the reason for a sync finish, especially relevant if we
                 // started off asynchronously.
@@ -1222,23 +1306,54 @@ public class WebViewChromiumAwInit {
                 try (ScopedSysTraceEvent event =
                         ScopedSysTraceEvent.scoped(
                                 "WebViewChromiumAwInit.startChromiumLockedSync")) {
-                    timedRunWithExceptionHandling(
-                            () -> {
-                                while (!mQueue.isEmpty()) {
-                                    mQueue.poll().run();
-                                }
-                            },
-                            SYNC);
+                    timedRunWithExceptionHandling(this::runSync);
                 }
             }
         }
 
-        private void runAsyncStartupTaskAndPostNext(int taskNum) {
+        private void runSync() {
             assert ThreadUtils.runningOnUiThread();
 
-            if (mQueue.isEmpty()) {
+            // Avoid changing runState when there's no task to be run synchronously.
+            if (mPreBrowserProcessStartQueue.isEmpty() && mPostBrowserProcessStartQueue.isEmpty()) {
                 return;
             }
+
+            mRunState = SYNC;
+
+            while (!mPreBrowserProcessStartQueue.isEmpty()) {
+                mPreBrowserProcessStartQueue.poll().run();
+            }
+
+            while (!mPostBrowserProcessStartQueue.isEmpty()) {
+                mPostBrowserProcessStartQueue.poll().run();
+            }
+        }
+
+        private void startAsyncRun() {
+            assert ThreadUtils.runningOnUiThread();
+            runAsyncStartupTaskAndPostNext(/* taskNum= */ 1, mPreBrowserProcessStartQueue);
+        }
+
+        // Continues running the tasks in the postBrowserProcessStartQueue. This method is often
+        // called inline, so post the next task in order to maintain the gap between the previous
+        // task and the next task.
+        void finishAsyncRun() {
+            AwThreadUtils.postToUiThreadLooper(
+                    () ->
+                            runAsyncStartupTaskAndPostNext(
+                                    mPreBrowserProcessStartTasksSize + 1,
+                                    mPostBrowserProcessStartQueue));
+        }
+
+        private void runAsyncStartupTaskAndPostNext(int taskNum, ArrayDeque<Runnable> queue) {
+            assert ThreadUtils.runningOnUiThread();
+
+            if (queue.isEmpty()) {
+                return;
+            }
+
+            mRunState = ASYNC;
 
             try (ScopedSysTraceEvent event =
                     ScopedSysTraceEvent.scoped(
@@ -1247,17 +1362,17 @@ public class WebViewChromiumAwInit {
                                     "WebViewChromiumAwInit.startChromiumLockedAsync_task%d/%d",
                                     taskNum,
                                     mNumTasks))) {
-                timedRunWithExceptionHandling(mQueue.poll(), ASYNC);
+                timedRunWithExceptionHandling(queue.poll());
             }
 
-            if (!mQueue.isEmpty()) { // Avoids unnecessarily posting to the UI thread
+            if (!queue.isEmpty()) { // Avoids unnecessarily posting to the UI thread
                 AwThreadUtils.postToUiThreadLooper(
-                        () -> runAsyncStartupTaskAndPostNext(taskNum + 1));
+                        () -> runAsyncStartupTaskAndPostNext(taskNum + 1, queue));
             }
         }
 
         // Runs the startup task while keeping track of metrics and dealing with exceptions
-        private void timedRunWithExceptionHandling(Runnable task, int runMode) {
+        private void timedRunWithExceptionHandling(Runnable task) {
             assert ThreadUtils.runningOnUiThread();
 
             try {
@@ -1267,7 +1382,7 @@ public class WebViewChromiumAwInit {
 
                 mLongestUiBlockingTaskTimeMs = Math.max(mLongestUiBlockingTaskTimeMs, durationMs);
                 mTotalTimeTakenMs += durationMs;
-                if (mQueue.isEmpty()) {
+                if (mPostBrowserProcessStartQueue.isEmpty()) {
                     // We are done running all the tasks, so record the metrics.
                     recordStartupMetrics(
                             mStartCallSite,
@@ -1275,7 +1390,7 @@ public class WebViewChromiumAwInit {
                             /* startTimeMs= */ mStartupTimeMs,
                             /* totalTimeTakenMs= */ mTotalTimeTakenMs,
                             /* longestUiBlockingTaskTimeMs= */ mLongestUiBlockingTaskTimeMs,
-                            calculateStartupMode(runMode));
+                            calculateStartupMode());
                 }
             } catch (RuntimeException | Error e) {
                 Log.e(TAG, "WebView chromium startup failed", e);
@@ -1292,9 +1407,9 @@ public class WebViewChromiumAwInit {
         // 1. Whether the initial startup request was synchronous or asynchronous.
         // 2. Whether the first task ran synchronously or asynchronously.
         // 3. Whether the last task ran synchronously or asynchronously.
-        private @StartupMode int calculateStartupMode(int lastTaskRunMode) {
+        private @StartupMode int calculateStartupMode() {
             // The control arm of our experiment runs fully synchronously.
-            if (!mIsStartupTaskExperimentEnabled) {
+            if (!anyStartupTaskExperimentIsEnabled()) {
                 return StartupMode.FULLY_SYNC;
             }
 
@@ -1303,9 +1418,15 @@ public class WebViewChromiumAwInit {
                         ? StartupMode.FULLY_SYNC
                         : StartupMode.ASYNC_BUT_FULLY_SYNC;
             }
-            return lastTaskRunMode == SYNC
+            return mRunState == SYNC
                     ? StartupMode.PARTIAL_ASYNC_THEN_SYNC
                     : StartupMode.FULLY_ASYNC;
+        }
+
+        // Returns the state in which the StartupTaskRunner is running. Either async or
+        // synchronously.
+        int getRunState() {
+            return mRunState;
         }
     }
 }

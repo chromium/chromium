@@ -576,6 +576,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             boolean enableStartupTasksExperiment = shouldEnableStartupTasksExperiment();
             mAwInit.setStartupTaskExperimentEnabled(enableStartupTasksExperiment);
             AwBrowserMainParts.setWebViewStartupTasksLogicIsEnabled(enableStartupTasksExperiment);
+            AwBrowserMainParts.setWebViewStartupTasksExperimentEnabledP2(
+                    mAwInit.shouldEnableStartupTasksExperimentP2());
 
             if (!FastVariationsSeedSafeModeAction.hasRun()) {
                 mAwInit.startVariationsInit();

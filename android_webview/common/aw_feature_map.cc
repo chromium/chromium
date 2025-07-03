@@ -62,6 +62,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewUseMetricsUploadService,
     &features::kWebViewUseMetricsUploadServiceOnlySdkRuntime,
     &features::kWebViewUseStartupTasksLogic,
+    &features::kWebViewUseStartupTasksLogicP2,
     &features::kWebViewWebauthn,
     &features::kWebViewXRequestedWithHeaderControl,
     // keep-sorted end

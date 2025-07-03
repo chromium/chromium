@@ -77,10 +77,13 @@ public class WebViewCachedFlags {
                             Map.of(
                                     // Add new CachedFlags here along with their default state.
                                     AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT,
-                                            DefaultState.DISABLED,
-                                    AwFeatures.WEBVIEW_DISABLE_CHIPS, DefaultState.DISABLED,
+                                    DefaultState.DISABLED,
+                                    AwFeatures.WEBVIEW_DISABLE_CHIPS,
+                                    DefaultState.DISABLED,
                                     AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC,
-                                            DefaultState.DISABLED));
+                                    DefaultState.DISABLED,
+                                    AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2,
+                                    DefaultState.DISABLED));
         }
     }
 

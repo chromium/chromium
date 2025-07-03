@@ -114,4 +114,10 @@ const char kDebugBsa[] = "debug-bsa";
 // without a restart.
 const char kWebViewUseStartupTasksLogic[] = "webview-use-startup-tasks-logic";
 
+// Enables phase 2 of using startup tasks logic for webview chromium
+// initialization which also starts browser processes asynchronously, when
+// starting webview asynchronously.
+const char kWebViewUseStartupTasksLogicP2[] =
+    "webview-use-startup-tasks-logic-p2";
+
 }  // namespace switches

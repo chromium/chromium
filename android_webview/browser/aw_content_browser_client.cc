@@ -343,10 +343,9 @@ AwContentBrowserClient::CreateBrowserMainParts(bool /* is_integration_test */) {
   return std::make_unique<AwBrowserMainParts>(this);
 }
 
-bool IsStartupTaskExperimentEnabled() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+bool IsAnyStartupTaskExperimentEnabled() {
   return AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() ||
-         command_line->HasSwitch(switches::kWebViewUseStartupTasksLogic);
+         AwBrowserMainParts::isWebViewStartupTasksExperimentEnabledP2();
 }
 
 void AwContentBrowserClient::PostAfterStartupTask(
@@ -354,7 +353,7 @@ void AwContentBrowserClient::PostAfterStartupTask(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::OnceClosure task) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsStartupTaskExperimentEnabled()) {
+  if (!IsAnyStartupTaskExperimentEnabled()) {
     task_runner->PostTask(from_here, std::move(task));
     return;
   }
@@ -391,7 +390,7 @@ void AwContentBrowserClient::OnStartupComplete() {
 
 void AwContentBrowserClient::OnUiTaskRunnerReady(
     base::OnceClosure enable_native_task_execution_callback) {
-  if (!IsStartupTaskExperimentEnabled()) {
+  if (!IsAnyStartupTaskExperimentEnabled()) {
     std::move(enable_native_task_execution_callback).Run();
     return;
   }

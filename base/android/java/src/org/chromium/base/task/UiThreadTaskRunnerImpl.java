@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 @JNINamespace("base")
 public class UiThreadTaskRunnerImpl extends TaskRunnerImpl implements SequencedTaskRunner {
+
     /**
      * @param traits The TaskTraits associated with this TaskRunner.
      */
@@ -27,11 +28,9 @@ public class UiThreadTaskRunnerImpl extends TaskRunnerImpl implements SequencedT
      */
     @Override
     protected void schedulePreNativeTask() {
-        if (PostTask.preNativeUiTasksAreDisabled()) {
-            return;
+        if (PostTask.canRunUiTaskBeforeNativeInit(mTaskTraits)) {
+            ThreadUtils.getUiThreadHandler().post(mRunPreNativeTaskClosure);
         }
-
-        ThreadUtils.getUiThreadHandler().post(mRunPreNativeTaskClosure);
     }
 
     /**
@@ -41,10 +40,10 @@ public class UiThreadTaskRunnerImpl extends TaskRunnerImpl implements SequencedT
      */
     @Override
     protected boolean schedulePreNativeDelayedTask(Runnable task, long delay) {
-        if (PostTask.preNativeUiTasksAreDisabled()) {
-            return false;
+        if (PostTask.canRunUiTaskBeforeNativeInit(mTaskTraits)) {
+            ThreadUtils.getUiThreadHandler().postDelayed(task, delay);
+            return true;
         }
-        ThreadUtils.getUiThreadHandler().postDelayed(task, delay);
-        return true;
+        return false;
     }
 }

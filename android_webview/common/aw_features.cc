@@ -310,4 +310,11 @@ BASE_FEATURE(kWebViewConnectToComponentProviderInBackground,
              "WebViewConnectToComponentProviderInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables phase 2 of using startup tasks logic for webview chromium
+// initialization which starts browser processes asynchronously, when starting
+// webview asynchronously.
+BASE_FEATURE(kWebViewUseStartupTasksLogicP2,
+             "WebViewUseStartupTasksLogicP2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

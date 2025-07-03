@@ -49,6 +49,7 @@ class AwBrowserMainParts : public content::BrowserMainParts {
   void PostCreateThreads() override;
 
   static bool isWebViewStartupTasksExperimentEnabled();
+  static bool isWebViewStartupTasksExperimentEnabledP2();
 
  private:
   void RegisterSyntheticTrials();

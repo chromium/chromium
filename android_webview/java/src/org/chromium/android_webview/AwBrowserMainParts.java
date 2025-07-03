@@ -16,6 +16,7 @@ public class AwBrowserMainParts {
     private static boolean sUseWebViewContext;
     private static boolean sPartitionedCookiesDefaultState;
     private static boolean sWebViewUseStartupTasksLogic;
+    private static boolean sWebViewStartupTasksExperimentEnabledP2;
 
     public static void setUseWebViewContext(boolean enabled) {
         sUseWebViewContext = enabled;
@@ -27,6 +28,10 @@ public class AwBrowserMainParts {
 
     public static void setWebViewStartupTasksLogicIsEnabled(boolean enabled) {
         sWebViewUseStartupTasksLogic = enabled;
+    }
+
+    public static void setWebViewStartupTasksExperimentEnabledP2(boolean enabled) {
+        sWebViewStartupTasksExperimentEnabledP2 = enabled;
     }
 
     @CalledByNative
@@ -42,6 +47,11 @@ public class AwBrowserMainParts {
     @CalledByNative
     private static boolean isWebViewStartupTasksLogicEnabled() {
         return sWebViewUseStartupTasksLogic;
+    }
+
+    @CalledByNative
+    private static boolean isWebViewStartupTasksExperimentEnabledP2() {
+        return sWebViewStartupTasksExperimentEnabledP2;
     }
 
     private AwBrowserMainParts() {}

@@ -33,6 +33,7 @@ extern const char kWebViewUseSeparateResourceContext[];
 extern const char kDebugBsa[];
 extern const char kWebViewInterceptedCookieHeader[];
 extern const char kWebViewUseStartupTasksLogic[];
+extern const char kWebViewUseStartupTasksLogicP2[];
 
 }  // namespace switches
 

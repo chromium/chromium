@@ -29,11 +29,45 @@ using ::testing::InSequence;
 using StrictMockTask =
     testing::StrictMock<base::MockCallback<base::RepeatingCallback<void()>>>;
 
-class AwContentBrowserClientTest : public testing::Test {
+enum class StartupTaskExperiment {
+  kNone,
+  kUseStartupTasksLogic,
+  kUseStartupTasksLogicP2
+};
+
+std::string StartupTaskExperimentToString(
+    const ::testing::TestParamInfo<StartupTaskExperiment>& info) {
+  switch (info.param) {
+    case StartupTaskExperiment::kNone:
+      return "NoExperiment";
+    case StartupTaskExperiment::kUseStartupTasksLogic:
+      return "UseStartupTasksLogic";
+    case StartupTaskExperiment::kUseStartupTasksLogicP2:
+      return "UseStartupTasksLogicP2";
+  }
+}
+
+class AwContentBrowserClientTest
+    : public testing::TestWithParam<StartupTaskExperiment> {
  public:
   AwContentBrowserClientTest() {
     auto* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitch(switches::kWebViewUseStartupTasksLogic);
+    switch (GetParam()) {
+      case StartupTaskExperiment::kNone:
+        break;
+      case StartupTaskExperiment::kUseStartupTasksLogic:
+        command_line->AppendSwitch(switches::kWebViewUseStartupTasksLogic);
+        break;
+      case StartupTaskExperiment::kUseStartupTasksLogicP2:
+        command_line->AppendSwitch(switches::kWebViewUseStartupTasksLogicP2);
+        break;
+      default:
+        CHECK(false) << "Unhandled experiment";
+    }
+  }
+
+  bool IsAnyExperimentEnabled() {
+    return GetParam() != StartupTaskExperiment::kNone;
   }
 
  protected:
@@ -45,29 +79,42 @@ class AwContentBrowserClientTest : public testing::Test {
       base::ThreadPool::CreateSequencedTaskRunner({});
 };
 
-TEST_F(AwContentBrowserClientTest, ClientTaskNotRunBeforeStartupComplete) {
+TEST_P(AwContentBrowserClientTest, ClientTaskNotRunBeforeStartupComplete) {
   StrictMockTask client_task;
-  StrictMockTask loop_quitting_task;
 
-  client_.PostAfterStartupTask(FROM_HERE, task_runner_, client_task.Get());
+  if (IsAnyExperimentEnabled()) {
+    StrictMockTask loop_quitting_task;
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(loop_quitting_task, Run)
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-  task_runner_->PostTask(FROM_HERE, loop_quitting_task.Get());
-  run_loop.Run();
+    client_.PostAfterStartupTask(FROM_HERE, task_runner_, client_task.Get());
 
-  base::RunLoop task_run_loop;
-  EXPECT_CALL(client_task, Run)
-      .WillOnce(base::test::RunOnceClosure(task_run_loop.QuitClosure()));
-  client_.OnStartupComplete();
-  task_run_loop.Run();
+    // Run loop to confirm that client task is not executed.
+    base::RunLoop run_loop;
+    EXPECT_CALL(loop_quitting_task, Run)
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    task_runner_->PostTask(FROM_HERE, loop_quitting_task.Get());
+    run_loop.Run();
+
+    base::RunLoop task_run_loop;
+    EXPECT_CALL(client_task, Run)
+        .WillOnce(base::test::RunOnceClosure(task_run_loop.QuitClosure()));
+    client_.OnStartupComplete();
+    task_run_loop.Run();
+  } else {
+    base::RunLoop run_loop;
+    EXPECT_CALL(client_task, Run)
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    client_.PostAfterStartupTask(FROM_HERE, task_runner_, client_task.Get());
+    run_loop.Run();
+  }
 }
 
-TEST_F(AwContentBrowserClientTest, TaskRunAfterStartupComplete) {
+TEST_P(AwContentBrowserClientTest, TaskRunAfterStartupComplete) {
   StrictMockTask task;
 
-  client_.OnStartupComplete();
+  // Task should run without startup complete call if no experiment
+  if (IsAnyExperimentEnabled()) {
+    client_.OnStartupComplete();
+  }
 
   base::RunLoop run_loop;
   EXPECT_CALL(task, Run).WillOnce(
@@ -77,40 +124,67 @@ TEST_F(AwContentBrowserClientTest, TaskRunAfterStartupComplete) {
   run_loop.Run();
 }
 
-TEST_F(AwContentBrowserClientTest, MultipleTasksBeforeStartup) {
+TEST_P(AwContentBrowserClientTest, MultipleTasksBeforeStartup) {
   StrictMockTask task1;
   StrictMockTask task2;
   StrictMockTask task3;
 
-  client_.PostAfterStartupTask(FROM_HERE, task_runner_, task1.Get());
-  client_.PostAfterStartupTask(FROM_HERE, task_runner_, task2.Get());
-  client_.PostAfterStartupTask(FROM_HERE, task_runner_, task3.Get());
-
   base::RunLoop run_loop;
-  InSequence s;
-  EXPECT_CALL(task1, Run);
-  EXPECT_CALL(task2, Run);
-  EXPECT_CALL(task3, Run)
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  auto setup_call_expectations = [&] {
+    InSequence s;
+    EXPECT_CALL(task1, Run);
+    EXPECT_CALL(task2, Run);
+    EXPECT_CALL(task3, Run)
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  };
 
-  client_.OnStartupComplete();
+  auto post_after_startup_tasks = [&] {
+    client_.PostAfterStartupTask(FROM_HERE, task_runner_, task1.Get());
+    client_.PostAfterStartupTask(FROM_HERE, task_runner_, task2.Get());
+    client_.PostAfterStartupTask(FROM_HERE, task_runner_, task3.Get());
+  };
 
-  run_loop.Run();
+  if (IsAnyExperimentEnabled()) {
+    // AfterStartupTasks only running after startup is marked as complete.
+    post_after_startup_tasks();
+    setup_call_expectations();
+    client_.OnStartupComplete();
+    run_loop.Run();
+  } else {
+    // AfterStartupTasks run without startup complete.
+    setup_call_expectations();
+    post_after_startup_tasks();
+    run_loop.Run();
+  }
 }
 
-TEST_F(AwContentBrowserClientTest,
+TEST_P(AwContentBrowserClientTest,
        OnUiTaskRunnerReadyCallbackRunAfterStartupComplete) {
   StrictMockTask task;
-  client_.OnUiTaskRunnerReady(task.Get());
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(task, Run).WillOnce(
-      base::test::RunOnceClosure(run_loop.QuitClosure()));
+  if (IsAnyExperimentEnabled()) {
+    client_.OnUiTaskRunnerReady(task.Get());
 
-  client_.OnStartupComplete();
+    base::RunLoop run_loop;
+    EXPECT_CALL(task, Run).WillOnce(
+        base::test::RunOnceClosure(run_loop.QuitClosure()));
 
-  run_loop.Run();
+    client_.OnStartupComplete();
+
+    run_loop.Run();
+  } else {
+    EXPECT_CALL(task, Run).Times(1);
+    client_.OnUiTaskRunnerReady(task.Get());
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AwContentBrowserClientTest,
+    ::testing::Values(StartupTaskExperiment::kNone,
+                      StartupTaskExperiment::kUseStartupTasksLogic,
+                      StartupTaskExperiment::kUseStartupTasksLogicP2),
+    StartupTaskExperimentToString);
 
 }  // namespace
 

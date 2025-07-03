@@ -62,7 +62,7 @@ public class TaskRunnerImpl implements TaskRunner {
     @GuardedBy("sCleaners")
     private static final Set<TaskRunnerCleaner> sCleaners = new HashSet<>();
 
-    private final @TaskTraits int mTaskTraits;
+    protected final @TaskTraits int mTaskTraits;
     private final String mTraceEvent;
     private final @TaskRunnerType int mTaskRunnerType;
     // Volatile is sufficient for synchronization here since we never need to read-write and
