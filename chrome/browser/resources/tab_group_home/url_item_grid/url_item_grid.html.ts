@@ -10,7 +10,7 @@ export function getHtml(this: UrlItemGrid) {
   return html`
     <cr-grid>
       ${this.items_.map(item => html`
-        <div class="item">urlItem id: ${item.id}</div>
+        <div id="${item.id}" class="item">urlItem id: ${item.id}</div>
       `)}
     </cr-grid>
   `;
