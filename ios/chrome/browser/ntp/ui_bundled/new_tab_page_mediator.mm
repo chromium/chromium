@@ -69,6 +69,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
+#import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -528,6 +529,17 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   std::optional<sync_pb::NtpCustomBackground> background =
       _backgroundCustomizationService->GetCurrentCustomBackground();
 
+  std::optional<sync_pb::UserColorTheme> colorTheme =
+      _backgroundCustomizationService->GetCurrentColorTheme();
+
+  if (colorTheme) {
+    [self.consumer
+        applyBaseBackgroundColor:skia::UIColorFromSkColor(colorTheme->color())];
+    [self.consumer setBackgroundImage:nil];
+    return;
+  }
+
+  [self.consumer applyBaseBackgroundColor:nil];
   if (!background) {
     [self.consumer setBackgroundImage:nil];
     return;

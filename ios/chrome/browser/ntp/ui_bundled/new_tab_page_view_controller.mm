@@ -824,6 +824,10 @@ CGFloat SpaceBetweenModules() {
   [self updateBackgroundImageView];
 }
 
+- (void)applyBaseBackgroundColor:(UIColor*)color {
+  // TODO(crbug.com/421925819): Apply color palette to NTP UI elements.
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {

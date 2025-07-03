@@ -55,6 +55,10 @@
 // if nil is passed.
 - (void)setBackgroundImage:(UIImage*)backgroundImage;
 
+// Sets the base background color palette of the NTP.
+// Pass nil to remove any currently applied background color.
+- (void)applyBaseBackgroundColor:(UIColor*)color;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONSUMER_H_

@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_configuration.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "third_party/material_color_utilities/src/cpp/cam/hct.h"
@@ -21,41 +22,55 @@ namespace {
 // collection.
 typedef UIColor* (^DynamicColorProviderBlock)(UITraitCollection* traits);
 
-// Represents a pair of tone values for a given color tone,
-// with separate values for light and dark UI modes.
-struct ToneSet {
-  // The tone value to use in light mode.
-  int light_mode;
+// Represents a tone value tied to a specific TonalPalette.
+struct PaletteTone {
+  raw_ptr<const ui::TonalPalette> palette;
+  int tone;
 
-  // The tone value to use in dark mode.
-  int dark_mode;
+  PaletteTone(const ui::TonalPalette& associatedPalette, int toneValue)
+      : palette(&associatedPalette), tone(toneValue) {}
+
+  SkColor color() const { return palette->get(tone); }
 };
 
-// The tone value used for generating a light variant of the seed color.
-const ToneSet kLightTone = {
-    /*light_mode=*/90,
-    /*dark_mode=*/30,
+// Represents a color input that can be either a palette-based tone or a fixed
+// UIColor. Only one of `tone` or `fixedColor` should be set. If neither is set,
+// `resolveColor()` returns opaque black (`SK_ColorBLACK`) as a fallback.
+struct DynamicColorInput {
+  std::optional<PaletteTone> tone;
+  std::optional<UIColor*> fixedColor;
+
+  explicit DynamicColorInput(const PaletteTone& t) : tone(t) {}
+  explicit DynamicColorInput(UIColor* color) : fixedColor(color) {}
+
+  SkColor resolveColor() const {
+    if (tone.has_value()) {
+      return tone->color();
+    }
+    if (fixedColor.has_value()) {
+      return skia::UIColorToSkColor(fixedColor.value());
+    }
+    return SK_ColorBLACK;
+  }
 };
 
-// The tone value used for generating a medium variant of the seed color.
-const ToneSet kMediumTone = {
-    /*light_mode=*/80,
-    /*dark_mode=*/50,
-};
+// Factory helper for creating DynamicColorInput from a tone.
+inline DynamicColorInput FromTone(const PaletteTone& tone) {
+  return DynamicColorInput(tone);
+}
 
-// The tone value used for generating a dark variant of the seed color.
-const ToneSet kDarkTone = {
-    /*light_mode=*/40,
-    /*dark_mode=*/80,
-};
+// Factory helper for creating DynamicColorInput from a fixed UIColor.
+inline DynamicColorInput FromColor(UIColor* color) {
+  return DynamicColorInput(color);
+}
 
 // Returns a dynamic `UIColor` that adapts to the system's light or dark
-// appearance using tones derived from the given `TonalPalette`.
-DynamicColorProviderBlock GetDynamicProviderForPrimary(
-    const ui::TonalPalette& primary,
-    const ToneSet& toneSet) {
-  uint32_t lightARGB = primary.get(toneSet.light_mode);
-  uint32_t darkARGB = primary.get(toneSet.dark_mode);
+// appearance using tones derived from the given `DynamicColorInput`.
+DynamicColorProviderBlock GetDynamicProvider(
+    const DynamicColorInput& lightInput,
+    const DynamicColorInput& darkInput) {
+  uint32_t lightARGB = lightInput.resolveColor();
+  uint32_t darkARGB = darkInput.resolveColor();
 
   return ^UIColor*(UITraitCollection* traits) {
     BOOL isDark = (traits.userInterfaceStyle == UIUserInterfaceStyleDark);
@@ -79,17 +94,62 @@ CreateColorPaletteConfigurationFromSeedColor(UIColor* seed_color) {
       ui::GeneratePalette(skia::UIColorToSkColor(seed_color),
                           ui::ColorProviderKey::SchemeVariant::kTonalSpot);
   const ui::TonalPalette& primary = palette->primary();
+  const ui::TonalPalette& secondary = palette->secondary();
 
   config.seedColor = seed_color;
-  config.lightColor =
-      [UIColor colorWithDynamicProvider:GetDynamicProviderForPrimary(
-                                            primary, kLightTone)];
-  config.mediumColor =
-      [UIColor colorWithDynamicProvider:GetDynamicProviderForPrimary(
-                                            primary, kMediumTone)];
-  config.darkColor =
-      [UIColor colorWithDynamicProvider:GetDynamicProviderForPrimary(
-                                            primary, kDarkTone)];
+
+  config.lightColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(primary, 90)),
+                                   FromTone(PaletteTone(primary, 30)))];
+
+  config.mediumColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(primary, 80)),
+                                   FromTone(PaletteTone(primary, 50)))];
+
+  config.darkColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(primary, 40)),
+                                   FromTone(PaletteTone(primary, 80)))];
+
+  config.tintColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(primary, 40)),
+                                   FromTone(PaletteTone(primary, 90)))];
+  config.primaryColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(secondary, 98)),
+                                   FromTone(PaletteTone(secondary, 20)))];
+  config.secondaryCellColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromColor(UIColor.whiteColor),
+                                   FromTone(PaletteTone(secondary, 10)))];
+
+  config.secondaryColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(secondary, 95)),
+                                   FromTone(PaletteTone(secondary, 10)))];
+
+  config.tertiaryColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(secondary, 95)),
+                                   FromTone(PaletteTone(secondary, 30)))];
+
+  config.omniboxColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(secondary, 90)),
+                                   FromTone(PaletteTone(secondary, 40)))];
+
+  config.omniboxIconColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(primary, 40)),
+                                   FromTone(PaletteTone(secondary, 80)))];
+
+  config.omniboxIconDividerColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(secondary, 70)),
+                                   FromTone(PaletteTone(secondary, 60)))];
 
   return config;
 }

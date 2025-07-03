@@ -23,6 +23,30 @@
 // The original seed color used to generate the palette.
 @property(nonatomic, strong) UIColor* seedColor;
 
+// A general-purpose accent or highlight color used across the UI.
+@property(nonatomic, strong) UIColor* tintColor;
+
+// The primary color used for main UI elements.
+@property(nonatomic, strong) UIColor* primaryColor;
+
+// A secondary color used for supporting UI elements.
+@property(nonatomic, strong) UIColor* secondaryColor;
+
+// A color specifically used for background cells or cards.
+@property(nonatomic, strong) UIColor* secondaryCellColor;
+
+// A tertiary color used for subtle accents or less prominent components.
+@property(nonatomic, strong) UIColor* tertiaryColor;
+
+// The background color used for the omnibox.
+@property(nonatomic, strong) UIColor* omniboxColor;
+
+// The color used for icons within the omnibox.
+@property(nonatomic, strong) UIColor* omniboxIconColor;
+
+// The color used for dividers or separators between omnibox icons.
+@property(nonatomic, strong) UIColor* omniboxIconDividerColor;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_COLOR_PALETTE_CONFIGURATION_H_
