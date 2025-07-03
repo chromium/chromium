@@ -50,6 +50,7 @@ class PeerConnectionTracker;
 class RTCAnswerOptionsPlatform;
 class RTCOfferOptionsPlatform;
 class RTCPeerConnectionHandlerClient;
+class RTCRtpTransport;
 class RTCSessionDescriptionInit;
 class RTCVoidRequest;
 class SetLocalDescriptionRequest;
