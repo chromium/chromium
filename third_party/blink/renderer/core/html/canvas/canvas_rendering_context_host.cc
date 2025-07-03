@@ -268,25 +268,6 @@ bool CanvasRenderingContextHost::ShouldTryToUseGpuRaster() const {
   return preferred_2d_raster_mode_ == RasterModeHint::kPreferGPU && CanUseGPU();
 }
 
-std::unique_ptr<CanvasResourceProvider>
-CanvasRenderingContextHost::ReplaceResourceProviderForCanvas2D(
-    std::unique_ptr<CanvasResourceProvider> new_resource_provider) {
-  CHECK(IsRenderingContext2D());
-  std::unique_ptr<CanvasResourceProvider> old_resource_provider =
-      std::move(resource_provider_for_canvas2d_);
-  resource_provider_for_canvas2d_ = std::move(new_resource_provider);
-  UpdateMemoryUsage();
-  if (old_resource_provider) {
-    old_resource_provider->SetDelegate(nullptr);
-  }
-  return old_resource_provider;
-}
-
-void CanvasRenderingContextHost::DiscardResources() {
-  resource_provider_for_canvas2d_ = nullptr;
-  UpdateMemoryUsage();
-}
-
 void CanvasRenderingContextHost::FlushRecordingForCanvas2D(FlushReason reason) {
   CHECK(IsRenderingContext2D());
   if (auto* provider = GetResourceProviderForCanvas2D()) {

@@ -156,10 +156,7 @@ class CORE_EXPORT CanvasRenderingContextHost
   // resource provider did not exist at all, it may be created.
   virtual bool EnableAccelerationForCanvas2D() = 0;
 
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() const {
-    CHECK(IsRenderingContext2D());
-    return resource_provider_for_canvas2d_.get();
-  }
+  virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const = 0;
 
   gfx::Size Size() const { return size_; }
   virtual void SetSize(gfx::Size size) { size_ = size; }
@@ -167,24 +164,16 @@ class CORE_EXPORT CanvasRenderingContextHost
   bool ShouldTryToUseGpuRaster() const;
   void SetPreferred2DRasterMode(RasterModeHint);
 
-  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
-      std::unique_ptr<CanvasResourceProvider>);
+  virtual std::unique_ptr<CanvasResourceProvider>
+      ReplaceResourceProviderForCanvas2D(
+          std::unique_ptr<CanvasResourceProvider>) = 0;
 
-  virtual void DiscardResources();
+  virtual void DiscardResources() = 0;
 
   void FlushRecordingForCanvas2D(FlushReason reason);
 
  protected:
   ~CanvasRenderingContextHost() override = default;
-
-  // `resource_provider_` must be null.
-  void SetResourceProviderForCanvas2D(
-      std::unique_ptr<CanvasResourceProvider> resource_provider) {
-    CHECK(IsRenderingContext2D());
-    CHECK(!resource_provider_for_canvas2d_);
-    resource_provider_for_canvas2d_ = std::move(resource_provider);
-    UpdateMemoryUsage();
-  }
 
   scoped_refptr<StaticBitmapImage> CreateTransparentImage() const;
 
@@ -204,7 +193,6 @@ class CORE_EXPORT CanvasRenderingContextHost
 
  private:
 
-  std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
   gfx::Size size_;

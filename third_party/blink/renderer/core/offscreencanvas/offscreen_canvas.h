@@ -128,6 +128,13 @@ class CORE_EXPORT OffscreenCanvas final
     transfer_to_gpu_texture_was_invoked_ = true;
   }
   bool EnableAccelerationForCanvas2D() final;
+  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
+      std::unique_ptr<CanvasResourceProvider>) override;
+  void DiscardResources() override;
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
+    CHECK(IsRenderingContext2D());
+    return resource_provider_for_canvas2d_.get();
+  }
 
   bool PushFrameIfNeeded();
   bool PushFrame(scoped_refptr<CanvasResource>&& frame,
@@ -255,6 +262,15 @@ class CORE_EXPORT OffscreenCanvas final
   void RecordIdentifiabilityMetric(const blink::IdentifiableSurface& surface,
                                    const IdentifiableToken& token) const;
 
+  // `resource_provider_` must be null.
+  void SetResourceProviderForCanvas2D(
+      std::unique_ptr<CanvasResourceProvider> resource_provider) {
+    CHECK(IsRenderingContext2D());
+    CHECK(!resource_provider_for_canvas2d_);
+    resource_provider_for_canvas2d_ = std::move(resource_provider);
+    UpdateMemoryUsage();
+  }
+
   Member<CanvasRenderingContext> context_;
   WeakMember<ExecutionContext> execution_context_;
 
@@ -270,6 +286,7 @@ class CORE_EXPORT OffscreenCanvas final
   bool origin_clean_ = true;
   bool disable_reading_from_canvas_ = false;
 
+  std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
   std::unique_ptr<CanvasResourceDispatcher> frame_dispatcher_;
 
   SkIRect current_frame_damage_rect_;

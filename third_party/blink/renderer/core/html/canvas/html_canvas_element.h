@@ -249,7 +249,8 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsContextLost() const override;
   bool IsPageVisible() const override;
   CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
-    return CanvasRenderingContextHost::GetResourceProviderForCanvas2D();
+    CHECK(IsRenderingContext2D());
+    return resource_provider_for_canvas2d_.get();
   }
   void ResetResourceProviderForCanvas2D() override {
     ReplaceResourceProviderForCanvas2D(nullptr);
@@ -270,6 +271,8 @@ class CORE_EXPORT HTMLCanvasElement final
   void SetTransferToGPUTextureWasInvoked() override;
   UkmParameters GetUkmParameters() override;
   bool EnableAccelerationForCanvas2D() final;
+  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
+      std::unique_ptr<CanvasResourceProvider>) override;
 
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D();
 
@@ -447,7 +450,18 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool RecreateCanvasInGPURasterModeForCanvas2D();
 
+  // `resource_provider_` must be null.
+  void SetResourceProviderForCanvas2D(
+      std::unique_ptr<CanvasResourceProvider> resource_provider) {
+    CHECK(IsRenderingContext2D());
+    CHECK(!resource_provider_for_canvas2d_);
+    resource_provider_for_canvas2d_ = std::move(resource_provider);
+    UpdateMemoryUsage();
+  }
+
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
+
+  std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
 
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;
 
