@@ -85,8 +85,14 @@ static int AdjustedOffsetForSecureText(const Node* node, int offset) {
   // OffsetMapping gives offsets relative to the whole text in the layout, so
   // subtract the node's start offset to get the offset relative to this node
   // only.
-  return *mapping->GetTextContentOffset(current) -
-         *mapping->GetTextContentOffset(node_start);
+  std::optional<unsigned> current_offset =
+      mapping->GetTextContentOffset(current);
+  std::optional<unsigned> node_start_offset =
+      mapping->GetTextContentOffset(node_start);
+  if (!current_offset || !node_start_offset) {
+    return offset;
+  }
+  return *current_offset - *node_start_offset;
 }
 
 template <typename Strategy>
