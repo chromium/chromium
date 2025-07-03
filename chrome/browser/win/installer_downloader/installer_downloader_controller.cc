@@ -174,6 +174,12 @@ void InstallerDownloaderController::OnEligibilityReady(
     return;
   }
 
+  // The infobar should not be shown on guest profiles.
+  if (Profile::FromBrowserContext(contents->GetBrowserContext())
+          ->IsGuestSession()) {
+    return;
+  }
+
   if (visible_infobars_web_contents_.contains(contents)) {
     return;
   }
