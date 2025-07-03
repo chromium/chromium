@@ -291,10 +291,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)actionSheetItemWithAccessibilityLabel:(NSString*)label {
-  return grey_allOf(grey_accessibilityLabel(label),
-                    grey_ancestor(grey_kindOfClassName(
-                        @"_UIInterfaceActionCustomViewRepresentationView")),
-                    grey_minimumVisiblePercent(0.5), nil);
+  return grey_allOf(
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabel:label],
+      grey_ancestor(grey_kindOfClassName(
+          @"_UIInterfaceActionCustomViewRepresentationView")),
+      grey_minimumVisiblePercent(0.5), nil);
 }
 
 + (id<GREYMatcher>)actionSheetItemWithAccessibilityLabelID:(int)messageID {
