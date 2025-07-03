@@ -19,11 +19,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CONVERT_TO_8BIT_HASH_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CONVERT_TO_8BIT_HASH_READER_H_
 
@@ -51,7 +46,8 @@ struct ConvertTo8BitHashReader {
   static constexpr unsigned kCompressionFactor = 2;
   static constexpr unsigned kExpansionFactor = 1;
 
-  ALWAYS_INLINE static uint64_t Read64(const uint8_t* ptr) {
+  // SAFETY: rapidhash callback.
+  UNSAFE_BUFFER_USAGE ALWAYS_INLINE static uint64_t Read64(const uint8_t* ptr) {
     const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
     DCHECK_LE(p[0], 0xff);
     DCHECK_LE(p[1], 0xff);
@@ -76,7 +72,8 @@ struct ConvertTo8BitHashReader {
 #endif
   }
 
-  ALWAYS_INLINE static uint64_t Read32(const uint8_t* ptr) {
+  // SAFETY: rapidhash callback.
+  UNSAFE_BUFFER_USAGE ALWAYS_INLINE static uint64_t Read32(const uint8_t* ptr) {
     const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
     DCHECK_LE(p[0], 0xff);
     DCHECK_LE(p[1], 0xff);
@@ -96,7 +93,10 @@ struct ConvertTo8BitHashReader {
 #endif
   }
 
-  ALWAYS_INLINE static uint64_t ReadSmall(const uint8_t* ptr, size_t k) {
+  // SAFETY: rapidhash callback.
+  UNSAFE_BUFFER_USAGE ALWAYS_INLINE static uint64_t ReadSmall(
+      const uint8_t* ptr,
+      size_t k) {
     const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
     DCHECK_LE(p[0], 0xff);
     DCHECK_LE(p[k >> 1], 0xff);
