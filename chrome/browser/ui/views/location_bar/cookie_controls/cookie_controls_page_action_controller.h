@@ -8,8 +8,11 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
+#include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace page_actions {
 class PageActionController;
@@ -21,7 +24,16 @@ class PageActionController;
 class CookieControlsPageActionController
     : public content_settings::CookieControlsObserver {
  public:
-  explicit CookieControlsPageActionController(
+  // An interface for fetching relevant Cookie Controls bubble state.
+  class BubbleDelegate {
+   public:
+    virtual ~BubbleDelegate() = default;
+    virtual bool IsReloading() = 0;
+    virtual bool HasBubble() = 0;
+  };
+
+  CookieControlsPageActionController(
+      tabs::TabInterface& tab_interface,
       page_actions::PageActionController& page_action_controller);
 
   CookieControlsPageActionController(
@@ -38,6 +50,11 @@ class CookieControlsPageActionController
       bool should_highlight) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
+  void set_bubble_delegate_for_testing(
+      std::unique_ptr<BubbleDelegate> delegate) {
+    bubble_delegate_ = std::move(delegate);
+  }
+
  private:
   // Encapsulates values provided by `OnCookieControlsIconStatusChanged`.
   struct CookieControlsIconStatus {
@@ -50,6 +67,10 @@ class CookieControlsPageActionController
   void UpdatePageActionIcon(bool from_page_reload);
 
   const raw_ref<page_actions::PageActionController> page_action_controller_;
+  std::unique_ptr<BubbleDelegate> bubble_delegate_;
+
   CookieControlsIconStatus icon_status_;
+
+  base::CallbackListSubscription tab_insert_subscription_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_PAGE_ACTION_CONTROLLER_H_
