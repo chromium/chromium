@@ -9282,3 +9282,4 @@ crbug.com/426391960 external/wpt/soft-navigation-heuristics/lcp/tentative/broken
 
 # Gardener 2025-07-03
 crbug.com/429394126 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure Timeout ]
+crbug.com/429440406 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/device/forget/getDevices.https.window.html [ Failure Pass ]
