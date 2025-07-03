@@ -20,8 +20,8 @@ namespace gin {
 enum WrappablePointerTag : uint16_t {
   // The type tags for gin::Wrappable start at the end of the value range to
   // avoid overlaps with the type tags of blink::ScriptWrappable.
-  kFirstPointerTag = 0x7F80,
-  kTestObject = 0x7F80,        // gin::MyObject
+  kFirstPointerTag = 1501,
+  kTestObject = 1501,          // gin::MyObject
   kGamepadControllerBindings,  // content::GameControllerBindings
   kTestObject2,                // gin::MyObject2
   kLastPointerTag = kTestObject2

@@ -6396,6 +6396,10 @@ def make_wrapper_type_info(cg_context, function_name,
 
     public_defs.append(
         TextNode("""\
+  static_assert(static_cast<v8::CppHeapPointerTag>({this_tag}) <
+                 blink::kLastScriptWrappableTag,
+                 "There are more ScriptWrappable types than available type tags."
+                 "You have to increase the kLastScirptWrappableTag in wrapper_type_info.h");
   static constexpr v8::CppHeapPointerTag kThisTag =
       static_cast<v8::CppHeapPointerTag>({this_tag});
   static constexpr v8::CppHeapPointerTag kMaxSubclassTag =
@@ -6405,6 +6409,10 @@ def make_wrapper_type_info(cg_context, function_name,
 """.format(this_tag=class_like.tag,
            max_subclass_tag=class_like.max_subclass_tag)))
 
+    public_defs.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
+        ]))
     member_var_def = TextNode(
         "static const WrapperTypeInfo wrapper_type_info_;")
     member_var_def.accumulate(
