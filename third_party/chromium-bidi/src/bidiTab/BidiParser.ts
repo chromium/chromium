@@ -237,6 +237,9 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Network.ContinueWithAuthParameters {
     return Parser.Network.parseContinueWithAuthParameters(params);
   }
+  parseDisownDataParams(params: unknown): Network.DisownDataParameters {
+    return Parser.Network.parseDisownDataParameters(params);
+  }
   parseFailRequestParams(params: unknown): Network.FailRequestParameters {
     return Parser.Network.parseFailRequestParameters(params);
   }

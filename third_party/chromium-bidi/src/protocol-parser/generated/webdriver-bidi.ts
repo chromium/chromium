@@ -1344,6 +1344,7 @@ export const NetworkCommandSchema = z.lazy(() =>
     Network.ContinueRequestSchema,
     Network.ContinueResponseSchema,
     Network.ContinueWithAuthSchema,
+    Network.DisownDataSchema,
     Network.FailRequestSchema,
     Network.GetDataSchema,
     Network.ProvideResponseSchema,
@@ -1767,7 +1768,7 @@ export namespace Network {
     }),
   );
 }
-export namespace Script {
+export namespace Network {
   export const GetDataResultSchema = z.lazy(() =>
     z.object({
       bytes: Network.BytesValueSchema,

@@ -129,6 +129,12 @@ export namespace Network {
       WebDriverBidi.Network.GetDataParametersSchema,
     ) as Protocol.Network.GetDataParameters;
   }
+  export function parseDisownDataParameters(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.DisownDataParametersSchema,
+    ) as Protocol.Network.DisownDataParameters;
+  }
 
   export function parseProvideResponseParameters(params: unknown) {
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.

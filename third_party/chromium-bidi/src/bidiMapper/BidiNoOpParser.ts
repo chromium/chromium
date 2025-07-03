@@ -262,6 +262,9 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Network.ContinueWithAuthParameters {
     return params as Network.ContinueWithAuthParameters;
   }
+  parseDisownDataParams(params: unknown): Network.DisownDataParameters {
+    return params as Network.DisownDataParameters;
+  }
   parseFailRequestParams(params: unknown): Network.FailRequestParameters {
     return params as Network.FailRequestParameters;
   }
