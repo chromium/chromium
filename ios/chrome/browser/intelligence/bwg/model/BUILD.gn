@@ -7,20 +7,13 @@ source_set("model") {
     "bwg_link_opening_delegate.h",
     "bwg_link_opening_handler.h",
     "bwg_link_opening_handler.mm",
-    "bwg_service.h",
-    "bwg_service.mm",
     "bwg_session_delegate.h",
     "bwg_session_handler.h",
     "bwg_session_handler.mm",
   ]
   deps = [
     ":tab_helper",
-    "//components/keyed_service/core",
-    "//components/prefs",
-    "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/url_loading/model",
     "//ios/web/public",
@@ -57,12 +50,30 @@ source_set("tab_helper") {
     "bwg_tab_helper.mm",
   ]
   deps = [
+    ":bwg_service",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",
+    "//ios/web/util",
+  ]
+}
+
+source_set("bwg_service") {
+  sources = [
+    "bwg_service.h",
+    "bwg_service.mm",
+  ]
+  deps = [
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 }
 
@@ -72,7 +83,7 @@ source_set("bwg_service_factory") {
     "bwg_service_factory.mm",
   ]
   deps = [
-    ":model",
+    ":bwg_service",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/profile",
@@ -96,7 +107,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "bwg_service_unittest.mm" ]
   deps = [
-    ":model",
+    ":bwg_service",
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",

@@ -4,4 +4,5 @@ include_rules = [
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
   "+ios/chrome/browser/url_loading/model/url_loading_params.h",
+  "+ios/web/util/content_type_util.h",
 ]

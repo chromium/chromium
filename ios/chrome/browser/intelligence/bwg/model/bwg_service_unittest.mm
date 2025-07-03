@@ -79,7 +79,7 @@ TEST_F(BwgServiceTest, IsEligibleForBWG_WhenUserIsEligible) {
   SignInAndSetCapability(true);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
 
-  EXPECT_TRUE(bwg_service_->IsEligibleForBWG());
+  EXPECT_TRUE(bwg_service_->IsEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/true,
                                        /*expected_count=*/1);
@@ -91,7 +91,7 @@ TEST_F(BwgServiceTest, IsEligibleForBWG_IneligibleByCapability) {
   SignInAndSetCapability(false);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
 
-  EXPECT_FALSE(bwg_service_->IsEligibleForBWG());
+  EXPECT_FALSE(bwg_service_->IsEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/false,
                                        /*expected_count=*/1);
@@ -102,7 +102,7 @@ TEST_F(BwgServiceTest, IsEligibleForBWG_IneligibleByPolicy) {
   SignInAndSetCapability(true);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 1);
 
-  EXPECT_FALSE(bwg_service_->IsEligibleForBWG());
+  EXPECT_FALSE(bwg_service_->IsEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/false,
                                        /*expected_count=*/1);
@@ -115,7 +115,7 @@ TEST_F(BwgServiceTest, IsEligibleForBWG_IneligibleWhenSignedOut) {
   EXPECT_FALSE(
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  EXPECT_FALSE(bwg_service_->IsEligibleForBWG());
+  EXPECT_FALSE(bwg_service_->IsEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/false,
                                        /*expected_count=*/1);

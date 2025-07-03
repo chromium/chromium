@@ -30,6 +30,9 @@ class BwgTabHelper : public web::WebStateObserver,
   // Removes the associated WebState's session from storage.
   void DeleteBwgSessionInStorage();
 
+  // Whether BWG is available for the current web state.
+  bool IsBwgAvailableForWebState();
+
   // Gets the client and server IDs for the BWG session for the associated
   // WebState. server ID is optional because it may not be found or is expired.
   std::string GetClientId();

@@ -30,6 +30,7 @@ include_rules = [
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_util.h",
+  "+ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_entrypoint_view.h",
   "+ios/chrome/browser/omnibox/public"

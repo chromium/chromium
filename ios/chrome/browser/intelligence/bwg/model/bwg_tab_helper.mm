@@ -9,12 +9,17 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/util/content_type_util.h"
+#import "url/gurl.h"
 
 BwgTabHelper::BwgTabHelper(web::WebState* web_state) : web_state_(web_state) {
   web_state_observation_.Observe(web_state);
@@ -32,6 +37,25 @@ void BwgTabHelper::CreateOrUpdateBwgSessionInStorage(std::string server_id) {
 
 void BwgTabHelper::DeleteBwgSessionInStorage() {
   CleanupSessionFromPrefs(GetClientId());
+}
+
+bool BwgTabHelper::IsBwgAvailableForWebState() {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+
+  // The BWG Service determines whether the profile is eligible.
+  BwgService* bwg_service = BwgServiceFactory::GetForProfile(profile);
+  const bool is_profile_eligible =
+      !profile->IsOffTheRecord() && bwg_service->IsEligibleForBwg();
+
+  // The web state is eligible for HTML and images that use http/https schemas,
+  const GURL& url = web_state_->GetVisibleURL();
+  const std::string mime_type = web_state_->GetContentsMimeType();
+  const BOOL is_web_state_eligible =
+      url.SchemeIsHTTPOrHTTPS() &&
+      (web::IsContentTypeHtml(mime_type) || web::IsContentTypeImage(mime_type));
+
+  return is_profile_eligible && is_web_state_eligible;
 }
 
 std::string BwgTabHelper::GetClientId() {

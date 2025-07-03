@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/follow/model/follow_menu_updater.h"
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_util.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -708,7 +709,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.AIPrototypeAction = [self openAIPrototypeAction];
   }
 
-  if (IsPageActionMenuEnabled()) {
+  if ([self isAIHubAvailable]) {
     self.askBWGAction = [self openAskBWGAction];
   }
 
@@ -1763,6 +1764,20 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 }
 
+/// Returns whether the AI Hub is currently available for the web state.
+- (BOOL)isAIHubAvailable {
+  if (!IsPageActionMenuEnabled()) {
+    return NO;
+  }
+  if (_webState) {
+    BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(_webState);
+    if (BWGTabHelper) {
+      return BWGTabHelper->IsBwgAvailableForWebState();
+    }
+  }
+  return NO;
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
@@ -2116,7 +2131,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     actions.push_back(overflow_menu::ActionType::AIPrototype);
   }
 
-  if (IsPageActionMenuEnabled()) {
+  if ([self isAIHubAvailable]) {
     actions.push_back(overflow_menu::ActionType::AskBWG);
   }
 

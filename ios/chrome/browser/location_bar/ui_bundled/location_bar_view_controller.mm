@@ -282,7 +282,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
         forControlEvents:UIControlEventTouchUpInside];
     [self.layoutGuideCenter referenceView:_pageActionMenuEntrypointView
                                 underName:kPageActionMenuEntrypointGuide];
-  } else if (IsLensOverlayAvailable(_profilePrefs)) {
+  }
+
+  if (IsLensOverlayAvailable(_profilePrefs)) {
     _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc]
         initWithProfilePrefs:_profilePrefs];
     [self.layoutGuideCenter referenceView:_lensOverlayPlaceholderView

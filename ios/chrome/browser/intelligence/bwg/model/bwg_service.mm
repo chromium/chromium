@@ -18,15 +18,21 @@ BwgService::BwgService(signin::IdentityManager* identity_manager,
 
 BwgService::~BwgService() = default;
 
-bool BwgService::IsEligibleForBWG() {
-  AccountCapabilities capabilities =
-      identity_manager_
-          ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin))
-          .capabilities;
+bool BwgService::IsEligibleForBwg() {
+  AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 
+  // If the account info was not found, the user is likely not authenticated.
+  bool has_account_info = !account_info.IsEmpty();
+
+  // Checks whether the account capabilities permit model execution.
   bool can_use_model_execution =
-      capabilities.can_use_model_execution_features() == signin::Tribool::kTrue;
+      has_account_info
+          ? account_info.capabilities.can_use_model_execution_features() ==
+                signin::Tribool::kTrue
+          : false;
+
+  // Checks the enterprise policy.
   bool is_disabled_by_policy =
       pref_service_->GetInteger(prefs::kGeminiEnabledByPolicy) == 1;
 

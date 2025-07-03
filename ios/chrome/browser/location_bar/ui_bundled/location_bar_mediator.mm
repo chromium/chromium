@@ -8,6 +8,7 @@
 #import "components/google/core/common/google_util.h"
 #import "components/lens/lens_url_utils.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
@@ -198,7 +199,8 @@ const CGFloat kIconPointSize = 16.0;
 
 #pragma mark - Private
 
-- (bool)isLensOverlayAvailable {
+/// Returns whether the Lens overlay is currently available for the web state.
+- (BOOL)isLensOverlayAvailable {
   if (_webStateList) {
     web::WebState* webState = _webStateList->GetActiveWebState();
     if (webState) {
@@ -207,7 +209,24 @@ const CGFloat kIconPointSize = 16.0;
       return IsLensOverlayAvailable(profile->GetPrefs());
     }
   }
-  return false;
+  return NO;
+}
+
+/// Returns whether the AI Hub is currently available for the web state.
+- (BOOL)isAIHubAvailable {
+  if (!IsPageActionMenuEnabled()) {
+    return NO;
+  }
+  if (_webStateList) {
+    web::WebState* webState = _webStateList->GetActiveWebState();
+    if (webState) {
+      BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
+      if (BWGTabHelper) {
+        return BWGTabHelper->IsBwgAvailableForWebState();
+      }
+    }
+  }
+  return NO;
 }
 
 /// Updates the placeholder.
@@ -223,7 +242,7 @@ const CGFloat kIconPointSize = 16.0;
     // necessary.
   }
 
-  if (IsPageActionMenuEnabled()) {
+  if ([self isAIHubAvailable]) {
     [self.consumer
         setPlaceholderType:LocationBarPlaceholderType::kPageActionMenu];
     return;

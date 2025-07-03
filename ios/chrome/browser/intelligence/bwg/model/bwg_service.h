@@ -22,8 +22,7 @@ class BwgService : public KeyedService {
   ~BwgService() override;
 
   // Returns whether the current profile is eligible for BWG.
-  // TODO(crbug.com/419066154): Use this function to show the entry point.
-  bool IsEligibleForBWG();
+  bool IsEligibleForBwg();
 
  private:
   // Identity manager used to check account capabilities.
