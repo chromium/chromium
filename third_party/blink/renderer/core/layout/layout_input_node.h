@@ -262,8 +262,9 @@ class CORE_EXPORT LayoutInputNode {
   LayoutUnit DefaultIntrinsicContentInlineSize() const {
     return box_->DefaultIntrinsicContentInlineSize();
   }
-  LayoutUnit DefaultIntrinsicContentBlockSize() const {
-    return box_->DefaultIntrinsicContentBlockSize();
+  LayoutUnit DefaultIntrinsicContentBlockSize(
+      bool children_have_geometry) const {
+    return box_->DefaultIntrinsicContentBlockSize(children_have_geometry);
   }
 
   bool ChildLayoutBlockedByDisplayLock() const {

@@ -1380,7 +1380,8 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
   return kIndefiniteSize;
 }
 
-LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
+LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize(
+    bool children_have_geometry) const {
   NOT_DESTROYED();
 
   auto effective_appearance = StyleRef().EffectiveAppearance();
@@ -1397,6 +1398,9 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
   }
   if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
     if (!select->UsesMenuList()) {
+      if (!children_have_geometry) {
+        return kIndefiniteSize;
+      }
       // TODO(crbug.com/357649033): Consider not doing this when in base
       // appearance mode by using a presentational style for the size attribute
       // instead.
