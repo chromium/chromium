@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_controls_view.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -75,7 +76,7 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
 #pragma mark - UI actions
 
 - (void)hideReaderModeOptions {
-  // TODO(crbug.com/409941529): Hide Reader mode options with commands.
+  [self.readerModeOptionsHandler hideReaderModeOptions];
 }
 
 - (void)hideReaderMode {
@@ -94,6 +95,9 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
           initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                                target:self
                                action:@selector(hideReaderModeOptions)];
+  contentViewController.navigationItem.rightBarButtonItem
+      .accessibilityIdentifier =
+      kReaderModeOptionsCloseButtonAccessibilityIdentifier;
   contentViewController.view.accessibilityIdentifier =
       kReaderModeOptionsViewAccessibilityIdentifier;
   contentViewController.view.backgroundColor =

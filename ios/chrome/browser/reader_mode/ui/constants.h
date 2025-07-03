@@ -41,6 +41,9 @@ extern NSString* const kReaderModeOptionsDarkThemeButtonAccessibilityIdentifier;
 extern NSString* const
     kReaderModeOptionsSepiaThemeButtonAccessibilityIdentifier;
 
+// The accessibility identifier for the close button.
+extern NSString* const kReaderModeOptionsCloseButtonAccessibilityIdentifier;
+
 // Reader mode color themes helpers.
 UIColor* ReaderModeLightBackgroundColor();
 UIColor* ReaderModeLightTextColor();

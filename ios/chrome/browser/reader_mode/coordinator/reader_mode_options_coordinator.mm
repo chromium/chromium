@@ -28,6 +28,8 @@
 - (void)start {
   _viewController = [[ReaderModeOptionsViewController alloc] init];
   _viewController.presentationController.delegate = self;
+  _viewController.readerModeOptionsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ReaderModeOptionsCommands);
   DistillerService* distillerService =
       DistillerServiceFactory::GetForProfile(self.browser->GetProfile());
   _mediator = [[ReaderModeOptionsMediator alloc]

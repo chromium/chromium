@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class ReaderModeOptionsControlsView;
+@protocol ReaderModeOptionsCommands;
 @protocol ReaderModeOptionsMutator;
 
 // View controller for the reader mode options.
@@ -18,6 +19,9 @@
     ReaderModeOptionsControlsView* controlsView;
 
 @property(nonatomic, weak) id<ReaderModeOptionsMutator> mutator;
+
+@property(nonatomic, weak) id<ReaderModeOptionsCommands>
+    readerModeOptionsHandler;
 
 @end
 

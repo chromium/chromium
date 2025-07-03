@@ -55,6 +55,7 @@ source_set("options") {
     ":constants",
     "//components/dom_distiller/core/mojom",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
