@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MVT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
@@ -41,10 +42,12 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -315,13 +318,37 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
     public void testBuildListContentWhenProfileIsNotReady() {
+        List<Integer> listContent = mMediator.buildListContent();
+        assertEquals(List.of(MVT, NTP_CARDS), listContent);
+    }
+
+    @Test
+    public void testBuildListContentWhenProfileIsNotReadyAsNtpCustomizationForMvtFeatureDisabled() {
         List<Integer> listContent = mMediator.buildListContent();
         assertEquals(List.of(NTP_CARDS), listContent);
     }
 
     @Test
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
     public void testBuildListContent() {
+        // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return true.
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
+
+        assertTrue(FeedFeatures.isFeedEnabled(mProfile));
+        assertEquals(List.of(MVT, NTP_CARDS, FEED), mMediator.buildListContent());
+
+        // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return false.
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
+
+        assertFalse(FeedFeatures.isFeedEnabled(mProfile));
+        assertEquals(List.of(MVT, NTP_CARDS), mMediator.buildListContent());
+    }
+
+    @Test
+    public void testBuildListContentWithNtpCustomizationForMvtFeatureDisabled() {
         // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return true.
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);

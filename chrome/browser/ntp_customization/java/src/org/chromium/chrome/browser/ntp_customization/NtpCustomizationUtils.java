@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MVT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 
@@ -59,6 +60,8 @@ public class NtpCustomizationUtils {
         switch (type) {
             case MAIN:
                 return R.string.ntp_customization_main_bottom_sheet;
+            case MVT:
+                return R.string.ntp_customization_mvt_bottom_sheet;
             case NTP_CARDS:
                 return R.string.ntp_customization_ntp_cards_bottom_sheet;
             case FEED:
@@ -80,6 +83,8 @@ public class NtpCustomizationUtils {
         switch (type) {
             case MAIN:
                 return R.string.ntp_customization_main_bottom_sheet_opened_full;
+            case MVT:
+                return R.string.ntp_customization_mvt_bottom_sheet_opened_full;
             case NTP_CARDS:
                 return R.string.ntp_customization_ntp_cards_bottom_sheet_opened_full;
             case FEED:

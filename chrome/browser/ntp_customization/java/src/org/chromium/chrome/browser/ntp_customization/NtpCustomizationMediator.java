@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MVT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
@@ -158,6 +159,8 @@ public class NtpCustomizationMediator {
             @Override
             public int getListItemId(int type) {
                 switch (type) {
+                    case MVT:
+                        return R.id.mvt;
                     case NTP_CARDS:
                         return R.id.ntp_cards;
                     case FEED:
@@ -172,6 +175,8 @@ public class NtpCustomizationMediator {
             @Override
             public String getListItemTitle(int type, Context context) {
                 switch (type) {
+                    case MVT:
+                        return context.getString(R.string.ntp_customization_mvt_settings_title);
                     case NTP_CARDS:
                         return context.getString(R.string.home_modules_configuration);
                     case FEED:
@@ -188,6 +193,10 @@ public class NtpCustomizationMediator {
             public @Nullable String getListItemSubtitle(int type, Context context) {
                 if (type == FEED) {
                     return context.getString(getFeedSectionSubtitleId());
+                }
+
+                if (type == MVT) {
+                    return context.getString(R.string.text_on);
                 }
                 return null;
             }
@@ -237,6 +246,9 @@ public class NtpCustomizationMediator {
 
         mProfile = mProfileSupplier.get().getOriginalProfile();
         List<Integer> content = new ArrayList<>();
+        if (ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled()) {
+            content.add(MVT);
+        }
         content.add(NTP_CARDS);
         if (FeedFeatures.isFeedEnabled(mProfile)) {
             content.add(FEED);

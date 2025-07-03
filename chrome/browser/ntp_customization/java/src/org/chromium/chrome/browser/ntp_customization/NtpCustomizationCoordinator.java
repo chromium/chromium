@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MVT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
@@ -24,7 +25,9 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator;
+import org.chromium.chrome.browser.ntp_customization.most_visited_tiles.MvtSettingsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -49,6 +52,7 @@ public class NtpCustomizationCoordinator {
     private final Supplier<Profile> mProfileSupplier;
     private final int mBottomSheetType;
     private NtpCustomizationMediator mMediator;
+    private @Nullable MvtSettingsCoordinator mMvtSettingCoordinator;
     private @MonotonicNonNull NtpCardsCoordinator mNtpCardsCoordinator;
     private @Nullable FeedSettingsCoordinator mFeedSettingsCoordinator;
     private @Nullable NtpThemeCoordinator mNtpThemeCoordinator;
@@ -58,7 +62,8 @@ public class NtpCustomizationCoordinator {
         BottomSheetType.MAIN,
         BottomSheetType.NTP_CARDS,
         BottomSheetType.FEED,
-        BottomSheetType.THEME
+        BottomSheetType.THEME,
+        BottomSheetType.MVT
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BottomSheetType {
@@ -66,7 +71,8 @@ public class NtpCustomizationCoordinator {
         int NTP_CARDS = 1;
         int FEED = 2;
         int THEME = 3;
-        int NUM_ENTRIES = 4;
+        int MVT = 4;
+        int NUM_ENTRIES = 5;
     }
 
     @IntDef({EntryPointType.MAIN_MENU, EntryPointType.TOOL_BAR, EntryPointType.NEW_TAB_PAGE})
@@ -144,6 +150,9 @@ public class NtpCustomizationCoordinator {
         if (mBottomSheetType == MAIN) {
             // The click listener for each list item in the main bottom sheet should be registered
             // before calling renderListContent().
+            if (ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled()) {
+                mMediator.registerClickListener(MVT, getOptionClickListener(MVT));
+            }
             mMediator.registerClickListener(NTP_CARDS, getOptionClickListener(NTP_CARDS));
             mMediator.registerClickListener(FEED, getOptionClickListener(FEED));
             mMediator.registerClickListener(THEME, getOptionClickListener(THEME));
@@ -195,6 +204,13 @@ public class NtpCustomizationCoordinator {
         mMediator.showBottomSheet(FEED);
     }
 
+    private void showMvtSettingCoordinator() {
+        if (mMvtSettingCoordinator == null) {
+            mMvtSettingCoordinator = new MvtSettingsCoordinator(mContext, mDelegate);
+        }
+        mMediator.showBottomSheet(MVT);
+    }
+
     private void showThemeBottomSheet() {
         if (mNtpThemeCoordinator == null) {
             mNtpThemeCoordinator =
@@ -219,6 +235,9 @@ public class NtpCustomizationCoordinator {
             }
             case THEME -> {
                 return v -> showThemeBottomSheet();
+            }
+            case MVT -> {
+                return v -> showMvtSettingCoordinator();
             }
             default -> {
                 assert false : "Bottom sheet type not supported!";
@@ -269,6 +288,9 @@ public class NtpCustomizationCoordinator {
     public void destroy() {
         mViewFlipperView.removeAllViews();
         mMediator.destroy();
+        if (mMvtSettingCoordinator != null) {
+            mMvtSettingCoordinator.destroy();
+        }
         if (mNtpCardsCoordinator != null) {
             mNtpCardsCoordinator.destroy();
         }

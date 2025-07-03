@@ -1320,6 +1320,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page customization main bottom sheet is fully opened.">
         Customize your new tab page bottom sheet opened at full height
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MVT_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the mvt bottom sheet is fully opened." is_accessibility_with_no_ui="true">
+        my shortcuts bottom sheet opened at full height
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_NTP_CARDS_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page cards bottom sheet is fully opened.">
         New tab page cards bottom sheet opened at full height
       </message>
@@ -1334,6 +1337,9 @@
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_FEED_LIST_ITEMS_TITLE" desc="Title of the list items in the new tab page customization discover feed bottom sheet">
         Manage your feed
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MVT_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the mvt bottom sheet." is_accessibility_with_no_ui="true">
+        My shortcuts bottom sheet
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the customize your new tab page bottom sheet.">
         Customize your new tab page bottom sheet
