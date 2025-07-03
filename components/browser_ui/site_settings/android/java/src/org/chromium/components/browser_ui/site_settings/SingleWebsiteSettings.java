@@ -48,6 +48,8 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -597,7 +599,13 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         Preference permissionsHeaderPref = findPreference(PREF_PERMISSIONS_HEADER);
         mMaxPermissionOrder = permissionsHeaderPref.getOrder();
         for (@ContentSettingsType.EnumType int type : SiteSettingsUtil.SETTINGS_ORDER) {
-            Preference preference = new ChromeSwitchPreference(getStyledContext());
+            Preference preference =
+                    (isOneTime(type)
+                                    && PermissionsAndroidFeatureMap.isEnabled(
+                                            PermissionsAndroidFeatureList
+                                                    .APPROXIMATE_GEOLOCATION_PERMISSION))
+                            ? new ChromeImageViewPreference(getStyledContext())
+                            : new ChromeSwitchPreference(getStyledContext());
             preference.setKey(getPreferenceKey(type));
 
             if (type == ContentSettingsType.ADS) {
@@ -1279,20 +1287,34 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             boolean isOneTime) {
         if (value == null) return;
         setUpPreferenceCommon(preference, value);
-
-        ChromeSwitchPreference switchPreference = (ChromeSwitchPreference) preference;
+        preference.setOnPreferenceChangeListener(this);
         @ContentSettingsType.EnumType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
-        switchPreference.setChecked(value == getEnabledValue(contentType));
-        switchPreference.setSummary(
+        preference.setSummary(
                 isEmbargoed
                         ? getString(R.string.automatically_blocked)
                         : getString(ContentSettingsResources.getCategorySummary(value, isOneTime)));
-        switchPreference.setOnPreferenceChangeListener(this);
-        if (contentType == mHighlightedPermission) {
-            switchPreference.setBackgroundColor(
-                    AppCompatResources.getColorStateList(getContext(), mHighlightColor)
-                            .getDefaultColor());
+        if (preference instanceof ChromeImageViewPreference) {
+            ChromeImageViewPreference oneTimePreference = (ChromeImageViewPreference) preference;
+            oneTimePreference.setImageView(
+                    R.drawable.material_ic_close_24dp,
+                    R.string.website_settings_revoke_permission,
+                    (View view) -> {
+                        // TODO(crbug.com/418941286): Revoke the permission by calling
+                        // onPreferenceChanged() with the new value.
+                        getPreferenceScreen().removePreference(oneTimePreference);
+                    });
+            if (contentType == mHighlightedPermission) {
+                oneTimePreference.setBackgroundColor(mHighlightColor);
+            }
+        } else {
+            ChromeSwitchPreference switchPreference = (ChromeSwitchPreference) preference;
+            switchPreference.setChecked(value == getEnabledValue(contentType));
+            if (contentType == mHighlightedPermission) {
+                switchPreference.setBackgroundColor(
+                        AppCompatResources.getColorStateList(getContext(), mHighlightColor)
+                                .getDefaultColor());
+            }
         }
     }
 

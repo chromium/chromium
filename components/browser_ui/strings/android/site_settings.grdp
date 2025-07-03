@@ -186,6 +186,9 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PERMISSION_TITLE" desc="Label as the title for the CPSS permission prompt.">
     How to show requests
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_REVOKE_PERMISSION" desc="Label for X button to revoke one time permission.">
+    Revoke permission
+  </message>
 
   <!-- Site settings: general category strings -->
 
