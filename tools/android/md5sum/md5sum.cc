@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 // Md5sum implementation for Android. In gzip mode, takes in a list of files,
-// and outputs a list of Md5sums in the same order. Otherwise,
+// and outputs a list of the first halves of their md5sums in the same order.
+// Otherwise, emits the full md5 hash of the files named in argv.
 
 #include <dirent.h>
 #include <stddef.h>
@@ -17,13 +18,26 @@
 
 #include "base/base64.h"
 #include "base/containers/heap_array.h"
-#include "base/hash/md5.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "crypto/obsolete/md5.h"
 #include "third_party/zlib/google/compression_utils_portable.h"
+
+// This function is in this odd namespace so it can be friended from
+// crypto/obsolete/md5.h.
+namespace android_tools {
+crypto::obsolete::Md5 MakeMd5HasherForMd5sumTool() {
+  return {};
+}
+}  // namespace android_tools
 
 namespace {
 
 // Only used in the gzip mode.
 const char kFilePathDelimiter = ';';
+
+// Note: this value is letters of the hex encoding of the hash, *not* bytes of
+// the hash, so in gzip mode this tool only emits the first 64 bits of the hash.
 const int kMD5HashLength = 16;
 
 // Returns whether |path|'s MD5 was successfully written to |digest_string|.
@@ -33,13 +47,13 @@ bool MD5Sum(const std::string& path, std::string* digest_string) {
     std::cerr << "Could not open file " << path << std::endl;
     return false;
   }
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
+
+  crypto::obsolete::Md5 hasher = android_tools::MakeMd5HasherForMd5sumTool();
   const size_t kBufferSize = 1 << 16;
   auto buf = base::HeapArray<char>::Uninit(kBufferSize);
   size_t len;
   while ((len = fread(buf.data(), 1, buf.size(), fd)) > 0) {
-    base::MD5Update(&ctx, std::string_view(buf.data(), len));
+    hasher.Update(std::string_view(buf.data(), len));
   }
   if (ferror(fd)) {
     fclose(fd);
@@ -47,9 +61,7 @@ bool MD5Sum(const std::string& path, std::string* digest_string) {
     return false;
   }
   fclose(fd);
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-  *digest_string = base::MD5DigestToBase16(digest);
+  *digest_string = base::ToLowerASCII(base::HexEncode(hasher.Finish()));
   return true;
 }
 

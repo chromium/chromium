@@ -23,6 +23,10 @@ crypto::obsolete::Md5 MakeMd5HasherForZeroconf();
 std::string ServerPrinterId(const std::string& url);
 }  // namespace ash::printing
 
+namespace android_tools {
+crypto::obsolete::Md5 MakeMd5HasherForMd5sumTool();
+}
+
 namespace bookmarks {
 class BookmarkCodec;
 }  // namespace bookmarks
@@ -95,6 +99,7 @@ class CRYPTO_EXPORT Md5 {
 
   // The friends listed here are the areas required to continue using MD5 for
   // compatibility with existing specs, on-disk data, or similar.
+  friend Md5 android_tools::MakeMd5HasherForMd5sumTool();
   friend Md5 policy::MakeMd5HasherForPolicyEventId();
   friend Md5 drive::util::MakeMd5HasherForDriveApi();
   friend Md5 extensions::image_writer::MakeMd5HasherForImageWriter();

@@ -44,6 +44,7 @@ executable("md5sum_bin") {
   sources = [ "md5sum.cc" ]
   deps = [
     "//base",
+    "//crypto",
     "//third_party/zlib/google:compression_utils_portable",
   ]
 }
