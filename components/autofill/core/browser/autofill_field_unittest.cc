@@ -578,8 +578,8 @@ INSTANTIATE_TEST_SUITE_P(
             .html_field_type = HtmlFieldType::kUnspecified,
             .server_type = PASSPORT_NAME_TAG,
             .heuristic_type = NAME_FIRST,
-            .expected_result = NAME_FIRST,
-            .expected_source = AutofillPredictionSource::kHeuristics},
+            .expected_result = PASSPORT_NAME_TAG,
+            .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
         AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kUnspecified,
             .server_type = PASSPORT_NAME_TAG,

@@ -417,12 +417,13 @@ TEST_F(FormFillerTest, UndoSavesFormFillingData) {
 
 TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
   FormData form = FormSeen(
-      {.fields = {{.role = PASSPORT_NAME_TAG, .heuristic_type = NAME_FULL},
-                  {.role = PASSPORT_ISSUING_COUNTRY,
-                   .heuristic_type = ADDRESS_HOME_COUNTRY},
-                  {.role = PASSPORT_NUMBER},
-                  {.role = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
-                  {.role = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}});
+      {.fields = {
+           {.server_type = PASSPORT_NUMBER},
+           {.server_type = NO_SERVER_DATA, .heuristic_type = NAME_FULL},
+           {.server_type = PASSPORT_ISSUING_COUNTRY,
+            .heuristic_type = ADDRESS_HOME_COUNTRY},
+           {.server_type = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
+           {.server_type = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}});
 
   auto safe_fields = base::MakeFlatSet<FieldGlobalId>(
       form.fields(), {}, &FormFieldData::global_id);
@@ -432,7 +433,7 @@ TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
 
   EntityInstance passport = test::GetPassportEntityInstance();
   browser_autofill_manager_->FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
       &passport, AutofillTriggerSource::kAutofillAi);
   browser_autofill_manager_->UndoAutofill(mojom::ActionPersistence::kFill, form,
                                           form.fields().front());

@@ -58,6 +58,13 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, this makes the autofill classification logic prefer the
+// AutofillAi predictions sent via the server response over local heuristic
+// predictions.
+BASE_FEATURE(kAutofillAiPreferModelResponseOverHeuristics,
+             "AutofillAiPreferModelResponseOverHeuristics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled (and if `AutofillAiServerModel` is also enabled), this ignores
 // the `may_run_server_model` boolean sent by the Autofill server and, instead,
 // queries the server model for every encountered form that is not already
