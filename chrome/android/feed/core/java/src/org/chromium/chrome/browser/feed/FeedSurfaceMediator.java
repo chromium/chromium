@@ -1323,7 +1323,7 @@ public class FeedSurfaceMediator
     @Override
     public boolean isScrollViewInitialized() {
         RecyclerView recyclerView = mCoordinator.getRecyclerView();
-        return recyclerView != null && recyclerView.getHeight() > 0;
+        return recyclerView != null && (!mFeedEnabled || recyclerView.getHeight() > 0);
     }
 
     @Override
