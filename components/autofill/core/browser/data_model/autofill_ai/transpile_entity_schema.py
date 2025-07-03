@@ -164,8 +164,12 @@ def generate_cpp_functions(schema):
   yield '  switch (name_) {'
   for entity in schema:
     yield f'    case {entity_name(entity["name"])}: {{'
-    yield f'      static constexpr auto as = std::array{{{", ".join(attribute_dense_set(entity["name"], attributes) for attributes in entity["merge constraints"])}}};'
-    yield f'      return as;'
+    merge_constraints = entity.get("merge constraints", [])
+    if merge_constraints:
+      yield f'      static constexpr auto as = std::array{{{", ".join(attribute_dense_set(entity["name"], attributes) for attributes in merge_constraints)}}};'
+      yield f'      return as;'
+    else:
+      yield f'     return {{}};'
     yield f'    }}'
   yield '  }'
   yield '  NOTREACHED();'
@@ -174,8 +178,9 @@ def generate_cpp_functions(schema):
   yield '  switch (name_) {'
   for entity in schema:
     yield f'    case {entity_name(entity["name"])}: {{'
-    if entity.get("strike keys", []):
-      yield f'      static constexpr auto as = std::array{{{", ".join(attribute_dense_set(entity["name"], attributes) for attributes in entity.get("strike keys", []))}}};'
+    strike_keys = entity.get("strike keys", [])
+    if strike_keys:
+      yield f'      static constexpr auto as = std::array{{{", ".join(attribute_dense_set(entity["name"], attributes) for attributes in strike_keys)}}};'
       yield f'      return as;'
     else:
       yield f'      return {{}};'
