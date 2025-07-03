@@ -7,10 +7,12 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -244,6 +246,30 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObservers) {
             tab_helper->RemoveObserver(&mock_observer);
           }));
   ReaderModeTabHelper::RemoveFromWebState(web_state_.get());
+}
+
+// Tests that ReaderMode WebState has the correct TabHelpers attached for edit
+// menu.
+TEST_F(ReaderModeTabHelperTest, TestTabHelpers) {
+  EditMenuTabHelper::CreateForWebState(web_state());
+
+  // Set a non-empty DOM Distiller result.
+  GURL test_url("https://test.url/");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+
+  // Initially, no observer methods should be called.
+  WaitForReaderModeContentReady();
+
+  reader_mode_tab_helper()->SetActive(true);
+  WaitForReaderModeContentReady();
+  web::WebState* reader_mode_web_state =
+      reader_mode_tab_helper()->GetReaderModeWebState();
+  EXPECT_NE(nullptr, reader_mode_web_state);
+  EXPECT_NE(nullptr, EditMenuTabHelper::FromWebState(reader_mode_web_state));
+  EXPECT_NE(nullptr,
+            WebSelectionTabHelper::FromWebState(reader_mode_web_state));
 }
 
 class ReaderModeTabHelperWithEligibilityTest

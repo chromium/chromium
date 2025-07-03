@@ -128,9 +128,8 @@
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
   _searchWithMediator =
-      [[SearchWithMediator alloc] initWithWebStateList:webStateList
-                                    templateURLService:templateURLService
-                                             incognito:incognito];
+      [[SearchWithMediator alloc] initWithTemplateURLService:templateURLService
+                                                   incognito:incognito];
 
   id<ApplicationCommands> applicationCommandsHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);

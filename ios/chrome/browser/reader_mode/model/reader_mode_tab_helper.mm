@@ -13,6 +13,7 @@
 #import "base/time/time.h"
 #import "components/dom_distiller/core/extraction_utils.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -446,6 +448,17 @@ void ReaderModeTabHelper::CreateReaderModeWebState() {
   ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
       ->SetDelegate(this);
   reader_mode_web_state_->SetWebUsageEnabled(true);
+
+  // Inherit edit menu from the current webState.
+  EditMenuTabHelper* main_tab_edit_menu_builder_tab_helper =
+      EditMenuTabHelper::FromWebState(web_state_);
+  if (main_tab_edit_menu_builder_tab_helper) {
+    EditMenuTabHelper::CreateForWebState(reader_mode_web_state_.get());
+    EditMenuTabHelper::FromWebState(reader_mode_web_state_.get())
+        ->SetEditMenuBuilder(
+            main_tab_edit_menu_builder_tab_helper->GetEditMenuBuilder());
+    WebSelectionTabHelper::CreateForWebState(reader_mode_web_state_.get());
+  }
 
   std::unique_ptr<ReaderModeDistillerPage> distiller_page =
       std::make_unique<ReaderModeDistillerPage>(web_state_);

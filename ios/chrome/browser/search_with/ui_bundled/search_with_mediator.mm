@@ -69,19 +69,14 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 @end
 
 @implementation SearchWithMediator {
-  // The Browser's WebStateList.
-  base::WeakPtr<WebStateList> _webStateList;
-
   // The service to retrieve default search engine URL.
   raw_ptr<TemplateURLService> _templateURLService;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                  templateURLService:(TemplateURLService*)templateURLService
-                           incognito:(BOOL)incognito {
+- (instancetype)initWithTemplateURLService:
+                    (TemplateURLService*)templateURLService
+                                 incognito:(BOOL)incognito {
   if ((self = [super init])) {
-    CHECK(webStateList);
-    _webStateList = webStateList->AsWeakPtr();
     _incognito = incognito;
     _templateURLService = templateURLService;
   }
@@ -92,18 +87,12 @@ void LogSelectedNumberChar(NSUInteger textLength) {
   _templateURLService = nullptr;
 }
 
-- (WebSelectionTabHelper*)webSelectionTabHelper {
-  web::WebState* webState =
-      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+- (BOOL)canPerformSearchInWebState:(web::WebState*)webState {
   if (!webState) {
-    return nullptr;
+    return NO;
   }
-  WebSelectionTabHelper* helper = WebSelectionTabHelper::FromWebState(webState);
-  return helper;
-}
-
-- (BOOL)canPerformSearch {
-  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
+  WebSelectionTabHelper* tabHelper =
+      WebSelectionTabHelper::FromWebState(webState);
   if (!tabHelper || !tabHelper->CanRetrieveSelectedText() ||
       !self.applicationCommandHandler || !_templateURLService ||
       !_templateURLService->GetDefaultSearchProvider()) {
@@ -113,21 +102,25 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 }
 
 - (NSString*)buttonTitle {
-  if (![self canPerformSearch]) {
-    return @"";
-  }
   // Default value
   return l10n_util::GetNSStringF(
       IDS_IOS_SEARCH_WITH_TITLE_SEARCH_WITH,
       _templateURLService->GetDefaultSearchProvider()->short_name());
 }
 
-- (void)addItemWithCompletion:(ProceduralBlockWithItemArray)completion {
-  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
-  if (![self canPerformSearch] || !tabHelper) {
+- (void)addItemForWebState:(base::WeakPtr<web::WebState>)weakWebState
+            withCompletion:(ProceduralBlockWithItemArray)completion {
+  if (!weakWebState) {
     completion(@[]);
     return;
   }
+  web::WebState* webState = weakWebState.get();
+  if (![self canPerformSearchInWebState:webState]) {
+    completion(@[]);
+    return;
+  }
+  WebSelectionTabHelper* tabHelper =
+      WebSelectionTabHelper::FromWebState(webState);
 
   __weak __typeof(self) weakSelf = self;
   tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
@@ -141,7 +134,7 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 
 - (void)addItemWithResponse:(WebSelectionResponse*)response
                  completion:(ProceduralBlockWithItemArray)completion {
-  if (!response.valid || ![self canPerformSearch]) {
+  if (!response.valid) {
     completion(@[]);
     return;
   }
@@ -171,7 +164,8 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 }
 
 - (void)triggerSearchForText:(NSString*)text {
-  if (![self canPerformSearch]) {
+  if (!_templateURLService ||
+      !_templateURLService->GetDefaultSearchProvider()) {
     return;
   }
   GURL searchURL =
@@ -201,15 +195,18 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 
 - (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder
                       inWebState:(web::WebState*)webState {
-  // TODO(crbug.com/427168159): use webState.
-  if (![self canPerformSearch]) {
+  if (!webState) {
+    return;
+  }
+  if (![self canPerformSearchInWebState:webState]) {
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   ProceduralBlockWithBlockWithItemArray provider =
       ^(ProceduralBlockWithItemArray completion) {
-        [weakSelf addItemWithCompletion:completion];
+        [weakSelf addItemForWebState:weakWebState withCompletion:completion];
       };
   UIDeferredMenuElement* deferredMenuElement =
       [UIDeferredMenuElement elementWithProvider:provider];
