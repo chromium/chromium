@@ -26,6 +26,7 @@
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::ActionSheetItemWithAccessibilityLabelId;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using manual_fill::ChipButton;
 using manual_fill::ExpandedManualFillHeaderView;
@@ -309,7 +310,7 @@ id<GREYMatcher> AutofillFormButton() {
 
   // Acknowledge concerns using other passwords on a website.
   id<GREYMatcher> confirmDialogButton =
-      grey_allOf(ButtonWithAccessibilityLabelId(
+      grey_allOf(ActionSheetItemWithAccessibilityLabelId(
                      IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE),
                  grey_interactable(), nullptr);
   [[EarlGrey selectElementWithMatcher:confirmDialogButton]
