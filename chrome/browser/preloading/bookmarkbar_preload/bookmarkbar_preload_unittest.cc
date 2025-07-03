@@ -59,6 +59,8 @@ class BookmarkBarPreloadPipelineManagerTest
                   "&oq=" + original_query);
   }
 
+  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
+
  protected:
   GURL GetUrl(const std::string& path) { return test_server_.GetURL(path); }
 
