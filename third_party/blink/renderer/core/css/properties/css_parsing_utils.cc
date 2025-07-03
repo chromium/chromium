@@ -770,8 +770,12 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
       } else if (filter_type == CSSValueID::kBrightness) {
         // FIXME (crbug.com/397061): Support calc expressions like
         // calc(10% + 0.5)
-        parsed_value = ConsumePercent(stream, context,
-                                      CSSPrimitiveValue::ValueRange::kAll);
+        parsed_value = ConsumePercent(
+            stream, context,
+            RuntimeEnabledFeatures::
+                    CSSFilterBrightnessNonNegativePercentageEnabled()
+                ? CSSPrimitiveValue::ValueRange::kNonNegative
+                : CSSPrimitiveValue::ValueRange::kAll);
         if (!parsed_value) {
           parsed_value = ConsumeNumber(
               stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
