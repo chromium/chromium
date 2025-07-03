@@ -16,18 +16,23 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.PackageManagerWrapper;
 
 /** JUnit test rule that takes care of setup and teardown for automotive-specific tests. */
-public class AutomotiveContextWrapperTestRule implements TestRule {
-    private AutomotiveTestContext mContext;
+public class OverrideContextWrapperTestRule implements TestRule {
+    private OverrideTestContext mContext;
 
-    private class AutomotiveTestContext extends ContextWrapper {
+    private class OverrideTestContext extends ContextWrapper {
         private Boolean mIsAutomotive;
+        private Boolean mIsDesktop;
 
-        public AutomotiveTestContext(Context baseContext) {
+        public OverrideTestContext(Context baseContext) {
             super(baseContext);
         }
 
         public void setIsAutomotive(boolean isAutomotive) {
             this.mIsAutomotive = isAutomotive;
+        }
+
+        public void setIsDesktop(boolean isDesktop) {
+            this.mIsDesktop = isDesktop;
         }
 
         @Override
@@ -37,6 +42,8 @@ public class AutomotiveContextWrapperTestRule implements TestRule {
                 public boolean hasSystemFeature(String name) {
                     if (mIsAutomotive != null && PackageManager.FEATURE_AUTOMOTIVE.equals(name)) {
                         return mIsAutomotive;
+                    } else if (mIsDesktop != null && PackageManager.FEATURE_PC.equals(name)) {
+                        return mIsDesktop;
                     }
                     return super.hasSystemFeature(name);
                 }
@@ -48,6 +55,10 @@ public class AutomotiveContextWrapperTestRule implements TestRule {
         mContext.setIsAutomotive(isAutomotive);
     }
 
+    public void setIsDesktop(boolean isDesktop) {
+        mContext.setIsDesktop(isDesktop);
+    }
+
     @Override
     public Statement apply(final Statement base, Description description) {
         return new Statement() {
@@ -55,7 +66,7 @@ public class AutomotiveContextWrapperTestRule implements TestRule {
             public void evaluate() throws Throwable {
                 // Before
                 Context contextToRestore = ContextUtils.getApplicationContext();
-                mContext = new AutomotiveTestContext(contextToRestore);
+                mContext = new OverrideTestContext(contextToRestore);
                 ContextUtils.initApplicationContextForTests(mContext);
 
                 base.evaluate();

@@ -28,6 +28,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import com.google.common.primitives.UnsignedLongs;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
@@ -35,7 +36,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -1088,7 +1088,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                         && !shouldShowReaderModePrefs(currentTab)
                         && currentTab != null
                         && currentTab.getWebContents() != null
-                        && !BuildConfig.IS_DESKTOP_ANDROID;
+                        && !DeviceInfo.isDesktop();
 
         if (!itemVisible) return null;
 

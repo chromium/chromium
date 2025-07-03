@@ -103,13 +103,6 @@ public class BuildConfig {
     public static String APK_ASSETS_SUFFIX = null;
 #endif
 
-    // Enable features that are more typically available on desktop.
-#if defined(_IS_DESKTOP_ANDROID)
-    public static boolean IS_DESKTOP_ANDROID = true;
-#else
-    public static boolean IS_DESKTOP_ANDROID;
-#endif
-
     // Controls whether or not StrictModeContext is a no-op.
 #if defined(_DISABLE_STRICT_MODE_CONTEXT)
     public static boolean DISABLE_STRICT_MODE_CONTEXT = true;

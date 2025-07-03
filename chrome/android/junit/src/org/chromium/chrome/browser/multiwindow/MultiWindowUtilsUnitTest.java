@@ -52,7 +52,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
@@ -65,7 +64,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
-import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
+import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -144,8 +143,8 @@ public class MultiWindowUtilsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
-            new AutomotiveContextWrapperTestRule();
+    public OverrideContextWrapperTestRule mOverrideContextWrapperTestRule =
+            new OverrideContextWrapperTestRule();
 
     private static final int INSTANCE_ID_0 = 0;
     private static final int INSTANCE_ID_1 = 1;
@@ -349,7 +348,7 @@ public class MultiWindowUtilsUnitTest {
 
     @Test
     public void testIsMoveOtherWindowSupported_OnAutomotive_ReturnsFalse() {
-        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        mOverrideContextWrapperTestRule.setIsAutomotive(true);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
         assertFalse(
                 "Should return false for automotive.",
@@ -909,7 +908,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testMaxInstances_DefaultValues() {
-        setupMaxInstanceCountTestConfig(/* deviceType= */ null);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
 
         // Verify default instance limit for low-memory device, using default memory threshold.
         ShadowSysUtils.setMemoryInMB(4000);
@@ -929,7 +928,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testMaxInstances_CustomInstanceLimit_HighMemoryDevice() {
-        setupMaxInstanceCountTestConfig(/* deviceType= */ null);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         Map<String, Integer> featureParams = new HashMap<>();
         featureParams.put("max_instance_limit", 50);
         updateFeatureParams(ChromeFeatureList.DISABLE_INSTANCE_LIMIT, featureParams);
@@ -943,7 +942,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testMaxInstances_CustomInstanceLimit_LowMemoryDevice() {
-        setupMaxInstanceCountTestConfig(/* deviceType= */ null);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         ShadowSysUtils.setMemoryInMB(4000);
         Map<String, Integer> featureParams = new HashMap<>();
         featureParams.put("max_instance_limit", 50);
@@ -958,7 +957,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testMaxInstances_CustomMemoryThreshold_HighMemoryDevice() {
-        setupMaxInstanceCountTestConfig(/* deviceType= */ null);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         ShadowSysUtils.setMemoryInMB(8500);
         Map<String, Integer> featureParams = new HashMap<>();
         featureParams.put("max_instance_limit_memory_threshold_mb", 8000);
@@ -973,7 +972,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testMaxInstances_CustomMemoryThreshold_LowMemoryDevice() {
-        setupMaxInstanceCountTestConfig(/* deviceType= */ null);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         ShadowSysUtils.setMemoryInMB(7500);
         Map<String, Integer> featureParams = new HashMap<>();
         featureParams.put("max_instance_limit_memory_threshold_mb", 8000);
@@ -988,7 +987,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testMaxInstances_CustomInstanceLimit_CustomMemoryThreshold_HighMemoryDevice() {
-        setupMaxInstanceCountTestConfig(/* deviceType= */ null);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         ShadowSysUtils.setMemoryInMB(8500);
         Map<String, Integer> featureParams = new HashMap<>();
         featureParams.put("max_instance_limit", 50);
@@ -1004,7 +1003,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testMaxInstances_CustomInstanceLimit_CustomMemoryThreshold_LowMemoryDevice() {
-        setupMaxInstanceCountTestConfig(/* deviceType= */ null);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         ShadowSysUtils.setMemoryInMB(7500);
         Map<String, Integer> featureParams = new HashMap<>();
         featureParams.put("max_instance_limit", 50);
@@ -1020,7 +1019,8 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testMaxInstances_XrDevice() {
-        setupMaxInstanceCountTestConfig(XR_DEVICE);
+        XrUtils.setXrDeviceForTesting(true);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         assertEquals(
                 "Instance limit on XR device is incorrect.",
                 1000,
@@ -1030,23 +1030,12 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testMaxInstances_DesktopDevice() {
-        setupMaxInstanceCountTestConfig(DESKTOP_DEVICE);
+        mOverrideContextWrapperTestRule.setIsDesktop(true);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         assertEquals(
                 "Instance limit on desktop device is incorrect.",
                 1000,
                 MultiWindowUtils.getMaxInstances());
-    }
-
-    private void setupMaxInstanceCountTestConfig(String deviceType) {
-        if (XR_DEVICE.equals(deviceType)) {
-            XrUtils.setXrDeviceForTesting(true);
-        } else if (DESKTOP_DEVICE.equals(deviceType)) {
-            BuildConfig.IS_DESKTOP_ANDROID = true;
-        } else {
-            XrUtils.setXrDeviceForTesting(false);
-            BuildConfig.IS_DESKTOP_ANDROID = false;
-        }
-        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
     }
 
     private void updateFeatureParams(String feature, Map<String, Integer> featureParams) {

@@ -263,12 +263,12 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
         False,
     ),
     BanRule(
-        pattern=(r'IS_DESKTOP_ANDROID'),
+        pattern=(r'/((DeviceInfo\.isDesktop\()|IS_DESKTOP_ANDROID)'),
         explanation=(
-            'Do not add new uses of IS_DESKTOP_ANDROID build flag until you '
-            'have the approval of tedchoc@ or twellington@. '
-            'Background: it is highly important to reduce the divergence of '
-            'features across platforms. '
+            'Do not add new uses of IS_DESKTOP_ANDROID build flag or '
+            'DeviceInfo.isDesktop() until you have the approval of tedchoc@ or '
+            'twellington@. Background: it is highly important to reduce the '
+            'divergence of features across platforms. '
             'Allowances may be granted to only the directories below: '
             '[build/, chrome/, components/, extensions/, infra/, tools/] ',
             'Note: in particular we need to avoid components shared with '

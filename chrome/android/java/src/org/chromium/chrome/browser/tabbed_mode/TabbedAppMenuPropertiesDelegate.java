@@ -20,10 +20,10 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.CallbackController;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -640,7 +640,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private boolean shouldShowPrintItem(@Nullable Tab currentTab) {
         return currentTab != null
                 && ShareUtils.shouldEnableShare(currentTab)
-                && BuildConfig.IS_DESKTOP_ANDROID
+                && DeviceInfo.isDesktop()
                 && UserPrefs.get(currentTab.getProfile()).getBoolean(Pref.PRINTING_ENABLED);
     }
 
