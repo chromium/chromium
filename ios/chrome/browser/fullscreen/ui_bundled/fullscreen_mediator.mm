@@ -111,9 +111,22 @@ void FullscreenMediator::FullscreenModelToolbarHeightsUpdated(
                                                  model_->min_toolbar_insets(),
                                                  model_->max_toolbar_insets());
   }
+  BOOL compensateFrameChangeByOffset = resizer_.compensateFrameChangeByOffset;
+  // The compensateFrameChangeByOffset property determines whether the webview's
+  // contentOffset should be adjusted to visually "pin" the web content during
+  // fullscreen transitions. This makes the content appear to move as a whole
+  // rather than scrolling internally. However, when toolbar heights are updated
+  // (as in FullscreenModelToolbarHeightsUpdated), setting
+  // compensateFrameChangeByOffset to YES would incorrectly shift the webview's
+  // contentOffset, leading to unexpected content positioning. To prevent this,
+  // compensateFrameChangeByOffset is set to NO here, ensuring the contentOffset
+  // remains unchanged during the update.
+  resizer_.compensateFrameChangeByOffset = NO;
   // Changes in the toolbar heights modifies the visible viewport so the WebView
   // needs to be resized as needed.
   [resizer_ updateForCurrentState];
+  // Restore the compensateFrameChangeByOffset property to its original value.
+  resizer_.compensateFrameChangeByOffset = compensateFrameChangeByOffset;
 }
 
 void FullscreenMediator::FullscreenModelProgressUpdated(
