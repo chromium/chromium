@@ -21,12 +21,7 @@ BASE_FEATURE(kFileSystemAccessPersistentPermissions,
 // resolves any symbolic link.
 BASE_FEATURE(kFileSystemAccessSymbolicLinkCheck,
              "FileSystemAccessSymbolicLinkCheck",
-// TODO(crbug.com/428455312): Enable for Windows
-#if BUILDFLAG(IS_WIN)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 
 }  // namespace features
