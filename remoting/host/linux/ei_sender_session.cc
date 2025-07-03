@@ -496,6 +496,8 @@ void EiSenderSession::ProcessEvents(bool shutting_down) {
       case EI_EVENT_KEYBOARD_MODIFIERS:
         // TODO(rkjnsn): Track changes to the group for the layout monitor.
         break;
+      case EI_EVENT_SYNC:
+        break;
       default:
         std::string message = base::StringPrintf(
             "Unexpected libei event type: %d", ei_event_get_type(event.get()));
