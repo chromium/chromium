@@ -7,12 +7,12 @@
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/task_id.h"
-#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/common/actor.mojom-forward.h"
 
 namespace actor::ui {
 using UiCompleteCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+
 class ActorUiStateManagerInterface {
  public:
   virtual ~ActorUiStateManagerInterface() = default;
@@ -21,13 +21,7 @@ class ActorUiStateManagerInterface {
   virtual void OnActorTaskStateChange(TaskId task_id,
                                       ActorTask::State task_state) = 0;
 
-  // Called whenever a ui event occurs.
   virtual void OnUiEvent(UiEvent event, UiCompleteCallback callback) = 0;
-
-  // Notifies the ActorUiTabController of a new `ui_tab_state`.
-  // Can be stubbed out to do nothing in tests.
-  virtual void NotifyUiTabController(tabs::TabInterface& tab,
-                                     const UiTabState& ui_tab_state) = 0;
 
   // Shows toast that notifies user the agent is working in the background.
   // Shows a maximum of kToastShownMax per profile.
