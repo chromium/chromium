@@ -1256,6 +1256,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollByRAF) {
 // Make sure that when a relevant feature of the main frame changes, e.g. the
 // frame width, that the browser is notified.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
+  if (base::FeatureList::IsEnabled(blink::features::kForceOffTextAutosizing)) {
+    GTEST_SKIP() << "Test does not apply when forcing off text autosizing.";
+  }
+
   UpdateTextAutosizerInfoProxyObserver update_text_autosizer_info_observer;
 
   blink::web_pref::WebPreferences prefs =
