@@ -1490,7 +1490,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // host is already accelerated.
   // TODO(crbug.com/340911120): if the user requested WillReadFrequently, do we
   // want to behave differently here?
-  host->EnableAccelerationForCanvas2D();
+  EnableAccelerationIfPossible();
 
   // A texture needs to exist on the GPU. If we aren't able to enable
   // acceleration, the canvas pixels live on the CPU and we weren't able to

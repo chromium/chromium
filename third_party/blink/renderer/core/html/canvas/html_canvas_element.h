@@ -270,9 +270,21 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsHibernating() const override;
   void SetTransferToGPUTextureWasInvoked() override;
   UkmParameters GetUkmParameters() override;
-  void EnableAccelerationForCanvas2D() final;
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>) override;
+
+  // This method attempts to ensure that the canvas' resource exists on the GPU.
+  // A HTMLCanvasElement can downgrade itself from GPU to CPU when readback
+  // occurs too frequently, so a canvas may exist on the CPU even if the browser
+  // is normally GPU-capable. If the canvas needed to be migrated off of the
+  // CPU, the canvas resource provider and canvas 2D layer bridge will be
+  // destroyed and recreated; when this occurs, any existing pointers to these
+  // objects will be invalidated. If the canvas resource provider did not exist
+  // at all, it may be created.  NOTE: This method might fail to enable
+  // acceleration. Clients needing to know whether it succeeded should check
+  // whether the Canvas2D resource provider is accelerated after calling this
+  // method.
+  void EnableAccelerationForCanvas2D();
 
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D();
 

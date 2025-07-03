@@ -127,7 +127,6 @@ class CORE_EXPORT OffscreenCanvas final
   void SetTransferToGPUTextureWasInvoked() override {
     transfer_to_gpu_texture_was_invoked_ = true;
   }
-  void EnableAccelerationForCanvas2D() final;
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>) override;
   void DiscardResources() override;

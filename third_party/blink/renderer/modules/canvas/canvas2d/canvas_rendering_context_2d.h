@@ -281,6 +281,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   FRIEND_TEST_ALL_PREFIXES(CanvasRenderingContext2DTestAccelerated,
                            PrepareMailboxWhenContextIsLostWithFailedRestore);
 
+  void EnableAccelerationIfPossible() override;
+
   void DrawElementInternal(Element* element,
                            double x,
                            double y,

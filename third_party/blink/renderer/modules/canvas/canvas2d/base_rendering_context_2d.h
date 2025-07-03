@@ -294,6 +294,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   bool context_restorable_{true};
 
  private:
+  virtual void EnableAccelerationIfPossible() {}
   void DrawTextInternal(const String& text,
                         double x,
                         double y,

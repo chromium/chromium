@@ -723,6 +723,10 @@ void CanvasRenderingContext2D::setHitTestRegions(
   HostAsHTMLCanvasElement()->SetHitTestRegions(std::move(result));
 }
 
+void CanvasRenderingContext2D::EnableAccelerationIfPossible() {
+  canvas()->EnableAccelerationForCanvas2D();
+}
+
 void CanvasRenderingContext2D::DrawElementInternal(
     Element* element,
     double x,

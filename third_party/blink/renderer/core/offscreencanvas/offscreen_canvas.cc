@@ -466,15 +466,6 @@ bool OffscreenCanvas::OriginClean() const {
   return origin_clean_ && !disable_reading_from_canvas_;
 }
 
-void OffscreenCanvas::EnableAccelerationForCanvas2D() {
-  CHECK(IsRenderingContext2D());
-
-  // Unlike HTML canvases, offscreen canvases don't automatically shift between
-  // CPU and GPU. Instead, we just create the resource provider for Canvas2D
-  // here - it will either be accelerated or not.
-  GetOrCreateResourceProviderForCanvas2D();
-}
-
 std::unique_ptr<CanvasResourceProvider>
 OffscreenCanvas::ReplaceResourceProviderForCanvas2D(
     std::unique_ptr<CanvasResourceProvider> new_resource_provider) {
