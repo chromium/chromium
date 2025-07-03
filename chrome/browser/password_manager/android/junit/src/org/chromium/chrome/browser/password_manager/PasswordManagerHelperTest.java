@@ -334,8 +334,9 @@ public class PasswordManagerHelperTest {
         Context context = RuntimeEnvironment.getApplication().getApplicationContext();
         assertNotNull(dialogModel);
         assertThat(
-                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1),
+                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0),
                 is(context.getString(R.string.password_manager_outdated_gms_dialog_description)));
+        assertEquals(1, dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).size());
     }
 
     @Test

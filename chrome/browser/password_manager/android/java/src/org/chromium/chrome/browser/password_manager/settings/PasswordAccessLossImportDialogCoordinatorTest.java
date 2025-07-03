@@ -86,7 +86,8 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
                 resources.getString(
                         org.chromium.chrome.browser.password_manager.R.string
                                 .access_loss_import_dialog_desc),
-                model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+                model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0));
+        assertEquals(1, model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).size());
         assertEquals(
                 resources.getString(
                         org.chromium.chrome.browser.password_manager.R.string

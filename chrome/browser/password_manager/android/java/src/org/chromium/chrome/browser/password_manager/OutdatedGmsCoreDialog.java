@@ -17,6 +17,8 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+
 /**
  * Dialog that informs user that the GMS Core needs to be updated and confirms whether the user
  * agrees to proceed with the update.
@@ -66,14 +68,13 @@ class OutdatedGmsCoreDialog {
     void show() {
         SimpleModalDialogController modalDialogController =
                 new SimpleModalDialogController(mModalDialogManager, this::onDismissedWithReason);
+        ArrayList<CharSequence> messages = new ArrayList<>();
+        messages.add(mContext.getString(R.string.password_manager_outdated_gms_dialog_description));
 
         PropertyModel dialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, modalDialogController)
-                        .with(
-                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                mContext.getString(
-                                        R.string.password_manager_outdated_gms_dialog_description))
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, messages)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 mContext.getString(

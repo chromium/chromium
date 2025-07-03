@@ -90,7 +90,8 @@ public class ConfirmationDialogHelperTest {
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         assertNotNull(model);
         assertEquals("Title", model.get(ModalDialogProperties.TITLE));
-        assertEquals("Message", model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+        assertEquals("Message", model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0));
+        assertEquals(1, model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).size());
         assertEquals(
                 model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT),
                 mActivity.getString(R.string.ok));

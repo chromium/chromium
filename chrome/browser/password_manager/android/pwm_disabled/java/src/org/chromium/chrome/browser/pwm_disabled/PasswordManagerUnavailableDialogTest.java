@@ -87,8 +87,8 @@ public class PasswordManagerUnavailableDialogTest {
                 mDialogModel.get(ModalDialogProperties.TITLE));
         assertEquals(
                 mActivity.getResources().getString(R.string.pwm_disabled_update_dialog_description),
-                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
-        assertNull(mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_2));
+                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0));
+        assertEquals(1, mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).size());
         assertEquals(
                 mActivity
                         .getResources()
@@ -115,12 +115,13 @@ public class PasswordManagerUnavailableDialogTest {
                 mActivity
                         .getResources()
                         .getString(R.string.pwm_disabled_no_gms_dialog_description_paragraph1),
-                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0));
         assertEquals(
                 mActivity
                         .getResources()
                         .getString(R.string.pwm_disabled_no_gms_dialog_description_paragraph2),
-                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_2));
+                mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(1));
+        assertEquals(2, mDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).size());
         assertEquals(
                 mActivity.getResources().getString(R.string.pwm_disabled_no_gms_dialog_button_text),
                 mDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));

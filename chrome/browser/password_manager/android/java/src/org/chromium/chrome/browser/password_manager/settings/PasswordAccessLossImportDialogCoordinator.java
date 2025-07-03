@@ -25,6 +25,8 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+
 /**
  * Shows the dialog instructing the user to import their passwords into the GMS Core after they've
  * been saved to the file on disk. It is displayed only if the user has up to date GMS Core
@@ -87,6 +89,12 @@ public class PasswordAccessLossImportDialogCoordinator {
 
     public void showImportInstructionDialog() {
         Resources resources = mContext.getResources();
+        ArrayList<CharSequence> messages = new ArrayList<>();
+        messages.add(
+                resources.getString(
+                        org.chromium.chrome.browser.password_manager.R.string
+                                .access_loss_import_dialog_desc));
+
         PropertyModel model =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, new ModalDialogController())
@@ -95,11 +103,7 @@ public class PasswordAccessLossImportDialogCoordinator {
                                 resources,
                                 org.chromium.chrome.browser.password_manager.R.string
                                         .access_loss_import_dialog_title)
-                        .with(
-                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                resources.getString(
-                                        org.chromium.chrome.browser.password_manager.R.string
-                                                .access_loss_import_dialog_desc))
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, messages)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources,

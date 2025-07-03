@@ -253,7 +253,7 @@ public class PasswordCheckupLauncherTest {
         verify(mMockPendingIntentForAccountCheckup, times(0)).send();
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         assertThat(
-                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1),
+                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).get(0),
                 is(mContext.getString(R.string.password_manager_outdated_gms_dialog_description)));
     }
 

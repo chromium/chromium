@@ -20,6 +20,9 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Helps to show a confirmation. */
 @NullMarked
 public class ConfirmationDialogHelper {
@@ -99,7 +102,9 @@ public class ConfirmationDialogHelper {
                                 ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.TITLE, title)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPHS,
+                                new ArrayList<>(List.of(message)))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 mContext.getString(confirmButtonTextId))
