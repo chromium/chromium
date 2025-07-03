@@ -27,8 +27,16 @@ BwgTabHelper::BwgTabHelper(web::WebState* web_state) : web_state_(web_state) {
 
 BwgTabHelper::~BwgTabHelper() {}
 
-void BwgTabHelper::SetBwgSessionActive(bool active) {
-  is_bwg_session_active_ = active;
+void BwgTabHelper::SetBwgUiShowing(bool showing) {
+  is_bwg_ui_showing_ = showing;
+
+  if (is_bwg_ui_showing_) {
+    is_bwg_session_active_in_background_ = false;
+  }
+}
+
+bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
+  return is_bwg_session_active_in_background_;
 }
 
 void BwgTabHelper::CreateOrUpdateBwgSessionInStorage(std::string server_id) {
@@ -102,13 +110,14 @@ void BwgTabHelper::SetBwgCommandsHandler(id<BWGCommands> handler) {
 #pragma mark - WebStateObserver
 
 void BwgTabHelper::WasShown(web::WebState* web_state) {
-  if (is_bwg_session_active_) {
+  if (is_bwg_session_active_in_background_) {
     [bwg_commands_handler_ startBWGFlow];
   }
 }
 
 void BwgTabHelper::WasHidden(web::WebState* web_state) {
-  if (is_bwg_session_active_) {
+  if (is_bwg_ui_showing_) {
+    is_bwg_session_active_in_background_ = true;
     [bwg_commands_handler_ dismissBWGFlow];
   }
 }

@@ -82,7 +82,7 @@
   }
 
   BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
-  BWGTabHelper->SetBwgSessionActive(active);
+  BWGTabHelper->SetBwgUiShowing(active);
 }
 
 @end

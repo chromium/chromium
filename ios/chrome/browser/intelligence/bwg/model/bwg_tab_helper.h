@@ -20,8 +20,11 @@ class BwgTabHelper : public web::WebStateObserver,
 
   ~BwgTabHelper() override;
 
-  // Sets the state of `is_bwg_session_active_`.
-  void SetBwgSessionActive(bool active);
+  // Sets the state of `is_bwg_ui_showing_`.
+  void SetBwgUiShowing(bool showing);
+
+  // Gets the state of `is_bwg_session_active_in_background_`.
+  bool GetIsBwgSessionActiveInBackground();
 
   // Creates, or updates, a new BWG session in storage with the current
   // timestamp for the associated WebState.
@@ -62,8 +65,13 @@ class BwgTabHelper : public web::WebStateObserver,
   // WebState this tab helper is attached to.
   raw_ptr<web::WebState> web_state_ = nullptr;
 
-  // Whether the BWG session is currently active.
-  bool is_bwg_session_active_ = false;
+  // Whether the BWG UI is currently showing.
+  bool is_bwg_ui_showing_ = false;
+
+  // Whether the BWG session is currently active in the "background", i.e. the
+  // UI is not present since another  WebState is being shown, but the current
+  // WebState has an active session.
+  bool is_bwg_session_active_in_background_ = false;
 
   // Commands handler for BWG commands.
   __weak id<BWGCommands> bwg_commands_handler_ = nil;

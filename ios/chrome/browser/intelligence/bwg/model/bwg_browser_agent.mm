@@ -72,8 +72,8 @@ void BwgBrowserAgent::PresentBwgOverlay(
   config.serverID =
       maybe_server_id ? base::SysUTF8ToNSString(*maybe_server_id) : nil;
 
-  // TODO(crbug.com/429250847): Implement logic for this.
-  config.shouldAnimatePresentation = YES;
+  config.shouldAnimatePresentation =
+      !bwg_tab_helper->GetIsBwgSessionActiveInBackground();
 
   std::unique_ptr<optimization_guide::proto::PageContext> pageContext = nullptr;
   if (expected_page_context.has_value()) {
@@ -87,5 +87,5 @@ void BwgBrowserAgent::PresentBwgOverlay(
   config.uniquePageContext = std::move(pageContext);
 
   ios::provider::StartBwgOverlay(config);
-  bwg_tab_helper->SetBwgSessionActive(true);
+  bwg_tab_helper->SetBwgUiShowing(true);
 }
