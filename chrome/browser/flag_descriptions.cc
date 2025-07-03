@@ -885,6 +885,16 @@ const char kAutofillEnableSaveAndFillDescription[] =
     "with a single click when users don't have any cards saved in Autofill.";
 
 #if BUILDFLAG(IS_ANDROID)
+const char kAutofillEnableSeparatePixPreferenceItemName[] =
+    "Enable Pix settings to be shown as a separate preference menu item.";
+const char kAutofillEnableSeparatePixPreferenceItemDescription[] =
+    "When enabled, show Pix settings as a separate preference menu item "
+    "instead of bundling them together with the non-card payment preference "
+    "menu "
+    "item.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 const char kAutofillEnableShowSaveCardSecurelyMessageName[] =
     "Enable updated credit card upload UI messaging";
 const char kAutofillEnableShowSaveCardSecurelyMessageDescription[] =

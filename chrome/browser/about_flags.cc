@@ -12835,6 +12835,14 @@ const FeatureEntry kFeatureEntries[] = {
              kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarna)}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-enable-separate-pix-preference-item",
+     flag_descriptions::kAutofillEnableSeparatePixPreferenceItemName,
+     flag_descriptions::kAutofillEnableSeparatePixPreferenceItemDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+        autofill::features::kAutofillEnableSeparatePixPreferenceItem)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
 

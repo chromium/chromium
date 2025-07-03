@@ -543,6 +543,11 @@ extern const char kAutofillEnableSaveAndFillName[];
 extern const char kAutofillEnableSaveAndFillDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kAutofillEnableSeparatePixPreferenceItemName[];
+extern const char kAutofillEnableSeparatePixPreferenceItemDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillEnableShowSaveCardSecurelyMessageName[];
 extern const char kAutofillEnableShowSaveCardSecurelyMessageDescription[];
 

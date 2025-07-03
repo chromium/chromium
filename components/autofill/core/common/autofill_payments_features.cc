@@ -242,6 +242,12 @@ BASE_FEATURE(kAutofillEnableSaveAndFill,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// When enabled, show Pix settings as a separate preference menu item instead of
+// bundling them together with the non-card payment preference menu item.
+BASE_FEATURE(kAutofillEnableSeparatePixPreferenceItem,
+             "AutofillEnableSeparatePixPreferenceItem",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, save card securely message be displayed on upload card
 // UI message.
 BASE_FEATURE(kAutofillEnableShowSaveCardSecurelyMessage,

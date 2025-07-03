@@ -843,6 +843,16 @@
     "expiry_milestone": 145
   },
   {
+    "name": "autofill-enable-separate-pix-preference-item",
+    "owners": [
+      "tushartushar@google.com",
+      "junhuihe@google.com",
+      "joshuatan@google.com",
+      "payments-autofill-team@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-enable-show-save-card-securely-message",
     "owners": [ "qihuizhao@google.com"],
     "expiry_milestone": 145

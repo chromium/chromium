@@ -11350,6 +11350,8 @@ from previous Chrome versions.
   <int value="-998731974" label="WinUseBrowserSpellChecker:enabled"/>
   <int value="-998310305" label="OmniboxContextMenuShowFullUrls:disabled"/>
   <int value="-998255750" label="ExperimentalKeyboardLockUI:enabled"/>
+  <int value="-998206989"
+      label="AutofillEnableSeparatePixPreferenceItem:disabled"/>
   <int value="-998179063"
       label="AutofillDropNamesWithInvalidCharactersForCardUpload:disabled"/>
   <int value="-997652636" label="EnableExtensibleEnterpriseSSO:enabled"/>
@@ -16163,6 +16165,8 @@ from previous Chrome versions.
   <int value="787080596" label="DynamicTcmallocTuning:enabled"/>
   <int value="787385958" label="RegionalLocalesAsDisplayUI:enabled"/>
   <int value="788130042" label="PrivacySandboxSettings2:enabled"/>
+  <int value="789384500"
+      label="AutofillEnableSeparatePixPreferenceItem:enabled"/>
   <int value="789521140" label="ReduceAcceptLanguageHTTP:disabled"/>
   <int value="789654228" label="ExternalNavigationDebugLogs:disabled"/>
   <int value="789778745" label="EwalletPayments:disabled"/>
