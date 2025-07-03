@@ -209,14 +209,12 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
     case SyntheticResponseStatus::kReady:
       CHECK(write_buffer_manager_.has_value());
       if (CheckHeaderConsistency(response_head->headers)) {
-        read_buffer_manager_.emplace(std::move(body));
-        read_buffer_manager_->Watch(
-            base::BindRepeating(&ServiceWorkerSyntheticResponseManager::Read,
-                                weak_factory_.GetWeakPtr()));
-        write_buffer_manager_->Watch(
-            base::BindRepeating(&ServiceWorkerSyntheticResponseManager::Write,
-                                weak_factory_.GetWeakPtr()));
-        read_buffer_manager_->ArmOrNotify();
+        simple_buffer_manager_.emplace(std::move(body));
+        simple_buffer_manager_->Clone(
+            write_buffer_manager_->ReleaseProducerHandle(),
+            base::BindOnce(
+                &ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
+                weak_factory_.GetWeakPtr()));
       } else {
         // Clear the stored header when it's inconsistent with the header from
         // the network so that the next navigation won't get the header mismatch
@@ -244,73 +242,12 @@ void ServiceWorkerSyntheticResponseManager::OnComplete(
   std::move(complete_callback_).Run(status);
 }
 
-void ServiceWorkerSyntheticResponseManager::Read(
-    MojoResult result,
-    const mojo::HandleSignalsState& state) {
-  if (result != MOJO_RESULT_OK) {
-    return;
-  }
-
-  CHECK(read_buffer_manager_.has_value());
-  if (read_buffer_manager_->BytesRemaining() > 0) {
-    write_buffer_manager_->ArmOrNotify();
-    return;
-  }
-  auto [read_result, read_buffer] = read_buffer_manager_->ReadData();
-  switch (read_result) {
-    case MOJO_RESULT_OK:
-      write_buffer_manager_->ArmOrNotify();
-      return;
-    case MOJO_RESULT_FAILED_PRECONDITION:
-      read_buffer_manager_->CancelWatching();
-      write_buffer_manager_->CancelWatching();
-      write_buffer_manager_->ResetProducer();
-      CHECK(stream_callback_);
-      // Perhaps this assumption is wrong because the write operation may not be
-      // completed at the timing of when the read buffer is empty.
-      stream_callback_->OnCompleted();
-      return;
-    case MOJO_RESULT_BUSY:
-    case MOJO_RESULT_SHOULD_WAIT:
-      return;
-    default:
-      return;
-  }
-}
-
-void ServiceWorkerSyntheticResponseManager::Write(
-    MojoResult result,
-    const mojo::HandleSignalsState& state) {
-  if (result != MOJO_RESULT_OK) {
-    return;
-  }
-
-  CHECK(read_buffer_manager_.has_value());
-  if (read_buffer_manager_->BytesRemaining() == 0) {
-    read_buffer_manager_->ArmOrNotify();
-    return;
-  }
-  base::span<const char> read_buffer = read_buffer_manager_->RemainingBuffer();
-
-  size_t num_bytes_to_consume = read_buffer.size();
-  if (write_buffer_manager_->IsWatching()) {
-    result = write_buffer_manager_->BeginWriteData();
-    switch (result) {
-      case MOJO_RESULT_OK:
-        num_bytes_to_consume =
-            write_buffer_manager_->CopyAndCompleteWriteData(read_buffer);
-        read_buffer_manager_->ConsumeData(num_bytes_to_consume);
-        read_buffer_manager_->ArmOrNotify();
-        return;
-      case MOJO_RESULT_FAILED_PRECONDITION:
-        // abort
-        return;
-      case MOJO_RESULT_SHOULD_WAIT:
-        write_buffer_manager_->EndWriteData(0);
-        write_buffer_manager_->ArmOrNotify();
-        return;
-    }
-  }
+void ServiceWorkerSyntheticResponseManager::OnCloneCompleted() {
+  write_buffer_manager_->ResetProducer();
+  CHECK(stream_callback_);
+  // Perhaps this assumption is wrong because the write operation may not be
+  // completed at the timing of when the read buffer is empty.
+  stream_callback_->OnCompleted();
 }
 
 bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
@@ -345,8 +282,6 @@ void ServiceWorkerSyntheticResponseManager::NotifyReloading() {
   if (result != MOJO_RESULT_OK) {
     return;
   }
-  write_buffer_manager_->ResetProducer();
-  CHECK(stream_callback_);
-  stream_callback_->OnCompleted();
+  OnCloneCompleted();
 }
 }  // namespace content
