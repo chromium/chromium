@@ -1828,10 +1828,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)ungroupConfirmationButton {
-  return grey_allOf(grey_accessibilityID(
-                        [l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_UNGROUP)
-                            stringByAppendingString:@"AlertAction"]),
-                    grey_interactable(), nil);
+  return [ChromeMatchersAppInterface
+      actionSheetItemWithAccessibilityLabelID:IDS_IOS_CONTENT_CONTEXT_UNGROUP];
 }
 
 + (id<GREYMatcher>)deleteGroupButton {
@@ -1840,10 +1838,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)deleteGroupConfirmationButton {
-  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
-                        IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)
-                        stringByAppendingString:@"AlertAction"]),
-                    grey_interactable(), nil);
+  return [ChromeMatchersAppInterface actionSheetItemWithAccessibilityLabelID:
+                                         IDS_IOS_CONTENT_CONTEXT_DELETEGROUP];
 }
 
 + (id<GREYMatcher>)closeGroupButton {

@@ -254,6 +254,21 @@ UIViewController* TopPresentedViewController() {
   return topController;
 }
 
+// Taps the edit button in the tab grid and close the keyboard if it apprears on
+// iOS 26.
+void TapTabGridEditButton() {
+  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
+      performAction:grey_tap()];
+
+  if (@available(iOS 19, *)) {
+    // TODO(crbug.com/428928323): Investigate why the keyboard appears. Remove
+    // this workaround when it's not needed anymore.
+    // On iOS 26, the keyboard appears when the "Edit" button is tapped and it
+    // hides the elements behind. Close the keyboard by typing a return key.
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
+  }
+}
+
 }  // namespace
 
 // Test Tab Groups feature.
@@ -1072,8 +1087,7 @@ UIViewController* TopPresentedViewController() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Enter the selection mode.
-  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
-      performAction:grey_tap()];
+  TapTabGridEditButton();
   [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
 
@@ -1122,8 +1136,7 @@ UIViewController* TopPresentedViewController() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Enter the selection mode.
-  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
-      performAction:grey_tap()];
+  TapTabGridEditButton();
   [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
 
@@ -1186,8 +1199,7 @@ UIViewController* TopPresentedViewController() {
       waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
 
   // Enter the selection mode.
-  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
-      performAction:grey_tap()];
+  TapTabGridEditButton();
   [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
 
@@ -1287,8 +1299,7 @@ UIViewController* TopPresentedViewController() {
                                           1)] assertWithMatcher:grey_notNil()];
 
   // Close all (groups and tabs).
-  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
-      performAction:grey_tap()];
+  TapTabGridEditButton();
   [[EarlGrey selectElementWithMatcher:TabGridEditMenuCloseAllButton()]
       performAction:grey_tap()];
 
@@ -1834,8 +1845,7 @@ UIViewController* TopPresentedViewController() {
   CreateDefaultFirstGroupFromTabCellAtIndex(0);
 
   // Tap on "Edit" then "Select tabs".
-  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
-      performAction:grey_tap()];
+  TapTabGridEditButton();
   [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
 
@@ -1853,10 +1863,9 @@ UIViewController* TopPresentedViewController() {
       base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
           IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
           /*number=*/1));
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
-                                   closeTabsButtonText)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabel(
+                     closeTabsButtonText)] performAction:grey_tap()];
 
   // Make sure that the tab grid is empty.
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
