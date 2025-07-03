@@ -100,7 +100,7 @@ void RecordOutcomeMetrics(
 }
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  auto options = blink::mojom::AIPageContentOptions::New();
+  auto options = optimization_guide::ActionableAIPageContentOptions();
   // WebContents where password change is happening is hidden, and renderer
   // won't capture a snapshot unless it becomes visible again or
   // on_critical_path is set to true.
