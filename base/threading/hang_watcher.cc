@@ -626,7 +626,9 @@ HangWatcher::~HangWatcher() {
   DCHECK_EQ(g_instance, this);
   DCHECK(watch_states_.empty());
   g_instance = nullptr;
-  Stop();
+  if (thread_started_) {
+    Stop();
+  }
 }
 
 void HangWatcher::Start() {

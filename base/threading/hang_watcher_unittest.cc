@@ -47,6 +47,7 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::TestWithParam;
 using ::testing::UnorderedElementsAre;
+using ::testing::Values;
 using ::testing::ValuesIn;
 
 // Use this value to mark things very far off in the future. Adding this
@@ -171,7 +172,18 @@ class ManualHangWatcher : public HangWatcher {
     Start();
   }
 
-  ~ManualHangWatcher() override { UninitializeOnMainThreadForTesting(); }
+  ~ManualHangWatcher() override {
+    UninitializeOnMainThreadForTesting();
+
+    // Stop now instead of in `~HangWatcher()` to avoid a data race between
+    // the destructor and virtual calls. If we destroy `HangWatcher` right after
+    // it's created, `HangWatcher::Run()` might get called concurrently with
+    // `~HangWatcher`. The vtable pointer is changed when calling into a parent
+    // class destructor. Virtual calls might resolve differently before or after
+    // the vtable is changed. See here for details:
+    // https://github.com/google/sanitizers/wiki/ThreadSanitizerPopularDataRaces#data-race-on-vptr
+    Stop();
+  }
 
   void SetOnHangClosure(base::RepeatingClosure closure) {
     on_hang_closure_ = std::move(closure);
@@ -210,6 +222,18 @@ class HangWatcherTest : public testing::Test {
   test::SingleThreadTaskEnvironment task_environment_{
       test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
+
+using HangWatcherEnabledTest = TestWithParam<HangWatcher::ProcessType>;
+INSTANTIATE_TEST_SUITE_P(AllEnabledProcessTypes,
+                         HangWatcherEnabledTest,
+                         Values(HangWatcher::ProcessType::kBrowserProcess,
+                                HangWatcher::ProcessType::kRendererProcess,
+                                HangWatcher::ProcessType::kUtilityProcess));
+TEST_P(HangWatcherEnabledTest, HangWatcherEnabled) {
+  ScopedFeatureList feature_list(base::kEnableHangWatcher);
+  ManualHangWatcher hang_watcher(GetParam());
+  EXPECT_TRUE(hang_watcher.IsEnabled());
+}
 
 TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
