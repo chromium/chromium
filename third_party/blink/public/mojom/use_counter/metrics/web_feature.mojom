@@ -4908,6 +4908,10 @@ enum WebFeature {
   kSpeculationRulesEagernessEager = 5598,
   kCSSSelectorPseudoNot = 5599,
   kCSSCustomMedia = 5600,
+  kHTMLCanvasElementLowLatency_2D = 5601,
+  kHTMLCanvasElementLowLatency_WebGL = 5602,
+  kHTMLCanvasElementLowLatency_WebGL_Preserve = 5603,
+  kHTMLCanvasElementLowLatency_WebGL_Discard = 5604,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
