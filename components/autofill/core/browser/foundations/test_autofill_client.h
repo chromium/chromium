@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -396,8 +397,9 @@ class TestAutofillClientTemplate : public T {
   }
 
   const AutofillAblationStudy& GetAblationStudy() const override {
-    static const AutofillAblationStudy default_ablation_study("seed");
-    return default_ablation_study;
+    static const base::NoDestructor<AutofillAblationStudy>
+        default_ablation_study("seed");
+    return *default_ablation_study;
   }
 
   bool ShouldFormatForLargeKeyboardAccessory() const override {
