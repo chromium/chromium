@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/check.h"
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -315,8 +314,10 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
        i <= optimization_guide::proto::
                 BlingPrototypingRequest_ModelEnum_ModelEnum_MAX;
        ++i) {
-    CHECK(optimization_guide::proto::BlingPrototypingRequest_ModelEnum_IsValid(
-        i));
+    if (!optimization_guide::proto::BlingPrototypingRequest_ModelEnum_IsValid(
+            i)) {
+      continue;
+    }
 
     BlingPrototypingRequest_ModelEnum enum_value =
         static_cast<BlingPrototypingRequest_ModelEnum>(i);
