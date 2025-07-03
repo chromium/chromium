@@ -205,6 +205,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".TailoredSecurityEnabled"/>
   <variant name=".TrackingProtectionNotice"/>
   <variant name=".Translate"/>
+  <variant name=".UpdateChromeForTabGroupShare"/>
   <variant name=".UpdatePassword"/>
   <variant name=".VirtualCardEnrollFailure"/>
   <variant name=".VrServicesUpgrade"/>

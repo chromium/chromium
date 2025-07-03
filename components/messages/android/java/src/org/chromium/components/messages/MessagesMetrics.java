@@ -375,6 +375,8 @@ public class MessagesMetrics {
                 return "OsAdvancedProtectionSettingChangedMessage";
             case MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT:
                 return "MultiInstanceRestorationOnDowngradedLimit";
+            case MessageIdentifier.UPDATE_CHROME_FOR_TAB_GROUP_SHARE:
+                return "UpdateChromeForTabGroupShare";
             default:
                 return "Unknown";
         }
