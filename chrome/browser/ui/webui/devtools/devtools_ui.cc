@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui_data_source.h"
 #include "chrome/common/chrome_switches.h"
@@ -67,13 +68,16 @@ bool DevToolsUI::IsFrontendResourceURL(const GURL& url) {
 DevToolsUI::DevToolsUI(content::WebUI* web_ui)
     : WebUIController(web_ui), bindings_(web_ui->GetWebContents()) {
   web_ui->SetBindings(content::BindingsPolicySet());
-  auto factory = web_ui->GetWebContents()
-                     ->GetBrowserContext()
-                     ->GetDefaultStoragePartition()
-                     ->GetURLLoaderFactoryForBrowserProcess();
-  content::URLDataSource::Add(
-      web_ui->GetWebContents()->GetBrowserContext(),
-      std::make_unique<DevToolsDataSource>(std::move(factory)));
+  content::BrowserContext* browser_context =
+      web_ui->GetWebContents()->GetBrowserContext();
+  if (IsInspectionAllowed(Profile::FromBrowserContext(browser_context),
+                          static_cast<content::WebContents*>(nullptr))) {
+    auto factory = browser_context->GetDefaultStoragePartition()
+                       ->GetURLLoaderFactoryForBrowserProcess();
+    content::URLDataSource::Add(
+        browser_context,
+        std::make_unique<DevToolsDataSource>(std::move(factory)));
+  }
 }
 
 DevToolsUI::~DevToolsUI() = default;

@@ -219,6 +219,37 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
   EXPECT_FALSE(DevToolsWindow::GetInstanceForInspectedWebContents(contents));
 }
 
+IN_PROC_BROWSER_TEST_F(PolicyTest,
+                       DevToolsUrlDisabledByDeveloperToolsAvailability) {
+  UpdateProviderPolicy(
+      MakeDeveloperToolsAvailabilityMap(2 /* DeveloperToolsDisallowed */));
+
+  GURL devtools_url("devtools://devtools/bundled/devtools_app.html");
+  // Navigate to the extensions frame and enabled "Developer mode"
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), devtools_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Loading fails so that the title is not set to "DevTools".
+  EXPECT_EQ(u"devtools://devtools/bundled/devtools_app.html",
+            web_contents->GetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTest,
+                       DevToolsUrlAllowedByDeveloperToolsAvailability) {
+  UpdateProviderPolicy(
+      MakeDeveloperToolsAvailabilityMap(0 /* DeveloperToolsDisallowed */));
+
+  GURL devtools_url("devtools://devtools/bundled/devtools_app.html");
+  // Navigate to the extensions frame and enabled "Developer mode"
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), devtools_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Loading succeeds so that the title is not set to "DevTools".
+  EXPECT_EQ(u"DevTools", web_contents->GetTitle());
+}
+
 // Test for https://b/263040629
 IN_PROC_BROWSER_TEST_F(PolicyTest, AvailabilityWins) {
   // DeveloperToolsDisabled is true, but DeveloperToolsAvailability wins.
