@@ -235,6 +235,12 @@ bool KeepAliveDSEPolicy::IsSuitableDSEPage(const PageNode* page_node) const {
   }
 
   TemplateURLService* template_url_service = GetTemplateURLService(page_node);
+  // A TemplateURLService isn't available for all profile types (e.g., Guest)
+  // or during profile teardown. We must check for null before using it.
+  if (!template_url_service) {
+    return false;
+  }
+
   return template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
       page_node->GetMainFrameUrl());
 }
