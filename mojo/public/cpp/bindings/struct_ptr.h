@@ -9,6 +9,7 @@
 #include <functional>
 #include <memory>
 #include <new>
+#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
@@ -129,6 +130,15 @@ class StructPtr {
 };
 
 // Designed to be used when Struct is small and copyable.
+//
+// Implementation note: the external interface is intended to mirror `StructPtr`
+// as closely as possible; in particular, this means that a moved-from
+// `InlinedStructPtr` should be treated as nil.
+//
+// Currently, this is implemented by promptly destroying the contained value as
+// soon as it is moved from; it might be interesting to consider tracking the
+// `valid-but-moved-from` state explicitly and deferring destruction of the
+// contained value to the destructor, but it adds quite a bit of complexity.
 template <typename S>
 class InlinedStructPtr {
  public:
@@ -144,22 +154,34 @@ class InlinedStructPtr {
   InlinedStructPtr(const InlinedStructPtr&) = delete;
   InlinedStructPtr& operator=(const InlinedStructPtr&) = delete;
 
-  ~InlinedStructPtr() = default;
+  ~InlinedStructPtr()
+    requires(!std::is_trivially_destructible_v<Struct>)
+  {
+    reset();
+  }
 
   InlinedStructPtr& operator=(std::nullptr_t) {
     reset();
     return *this;
   }
 
-  InlinedStructPtr(InlinedStructPtr&& other) noexcept { Take(&other); }
+  InlinedStructPtr(InlinedStructPtr&& other) noexcept
+      : storage_(CreateValue(other)), state_(other.state_) {
+    other.reset();
+  }
   InlinedStructPtr& operator=(InlinedStructPtr&& other) noexcept {
-    Take(&other);
+    reset();
+    state_ = other.state_;
+    if (other.state_ != NIL) {
+      new (&storage_.value) Struct(std::move(other.storage_.value));
+      other.reset();
+    }
     return *this;
   }
 
   template <typename... Args>
   InlinedStructPtr(std::in_place_t, Args&&... args)
-      : value_(std::forward<Args>(args)...), state_(VALID) {}
+      : storage_(std::in_place, std::forward<Args>(args)...), state_(VALID) {}
 
   template <typename U>
   U To() const {
@@ -167,48 +189,51 @@ class InlinedStructPtr {
   }
 
   void reset() {
-    state_ = NIL;
-    value_. ~Struct();
-    new (&value_) Struct();
+    if (state_ != NIL) {
+      state_ = NIL;
+      storage_.value.~Struct();
+    }
   }
 
-  bool is_null() const { return state_ == NIL; }
+  bool is_null() const { return state_ != VALID; }
 
   Struct& operator*() const {
-    DCHECK(state_ == VALID);
-    return value_;
+    CHECK(state_ == VALID);
+    return storage_.value;
   }
   Struct* operator->() const {
-    DCHECK(state_ == VALID);
-    return &value_;
+    CHECK(state_ == VALID);
+    return &storage_.value;
   }
   Struct* get() const {
-    if (state_ == NIL)
-      return nullptr;
-    return &value_;
+    if (state_ == VALID) {
+      return &storage_.value;
+    }
+    return nullptr;
   }
 
   void Swap(InlinedStructPtr* other) {
-    std::swap(value_, other->value_);
-    std::swap(state_, other->state_);
+    InlinedStructPtr tmp = std::move(*this);
+    *this = std::move(*other);
+    *other = std::move(tmp);
   }
 
   InlinedStructPtr Clone() const {
-    return is_null() ? InlinedStructPtr() : value_.Clone();
+    return is_null() ? InlinedStructPtr() : storage_.value.Clone();
   }
 
   // Compares the pointees (which might both be null).
   bool Equals(const InlinedStructPtr& other) const {
     if (is_null() || other.is_null())
       return is_null() && other.is_null();
-    return value_.Equals(other.value_);
+    return storage_.value.Equals(other.storage_.value);
   }
 
   // Hashes based on the pointee (which might be null).
   size_t Hash(size_t seed) const {
     if (is_null())
       return internal::HashCombine(seed, 0);
-    return value_.Hash(seed);
+    return storage_.value.Hash(seed);
   }
 
   explicit operator bool() const { return !is_null(); }
@@ -222,18 +247,39 @@ class InlinedStructPtr {
 
  private:
   friend class internal::InlinedStructPtrWTFHelper<Struct>;
-  void Take(InlinedStructPtr* other) {
-    reset();
-    Swap(other);
-  }
 
   enum State {
     NIL,
     VALID,
-    DELETED,  // For use in WTF::HashMap only
+    // For use in WTF::HashMap only. There is only one way to construct an
+    // `InlinedStructPtr` with this state, and it will never be deleted or
+    // destroyed in this state.
+    DELETED,
   };
 
-  mutable Struct value_;
+  union Storage {
+    Storage() {}
+    ~Storage() {}
+
+    template <typename... Args>
+    explicit Storage(std::in_place_t, Args&&... args)
+        : value(std::forward<Args>(args)...) {}
+
+    mutable Struct value;
+  };
+
+  struct DeletedValue {};
+  explicit InlinedStructPtr(DeletedValue) : state_(DELETED) {}
+
+  Storage CreateValue(InlinedStructPtr& other) {
+    if (other.state_ != NIL) {
+      return Storage(std::in_place, std::move(other.storage_.value));
+    } else {
+      return Storage();
+    }
+  }
+
+  Storage storage_;
   State state_ = NIL;
 };
 
@@ -269,8 +315,8 @@ class InlinedStructPtrWTFHelper {
     // |slot| refers to a previous, real value that got deleted and had its
     // destructor run, so this is the first time the "deleted value" has its
     // constructor called.
-    new (&slot) InlinedStructPtr<Struct>();
-    slot.state_ = InlinedStructPtr<Struct>::DELETED;
+    new (&slot) InlinedStructPtr<Struct>(
+        typename InlinedStructPtr<Struct>::DeletedValue());
   }
 };
 
