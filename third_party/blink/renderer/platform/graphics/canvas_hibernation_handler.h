@@ -35,11 +35,6 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     virtual bool IsContextLost() const = 0;
     virtual void ResetResourceProviderForCanvas2D() = 0;
     virtual void SetNeedsCompositingUpdate() = 0;
-
-    // Called when the CC texture layer that this instance is holding (if any)
-    // should be cleared. Subclasses that can hold a CC texture layer should
-    // override this method. Should only be called if the context is
-    // CanvasRenderingContext2D.
     virtual void ClearCanvas2DLayerTexture() {}
   };
 
