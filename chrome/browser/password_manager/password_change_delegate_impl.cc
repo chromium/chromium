@@ -318,10 +318,16 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
   CHECK(originator_);
   auto* tab_interface = tabs::TabInterface::GetFromContents(originator_);
   CHECK(tab_interface);
-
-  auto* tabs_strip =
+  TabStripModel* tab_strip_model =
       tab_interface->GetBrowserWindowInterface()->GetTabStripModel();
-  tabs_strip->AppendWebContents(std::move(executor_), /*foreground*/ true);
+  CHECK(tab_strip_model);
+
+  content::WebContents* web_contents = executor_.get();
+  tab_strip_model->AppendWebContents(std::move(executor_), /*foreground=*/true);
+  MaybeLaunchSurvey(
+      kHatsSurveyTriggerPasswordChangeError,
+      /*password_change_duration=*/base::Time::Now() - flow_start_time_,
+      profile_, web_contents);
 }
 
 void PasswordChangeDelegateImpl::OpenPasswordDetails() {
