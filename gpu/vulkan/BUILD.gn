@@ -103,6 +103,8 @@ if (enable_vulkan) {
       "vulkan_image.h",
       "vulkan_implementation.cc",
       "vulkan_implementation.h",
+      "vulkan_info.cc",
+      "vulkan_info.h",
       "vulkan_instance.cc",
       "vulkan_instance.h",
       "vulkan_memory.cc",
@@ -113,6 +115,8 @@ if (enable_vulkan) {
       "vulkan_swap_chain.h",
       "vulkan_util.cc",
       "vulkan_util.h",
+      "vulkan_ycbcr_info.cc",
+      "vulkan_ycbcr_info.h",
     ]
 
     defines = [ "IS_VULKAN_IMPL" ]
@@ -128,7 +132,6 @@ if (enable_vulkan) {
       "//base",
       "//build:android_buildflags",
       "//components/crash/core/common:crash_key",
-      "//gpu/ipc/common:vulkan_ycbcr_info",
       "//third_party/vulkan_memory_allocator",
       "//ui/base:ozone_buildflags",
       "//ui/gfx",
@@ -138,7 +141,6 @@ if (enable_vulkan) {
     public_deps = [
       ":vma_wrapper",
       ":vulkan_function_pointers",
-      "//gpu/config:vulkan_info",
     ]
 
     data_deps = []

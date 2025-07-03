@@ -8,5 +8,5 @@ include_rules = [
   "+ui/gfx",
   "+ui/latency/mojom",
   "+ui/gl",
-  "+gpu/ipc/common/vulkan_ycbcr_info.h"
+  "+gpu/vulkan/vulkan_ycbcr_info.h"
 ]

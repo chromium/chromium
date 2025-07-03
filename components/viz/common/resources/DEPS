@@ -8,6 +8,7 @@ include_rules = [
   "+gpu/command_buffer/common",
   "+gpu/ipc/common",
   "+gpu/vulkan/buildflags.h",
+  "+gpu/vulkan/vulkan_ycbcr_info.h",
   "+gpu/GLES2",
   "+mojo/public/cpp/system/buffer.h",
   "+mojo/public/cpp/system/platform_handle.h",

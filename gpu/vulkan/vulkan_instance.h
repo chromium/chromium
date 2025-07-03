@@ -13,7 +13,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/native_library.h"
-#include "gpu/config/vulkan_info.h"
+#include "gpu/vulkan/vulkan_info.h"
 #include "third_party/skia/include/gpu/vk/VulkanPreferredFeatures.h"
 #include "ui/gfx/extension_set.h"
 

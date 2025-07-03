@@ -25,11 +25,7 @@ component("android") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//gpu/ipc/common",
-    "//gpu/ipc/common:vulkan_ycbcr_info",
-    "//ui/gfx",
-  ]
+  deps = [ "//ui/gfx" ]
 
   public_configs = [ ":vulkan_android" ]
 

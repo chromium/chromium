@@ -57,7 +57,6 @@ source_set("command_buffer_traits_sources") {
 
   deps = [
     "//base",
-    "//gpu/ipc/common:vulkan_ycbcr_info",
     "//ui/gfx/ipc/buffer_types",
     "//ui/gfx/ipc/geometry",
     "//ui/gfx/ipc/skia",
@@ -138,7 +137,6 @@ source_set("ipc_common_sources") {
     ":memory_stats_sources",
     ":shared_image_pool_client_interface",
     ":surface_handle_type",
-    ":vulkan_ycbcr_info",
     "//ipc",
     "//url/ipc:url_ipc",
   ]
@@ -198,16 +196,6 @@ source_set("surface_handle_type") {
   public = [ "surface_handle.h" ]
 
   public_deps = [ "//ui/gfx:native_widget_types" ]
-}
-
-component("vulkan_ycbcr_info") {
-  sources = [
-    "vulkan_ycbcr_info.cc",
-    "vulkan_ycbcr_info.h",
-  ]
-  public_deps = [ ":export" ]
-  deps = [ "//base" ]
-  configs += [ "//gpu:gpu_implementation" ]
 }
 
 source_set("vulkan_types") {
@@ -846,10 +834,14 @@ source_set("mojom_traits") {
     ":interfaces_shared",
     ":memory_stats_sources",
     ":surface_handle_type",
-    ":vulkan_ycbcr_info",
     "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings:bindings",
   ]
+
+  if (enable_vulkan) {
+    public_deps += [ "//gpu/vulkan" ]
+  }
+
   if (is_android) {
     sources += [ "vulkan_ycbcr_info_mojom_traits.h" ]
   }

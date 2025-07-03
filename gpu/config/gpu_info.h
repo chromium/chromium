@@ -34,7 +34,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include "gpu/config/vulkan_info.h"
+#include "gpu/vulkan/vulkan_info.h"
 #endif
 
 namespace gpu {

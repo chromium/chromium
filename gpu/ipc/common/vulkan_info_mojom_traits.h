@@ -7,9 +7,9 @@
 
 #include <string_view>
 
-#include "gpu/config/vulkan_info.h"
 #include "gpu/ipc/common/vulkan_info.mojom-shared.h"
 #include "gpu/ipc/common/vulkan_types_mojom_traits.h"
+#include "gpu/vulkan/vulkan_info.h"
 
 namespace mojo {
 

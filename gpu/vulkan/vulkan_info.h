@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_CONFIG_VULKAN_INFO_H_
-#define GPU_CONFIG_VULKAN_INFO_H_
+#ifndef GPU_VULKAN_VULKAN_INFO_H_
+#define GPU_VULKAN_VULKAN_INFO_H_
 
 #include <vulkan/vulkan_core.h>
 
 #include <string_view>
 #include <vector>
 
-#include "gpu/config/gpu_config_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/extension_set.h"
 
 namespace gpu {
 
-class GPU_CONFIG_EXPORT VulkanPhysicalDeviceInfo {
+class COMPONENT_EXPORT(VULKAN) VulkanPhysicalDeviceInfo {
  public:
   VulkanPhysicalDeviceInfo();
   VulkanPhysicalDeviceInfo(const VulkanPhysicalDeviceInfo& other);
@@ -39,7 +39,7 @@ class GPU_CONFIG_EXPORT VulkanPhysicalDeviceInfo {
   std::vector<VkQueueFamilyProperties> queue_families;
 };
 
-class GPU_CONFIG_EXPORT VulkanInfo {
+class COMPONENT_EXPORT(VULKAN) VulkanInfo {
  public:
   VulkanInfo();
   VulkanInfo(const VulkanInfo& other);
@@ -60,4 +60,4 @@ class GPU_CONFIG_EXPORT VulkanInfo {
 
 }  // namespace gpu
 
-#endif  // GPU_CONFIG_VULKAN_INFO_H_
+#endif  // GPU_VULKAN_VULKAN_INFO_H_

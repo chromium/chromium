@@ -17,8 +17,8 @@
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
 #endif
 
 namespace mojo {

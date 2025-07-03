@@ -7,7 +7,7 @@
 #pragma allow_unsafe_libc_calls
 #endif
 
-#include "gpu/config/vulkan_info.h"
+#include "gpu/vulkan/vulkan_info.h"
 
 #include <string_view>
 

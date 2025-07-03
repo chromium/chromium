@@ -6,8 +6,8 @@
 #define GPU_IPC_COMMON_VULKAN_YCBCR_INFO_MOJOM_TRAITS_H_
 
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.mojom-shared.h"
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
 
 namespace mojo {
 

@@ -23,7 +23,7 @@
 #include "ui/gfx/hdr_metadata.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
 #endif
 
 namespace gpu {

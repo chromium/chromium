@@ -91,35 +91,6 @@ source_set("export") {
   sources = [ "gpu_config_export.h" ]
 }
 
-if (enable_vulkan) {
-  # TODO(crbug.com/422797572): This component doesn't use separate export,
-  # which is problematic. Once //gpu/config becomes its own component it
-  # should be possible to merge it into //gpu/config.
-  component("vulkan_info") {
-    sources = [
-      "vulkan_info.cc",
-      "vulkan_info.h",
-    ]
-
-    configs += [ "//gpu:gpu_implementation" ]
-
-    deps = [ "//gpu/ipc/common:vulkan_interface" ]
-    public_deps = [
-      ":export",
-      "//third_party/vulkan-headers/src:vulkan_headers",
-      "//ui/gfx",
-    ]
-
-    # surpass linke error 4217. It is because vulkan_info depends on
-    # //gpu/ipc/common:vulkan_interface and //gpu/ipc/common:vulkan_interface"
-    # depends on this target.
-    # TODO(penghuang): Fix this link error
-    if (is_win && is_component_build) {
-      ldflags = [ "/IGNORE:4217" ]
-    }
-  }
-}
-
 source_set("webgpu_blocklist_impl") {
   sources = [
     "webgpu_blocklist_impl.cc",
@@ -193,7 +164,7 @@ source_set("config_sources") {
   ]
 
   if (enable_vulkan) {
-    public_deps += [ ":vulkan_info" ]
+    public_deps += [ "//gpu/vulkan" ]
   }
 
   deps = [
