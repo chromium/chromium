@@ -26,8 +26,11 @@
 
 namespace zoom {
 
-ZoomViewController::ZoomViewController(tabs::TabInterface& tab_interface)
-    : tab_interface_(tab_interface) {
+ZoomViewController::ZoomViewController(
+    tabs::TabInterface& tab_interface,
+    page_actions::PageActionController& page_action_controller)
+    : tab_interface_(tab_interface),
+      page_action_controller_(page_action_controller) {
   DCHECK(IsPageActionMigrated(PageActionIconType::kZoom));
 }
 
@@ -50,12 +53,8 @@ void ZoomViewController::UpdatePageActionIcon(bool is_bubble_visible) {
       zoom::ZoomController::FromWebContents(GetWebContents());
   CHECK(zoom_controller);
 
-  page_actions::PageActionController* page_action_controller =
-      tab_interface_->GetTabFeatures()->page_action_controller();
-  CHECK(page_action_controller);
-
   // Update the tooltip with the current zoom percentage.
-  page_action_controller->OverrideTooltip(
+  page_action_controller_->OverrideTooltip(
       kActionZoomNormal,
       l10n_util::GetStringFUTF16(
           IDS_TOOLTIP_ZOOM,
@@ -63,14 +62,14 @@ void ZoomViewController::UpdatePageActionIcon(bool is_bubble_visible) {
 
   switch (zoom_controller->GetZoomRelativeToDefault()) {
     case ZoomController::ZOOM_BELOW_DEFAULT_ZOOM:
-      page_action_controller->OverrideImage(
+      page_action_controller_->OverrideImage(
           kActionZoomNormal,
           ui::ImageModel::FromVectorIcon(kZoomMinusChromeRefreshIcon));
       break;
     case ZoomController::ZOOM_AT_DEFAULT_ZOOM:
       // Default and above share the “zoom plus” icon for simplicity.
     case ZoomController::ZOOM_ABOVE_DEFAULT_ZOOM:
-      page_action_controller->OverrideImage(
+      page_action_controller_->OverrideImage(
           kActionZoomNormal,
           ui::ImageModel::FromVectorIcon(kZoomPlusChromeRefreshIcon));
       break;
@@ -82,9 +81,9 @@ void ZoomViewController::UpdatePageActionIcon(bool is_bubble_visible) {
   // bubble.
   const bool is_at_default_zoom = zoom_controller->IsAtDefaultZoom();
   if (is_at_default_zoom && !is_bubble_visible) {
-    page_action_controller->Hide(kActionZoomNormal);
+    page_action_controller_->Hide(kActionZoomNormal);
   } else {
-    page_action_controller->Show(kActionZoomNormal);
+    page_action_controller_->Show(kActionZoomNormal);
   }
 }
 

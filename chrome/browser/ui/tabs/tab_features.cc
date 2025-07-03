@@ -189,7 +189,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     }
 
     if (IsPageActionMigrated(PageActionIconType::kZoom)) {
-      zoom_view_controller_ = std::make_unique<zoom::ZoomViewController>(tab);
+      zoom_view_controller_ = std::make_unique<zoom::ZoomViewController>(
+          tab, *page_action_controller_);
     }
 
     if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
