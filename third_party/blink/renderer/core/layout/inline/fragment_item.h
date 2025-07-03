@@ -516,7 +516,7 @@ class CORE_EXPORT FragmentItem final {
       return nullptr;
     }
     const auto* svg_data = text_.svg_data.Get();
-    return svg_data->IsSvg() ? svg_data : nullptr;
+    return svg_data && svg_data->IsSvg() ? svg_data : nullptr;
   }
   // Returns true if BuildSvgTransformForPaint() returns non-identity transform.
   bool HasSvgTransformForPaint() const;
