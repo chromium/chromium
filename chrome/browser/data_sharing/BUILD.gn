@@ -265,6 +265,16 @@ if (is_android) {
     ]
   }
 
+  android_library("versioning_java") {
+    resources_package = "org.chromium.chrome.browser.data_sharing.ui.versioning"
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/ui/versioning/VersioningMessageBanner.java" ]
+    deps = [
+      "//chrome/browser/profiles/android:java",
+      "//components/messages/android:java",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
+
   android_library("internal_library_java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [

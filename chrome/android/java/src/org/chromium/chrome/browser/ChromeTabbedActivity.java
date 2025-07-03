@@ -7,6 +7,7 @@ package org.chromium.chrome.browser;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutManager;
@@ -108,6 +109,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingIntentUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.data_sharing.ui.versioning.VersioningMessageBanner;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
@@ -291,6 +293,7 @@ import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.profile_metrics.BrowserProfileType;
@@ -3110,31 +3113,34 @@ public class ChromeTabbedActivity extends ChromeActivity {
             return;
         }
 
-        LauncherShortcutActivity.updateIncognitoShortcut(
-                ChromeTabbedActivity.this, mTabModelProfileSupplier.get());
+        Activity activity = ChromeTabbedActivity.this;
+        Profile profile = mTabModelProfileSupplier.get();
+        MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(getWindowAndroid());
+
+        LauncherShortcutActivity.updateIncognitoShortcut(activity, profile);
 
         ChromeSurveyController.initialize(
-                mTabModelSelector,
-                getLifecycleDispatcher(),
-                ChromeTabbedActivity.this,
-                MessageDispatcherProvider.from(getWindowAndroid()),
-                mTabModelProfileSupplier.get());
+                mTabModelSelector, getLifecycleDispatcher(), activity, messageDispatcher, profile);
 
         PrivacySandboxSurveyController.initialize(
                 mTabModelSelector,
                 getLifecycleDispatcher(),
-                ChromeTabbedActivity.this,
-                MessageDispatcherProvider.from(getWindowAndroid()),
+                activity,
+                messageDispatcher,
                 getActivityTabProvider(),
-                mTabModelProfileSupplier.get());
+                profile);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HEADLESS_TAB_MODEL)) {
-            Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
+            Profile originalProfile = getProfileProviderSupplier().get().getOriginalProfile();
             TabWindowManagerSingleton.getInstance()
-                    .keepAllTabModelsLoaded(mMultiInstanceManager, profile, getTabModelSelector());
+                    .keepAllTabModelsLoaded(
+                            mMultiInstanceManager, originalProfile, getTabModelSelector());
         } else {
             mMultiInstanceManager.cleanupSyncedTabGroupsIfOnlyInstance(mTabModelSelector);
         }
+
+        VersioningMessageBanner.maybeShow(
+                activity, messageDispatcher, getModalDialogManager(), profile);
 
         if (mAuxiliarySearchController != null) {
             mAuxiliarySearchController.onDeferredStartup();
