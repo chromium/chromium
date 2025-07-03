@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/audio_input_device.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 
 #include "audio_device_stats_reporter.h"
 #include "base/atomicops.h"
+#include "base/containers/span_reader.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -420,15 +416,16 @@ void AudioInputDevice::AudioThreadCallback::MapSharedMemory() {
   shared_memory_mapping_ = shared_memory_region_.MapAt(0, memory_length_);
 
   // Create vector of audio buses by wrapping existing blocks of memory.
-  const uint8_t* ptr =
-      static_cast<const uint8_t*>(shared_memory_mapping_.memory());
+  base::SpanReader span_reader(
+      shared_memory_mapping_.GetMemoryAsSpan<uint8_t>());
   for (uint32_t i = 0; i < total_segments_; ++i) {
     const media::AudioInputBuffer* buffer =
-        reinterpret_cast<const media::AudioInputBuffer*>(ptr);
+        reinterpret_cast<const media::AudioInputBuffer*>(
+            span_reader.Read(segment_length_)->data());
     audio_buses_.push_back(
         media::AudioBus::WrapReadOnlyMemory(audio_parameters_, buffer->audio));
-    ptr += segment_length_;
   }
+  CHECK_EQ(span_reader.remaining(), 0u);
 
   // Indicate that browser side capture initialization has succeeded and IPC
   // channel initialized. This effectively completes the
@@ -442,9 +439,9 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   // The shared memory represents parameters, size of the data buffer and the
   // actual data buffer containing audio data. Map the memory into this
   // structure and parse out parameters and the data area.
-  uint8_t* ptr = static_cast<uint8_t*>(shared_memory_mapping_.memory());
-  ptr += current_segment_id_ * segment_length_;
-  AudioInputBuffer* buffer = reinterpret_cast<AudioInputBuffer*>(ptr);
+  base::span<uint8_t> span = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
+  span = span.subspan(current_segment_id_ * segment_length_, segment_length_);
+  AudioInputBuffer* buffer = reinterpret_cast<AudioInputBuffer*>(span.data());
 
   // Usually this will be equal but in the case of low sample rate (e.g. 8kHz,
   // the buffer may be bigger (on mac at least)).

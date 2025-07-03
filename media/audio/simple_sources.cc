@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/simple_sources.h"
 
 #include <stddef.h>
@@ -285,7 +280,7 @@ int BeepingSource::OnMoreData(base::TimeDelta /* delay */,
   // Accumulate the time from the last beep.
   interval_from_last_beep_ += base::TimeTicks::Now() - last_callback_time_;
 
-  memset(buffer_.data(), 128, buffer_.size());
+  std::ranges::fill(buffer_, 128);
   bool should_beep = false;
   BeepContext* beep_context = GetBeepContext();
   if (beep_context->automatic_beep()) {
@@ -313,7 +308,7 @@ int BeepingSource::OnMoreData(base::TimeDelta /* delay */,
     size_t position = 0;
     while (position + high_bytes <= buffer_.size()) {
       // Write high values first.
-      memset(buffer_.data() + position, 255, high_bytes);
+      std::ranges::fill(buffer_.subspan(position, high_bytes), 255);
       // Then leave low values in the buffer with |high_bytes|.
       position += high_bytes * 2;
     }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/simple_sources.h"
 
 #include <stddef.h>
@@ -213,7 +208,8 @@ TEST(SimpleSources, FileSourceCorruptTestDataFails) {
   temp.WriteAtCurrentPos(base::byte_span_from_cstring(kTestAudioData));
 
   // Corrupt the header.
-  temp.Write(3, "0x00", 1);
+  static constexpr uint8_t zero = 0;
+  temp.Write(3, base::byte_span_from_ref(zero));
 
   ASSERT_EQ(kTestAudioDataSize, static_cast<size_t>(temp.GetLength()));
   temp.Close();
