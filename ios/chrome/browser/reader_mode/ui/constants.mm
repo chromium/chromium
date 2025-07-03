@@ -36,6 +36,9 @@ NSString* const kReaderModeOptionsSepiaThemeButtonAccessibilityIdentifier =
 NSString* const kReaderModeOptionsCloseButtonAccessibilityIdentifier =
     @"ReaderModeOptionsCloseButtonAccessibilityIdentifier";
 
+NSString* const kReaderModeOptionsTurnOffButtonAccessibilityIdentifier =
+    @"ReaderModeOptionsTurnOffButtonAccessibilityIdentifier";
+
 UIColor* ReaderModeLightBackgroundColor() {
   return [UIColor whiteColor];
 }

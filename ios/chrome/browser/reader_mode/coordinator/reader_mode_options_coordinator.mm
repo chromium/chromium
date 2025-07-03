@@ -33,7 +33,8 @@
   DistillerService* distillerService =
       DistillerServiceFactory::GetForProfile(self.browser->GetProfile());
   _mediator = [[ReaderModeOptionsMediator alloc]
-      initWithDistilledPagePrefs:distillerService->GetDistilledPagePrefs()];
+      initWithDistilledPagePrefs:distillerService->GetDistilledPagePrefs()
+                    webStateList:self.browser->GetWebStateList()];
   _viewController.mutator = _mediator;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES

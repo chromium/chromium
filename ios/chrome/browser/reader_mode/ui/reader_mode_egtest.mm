@@ -644,4 +644,51 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
           grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
 }
 
+// Tests that tapping the "Turn Off" button in the options view dismisses the
+// view and deactivates Reader mode.
+- (void)testTapTurnOffButtonInOptionsView {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+
+  // Tap the chip to open the options view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // The options view should be visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
+
+  // Tap the hide button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kReaderModeOptionsTurnOffButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // The options view should be hidden.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
+
+  // The Reader Mode UI is not visible.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_hidden(YES)];
+}
+
 @end

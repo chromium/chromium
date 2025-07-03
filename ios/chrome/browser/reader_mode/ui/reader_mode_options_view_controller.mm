@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_controls_view.h"
+#import "ios/chrome/browser/reader_mode/ui/reader_mode_options_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -80,7 +81,7 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
 }
 
 - (void)hideReaderMode {
-  // TODO(crbug.com/409941529): Hide Reader mode with mutator.
+  [self.mutator hideReaderMode];
 }
 
 #pragma mark - UI creation helpers
@@ -172,6 +173,8 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.configuration = configuration;
   button.maximumContentSizeCategory = UIContentSizeCategoryExtraExtraLarge;
+  button.accessibilityIdentifier =
+      kReaderModeOptionsTurnOffButtonAccessibilityIdentifier;
   [button addTarget:self
                 action:@selector(hideReaderMode)
       forControlEvents:UIControlEventTouchUpInside];
