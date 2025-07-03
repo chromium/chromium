@@ -55,6 +55,9 @@ class PageContext;
 // The server ID, uniquely representing the session at the server level.
 @property(nonatomic, copy) NSString* serverID;
 
+// Whether to animate the presentation of the BWG UI.
+@property(nonatomic, assign) BOOL shouldAnimatePresentation;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_CONFIGURATION_H_

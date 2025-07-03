@@ -72,6 +72,9 @@ void BwgBrowserAgent::PresentBwgOverlay(
   config.serverID =
       maybe_server_id ? base::SysUTF8ToNSString(*maybe_server_id) : nil;
 
+  // TODO(crbug.com/429250847): Implement logic for this.
+  config.shouldAnimatePresentation = YES;
+
   std::unique_ptr<optimization_guide::proto::PageContext> pageContext = nullptr;
   if (expected_page_context.has_value()) {
     pageContext = std::move(expected_page_context.value());

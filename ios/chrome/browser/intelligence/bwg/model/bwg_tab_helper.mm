@@ -99,6 +99,10 @@ void BwgTabHelper::WebStateDestroyed(web::WebState* web_state) {
 
 void BwgTabHelper::CreateOrUpdateSessionInPrefs(std::string client_id,
                                                 std::string server_id) {
+  if (client_id.empty() || server_id.empty()) {
+    return;
+  }
+
   base::Value::Dict session_info_dict;
   session_info_dict.Set(kServerIDDictKey, server_id);
   session_info_dict.Set(
@@ -112,6 +116,10 @@ void BwgTabHelper::CreateOrUpdateSessionInPrefs(std::string client_id,
 }
 
 void BwgTabHelper::CleanupSessionFromPrefs(std::string session_id) {
+  if (session_id.empty()) {
+    return;
+  }
+
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   ScopedDictPrefUpdate update(profile->GetPrefs(), prefs::kBwgSessionMap);
