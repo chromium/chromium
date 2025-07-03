@@ -208,10 +208,7 @@ base::expected<std::string, absl::Status> PathURLPathnameEncodeCallback(
 
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
-
-  url::CanonicalizePathURLPath(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      &canon_output, &component);
+  url::CanonicalizePathURLPath(input, &canon_output, &component);
 
   return StdStringFromCanonOutput(canon_output, component);
 }

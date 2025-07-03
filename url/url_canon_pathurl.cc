@@ -22,12 +22,14 @@ namespace {
 // |new_component|. If |separator| is non-zero, it is pre-pended to |output|
 // prior to the canonicalized component; i.e. for the '?' or '#' characters.
 template <typename CHAR, typename UCHAR>
-void DoCanonicalizePathComponent(const CHAR* source,
-                                 const Component& component,
-                                 char separator,
-                                 CanonOutput* output,
-                                 Component* new_component) {
-  if (component.is_valid()) {
+void DoCanonicalizePathComponent(
+    std::optional<std::basic_string_view<CHAR>> source,
+    char separator,
+    CanonOutput* output,
+    Component* new_component) {
+  if (source.has_value()) {
+    auto& source_value = *source;
+
     if (separator)
       output->push_back(separator);
     // Copy the path using path URL's more lax escaping rules (think for
@@ -37,11 +39,11 @@ void DoCanonicalizePathComponent(const CHAR* source,
     // https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
     // https://url.spec.whatwg.org/#c0-control-percent-encode-set
     new_component->begin = output->length();
-    size_t end = static_cast<size_t>(component.end());
-    for (size_t i = static_cast<size_t>(component.begin); i < end; i++) {
-      UCHAR uch = static_cast<UCHAR>(source[i]);
+    for (size_t i = 0; i < source_value.size(); i++) {
+      UCHAR uch = static_cast<UCHAR>(source_value[i]);
       if (IsInC0ControlPercentEncodeSet(uch)) {
-        AppendUTF8EscapedChar(source, &i, end, output);
+        AppendUTF8EscapedChar(source_value.data(), &i, source_value.size(),
+                              output);
       } else {
         output->push_back(static_cast<char>(uch));
       }
@@ -74,8 +76,9 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
   //
   // Note: parsing the path part should never cause a failure, see
   // https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
-  DoCanonicalizePathComponent<CHAR, UCHAR>(source.path, parsed.path, '\0',
-                                           output, &new_parsed->path);
+  DoCanonicalizePathComponent<CHAR, UCHAR>(
+      parsed.path.maybe_as_string_view_on(source.path), '\0', output,
+      &new_parsed->path);
 
   // Similar to mailto:, always use the default UTF-8 charset converter for
   // query.
@@ -108,20 +111,18 @@ bool CanonicalizePathURL(const char16_t* spec,
       URLComponentSource<char16_t>(spec), parsed, output, new_parsed);
 }
 
-void CanonicalizePathURLPath(const char* source,
-                             const Component& component,
+void CanonicalizePathURLPath(std::optional<std::string_view> source,
                              CanonOutput* output,
                              Component* new_component) {
-  DoCanonicalizePathComponent<char, unsigned char>(source, component, '\0',
-                                                   output, new_component);
+  DoCanonicalizePathComponent<char, unsigned char>(source, '\0', output,
+                                                   new_component);
 }
 
-void CanonicalizePathURLPath(const char16_t* source,
-                             const Component& component,
+void CanonicalizePathURLPath(std::optional<std::u16string_view> source,
                              CanonOutput* output,
                              Component* new_component) {
-  DoCanonicalizePathComponent<char16_t, char16_t>(source, component, '\0',
-                                                  output, new_component);
+  DoCanonicalizePathComponent<char16_t, char16_t>(source, '\0', output,
+                                                  new_component);
 }
 
 bool ReplacePathURL(const char* base,
