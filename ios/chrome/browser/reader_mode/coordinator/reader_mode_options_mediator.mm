@@ -7,6 +7,7 @@
 #import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/dom_distiller/ios/distilled_page_prefs_observer_bridge.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
+#import "ios/chrome/browser/reader_mode/ui/reader_mode_options_consumer.h"
 
 @interface ReaderModeOptionsMediator () <DistilledPagePrefsObserving>
 @end
@@ -28,6 +29,15 @@
     _distilledPagePrefs->AddObserver(_prefsObserverBridge.get());
   }
   return self;
+}
+
+- (void)setConsumer:(id<ReaderModeOptionsConsumer>)consumer {
+  _consumer = consumer;
+  if (_consumer) {
+    [self onChangeFontFamily:_distilledPagePrefs->GetFontFamily()];
+    [self onChangeTheme:_distilledPagePrefs->GetTheme()];
+    [self onChangeFontScaling:_distilledPagePrefs->GetFontScaling()];
+  }
 }
 
 #pragma mark - ReaderModeOptionsMutator
@@ -71,15 +81,19 @@
 #pragma mark - DistilledPagePrefsObserving
 
 - (void)onChangeFontFamily:(dom_distiller::mojom::FontFamily)font {
-  // TODO(crbug.com/409941529): Feed new font to consumer.
+  [self.consumer setSelectedFontFamily:font];
 }
 
 - (void)onChangeTheme:(dom_distiller::mojom::Theme)theme {
-  // TODO(crbug.com/409941529): Feed new theme to consumer.
+  [self.consumer setSelectedTheme:theme];
 }
 
 - (void)onChangeFontScaling:(float)scaling {
-  // TODO(crbug.com/409941529): Feed new scaling to consumer.
+  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
+  [self.consumer
+      setDecreaseFontSizeButtonEnabled:(scaling > multipliers.front())];
+  [self.consumer
+      setIncreaseFontSizeButtonEnabled:(scaling < multipliers.back())];
 }
 
 @end

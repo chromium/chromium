@@ -13,8 +13,12 @@ namespace dom_distiller {
 class DistilledPagePrefs;
 }
 
+@protocol ReaderModeOptionsConsumer;
+
 // Mediator for the reader mode options.
 @interface ReaderModeOptionsMediator : NSObject <ReaderModeOptionsMutator>
+
+@property(nonatomic, weak) id<ReaderModeOptionsConsumer> consumer;
 
 // Initializer.
 - (instancetype)initWithDistilledPagePrefs:

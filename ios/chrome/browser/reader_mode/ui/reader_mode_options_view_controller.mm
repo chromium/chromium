@@ -32,9 +32,10 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
 }  // namespace
 
 @implementation ReaderModeOptionsViewController {
-  ReaderModeOptionsControlsView* _controlsView;
   UIStackView* _mainStackView;
 }
+
+@synthesize controlsView = _controlsView;
 
 #pragma mark - UIViewController
 

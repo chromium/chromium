@@ -70,6 +70,33 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   return self;
 }
 
+#pragma mark - ReaderModeOptionsConsumer
+
+- (void)setSelectedFontFamily:(dom_distiller::mojom::FontFamily)fontFamily {
+  _fontFamilyButton.menu =
+      [self createFontFamilyMenuWithSelectedFamily:fontFamily];
+}
+
+- (void)setSelectedTheme:(dom_distiller::mojom::Theme)theme {
+  _lightThemeButton.configuration =
+      [self createLightThemeButtonConfigurationSelected:
+                theme == dom_distiller::mojom::Theme::kLight];
+  _sepiaThemeButton.configuration =
+      [self createSepiaThemeButtonConfigurationSelected:
+                theme == dom_distiller::mojom::Theme::kSepia];
+  _darkThemeButton.configuration =
+      [self createDarkThemeButtonConfigurationSelected:
+                theme == dom_distiller::mojom::Theme::kDark];
+}
+
+- (void)setDecreaseFontSizeButtonEnabled:(BOOL)enabled {
+  _decreaseFontSizeButton.enabled = enabled;
+}
+
+- (void)setIncreaseFontSizeButtonEnabled:(BOOL)enabled {
+  _increaseFontSizeButton.enabled = enabled;
+}
+
 #pragma mark - UI actions
 
 // Decrease the font size using the mutator.

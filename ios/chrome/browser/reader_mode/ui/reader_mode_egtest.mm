@@ -298,13 +298,41 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
       onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
-  ExpectBodyHasThemeAndFont("light", "sans-serif");
+  // Tap the chip to open the options view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
 
+  // The options view should be visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
+
+  ExpectBodyHasThemeAndFont("light", "sans-serif");
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SANS_SERIF_LABEL)]
+      assertWithMatcher:grey_notNil()];
+
+  // Change the font family to Monospace.
   [ChromeEarlGrey
       setIntegerValue:(int)dom_distiller::mojom::FontFamily::kMonospace
           forUserPref:dom_distiller::prefs::kFont];
-
   ExpectBodyHasThemeAndFont("light", "monospace");
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MONOSPACE_LABEL)]
+      assertWithMatcher:grey_notNil()];
+
+  // Change the font family to Serif.
+  [ChromeEarlGrey setIntegerValue:(int)dom_distiller::mojom::FontFamily::kSerif
+                      forUserPref:dom_distiller::prefs::kFont];
+  ExpectBodyHasThemeAndFont("light", "serif");
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SERIF_LABEL)]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that tapping the reader mode chip shows the Reader mode options view.
@@ -467,6 +495,13 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
 
+  // Decrease button should be disabled at the minimum font size.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              kReaderModeOptionsDecreaseFontSizeButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_not(grey_enabled())];
+
   // Increase the font size.
   for (int i = 1; i < static_cast<int>(multipliers.size()); ++i) {
     [[EarlGrey
@@ -478,7 +513,20 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
         [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale],
         multipliers[i], @"Pref should be updated to next multiplier");
     ExpectFontSize(multipliers[i] * kReaderModeBaseFontSize);
+    // Decrease button should be enabled.
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                kReaderModeOptionsDecreaseFontSizeButtonAccessibilityIdentifier)]
+        assertWithMatcher:grey_enabled()];
   }
+
+  // Increase button should be disabled at the maximum font size.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              kReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_not(grey_enabled())];
 
   // Decrease the font size.
   for (int i = static_cast<int>(multipliers.size()) - 2; i >= 0; --i) {
@@ -491,6 +539,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
         [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale],
         multipliers[i], @"Pref should be updated to previous multiplier");
     ExpectFontSize(multipliers[i] * kReaderModeBaseFontSize);
+    // Increase button should be enabled.
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                kReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier)]
+        assertWithMatcher:grey_enabled()];
   }
 }
 

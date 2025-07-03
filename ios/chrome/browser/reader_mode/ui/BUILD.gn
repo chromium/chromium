@@ -44,6 +44,7 @@ source_set("chip") {
 
 source_set("options") {
   sources = [
+    "reader_mode_options_consumer.h",
     "reader_mode_options_controls_view.h",
     "reader_mode_options_controls_view.mm",
     "reader_mode_options_mutator.h",
