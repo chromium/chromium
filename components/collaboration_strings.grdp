@@ -50,7 +50,7 @@
   <message name="IDS_COLLABORATION_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
     Contact the sender to ask for a new link
   </message>
-  <message name="IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_HEADER" desc="The title for the chrome out of date dialog, shown when user tries to share a tab group.">
+  <message name="IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_HEADER" desc="The title for the chrome out of date dialog, shown when user tries to share a tab group." formatter_data="android_java">
     Chrome is out of date
   </message>
   <message name="IDS_COLLABORATION_SHARE_BUTTON_CHROME_OUT_OF_DATE_ERROR_DIALOG_BODY" desc="The body for the chrome out of date dialog, shown when user tries to share a tab group.">
@@ -59,10 +59,10 @@
   <message name="IDS_COLLABORATION_JOIN_BUTTON_CHROME_OUT_OF_DATE_ERROR_DIALOG_BODY" desc="The body for the chrome out of date dialog, shown when user tries to share a tab group.">
     To join this tab group, update Chrome
   </message>
-  <message name="IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_UPDATE_BUTTON" desc="The text of the button to update the app from the chrome out of date dialog, shown when user tries to share or join a tab group.">
+  <message name="IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_UPDATE_BUTTON" desc="The text of the button to update the app from the chrome out of date dialog, shown when user tries to share or join a tab group." formatter_data="android_java">
     Update Chrome
   </message>
-  <message name="IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_NOT_NOW_BUTTON" desc="The text of the button to skip updating the app from the chrome out of date dialog, shown when user tries to share or join a tab group.">
+  <message name="IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_NOT_NOW_BUTTON" desc="The text of the button to skip updating the app from the chrome out of date dialog, shown when user tries to share or join a tab group." formatter_data="android_java">
     Not now
   </message>
   <message name="IDS_COLLABORATION_SIGNED_OUT_HEADER" desc="The title for the signed out dialog." formatter_data="android_java">
@@ -121,7 +121,7 @@
   <!-- /Data Sharing -->
 
   <!-- Versioning -->
-  <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_PANEL_OUT_OF_DATE_MESSAGE_CELL_TEXT" desc="Text for the out-of-date cell that can appear at the top of the tab groups panel when the app is out-of-date to support shared tab groups.">
+  <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_PANEL_OUT_OF_DATE_MESSAGE_CELL_TEXT" desc="Text for the out-of-date cell that can appear at the top of the tab groups panel when the app is out-of-date to support shared tab groups." formatter_data="android_java">
     Update Chrome to continue using your shared tab groups
   </message>
   <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_AVAILABLE_AGAIN_IPH_MESSAGE" desc="The text that appears in the in-product help tooltip anchored on the tab groups panel when the shared tab groups are available again (typically after having updated the app).">
