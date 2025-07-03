@@ -9,7 +9,8 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionService.java",
+    "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUi.java",
+    "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUiBackend.java",
   ]
   srcjar_deps = [ ":generate_buildflags" ]
 
@@ -35,7 +36,7 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionAction.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionPopupContents.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionsBridge.java",
-      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionServiceImpl.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUiBackendImpl.java",
     ]
     srcjar_deps += [
       ":jni_headers",
