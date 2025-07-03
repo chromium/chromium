@@ -229,7 +229,7 @@ public class TabSwitcherLayoutPTTest {
 
         tabSwitcherStation = pageStation.openRegularTabSwitcher();
 
-        mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "3_native_tabs_v3");
+        mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "3_native_tabs_v4");
 
         RegularNewTabPageStation previousPage =
                 tabSwitcherStation.leaveHubToPreviousTabViaBack(

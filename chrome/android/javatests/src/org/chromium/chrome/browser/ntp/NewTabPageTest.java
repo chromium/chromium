@@ -224,7 +224,7 @@ public class NewTabPageTest {
         onView(withId(R.id.search_box)).perform(click());
         View view = mNtp.getView().findViewById(R.id.search_box);
         ChromeRenderTestRule.sanitize(view);
-        mRenderTestRule.render(view, "focus_fake_box_v2");
+        mRenderTestRule.render(view, "focus_fake_box_v3");
         scrimManager.disableAnimationForTesting(false);
     }
 
