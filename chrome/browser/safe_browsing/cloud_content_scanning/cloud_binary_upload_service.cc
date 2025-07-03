@@ -428,6 +428,13 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
     // file contents to the content analysis service.  Let the service know that
     // a metadata-only analysis is required.
     request->set_require_metadata_verdict(true);
+    // If the file is encrypted, let the service know that the file is
+    // encrypted.
+    if (result == Result::FILE_ENCRYPTED &&
+        base::FeatureList::IsEnabled(
+            enterprise_connectors::kEnableEncryptedFileUpload)) {
+      request->set_is_content_encrypted(true);
+    }
   }
 
   if (!request->IsAuthRequest() && data.size == 0) {

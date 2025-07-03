@@ -260,6 +260,11 @@ void BinaryUploadService::Request::set_require_metadata_verdict(
       require_metadata_verdict);
 }
 
+void BinaryUploadService::Request::set_is_content_encrypted(
+    bool is_content_encrypted) {
+  content_analysis_request_.set_is_content_encrypted(is_content_encrypted);
+}
+
 void BinaryUploadService::Request::set_blocking(bool blocking) {
   content_analysis_request_.set_blocking(blocking);
 }

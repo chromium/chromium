@@ -193,6 +193,7 @@ class BinaryUploadService : public KeyedService {
     void set_reason(
         enterprise_connectors::ContentAnalysisRequest::Reason reason);
     void set_require_metadata_verdict(bool require_metadata_verdict);
+    void set_is_content_encrypted(bool is_content_encrypted);
     void set_blocking(bool blocking);
     void add_local_ips(const std::string& ip_address);
     void set_referrer_chain(const google::protobuf::RepeatedPtrField<

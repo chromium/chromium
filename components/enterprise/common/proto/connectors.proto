@@ -235,6 +235,9 @@ message ContentAnalysisRequest {
   // Local IP addresses of the device.
   repeated string local_ips = 22;
 
+  // Indicates whether the request is for content that is encrypted.
+  optional bool is_content_encrypted = 23;
+
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;
 }
