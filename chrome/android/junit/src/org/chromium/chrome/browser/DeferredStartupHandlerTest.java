@@ -17,11 +17,13 @@ import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for DeferredStartupHandler. */
+@DisabledTest(message = "https://crbug.com/429459955")
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
