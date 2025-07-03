@@ -5,6 +5,9 @@
   program: {
     runner: "elf",
     binary: "web_engine_exe",
+
+    // Raise an exception if the browser tries to use a bad handle.
+    deny_bad_handles: "true",
   },
   capabilities: [
     {
