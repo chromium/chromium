@@ -33,6 +33,16 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
   static constexpr gfx::GpuMemoryBufferType kBufferType =
       gfx::IO_SURFACE_BUFFER;
 
+  static std::unique_ptr<GpuMemoryBufferImplIOSurface>
+  CreateFromHandleForTesting(gfx::GpuMemoryBufferHandle handle,
+                             const gfx::Size& size,
+                             gfx::BufferFormat format,
+                             gfx::BufferUsage usage,
+                             DestructionCallback callback) {
+    return CreateFromHandle(std::move(handle), size, format, usage,
+                            std::move(callback));
+  }
+
   static base::OnceClosure AllocateForTesting(
       const gfx::Size& size,
       gfx::BufferFormat format,

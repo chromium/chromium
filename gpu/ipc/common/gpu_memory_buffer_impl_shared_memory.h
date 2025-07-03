@@ -30,6 +30,16 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
   static constexpr gfx::GpuMemoryBufferType kBufferType =
       gfx::SHARED_MEMORY_BUFFER;
 
+  static std::unique_ptr<GpuMemoryBufferImplSharedMemory>
+  CreateFromHandleForTesting(gfx::GpuMemoryBufferHandle handle,
+                             const gfx::Size& size,
+                             gfx::BufferFormat format,
+                             gfx::BufferUsage usage,
+                             DestructionCallback callback) {
+    return CreateFromHandle(std::move(handle), size, format, usage,
+                            std::move(callback));
+  }
+
   static std::unique_ptr<GpuMemoryBufferImplSharedMemory> CreateForTesting(
       gfx::GpuMemoryBufferId id,
       const gfx::Size& size,

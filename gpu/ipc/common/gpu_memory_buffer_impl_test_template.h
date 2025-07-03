@@ -25,6 +25,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -40,12 +41,36 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
+#include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
+#include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
+#endif
+
 namespace gpu {
 
 template <typename GpuMemoryBufferImplType>
 class GpuMemoryBufferImplTest : public testing::Test {
  public:
-  GpuMemoryBufferImplTest() = default;
+  GpuMemoryBufferImplTest() {
+#if BUILDFLAG(IS_OZONE)
+    client_native_pixmap_factory_ = ui::CreateClientNativePixmapFactoryOzone();
+#endif
+  }
 
   GpuMemoryBufferImpl::DestructionCallback CreateGpuMemoryBuffer(
       const gfx::Size& size,
@@ -66,9 +91,29 @@ class GpuMemoryBufferImplTest : public testing::Test {
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       GpuMemoryBufferImpl::DestructionCallback callback) {
-    return gpu_memory_buffer_support_
-        .CreateGpuMemoryBufferImplFromHandleForTesting(
+    switch (handle.type) {
+      case gfx::SHARED_MEMORY_BUFFER:
+        return GpuMemoryBufferImplSharedMemory::CreateFromHandleForTesting(
             std::move(handle), size, format, usage, std::move(callback));
+#if BUILDFLAG(IS_MAC)
+      case gfx::IO_SURFACE_BUFFER:
+        return GpuMemoryBufferImplIOSurface::CreateFromHandleForTesting(
+            std::move(handle), size, format, usage, std::move(callback));
+#endif
+#if BUILDFLAG(IS_OZONE)
+      case gfx::NATIVE_PIXMAP:
+        return GpuMemoryBufferImplNativePixmap::CreateFromHandleForTesting(
+            client_native_pixmap_factory_.get(), std::move(handle), size,
+            format, usage, std::move(callback));
+#endif
+#if BUILDFLAG(IS_WIN)
+      case gfx::DXGI_SHARED_HANDLE:
+        return GpuMemoryBufferImplDXGI::CreateFromHandleForTesting(
+            std::move(handle), size, format, usage, std::move(callback));
+#endif
+      default:
+        NOTREACHED();
+    }
   }
 
   GpuMemoryBufferSupport* gpu_memory_buffer_support() {
@@ -138,6 +183,9 @@ class GpuMemoryBufferImplTest : public testing::Test {
   bool run_gpu_test_ = false;
   GpuMemoryBufferSupport gpu_memory_buffer_support_;
   raw_ptr<gl::GLDisplay> display_ = nullptr;
+#if BUILDFLAG(IS_OZONE)
+  std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
+#endif
 
   void FreeGpuMemoryBuffer(base::OnceClosure free_callback, bool* destroyed) {
     std::move(free_callback).Run();

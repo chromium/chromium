@@ -41,6 +41,16 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
   static constexpr gfx::GpuMemoryBufferType kBufferType =
       gfx::DXGI_SHARED_HANDLE;
 
+  static std::unique_ptr<GpuMemoryBufferImplDXGI> CreateFromHandleForTesting(
+      gfx::GpuMemoryBufferHandle handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      DestructionCallback callback) {
+    return CreateFromHandle(std::move(handle), size, format, usage,
+                            std::move(callback));
+  }
+
   static base::OnceClosure AllocateForTesting(
       const gfx::Size& size,
       gfx::BufferFormat format,
