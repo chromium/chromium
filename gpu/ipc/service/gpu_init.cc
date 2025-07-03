@@ -250,6 +250,29 @@ uint64_t CHROME_LUID_to_uint64_t(const CHROME_LUID& luid) {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+const GPUInfo::GPUDevice* GetDefaultGPU(
+    const GPUInfo& gpu_info,
+    const GpuFeatureInfo& gpu_feature_info) {
+  if (!gpu_feature_info.IsWorkaroundEnabled(FORCE_PHYSICAL_GPU_FOR_TESTING)) {
+    // If no preference is set, return the default GPU.
+    return &(gpu_info.gpu);
+  }
+
+  // Ensure default GPU is not a software renderer.
+  if (!gpu_info.gpu.IsSoftwareRenderer()) {
+    return &(gpu_info.gpu);
+  } else if (auto it =
+                 std::ranges::find_if(gpu_info.secondary_gpus,
+                                      [](const GPUInfo::GPUDevice& device) {
+                                        return !device.IsSoftwareRenderer();
+                                      });
+             it != gpu_info.secondary_gpus.end()) {
+    return &(*it);
+  } else {
+    LOG(FATAL) << "No non-software renderer device available.";
+  }
+}
+
 // GPU picking is only effective with ANGLE/Metal backend on Mac and
 // on Windows with EGL.
 // Returns the default GPU's system_device_id.
@@ -262,7 +285,8 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
       gpu_info.GetGpuByPreference(gl::GpuPreference::kLowPower);
 #if BUILDFLAG(IS_WIN)
   // On Windows the default GPU may not be the low power GPU.
-  const GPUInfo::GPUDevice* gpu_default = &(gpu_info.gpu);
+  const GPUInfo::GPUDevice* gpu_default =
+      GetDefaultGPU(gpu_info, gpu_feature_info);
   uint64_t system_device_id_high_perf =
       gpu_high_perf ? CHROME_LUID_to_uint64_t(gpu_high_perf->luid) : 0;
   uint64_t system_device_id_low_power =
@@ -271,14 +295,13 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
       CHROME_LUID_to_uint64_t(gpu_default->luid);
 #else  // IS_MAC
   const GPUInfo::GPUDevice* gpu_default =
-      gpu_low_power ? gpu_low_power : &(gpu_info.gpu);
+      gpu_low_power ? gpu_low_power : GetDefaultGPU(gpu_info, gpu_feature_info);
   uint64_t system_device_id_high_perf =
       gpu_high_perf ? gpu_high_perf->system_device_id : 0;
   uint64_t system_device_id_low_power =
       gpu_low_power ? gpu_low_power->system_device_id : 0;
   uint64_t system_device_id_default = gpu_default->system_device_id;
 #endif  // BUILDFLAG(IS_WIN)
-  DCHECK(gpu_default);
 
   if (gpu_info.GpuCount() <= 1) {
     gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
@@ -297,6 +320,7 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
                             system_device_id_high_perf);
     return;
   }
+
   if (gpu_default == gpu_high_perf) {
     // If the default GPU is already the high performance GPU, then it's better
     // for Chrome to always use this GPU.

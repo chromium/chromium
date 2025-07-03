@@ -773,6 +773,12 @@ bool EnableSwiftShaderIfNeeded(base::CommandLine* command_line,
                                const GpuFeatureInfo& gpu_feature_info,
                                bool disable_software_rasterizer,
                                bool blocklist_needs_more_info) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (gpu_feature_info.IsWorkaroundEnabled(FORCE_PHYSICAL_GPU_FOR_TESTING)) {
+    return false;
+  }
+#endif  // IS_WIN || IS_MAC
+
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
   if (disable_software_rasterizer || blocklist_needs_more_info)
     return false;

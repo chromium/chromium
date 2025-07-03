@@ -86,6 +86,7 @@ force_high_performance_gpu
 force_int_or_srgb_cube_texture_complete
 force_low_power_gpu
 force_nv12_overlay_support
+force_physical_gpu_for_testing
 force_rgb10a2_overlay_support
 force_update_scissor_state_when_binding_fbo0
 gl_clear_broken
