@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
 
 const char kIOSPresentQLPreviewControllerHistogram[] =
     "Download.IOSPresentQLPreviewControllerResult";

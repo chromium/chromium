@@ -7,8 +7,8 @@ include_rules = [
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h",
   "+ios/chrome/browser/tips_manager/model",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_util.h",
-  "+ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h",
 ]

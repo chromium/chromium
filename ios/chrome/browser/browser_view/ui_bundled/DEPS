@@ -114,6 +114,8 @@ include_rules = [
   "+ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled",
   "+ios/chrome/browser/tabs/model/tab_title_util.h",
+  "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
+  "+ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h",
   "+ios/chrome/browser/tabs/ui_bundled",
   "+ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h",
   "+ios/chrome/browser/tips_manager/model",

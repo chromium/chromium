@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
-#define IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
+#ifndef IOS_CHROME_BROWSER_TABS_MODEL_TABS_DEPENDENCY_INSTALLER_H_
+#define IOS_CHROME_BROWSER_TABS_MODEL_TABS_DEPENDENCY_INSTALLER_H_
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_multi_source_observation.h"
@@ -76,4 +76,4 @@ class WebStateDependencyInstallationObserver : public WebStateListObserver,
       web_state_observations_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
+#endif  // IOS_CHROME_BROWSER_TABS_MODEL_TABS_DEPENDENCY_INSTALLER_H_

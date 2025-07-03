@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_DEPENDENCY_INSTALLER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_DEPENDENCY_INSTALLER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_TABS_MODEL_TABS_DEPENDENCY_INSTALLER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_TABS_MODEL_TABS_DEPENDENCY_INSTALLER_BRIDGE_H_
 
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installation_observer.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
 // Protocol for classes wishing to install and/or uninstall dependencies
 // (delegates, etc) for each WebState using WebStateDependencyInstallerBridge.
@@ -48,4 +48,4 @@ class WebStateDependencyInstallerBridge : public DependencyInstaller {
   WebStateDependencyInstallationObserver observer_;
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_DEPENDENCY_INSTALLER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_TABS_MODEL_TABS_DEPENDENCY_INSTALLER_BRIDGE_H_
