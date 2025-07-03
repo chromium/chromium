@@ -49,8 +49,6 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
   // by this class; it will delete itself when a decision is made.
   views::ViewTracker prompt_bubble_tracker_;
 
-  base::TimeTicks permission_requested_time_;
-
   bool parent_was_visible_when_activation_changed_;
 
   base::ScopedClosureRunner disallowed_custom_cursors_scope_;

@@ -344,8 +344,6 @@ void ChipController::ShowPermissionUi(
                                                   weak_factory_.GetWeakPtr()));
   }
 
-  request_chip_shown_time_ = base::TimeTicks::Now();
-
   // The permission prompt bubble has its own accessibility announcement. We
   // should not announce the chip.
   if (!permission_prompt_model_->ShouldBubbleStartOpen()) {
@@ -649,7 +647,7 @@ void ChipController::OpenPermissionPromptBubble() {
     raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble =
         CreatePermissionPromptBubbleView(
             browser, permission_prompt_model_->GetDelegate(),
-            request_chip_shown_time_, PermissionPromptStyle::kChip);
+            PermissionPromptStyle::kChip);
     bubble_tracker_.SetView(prompt_bubble);
     prompt_bubble->Show();
   } else if (permission_prompt_model_->GetPromptStyle() ==
@@ -689,11 +687,6 @@ void ChipController::ClosePermissionPromptBubbleWithReason(
     views::Widget::ClosedReason reason) {
   DCHECK(IsBubbleShowing());
   GetBubbleWidget()->CloseWithReason(reason);
-}
-
-void ChipController::RecordRequestChipButtonPressed(const char* recordKey) {
-  base::UmaHistogramMediumTimes(
-      recordKey, base::TimeTicks::Now() - request_chip_shown_time_);
 }
 
 void ChipController::ObservePromptBubble() {
@@ -741,16 +734,6 @@ void ChipController::OnPromptExpired() {
 }
 
 void ChipController::OnRequestChipButtonPressed() {
-  if (permission_prompt_model_ &&
-      (!IsBubbleShowing() ||
-       permission_prompt_model_->ShouldBubbleStartOpen())) {
-    // Only record if its the first interaction.
-    if (permission_prompt_model_->GetPromptStyle() ==
-        PermissionPromptStyle::kChip) {
-      RecordRequestChipButtonPressed("Permissions.Chip.TimeToInteraction");
-    }
-  }
-
   if (IsBubbleShowing()) {
     // A mouse click on chip while a permission prompt is open should dismiss
     // the prompt and collapse the chip

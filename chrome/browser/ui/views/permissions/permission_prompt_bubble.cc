@@ -17,8 +17,7 @@ PermissionPromptBubble::PermissionPromptBubble(
     Browser* browser,
     content::WebContents* web_contents,
     Delegate* delegate)
-    : PermissionPromptDesktop(browser, web_contents, delegate),
-      permission_requested_time_(base::TimeTicks::Now()) {
+    : PermissionPromptDesktop(browser, web_contents, delegate) {
   LocationBarView* lbv = GetLocationBarView();
   if (lbv && lbv->IsDrawn() &&
       delegate->Requests()[0]->IsConfirmationChipSupported()) {
@@ -39,7 +38,6 @@ PermissionPromptBubble::~PermissionPromptBubble() {
 void PermissionPromptBubble::ShowBubble() {
   raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble =
       CreatePermissionPromptBubbleView(browser(), delegate()->GetWeakPtr(),
-                                       permission_requested_time_,
                                        PermissionPromptStyle::kBubbleOnly);
   prompt_bubble_tracker_.SetView(prompt_bubble);
   prompt_bubble->Show();

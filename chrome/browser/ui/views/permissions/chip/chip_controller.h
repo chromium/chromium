@@ -255,9 +255,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // `PermissionDashboardController` is an owner of this.
   raw_ptr<PermissionDashboardController> permission_dashboard_controller_;
 
-  // The time when the request chip was displayed.
-  base::TimeTicks request_chip_shown_time_;
-
   // A timer used to dismiss the permission request after it's been collapsed
   // for a while.
   base::OneShotTimer dismiss_timer_;

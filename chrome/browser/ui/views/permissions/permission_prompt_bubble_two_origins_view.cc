@@ -62,11 +62,9 @@ bool HasExtraText(permissions::PermissionPrompt::Delegate& delegate) {
 PermissionPromptBubbleTwoOriginsView::PermissionPromptBubbleTwoOriginsView(
     Browser* browser,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
-    base::TimeTicks permission_requested_time,
     PermissionPromptStyle prompt_style)
     : PermissionPromptBubbleBaseView(browser,
                                      delegate,
-                                     permission_requested_time,
                                      prompt_style) {
   SetTitle(CreateWindowTitle());
 

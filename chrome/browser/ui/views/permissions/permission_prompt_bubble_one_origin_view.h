@@ -37,7 +37,6 @@ class PermissionPromptBubbleOneOriginView :
   PermissionPromptBubbleOneOriginView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
-      base::TimeTicks permission_requested_time,
       PermissionPromptStyle prompt_style);
   PermissionPromptBubbleOneOriginView(
       const PermissionPromptBubbleOneOriginView&) = delete;

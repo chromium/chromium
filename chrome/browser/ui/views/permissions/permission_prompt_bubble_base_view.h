@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
@@ -49,7 +48,6 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   PermissionPromptBubbleBaseView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
-      base::TimeTicks permission_requested_time,
       PermissionPromptStyle prompt_style);
   PermissionPromptBubbleBaseView(const PermissionPromptBubbleBaseView&) =
       delete;
@@ -114,8 +112,6 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   }
 
   base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate_;
-
-  base::TimeTicks permission_requested_time_;
 
   PermissionPromptStyle prompt_style_;
 

@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "components/favicon_base/favicon_types.h"
 #include "ui/views/controls/styled_label.h"
@@ -35,7 +34,6 @@ class PermissionPromptBubbleTwoOriginsView
   PermissionPromptBubbleTwoOriginsView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
-      base::TimeTicks permission_requested_time,
       PermissionPromptStyle prompt_style);
   PermissionPromptBubbleTwoOriginsView(
       const PermissionPromptBubbleTwoOriginsView&) = delete;
