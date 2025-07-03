@@ -98,6 +98,11 @@ std::optional<AttributeType> GetStaticAttributeType(
     return std::nullopt;
   }
 
+  // Returns `at` if its entity is enabled and std::nullopt otherwise.
+  auto if_enabled = [](std::optional<AttributeType> at) {
+    return at && at->entity_type().enabled() ? at : std::nullopt;
+  };
+
   if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
     static constexpr auto kTable = []() {
       std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
@@ -106,12 +111,13 @@ std::optional<AttributeType> GetStaticAttributeType(
       }
       return arr;
     }();
-    return 0 <= *ft && *ft < kTable.size() ? kTable[*ft] : std::nullopt;
+    return 0 <= *ft && *ft < kTable.size() ? if_enabled(kTable[*ft])
+                                           : std::nullopt;
   }
 
   // This lookup table is the inverse of AttributeType::field_type(), except
   // for the `kNonInjectiveFieldTypes`.
-  static constexpr auto kTable = []() {
+  static auto kTable = []() {
     std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
     for (AttributeType at : DenseSet<AttributeType>::all()) {
       if (!kNonInjectiveFieldTypes.contains(
@@ -121,7 +127,8 @@ std::optional<AttributeType> GetStaticAttributeType(
     }
     return arr;
   }();
-  return 0 <= *ft && *ft < kTable.size() ? kTable[*ft] : std::nullopt;
+  return 0 <= *ft && *ft < kTable.size() ? if_enabled(kTable[*ft])
+                                         : std::nullopt;
 }
 
 // A field is assignable a dynamic AttributeType if there are more than one
