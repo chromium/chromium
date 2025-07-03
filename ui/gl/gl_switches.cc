@@ -159,6 +159,17 @@ const char kEnableUnsafeSwiftShader[] = "enable-unsafe-swiftshader";
 const char kDirectCompositionVideoSwapChainFormat[] =
     "direct-composition-video-swap-chain-format";
 
+// Tint `SwapChainPresenter` with the following colors:
+//
+// - Decode swap chain: blue
+// - VP blit: magenta
+// - VP blit w/ staging texture: orange
+// - MF proxy surface: green
+//
+// This is similar to `HKLM\Software\Microsoft\Windows\DWM` `OverlayTestMode=1`
+// in DWM, but to help understand `SwapChainPresenter` state.
+const char kTintDcLayer[] = "tint-dc-layer";
+
 // This is the list of switches passed from this file that are passed from the
 // GpuProcessHost to the GPU Process. Add your switch to this list if you need
 // to read it in the GPU process, else don't add it.
@@ -176,6 +187,7 @@ const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
     kDisableDirectComposition,
     kEnableDirectCompositionVideoOverlays,
     kDirectCompositionVideoSwapChainFormat,
+    kTintDcLayer,
     kEnableUnsafeSwiftShader,
 };
 const size_t kGLSwitchesCopiedFromGpuProcessHostNumSwitches =

@@ -60,6 +60,18 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // `CreateSurfaceFromHandle`.
   GL_EXPORT static bool CreateSurfaceHandleHelperForTesting(HANDLE* handle);
 
+  // This only differs from `VideoPresentationMode` because that does not
+  // include MF surface proxy.
+  enum class PresentationMode {
+    kDecodeSwapChain,
+    kVpBlt,
+    kVpBltWithStagingTexture,
+    kMfSurfaceProxy,
+  };
+
+  // Get the presentation mode of the last successfully presented frame.
+  PresentationMode GetLastPresentationMode() const;
+
  private:
   // Mapped to DirectCompositonVideoPresentationMode UMA enum.  Do not remove or
   // remap existing entries!
@@ -258,6 +270,10 @@ class SwapChainPresenter : public base::PowerStateObserver {
       Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3,
       Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1,
       const gfx::ColorSpace& input_color_space);
+
+  // Returns `true` if the last successfully presented frame was a Media
+  // Foundation surface proxy.
+  bool IsMediaFoundationSurfaceProxy() const;
 
   // The Direct Composition surface handle from MediaFoundationRenderer.
   HANDLE dcomp_surface_handle_ = INVALID_HANDLE_VALUE;

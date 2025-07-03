@@ -529,6 +529,8 @@ class GL_EXPORT DCLayerTree {
   const bool force_dcomp_triple_buffer_video_swap_chain_;
   const bool no_downscaled_overlay_promotion_;
 
+  const bool tint_video_layer_;
+
   HWND window_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device_;

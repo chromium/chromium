@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -315,6 +316,8 @@ DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
       force_dcomp_triple_buffer_video_swap_chain_(
           force_dcomp_triple_buffer_video_swap_chain),
       no_downscaled_overlay_promotion_(no_downscaled_overlay_promotion),
+      tint_video_layer_(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTintDcLayer)),
       ink_renderer_(std::make_unique<DelegatedInkRenderer>()) {}
 
 DCLayerTree::~DCLayerTree() = default;
@@ -1261,7 +1264,8 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
   }
 
   // Populate |overlays| with information required to build dcomp visual tree.
-  for (auto& overlay : overlays) {
+  for (auto it = overlays.begin(); it != overlays.end(); it++) {
+    auto& overlay = *it;
     if (NeedSwapChainPresenter(overlay)) {
       // Present to swap chain and update the overlay with transform, clip
       // and content.
@@ -1297,6 +1301,36 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
       overlay.overlay_image = DCLayerOverlayImage(
           video_swap_chain->content_size(), video_swap_chain->content());
       overlay.content_rect = gfx::RectF(video_swap_chain->content_size());
+
+      if (tint_video_layer_) {
+        SkColor4f tint_color;
+        switch (video_swap_chain->GetLastPresentationMode()) {
+          case SwapChainPresenter::PresentationMode::kDecodeSwapChain:
+            tint_color = SkColors::kBlue;
+            break;
+          case SwapChainPresenter::PresentationMode::kVpBlt:
+            tint_color = SkColors::kMagenta;
+            break;
+          case SwapChainPresenter::PresentationMode::kVpBltWithStagingTexture:
+            tint_color = SkColor4f(1.0, 0.5, 0.0, 1.0);
+            break;
+          case SwapChainPresenter::PresentationMode::kMfSurfaceProxy:
+            tint_color = SkColors::kGreen;
+            break;
+        }
+
+        DCLayerOverlayParams tint_overlay;
+        tint_overlay.quad_rect = it->quad_rect;
+        tint_overlay.transform = it->transform;
+        tint_overlay.clip_rect = it->clip_rect;
+        tint_overlay.rounded_corner_bounds = it->rounded_corner_bounds;
+        tint_overlay.opacity = 0.25;
+        tint_overlay.background_color = tint_color;
+        tint_overlay.layer_id =
+            it->layer_id.MakeForChildOfSharedQuadStateLayer(1);
+        it = overlays.insert(std::next(it), std::move(tint_overlay));
+        // Do not access `overlay` after this point since it is invalidated.
+      }
     }
   }
 
