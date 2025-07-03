@@ -190,9 +190,7 @@ base::expected<std::string, absl::Status> StandardURLPathnameEncodeCallback(
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
-  bool result = url::CanonicalizePartialPath(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
-      &canon_output, &component);
+  bool result = url::CanonicalizePartialPath(input, &canon_output, &component);
 
   if (!result) {
     return base::unexpected(absl::InvalidArgumentError(

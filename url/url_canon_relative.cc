@@ -397,8 +397,8 @@ bool DoResolveRelativePath(const char* base_url,
       // just replace everything from the path on with the new versions.
       // Since the input should be canonical hierarchical URL, we should
       // always have a path.
-      success &= CanonicalizePath(relative_url, path,
-                                  output, &out_parsed->path);
+      success &= CanonicalizePath(path.as_string_view_on(relative_url), output,
+                                  &out_parsed->path);
     } else {
       // Relative path, replace the query, and reference. We take the
       // original path with the file part stripped, and append the new path.
@@ -416,8 +416,8 @@ bool DoResolveRelativePath(const char* base_url,
 
       CopyToLastSlash(base_url, base_path_begin, base_parsed.path.end(),
                       output);
-      success &= CanonicalizePartialPathInternal(relative_url, path, path_begin,
-                                                 canon_mode, output);
+      success &= CanonicalizePartialPathInternal(
+          path.as_string_view_on(relative_url), path_begin, canon_mode, output);
       out_parsed->path = MakeRange(path_begin, output->length());
 
       // Copy the rest of the stuff after the path from the relative path.

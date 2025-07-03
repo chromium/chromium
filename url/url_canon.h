@@ -632,14 +632,12 @@ int DefaultPortForScheme(std::string_view scheme);
 // the path that the server expects (we'll escape high-bit characters), so
 // if something is invalid, it's their problem.
 COMPONENT_EXPORT(URL)
-bool CanonicalizePath(const char* spec,
-                      const Component& path,
+bool CanonicalizePath(std::optional<std::string_view> path,
                       CanonMode canon_mode,
                       CanonOutput* output,
                       Component* out_path);
 COMPONENT_EXPORT(URL)
-bool CanonicalizePath(const char16_t* spec,
-                      const Component& path,
+bool CanonicalizePath(std::optional<std::u16string_view> path,
                       CanonMode canon_mode,
                       CanonOutput* output,
                       Component* out_path);
@@ -648,27 +646,30 @@ bool CanonicalizePath(const char16_t* spec,
 //
 // These functions are also used in net/third_party code. So removing these
 // functions requires several steps.
+// TODO(crbug.com/422740114): Remove this after `//net/third_party/quiche` is
+// not depending on it.
 COMPONENT_EXPORT(URL)
 bool CanonicalizePath(const char* spec,
                       const Component& path,
                       CanonOutput* output,
                       Component* out_path);
 COMPONENT_EXPORT(URL)
-bool CanonicalizePath(const char16_t* spec,
-                      const Component& path,
+bool CanonicalizePath(std::optional<std::string_view> path,
+                      CanonOutput* output,
+                      Component* out_path);
+COMPONENT_EXPORT(URL)
+bool CanonicalizePath(std::optional<std::u16string_view> path,
                       CanonOutput* output,
                       Component* out_path);
 
 // Like CanonicalizePath(), but does not assume that its operating on the
 // entire path.  It therefore does not prepend a slash, etc.
 COMPONENT_EXPORT(URL)
-bool CanonicalizePartialPath(const char* spec,
-                             const Component& path,
+bool CanonicalizePartialPath(std::optional<std::string_view> path,
                              CanonOutput* output,
                              Component* out_path);
 COMPONENT_EXPORT(URL)
-bool CanonicalizePartialPath(const char16_t* spec,
-                             const Component& path,
+bool CanonicalizePartialPath(std::optional<std::u16string_view> path,
                              CanonOutput* output,
                              Component* out_path);
 

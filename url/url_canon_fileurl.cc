@@ -51,7 +51,8 @@ int DoFindWindowsDriveLetter(const CHAR* spec, int begin, int end) {
   Component sub_path = MakeRange(begin, drive_letter_pos);
   RawCanonOutput<1024> output;
   Component output_path;
-  bool success = CanonicalizePath(spec, sub_path, &output, &output_path);
+  bool success = CanonicalizePath(sub_path.maybe_as_string_view_on(spec),
+                                  &output, &output_path);
   if (!success || output_path.len != 1 || output.at(output_path.begin) != '/') {
     return -1;
   }
@@ -116,7 +117,8 @@ bool DoFileCanonicalizePath(const CHAR* spec,
     // path we canonicalize here).
     Component sub_path = MakeRange(after_drive, path.end());
     Component fake_output_path;
-    success = CanonicalizePath(spec, sub_path, output, &fake_output_path);
+    success = CanonicalizePath(sub_path.maybe_as_string_view_on(spec), output,
+                               &fake_output_path);
   } else if (after_drive == path.begin) {
     // No input path and no drive spec, canonicalize to a slash.
     output->push_back('/');

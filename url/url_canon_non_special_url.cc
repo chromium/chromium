@@ -126,9 +126,9 @@ bool DoCanonicalizeNonSpecialURL(const URLComponentSource<CHAR>& source,
       output.push_back('/');
       new_parsed.path.len = output.length() - new_parsed.path.begin;
     } else {
-      success &=
-          CanonicalizePath(source.path, parsed.path, CanonMode::kNonSpecialURL,
-                           &output, &new_parsed.path);
+      success &= CanonicalizePath(parsed.path.as_string_view_on(source.path),
+                                  CanonMode::kNonSpecialURL, &output,
+                                  &new_parsed.path);
       if (!parsed.host.is_valid() && new_parsed.path.is_valid() &&
           new_parsed.path.as_string_view_on(output.view().data())
               .starts_with("//")) {

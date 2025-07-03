@@ -526,13 +526,11 @@ bool SetupUTF16OverrideComponents(const char* base,
 
 // Implemented in url_canon_path.cc, these are required by the relative URL
 // resolver as well, so we declare them here.
-bool CanonicalizePartialPathInternal(const char* spec,
-                                     const Component& path,
+bool CanonicalizePartialPathInternal(std::string_view path,
                                      size_t path_begin_in_output,
                                      CanonMode canon_mode,
                                      CanonOutput* output);
-bool CanonicalizePartialPathInternal(const char16_t* spec,
-                                     const Component& path,
+bool CanonicalizePartialPathInternal(std::u16string_view path,
                                      size_t path_begin_in_output,
                                      CanonMode canon_mode,
                                      CanonOutput* output);

@@ -211,13 +211,7 @@ String CanonicalizePathname(const String& protocol,
   const auto canonicalize_path =
       [&]<typename CharType>(std::basic_string_view<CharType> data) {
         if (standard) {
-          // TODO(crbug.com/351564777, crbug.com/420421613): Remove the
-          // UNSAFE_TODO after we finish transition in
-          // `url::CanonicalizePartialPath` to use
-          // `std::basic_string_view<CharType>`.
-          return UNSAFE_TODO(url::CanonicalizePartialPath(
-              data.data(), url::Component(0, data.size()), &canon_output,
-              &component));
+          return url::CanonicalizePartialPath(data, &canon_output, &component);
         }
         // TODO(crbug.com/351564777, crbug.com/420421613): Remove the
         // UNSAFE_TODO after we finish transition in

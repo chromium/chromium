@@ -91,7 +91,7 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
 
   // Path
   if (parsed.path.is_valid()) {
-    success &= CanonicalizePath(source.path, parsed.path,
+    success &= CanonicalizePath(parsed.path.as_string_view_on(source.path),
                                 output, &new_parsed->path);
   } else if (have_authority ||
              parsed.query.is_valid() || parsed.ref.is_valid()) {

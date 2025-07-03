@@ -644,11 +644,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
 
   std::string cookie_path = cookie_util::CanonPathWithString(url, path);
   // Canonicalize path again to make sure it escapes characters as needed.
-  url::Component path_component(0, cookie_path.length());
   url::RawCanonOutputT<char> canon_path;
   url::Component canon_path_component;
-  url::CanonicalizePath(cookie_path.data(), path_component, &canon_path,
-                        &canon_path_component);
+  url::CanonicalizePath(cookie_path, &canon_path, &canon_path_component);
   std::string_view encoded_cookie_path = canon_path.view().substr(
       canon_path_component.begin, canon_path_component.len);
 
