@@ -5,10 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_LINK_PREVIEW_TRIGGERER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_LINK_PREVIEW_TRIGGERER_H_
 
-#include "base/functional/callback.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 
 namespace blink {

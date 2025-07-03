@@ -85,6 +85,10 @@ namespace mojo {
 class BinderMap;
 }
 
+namespace net {
+class SiteForCookies;
+}
+
 namespace url {
 class Origin;
 }
