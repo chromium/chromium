@@ -9,11 +9,11 @@
 #include <algorithm>
 #include <string>
 
-#include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
+#include "crypto/hash.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 
@@ -218,23 +218,15 @@ uint64_t MediaStreamTrackMetrics::MakeUniqueIdImpl(uint64_t pc_id,
   // We use a hash over the |track| pointer and the PeerConnection ID,
   // plus a boolean flag indicating whether the track is remote (since
   // you might conceivably have a remote track added back as a sent
-  // track) as the unique ID.
-  //
-  // We don't need a cryptographically secure hash (which MD5 should
-  // no longer be considered), just one with virtually zero chance of
-  // collisions when faced with non-malicious data.
+  // track) as the unique ID, then use SHA-256 for a hash function with low
+  // chance of collision when faced with non-adversarial data.
   std::string unique_id_string =
       base::StringPrintf("%" PRIu64 " %s %d", pc_id, track_id.c_str(),
                          direction == Direction::kReceive ? 1 : 0);
 
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
-  base::MD5Update(&ctx, unique_id_string);
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-
-  static_assert(sizeof(digest.a) > sizeof(uint64_t), "need a bigger digest");
-  return base::U64FromLittleEndian(base::span(digest.a).first<8u>());
+  auto hash = crypto::hash::Sha256(unique_id_string);
+  static_assert(sizeof(hash) >= sizeof(uint64_t));
+  return base::U64FromNativeEndian(base::span(hash).first<sizeof(uint64_t)>());
 }
 
 uint64_t MediaStreamTrackMetrics::MakeUniqueId(const std::string& track_id,

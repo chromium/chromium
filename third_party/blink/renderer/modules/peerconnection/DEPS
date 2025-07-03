@@ -10,7 +10,6 @@ include_rules = [
     "+third_party/blink/renderer/modules/p2p",
     "+third_party/blink/renderer/modules/webrtc",
 
-    "+base/hash/md5.h",
     "+base/lazy_instance.h",
     "+base/power_monitor/power_observer.h",
     # TODO(crbug.com/787254): Replace StringPrintf uses here.
@@ -20,6 +19,7 @@ include_rules = [
     "+base/threading/thread.h",
     "+base/unguessable_token.h",
     "+base/values.h",
+    "+crypto/hash.h",
     "+crypto/openssl_util.h",
     "+components/webrtc/thread_wrapper.h",
     "+media/base",
