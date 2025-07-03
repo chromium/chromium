@@ -635,30 +635,7 @@ static void NotReachedEntityCallback(const void* context,
   NOTREACHED();
 }
 
-class TextCodecInput final {
-  STACK_ALLOCATED();
-
- public:
-  TextCodecInput(const TextEncoding& encoding,
-                 base::span<const UChar> characters)
-      : buffer_span_(characters) {}
-
-  TextCodecInput(const TextEncoding& encoding,
-                 base::span<const LChar> characters) {
-    buffer_.ReserveInitialCapacity(
-        base::checked_cast<wtf_size_t>(characters.size()));
-    buffer_.AppendSpan(characters);
-    buffer_span_ = base::span(buffer_);
-  }
-
-  base::span<const UChar> Span() const { return buffer_span_; }
-
- private:
-  base::span<const UChar> buffer_span_;
-  Vector<UChar> buffer_;
-};
-
-std::string TextCodecIcu::EncodeInternal(const TextCodecInput& input,
+std::string TextCodecIcu::EncodeInternal(base::span<const UChar> input,
                                          UnencodableHandling handling) {
   UErrorCode err = U_ZERO_ERROR;
 
@@ -709,8 +686,8 @@ std::string TextCodecIcu::EncodeInternal(const TextCodecInput& input,
   if (U_FAILURE(err))
     return std::string();
 
-  const UChar* source = input.Span().data();
-  const UChar* end = base::to_address(input.Span().end());
+  const UChar* source = input.data();
+  const UChar* end = base::to_address(input.end());
   Vector<char> result;
   do {
     std::array<char, kConversionBufferSize> buffer;
@@ -726,20 +703,20 @@ std::string TextCodecIcu::EncodeInternal(const TextCodecInput& input,
   return std::string(result.data(), result.size());
 }
 
-template <typename CharType>
-std::string TextCodecIcu::EncodeCommon(base::span<const CharType> characters,
+std::string TextCodecIcu::EncodeCommon(base::span<const UChar> characters,
                                        UnencodableHandling handling) {
   if (characters.empty()) {
     return "";
   }
 
-  if (!converter_icu_)
+  if (!converter_icu_) {
     CreateIcuConverter();
-  if (!converter_icu_)
+  }
+  if (!converter_icu_) {
     return std::string();
+  }
 
-  const TextCodecInput input(encoding_, characters);
-  return EncodeInternal(input, handling);
+  return EncodeInternal(characters, handling);
 }
 
 std::string TextCodecIcu::Encode(base::span<const UChar> characters,
@@ -749,7 +726,12 @@ std::string TextCodecIcu::Encode(base::span<const UChar> characters,
 
 std::string TextCodecIcu::Encode(base::span<const LChar> characters,
                                  UnencodableHandling handling) {
-  return EncodeCommon(characters, handling);
+  Vector<UChar> buffer;
+  buffer.ReserveInitialCapacity(
+      base::checked_cast<wtf_size_t>(characters.size()));
+  buffer.AppendSpan(characters);
+  base::span<const UChar> span(buffer);
+  return EncodeCommon(span, handling);
 }
 
 }  // namespace blink
