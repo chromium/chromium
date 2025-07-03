@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -487,8 +486,6 @@ public class ChromePaymentRequestService
                             getPayeeOrigin(spcMethodData),
                             spcMethodData.securePaymentConfirmation.showOptOut,
                             spcMethodData.securePaymentConfirmation.rpId,
-                            getIssuerIcon(),
-                            getNetworkIcon(),
                             /* informOnly= */ true);
 
             return success;
@@ -667,8 +664,6 @@ public class ChromePaymentRequestService
                             getPayeeOrigin(spcMethodData),
                             spcMethodData.securePaymentConfirmation.showOptOut,
                             spcMethodData.securePaymentConfirmation.rpId,
-                            getIssuerIcon(),
-                            getNetworkIcon(),
                             /* informOnly= */ false);
 
             if (success) {
@@ -720,28 +715,6 @@ public class ChromePaymentRequestService
         assertNonNull(mPaymentRequestService);
         mPaymentRequestService.invokePaymentApp(
                 app, new PaymentResponseHelper(app, mSpec.getPaymentOptions()));
-    }
-
-    private @Nullable BitmapDrawable getIssuerIcon() {
-        Context context = mDelegate.getContext(mRenderFrameHost);
-        if (context != null) {
-            if (getSelectedPaymentApp().getIssuerIcon() != null) {
-                return new BitmapDrawable(
-                        context.getResources(), getSelectedPaymentApp().getIssuerIcon());
-            }
-        }
-        return null;
-    }
-
-    private @Nullable BitmapDrawable getNetworkIcon() {
-        Context context = mDelegate.getContext(mRenderFrameHost);
-        if (context != null) {
-            if (getSelectedPaymentApp().getNetworkIcon() != null) {
-                return new BitmapDrawable(
-                        context.getResources(), getSelectedPaymentApp().getNetworkIcon());
-            }
-        }
-        return null;
     }
 
     private @Nullable Origin getPayeeOrigin(PaymentMethodData spcMethodData) {

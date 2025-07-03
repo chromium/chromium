@@ -33,7 +33,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -59,10 +58,7 @@ import java.lang.ref.WeakReference;
 @Config(
         manifest = Config.NONE,
         shadows = {SecurePaymentConfirmationAuthnTest.ShadowBottomSheetControllerProvider.class})
-@EnableFeatures({
-    BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_NETWORK_AND_ISSUER_ICONS,
-    PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK
-})
+@EnableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK})
 @DisableFeatures(PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES)
 public class SecurePaymentConfirmationAuthnTest {
     private static final long IGNORED_INPUT_DELAY =
@@ -83,8 +79,6 @@ public class SecurePaymentConfirmationAuthnTest {
     private Origin mPayeeOrigin;
     private PaymentItem mTotal;
     private Drawable mPaymentIcon;
-    private Drawable mIssuerIcon;
-    private Drawable mNetworkIcon;
     private SecurePaymentConfirmationAuthnController mAuthnController;
     private final FakeClock mClock = new FakeClock();
     private @SpcResponseStatus int mResponseStatus = SpcResponseStatus.UNKNOWN;
@@ -133,22 +127,6 @@ public class SecurePaymentConfirmationAuthnTest {
                         RuntimeEnvironment.application.getResources(),
                         Bitmap.createBitmap(
                                 new int[] {Color.RED},
-                                /* width= */ 1,
-                                /* height= */ 1,
-                                Bitmap.Config.ARGB_8888));
-        mIssuerIcon =
-                new BitmapDrawable(
-                        RuntimeEnvironment.getApplication().getResources(),
-                        Bitmap.createBitmap(
-                                new int[] {Color.GREEN},
-                                /* width= */ 1,
-                                /* height= */ 1,
-                                Bitmap.Config.ARGB_8888));
-        mNetworkIcon =
-                new BitmapDrawable(
-                        RuntimeEnvironment.getApplication().getResources(),
-                        Bitmap.createBitmap(
-                                new int[] {Color.BLUE},
                                 /* width= */ 1,
                                 /* height= */ 1,
                                 Bitmap.Config.ARGB_8888));
@@ -224,8 +202,6 @@ public class SecurePaymentConfirmationAuthnTest {
                 payeeOrigin,
                 enableOptOut,
                 rpId,
-                mIssuerIcon,
-                mNetworkIcon,
                 informOnly);
     }
 
@@ -443,93 +419,11 @@ public class SecurePaymentConfirmationAuthnTest {
         Assert.assertEquals("My Store (store.example)", view.mStoreLabel.getText());
         Assert.assertEquals("My Card", view.mPaymentInstrumentLabel.getText());
         Assert.assertEquals(mPaymentIcon, view.mPaymentIcon.getDrawable());
-        Assert.assertEquals(mNetworkIcon, view.mNetworkIcon.getDrawable());
-        Assert.assertEquals(mIssuerIcon, view.mIssuerIcon.getDrawable());
         Assert.assertEquals("$1.00", view.mTotal.getText());
         Assert.assertEquals("USD", view.mCurrency.getText());
         // By default the opt-out text should not be visible.
         Assert.assertEquals(View.GONE, view.mOptOutText.getVisibility());
-        // The payment and network icon row should be visible.
-        Assert.assertEquals(View.VISIBLE, view.mIssuerNetworkIconsRow.getVisibility());
-        // The header image should not be visible.
-        Assert.assertEquals(View.GONE, view.mHeaderImage.getVisibility());
-    }
-
-    @Test
-    @Feature({"Payments"})
-    @DisableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_NETWORK_AND_ISSUER_ICONS)
-    public void testShowWhenSpcNetworkIssuerIconsFeatureIsDisabled() {
-        createAuthnController();
-        show();
-
-        SecurePaymentConfirmationAuthnView view = mAuthnController.getView();
-        Assert.assertNotNull(view);
-        Assert.assertEquals("My Store (store.example)", view.mStoreLabel.getText());
-        Assert.assertEquals("My Card", view.mPaymentInstrumentLabel.getText());
-        Assert.assertEquals(mPaymentIcon, view.mPaymentIcon.getDrawable());
-        Assert.assertEquals("$1.00", view.mTotal.getText());
-        Assert.assertEquals("USD", view.mCurrency.getText());
-        // By default the opt-out text should not be visible.
-        Assert.assertEquals(View.GONE, view.mOptOutText.getVisibility());
-        // The header image should be visible.
         Assert.assertEquals(View.VISIBLE, view.mHeaderImage.getVisibility());
-        // The payment and network icon row should not be visible.
-        Assert.assertEquals(View.GONE, view.mIssuerNetworkIconsRow.getVisibility());
-    }
-
-    @Test
-    @Feature({"Payments"})
-    public void testShowWhenNetworkIssuerIconsAreNull() {
-        createAuthnController();
-        WeakReference<Context> context = mWebContents.getTopLevelNativeWindow().getContext();
-        Assert.assertNotNull(context.get());
-        mIssuerIcon = null;
-        mNetworkIcon = null;
-
-        show();
-
-        SecurePaymentConfirmationAuthnView view = mAuthnController.getView();
-        Assert.assertNotNull(view);
-        // The header image should be visible.
-        Assert.assertEquals(View.VISIBLE, view.mHeaderImage.getVisibility());
-        // The payment and network icon row should not be visible.
-        Assert.assertEquals(View.GONE, view.mIssuerNetworkIconsRow.getVisibility());
-    }
-
-    @Test
-    @Feature({"Payments"})
-    public void testShowWhenIssuerIconIsNull() {
-        createAuthnController();
-        WeakReference<Context> context = mWebContents.getTopLevelNativeWindow().getContext();
-        Assert.assertNotNull(context.get());
-        mIssuerIcon = null;
-
-        show();
-
-        SecurePaymentConfirmationAuthnView view = mAuthnController.getView();
-        Assert.assertNotNull(view);
-        // The header image should be visible.
-        Assert.assertEquals(View.VISIBLE, view.mHeaderImage.getVisibility());
-        // The payment and network icon row should not be visible.
-        Assert.assertEquals(View.GONE, view.mIssuerNetworkIconsRow.getVisibility());
-    }
-
-    @Test
-    @Feature({"Payments"})
-    public void testShowWhenNetworkIconIsNull() {
-        createAuthnController();
-        WeakReference<Context> context = mWebContents.getTopLevelNativeWindow().getContext();
-        Assert.assertNotNull(context.get());
-        mNetworkIcon = null;
-
-        show();
-
-        SecurePaymentConfirmationAuthnView view = mAuthnController.getView();
-        Assert.assertNotNull(view);
-        // The header image should be visible.
-        Assert.assertEquals(View.VISIBLE, view.mHeaderImage.getVisibility());
-        // The payment and network icon row should not be visible.
-        Assert.assertEquals(View.GONE, view.mIssuerNetworkIconsRow.getVisibility());
     }
 
     @Test

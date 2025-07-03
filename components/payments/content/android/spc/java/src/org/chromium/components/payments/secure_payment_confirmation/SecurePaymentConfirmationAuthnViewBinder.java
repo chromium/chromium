@@ -69,21 +69,6 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
                         model.get(SecurePaymentConfirmationAuthnProperties.CANCEL_BUTTON_CALLBACK)
                                 .run();
                     });
-        } else if (SecurePaymentConfirmationAuthnProperties.SHOWS_ISSUER_NETWORK_ICONS
-                == propertyKey) {
-            if (model.get(SecurePaymentConfirmationAuthnProperties.SHOWS_ISSUER_NETWORK_ICONS)) {
-                view.mIssuerNetworkIconsRow.setVisibility(View.VISIBLE);
-                view.mHeaderImage.setVisibility(View.GONE);
-            } else {
-                view.mHeaderImage.setVisibility(View.VISIBLE);
-                view.mIssuerNetworkIconsRow.setVisibility(View.GONE);
-            }
-        } else if (SecurePaymentConfirmationAuthnProperties.ISSUER_ICON == propertyKey) {
-            view.mIssuerIcon.setImageDrawable(
-                    model.get(SecurePaymentConfirmationAuthnProperties.ISSUER_ICON));
-        } else if (SecurePaymentConfirmationAuthnProperties.NETWORK_ICON == propertyKey) {
-            view.mNetworkIcon.setImageDrawable(
-                    model.get(SecurePaymentConfirmationAuthnProperties.NETWORK_ICON));
         } else if (SecurePaymentConfirmationAuthnProperties.TITLE == propertyKey) {
             view.mTitle.setText(model.get(SecurePaymentConfirmationAuthnProperties.TITLE));
         } else if (SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_LABEL == propertyKey) {

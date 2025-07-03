@@ -308,20 +308,6 @@ public abstract class PaymentApp extends EditableOption {
     }
 
     /**
-     * @return The bitmap icon for the issuer (Secure Payment Confirmation specific).
-     */
-    public @Nullable Bitmap getIssuerIcon() {
-        return null;
-    }
-
-    /**
-     * @return The bitmap icon for the network (Secure Payment Confirmation specific).
-     */
-    public @Nullable Bitmap getNetworkIcon() {
-        return null;
-    }
-
-    /**
      * @return The payment entities logos, an unmodifiable {@link List} (Secure Payment Confirmation
      *     specific).
      */

@@ -21,7 +21,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -35,7 +34,6 @@ import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.ui.base.WindowAndroid;
@@ -199,8 +197,6 @@ public class SecurePaymentConfirmationAuthnController {
      * @param payeeOrigin The origin of the payee, or null if not specified.
      * @param showOptOut Whether to show the opt out UX to the user.
      * @param rpId The relying party ID for the SPC credential.
-     * @param issuerIcon The icon of the issuer.
-     * @param networkIcon The icon of the network.
      * @param informOnly Whether to show the inform-only UX.
      */
     public boolean show(
@@ -213,8 +209,6 @@ public class SecurePaymentConfirmationAuthnController {
             @Nullable Origin payeeOrigin,
             boolean showOptOut,
             String rpId,
-            @Nullable Drawable issuerIcon,
-            @Nullable Drawable networkIcon,
             boolean informOnly) {
         assert !informOnly
                 || PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
@@ -248,14 +242,6 @@ public class SecurePaymentConfirmationAuthnController {
         SecurePaymentConfirmationAuthnView.OptOutInfo optOutInfo =
                 new SecurePaymentConfirmationAuthnView.OptOutInfo(
                         showOptOut, rpId, this::onOptOutPressed);
-
-        boolean showsIssuerNetworkIcons = false;
-        if (issuerIcon != null
-                && networkIcon != null
-                && ContentFeatureMap.isEnabled(
-                        BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_NETWORK_AND_ISSUER_ICONS)) {
-            showsIssuerNetworkIcons = true;
-        }
 
         SpannableString footnote = null;
         if (!mInformOnly
@@ -301,11 +287,6 @@ public class SecurePaymentConfirmationAuthnController {
                         .with(
                                 SecurePaymentConfirmationAuthnProperties.CANCEL_BUTTON_CALLBACK,
                                 this::onCancelPressed)
-                        .with(
-                                SecurePaymentConfirmationAuthnProperties.SHOWS_ISSUER_NETWORK_ICONS,
-                                showsIssuerNetworkIcons)
-                        .with(SecurePaymentConfirmationAuthnProperties.ISSUER_ICON, issuerIcon)
-                        .with(SecurePaymentConfirmationAuthnProperties.NETWORK_ICON, networkIcon)
                         .with(
                                 SecurePaymentConfirmationAuthnProperties.TITLE,
                                 mInformOnly
