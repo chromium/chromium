@@ -202,7 +202,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
       commerce_price_insights_page_action_view_controller_ =
           std::make_unique<commerce::PriceInsightsPageActionViewController>(
-              tab);
+              tab, *page_action_controller_);
     }
 
     if (IsPageActionMigrated(PageActionIconType::kManagePasswords)) {

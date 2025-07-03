@@ -12,6 +12,10 @@
 
 class ScopedWindowCallToAction;
 
+namespace page_actions {
+class PageActionController;
+}
+
 namespace tabs {
 class TabInterface;
 }
@@ -25,7 +29,9 @@ namespace commerce {
 class PriceInsightsPageActionViewController {
  public:
   explicit PriceInsightsPageActionViewController(
-      tabs::TabInterface& tab_interface);
+      tabs::TabInterface& tab_interface,
+      page_actions::PageActionController& page_action_controller);
+
   PriceInsightsPageActionViewController(
       const PriceInsightsPageActionViewController&) = delete;
   PriceInsightsPageActionViewController& operator=(
@@ -45,6 +51,10 @@ class PriceInsightsPageActionViewController {
   // Reference to the tab interface, which provides access to tab-specific
   // features.
   const raw_ref<tabs::TabInterface> tab_interface_;
+
+  // Unowned reference to the page action controller that will coordinate
+  // requests from this object.
+  const raw_ref<page_actions::PageActionController> page_action_controller_;
 
   std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
 };
