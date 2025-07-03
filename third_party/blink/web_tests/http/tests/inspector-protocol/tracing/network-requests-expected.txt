@@ -30,6 +30,7 @@ Object: {
 			requestId: string
 			requestMethod: string
 			resourceType: Document
+			sampleTraceId: number
 			url: string
 		}
 	}

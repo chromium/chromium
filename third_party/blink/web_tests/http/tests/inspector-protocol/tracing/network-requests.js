@@ -9,7 +9,7 @@
   await dp.Page.enable();
   await dp.Network.enable();
 
-  await tracingHelper.startTracing('devtools.timeline');
+  await tracingHelper.startTracing('devtools.timeline,disabled-by-default-devtools.timeline.stack');
 
   // Get the ID of the request for the HTML page.
   // Kick this off before we navigate to ensure the navigation is not completed before this listener is added.
