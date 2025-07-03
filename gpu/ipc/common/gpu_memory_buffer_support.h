@@ -73,17 +73,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
                                        gfx::BufferFormat format,
                                        gfx::BufferUsage usage);
 
-  std::unique_ptr<GpuMemoryBufferImpl>
-  CreateGpuMemoryBufferImplFromHandleForTesting(
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      GpuMemoryBufferImpl::DestructionCallback callback) {
-    return CreateGpuMemoryBufferImplFromHandle(std::move(handle), size, format,
-                                               usage, std::move(callback));
-  }
-
  private:
   // ClientSharedImage is the only entity that should be creating GMBs via
   // GpuMemoryBufferSupport.
