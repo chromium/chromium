@@ -5,9 +5,15 @@
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_options_mediator.h"
 
 #import "components/dom_distiller/core/distilled_page_prefs.h"
+#import "components/dom_distiller/ios/distilled_page_prefs_observer_bridge.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 
+@interface ReaderModeOptionsMediator () <DistilledPagePrefsObserving>
+@end
+
 @implementation ReaderModeOptionsMediator {
+  // The observer bridge.
+  std::unique_ptr<DistilledPagePrefsObserverBridge> _prefsObserverBridge;
   // The distilled page preferences.
   raw_ptr<dom_distiller::DistilledPagePrefs> _distilledPagePrefs;
 }
@@ -17,6 +23,9 @@
   self = [super init];
   if (self) {
     _distilledPagePrefs = distilledPagePrefs;
+    _prefsObserverBridge =
+        std::make_unique<DistilledPagePrefsObserverBridge>(self);
+    _distilledPagePrefs->AddObserver(_prefsObserverBridge.get());
   }
   return self;
 }
@@ -54,7 +63,23 @@
 #pragma mark - Public
 
 - (void)disconnect {
+  _distilledPagePrefs->RemoveObserver(_prefsObserverBridge.get());
+  _prefsObserverBridge.reset();
   _distilledPagePrefs = nullptr;
+}
+
+#pragma mark - DistilledPagePrefsObserving
+
+- (void)onChangeFontFamily:(dom_distiller::mojom::FontFamily)font {
+  // TODO(crbug.com/409941529): Feed new font to consumer.
+}
+
+- (void)onChangeTheme:(dom_distiller::mojom::Theme)theme {
+  // TODO(crbug.com/409941529): Feed new theme to consumer.
+}
+
+- (void)onChangeFontScaling:(float)scaling {
+  // TODO(crbug.com/409941529): Feed new scaling to consumer.
 }
 
 @end

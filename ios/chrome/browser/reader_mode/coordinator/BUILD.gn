@@ -47,6 +47,7 @@ source_set("options") {
   ]
   deps = [
     "//base",
+    "//components/dom_distiller/ios",
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/reader_mode/ui:constants",
     "//ios/chrome/browser/reader_mode/ui:options",

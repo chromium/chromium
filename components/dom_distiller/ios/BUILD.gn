@@ -4,6 +4,8 @@
 
 source_set("ios") {
   sources = [
+    "distilled_page_prefs_observer_bridge.h",
+    "distilled_page_prefs_observer_bridge.mm",
     "distiller_page_ios.h",
     "distiller_page_ios.mm",
     "distiller_page_utils.h",
@@ -23,4 +25,14 @@ source_set("ios") {
   public_deps = [ "//base" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "distilled_page_prefs_observer_bridge_unittest.mm" ]
+  deps = [
+    ":ios",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }

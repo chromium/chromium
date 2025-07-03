@@ -567,6 +567,7 @@ test("components_unittests") {
       "//components/autofill/ios/form_util:unit_tests",
       "//components/commerce/ios/browser:unit_tests",
       "//components/crash/core/app:unit_tests",
+      "//components/dom_distiller/ios:unit_tests",
       "//components/feed/core/v2/public/ios:feed_ios_unit_tests",
       "//components/fingerprinting_protection_filter/ios:unit_tests",
       "//components/image_fetcher/ios:unit_tests",
