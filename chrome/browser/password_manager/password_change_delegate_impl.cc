@@ -384,7 +384,6 @@ void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
   MaybeLaunchSurvey(kHatsSurveyTriggerPasswordChangeCanceled,
                     /*password_change_duration=*/base::TimeDelta(), profile_,
                     originator_);
-  Stop();
 }
 
 void PasswordChangeDelegateImpl::UpdateState(State new_state) {

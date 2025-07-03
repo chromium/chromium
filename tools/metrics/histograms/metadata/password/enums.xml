@@ -757,6 +757,16 @@ chromium-metrics-reviews@google.com.
              credentials report"/>
 </enum>
 
+<!-- LINT.IfChange(PasswordChangeDialogAction) -->
+
+<enum name="PasswordChangeDialogAction">
+  <int value="0" label="Cancel button clicked"/>
+  <int value="1" label="Accept button clicked"/>
+  <int value="2" label="'About password change' link clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/passwords/password_change_ui_controller.h:PasswordChangeDialogAction) -->
+
 <enum name="PasswordChangeFlowState">
   <int value="0" label="Offering password change"/>
   <int value="1" label="Waiting for privacy notice acceptance"/>

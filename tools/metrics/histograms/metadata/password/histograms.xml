@@ -2693,6 +2693,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChange.FailedInteraction"
+    enum="PasswordChangeDialogAction" expires_after="2025-11-30">
+  <owner>rgod@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records user interaction with the dialog displayed in the password change
+    flow when it ends with an error.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChange.InformationBubble"
     enum="PasswordManagerUIDismissalReason" expires_after="2025-11-30">
   <owner>atsvirchkova@google.com</owner>
@@ -2716,6 +2726,38 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.PasswordChange.LeakDetectionDialog{DialogType}"
+    enum="PasswordChangeDialogAction" expires_after="2025-11-30">
+  <owner>rgod@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records user interaction with the dialog displayed when the password change
+    flow is available. {DialogType}
+  </summary>
+  <token key="DialogType">
+    <variant name=""
+        summary="This metric contains the total count of actions in the
+                 initial password change dialog regardless of the type (e.g.
+                 with or without privacy notice)"/>
+    <variant name=".WithoutPrivacyNotice"
+        summary="This is the dialog that is displayed every consecutive time
+                 after the user accepted the first run dialog."/>
+    <variant name=".WithPrivacyNotice"
+        summary="This is the first run dialog that includes privacy notice."/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.PasswordChange.NoPasswordForm"
+    enum="PasswordChangeDialogAction" expires_after="2025-11-30">
+  <owner>rgod@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records user interaction with the dialog displayed in the password change
+    flow when no change password form is detected.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChange.NoPasswordFormBubble"
     enum="PasswordManagerUIDismissalReason" expires_after="2025-11-30">
   <owner>atsvirchkova@google.com</owner>
@@ -2724,6 +2766,17 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records the result of interaction with one of the password change flow
     bubbles. This bubble is displayed when error occures, namely no password
     change form is detected. The metric is recorded during the bubble closure.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordChange.OTPRequested"
+    enum="PasswordChangeDialogAction" expires_after="2025-11-30">
+  <owner>rgod@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records user interaction with the dialog displayed in the password change
+    flow when the site requires additional OTP verification and the flow cannot
+    continue automatically.
   </summary>
 </histogram>
 

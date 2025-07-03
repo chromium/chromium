@@ -19,6 +19,18 @@ namespace ui {
 class DialogModel;
 }  // namespace ui
 
+// Possible actions that the user can take in dialogs displayed by this
+// controller. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(PasswordChangeDialogAction)
+enum class PasswordChangeDialogAction {
+  kCancelButtonClicked = 0,
+  kAcceptButtonClicked = 1,
+  kLinkClicked = 2,
+  kMaxValue = kLinkClicked,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeDialogAction)
+
 // Responsible for creating and displaying appropriate views based on the
 // current state of the password change flow.
 class PasswordChangeUIController {
@@ -42,12 +54,13 @@ class PasswordChangeUIController {
 
   void ShowToast(PasswordChangeToast::ToastOptions options);
   void ShowDialog(std::unique_ptr<ui::DialogModel> dialog_model);
-  void ShowNothingChangedToast();
 
+  void OnToastCanceled();
+  void OnDialogCanceled();
   void OpenPasswordChangeTab();
   void StartPasswordChangeFlow();
+  void OnPrivacyNoticeAccepted();
   void ShowPasswordDetails();
-  void CancelPasswordChange();
   void NavigateToPasswordChangeSettings();
 
   // Closes the dialog or widget and logs the `reason`.

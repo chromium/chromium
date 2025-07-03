@@ -1,0 +1,165 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/passwords/password_change_ui_controller.h"
+
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/password_manager/password_change_delegate_mock.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/window/dialog_delegate.h"
+
+namespace {
+
+class PasswordChangeUIControllerBrowserTest : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    tabs::TabInterface* tab_interface = browser()->GetActiveTabInterface();
+    ASSERT_TRUE(tab_interface);
+    ui_controller_ =
+        std::make_unique<PasswordChangeUIController>(&delegate_, tab_interface);
+  }
+
+  void TearDownOnMainThread() override {
+    // Needed to avoid dangling pointer to tab interface.
+    ui_controller_ = nullptr;
+  }
+
+  void UpdateState(PasswordChangeDelegate::State state) {
+    ui_controller_->UpdateState(state);
+  }
+
+  views::DialogDelegate* GetDialogDelegate() {
+    return ui_controller_->dialog_widget()
+        ->widget_delegate()
+        ->AsDialogDelegate();
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+  PasswordChangeDelegateMock delegate_;
+  std::unique_ptr<PasswordChangeUIController> ui_controller_;
+};
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       OfferingPasswordChangeDialogAccepted) {
+  UpdateState(PasswordChangeDelegate::State::kOfferingPasswordChange);
+  GetDialogDelegate()->AcceptDialog();
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog",
+      PasswordChangeDialogAction::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog.WithoutPrivacyNotice",
+      PasswordChangeDialogAction::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       OfferingPasswordChangeDialogCancelled) {
+  UpdateState(PasswordChangeDelegate::State::kOfferingPasswordChange);
+  GetDialogDelegate()->CancelDialog();
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog",
+      PasswordChangeDialogAction::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog.WithoutPrivacyNotice",
+      PasswordChangeDialogAction::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       PrivacyNoticeDialogAccepted) {
+  UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
+  GetDialogDelegate()->AcceptDialog();
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog",
+      PasswordChangeDialogAction::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog.WithPrivacyNotice",
+      PasswordChangeDialogAction::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       PrivacyNoticeDialogCancelled) {
+  UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
+  GetDialogDelegate()->CancelDialog();
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog",
+      PasswordChangeDialogAction::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog.WithPrivacyNotice",
+      PasswordChangeDialogAction::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       PasswordFormNotFoundDialogAccepted) {
+  UpdateState(PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+  GetDialogDelegate()->AcceptDialog();
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.NoPasswordForm",
+      PasswordChangeDialogAction::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       PasswordFormNotFoundDialogCancelled) {
+  UpdateState(PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+  GetDialogDelegate()->CancelDialog();
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.NoPasswordForm",
+      PasswordChangeDialogAction::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       ErrorDialogAccepted) {
+  UpdateState(PasswordChangeDelegate::State::kPasswordChangeFailed);
+  GetDialogDelegate()->AcceptDialog();
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.FailedInteraction",
+      PasswordChangeDialogAction::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       ErrorDialogCancelled) {
+  UpdateState(PasswordChangeDelegate::State::kPasswordChangeFailed);
+  GetDialogDelegate()->CancelDialog();
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.FailedInteraction",
+      PasswordChangeDialogAction::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       OtpDetectedDialogAccepted) {
+  UpdateState(PasswordChangeDelegate::State::kOtpDetected);
+  GetDialogDelegate()->AcceptDialog();
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.OTPRequested",
+      PasswordChangeDialogAction::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       OtpDetectedDialogCancelled) {
+  UpdateState(PasswordChangeDelegate::State::kOtpDetected);
+  GetDialogDelegate()->CancelDialog();
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.OTPRequested",
+      PasswordChangeDialogAction::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+}  // namespace
