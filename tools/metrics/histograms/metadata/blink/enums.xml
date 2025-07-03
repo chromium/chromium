@@ -8307,6 +8307,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="342" label="CustomizableSelect"/>
   <int value="343" label="Not"/>
   <int value="344" label="Scripting"/>
+  <int value="345" label="AlignContentBlock"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

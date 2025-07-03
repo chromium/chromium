@@ -420,6 +420,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kCustomizableSelect},
           {WebFeature::kCSSSelectorPseudoNot, WebDXFeature::kNot},
           {WebFeature::kScriptingMediaFeature, WebDXFeature::kScripting},
+          {WebFeature::kEffectiveAlignContentForBlock,
+           WebDXFeature::kAlignContentBlock},
           // Add new features above this line.
       }};
 
