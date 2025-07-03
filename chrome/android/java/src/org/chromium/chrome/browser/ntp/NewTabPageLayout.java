@@ -1119,14 +1119,10 @@ public class NewTabPageLayout extends LinearLayout
     /** Makes the Search Box and Logo as wide as Most Visited. */
     private void unifyElementWidths() {
         View searchBoxView = getSearchBoxView();
-        if (mMvTilesContainerLayout.getVisibility() != GONE) {
-            final int width = getMeasuredWidth();
-            measureExactly(
-                    searchBoxView,
-                    width - mSearchBoxTwoSideMargin,
-                    searchBoxView.getMeasuredHeight());
-            mLogoCoordinator.measureExactlyLogoView(width);
-        }
+        final int width = getMeasuredWidth();
+        measureExactly(
+                searchBoxView, width - mSearchBoxTwoSideMargin, searchBoxView.getMeasuredHeight());
+        mLogoCoordinator.measureExactlyLogoView(width);
     }
 
     /**
