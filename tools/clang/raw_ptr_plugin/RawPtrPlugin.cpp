@@ -8,6 +8,7 @@
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Frontend/FrontendPluginRegistry.h"
 #include "llvm/Support/TimeProfiler.h"
+#include "tools/clang/plugins/FilteredASTConsumer.h"
 
 using namespace clang;
 
@@ -44,13 +45,15 @@ namespace raw_ptr_plugin {
 
 namespace {
 
-class PluginConsumer : public ASTConsumer {
+class PluginConsumer : public FilteredASTConsumer {
  public:
   PluginConsumer(CompilerInstance* instance, const Options& options)
       : options_(options), instance_(*instance) {}
 
   void HandleTranslationUnit(clang::ASTContext& context) override {
     llvm::TimeTraceScope TimeScope("HandleTranslationUnit for raw-ptr plugin");
+    ApplyFilter(context);
+
     if (options_.check_bad_raw_ptr_cast || options_.check_raw_ptr_fields ||
         options_.check_raw_ref_fields ||
         (options_.check_raw_ptr_to_stack_allocated &&

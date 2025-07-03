@@ -28,6 +28,12 @@ class Foo {
   void foo() {}
 };
 
+template <typename T>
+T copy(T orig) {
+  auto copy = orig;
+  return copy;
+}
+
 void f();
 
 int main() {
@@ -35,10 +41,14 @@ int main() {
   Foo foo;
 
   auto int_copy = integer;
+  auto int_copy2 = copy(integer);
   const auto const_int_copy = integer;
   const auto& const_int_ref = integer;
 
   auto raw_int_ptr = &integer;
+  // Instantiates `copy()` with `T` == `*int`. This should not warn, because
+  // the template might be instantiated with non-pointer `T`s as well.
+  auto* raw_int_ptr_copy = copy(&integer);
   const auto const_raw_int_ptr = &integer;
   const auto& const_raw_int_ptr_ref = &integer;
 
@@ -94,22 +104,55 @@ int main() {
   auto lambda = [foo_ptr = &foo] { return *foo_ptr; };
 }
 
-template <class T>
+template <typename T, typename U>
+T* specialization(U _) {
+  return nullptr;
+}
+
+// Though template instantiations should be ignored by the `auto` checker, an
+// explicit specialization should be checked since `auto` can be correctly
+// qualified.
+template <>
+void* specialization(int) {
+  void* p = nullptr;
+  auto bad = p;
+  return bad;
+}
+
+template <class T, class U>
 struct WithDependentType {
   void func() {
     // The deduced type here is not known and `isNull()` will be true when
     // parsing the template (but not instantiations).
     auto x = T::foo();
   }
+  void f2() {};
 };
+
+// Similarly to function specialization, the code written here should be
+// checked, but not any parts inherited from the primary template.
+template <class U>
+struct WithDependentType<void*, U> {
+  void f2() {
+    void* p = nullptr;
+    auto bad = p;
+    // The deduced type here is not known and `isNull()` will be true when
+    // parsing the template (but not instantiations).
+    auto u = U();
+  }
+};
+
+// The partial spepcialization is instantiated, but no errors are produced.
+constexpr auto foo = WithDependentType<void*, void*>();
 
 void use_template() {
   struct S {
     static int* foo() { return nullptr; };
   };
   // The dependent type is instantiated, but no errors are produced.
-  WithDependentType<S>().func();
+  WithDependentType<S, int>().func();
 }
+
 
 template <class T>
 concept Concept = true;
