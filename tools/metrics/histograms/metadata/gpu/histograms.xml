@@ -370,6 +370,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.ANGLE.D3DDeviceRemovedReason" enum="Hresult"
+    expires_after="2026-06-25">
+  <owner>geofflang@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    Error codes received when checking for D3D device removal reason. HRESULT is
+    DXGI error code that listed at
+    https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11device-getdeviceremovedreason
+  </summary>
+</histogram>
+
 <histogram name="GPU.ANGLE.D3DShaderBlobSizeKB" units="KB"
     expires_after="2025-01-05">
   <owner>geofflang@chromium.org</owner>
@@ -1483,6 +1494,18 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
   <token key="Module" variants="WebGPUModule"/>
+</histogram>
+
+<histogram name="GPU.{GraphiteDawnOrWebGPU}.D3DDeviceRemovedReason"
+    enum="Hresult" expires_after="2026-06-25">
+  <owner>cwallez@google.com</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Error codes received when checking for D3D device removal reason. HRESULT is
+    DXGI error code that listed at
+    https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11device-getdeviceremovedreason
+  </summary>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
 </histogram>
 
 <histogram name="GPU.{GraphiteDawnOrWebGPU}.HasGpuAdapter" enum="Boolean"
