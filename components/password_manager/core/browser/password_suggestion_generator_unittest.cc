@@ -1624,7 +1624,9 @@ TEST_F(PasswordSuggestionGeneratorTest,
           EqualsSuggestion(
               SuggestionType::kFreeformFooter,
               l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_NON_BRANDED))));
+                  UsesPasswordManagerGoogleBranding()
+                      ? IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_BRANDED
+                      : IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_FOOTER_NON_BRANDED))));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
