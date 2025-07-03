@@ -26,6 +26,7 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/data_type_state_helper.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
@@ -322,8 +323,7 @@ SyncableServiceBasedBridge::GetAllDataForDebugging() {
 
 std::string SyncableServiceBasedBridge::GetClientTag(
     const EntityData& entity_data) const {
-  // Not supported as per SupportsGetClientTag().
-  NOTREACHED();
+  return syncable_service_->GetClientTag(entity_data);
 }
 
 std::string SyncableServiceBasedBridge::GetStorageKey(
@@ -340,7 +340,9 @@ bool SyncableServiceBasedBridge::IsEntityDataValid(
 }
 
 bool SyncableServiceBasedBridge::SupportsGetClientTag() const {
-  return false;
+  // TODO(crbug.com/40726283): This function can always return true once all
+  // syncable services support GetClientTag().
+  return syncable_service_->SupportsGetClientTag();
 }
 
 bool SyncableServiceBasedBridge::SupportsGetStorageKey() const {

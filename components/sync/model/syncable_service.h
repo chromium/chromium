@@ -18,6 +18,7 @@
 namespace syncer {
 
 class SyncChangeProcessor;
+struct EntityData;
 
 // DEPRECATED: new code should use DataTypeSyncBridge instead.
 // See https://www.chromium.org/developers/design-documents/sync/model-api/ for
@@ -102,6 +103,14 @@ class SyncableService {
   virtual std::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const SyncChangeList& change_list) = 0;
+
+  // TODO(crbug.com/40726283): Make pure virtual once all subclasses implement
+  // this function.
+  virtual std::string GetClientTag(const EntityData& entity_data) const;
+
+  // TODO(crbug.com/40726283): This function will be removed when all
+  // syncable services support GetClientTag().
+  virtual bool SupportsGetClientTag() const;
 
   // Get a WeakPtr to the instance.
   virtual base::WeakPtr<SyncableService> AsWeakPtr() = 0;

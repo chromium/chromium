@@ -24,4 +24,18 @@ void SyncableService::StayStoppedAndMaybeClearData(DataType type) {
   // method for the relevant syncable services.
 }
 
+std::string SyncableService::GetClientTag(const EntityData& entity_data) const {
+  // TODO(crbug.com/40726283): The default implementation should not be reached
+  // and is only implemented to enable linkage. Once the function declaration is
+  // made pure virtual, this function will be removed.
+  NOTREACHED();
+}
+
+bool SyncableService::SupportsGetClientTag() const {
+  // TODO(crbug.com/40726283): The default implementation returns false.
+  // This is a temporary workaround to avoid accessing the client tag
+  // without checking if the syncable service supports it.
+  return false;
+}
+
 }  // namespace syncer

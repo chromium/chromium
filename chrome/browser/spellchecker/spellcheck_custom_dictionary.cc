@@ -35,6 +35,7 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -415,6 +416,16 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
 
 base::WeakPtr<syncer::SyncableService> SpellcheckCustomDictionary::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::string SpellcheckCustomDictionary::GetClientTag(
+    const syncer::EntityData& entity_data) const {
+  DCHECK(entity_data.specifics.has_dictionary());
+  return entity_data.specifics.dictionary().word();
+}
+
+bool SpellcheckCustomDictionary::SupportsGetClientTag() const {
+  return true;
 }
 
 SpellcheckCustomDictionary::LoadFileResult::LoadFileResult()
