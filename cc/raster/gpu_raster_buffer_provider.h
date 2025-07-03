@@ -138,7 +138,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   const bool tile_overlay_candidate_;
   const gfx::Size max_tile_size_;
 
-  const raw_ptr<RasterQueryQueue, DanglingUntriaged> pending_raster_queries_;
+  const raw_ptr<RasterQueryQueue> pending_raster_queries_;
 
   const double raster_metric_probability_;
   // Accessed with the worker context lock acquired.

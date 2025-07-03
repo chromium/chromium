@@ -366,6 +366,10 @@ class RasterBufferProviderTest
   std::unique_ptr<FakeLayerTreeFrameSink> layer_tree_frame_sink_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
   std::unique_ptr<TileTaskManager> tile_task_manager_;
+  std::unique_ptr<RasterQueryQueue> pending_raster_queries_;
+  // Some subclasses of RasterBufferProvider (GpuRasterBufferProvider) hold a
+  // raw_ptr to pending_raster_queries_, so it must be declared after
+  // pending_raster_queries_ to avoid having a dangling ptr.
   std::unique_ptr<RasterBufferProvider> raster_buffer_provider_;
   SynchronousTaskGraphRunner task_graph_runner_;
   UniqueNotifier all_tile_tasks_finished_;
@@ -375,7 +379,6 @@ class RasterBufferProviderTest
   std::vector<RasterTaskResult> completed_tasks_;
   std::vector<ResourcePool::InUsePoolResource> resources_;
   TaskGraph graph_;
-  std::unique_ptr<RasterQueryQueue> pending_raster_queries_;
 };
 
 TEST_P(RasterBufferProviderTest, Basic) {
