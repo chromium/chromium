@@ -1767,21 +1767,6 @@ config("clang_warning_suppression") {
   }
 }
 
-# Enable bounds checks when indexing directly (i.e. not via a pointer)
-# into C arrays. This aligns with libc++ hardening for
-# `std::array::operator[]`.
-#
-# UBSan already includes these checks and more.
-# GCC does not appear to support these flags.
-config("sanitize_c_array_bounds") {
-  if (!is_nacl && !is_ubsan && is_clang) {
-    cflags = [
-      "-fsanitize=array-bounds",
-      "-fsanitize-trap=array-bounds",
-    ]
-  }
-}
-
 config("rustc_revision") {
   if (rustc_revision != "") {
     # Similar to the above config, this is here so that all files get recompiled
