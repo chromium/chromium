@@ -82,8 +82,7 @@ public class TabGroupListItemDecoration extends RecyclerView.ItemDecoration {
 
         for (; index < parent.getChildCount(); index++) {
             View child = parent.getChildAt(index);
-            // Messages should all come first.
-            assert !(child instanceof MessageCardView);
+            if (child instanceof MessageCardView) continue;
 
             int position = parent.getChildAdapterPosition(child) - messageCount;
             child.setBackground(getBackgroundDrawable(position, tabGroupCount));

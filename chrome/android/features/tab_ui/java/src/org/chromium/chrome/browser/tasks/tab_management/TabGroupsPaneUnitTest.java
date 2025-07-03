@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
@@ -128,6 +128,9 @@ public class TabGroupsPaneUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
+        // Unused at this level.
+        when(mTabGroupSyncService.getVersioningMessageController()).thenReturn(mock());
+
         mTabGroupsPane =
                 new TabGroupsPane(
                         ApplicationProvider.getApplicationContext(),
@@ -211,7 +214,7 @@ public class TabGroupsPaneUnitTest {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         verify(mEdgeToEdgeController).registerAdjuster(notNull());
 
-        EdgeToEdgeController controller2 = Mockito.mock(EdgeToEdgeController.class);
+        EdgeToEdgeController controller2 = mock(EdgeToEdgeController.class);
         mEdgeToEdgeSupplier.set(controller2);
         verify(controller2).registerAdjuster(notNull());
         verify(mEdgeToEdgeController).unregisterAdjuster(notNull());

@@ -66,6 +66,8 @@ public class TabGroupListMediator {
     private final boolean mEnableContainment;
     private final DataSharingTabManager mDataSharingTabManager;
     private final TabGroupRemovedMessageMediator mTabGroupRemovedMessageMediator;
+    private final @Nullable PersistentVersioningMessageMediator
+            mPersistentVersioningMessageMediator;
 
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
@@ -189,6 +191,7 @@ public class TabGroupListMediator {
      * @param enableContainment Whether containment is enabled.
      * @param dataSharingTabManager The {@link} DataSharingTabManager to start collaboration flows.
      * @param tabGroupRemovedMessageMediator The mediator for the tab group removed message card.
+     * @param persistentVersioningMessageMediator Used to show persistent versioning messages.
      */
     public TabGroupListMediator(
             Context context,
@@ -205,8 +208,9 @@ public class TabGroupListMediator {
             ActionConfirmationManager actionConfirmationManager,
             SyncService syncService,
             boolean enableContainment,
-            @NonNull DataSharingTabManager dataSharingTabManager,
-            TabGroupRemovedMessageMediator tabGroupRemovedMessageMediator) {
+            DataSharingTabManager dataSharingTabManager,
+            TabGroupRemovedMessageMediator tabGroupRemovedMessageMediator,
+            @Nullable PersistentVersioningMessageMediator persistentVersioningMessageMediator) {
         mContext = context;
         mModelList = modelList;
         mPropertyModel = propertyModel;
@@ -223,6 +227,7 @@ public class TabGroupListMediator {
         mEnableContainment = enableContainment;
         mDataSharingTabManager = dataSharingTabManager;
         mTabGroupRemovedMessageMediator = tabGroupRemovedMessageMediator;
+        mPersistentVersioningMessageMediator = persistentVersioningMessageMediator;
 
         mFilter.addObserver(mTabModelObserver);
         if (mTabGroupSyncService != null) {
@@ -252,6 +257,9 @@ public class TabGroupListMediator {
     private void repopulateModelList() {
         destroyAndClearAllRows(mModelList, DESTROYABLE);
         mTabGroupRemovedMessageMediator.queueMessageIfNeeded();
+        if (mPersistentVersioningMessageMediator != null) {
+            mPersistentVersioningMessageMediator.queueMessageIfNeeded();
+        }
 
         GroupWindowChecker sortUtil = new GroupWindowChecker(mTabGroupSyncService, mFilter);
         List<SavedTabGroup> sortedTabGroups =

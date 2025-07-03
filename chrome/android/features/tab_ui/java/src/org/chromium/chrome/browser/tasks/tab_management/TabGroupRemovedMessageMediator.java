@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.IS_ICON_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.LEFT_MARGIN_OVERRIDE_PX;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_IDENTIFIER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER;
@@ -164,11 +165,9 @@ public class TabGroupRemovedMessageMediator {
 
     @VisibleForTesting
     void removeMessageCard() {
-        if (mModelList.isEmpty()) return;
-
         for (int index = 0; index < mModelList.size(); index++) {
             MVCListAdapter.ListItem listItem = mModelList.get(index);
-            if (listItem.type != MESSAGE_CARD) continue;
+            if (listItem.type != MESSAGE_CARD) return;
             if (isGroupRemovedMessage(listItem.model)) {
                 mModelList.removeAt(index);
                 break;
@@ -214,6 +213,7 @@ public class TabGroupRemovedMessageMediator {
                 .with(LEFT_MARGIN_OVERRIDE_PX, horizontalPadding)
                 .with(RIGHT_MARGIN_OVERRIDE_PX, horizontalPadding)
                 .with(BOTTOM_MARGIN_OVERRIDE_PX, 0)
+                .with(IS_INCOGNITO, false)
                 .build();
     }
 }
