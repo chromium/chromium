@@ -16795,21 +16795,6 @@
             ]
         }
     ],
-    "PageAllocatorRetryOnCommitFailure": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PageAllocatorRetryOnCommitFailure"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageInfoAboutThisSite40Langs": [
         {
             "platforms": [
@@ -24525,6 +24510,28 @@
                     },
                     "enable_features": [
                         "TcpPortRandomizationWin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TerminateRendererOnBrowserCommitExhaustion": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "RetryOnly",
+                    "enable_features": [
+                        "PageAllocatorRetryOnCommitFailure"
+                    ]
+                },
+                {
+                    "name": "RetryAndTerminate",
+                    "enable_features": [
+                        "PageAllocatorRetryOnCommitFailure",
+                        "TerminationTargetPolicy"
                     ]
                 }
             ]
