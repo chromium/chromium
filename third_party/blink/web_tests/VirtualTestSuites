@@ -1343,7 +1343,7 @@
     "args": [
       "--enable-blink-features=MeasureMemory,ForceEagerMeasureMemory"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2027"
   },
   {
     "prefix": "force-renderer-accessibility",
