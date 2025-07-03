@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/animation/css_font_style_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_variation_settings_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_weight_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_gap_length_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_grid_template_property_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_image_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_image_list_interpolation_type.h"
@@ -169,7 +170,6 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kWebkitBorderVerticalSpacing:
       case CSSPropertyID::kColumnGap:
       case CSSPropertyID::kRowGap:
-      case CSSPropertyID::kColumnRuleWidth:
       case CSSPropertyID::kColumnWidth:
       case CSSPropertyID::kColumnHeight:
       case CSSPropertyID::kWebkitPerspectiveOriginX:
@@ -193,6 +193,17 @@ const InterpolationTypes* InterpolationTypesMap::Get(
         applicable_types->push_back(
             MakeGarbageCollected<CSSGridTemplatePropertyInterpolationType>(
                 property));
+        break;
+      case CSSPropertyID::kColumnRuleWidth:
+      case CSSPropertyID::kRowRuleWidth:
+        if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+          applicable_types->push_back(
+              MakeGarbageCollected<CSSGapLengthListInterpolationType>(
+                  property));
+        } else {
+          applicable_types->push_back(
+              MakeGarbageCollected<CSSLengthInterpolationType>(property));
+        }
         break;
       case CSSPropertyID::kContainIntrinsicWidth:
       case CSSPropertyID::kContainIntrinsicHeight:

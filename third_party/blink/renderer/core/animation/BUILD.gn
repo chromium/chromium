@@ -114,6 +114,8 @@ blink_core_sources("animation") {
     "css_font_variation_settings_interpolation_type.h",
     "css_font_weight_interpolation_type.cc",
     "css_font_weight_interpolation_type.h",
+    "css_gap_length_list_interpolation_type.cc",
+    "css_gap_length_list_interpolation_type.h",
     "css_grid_template_property_interpolation_type.cc",
     "css_grid_template_property_interpolation_type.h",
     "css_image_interpolation_type.cc",

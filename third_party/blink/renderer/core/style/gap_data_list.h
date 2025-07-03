@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_LIST_H_
 
 #include "third_party/blink/renderer/core/style/gap_data.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 
 namespace blink {
 
@@ -43,6 +44,12 @@ class CORE_EXPORT GapDataList {
 
   explicit GapDataList(const T& value) {
     gap_data_list_.emplace_back(GapData<T>(value));
+  }
+
+  explicit GapDataList(Vector<Length>& lengths) {
+    for (const auto& length : lengths) {
+      gap_data_list_.emplace_back(GapData<int>(length.Pixels()));
+    }
   }
 
   void Trace(Visitor* visitor) const {

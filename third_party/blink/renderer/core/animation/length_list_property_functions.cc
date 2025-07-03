@@ -89,6 +89,8 @@ Length::ValueRange LengthListPropertyFunctions::GetValueRange(
     case CSSPropertyID::kBorderBottomRightRadius:
     case CSSPropertyID::kBorderTopLeftRadius:
     case CSSPropertyID::kBorderTopRightRadius:
+    case CSSPropertyID::kColumnRuleWidth:
+    case CSSPropertyID::kRowRuleWidth:
     case CSSPropertyID::kStrokeDasharray:
       return Length::ValueRange::kNonNegative;
 
