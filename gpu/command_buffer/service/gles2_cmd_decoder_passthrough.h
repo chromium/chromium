@@ -51,7 +51,6 @@ class ContextGroup;
 class GPUTracer;
 class MultiDrawManager;
 class GLES2DecoderPassthroughImpl;
-class GLES2ExternalFramebuffer;
 class PassthroughProgramCache;
 
 struct MappedBuffer {
@@ -712,7 +711,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   GLenum emulated_default_framebuffer_format_;
   std::unique_ptr<EmulatedDefaultFramebuffer> emulated_back_buffer_;
-  std::unique_ptr<GLES2ExternalFramebuffer> external_default_framebuffer_;
 
   // Maximum 2D resource sizes for limiting offscreen framebuffer sizes
   GLint max_renderbuffer_size_ = 0;

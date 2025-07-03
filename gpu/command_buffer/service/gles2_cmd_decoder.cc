@@ -68,7 +68,6 @@
 #include "gpu/command_buffer/service/gles2_cmd_copy_texture_chromium.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 #include "gpu/command_buffer/service/gles2_cmd_validation.h"
-#include "gpu/command_buffer/service/gles2_external_framebuffer.h"
 #include "gpu/command_buffer/service/gles2_query_manager.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_state_tracer.h"
@@ -2257,11 +2256,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
     if (back_buffer_draw_buffer_ == GL_NONE)
       return false;
 
-    if (external_default_framebuffer_ &&
-        external_default_framebuffer_->IsSharedImageAttached()) {
-      return external_default_framebuffer_->HasAlpha();
-    }
-
     if (offscreen_target_frame_buffer_.get()) {
       return false;
     }
@@ -2392,8 +2386,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // The offscreen frame buffer that the client renders to.
   std::unique_ptr<BackFramebuffer> offscreen_target_frame_buffer_;
   std::unique_ptr<BackTexture> offscreen_target_color_texture_;
-
-  std::unique_ptr<GLES2ExternalFramebuffer> external_default_framebuffer_;
 
   // The format of the texture or renderbuffer backing the offscreen
   // framebuffer.
@@ -4178,9 +4170,6 @@ gfx::Size GLES2DecoderImpl::GetBoundReadFramebufferSize() {
   Framebuffer* framebuffer = GetBoundReadFramebuffer();
   if (framebuffer) {
     return framebuffer->GetFramebufferValidSize();
-  } else if (external_default_framebuffer_ &&
-             external_default_framebuffer_->IsSharedImageAttached()) {
-    return external_default_framebuffer_->GetSize();
   } else if (offscreen_target_frame_buffer_.get()) {
     return offscreen_size_;
   } else {
@@ -4192,9 +4181,6 @@ gfx::Size GLES2DecoderImpl::GetBoundDrawFramebufferSize() {
   Framebuffer* framebuffer = GetBoundDrawFramebuffer();
   if (framebuffer) {
     return framebuffer->GetFramebufferValidSize();
-  } else if (external_default_framebuffer_ &&
-             external_default_framebuffer_->IsSharedImageAttached()) {
-    return external_default_framebuffer_->GetSize();
   } else if (offscreen_target_frame_buffer_.get()) {
     return offscreen_size_;
   } else {
@@ -4207,10 +4193,6 @@ GLuint GLES2DecoderImpl::GetBoundReadFramebufferServiceId() {
   if (framebuffer) {
     return framebuffer->service_id();
   }
-  if (external_default_framebuffer_ &&
-      external_default_framebuffer_->IsSharedImageAttached()) {
-    return external_default_framebuffer_->GetFramebufferId();
-  }
   if (surface_.get()) {
     return surface_->GetBackingFramebufferObject();
   }
@@ -4221,10 +4203,6 @@ GLuint GLES2DecoderImpl::GetBoundDrawFramebufferServiceId() const {
   Framebuffer* framebuffer = GetBoundDrawFramebuffer();
   if (framebuffer) {
     return framebuffer->service_id();
-  }
-  if (external_default_framebuffer_ &&
-      external_default_framebuffer_->IsSharedImageAttached()) {
-    return external_default_framebuffer_->GetFramebufferId();
   }
   if (offscreen_target_frame_buffer_.get()) {
     return offscreen_target_frame_buffer_->id();
@@ -4253,10 +4231,6 @@ GLenum GLES2DecoderImpl::GetBoundReadFramebufferInternalFormat() {
   } else {  // Back buffer.
     if (back_buffer_read_buffer_ == GL_NONE)
       return 0;
-    if (external_default_framebuffer_ &&
-        external_default_framebuffer_->IsSharedImageAttached()) {
-      return external_default_framebuffer_->GetColorFormat();
-    }
     if (offscreen_target_frame_buffer_.get()) {
       return offscreen_target_color_format_;
     }
@@ -4312,10 +4286,6 @@ GLsizei GLES2DecoderImpl::GetBoundFramebufferSamples(GLenum target) {
   if (framebuffer) {
     return framebuffer->GetSamples();
   } else {  // Back buffer.
-    if (external_default_framebuffer_ &&
-        external_default_framebuffer_->IsSharedImageAttached()) {
-      return external_default_framebuffer_->GetSamplesCount();
-    }
     return 0;
   }
 }
@@ -4328,10 +4298,6 @@ GLenum GLES2DecoderImpl::GetBoundFramebufferDepthFormat(
   if (framebuffer) {
     return framebuffer->GetDepthFormat();
   } else {  // Back buffer.
-    if (external_default_framebuffer_ &&
-        external_default_framebuffer_->IsSharedImageAttached()) {
-      return external_default_framebuffer_->GetDepthFormat();
-    }
     if (offscreen_target_frame_buffer_.get()) {
       return 0;
     }
@@ -4349,10 +4315,6 @@ GLenum GLES2DecoderImpl::GetBoundFramebufferStencilFormat(
   if (framebuffer) {
     return framebuffer->GetStencilFormat();
   } else {  // Back buffer.
-    if (external_default_framebuffer_ &&
-        external_default_framebuffer_->IsSharedImageAttached()) {
-      return external_default_framebuffer_->GetStencilFormat();
-    }
     if (offscreen_target_frame_buffer_.get()) {
       return 0;
     }
@@ -4450,11 +4412,6 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
     return;
 
   DCHECK(!have_context || context_->IsCurrent(nullptr));
-
-  if (external_default_framebuffer_) {
-    external_default_framebuffer_->Destroy(have_context);
-    external_default_framebuffer_.reset();
-  }
 
   if (have_context) {
     if (copy_tex_image_blit_.get()) {
@@ -5060,10 +5017,6 @@ bool GLES2DecoderImpl::BoundFramebufferAllowsChangesToAlphaChannel() {
     return framebuffer->HasAlphaMRT();
   if (back_buffer_draw_buffer_ == GL_NONE)
     return false;
-  if (external_default_framebuffer_ &&
-      external_default_framebuffer_->IsSharedImageAttached()) {
-    return external_default_framebuffer_->HasAlpha();
-  }
   if (offscreen_target_frame_buffer_.get()) {
     return false;
   }
@@ -5076,10 +5029,6 @@ bool GLES2DecoderImpl::BoundFramebufferHasDepthAttachment() {
   if (framebuffer) {
     return framebuffer->HasDepthAttachment();
   }
-  if (external_default_framebuffer_ &&
-      external_default_framebuffer_->IsSharedImageAttached()) {
-    return external_default_framebuffer_->HasDepth();
-  }
   if (offscreen_target_frame_buffer_.get()) {
     return false;
   }
@@ -5090,10 +5039,6 @@ bool GLES2DecoderImpl::BoundFramebufferHasStencilAttachment() {
   Framebuffer* framebuffer = GetBoundDrawFramebuffer();
   if (framebuffer) {
     return framebuffer->HasStencilAttachment();
-  }
-  if (external_default_framebuffer_ &&
-      external_default_framebuffer_->IsSharedImageAttached()) {
-    return external_default_framebuffer_->HasStencil();
   }
   if (offscreen_target_frame_buffer_.get()) {
     return false;
@@ -5126,10 +5071,6 @@ void GLES2DecoderImpl::ApplyDirtyState() {
 }
 
 GLuint GLES2DecoderImpl::GetBackbufferServiceId() const {
-  if (external_default_framebuffer_ &&
-      external_default_framebuffer_->IsSharedImageAttached())
-    return external_default_framebuffer_->GetFramebufferId();
-
   return (offscreen_target_frame_buffer_.get())
              ? offscreen_target_frame_buffer_->id()
              : (surface_.get() ? surface_->GetBackingFramebufferObject() : 0);
