@@ -755,7 +755,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slika/slike</translation>
 <translation id="4300272766492248925">Otvori aplikaciju</translation>
 <translation id="430786093962686457">šifona</translation>
-<translation id="4310735698903592804">Nedavne pozadine omogućuje Googleov AI</translation>
+<translation id="4310735698903592804">Nedavne pozadine izrađene pomoću Googleovog AI-ja</translation>
 <translation id="4320904097188876154">fluorescentno ružičaste boje</translation>
 <translation id="4333390807948134856">Pritisnuta je tipka <ph name="KEY_NAME" /></translation>
 <translation id="4334293042716981313">Također možete <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />napisati vlastiti upit<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
@@ -1739,7 +1739,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tipkom sa strelicom ulijevo ili strelicom udesno upravljajte ovom značajkom.</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>
-<translation id="8721554916373590179">Uzorci s upitom</translation>
+<translation id="8721554916373590179">Predlošci upita</translation>
 <translation id="8723108084122415655">Mreža koja nije zadana je iznad praga latencije</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>
 <translation id="8726019395068607495">Zaustavljeno – vratašca su otvorena</translation>

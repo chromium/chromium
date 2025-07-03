@@ -1315,7 +1315,7 @@
 <translation id="1901213235765457754">يُرجى طلب تحديث هذا التطبيق من المشرف</translation>
 <translation id="1901303067676059328">تح&amp;ديد الكلّ</translation>
 <translation id="1901760057081700494">‏تم ضبط المنطقة الزمنية حاليًا على ‎<ph name="TIME_ZONE_ENTRY" />. ولتعديلها تلقائيًا، يجب <ph name="BEGIN_LINK" />تفعيل إذن الوصول إلى الموقع الجغرافي للنظام<ph name="END_LINK" />.</translation>
-<translation id="1904580727789512086">‏يتم حفظ عناوين URL التي تنتقل إليها في حسابك على Google.</translation>
+<translation id="1904580727789512086">‏عند زيارة عنوان URL، سيتم حفظه في حسابك على Google.</translation>
 <translation id="1906181697255754968">تطلب المواقع الإلكترونية عادةً الوصول إلى الملفات والمجلدات على جهازك لتتيح ميزات مثل حفظ عملك تلقائيًا.</translation>
 <translation id="1906488504371069394">‏الاطّلاع على مزيد من الإضافات والمظاهر على <ph name="BEGIN_LINK" />سوق Chrome الإلكتروني<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">‏هذه الميزة تتيح لك إمكانية الكتابة باستخدام صوتك. اضغط على مفتاح البحث + D، ثم ابدأ التحدّث.</translation>
@@ -1773,7 +1773,7 @@
 <translation id="222115440608612541">التبديل بين الوضع الفاتح والداكن عند شروق الشمس وعند غروبها</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">مصدر وسائط بلا اسم</translation>
-<translation id="2224337661447660594">الاتصال بالإنترنت مقطوع</translation>
+<translation id="2224337661447660594">لا يتوفّر اتصال بالإنترنت</translation>
 <translation id="2224444042887712269">ينتمي هذا الإعداد إلى <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">تعديل اسم المجلد</translation>
 <translation id="2225927550500503913">البطاقة الافتراضية مُفعّلة</translation>
@@ -4277,6 +4277,7 @@
 <translation id="3948334586359655083">تشغّل علامة التبويب هذه محتوى صوتيًا.</translation>
 <translation id="3948507072814225786">بإمكان <ph name="ORIGIN" /> تعديل الملفات في المجلدات التالية:</translation>
 <translation id="3948985214866944547">يَحظر معظم المستخدمين مشاركة الموقع الجغرافي الدقيق لهذا الموقع الإلكتروني.</translation>
+<translation id="394930357226768495">عرض الاقتراحات والنتائج من مؤسستك</translation>
 <translation id="394984172568887996">‏تمّ الاستيراد من IE</translation>
 <translation id="3949999964543783947">يمكنك <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> لتنزيل الملفات بطريقة أكثر أمانًا.</translation>
 <translation id="3950479158728806902">إنشاء مفتاح مرور تلقائيًا لتسجيل الدخول بشكل أسرع</translation>
@@ -4670,7 +4671,7 @@
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4242577469625748426">تعذّر تثبيت إعدادات السياسة على الجهاز: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />تتم إدارة متصفِّحك وملفك الشخصي<ph name="END_LINK" /> من خلال <ph name="DOMAIN" />.</translation>
-<translation id="424315890655130736">إدخال عبارة المرور</translation>
+<translation id="424315890655130736">يُرجى إدخال عبارة المرور</translation>
 <translation id="4243504193894350135">الطابعة متوقفة مؤقتًا</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />، الدرجة <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">العثور على المزيد من تطبيقات قلم الشاشة</translation>
@@ -8460,7 +8461,7 @@
 <translation id="6972754398087986839">البدء</translation>
 <translation id="697312151395002334">المواقع الإلكترونية التي يُسمح لها بإرسال النوافذ المنبثقة واستخدام عمليات إعادة التوجيه</translation>
 <translation id="6973611239564315524">‏تتوفّر ترقية إلى Debian 10 (Buster).</translation>
-<translation id="69739764870135975">‏إذا كان محرك البحث التلقائي هو Google، ستظهر لك اقتراحات أفضل وأكثر صلة بسياق عمليات البحث التي تجريها.</translation>
+<translation id="69739764870135975">‏إذا كان محرك البحث التلقائي هو Google، ستظهر لك اقتراحات أفضل وأكثر صلة بسياق عمليات البحث التي تجريها</translation>
 <translation id="697508444536771064">‏إيقاف نظام التشغيل Linux</translation>
 <translation id="6978121630131642226">محرّكات البحث</translation>
 <translation id="6978717888677691380">المواقع الإلكترونية التي حظرتها</translation>

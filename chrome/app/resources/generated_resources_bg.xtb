@@ -4284,6 +4284,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3948334586359655083">В този раздел се възпроизвежда звук</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да редактира файловете в следните папки</translation>
 <translation id="3948985214866944547">Повечето хора блокират споделянето на точното местоположение за този сайт</translation>
+<translation id="394930357226768495">Показване на предложения и резултати от организацията ви</translation>
 <translation id="394984172568887996">Импортирани от Internet Explorer</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, за да направите изтеглянето на файлове по-безопасно</translation>
 <translation id="3950479158728806902">Автоматично създаване на ключ за достъп за по-бързо влизане в профила</translation>
@@ -7937,7 +7938,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6607831829715835317">Още инструме&amp;нти</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> вече се управлява от <ph name="DOMAIN" />. За да използвате родителски контроли с друг профил в Google, излезте от този след настройването и изберете „Добавяне на човек“ на екрана за вход.</translation>
 <translation id="6608166463665411119">Нулиране на електронната SIM карта</translation>
-<translation id="660846213831377756">Бутони на мишката</translation>
+<translation id="660846213831377756">Клавиши за мишката</translation>
 <translation id="6608773371844092260">За да настрои отпечатък, детето ви трябва да докосне сензора за отпечатъци от дясната страна на устройството <ph name="DEVICE_TYPE" />. Данните за отпечатъка му се съхраняват надеждно и никога не напускат устройството <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Данните за вход в профила ще бъдат съхранени на това устройство, след като излезете от режим „инкогнито“. По-късно ще можете отново да влезете в профила си в този уебсайт от устройството си.</translation>
 <translation id="6610002944194042868">Опции за превод</translation>

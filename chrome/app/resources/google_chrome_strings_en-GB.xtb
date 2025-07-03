@@ -56,6 +56,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1682634494516646069">Google Chrome cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="1688214853608504530">When you type in the address bar or search box, Chrome sends what you type to your organisation's search, AI and agent tools to get suggestions.</translation>
 <translation id="1698376642261615901">Google Chrome is a web browser that runs web pages and applications with lightning speed. It's fast, stable and easy to use. Browse the web more safely with malware and phishing protection built into Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome will relaunch in an hour}other{Chrome will relaunch in # hours}}</translation>
 <translation id="1722488837206509557">This will allow you to select from available devices and display content on them.</translation>

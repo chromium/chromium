@@ -1098,7 +1098,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1750238553597293878">Pokračujte v používání hesel ve svém účtu Google</translation>
 <translation id="175081537116822146">Je potřeba přihlášení a synchronizace</translation>
 <translation id="1751262127955453661">Dokud nezavřete všechny karty webu <ph name="ORIGIN" />, bude moci upravovat soubory ve složce <ph name="FOLDERNAME" /></translation>
-<translation id="1751335846119670066">Pomoz mi číst</translation>
+<translation id="1751335846119670066">Pomoz mi přečíst</translation>
 <translation id="17513872634828108">Otevřené karty</translation>
 <translation id="175196451752279553">Znovu ot&amp;evřít zavřenou kartu</translation>
 <translation id="1752557850776261983">Kontrola přihlášení…</translation>
@@ -4273,6 +4273,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3948334586359655083">Tato karta přehrává zvuk</translation>
 <translation id="3948507072814225786">Web <ph name="ORIGIN" /> může upravovat soubory v následujících složkách</translation>
 <translation id="3948985214866944547">Většina lidí sdílení přesné polohy s tímto webem blokuje</translation>
+<translation id="394930357226768495">Zobrazovat návrhy a výsledky od vaší organizace</translation>
 <translation id="394984172568887996">Importováno z aplikace IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, aby bylo stahování souborů bezpečnější</translation>
 <translation id="3950479158728806902">Automaticky vytvořit přístupový klíč pro rychlejší přihlášení</translation>
@@ -9262,7 +9263,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7568790562536448087">Aktualizace</translation>
 <translation id="7569113730576914983">Když Chrome zjistí, že některé z vašich hesel bylo vyzrazeno při porušení zabezpečení údajů, může vám po přihlášení nabídnout jeho změnu</translation>
 <translation id="7569983096843329377">Černá</translation>
-<translation id="7570548610653957960">Pomoz mi číst</translation>
+<translation id="7570548610653957960">Pomoz mi přečíst</translation>
 <translation id="7571643774869182231">Na aktualizaci nemáte dostatek místa</translation>
 <translation id="7573172247376861652">Nabití baterie</translation>
 <translation id="7573594921350120855">Weby obvykle používají videokameru ke komunikačním funkcím, jako je videohovor</translation>

@@ -1453,7 +1453,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="686899695320434745">Las direcciones no se encriptaron con tu frase de contraseña. Esto te permite usarlas en otros servicios de Google.</translation>
 <translation id="6871397658902960384">Comenzar a navegar</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Guardar contraseña en la cuenta}other{Guardar contraseñas en la cuenta}}</translation>
-<translation id="6875166646976836138">También puedes ver y administrar estos elementos en tus favoritos, lista de lectura o administrador de contraseñas.</translation>
+<translation id="6875166646976836138">También puedes ver y administrar estos elementos en tus favoritos, tu lista de lectura o el administrador de contraseñas.</translation>
 <translation id="6882836635272038266">Protección estándar contra descargas, extensiones y sitios web identificados como peligrosos.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Guarda {COUNT} contraseña en tu Cuenta de Google}other{Guarda {COUNT} contraseñas en tu Cuenta de Google}}</translation>
 <translation id="6888009575607455378">¿Confirmas que quieres descartar los cambios?</translation>

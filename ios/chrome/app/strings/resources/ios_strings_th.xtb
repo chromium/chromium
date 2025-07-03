@@ -1038,7 +1038,7 @@
 <translation id="5279600392753459966">บล็อกทั้งหมด</translation>
 <translation id="5282340693022193851">หากต้องการรับการแจ้งเตือนการติดตามราคา ให้เปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
 <translation id="528857768909044842">ระบบจะบันทึกกลุ่มแท็บไว้ที่นี่</translation>
-<translation id="5294624619177114121">การแจ้งเตือนในอุปกรณ์เคลื่อนที่</translation>
+<translation id="5294624619177114121">การแจ้งเตือนบนมือถือ</translation>
 <translation id="5295239312320826323">นำบัญชี <ph name="USER_EMAIL" /> ออกใช่ไหม</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5311061401280561833">อนุญาตให้เข้าถึงกล้องและไมโครโฟน</translation>
@@ -1280,7 +1280,7 @@
 <translation id="6251835855431997163">ป้อนข้อความอัตโนมัติ <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">เปิดลิงก์ในแอปแทนเบราว์เซอร์</translation>
 <translation id="6268773951964630964">ค้นหารูปภาพที่คัดลอก</translation>
-<translation id="6271462272606946663">ซ่อน "คำขอเว็บไซต์เวอร์ชันอุปกรณ์เคลื่อนที่"</translation>
+<translation id="6271462272606946663">ซ่อน "คำขอเว็บไซต์เวอร์ชันมือถือ"</translation>
 <translation id="6271824294945464304">การแชร์รหัสผ่าน</translation>
 <translation id="628251768213143684">คุณจัดการข้อมูลที่บันทึกไว้ในบัญชี Google ได้ทุกเมื่อ</translation>
 <translation id="6284652193729350524">เสนอการแปล <ph name="LANGUAGE" /></translation>
@@ -1581,7 +1581,7 @@
 <translation id="7454057999980797137">จังหวัด</translation>
 <translation id="7458706065921255639">การปรับเปลี่ยนในแบบของคุณและการลิงก์</translation>
 <translation id="745899714366929493">ตลอดวัน</translation>
-<translation id="7460698861522306757">ขอเว็บไซต์เวอร์ชันอุปกรณ์เคลื่อนที่</translation>
+<translation id="7460698861522306757">ขอเว็บไซต์เวอร์ชันมือถือ</translation>
 <translation id="7468373585447318060">ติดตามการลดราคาของผลิตภัณฑ์ทั้งหมดที่คุณติดตาม</translation>
 <translation id="746872191028309255">เลือกซื้อสิ่งที่คุณเห็นโดยใช้กล้องหรือแกลเลอรีรูปภาพ</translation>
 <translation id="7471557245617580330">สร้างแท็บใหม่</translation>

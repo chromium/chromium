@@ -334,7 +334,7 @@
 <translation id="2316129865977710310">Nein, danke</translation>
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
 <translation id="2321086116217818302">Passwörter werden zum Exportieren vorbereitet…</translation>
-<translation id="2323697864063408084">Du kannst Benachrichtigungen auf dem Sperrbildschirm und als Banner erhalten, um nichts Wichtiges zu verpassen</translation>
+<translation id="2323697864063408084">Du kannst Benachrichtigungen auf dem Sperrbildschirm und als Banner sehen, um nichts Wichtiges zu verpassen</translation>
 <translation id="2326302612031521902">Auswahl der Einheit</translation>
 <translation id="2330607597130465898">Kein Safe Browsing</translation>
 <translation id="233375395665273385">Löschen und abmelden</translation>
@@ -708,7 +708,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3986739045730058129">Zum Tab</translation>
 <translation id="3992684624889376114">Über diese Seite</translation>
 <translation id="3993594519743675442">„Erinnerung einrichten“ ausblenden</translation>
-<translation id="3994422733891749358">Benachrichtigungen auswählen, die du erhalten möchtest</translation>
+<translation id="3994422733891749358">Auswählen, welche Benachrichtigungen du erhalten möchtest</translation>
 <translation id="3994522032746736727">Als <ph name="EMAIL" /> anmelden</translation>
 <translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Statusanzeige für den Seitenaufbau, <ph name="EMAIL" /> geladen.</translation>
@@ -1547,7 +1547,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7313347584264171202">Hier werden deine Inkognitotabs angezeigt</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % heruntergeladen</translation>
 <translation id="7346909386216857016">Ok</translation>
-<translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
+<translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
 <translation id="7363349185727752629">Übersicht über deine Datenschutzeinstellungen</translation>
 <translation id="736564850024123010">Du kannst die Position der Adressleiste verschieben, um den Browser an deine Bedürfnisse anzupassen.</translation>
 <translation id="7366909168761621528">Browserdaten</translation>

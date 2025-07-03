@@ -1989,7 +1989,7 @@
 <translation id="7497767806359279797">انتخاب زبان و صفحه‌کلید</translation>
 <translation id="7507162824403726948">تأیید هویت خود را تکمیل کنید</translation>
 <translation id="7508690557411636492">ماه گذشته باز شده است</translation>
-<translation id="7509246181739783082">هویتتان را به‌تأیید برسانید</translation>
+<translation id="7509246181739783082">هویتتان را درستی‌سنجی کنید</translation>
 <translation id="7512509370370076552">میان‌بر کلیک راست از دگرساز + کلیک به کلید <ph name="LAUNCHER_KEY_NAME" /> + کلیک تغییر کرده است</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />، انتخاب نشده</translation>
 <translation id="7513057995673284840">می‌توانید کنش دکمه‌های <ph name="PERIPHERAL_NAME" /> را شخصی‌سازی کنید</translation>
@@ -2379,7 +2379,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />، <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8751299148074971734">همین‌طور ادامه دهید!</translation>
 <translation id="8753368202781196133">درحال‌حاضر این زبان پشتیبانی نمی‌شود.</translation>
-<translation id="8755498163081687682">هویتتان را به‌تأیید برسانید: <ph name="ORIGIN_NAME" /> می‌خواهید تأیید کند این فرد شما هستید</translation>
+<translation id="8755498163081687682">هویتتان را درستی‌سنجی کنید: <ph name="ORIGIN_NAME" /> می‌خواهید تأیید کند این فرد شما هستید</translation>
 <translation id="875593634123171288">‏نمایش تنظیمات VPN</translation>
 <translation id="8756799553341497810">پس‌از خروج از این نما می‌توانید سفارشی‌سازی چیدمان برنامه‌تان را شروع کنید.</translation>
 <translation id="8759408218731716181">تنظیم ورود چندگانه به سیستم ممکن نیست</translation>

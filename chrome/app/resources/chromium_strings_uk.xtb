@@ -220,6 +220,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3954172517175569325">Ваші паролі, способи оплати й адреси, збережені в обліковому записі Google, буде вилучено із цього пристрою. Щоб знову використовувати їх у Chromium, увійдіть в обліковий запис.</translation>
 <translation id="395904275706073188">Захищені сторінки не можна зчитувати. Спробуйте на іншій сторінці.</translation>
 <translation id="3962647064319009959">Дізнайтесь, як Chromium дбає про вашу безпеку</translation>
+<translation id="3971865010372729242">Коли ви вводите запит в адресному рядку або полі пошуку, Chromium надсилає його в агрегатор пошуку вашої організації, а також штучному інтелекту й агентам на основі ШІ, які вона використовує, щоб надавати вам підказки.</translation>
 <translation id="3975724895399328945">Про &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Про Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>

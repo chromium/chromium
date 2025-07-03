@@ -3501,7 +3501,7 @@
 <translation id="3434512374684753970">ఆడియో &amp; వీడియో</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" మీ <ph name="CODE_TYPE" />ని అభ్యర్థిస్తోంది</translation>
 <translation id="3435738964857648380">భద్రత</translation>
-<translation id="343578350365773421">కాగితం లేదు</translation>
+<translation id="343578350365773421">పేపర్ లేదు</translation>
 <translation id="3435896845095436175">ప్రారంభించండి</translation>
 <translation id="3437397693214267762">మీ Outlook క్యాలెండర్, SharePoint, OneDrive ఫైల్స్‌ను చూడండి</translation>
 <translation id="3438633801274389918">నింజా</translation>
@@ -4285,6 +4285,7 @@
 <translation id="3948334586359655083">ఈ ట్యాబ్ ఆడియోను ప్లే చేస్తోంది</translation>
 <translation id="3948507072814225786">కింది ఫోల్డర్‌లలోని ఫైళ్లను <ph name="ORIGIN" /> సవరించగలదు</translation>
 <translation id="3948985214866944547">చాలా మంది వ్యక్తులు ఈ సైట్ కోసం ఖచ్చితమైన లొకేషన్ షేర్ చేయడాన్ని బ్లాక్ చేస్తారు</translation>
+<translation id="394930357226768495">మీ సంస్థకు సంబంధించిన సూచనలను, ఫలితాలను చూడండి</translation>
 <translation id="394984172568887996">IE నుండి దిగుమతి చేయబడింది</translation>
 <translation id="3949999964543783947">ఫైల్స్‌ను మరింత సురక్షితంగా డౌన్‌లోడ్ చేయడానికి <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">వేగంగా సైన్ ఇన్ చేయడానికి పాస్-కీని ఆటోమేటిక్‌గా క్రియేట్ చేయండి</translation>
@@ -10783,7 +10784,7 @@
 <translation id="8624315169751085215">క్లిప్‌బోర్డ్‌కు కాపీ చేయండి</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS పరికరం, అలాగే కాంపోనెంట్ సీరియల్ నంబర్‌లను చదవండి</translation>
-<translation id="862542460444371744">&amp;పొడిగింపులు</translation>
+<translation id="862542460444371744">&amp;ఎక్స్‌టెన్షన్‌లు</translation>
 <translation id="8625663000550647058">మీ మైక్రోఫోన్ ఉపయోగించడానికి అనుమతించబడలేదు</translation>
 <translation id="8625916342247441948">HID పరికరాలను కనెక్ట్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="862727964348362408">తాత్కాలికంగా రద్దు చేయబడింది</translation>

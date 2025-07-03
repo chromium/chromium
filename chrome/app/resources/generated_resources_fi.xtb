@@ -4283,6 +4283,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3948334586359655083">Tämä välilehti toistaa audiota</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> saa muokata seuraavien kansioiden tiedostoja</translation>
 <translation id="3948985214866944547">Useimmat ihmiset estävät tarkan sijainnin jakamisen tälle sivustolle</translation>
+<translation id="394930357226768495">Näytä ehdotuksia ja tuloksia organisaatiostasi</translation>
 <translation id="394984172568887996">Tuotu IE:stä</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> tehdäksesi tiedostojen lataamisesta turvallisempaa</translation>
 <translation id="3950479158728806902">Luo avainkoodi automaattisesti, jotta voit kirjautua sisään nopeammin</translation>
@@ -7360,7 +7361,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6185151644843671709">Salasana tallennettu ja PIN-koodi luotu</translation>
 <translation id="6186177419203903310">Tämä ottaa järjestelmän kaikkien uusien USB-lisälaitteiden ilmoitukset käyttöön. Haluatko varmasti jatkaa?</translation>
 <translation id="6190953336330058278">Puhelinhubi-sovellukset</translation>
-<translation id="6192333916571137726">Lataaminen-tiedosto</translation>
+<translation id="6192333916571137726">Lataa tiedosto</translation>
 <translation id="6192413564913825901">Siirrä Kaikki kirjanmerkit ‑kohtaan</translation>
 <translation id="6194333736420234626">&amp;Maksutavat</translation>
 <translation id="6195005504600220730">Lue tietoja selaimesta, käyttöjärjestelmästä ja laitteesta</translation>

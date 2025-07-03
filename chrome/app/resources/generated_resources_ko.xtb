@@ -1664,7 +1664,7 @@
 <translation id="2136476978468204130">입력한 암호가 잘못되었습니다.</translation>
 <translation id="2137128126782078222"><ph name="WEBSITE" />의 알림 허용 안함</translation>
 <translation id="2139919072249842737">설정 버튼</translation>
-<translation id="2140788884185208305">배터리 상태</translation>
+<translation id="2140788884185208305">배터리 성능 상태</translation>
 <translation id="2142328300403846845">다음으로 링크 열기</translation>
 <translation id="2142484069755256151">Google 비밀번호 관리자에 사용할 6자리 복구 PIN을 만드세요. PIN은 <ph name="NUM_DIGIT" />/6자리입니다</translation>
 <translation id="2142582065325732898">최근 사용한 Chrome 탭을 확인하려면 <ph name="LINK1_BEGIN" />Chrome 동기화<ph name="LINK1_END" />를 사용 설정하세요. <ph name="LINK2_BEGIN" />자세히 알아보기<ph name="LINK2_END" /></translation>
@@ -4289,6 +4289,7 @@
 <translation id="3948334586359655083">이 탭은 오디오를 재생합니다</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />에서 다음 폴더의 파일을 수정할 수 있습니다.</translation>
 <translation id="3948985214866944547">대부분의 사용자가 이 사이트의 정확한 위치 공유를 차단합니다</translation>
+<translation id="394930357226768495">조직의 검색 애그리게이터에서 제공하는 추천 및 검색 결과 표시</translation>
 <translation id="394984172568887996">IE에서 가져온 북마크</translation>
 <translation id="3949999964543783947">파일을 더 안전하게 다운로드하려면 <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">패스키를 자동으로 생성하여 더 빠르게 로그인</translation>

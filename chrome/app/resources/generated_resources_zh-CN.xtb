@@ -4263,6 +4263,7 @@
 <translation id="3948334586359655083">此标签页正在播放音频</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可修改以下文件夹内的文件</translation>
 <translation id="3948985214866944547">多数人阻止与此网站分享精确位置信息</translation>
+<translation id="394930357226768495">显示组织的建议和结果</translation>
 <translation id="394984172568887996">从 IE 中导入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />可更安全地下载文件</translation>
 <translation id="3950479158728806902">自动创建通行密钥，登录更迅速</translation>
@@ -4656,7 +4657,7 @@
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4242577469625748426">无法在设备上安装策略设置：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">您的<ph name="BEGIN_LINK" />浏览器和个人资料<ph name="END_LINK" />由 <ph name="DOMAIN" /> 管理</translation>
-<translation id="424315890655130736">请输入密码</translation>
+<translation id="424315890655130736">输入口令</translation>
 <translation id="4243504193894350135">打印机已暂停运行</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />，<ph name="GRADE" />级</translation>
 <translation id="4244238649050961491">查找更多触控笔应用</translation>
@@ -9817,7 +9818,7 @@
 <translation id="7953236668995583915">请重新加载此页面，以便在该网站上应用更新后的设置</translation>
 <translation id="7953669802889559161">输入法</translation>
 <translation id="7953955868932471628">管理快捷方式</translation>
-<translation id="7955105108888461311">当面申请</translation>
+<translation id="7955105108888461311">当面请求</translation>
 <translation id="7955177647836564772">如果 Smart Lock 已开启且您的手机处于未锁定状态，您无需输入密码或 PIN 码</translation>
 <translation id="7956373551960864128">已保存的打印机</translation>
 <translation id="7956918070009672177">您的设备上没有<ph name="LANGUAGE" />语音包。请联网，然后重试。</translation>
@@ -11666,7 +11667,7 @@
 <translation id="936801553271523408">系统诊断数据</translation>
 <translation id="93766956588638423">修复扩展程序</translation>
 <translation id="938623846785894166">不常用的文件</translation>
-<translation id="939598580284253335">请输入密码</translation>
+<translation id="939598580284253335">输入口令</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="940212040923880623">查找和修改(&amp;F)</translation>
 <translation id="942296794412775122">麦克风开/关</translation>

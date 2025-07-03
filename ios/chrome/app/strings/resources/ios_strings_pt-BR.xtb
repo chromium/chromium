@@ -334,7 +334,7 @@
 <translation id="2316129865977710310">Não.</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
 <translation id="2321086116217818302">Preparando senhas…</translation>
-<translation id="2323697864063408084">Receba notificações na tela de bloqueio e como banners para nunca perder o que é importante para você</translation>
+<translation id="2323697864063408084">Receba notificações na tela de bloqueio e como banners para não perder o que é importante</translation>
 <translation id="2326302612031521902">Seletor de unidade de medida</translation>
 <translation id="2330607597130465898">Sem proteção</translation>
 <translation id="233375395665273385">Excluir e sair</translation>
@@ -696,7 +696,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3948600256434252210">Deslize para a direita para entrar no modo de navegação anônima.</translation>
 <translation id="3950479158728806902">Criar automaticamente uma chave de acesso para fazer login mais rápido</translation>
 <translation id="3950820424414687140">Fazer login</translation>
-<translation id="3955740319737378355">Concluído</translation>
+<translation id="3955740319737378355">OK</translation>
 <translation id="3955822496205734389">Você tem senhas fracas.</translation>
 <translation id="3958312024468322930">Arraste até o Dock na parte de baixo da tela inicial</translation>
 <translation id="3960218941754097036">Pesquise o que quiser na tela com o Google Lens</translation>
@@ -708,7 +708,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3986739045730058129">Acessar a guia</translation>
 <translation id="3992684624889376114">Sobre esta página</translation>
 <translation id="3993594519743675442">Ocultar "Definir um lembrete"</translation>
-<translation id="3994422733891749358">Escolha as notificações que você quer receber</translation>
+<translation id="3994422733891749358">Escolha quais notificações receber</translation>
 <translation id="3994522032746736727">Fazer login como <ph name="EMAIL" /></translation>
 <translation id="3994911892367422121">ENTENDI</translation>
 <translation id="3995521777587992544">Barra de progresso do carregamento de página, <ph name="EMAIL" /> carregada.</translation>
@@ -820,7 +820,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4430277756566635951">Seleção atual: <ph name="EMAIL" />. Escolha uma conta.</translation>
 <translation id="4430505936695785931">Acesse as senhas salvas em outros apps</translation>
 <translation id="4431224949908513835">Selecione uma forma de pagamento para preencher.</translation>
-<translation id="4442550905108052454">Abra as <ph name="BEGIN_BOLD" />Configurações<ph name="END_BOLD" />.</translation>
+<translation id="4442550905108052454">Abra as <ph name="BEGIN_BOLD" />Configurações<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Mais opções de <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Deslize a borda da tela para voltar ou avançar.</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
@@ -1181,7 +1181,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5888889603768021126">Login feito com</translation>
 <translation id="5889333064153755823">Excluir dados de navegação</translation>
 <translation id="5896576662943111387">Desenvolvido para iOS</translation>
-<translation id="5897749768294722429">Para voltar rapidamente aos sites visitados, sincronize as guias e o histórico.</translation>
+<translation id="5897749768294722429">Sincronize o histórico e as guias para acessar rapidamente os sites visitados.</translation>
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Para compartilhar com pessoas próximas, permita que elas leiam esse QR code com a câmera ou um app adequado</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nova guia}one{{count} nova guia}other{{count} novas guias}}</translation>
@@ -1648,7 +1648,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7712361583414030698">Mostrando a versão off-line</translation>
 <translation id="7719038820139380048">Faça login para acessar conteúdo com base nos seus interesses.</translation>
 <translation id="7724085059277147439">{count,plural, =1{Item salvo na sua Conta do Google {email}}one{Item salvo na sua Conta do Google {email}}other{Itens salvos na sua Conta do Google {email}}}</translation>
-<translation id="7729458878441927652">Para conferir as guias dos seus outros dispositivos, sincronize-as com o histórico.</translation>
+<translation id="7729458878441927652">Para ver as guias dos seus outros dispositivos, sincronize-as com o histórico.</translation>
 <translation id="7730020510075123961">Não, juntar dados</translation>
 <translation id="7730973429297233609">Selecione a conta que você quer usar para salvar o arquivo <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Somente neste dispositivo.</translation>
